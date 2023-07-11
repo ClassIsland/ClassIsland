@@ -12,6 +12,6 @@
                                  VerticalAlignment="Center"/>
         <TextBlock Text="{Binding Text, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:IconText}}}"
                    VerticalAlignment="Center"
-                   Margin="6 0 0 0"/>
+                   Margin="{Binding IconMargin, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:IconText}}}"/>
     </StackPanel>
 </UserControl>

@@ -56,7 +56,7 @@ public partial class ProfileSettingsWindow : Window
     {
         ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value.Layouts.Add(new TimeLayoutItem()
         {
-            IsOnClass = true
+            TimeType = 0
         });
     }
 
@@ -64,7 +64,7 @@ public partial class ProfileSettingsWindow : Window
     {
         ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value.Layouts.Add(new TimeLayoutItem()
         {
-            IsOnClass = false
+            TimeType = 1
         });
     }
 
@@ -92,6 +92,21 @@ public partial class ProfileSettingsWindow : Window
         if (r == true)
         {
             MainViewModel.Profile.TimeLayouts.Remove(((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Key);
+        }
+    }
+
+    private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
+    {
+        MainViewModel.Profile.Subjects.Add(Guid.NewGuid().ToString(), new Subject());
+        ListViewSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
+    }
+
+    private async void ButtonSubject_OnClick(object sender, RoutedEventArgs e)
+    {
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteSubjectConfirm"));
+        if (r == true)
+        {
+            MainViewModel.Profile.Subjects.Remove(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Key);
         }
     }
 }

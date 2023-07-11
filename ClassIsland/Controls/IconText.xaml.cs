@@ -27,6 +27,15 @@ public partial class IconText : UserControl
         set => SetValue(KindProperty, value);
     }
 
+    public static readonly DependencyProperty IconMarginProperty = DependencyProperty.Register(
+        nameof(IconMargin), typeof(Thickness), typeof(IconText), new PropertyMetadata(new Thickness(6, 0, 0, 0)));
+
+    public Thickness IconMargin
+    {
+        get => (Thickness)GetValue(IconMarginProperty);
+        set => SetValue(IconMarginProperty, value);
+    }
+
     public IconText()
     {
         InitializeComponent();

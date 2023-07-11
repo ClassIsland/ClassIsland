@@ -42,7 +42,7 @@
         <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
                     DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-            <TextBlock Text="{Binding}"/>
+            <!--<TextBlock Text="{Binding}"/>-->
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
                                        WithSeconds="True" Is24Hours="True"
                                        Style="{StaticResource MaterialDesignOutlinedTimePicker}"
@@ -52,7 +52,8 @@
                                        Style="{StaticResource MaterialDesignOutlinedTimePicker}"
                                        SelectedTime="{Binding EndSecond}" />
             <TextBlock Text="类型" Margin="0 16 0 0"/>
-            <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
+            <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                     SelectedIndex="{Binding TimeType}">
                 <ListBoxItem>
                     <controls:IconText Kind="BookOutline" Text="上课"/>
                 </ListBoxItem>
@@ -73,6 +74,35 @@
                 <Run Text="确定要删除时间表"/>
                 <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewTimeLayouts}"/>
                 <Run Text="吗？如果有与此时间表关联的课程表，那么这些课程表在时间表删除后将无法正常工作！"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 删除科目确认 -->
+        <StackPanel x:Key="DeleteSubjectConfirm" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="删除"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="确定要删除科目"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
+                <Run Text="吗？如果有包含此科目的课程表，那么这些课程表在科目删除后将无法正常工作！"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
                 <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
@@ -121,7 +151,7 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <!-- 时间表操作 -->
-                                <ToolBar Grid.Row="0">
+                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
                                     <Button Click="ButtonAddTimeLayout_OnClick"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="Add" Text="添加"/>
@@ -132,7 +162,8 @@
                                 </ToolBar>
 
                                 <!-- 时间表 -->
-                                <ListView Grid.Row="1" ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                <ListView Grid.Row="1" Margin="12"
+                                          ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           x:Name="ListViewTimeLayouts">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
@@ -161,10 +192,10 @@
                                 </Grid.RowDefinitions>
 
                                 <!-- 时间表编辑操作 -->
-                                <ToolBar Grid.Row="0">
+                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
                                     <!--<TextBlock Text="{Binding Layouts}"/>-->
                                     <Button Click="ButtonAddClassTime_OnClick">
-                                        <controls:IconText Kind="NotePlusOutline" Text="添加上课"/>
+                                        <controls:IconText Kind="NotePlusOutline" Text="上课"/>
                                     </Button>
                                     <Button Click="ButtonAddBreakTime_OnClick">
                                         <controls:IconText Kind="ClockPlusOutline" Text="添加课间"/>
@@ -187,7 +218,8 @@
                                 </ToolBar>
 
                                 <!-- 时间点 -->
-                                <ListView Grid.Row="1" ItemsSource="{Binding Layouts}" x:Name="ListViewTimePoints">
+                                <ListView Grid.Row="1" Margin="12"
+                                          ItemsSource="{Binding Layouts}" x:Name="ListViewTimePoints">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -204,24 +236,29 @@
                                                     <materialDesign:PackIcon.Style>
                                                         <Style TargetType="materialDesign:PackIcon">
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding IsOnClass}" Value="True">
-                                                                    <Setter Property="Kind" Value="BookVariant"/>
+                                                                <DataTrigger Binding="{Binding TimeType}" Value="0">
+                                                                    <Setter Property="Kind" Value="BookOutline"/>
+                                                                    <Setter Property="ToolTip" Value="上课时间"/>
+                                                                </DataTrigger>  
+                                                                <DataTrigger Binding="{Binding TimeType}" Value="1">
+                                                                    <Setter Property="Kind" Value="ClockOutline"/>
+                                                                    <Setter Property="ToolTip" Value="课间休息"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
-                                                            <Setter Property="Kind" Value="Clock"/>
                                                         </Style>
                                                     </materialDesign:PackIcon.Style>
                                                 </materialDesign:PackIcon>
 
                                                 <!-- Time -->
-                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14">
+                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14" ToolTip="时间段">
                                                     <Run Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}"/>
                                                     <Run Text="-"/>
                                                     <Run Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}"/>
                                                 </TextBlock>
                                                 
                                                 <!-- Last Time -->
-                                                <controls:IconText Grid.Column="1" Grid.Row="1" Kind="ClockAuto" Text="{Binding Last}" Margin="0 3 0 0"/>
+                                                <controls:IconText Grid.Column="1" Grid.Row="1" Kind="ClockAutoOutline" Text="{Binding Last}" 
+                                                                   Margin="0 3 0 0" ToolTip="持续时间"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
@@ -232,7 +269,137 @@
 
                     <!-- 科目 -->
                     <TabItem Header="科目">
-                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <!-- 科目选择 -->
+                            <Grid Grid.Column="0" Margin="0 0 3 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <!-- 科目操作 -->
+                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                    <Button Click="ButtonAddSubject_OnClick">
+                                        <controls:IconText Kind="Add" Text="添加"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                    </Button>
+                                </ToolBar>
+
+                                <!-- 科目 -->
+                                <ListView Grid.Row="1" Margin="12"
+                                          ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                          x:Name="ListViewSubjects">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <!-- Icon -->
+                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0" 
+                                                                         Kind="BookmarkBoxMultipleOutline"/>
+
+                                                <!-- Subject -->
+                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
+                                                           ToolTip="科目名"/>
+
+                                                <!-- Info -->
+                                                <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
+                                                    <controls:IconText Kind="Teacher" Text="{Binding Value.TeacherName}"
+                                                                       IconMargin="3 0 0 0" Margin="0 0 6 0"
+                                                                       ToolTip="科任老师"/>
+                                                    <controls:IconText IconMargin="3 0 0 0" ToolTip="课程类型">
+                                                        <controls:IconText.Style>
+                                                            <Style TargetType="controls:IconText">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Value.IsOutDoor}" Value="True">
+                                                                        <Setter Property="Kind" Value="BasketballHoopOutline"/>
+                                                                        <Setter Property="Text" Value="户外课程"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                                <Setter Property="Kind" Value="HumanMaleBoardPoll"/>
+                                                                <Setter Property="Text" Value="室内课程"/>
+                                                            </Style>
+                                                        </controls:IconText.Style>
+                                                    </controls:IconText>
+                                                </WrapPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+
+                            <!-- 科目编辑 -->
+                            <Grid Grid.Column="1" Margin="3 0 0 0" 
+                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewSubjects}">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewSubjects}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 科目编辑操作 -->
+                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                    <Button Click="ButtonSubject_OnClick">
+                                        <controls:IconText Kind="Delete" Text="删除科目"/>
+                                    </Button>
+                                </ToolBar>
+
+                                <!-- 科目编辑 -->
+                                <StackPanel Grid.Row="1" Margin="12">
+                                    <!-- 科目名 & 简称 -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <!-- 科目名 -->
+                                        <TextBox Grid.Column="0" 
+                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                 materialDesign:HintAssist.Hint="科目名"
+                                                 Text="{Binding Name}"/>
+                                        <!-- 简称 -->
+                                        <TextBox Grid.Column="1" Margin="6 0 0 0"
+                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                 materialDesign:HintAssist.Hint="简称"
+                                                 Text="{Binding Initial}"/>
+                                    </Grid>
+                                    <!-- 科任老师 -->
+                                    <TextBox Margin="0 6 0 0"
+                                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                             materialDesign:HintAssist.Hint="科任老师"
+                                             Text="{Binding TeacherName}"/>
+                                    <!-- 户外课程 -->
+                                    <CheckBox Margin="0 6 0 0"
+                                              Style="{StaticResource MaterialDesignCheckBox}"
+                                              IsChecked="{Binding IsOutDoor}"
+                                              Content="该科目是户外课程"/>
+                                    <!-- Guid -->
+                                    <controls:IconText Kind="Code" HorizontalAlignment="Left"
+                                                       Text="{Binding SelectedItem.Key, ElementName=ListViewSubjects}" 
+                                                       Margin="0 16 0 0" ToolTip="Guid"/>
+                                </StackPanel>
+                            </Grid>
+                        </Grid>
                     </TabItem>
                     
                 </TabControl>

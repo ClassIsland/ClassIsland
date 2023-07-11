@@ -11,7 +11,7 @@ public class Profile : ObservableRecipient
     private string _name = "";
     private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
     private ObservableDictionary<string, ClassPlan> _classPlans = new();
-    private ObservableCollection<string> _subjects = new();
+    private ObservableDictionary<string, Subject> _subjects = new();
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -51,7 +51,7 @@ public class Profile : ObservableRecipient
         }
     }
 
-    public ObservableCollection<string> Subjects
+    public ObservableDictionary<string, Subject> Subjects
     {
         get => _subjects;
         set
