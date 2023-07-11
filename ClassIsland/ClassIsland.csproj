@@ -13,9 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\" />
+    <Folder Include="Models\TimeRules\" />
     <Folder Include="ViewModels\" />
-    <Folder Include="Models\" />
+    <Folder Include="Assets\" />
+    <Folder Include="Interfaces\" />
   </ItemGroup>
 
 </Project>

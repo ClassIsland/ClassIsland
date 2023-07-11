@@ -13,13 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.ViewModels;
-using ClassIsland.Views;
 
-namespace ClassIsland;
+namespace ClassIsland.Views;
 /// <summary>
-/// Interaction logic for MainWindow.xaml
+/// ProfileSettingsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class MainWindow : Window
+public partial class ProfileSettingsWindow : Window
 {
     public MainViewModel ViewModel
     {
@@ -27,18 +26,9 @@ public partial class MainWindow : Window
         set;
     } = new();
 
-    public MainWindow()
+    public ProfileSettingsWindow()
     {
         InitializeComponent();
-    }
-
-    private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
-    {
-        var win = new ProfileSettingsWindow()
-        {
-            Owner = this,
-            ViewModel = ViewModel
-        };
-        win.ShowDialog();
+        DataContext = this;
     }
 }

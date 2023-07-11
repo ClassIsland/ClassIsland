@@ -1,0 +1,148 @@
+﻿<Window x:Class="ClassIsland.Views.ProfileSettingsWindow"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:models="clr-namespace:ClassIsland.Models"
+      xmlns:controls="clr-namespace:ClassIsland.Controls"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      TextElement.FontWeight="Medium"
+      TextElement.FontSize="14"
+      Title="ProfileSettingsWindow"
+      d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}">
+    <materialDesign:DrawerHost>
+        <materialDesign:DialogHost>
+            <!-- Content -->
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TabControl Grid.Row="0" TabStripPlacement="Left">
+                    <!-- 课表 -->
+                    <TabItem Header="课表">
+
+                    </TabItem>
+
+                    <!-- 时间表 -->
+                    <TabItem Header="时间表">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <!-- 时间表选择 -->
+                            <Grid Grid.Column="0" Margin="0 0 3 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <!-- 时间表操作 -->
+                                <ToolBar Grid.Row="0">
+                                    <Button>
+                                        <controls:IconText Kind="Add" Text="添加"/>
+                                    </Button>
+                                </ToolBar>
+
+                                <!-- 时间表 -->
+                                <ListView Grid.Row="1" ItemsSource="{Binding ViewModel.Profile.TimeLayouts}"
+                                          x:Name="ListViewTimeLayouts">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type models:TimeLayout}">
+                                            <TextBlock Text="{Binding Name}"/>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+
+                            <!-- 时间节点编辑 -->
+                            <Grid Grid.Column="1" Margin="3 0 0 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 时间表编辑操作 -->
+                                <ToolBar Grid.Row="0">
+                                    <Button>
+                                        <controls:IconText Kind="NotePlusOutline" Text="添加上课"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="ClockPlusOutline" Text="添加课件"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="Remove" Text="删除"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="EditOutline" Text="编辑"/>
+                                    </Button>
+                                    <Separator/>
+                                    <Button>
+                                        <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="Delete" Text="删除时间表"/>
+                                    </Button>
+                                </ToolBar>
+
+                                <!-- 时间点 -->
+                                <ListView Grid.Row="1" ItemsSource="{Binding SelectedItem.(models:TimeLayout.Layouts), ElementName=ListViewTimeLayouts}" >
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type models:TimeLayoutItem}">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <!-- Icon -->
+                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0">
+                                                    <materialDesign:PackIcon.Style>
+                                                        <Style TargetType="materialDesign:PackIcon">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding IsOnClass}" Value="True">
+                                                                    <Setter Property="Kind" Value="BookVariant"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Kind" Value="Clock"/>
+                                                        </Style>
+                                                    </materialDesign:PackIcon.Style>
+                                                </materialDesign:PackIcon>
+
+                                                <!-- Time -->
+                                                <TextBlock Grid.Column="1" Grid.Row="0">
+                                                    
+                                                </TextBlock>
+                                                
+                                                <!-- Last Time -->
+                                                <controls:IconText Grid.Column="1" Grid.Row="1" Kind="ClockAuto" Text="{Binding Last}"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- 科目 -->
+                    <TabItem Header="科目">
+                        
+                    </TabItem>
+                    
+                </TabControl>
+                <!-- 档案操作 -->
+                <StackPanel Grid.Row="1">
+
+                </StackPanel>
+            </Grid>
+        </materialDesign:DialogHost>
+    </materialDesign:DrawerHost>
+</Window>
