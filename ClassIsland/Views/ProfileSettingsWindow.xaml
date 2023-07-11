@@ -7,6 +7,8 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:models="clr-namespace:ClassIsland.Models"
       xmlns:controls="clr-namespace:ClassIsland.Controls"
+      xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
+      xmlns:converters="clr-namespace:ClassIsland.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -15,7 +17,83 @@
       TextElement.FontSize="14"
       Title="ProfileSettingsWindow"
       d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}">
-    <materialDesign:DrawerHost>
+    <Window.Resources>
+        <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
+        <models:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
+
+        <!-- 时间表信息 -->
+        <StackPanel Margin="16" Width="300" x:Key="TimeLayoutInfoEditor" 
+                    DataContext="{Binding SelectedItem, ElementName=ListViewTimeLayouts, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+            <TextBlock Text="时间表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Margin="0 12 0 0"
+                     Text="{Binding Value.Name}"
+                     materialDesign:HintAssist.Hint="名称"/>
+            <StackPanel Orientation="Horizontal" Margin="0 16 0 0">
+                <materialDesign:PackIcon Kind="Code" VerticalAlignment="Center" 
+                                         Margin="0 0 3 0"/>
+                <TextBlock VerticalAlignment="Center" TextWrapping="Wrap"
+                           Text="{Binding Key, Mode=OneWay}">
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 时间节点编辑 -->
+        <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
+                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+            <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <TextBlock Text="{Binding}"/>
+            <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
+                                       WithSeconds="True" Is24Hours="True"
+                                       Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+                                       SelectedTime="{Binding StartSecond}"/>
+            <materialDesign:TimePicker materialDesign:HintAssist.Hint="结束时间" Margin="0 12 0 0"
+                                       WithSeconds="True" Is24Hours="True"
+                                       Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+                                       SelectedTime="{Binding EndSecond}" />
+            <TextBlock Text="类型" Margin="0 16 0 0"/>
+            <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
+                <ListBoxItem>
+                    <controls:IconText Kind="BookOutline" Text="上课"/>
+                </ListBoxItem>
+                <ListBoxItem>
+                    <controls:IconText Kind="ClockOutline" Text="课间休息"/>
+                </ListBoxItem>
+            </ListBox>
+
+        </StackPanel>
+
+        <!-- 删除时间表确认 -->
+        <StackPanel x:Key="DeleteTimeLayoutConfirm" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="删除"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewTimeLayouts}"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="确定要删除时间表"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewTimeLayouts}"/>
+                <Run Text="吗？如果有与此时间表关联的课程表，那么这些课程表在时间表删除后将无法正常工作！"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+    </Window.Resources>
+    <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
         <materialDesign:DialogHost>
             <!-- Content -->
             <Grid>
@@ -44,24 +122,39 @@
                                 </Grid.RowDefinitions>
                                 <!-- 时间表操作 -->
                                 <ToolBar Grid.Row="0">
-                                    <Button>
+                                    <Button Click="ButtonAddTimeLayout_OnClick"
+                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="Add" Text="添加"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                 </ToolBar>
 
                                 <!-- 时间表 -->
-                                <ListView Grid.Row="1" ItemsSource="{Binding ViewModel.Profile.TimeLayouts}"
+                                <ListView Grid.Row="1" ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           x:Name="ListViewTimeLayouts">
                                     <ListView.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type models:TimeLayout}">
-                                            <TextBlock Text="{Binding Name}"/>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Value.Name}"/>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
                             </Grid>
 
                             <!-- 时间节点编辑 -->
-                            <Grid Grid.Column="1" Margin="3 0 0 0">
+                            <Grid Grid.Column="1" Margin="3 0 0 0" 
+                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewTimeLayouts}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </Style>
+                                </Grid.Style>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
@@ -69,31 +162,34 @@
 
                                 <!-- 时间表编辑操作 -->
                                 <ToolBar Grid.Row="0">
-                                    <Button>
+                                    <!--<TextBlock Text="{Binding Layouts}"/>-->
+                                    <Button Click="ButtonAddClassTime_OnClick">
                                         <controls:IconText Kind="NotePlusOutline" Text="添加上课"/>
                                     </Button>
-                                    <Button>
-                                        <controls:IconText Kind="ClockPlusOutline" Text="添加课件"/>
+                                    <Button Click="ButtonAddBreakTime_OnClick">
+                                        <controls:IconText Kind="ClockPlusOutline" Text="添加课间"/>
                                     </Button>
-                                    <Button>
+                                    <Button Click="ButtonRemoveTimePoint_OnClick">
                                         <controls:IconText Kind="Remove" Text="删除"/>
                                     </Button>
-                                    <Button>
+                                    <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" 
+                                            Click="ButtonEditTimePoint_OnClick">
                                         <controls:IconText Kind="EditOutline" Text="编辑"/>
                                     </Button>
                                     <Separator/>
-                                    <Button>
+                                    <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+                                            Click="ButtonEditTimeLayoutInfo_OnClick">
                                         <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
                                     </Button>
-                                    <Button>
+                                    <Button Click="ButtonDeleteTimeLayout_OnClick">
                                         <controls:IconText Kind="Delete" Text="删除时间表"/>
                                     </Button>
                                 </ToolBar>
 
                                 <!-- 时间点 -->
-                                <ListView Grid.Row="1" ItemsSource="{Binding SelectedItem.(models:TimeLayout.Layouts), ElementName=ListViewTimeLayouts}" >
+                                <ListView Grid.Row="1" ItemsSource="{Binding Layouts}" x:Name="ListViewTimePoints">
                                     <ListView.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type models:TimeLayoutItem}">
+                                        <DataTemplate>
                                             <Grid>
                                                 <Grid.RowDefinitions>
                                                     <RowDefinition Height="Auto"/>
@@ -104,7 +200,7 @@
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
                                                 <!-- Icon -->
-                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0">
+                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0">
                                                     <materialDesign:PackIcon.Style>
                                                         <Style TargetType="materialDesign:PackIcon">
                                                             <Style.Triggers>
@@ -118,12 +214,14 @@
                                                 </materialDesign:PackIcon>
 
                                                 <!-- Time -->
-                                                <TextBlock Grid.Column="1" Grid.Row="0">
-                                                    
+                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14">
+                                                    <Run Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}"/>
+                                                    <Run Text="-"/>
+                                                    <Run Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}"/>
                                                 </TextBlock>
                                                 
                                                 <!-- Last Time -->
-                                                <controls:IconText Grid.Column="1" Grid.Row="1" Kind="ClockAuto" Text="{Binding Last}"/>
+                                                <controls:IconText Grid.Column="1" Grid.Row="1" Kind="ClockAuto" Text="{Binding Last}" Margin="0 3 0 0"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ListView.ItemTemplate>

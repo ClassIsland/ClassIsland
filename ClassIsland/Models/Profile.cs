@@ -9,9 +9,14 @@ namespace ClassIsland.Models;
 public class Profile : ObservableRecipient
 {
     private string _name = "";
-    private Dictionary<string, TimeLayout> _timeLayouts = new();
-    private Dictionary<string, ClassPlan> _classPlans = new();
+    private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
+    private ObservableDictionary<string, ClassPlan> _classPlans = new();
     private ObservableCollection<string> _subjects = new();
+
+    public void NotifyPropertyChanged(string propertyName)
+    {
+        OnPropertyChanged(propertyName);
+    }
 
     public string Name
     {
@@ -24,7 +29,7 @@ public class Profile : ObservableRecipient
         }
     }
 
-    public Dictionary<string, TimeLayout> TimeLayouts
+    public ObservableDictionary<string, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
         set
@@ -35,7 +40,7 @@ public class Profile : ObservableRecipient
         }
     }
 
-    public Dictionary<string, ClassPlan> ClassPlans
+    public ObservableDictionary<string, ClassPlan> ClassPlans
     {
         get => _classPlans;
         set

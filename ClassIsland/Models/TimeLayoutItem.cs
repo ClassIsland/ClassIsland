@@ -5,14 +5,14 @@ namespace ClassIsland.Models;
 
 public class TimeLayoutItem : ObservableRecipient
 {
-    private long _startSecond;
-    private int _endSecond;
+    private DateTime _startSecond = DateTime.Now;
+    private DateTime _endSecond = DateTime.Now;
     private bool _isOnClass = true;
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
     /// </summary>
-    public long StartSecond
+    public DateTime StartSecond
     {
         get => _startSecond;
         set
@@ -27,7 +27,7 @@ public class TimeLayoutItem : ObservableRecipient
     /// <summary>
     /// 时间段在一天中结束的秒钟数
     /// </summary>
-    public int EndSecond
+    public DateTime EndSecond
     {
         get => _endSecond;
         set
@@ -39,7 +39,7 @@ public class TimeLayoutItem : ObservableRecipient
         }
     }
 
-    public TimeSpan Last => TimeSpan.FromSeconds(EndSecond - StartSecond);
+    public TimeSpan Last => EndSecond - StartSecond;
 
     public bool IsOnClass
     {

@@ -27,6 +27,12 @@ public partial class MainWindow : Window
         set;
     } = new();
 
+    public ProfileSettingsWindow? ProfileSettingsWindow
+    {
+        get;
+        set;
+    }
+
     public MainWindow()
     {
         InitializeComponent();
@@ -34,11 +40,11 @@ public partial class MainWindow : Window
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        var win = new ProfileSettingsWindow()
+        ProfileSettingsWindow = new ProfileSettingsWindow
         {
-            Owner = this,
-            ViewModel = ViewModel
+            MainViewModel = ViewModel,
+            Owner = this
         };
-        win.ShowDialog();
+        ProfileSettingsWindow.Show();
     }
 }
