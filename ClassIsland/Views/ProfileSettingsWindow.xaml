@@ -20,6 +20,17 @@
     <Window.Resources>
         <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <models:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
+        <converters:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
+        <converters:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter"/>
+        <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Mode=OneWay, Converter={StaticResource DictionaryValueAccessConverter}}"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <!-- 时间表信息 -->
         <StackPanel Margin="16" Width="300" x:Key="TimeLayoutInfoEditor" 
@@ -122,6 +133,59 @@
             </StackPanel>
         </StackPanel>
 
+        <!-- 删除课表确认 -->
+        <StackPanel x:Key="DeleteClassPlanConfirm" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="删除"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="确定要删除课表"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
+                <Run Text="吗？"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 课程表信息 -->
+        <StackPanel Margin="16" Width="300" x:Key="ClassPlansInfoEditor" 
+                    DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+            <TextBlock Text="课程表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Margin="0 12 0 0"
+                     Text="{Binding Value.Name}"
+                     materialDesign:HintAssist.Hint="名称"/>
+            <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                      x:Name="ComboBox1"
+                      Margin="0 12 0 0"
+                      materialDesign:HintAssist.Hint="时间表"
+                      SelectedItem="{Binding Value.TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
+                      ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Value.Name}"
+                                   ToolTip="{Binding Key}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <controls:IconText Kind="InfoOutline" Text="修改时间表将影响到当前的课程表。" Margin="0 16 0 0"/>
+        </StackPanel>
+
     </Window.Resources>
     <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
         <materialDesign:DialogHost>
@@ -134,7 +198,127 @@
                 <TabControl Grid.Row="0" TabStripPlacement="Left">
                     <!-- 课表 -->
                     <TabItem Header="课表">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <!-- 课表选择 -->
+                            <Grid Grid.Column="0" Margin="0 0 3 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <!-- 课表操作 -->
+                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                    <Button Click="ButtonAddClassPlan_OnClick">
+                                        <controls:IconText Kind="Add" Text="添加"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                    </Button>
+                                </ToolBar>
 
+                                <!-- 课表 -->
+                                <ListView Grid.Row="1" Margin="12"
+                                          SelectionChanged="ListViewClassPlans_OnSelectionChanged"
+                                          ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                          x:Name="ListViewClassPlans">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <!-- Icon -->
+                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0" 
+                                                                         Kind="FileChart"/>
+
+                                                <!-- Name -->
+                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
+                                                           ToolTip="课表名称"/>
+
+                                                <!-- Info -->
+                                                <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
+                                                    <controls:IconText Kind="ClockOutline" Text="{Binding Value.TimeLayout.Name}" ToolTip="时间表" IconMargin="3"/>
+                                                </WrapPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </Grid>
+
+                            <!-- 课表编辑 -->
+                            <Grid Grid.Column="1" Margin="3 0 0 0" 
+                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewClassPlans}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <!-- 课表编辑操作 -->
+                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                    <!--<Button Click="ButtonDebugAddNewClass_OnClick">
+                                        <controls:IconText Kind="Add" Text="DebugAddNew"/>
+                                    </Button>-->
+                                    <Button Click="ButtonClassPlanInfoEdit_OnClick"
+                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                        <controls:IconText Kind="InfoOutline" Text="课表信息"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="LightningBoltOutline" Text="触发规则"/>
+                                    </Button>
+                                    <Separator/>
+                                    <Button Click="ButtonDeleteClassPlan_OnClick">
+                                        <controls:IconText Kind="Delete" Text="删除课表"/>
+                                    </Button>
+                                </ToolBar>
+
+                                <!-- 课表编辑 -->
+                                <Grid Grid.Row="1">
+                                    <DataGrid AutoGenerateColumns="False" 
+                                              ItemsSource="{Binding Classes}" 
+                                              CanUserAddRows="False" 
+                                              CanUserSortColumns="False"
+                                              RowHeaderWidth="150"
+                                              x:Name="DataGridClassPlans">
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="时间">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock>
+                                                            <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                                            <Run Text="-"/>
+                                                            <Run Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <materialDesign:DataGridComboBoxColumn Header="科目"
+                                                                                   ItemsSourceBinding="{Binding MainViewModel.Profile.Subjects.Keys, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}"
+                                                                                   SelectedValueBinding="{Binding SubjectId}"
+                                                                                   ElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"
+                                                                                   EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Grid>
+                            </Grid>
+                        </Grid>
                     </TabItem>
 
                     <!-- 时间表 -->
@@ -399,7 +583,7 @@
                                                        Margin="0 16 0 0" ToolTip="Guid"/>
                                 </StackPanel>
                             </Grid>
-                        </Grid>
+                        </Grid> 
                     </TabItem>
                     
                 </TabControl>

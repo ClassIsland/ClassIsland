@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Converters;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
@@ -39,6 +40,16 @@ public partial class ProfileSettingsWindow : Window
     {
         InitializeComponent();
         DataContext = this;
+    }
+
+    protected override void OnContentRendered(EventArgs e)
+    {
+        var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
+        d.SourceDictionary = MainViewModel.Profile.Subjects;
+        var d2 = (ClassPlanDictionaryValueAccessConverter)FindResource("ClassPlanDictionaryValueAccessConverter");
+        d2.SourceDictionary = MainViewModel.Profile.TimeLayouts;
+
+        base.OnInitialized(e);
     }
 
     private void ButtonAddTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -107,6 +118,40 @@ public partial class ProfileSettingsWindow : Window
         if (r == true)
         {
             MainViewModel.Profile.Subjects.Remove(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Key);
+        }
+    }
+
+    private void ButtonAddClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), new ClassPlan());
+        ListViewClassPlans.SelectedIndex = MainViewModel.Profile.ClassPlans.Count - 1;
+    }
+
+    private void ButtonDebugAddNewClass_OnClick(object sender, RoutedEventArgs e)
+    {
+        var s = (KeyValuePair<string, ClassPlan>?)ListViewClassPlans.SelectedItem;
+        s?.Value.Classes.Add(new ClassInfo());
+    }
+
+    private void ButtonClassPlanInfoEdit_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DrawerContent = FindResource("ClassPlansInfoEditor");
+    }
+
+    private void ListViewClassPlans_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        foreach (KeyValuePair<string, ClassPlan> i in e.AddedItems)
+        {
+            i.Value.RefreshClassesList();
+        }
+    }
+
+    private async void ButtonDeleteClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteClassPlanConfirm"));
+        if (r == true)
+        {
+            MainViewModel.Profile.ClassPlans.Remove(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
         }
     }
 }

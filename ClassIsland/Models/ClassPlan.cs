@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.DirectoryServices;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -9,22 +11,36 @@ namespace ClassIsland.Models;
 
 public class ClassPlan : ObservableRecipient
 {
-    private TimeLayout _timeLayout = new();
     private string _timeLayoutId = "";
-    private ObservableCollection<string> _classes = new();
+    private ObservableCollection<ClassInfo> _classes = new();
     private ObservableCollection<ITimeRule> _timeRules = new();
+    private string _name = "新课表";
+    private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
+
+    public ClassPlan()
+    {
+        PropertyChanged += OnPropertyChanged;
+    }
+
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        RefreshClassesList();
+    }
 
     [JsonIgnore]
-    public TimeLayout TimeLayout
+    public ObservableDictionary<string, TimeLayout> TimeLayouts
     {
-        get => _timeLayout;
+        get => _timeLayouts;
         set
         {
-            if (Equals(value, _timeLayout)) return;
-            _timeLayout = value;
+            if (Equals(value, _timeLayouts)) return;
+            _timeLayouts = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(TimeLayout));
         }
     }
+
+    [JsonIgnore] public TimeLayout TimeLayout => TimeLayouts[TimeLayoutId];
 
     public string TimeLayoutId
     {
@@ -34,6 +50,7 @@ public class ClassPlan : ObservableRecipient
             if (value == _timeLayoutId) return;
             _timeLayoutId = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(TimeLayout));
         }
     }
 
@@ -51,7 +68,7 @@ public class ClassPlan : ObservableRecipient
 
     public bool IsAllRuleSatisfied => TimeRules.All(i => i.IsSatisfied);
 
-    public ObservableCollection<string> Classes
+    public ObservableCollection<ClassInfo> Classes
     {
         get => _classes;
         set
@@ -59,6 +76,51 @@ public class ClassPlan : ObservableRecipient
             if (Equals(value, _classes)) return;
             _classes = value;
             OnPropertyChanged();
+        }
+    }
+
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            if (value == _name) return;
+            _name = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public void RefreshClassesList()
+    {
+        // 对齐长度
+        if (!TimeLayouts.ContainsKey(TimeLayoutId))
+        {
+            return;
+        }
+        
+        var l = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).Count();
+        Debug.WriteLine(l);
+        if (Classes.Count < l)
+        {
+            var d = l - Classes.Count;
+            for (var i = 0; i < d; i++)
+            {
+                Classes.Add(new ClassInfo());
+            }
+        }
+        else if (Classes.Count > l) 
+        {
+            var d = Classes.Count - l;
+            for (var i = 0; i < d; i++)
+            {
+                Classes.RemoveAt(Classes.Count - 1);
+            }
+        }
+
+        for (var i = 0; i < Classes.Count; i++)
+        {
+            Classes[i].Index = i;
+            Classes[i].CurrentTimeLayout = TimeLayout;
         }
     }
 }

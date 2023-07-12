@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System;
 using System.Linq;
+using ClassIsland.Models;
 
 namespace ClassIsland;
 
@@ -199,6 +200,7 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
         }
         return -1;
     }
+    
 
     #endregion
 

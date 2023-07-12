@@ -11,6 +11,11 @@ public class TimeLayout : ObservableRecipient
     private ObservableCollection<TimeLayoutItem> _layouts = new();
     private string _name = "";
 
+    public TimeLayout()
+    {
+        Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
+    }
+
     public string Name
     {
         get => _name;

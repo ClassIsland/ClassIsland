@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -48,6 +49,20 @@ public class Profile : ObservableRecipient
             if (Equals(value, _classPlans)) return;
             _classPlans = value;
             OnPropertyChanged();
+            _classPlans.CollectionChanged += delegate(object? sender, NotifyCollectionChangedEventArgs args)
+            {
+                RefreshTimeLayouts();
+            };
+
+            RefreshTimeLayouts();
+        }
+    }
+
+    private void RefreshTimeLayouts()
+    {
+        foreach (var i in _classPlans)
+        {
+            i.Value.TimeLayouts = TimeLayouts;
         }
     }
 
