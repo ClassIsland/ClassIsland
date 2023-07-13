@@ -125,6 +125,7 @@ public partial class ProfileSettingsWindow : Window
     {
         MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), new ClassPlan());
         ListViewClassPlans.SelectedIndex = MainViewModel.Profile.ClassPlans.Count - 1;
+        ViewModel.DrawerContent = FindResource("ClassPlansInfoEditor");
     }
 
     private void ButtonDebugAddNewClass_OnClick(object sender, RoutedEventArgs e)
@@ -153,5 +154,10 @@ public partial class ProfileSettingsWindow : Window
         {
             MainViewModel.Profile.ClassPlans.Remove(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
         }
+    }
+
+    private void ButtonRulesEdit_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DrawerContent = FindResource("ClassPlanRulesEditor");
     }
 }

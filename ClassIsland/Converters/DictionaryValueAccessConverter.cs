@@ -17,7 +17,14 @@ public class DictionaryValueAccessConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         var k = (string)value;
-        return SourceDictionary[k].Name;
+        try
+        {
+            return SourceDictionary[k].Name;
+        }
+        catch
+        {
+            return k;
+        }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;

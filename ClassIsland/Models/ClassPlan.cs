@@ -13,9 +13,9 @@ public class ClassPlan : ObservableRecipient
 {
     private string _timeLayoutId = "";
     private ObservableCollection<ClassInfo> _classes = new();
-    private ObservableCollection<ITimeRule> _timeRules = new();
     private string _name = "新课表";
     private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
+    private TimeRule _timeRule = new();
 
     public ClassPlan()
     {
@@ -54,19 +54,16 @@ public class ClassPlan : ObservableRecipient
         }
     }
 
-    public ObservableCollection<ITimeRule> TimeRules
+    public TimeRule TimeRule
     {
-        get => _timeRules;
+        get => _timeRule;
         set
         {
-            if (Equals(value, _timeRules)) return;
-            _timeRules = value;
+            if (Equals(value, _timeRule)) return;
+            _timeRule = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(IsAllRuleSatisfied));
         }
     }
-
-    public bool IsAllRuleSatisfied => TimeRules.All(i => i.IsSatisfied);
 
     public ObservableCollection<ClassInfo> Classes
     {

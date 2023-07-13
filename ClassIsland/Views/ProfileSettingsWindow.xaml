@@ -34,7 +34,7 @@
 
         <!-- 时间表信息 -->
         <StackPanel Margin="16" Width="300" x:Key="TimeLayoutInfoEditor" 
-                    DataContext="{Binding SelectedItem, ElementName=ListViewTimeLayouts, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+                    DataContext="{Binding SelectedItem, ElementName=ListViewTimeLayouts}">
             <TextBlock Text="时间表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
             <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Margin="0 12 0 0"
@@ -163,27 +163,62 @@
         </StackPanel>
 
         <!-- 课程表信息 -->
-        <StackPanel Margin="16" Width="300" x:Key="ClassPlansInfoEditor" 
-                    DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans, FallbackValue={StaticResource TimeLayoutItemFallback}}">
-            <TextBlock Text="课程表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                     Margin="0 12 0 0"
-                     Text="{Binding Value.Name}"
-                     materialDesign:HintAssist.Hint="名称"/>
-            <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                      x:Name="ComboBox1"
-                      Margin="0 12 0 0"
-                      materialDesign:HintAssist.Hint="时间表"
-                      SelectedItem="{Binding Value.TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
-                      ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Value.Name}"
-                                   ToolTip="{Binding Key}"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <controls:IconText Kind="InfoOutline" Text="修改时间表将影响到当前的课程表。" Margin="0 16 0 0"/>
+        <ScrollViewer x:Key="ClassPlansInfoEditor" Width="300"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16"
+                        DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans}">
+                <TextBlock Text="课程表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         Margin="0 12 0 0"
+                         Text="{Binding Value.Name}"
+                         materialDesign:HintAssist.Hint="名称" />
+                <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          x:Name="ComboBox1"
+                          Margin="0 12 0 0"
+                          materialDesign:HintAssist.Hint="时间表"
+                          SelectedItem="{Binding Value.TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
+                          ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Value.Name}"
+                                       ToolTip="{Binding Key}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <controls:IconText Kind="InfoOutline" Text="修改时间表将影响到当前的课程表。" Margin="0 16 0 0" />
+                <StackPanel DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}"
+                            Margin="0 12 0 0">
+                    <TextBlock Text="触发规则" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                    <!--<TextBlock Text="{Binding}"/>-->
+                    <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" Margin="0 6 0 0" />
+
+                    <TextBlock Text="当今天是：" Margin="0 16 0 0" />
+                    <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                             SelectedIndex="{Binding WeekDay}">
+                        <ListBoxItem Content="周一" />
+                        <ListBoxItem Content="周二" />
+                        <ListBoxItem Content="周三" />
+                        <ListBoxItem Content="周四" />
+                        <ListBoxItem Content="周五" />
+                        <ListBoxItem Content="周六" />
+                        <ListBoxItem Content="周日" />
+                    </ListBox>
+
+                    <TextBlock Text="当本周是：" Margin="0 16 0 0" />
+                    <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                             SelectedIndex="{Binding WeekCountDiv}">
+                        <ListBoxItem Content="不限" />
+                        <ListBoxItem Content="单周" />
+                        <ListBoxItem Content="双周" />
+                    </ListBox>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- 课程表规则编辑 -->
+        <StackPanel Margin="16" Width="300" x:Key="ClassPlanRulesEditor" 
+                    DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}">
+            
         </StackPanel>
 
     </Window.Resources>
@@ -211,7 +246,8 @@
                                 </Grid.RowDefinitions>
                                 <!-- 课表操作 -->
                                 <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddClassPlan_OnClick">
+                                    <Button Click="ButtonAddClassPlan_OnClick"
+                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
                                     <Button>
@@ -280,7 +316,8 @@
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="InfoOutline" Text="课表信息"/>
                                     </Button>
-                                    <Button>
+                                    <Button Click="ButtonRulesEdit_OnClick"
+                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="LightningBoltOutline" Text="触发规则"/>
                                     </Button>
                                     <Separator/>
