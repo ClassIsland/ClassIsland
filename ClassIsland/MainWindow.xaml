@@ -5,15 +5,71 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClassIsland"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="ClassIsland - Development" 
         Height="450" 
         Width="800"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:converters="clr-namespace:ClassIsland.Converters"
+        xmlns:models="clr-namespace:ClassIsland.Models"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontWeight="Medium"
-        TextElement.FontSize="14">
+        TextElement.FontSize="14"
+        d:DataContext="{d:DesignInstance local:MainWindow}">
+    <Window.Resources>
+        <converters:IndexConverter x:Key="IndexConverter" />
+        <models:ClassPlan x:Key="FallbackClassPlan"/>
+    </Window.Resources>
     <Grid>
-        <Button Content="Settings" Click="ButtonSettings_OnClick"/>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Button Grid.Row="1" Content="Settings" Click="ButtonSettings_OnClick"/>
+        
+        <ListBox Grid.Row="0" ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
+                 SelectedIndex="{Binding ViewModel.CurrentSelectedIndex, Mode=OneWay}"
+                 SelectionChanged="Selector_OnSelectionChanged"
+                 IsHitTestVisible="False"
+                 IsTabStop="False"
+                 >
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="IsTabStop" Value="False"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <controls:LessonControl Index="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource IndexConverter}}" 
+                                            Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                            CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                            CurrentTimeLayout="{Binding ViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                            CurrentTimeLayoutItem="{Binding ViewModel.CurrentClassPlan.TimeLayout, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                            IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
+                        <controls:LessonControl.Style>
+                            <Style TargetType="controls:LessonControl">
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding TimeType}" Value="1"/>
+                                            <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </Style>
+                        </controls:LessonControl.Style>
+                    </controls:LessonControl>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>

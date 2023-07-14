@@ -195,13 +195,13 @@
                     <TextBlock Text="当今天是：" Margin="0 16 0 0" />
                     <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
                              SelectedIndex="{Binding WeekDay}">
+                        <ListBoxItem Content="周日" />
                         <ListBoxItem Content="周一" />
                         <ListBoxItem Content="周二" />
                         <ListBoxItem Content="周三" />
                         <ListBoxItem Content="周四" />
                         <ListBoxItem Content="周五" />
                         <ListBoxItem Content="周六" />
-                        <ListBoxItem Content="周日" />
                     </ListBox>
 
                     <TextBlock Text="当本周是：" Margin="0 16 0 0" />
