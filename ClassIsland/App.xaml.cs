@@ -12,4 +12,8 @@ namespace ClassIsland;
 /// </summary>
 public partial class App : Application
 {
+    private static string AppVersion
+    {
+        get;
+    } = "0.1";
 }

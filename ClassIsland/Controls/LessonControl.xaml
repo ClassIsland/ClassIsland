@@ -7,19 +7,42 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControl}}}">
-        <TextBlock Margin="10 8">
-            <TextBlock.Style>
-                <Style TargetType="TextBlock">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter Property="Text" Value="{Binding CurrentSubject.Name}"/>
+                            <Setter Property="Margin" Value="16 8"/>
                         </DataTrigger>
                     </Style.Triggers>
-                    <Setter Property="Text" Value="{Binding CurrentSubject.Initial}"/>
+                    <Setter Property="Margin" Value="10 8"/>
                 </Style>
-            </TextBlock.Style>
-        </TextBlock>
-        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                   Fill="Aqua" Height="4" Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel.Style>
+
+            <TextBlock VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="Text" Value="{Binding CurrentSubject.Name}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Text" Value="{Binding CurrentSubject.Initial}"/>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Margin="6 0 0 0" FontSize="12" VerticalAlignment="Bottom">
+                    <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                    </Run><Run Text="-">
+                    </Run><Run Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
+                </TextBlock>
+
+            </StackPanel>
+        </StackPanel>
+        <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
+                     Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                     Maximum="{Binding TotalSeconds}"
+                     Value="{Binding Seconds}"/>
     </Grid>
 </UserControl>

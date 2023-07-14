@@ -40,7 +40,7 @@ public class TimeLayoutItem : ObservableRecipient
         }
     }
 
-    public TimeSpan Last => EndSecond - StartSecond;
+    public TimeSpan Last => EndSecond.TimeOfDay - StartSecond.TimeOfDay;
 
     /// <summary>
     /// 时间点类型
