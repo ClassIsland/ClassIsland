@@ -58,7 +58,7 @@ public class Profile : ObservableRecipient
         }
     }
 
-    private void RefreshTimeLayouts()
+    public void RefreshTimeLayouts()
     {
         foreach (var i in _classPlans)
         {

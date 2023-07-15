@@ -24,7 +24,8 @@
         MouseDown="MainWindow_OnPreviewMouseDown"
         ShowInTaskbar="False"
         WindowStyle="None"
-        d:Width="600">
+        d:Width="600"
+        Topmost="True">
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
@@ -43,29 +44,59 @@
                 <MenuItem Header="OverlayOut" Click="MenuItemDebugOverlayOut_OnClick"/>
             </MenuItem>
         </ContextMenu>
+        
+        <StackPanel Orientation="Horizontal" x:Key="ClassPrepareNotifyMask" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+            <TextBlock Text="即将上课" FontSize="18" Margin="8 0"/>
+            <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+        </StackPanel>
+
+        <Grid x:Key="ClassPrepareNotifyOverlay">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- 倒计时 -->
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">
+                <Run Text="距上课还剩"/>
+                <Run Text="{Binding ViewModel.OnClassLeftTime, ConverterCulture=zh-cn, StringFormat={}{0:ss}, Mode=OneWay}" FontWeight="Bold"/>
+                <Run Text="秒"/>
+            </TextBlock>
+
+            <!-- 科目信息 -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
+                        TextElement.FontSize="16">
+                <TextBlock VerticalAlignment="Center" Text="下节课是："/>
+                <TextBlock Text="{Binding ViewModel.NextSubject.Name}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center"/>
+                <TextBlock Margin="6 0 0 0" FontSize="14" VerticalAlignment="Bottom">
+                    <Run Text="{Binding ViewModel.NextTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                    </Run><Run Text="-">
+                    </Run><Run Text="{Binding ViewModel.NextTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
+                </TextBlock>
+            </StackPanel>
+
+        </Grid>
+
+        <!--#region StoryBoards-->
         <Storyboard x:Key="OverlayMaskIn">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <QuinticEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
                     <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut"/>
+                        <QuinticEase EasingMode="EaseOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1">
                     <EasingDoubleKeyFrame.EasingFunction>
-                        <CircleEase EasingMode="EaseOut"/>
+                        <PowerEase EasingMode="EaseIn"/>
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
@@ -104,6 +135,7 @@
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+        <!--#endregion 1-->
     </Window.Resources>
     <Grid ContextMenu="{StaticResource AppContextMenu}">
         <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppIcon_Test.ico"/>
@@ -157,7 +189,7 @@
         <!-- Overlay View -->
         <Grid x:Name="GridOverlay" Background="{DynamicResource MaterialDesignPaper}"
               Opacity="0">
-            <TextBlock>Overlay</TextBlock>
+            <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}"/>
         </Grid>
 
         <!-- Mask -->
@@ -170,9 +202,7 @@
                     <TranslateTransform Y="-50"/>
                 </TransformGroup>
             </materialDesign:ColorZone.RenderTransform>
-            <Grid x:Name="OverlayMaskContent">
-                <TextBlock Text="Mask"/>
-            </Grid>
+            <ContentPresenter x:Name="OverlayMaskContent" Content="{Binding ViewModel.CurrentMaskElement}"/>
         </materialDesign:ColorZone>
 
     </Grid>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -62,7 +63,22 @@ public partial class MainWindow : Window
         UpdateTimer.Start();
     }
 
-    private void UpdateTimerOnTick(object? sender, EventArgs e)
+    private int GetSubjectIndex(int index)
+    {
+        var k = ViewModel.CurrentClassPlan?.TimeLayout.Layouts[index];
+        var l = (from t in ViewModel.CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
+        var i = l.IndexOf(k);
+        return i;
+    }
+
+    private Storyboard BeginStoryboard(string name)
+    {
+        var a = (Storyboard)FindResource(name);
+        a.Begin();
+        return a;
+    }
+
+    private async void UpdateTimerOnTick(object? sender, EventArgs e)
     {
         LoadCurrentClassPlan();
 
@@ -85,6 +101,38 @@ public partial class MainWindow : Window
         if (!isLessonConfirmed)
         {
             ViewModel.CurrentSelectedIndex = null;
+        }
+        else if (ViewModel.CurrentSelectedIndex + 1 < ViewModel.CurrentClassPlan.TimeLayout.Layouts.Count && ViewModel.CurrentSelectedIndex is not null)
+        {
+            var i0 = GetSubjectIndex((int)ViewModel.CurrentSelectedIndex + 1);
+            var i1  = (int)ViewModel.CurrentSelectedIndex + 1;
+            if (ViewModel.CurrentClassPlan.Classes.Count > i0 && ViewModel.CurrentClassPlan.TimeLayout.Layouts.Count > i1 && i0 >= 0)
+            {
+                var index = ViewModel.CurrentClassPlan.Classes[i0].SubjectId;
+                ViewModel.NextSubject = ViewModel.Profile.Subjects[index];
+                ViewModel.NextTimeLayoutItem = ViewModel.CurrentClassPlan.TimeLayout.Layouts[i1];
+            }
+        }
+
+        var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
+        ViewModel.OnClassLeftTime = tClassDelta;
+        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds) && !ViewModel.IsOverlayOpened)
+        {
+            ViewModel.IsOverlayOpened = true;
+            // Notify class start
+            ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
+            ViewModel.CurrentOverlayElement = FindResource("ClassPrepareNotifyOverlay");
+
+            var a1 = BeginStoryboard("OverlayMaskIn");
+            await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
+            var a2 = BeginStoryboard("OverlayMaskOut");
+        }
+
+        if (tClassDelta <= TimeSpan.Zero && ViewModel.IsOverlayOpened)
+        {
+            // Close Notification
+            ViewModel.IsOverlayOpened = false;
+            var a1 = BeginStoryboard("OverlayOut");
         }
     }
 
@@ -134,6 +182,7 @@ public partial class MainWindow : Window
 
     public void LoadCurrentClassPlan()
     {
+        ViewModel.Profile.RefreshTimeLayouts();
         var a = (from p in ViewModel.Profile.ClassPlans
             where CheckClassPlan(p.Value)
             select p.Value).ToList();
@@ -176,6 +225,8 @@ public partial class MainWindow : Window
 
     private void MenuItemDebugOverlayMaskIn_OnClick(object sender, RoutedEventArgs e)
     {
+        ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
+        ViewModel.CurrentOverlayElement = FindResource("ClassPrepareNotifyOverlay");
         var a = (Storyboard)FindResource("OverlayMaskIn");
         a.Begin();
     }
