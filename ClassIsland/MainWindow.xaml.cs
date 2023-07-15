@@ -13,6 +13,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -171,5 +172,23 @@ public partial class MainWindow : Window
             Settings = ViewModel.Settings
         };
         SettingsWindow.ShowDialog();
+    }
+
+    private void MenuItemDebugOverlayMaskIn_OnClick(object sender, RoutedEventArgs e)
+    {
+        var a = (Storyboard)FindResource("OverlayMaskIn");
+        a.Begin();
+    }
+
+    private void MenuItemDebugOverlayMaskOut_OnClick(object sender, RoutedEventArgs e)
+    {
+        var a = (Storyboard)FindResource("OverlayMaskOut");
+        a.Begin();
+    }
+
+    private void MenuItemDebugOverlayOut_OnClick(object sender, RoutedEventArgs e)
+    {
+        var a = (Storyboard)FindResource("OverlayOut");
+        a.Begin();
     }
 }

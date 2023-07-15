@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ClassIsland"
         mc:Ignorable="d"
         Title="ClassIsland - Development" 
-        Height="450" 
+        Height="40" 
         Width="800"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
@@ -20,10 +20,11 @@
         d:DataContext="{d:DesignInstance local:MainWindow}"
         FontFamily="{StaticResource HarmonyOsSans}"
         ResizeMode="NoResize"
-        SizeToContent="WidthAndHeight"
+        SizeToContent="Width"
         MouseDown="MainWindow_OnPreviewMouseDown"
         ShowInTaskbar="False"
-        WindowStyle="None">
+        WindowStyle="None"
+        d:Width="600">
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
@@ -36,63 +37,143 @@
             <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试">
                 <MenuItem Header="SizeToContentTest" Click="ButtonResizeDebug_OnClick"/>
+                <Separator/>
+                <MenuItem Header="OverlayMaskIn" Click="MenuItemDebugOverlayMaskIn_OnClick"/>
+                <MenuItem Header="OverlayMaskOut" Click="MenuItemDebugOverlayMaskOut_OnClick"/>
+                <MenuItem Header="OverlayOut" Click="MenuItemDebugOverlayOut_OnClick"/>
             </MenuItem>
         </ContextMenu>
+        <Storyboard x:Key="OverlayMaskIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="OverlayMaskOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="OverlayOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </Window.Resources>
-    <Grid Margin="12 0" ContextMenu="{StaticResource AppContextMenu}">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid ContextMenu="{StaticResource AppContextMenu}">
         <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppIcon_Test.ico"/>
 
-        <ListBox Grid.Row="0" ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
-                 SelectedIndex="{Binding ViewModel.CurrentSelectedIndex, Mode=OneWay}"
-                 SelectionChanged="Selector_OnSelectionChanged"
-                 IsHitTestVisible="False"
-                 IsTabStop="False">
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemContainerStyle>
-                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
-                    <Setter Property="Padding" Value="0"/>
-                    <Setter Property="IsTabStop" Value="False"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <controls:LessonControl Index="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource IndexConverter}}" 
+        <!-- Content -->
+        <StackPanel Margin="12 0">
+            <ListBox ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
+                     SelectedIndex="{Binding ViewModel.CurrentSelectedIndex, Mode=OneWay}"
+                     SelectionChanged="Selector_OnSelectionChanged"
+                     IsHitTestVisible="False"
+                     IsTabStop="False">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="IsTabStop" Value="False"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <controls:LessonControl Index="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource IndexConverter}}" 
                                             Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                             CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                             CurrentTimeLayout="{Binding ViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                             CurrentTimeLayoutItem="{Binding ViewModel.CurrentClassPlan.TimeLayout, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
                                             IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
-                        <controls:LessonControl.Style>
-                            <Style TargetType="controls:LessonControl">
-                                <Style.Triggers>
-                                    <MultiDataTrigger>
-                                        <MultiDataTrigger.Conditions>
-                                            <Condition Binding="{Binding TimeType}" Value="1"/>
-                                            <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="False"/>
-                                        </MultiDataTrigger.Conditions>
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </MultiDataTrigger>
-                                </Style.Triggers>
-                                <Setter Property="Visibility" Value="Visible"/>
-                            </Style>
-                        </controls:LessonControl.Style>
-                    </controls:LessonControl>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                            <controls:LessonControl.Style>
+                                <Style TargetType="controls:LessonControl">
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding TimeType}" Value="1"/>
+                                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="False"/>
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </Style>
+                            </controls:LessonControl.Style>
+                        </controls:LessonControl>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </StackPanel>
 
-        <!--<WrapPanel Grid.Row="1">
-            <Button Content="Profile" Click="ButtonSettings_OnClick"/>
-            <Button Content="Settings"/>
-            <Button Content="Resize" Click="ButtonResizeDebug_OnClick"/>
-        </WrapPanel>-->
+        <!-- Overlay View -->
+        <Grid x:Name="GridOverlay" Background="{DynamicResource MaterialDesignPaper}"
+              Opacity="0">
+            <TextBlock>Overlay</TextBlock>
+        </Grid>
+
+        <!-- Mask -->
+        <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" VerticalAlignment="Stretch" RenderTransformOrigin="0.5,0.5">
+            <materialDesign:ColorZone.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform Y="-50"/>
+                </TransformGroup>
+            </materialDesign:ColorZone.RenderTransform>
+            <Grid x:Name="OverlayMaskContent">
+                <TextBlock Text="Mask"/>
+            </Grid>
+        </materialDesign:ColorZone>
+
     </Grid>
 </Window>
