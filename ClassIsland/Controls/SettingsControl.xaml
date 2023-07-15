@@ -6,6 +6,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:ClassIsland.Controls"
              mc:Ignorable="d" 
+             FontFamily="{StaticResource HarmonyOsSans}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <materialDesign:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>

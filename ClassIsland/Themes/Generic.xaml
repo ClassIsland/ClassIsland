@@ -1,0 +1,22 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ClassIsland"
+    xmlns:controls="clr-namespace:ClassIsland.Controls"
+    xmlns:models="clr-namespace:ClassIsland.Models"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="controls:NumbericTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+    </Style>
+
+    <Style TargetType="{x:Type controls:FileBrowserButton}" BasedOn="{StaticResource MaterialDesignFlatButton}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="Content" Value="{materialDesign:PackIcon Folder}"/>
+        <Setter Property="ToolTip" Value="浏览…"/>
+    </Style>
+</ResourceDictionary>

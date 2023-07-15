@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,12 @@ public partial class MainWindow : Window
         set;
     }
 
+    public SettingsWindow? SettingsWindow
+    {
+        get;
+        set;
+    }
+
     public DispatcherTimer UpdateTimer
     {
         get;
@@ -58,18 +65,25 @@ public partial class MainWindow : Window
     {
         LoadCurrentClassPlan();
 
-        if (ViewModel.CurrentClassPlan is null)
+        if (ViewModel.CurrentClassPlan is null || ViewModel.CurrentClassPlan.TimeLayout is null)
         {
             return;
         }
 
+        var isLessonConfirmed = false;
         foreach (var i in ViewModel.CurrentClassPlan.TimeLayout.Layouts)
         {
             if (i.StartSecond.TimeOfDay <= DateTime.Now.TimeOfDay && i.EndSecond.TimeOfDay >= DateTime.Now.TimeOfDay)
             {
                 ViewModel.CurrentSelectedIndex = ViewModel.CurrentClassPlan.TimeLayout.Layouts.IndexOf(i);
+                isLessonConfirmed = true;
                 break;
             }
+        }
+
+        if (!isLessonConfirmed)
+        {
+            ViewModel.CurrentSelectedIndex = null;
         }
     }
 
@@ -133,5 +147,29 @@ public partial class MainWindow : Window
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         e.Handled = true;
+    }
+
+    private void ButtonResizeDebug_OnClick(object sender, RoutedEventArgs e)
+    {
+        SizeToContent = SizeToContent.WidthAndHeight;
+    }
+
+    private void MainWindow_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.LeftButton == MouseButtonState.Pressed)
+        {
+            DragMove();
+        }
+    }
+
+    private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsWindow = new SettingsWindow()
+        {
+            Owner = this,
+            MainViewModel = ViewModel,
+            Settings = ViewModel.Settings
+        };
+        SettingsWindow.ShowDialog();
     }
 }

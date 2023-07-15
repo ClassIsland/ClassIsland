@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             >
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControl}}}">
         <StackPanel Orientation="Horizontal">
             <StackPanel.Style>
@@ -19,20 +20,21 @@
                 </Style>
             </StackPanel.Style>
 
-            <TextBlock VerticalAlignment="Center">
+            <TextBlock VerticalAlignment="Center" FontSize="18">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
                                 <Setter Property="Text" Value="{Binding CurrentSubject.Name}"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
                             </DataTrigger>
                         </Style.Triggers>
                         <Setter Property="Text" Value="{Binding CurrentSubject.Initial}"/>
                     </Style>
                 </TextBlock.Style>
             </TextBlock>
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Margin="6 0 0 0" FontSize="12" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Margin="6 0 0 0" FontSize="13" VerticalAlignment="Bottom">
                     <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                     </Run><Run Text="-">
                     </Run><Run Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>

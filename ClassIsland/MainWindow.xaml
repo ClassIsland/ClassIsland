@@ -12,28 +12,45 @@
         xmlns:controls="clr-namespace:ClassIsland.Controls"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:models="clr-namespace:ClassIsland.Models"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
-        d:DataContext="{d:DesignInstance local:MainWindow}">
+        d:DataContext="{d:DesignInstance local:MainWindow}"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight"
+        MouseDown="MainWindow_OnPreviewMouseDown"
+        ShowInTaskbar="False"
+        WindowStyle="None">
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
+
+        <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu">
+            <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick"/>
+            <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="设置…" Click="MenuItemSettings_OnClick"/>
+            <Separator/>
+            <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出"/>
+            <Separator/>
+            <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试">
+                <MenuItem Header="SizeToContentTest" Click="ButtonResizeDebug_OnClick"/>
+            </MenuItem>
+        </ContextMenu>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="12 0" ContextMenu="{StaticResource AppContextMenu}">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Button Grid.Row="1" Content="Settings" Click="ButtonSettings_OnClick"/>
-        
+        <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppIcon_Test.ico"/>
+
         <ListBox Grid.Row="0" ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
                  SelectedIndex="{Binding ViewModel.CurrentSelectedIndex, Mode=OneWay}"
                  SelectionChanged="Selector_OnSelectionChanged"
                  IsHitTestVisible="False"
-                 IsTabStop="False"
-                 >
+                 IsTabStop="False">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top"/>
@@ -71,5 +88,11 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <!--<WrapPanel Grid.Row="1">
+            <Button Content="Profile" Click="ButtonSettings_OnClick"/>
+            <Button Content="Settings"/>
+            <Button Content="Resize" Click="ButtonResizeDebug_OnClick"/>
+        </WrapPanel>-->
     </Grid>
 </Window>

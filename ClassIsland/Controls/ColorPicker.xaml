@@ -40,25 +40,29 @@
                         </Grid.ColumnDefinitions>
                         <Rectangle Grid.Column="0" Width="50" Margin="2,0,10,2" Fill="{Binding Color, ElementName=Picker, Converter={StaticResource ColorToColorPickerBrushConverter}}" />
                         <TextBox Margin="2,0,10,2"
+                                 Padding="6"
                                  Grid.Column="1"
                                  materialDesign:HintAssist.Hint="HEX"
                                  KeyDown="UIElement_OnKeyDown"
-                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Text="{Binding Color, ElementName=Picker, UpdateSourceTrigger=LostFocus}" />
                         <TextBox Margin="2,0,3,2"
+                                 Padding="6"
                                  Grid.Column="2"
                                  materialDesign:HintAssist.Hint="R"
-                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Text="{Binding Color.R, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox Margin="2,0,3,2"
+                                 Padding="6"
                                  Grid.Column="3"
                                  materialDesign:HintAssist.Hint="G"
-                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Text="{Binding Color.G, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBox Margin="2,0,0,2"
+                                 Padding="6"
                                  Grid.Column="4"
                                  materialDesign:HintAssist.Hint="B"
-                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Text="{Binding Color.B, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
                 </Grid>

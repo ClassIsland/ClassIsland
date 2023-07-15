@@ -8,15 +8,38 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\AppIcon_Test.ico" />
+    <None Remove="Assets\AppIcon_Test.png" />
+    <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Black.ttf" />
+    <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Bold.ttf" />
+    <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Light.ttf" />
+    <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
+    <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
+    <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="HandyControls" Version="3.4.5" />
+    <PackageReference Include="HandyControls.Lang.zh-CN" Version="3.4.5" />
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\TimeRules\" />
     <Folder Include="ViewModels\" />
-    <Folder Include="Assets\" />
     <Folder Include="Interfaces\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\AppIcon_Test.ico" />
+    <Resource Include="Assets\AppIcon_Test.png" />
+    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Black.ttf" />
+    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Bold.ttf" />
+    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Light.ttf" />
+    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
+    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
+    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
   </ItemGroup>
 
 </Project>

@@ -15,6 +15,7 @@
       Background="{DynamicResource MaterialDesignPaper}"
       TextElement.FontWeight="Medium"
       TextElement.FontSize="14"
+      FontFamily="{StaticResource HarmonyOsSans}"
       Title="ProfileSettingsWindow"
       d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}">
     <Window.Resources>
@@ -223,7 +224,7 @@
 
     </Window.Resources>
     <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
-        <materialDesign:DialogHost>
+        <materialDesign:DialogHost Identifier="ProfileWindow">
             <!-- Content -->
             <Grid>
                 <Grid.RowDefinitions>

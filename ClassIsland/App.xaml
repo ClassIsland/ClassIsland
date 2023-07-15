@@ -9,6 +9,7 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <FontFamily x:Key="HarmonyOsSans" >/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
