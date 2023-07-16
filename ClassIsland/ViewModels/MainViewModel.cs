@@ -16,6 +16,7 @@ public class MainViewModel : ObservableRecipient
     private Subject _nextSubject = new();
     private TimeLayoutItem _nextTimeLayoutItem = new();
     private TimeSpan _onClassLeftTime = TimeSpan.Zero;
+    private DateTime _today = DateTime.Now;
 
     public Profile Profile
     {
@@ -123,6 +124,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_onClassLeftTime)) return;
             _onClassLeftTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime Today
+    {
+        get => _today;
+        set
+        {
+            if (value.Equals(_today)) return;
+            _today = value;
             OnPropertyChanged();
         }
     }

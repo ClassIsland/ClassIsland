@@ -146,6 +146,7 @@ public partial class MainWindow : Window
         }
 
         // Finished update
+        ViewModel.Today = DateTime.Now;
         MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
     }
 

@@ -168,6 +168,10 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         switch (e.Property.Name)
         {
             case nameof(CurrentClassPlan):
+                if (CurrentClassPlan == null)
+                {
+                    break;
+                }
                 CurrentClassPlan.PropertyChanged += CurrentClassPlanOnPropertyChanged;
                 CurrentClassPlan.Classes.CollectionChanged += ClassesOnCollectionChanged;
                 Debug.WriteLine("Add event listener to CurrentClassPlan.PropertyChanged.");

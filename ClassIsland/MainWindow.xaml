@@ -174,12 +174,44 @@
     </Window.Resources>
     <Grid ContextMenu="{StaticResource AppContextMenu}">
         <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppIcon_Test.ico"/>
-
+        
+        
         <!-- Content -->
-        <StackPanel Margin="12 0">
-            <ListBox ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
+        <Grid Margin="16 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 日历 -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal"
+                        Margin="6 0 0 0"
+                        VerticalAlignment="Center">
+                <TextBlock FontSize="16" Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat={}{0:ddd MM/dd}}"/>
+            </StackPanel>
+
+            <TextBlock Grid.Column="1"  
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Text="今天没有课程。" FontSize="16"
+                       Margin="128 0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <!-- 课表 -->
+            <ListBox Grid.Column="1" 
+                     ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
                      SelectionChanged="Selector_OnSelectionChanged"
                      IsHitTestVisible="False"
+                     Margin="12 0 0 0"
                      x:Name="MainListBox"
                      IsTabStop="False">
                 <ListBox.ItemsPanel>
@@ -219,10 +251,11 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-        </StackPanel>
+        </Grid>
 
         <!-- Overlay View -->
-        <Grid x:Name="GridOverlay" Background="{DynamicResource MaterialDesignPaper}"
+        <Grid x:Name="GridOverlay" 
+              Background="{DynamicResource MaterialDesignPaper}"
               Opacity="0">
             <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}"/>
         </Grid>
