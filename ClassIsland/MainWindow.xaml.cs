@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,9 @@ using System.Windows.Threading;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
+using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
+using Path = System.IO.Path;
 
 namespace ClassIsland;
 /// <summary>
@@ -123,9 +127,12 @@ public partial class MainWindow : Window
             ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
             ViewModel.CurrentOverlayElement = FindResource("ClassPrepareNotifyOverlay");
 
-            var a1 = BeginStoryboard("OverlayMaskIn");
-            await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
-            var a2 = BeginStoryboard("OverlayMaskOut");
+            if (ViewModel.Settings.IsClassPrepareNotificationEnabled)
+            {
+                var a1 = BeginStoryboard("OverlayMaskIn");
+                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
+                var a2 = BeginStoryboard("OverlayMaskOut");
+            }
         }
 
         if (tClassDelta <= TimeSpan.Zero)
@@ -136,6 +143,7 @@ public partial class MainWindow : Window
                 ViewModel.CurrentMaskElement = FindResource("ClassOnNotification");
                 BeginStoryboard("OverlayMaskIn");
                 await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
+                ViewModel.IsOverlayOpened = false;
                 BeginStoryboard("OverlayMaskOutDirect");
             }
             else if (ViewModel.IsOverlayOpened )
@@ -152,11 +160,16 @@ public partial class MainWindow : Window
 
     public void LoadProfile()
     {
+        if (!File.Exists("./Profile.json"))
+        {
+            return;
+        }
         var json = File.ReadAllText("./Profile.json");
         var r = JsonSerializer.Deserialize<Profile>(json);
         if (r != null)
         {
             ViewModel.Profile = r;
+            ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         }
     }
 
@@ -165,12 +178,88 @@ public partial class MainWindow : Window
         File.WriteAllText("./Profile.json", JsonSerializer.Serialize<Profile>(ViewModel.Profile));
     }
 
+    private void LoadSettings()
+    {
+        if (!File.Exists("./Settings.json"))
+        {
+            return;
+        }
+        var json = File.ReadAllText("./Settings.json");
+        var r = JsonSerializer.Deserialize<Settings>(json);
+        if (r != null)
+        {
+            ViewModel.Settings = r;
+            ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
+        }
+    }
+
+    public void SaveSettings()
+    {
+        UpdateTheme();
+        File.WriteAllText("./Settings.json", JsonSerializer.Serialize<Settings>(ViewModel.Settings));
+    }
+
     protected override void OnInitialized(EventArgs e)
     {
         base.OnInitialized(e);
-
-        LoadProfile();
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
+        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
+        LoadProfile();
+        LoadSettings();
+        UpdateTheme();
+    }
+
+    private void UpdateTheme()
+    {
+        var paletteHelper = new PaletteHelper();
+        var theme = paletteHelper.GetTheme();
+        var lastPrimary = theme.PrimaryMid.Color;
+        var lastSecondary = theme.SecondaryMid.Color;
+        var lastBaseTheme = theme.GetBaseTheme();
+        switch (ViewModel.Settings.Theme)
+        {
+            case 0:
+                try
+                {
+                    var key = Registry.CurrentUser.OpenSubKey(
+                        "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize");
+                    if (key != null)
+                    {
+                        if ((int?)key.GetValue("AppsUseLightTheme") == 0)
+                        {
+                            theme.SetBaseTheme(new MaterialDesignDarkTheme());
+                        }
+                        else
+                        {
+                            theme.SetBaseTheme(new MaterialDesignLightTheme());
+                        }
+                    }
+                }
+                catch
+                {
+                    theme.SetBaseTheme(new MaterialDesignLightTheme());
+                }
+                break;
+
+            case 1:
+                theme.SetBaseTheme(new MaterialDesignLightTheme());
+                break;
+            case 2:
+                theme.SetBaseTheme(new MaterialDesignDarkTheme());
+                break;
+        }
+        theme.SetPrimaryColor(ViewModel.Settings.PrimaryColor);
+        theme.SetSecondaryColor(ViewModel.Settings.SecondaryColor);
+
+        var lastTheme = paletteHelper.GetTheme();
+        if (lastPrimary == theme.PrimaryMid.Color &&
+            lastSecondary == theme.SecondaryMid.Color &&
+            lastBaseTheme == theme.GetBaseTheme())
+        {
+            return;
+        }
+
+        paletteHelper.SetTheme(theme);
     }
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
@@ -234,6 +323,7 @@ public partial class MainWindow : Window
             MainViewModel = ViewModel,
             Settings = ViewModel.Settings
         };
+        SettingsWindow.Closed += (o, args) => SaveSettings();
         SettingsWindow.ShowDialog();
     }
 
@@ -260,5 +350,16 @@ public partial class MainWindow : Window
     private void MenuItemDebugOverlayMaskOutDirect_OnClick(object sender, RoutedEventArgs e)
     {
         BeginStoryboard("OverlayMaskOutDirect");
+    }
+
+    private void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        SaveProfile();
+        SaveSettings();
     }
 }

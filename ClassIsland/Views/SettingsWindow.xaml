@@ -54,8 +54,8 @@
                                 </controls:SettingsCard>
                                 <!-- 启用课前提醒 -->
                                 <controls:SettingsCard IconGlyph="Alarm"
-                                                       Header="启用课前提醒" Description="在上课前在界面上发出醒目提醒。。"
-                                                       IsOn="{Binding Settings.IsClassPrepareNotificationEnabled}" />
+                                                       Header="启用课前提醒" Description="在上课前在界面上发出醒目提醒。"
+                                                       IsOn="{Binding Settings.IsClassPrepareNotificationEnabled, Mode=TwoWay}" />
                                 <!-- 课前提醒时间 -->
                                 <controls:SettingsCard IconGlyph="ClockAlertOutline" Header="课前提醒时间"
                                                        Description="在上课前指定时间进行上课提醒。">
@@ -69,16 +69,16 @@
                                 </controls:SettingsCard>
                                 <!-- 显示日期 -->
                                 <controls:SettingsCard IconGlyph="DateRange"
-                                                       Header="显示日期" Description="在界面上显示当前日期。"
-                                                       IsOn="{Binding Settings.ShowDate}" />
+                                                       Header="显示日期" Description="在界面上显示当前日期。"  
+                                                       IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
                                 <!-- 上课隐藏 -->
                                 <controls:SettingsCard IconGlyph="HideOutline"
                                                        Header="上课隐藏" Description="在上课时隐藏应用界面。"
-                                                       IsOn="{Binding Settings.HideOnClass}" />
+                                                       IsOn="{Binding Settings.HideOnClass, Mode=TwoWay}" />
                                 <!-- 上下课提醒 -->
                                 <controls:SettingsCard IconGlyph="Alarm"
                                                        Header="上下课提醒" Description="在上课、下课时在应用界面发出醒目提醒"
-                                                       IsOn="{Binding Settings.IsClassChangingNotificationEnabled}" />
+                                                       IsOn="{Binding Settings.IsClassChangingNotificationEnabled, Mode=TwoWay}" />
                             </StackPanel></ScrollViewer>
 
                     </TabItem>

@@ -25,7 +25,8 @@
         ShowInTaskbar="False"
         WindowStyle="None"
         d:Width="600"
-        Topmost="True">
+        Topmost="True"
+        Closing="MainWindow_OnClosing">
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
@@ -34,7 +35,7 @@
             <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick"/>
             <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="设置…" Click="MenuItemSettings_OnClick"/>
             <Separator/>
-            <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出"/>
+            <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
             <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试">
                 <MenuItem Header="SizeToContentTest" Click="ButtonResizeDebug_OnClick"/>
@@ -55,6 +56,7 @@
                                      Height="20" Width="20"/>
         </StackPanel>
 
+        <converters:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
         <Grid x:Key="ClassPrepareNotifyOverlay">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -64,7 +66,7 @@
             <!-- 倒计时 -->
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">
                 <Run Text="距上课还剩"/>
-                <Run Text="{Binding ViewModel.OnClassLeftTime, ConverterCulture=zh-cn, StringFormat={}{0:ss}, Mode=OneWay}" FontWeight="Bold"/>
+                <Run Text="{Binding ViewModel.OnClassLeftTime, Converter={StaticResource TimeSpanToTotalSecondsConverter}, Mode=OneWay}" FontWeight="Bold"/>
                 <Run Text="秒"/>
             </TextBlock>
 
@@ -185,11 +187,13 @@
 
             <!-- 日历 -->
             <StackPanel Grid.Column="0" Orientation="Horizontal"
-                        Margin="6 0 0 0"
-                        VerticalAlignment="Center">
+                        Margin="6 0 12 0"
+                        VerticalAlignment="Center"
+                        Visibility="{Binding ViewModel.Settings.ShowDate, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <TextBlock FontSize="16" Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat={}{0:ddd MM/dd}}"/>
             </StackPanel>
-
+            
+            <!-- 没有课程提示 -->
             <TextBlock Grid.Column="1"  
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        Text="今天没有课程。" FontSize="16"
@@ -211,7 +215,7 @@
                      ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
                      SelectionChanged="Selector_OnSelectionChanged"
                      IsHitTestVisible="False"
-                     Margin="12 0 0 0"
+                     Margin="0 0 0 0"
                      x:Name="MainListBox"
                      IsTabStop="False">
                 <ListBox.ItemsPanel>
