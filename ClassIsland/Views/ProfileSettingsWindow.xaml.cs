@@ -99,7 +99,7 @@ public partial class ProfileSettingsWindow : Window
 
     private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
-        var r = (bool?)await DialogHost.Show(FindResource("DeleteTimeLayoutConfirm"));
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteTimeLayoutConfirm"), dialogIdentifier: "ProfileWindow");
         if (r == true)
         {
             MainViewModel.Profile.TimeLayouts.Remove(((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Key);
@@ -114,7 +114,7 @@ public partial class ProfileSettingsWindow : Window
 
     private async void ButtonSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        var r = (bool?)await DialogHost.Show(FindResource("DeleteSubjectConfirm"));
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteSubjectConfirm"),dialogIdentifier: "ProfileWindow");
         if (r == true)
         {
             MainViewModel.Profile.Subjects.Remove(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Key);
@@ -149,7 +149,7 @@ public partial class ProfileSettingsWindow : Window
 
     private async void ButtonDeleteClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        var r = (bool?)await DialogHost.Show(FindResource("DeleteClassPlanConfirm"));
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteClassPlanConfirm"), dialogIdentifier: "ProfileWindow");
         if (r == true)
         {
             MainViewModel.Profile.ClassPlans.Remove(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);

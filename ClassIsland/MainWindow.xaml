@@ -42,6 +42,7 @@
                 <MenuItem Header="OverlayMaskIn" Click="MenuItemDebugOverlayMaskIn_OnClick"/>
                 <MenuItem Header="OverlayMaskOut" Click="MenuItemDebugOverlayMaskOut_OnClick"/>
                 <MenuItem Header="OverlayOut" Click="MenuItemDebugOverlayOut_OnClick"/>
+                <MenuItem Header="OverlayMaskOutDirect" Click="MenuItemDebugOverlayMaskOutDirect_OnClick"/>
             </MenuItem>
         </ContextMenu>
         
@@ -79,7 +80,17 @@
                 </TextBlock>
             </StackPanel>
 
+
         </Grid>
+
+        <StackPanel Orientation="Horizontal" x:Key="ClassOnNotification" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+            <TextBlock Text="上课" FontSize="18" Margin="8 0" FontWeight="Bold"/>
+            <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+        </StackPanel>
 
         <!--#region StoryBoards-->
         <Storyboard x:Key="OverlayMaskIn">
@@ -135,6 +146,30 @@
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+        <Storyboard x:Key="OverlayMaskOutDirect">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CubicEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
         <!--#endregion 1-->
     </Window.Resources>
     <Grid ContextMenu="{StaticResource AppContextMenu}">
@@ -143,9 +178,9 @@
         <!-- Content -->
         <StackPanel Margin="12 0">
             <ListBox ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
-                     SelectedIndex="{Binding ViewModel.CurrentSelectedIndex, Mode=OneWay}"
                      SelectionChanged="Selector_OnSelectionChanged"
                      IsHitTestVisible="False"
+                     x:Name="MainListBox"
                      IsTabStop="False">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>

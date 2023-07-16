@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -141,12 +143,20 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
             {
                 return ErrorSubject;
             }
-            return CurrentTimeLayout.Layouts[Index].TimeType switch
+
+            try
             {
-                0 => Subjects[CurrentClassPlan.Classes[GetSubjectIndex(Index)].SubjectId],
-                1 => BreakingSubject,
-                _ => ErrorSubject
-            };
+                return CurrentTimeLayout.Layouts[Index].TimeType switch
+                {
+                    0 => Subjects[CurrentClassPlan.Classes[GetSubjectIndex(Index)].SubjectId],
+                    1 => BreakingSubject,
+                    _ => ErrorSubject
+                };
+            }
+            catch
+            {
+                return ErrorSubject;
+            }
         }
     }
 
@@ -154,12 +164,34 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     {
         Update();
         OnPropertyChanged(nameof(CurrentSubject));
+
+        switch (e.Property.Name)
+        {
+            case nameof(CurrentClassPlan):
+                CurrentClassPlan.PropertyChanged += CurrentClassPlanOnPropertyChanged;
+                CurrentClassPlan.Classes.CollectionChanged += ClassesOnCollectionChanged;
+                Debug.WriteLine("Add event listener to CurrentClassPlan.PropertyChanged.");
+                break;
+        }
+
         base.OnPropertyChanged(e);
+    }
+
+    private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertyChanged(nameof(CurrentSubject));
+        Update();
+    }
+
+    private void CurrentClassPlanOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    { 
+        OnPropertyChanged(nameof(CurrentSubject));
+        Update();
     }
 
     private void Update()
     {
-        if (CurrentClassPlan is null)
+        if (CurrentClassPlan is null || Index >= CurrentTimeLayout?.Layouts.Count)
         {
             return;
         }

@@ -128,12 +128,25 @@ public partial class MainWindow : Window
             var a2 = BeginStoryboard("OverlayMaskOut");
         }
 
-        if (tClassDelta <= TimeSpan.Zero && ViewModel.IsOverlayOpened)
+        if (tClassDelta <= TimeSpan.Zero)
         {
             // Close Notification
-            ViewModel.IsOverlayOpened = false;
-            var a1 = BeginStoryboard("OverlayOut");
+            if (ViewModel.Settings.IsClassChangingNotificationEnabled && ViewModel.CurrentMaskElement != FindResource("ClassOnNotification"))
+            {
+                ViewModel.CurrentMaskElement = FindResource("ClassOnNotification");
+                BeginStoryboard("OverlayMaskIn");
+                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
+                BeginStoryboard("OverlayMaskOutDirect");
+            }
+            else if (ViewModel.IsOverlayOpened )
+            {
+                ViewModel.IsOverlayOpened = false;
+                var a1 = BeginStoryboard("OverlayOut");
+            }
         }
+
+        // Finished update
+        MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
     }
 
     public void LoadProfile()
@@ -241,5 +254,10 @@ public partial class MainWindow : Window
     {
         var a = (Storyboard)FindResource("OverlayOut");
         a.Begin();
+    }
+
+    private void MenuItemDebugOverlayMaskOutDirect_OnClick(object sender, RoutedEventArgs e)
+    {
+        BeginStoryboard("OverlayMaskOutDirect");
     }
 }
