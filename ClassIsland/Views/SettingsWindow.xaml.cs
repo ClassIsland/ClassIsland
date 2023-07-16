@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -42,5 +43,21 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
         DataContext = this;
+    }
+
+    protected override void OnInitialized(EventArgs e)
+    {
+        RefreshMonitors();
+        base.OnInitialized(e);
+    }
+
+    private void RefreshMonitors()
+    {
+        ViewModel.Screens = Screen.AllScreens;
+    }
+
+    private void ButtonRefreshMonitors_OnClick(object sender, RoutedEventArgs e)
+    {
+        RefreshMonitors();
     }
 }

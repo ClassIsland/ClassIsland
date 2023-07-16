@@ -14,8 +14,8 @@
         FontFamily="{StaticResource HarmonyOsSans}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
-        Title="应用设置" Height="700" Width="1400"
-        MinWidth="400">
+        Title="应用设置" Height="550" Width="1200"
+        MinWidth="600">
     <Window.Resources>
         <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">
             <Setter Property="Margin" Value="12"/>
@@ -30,6 +30,7 @@
             <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
         </Style>
         <converters:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
     </Window.Resources>
 
     <materialDesign:DialogHost Identifier="SettingsWindow">
@@ -79,7 +80,8 @@
                                 <controls:SettingsCard IconGlyph="Alarm"
                                                        Header="上下课提醒" Description="在上课、下课时在应用界面发出醒目提醒"
                                                        IsOn="{Binding Settings.IsClassChangingNotificationEnabled, Mode=TwoWay}" />
-                            </StackPanel></ScrollViewer>
+                            </StackPanel>
+                        </ScrollViewer>
 
                     </TabItem>
 
@@ -120,7 +122,123 @@
                                         <controls:ColorPicker Color="{Binding Settings.SecondaryColor}" />
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
-                            </StackPanel></ScrollViewer>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                    
+                    <!-- 窗口 -->
+                    <TabItem Header="窗口">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <!-- 窗口停靠位置 -->
+                                <controls:IconText Kind="Monitor" Text="窗口停靠位置"/>
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0" Margin="0 0 8 0">
+                                        <materialDesign:ColorZone BorderBrush="{DynamicResource MaterialDesignBody}"
+                                                                  BorderThickness="8" CornerRadius="4"
+                                                                  VerticalAlignment="Center"
+                                                                  Height="220">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0" Margin="8">
+                                                    <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}"/>
+                                                    <RadioButton VerticalAlignment="Top" HorizontalAlignment="Center" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}"/>
+                                                    <RadioButton VerticalAlignment="Top" HorizontalAlignment="Right" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}"/>
+
+                                                    <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Left" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}"/>
+                                                    <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Center" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}"/>
+                                                    <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Right" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}"/>
+                                                </Grid>
+                                                <materialDesign:ColorZone Mode="Dark" Grid.Row="1" Height="16"
+                                                                          Background="#99000000" BorderThickness="0">
+                                                    <Grid>
+                                                        <materialDesign:PackIcon Kind="MicrosoftWindows" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="3"/>
+                                                        <TextBlock Text="{Binding MainViewModel.Today, StringFormat={}{0:HH:mm}}" FontSize="8" FontWeight="Light" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3"></TextBlock>
+                                                    </Grid>
+                                                </materialDesign:ColorZone>
+                                            </Grid>
+                                        </materialDesign:ColorZone>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Stretch"
+                                                Margin="8 0 0 0">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <!-- 向下偏移 -->
+                                            <controls:NumbericTextBox Grid.Column="0"
+                                                                      Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                                                                      Padding="6" Margin="0 0 4 0"
+                                                                      materialDesign:HintAssist.Hint="向下偏移" 
+                                                                      Text="{Binding Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}"/>
+                                            <!-- 向右偏移 -->
+                                            <controls:NumbericTextBox Grid.Column="1"
+                                                                      Style="{StaticResource MaterialDesignOutlinedTextBox}" 
+                                                                      Padding="6" Margin="4 0 0 0"
+                                                                      materialDesign:HintAssist.Hint="向右偏移" 
+                                                                      Text="{Binding Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}"/>
+                                        </Grid>
+                                        <!-- 显示器 -->
+                                        <ComboBox Margin="0 12 0 0" Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                                  materialDesign:HintAssist.Hint="显示器"
+                                                  SelectedIndex="{Binding Settings.WindowDockingMonitorIndex}"
+                                                  ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Monitor" VerticalAlignment="Center"/>
+                                                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                                                            <Run Text="{Binding DeviceName, Mode=OneWay}"/>
+                                                            <Run Text="(">
+                                                            </Run><Run Text="{Binding Bounds.Width, Mode=OneWay}">
+                                                            </Run><Run Text="x">
+                                                            </Run><Run Text="{Binding Bounds.Height, Mode=OneWay}">
+                                                            </Run><Run Text=")"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+
+                                        <Button Margin="0 8 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
+                                            <controls:IconText Kind="Refresh" Text="刷新显示器列表"/>
+                                        </Button>
+
+                                        <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
+                                                   Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。"/>
+                                        <!--<TextBlock Text="{Binding Settings.WindowDockingLocation, Mode=OneWay}"/>-->
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Margin="0 16"/>
+
+                                <!-- 窗口层级 -->
+                                <controls:SettingsCard IconGlyph="LayersOutline" Header="窗口层级"
+                                                       Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
+                                    <controls:SettingsCard.Switcher>
+                                        <ComboBox SelectedIndex="{Binding Settings.WindowLayer}" Foreground="{DynamicResource MaterialDesignBody}">
+                                            <ComboBoxItem>
+                                                <controls:IconText Kind="LayersMinus" Text="置底"/>
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <controls:IconText Kind="LayersPlus" Text="置顶"/>
+                                            </ComboBoxItem>
+                                        </ComboBox>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+
+                            </StackPanel>
+                        </ScrollViewer>
                     </TabItem>
 
                     <!-- 关于 -->

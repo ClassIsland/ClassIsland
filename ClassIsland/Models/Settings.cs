@@ -16,6 +16,11 @@ public class Settings : ObservableRecipient
     private bool _hideOnClass = true;
     private bool _isClassChangingNotificationEnabled = true;
     private bool _isClassPrepareNotificationEnabled = true;
+    private int _windowDockingLocation = 1;
+    private int _windowDockingOffsetX = 0;
+    private int _windowDockingOffsetY = 0;
+    private int _windowDockingMonitorIndex = 0;
+    private int _windowLayer = 0;
 
     #region Gerneral
 
@@ -118,6 +123,87 @@ public class Settings : ObservableRecipient
         {
             if (value.Equals(_secondaryColor)) return;
             _secondaryColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Window
+
+    /// <summary>
+    /// 窗口停靠位置
+    /// 
+    /// </summary>
+    /// <value>
+    /// <code>
+    /// #############
+    /// # 0   1   2 #
+    /// #           #
+    /// # 3   4   5 #
+    /// #############
+    /// </code>
+    /// </value>
+    ///
+    /// 
+    public int WindowDockingLocation
+    {
+        get => _windowDockingLocation;
+        set
+        {
+            if (value == _windowDockingLocation) return;
+            _windowDockingLocation = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WindowDockingOffsetX
+    {
+        get => _windowDockingOffsetX;
+        set
+        {
+            if (value == _windowDockingOffsetX) return;
+            _windowDockingOffsetX = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WindowDockingOffsetY
+    {
+        get => _windowDockingOffsetY;
+        set
+        {
+            if (value == _windowDockingOffsetY) return;
+            _windowDockingOffsetY = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WindowDockingMonitorIndex
+    {
+        get => _windowDockingMonitorIndex;
+        set
+        {
+            if (value == _windowDockingMonitorIndex) return;
+            _windowDockingMonitorIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 窗口层级
+    /// </summary>
+    /// <value>
+    /// 0 - 置底<br/>
+    /// 1 - 置顶
+    /// </value>
+    public int WindowLayer
+    {
+        get => _windowLayer;
+        set
+        {
+            if (value == _windowLayer) return;
+            _windowLayer = value;
             OnPropertyChanged();
         }
     }
