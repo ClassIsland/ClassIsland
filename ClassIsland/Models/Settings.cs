@@ -145,8 +145,6 @@ public class Settings : ObservableRecipient
     /// #############
     /// </code>
     /// </value>
-    ///
-    /// 
     public int WindowDockingLocation
     {
         get => _windowDockingLocation;

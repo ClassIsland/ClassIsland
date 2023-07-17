@@ -46,8 +46,9 @@ public class TimeLayoutItem : ObservableRecipient
     /// 时间点类型
     /// </summary>
     /// <value>
-    /// 0 - 上课
-    /// 1 - 课间
+    /// 0 - 上课 <br/>
+    /// 1 - 课间 <br/>
+    /// 2 - 分割线
     /// </value>
     public int TimeType
     {

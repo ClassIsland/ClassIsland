@@ -30,7 +30,8 @@
         SizeChanged="MainWindow_OnSizeChanged"
         AllowsTransparency="True"
         Activated="MainWindow_OnActivated"
-        StateChanged="MainWindow_OnStateChanged">
+        StateChanged="MainWindow_OnStateChanged"
+        Icon="/Assets/AppLogo.ico">
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
@@ -215,8 +216,7 @@
     <Grid ContextMenu="{StaticResource AppContextMenu}" 
           Background="{DynamicResource MaterialDesignPaper}"
           IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}">
-        <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppIcon_Test.ico"/>
-        
+        <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>
         
         <!-- Content -->
         <Grid Margin="16 0">

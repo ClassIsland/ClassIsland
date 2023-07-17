@@ -17,7 +17,8 @@
       TextElement.FontSize="14"
       FontFamily="{StaticResource HarmonyOsSans}"
       Title="ProfileSettingsWindow"
-      d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}">
+      d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}"
+      Icon="/Assets/AppLogo.ico">
     <Window.Resources>
         <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <models:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>

@@ -15,7 +15,8 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         Title="应用设置" Height="550" Width="1200"
-        MinWidth="600">
+        MinWidth="600"
+        Icon="/Assets/AppLogo.ico">
     <Window.Resources>
         <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">
             <Setter Property="Margin" Value="12"/>
