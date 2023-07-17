@@ -16,7 +16,7 @@
       TextElement.FontWeight="Medium"
       TextElement.FontSize="14"
       FontFamily="{StaticResource HarmonyOsSans}"
-      Title="ProfileSettingsWindow"
+      Title="档案设置"
       d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}"
       Icon="/Assets/AppLogo.ico">
     <Window.Resources>
@@ -72,6 +72,9 @@
                 </ListBoxItem>
                 <ListBoxItem>
                     <controls:IconText Kind="ClockOutline" Text="课间休息"/>
+                </ListBoxItem>
+                <ListBoxItem>
+                    <controls:IconText Kind="ClockOutline" Text="分割线"/>
                 </ListBoxItem>
             </ListBox>
 
@@ -224,7 +227,8 @@
         </StackPanel>
 
     </Window.Resources>
-    <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}">
+    <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
+                               DrawerClosing="DrawerHost_OnDrawerClosing">
         <materialDesign:DialogHost Identifier="ProfileWindow">
             <!-- Content -->
             <Grid>
@@ -318,10 +322,6 @@
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="InfoOutline" Text="课表信息"/>
                                     </Button>
-                                    <Button Click="ButtonRulesEdit_OnClick"
-                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                        <controls:IconText Kind="LightningBoltOutline" Text="触发规则"/>
-                                    </Button>
                                     <Separator/>
                                     <Button Click="ButtonDeleteClassPlan_OnClick">
                                         <controls:IconText Kind="Delete" Text="删除课表"/>
@@ -335,7 +335,8 @@
                                               CanUserAddRows="False" 
                                               CanUserSortColumns="False"
                                               RowHeaderWidth="150"
-                                              x:Name="DataGridClassPlans">
+                                              x:Name="DataGridClassPlans"
+                                              UnloadingRow="DataGridClassPlans_OnUnloadingRow">
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn Header="时间">
                                                 <DataGridTemplateColumn.CellTemplate>
@@ -421,7 +422,10 @@
                                         <controls:IconText Kind="NotePlusOutline" Text="上课"/>
                                     </Button>
                                     <Button Click="ButtonAddBreakTime_OnClick">
-                                        <controls:IconText Kind="ClockPlusOutline" Text="添加课间"/>
+                                        <controls:IconText Kind="ClockPlusOutline" Text="课间"/>
+                                    </Button>
+                                    <Button Click="ButtonAddSeparator_OnClick">
+                                        <controls:IconText Kind="Add" Text="分割线"/>
                                     </Button>
                                     <Button Click="ButtonRemoveTimePoint_OnClick">
                                         <controls:IconText Kind="Remove" Text="删除"/>
@@ -462,10 +466,14 @@
                                                                 <DataTrigger Binding="{Binding TimeType}" Value="0">
                                                                     <Setter Property="Kind" Value="BookOutline"/>
                                                                     <Setter Property="ToolTip" Value="上课时间"/>
-                                                                </DataTrigger>  
+                                                                </DataTrigger>
                                                                 <DataTrigger Binding="{Binding TimeType}" Value="1">
                                                                     <Setter Property="Kind" Value="ClockOutline"/>
                                                                     <Setter Property="ToolTip" Value="课间休息"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding TimeType}" Value="2">
+                                                                    <Setter Property="Kind" Value="ArrowSplitHorizontal"/>
+                                                                    <Setter Property="ToolTip" Value="分割线"/>
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>

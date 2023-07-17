@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using ClassIsland.Interfaces;
@@ -13,7 +15,20 @@ public class TimeLayout : ObservableRecipient
 
     public TimeLayout()
     {
+        PropertyChanged += OnPropertyChanged;
         Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
+    }
+
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        Debug.WriteLine(e.PropertyName);
+        switch (e.PropertyName)
+        {
+            case nameof(Layouts):
+                Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
+                break;
+
+        }
     }
 
     public string Name

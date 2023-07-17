@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -65,18 +68,31 @@ public partial class ProfileSettingsWindow : Window
 
     private void ButtonAddClassTime_OnClick(object sender, RoutedEventArgs e)
     {
-        ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value.Layouts.Add(new TimeLayoutItem()
+        AddTimeLayoutItem(0);
+    }
+
+    private void AddTimeLayoutItem(int timeType)
+    {
+        var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
+        timeLayout.Layouts.Add(new TimeLayoutItem()
         {
-            TimeType = 0
+            TimeType = timeType
         });
+        UpdateTimeLayout();
+    }
+
+    private void UpdateTimeLayout()
+    {
+        var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
+        var l = timeLayout.Layouts.ToList();
+        l.Sort();
+        l.Reverse();
+        timeLayout.Layouts = new ObservableCollection<TimeLayoutItem>(l);
     }
 
     private void ButtonAddBreakTime_OnClick(object sender, RoutedEventArgs e)
     {
-        ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value.Layouts.Add(new TimeLayoutItem()
-        {
-            TimeType = 1
-        });
+        AddTimeLayoutItem(1);
     }
 
     private void ButtonEditTimePoint_OnClick(object sender, RoutedEventArgs e)
@@ -95,6 +111,8 @@ public partial class ProfileSettingsWindow : Window
         {
             ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value.Layouts.Remove((TimeLayoutItem)ListViewTimePoints.SelectedItem);
         }
+
+        UpdateTimeLayout();
     }
 
     private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -159,5 +177,24 @@ public partial class ProfileSettingsWindow : Window
     private void ButtonRulesEdit_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.DrawerContent = FindResource("ClassPlanRulesEditor");
+    }
+
+    private void DrawerHost_OnDrawerClosing(object? sender, DrawerClosingEventArgs e)
+    {
+        var timeLayoutItemEdit = FindResource("TimePointEditor");
+        if (ViewModel.DrawerContent == timeLayoutItemEdit)
+        {
+            UpdateTimeLayout();
+        }
+    }
+
+    private void DataGridClassPlans_OnUnloadingRow(object? sender, DataGridRowEventArgs e)
+    {
+        DataGridClassPlans.CommitEdit(DataGridEditingUnit.Cell, true);
+    }
+
+    private void ButtonAddSeparator_OnClick(object sender, RoutedEventArgs e)
+    {
+        AddTimeLayoutItem(2);
     }
 }

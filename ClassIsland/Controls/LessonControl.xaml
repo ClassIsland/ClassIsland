@@ -19,7 +19,7 @@
                     <Setter Property="Margin" Value="10 8"/>
                 </Style>
             </StackPanel.Style>
-
+            
             <TextBlock VerticalAlignment="Center" FontSize="18">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
@@ -27,6 +27,9 @@
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
                                 <Setter Property="Text" Value="{Binding CurrentSubject.Name}"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding CurrentTimeLayoutItem.TimeType}" Value="2">
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                         </Style.Triggers>
                         <Setter Property="Text" Value="{Binding CurrentSubject.Initial}"/>
@@ -42,9 +45,23 @@
 
             </StackPanel>
         </StackPanel>
+        <Line VerticalAlignment="Center" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="2"
+              HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="25" Opacity="0.8">
+            <Line.Style>
+                <Style TargetType="Line">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentTimeLayoutItem.TimeType}" Value="2">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </Line.Style>
+        </Line>
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
-                     Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                     Maximum="{Binding TotalSeconds}"
-                     Value="{Binding Seconds}"/>
+                 Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
+                 Maximum="{Binding TotalSeconds}"
+                 Value="{Binding Seconds}"/>
+        <!--<TextBlock Text="{Binding Index}" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>-->
     </Grid>
 </UserControl>

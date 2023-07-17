@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class TimeLayoutItem : ObservableRecipient
+public class TimeLayoutItem : ObservableRecipient, IComparable
 {
     private DateTime _startSecond = DateTime.Now;
     private DateTime _endSecond = DateTime.Now;
@@ -59,5 +59,24 @@ public class TimeLayoutItem : ObservableRecipient
             _timeType = value;
             OnPropertyChanged();
         }
+    }
+
+    public int CompareTo(object? obj)
+    {
+        var o = (TimeLayoutItem?)obj;
+        if (o is null)
+        {
+            return -1;
+        }
+
+        if (o.StartSecond.TimeOfDay < StartSecond.TimeOfDay)
+        {
+            return -1; 
+        } 
+        if (o.StartSecond.TimeOfDay > StartSecond.TimeOfDay)
+        {
+            return 1;
+        }
+        return 0;
     }
 }
