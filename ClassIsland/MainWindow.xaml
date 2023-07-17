@@ -14,7 +14,7 @@
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
+        Background="{x:Null}"
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         d:DataContext="{d:DesignInstance local:MainWindow}"
@@ -26,7 +26,11 @@
         WindowStyle="None"
         d:Width="600"
         Topmost="True"
-        Closing="MainWindow_OnClosing">
+        Closing="MainWindow_OnClosing"
+        SizeChanged="MainWindow_OnSizeChanged"
+        AllowsTransparency="True"
+        Activated="MainWindow_OnActivated"
+        StateChanged="MainWindow_OnStateChanged">
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
@@ -172,9 +176,45 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+        <Storyboard x:Key="WindowMouseIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0.1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="WindowMouseOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
         <!--#endregion 1-->
     </Window.Resources>
-    <Grid ContextMenu="{StaticResource AppContextMenu}">
+    <Window.Style>
+        <Style TargetType="Window">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ViewModel.IsMouseIn}" Value="True">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Grid ContextMenu="{StaticResource AppContextMenu}" 
+          Background="{DynamicResource MaterialDesignPaper}"
+          IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}">
         <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppIcon_Test.ico"/>
         
         

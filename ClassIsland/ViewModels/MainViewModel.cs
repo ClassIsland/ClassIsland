@@ -17,6 +17,7 @@ public class MainViewModel : ObservableRecipient
     private TimeLayoutItem _nextTimeLayoutItem = new();
     private TimeSpan _onClassLeftTime = TimeSpan.Zero;
     private DateTime _today = DateTime.Now;
+    private bool _isMouseIn = false;
 
     public Profile Profile
     {
@@ -135,6 +136,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_today)) return;
             _today = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMouseIn
+    {
+        get => _isMouseIn;
+        set
+        {
+            if (value == _isMouseIn) return;
+            _isMouseIn = value;
             OnPropertyChanged();
         }
     }

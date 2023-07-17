@@ -175,17 +175,17 @@
                                                 <ColumnDefinition/>
                                                 <ColumnDefinition/>
                                             </Grid.ColumnDefinitions>
-                                            <!-- 向下偏移 -->
+                                            <!-- 向右偏移 -->
                                             <controls:NumbericTextBox Grid.Column="0"
                                                                       Style="{StaticResource MaterialDesignOutlinedTextBox}" 
                                                                       Padding="6" Margin="0 0 4 0"
-                                                                      materialDesign:HintAssist.Hint="向下偏移" 
+                                                                      materialDesign:HintAssist.Hint="向右偏移" 
                                                                       Text="{Binding Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}"/>
-                                            <!-- 向右偏移 -->
+                                            <!-- 向下偏移 -->
                                             <controls:NumbericTextBox Grid.Column="1"
                                                                       Style="{StaticResource MaterialDesignOutlinedTextBox}" 
                                                                       Padding="6" Margin="4 0 0 0"
-                                                                      materialDesign:HintAssist.Hint="向右偏移" 
+                                                                      materialDesign:HintAssist.Hint="向下偏移" 
                                                                       Text="{Binding Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}"/>
                                         </Grid>
                                         <!-- 显示器 -->
@@ -236,6 +236,11 @@
                                         </ComboBox>
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
+
+                                <!-- 指针穿透 -->
+                                <controls:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
+                                                       Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
+                                                       IsOn="{Binding Settings.IsMouseClickingEnabled, Mode=TwoWay}"/>
 
                             </StackPanel>
                         </ScrollViewer>

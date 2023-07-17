@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
@@ -13,16 +14,20 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
+using HandyControl.Tools;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using Path = System.IO.Path;
@@ -54,7 +59,7 @@ public partial class MainWindow : Window
     public DispatcherTimer UpdateTimer
     {
         get;
-    } = new()
+    } = new(DispatcherPriority.Render)
     {
         Interval = TimeSpan.FromMilliseconds(25)
     };
@@ -82,8 +87,26 @@ public partial class MainWindow : Window
         return a;
     }
 
+    private void UpdateMouseStatus()
+    {
+        NativeWindowHelper.GetCursorPos(out var ptr);
+        GetCurrentDpi(out var dpiX, out var dpiY);
+        //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
+        var cx = Left * dpiX;
+        var cy = Top * dpiY;
+        var cw = Width * dpiX;
+        var ch = Height * dpiY;
+        var cr = cx + cw;
+        var cb = cy + ch;
+
+        ViewModel.IsMouseIn = (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+        
+    }
+
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
     {
+        UpdateWindowPos();
+        UpdateMouseStatus();
         LoadCurrentClassPlan();
 
         if (ViewModel.CurrentClassPlan is null || ViewModel.CurrentClassPlan.TimeLayout is null)
@@ -158,6 +181,12 @@ public partial class MainWindow : Window
         MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
     }
 
+    protected override void OnContentRendered(EventArgs e)
+    {
+        UpdateTheme();
+        base.OnContentRendered(e);
+    }
+
     public void LoadProfile()
     {
         if (!File.Exists("./Profile.json"))
@@ -209,8 +238,42 @@ public partial class MainWindow : Window
         UpdateTheme();
     }
 
+    private void SetBottom()
+    {
+        if (ViewModel.Settings.WindowLayer != 0)
+        {
+            return;
+        }
+
+        var hWnd = new WindowInteropHelper(this).Handle;
+        NativeWindowHelper.SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0, NativeWindowHelper.SWP_NOSIZE | NativeWindowHelper.SWP_NOMOVE | NativeWindowHelper.SWP_NOACTIVATE);
+    }
+
     private void UpdateTheme()
     {
+        UpdateWindowPos();
+        var hWnd = new WindowInteropHelper(this).Handle;
+        var style = NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE);
+        if (!ViewModel.Settings.IsMouseClickingEnabled)
+        {
+            var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
+        }
+        else
+        {
+            style &= ~(uint)NativeWindowHelper.WS_EX_TRANSPARENT;
+            var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style);
+        }
+
+        switch (ViewModel.Settings.WindowLayer)
+        {
+            case 0: // bottom
+                Topmost = false;
+                break;
+            case 1:
+                Topmost = true;
+                break;
+        }
+
         var paletteHelper = new PaletteHelper();
         var theme = paletteHelper.GetTheme();
         var lastPrimary = theme.PrimaryMid.Color;
@@ -311,7 +374,8 @@ public partial class MainWindow : Window
     {
         if (e.LeftButton == MouseButtonState.Pressed)
         {
-            DragMove();
+            e.Handled = true;
+            //DragMove();
         }
     }
 
@@ -361,5 +425,76 @@ public partial class MainWindow : Window
     {
         SaveProfile();
         SaveSettings();
+    }
+
+    private void UpdateWindowPos()
+    {
+        GetCurrentDpi(out var dpiX, out var dpiY);
+
+        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length 
+            ? Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] 
+            : Screen.PrimaryScreen;
+        var aw = RenderSize.Width * dpiX;
+        var ah = RenderSize.Height * dpiY;
+        var c = (double)(screen.WorkingArea.Left + screen.WorkingArea.Right) / 2;
+        var ox = ViewModel.Settings.WindowDockingOffsetX;
+        var oy = ViewModel.Settings.WindowDockingOffsetY;
+
+        switch (ViewModel.Settings.WindowDockingLocation)
+        {
+            case 0: //左上
+                Left = (screen.WorkingArea.Left + ox) / dpiX;
+                Top = (screen.WorkingArea.Top + oy) / dpiY;
+                break;
+            case 1: // 中上
+                Left = (c - aw / 2 + ox) / dpiX;
+                Top = (screen.WorkingArea.Top + oy) / dpiY;
+                break;
+            case 2: // 右上
+                Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
+                Top = (screen.WorkingArea.Top + oy) / dpiY;
+                break;
+            case 3: // 左下
+                Left = (screen.WorkingArea.Left + ox) / dpiX;
+                Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
+                break;
+            case 4: // 中下
+                Left = (c - aw / 2 + ox) / dpiX;
+                Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
+                break;
+            case 5: // 右下
+                Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
+                Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
+                break;
+        }
+    }
+
+    private void GetCurrentDpi(out double dpiX, out double dpiY)
+    {
+        var source = PresentationSource.FromVisual(this);
+
+        dpiX = 1.0;
+        dpiY = 1.0;
+
+        if (source?.CompositionTarget != null)
+        {
+            dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
+            dpiY = 1.0 * source.CompositionTarget.TransformToDevice.M22;
+        }
+    }
+
+    private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        UpdateWindowPos();
+    }
+
+    private void MainWindow_OnActivated(object? sender, EventArgs e)
+    {
+        SetBottom();
+    }
+
+    private void MainWindow_OnStateChanged(object? sender, EventArgs e)
+    {
+        SetBottom();
     }
 }

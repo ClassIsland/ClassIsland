@@ -21,6 +21,7 @@ public class Settings : ObservableRecipient
     private int _windowDockingOffsetY = 0;
     private int _windowDockingMonitorIndex = 0;
     private int _windowLayer = 0;
+    private bool _isMouseClickingEnabled = true;
 
     #region Gerneral
 
@@ -204,6 +205,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _windowLayer) return;
             _windowLayer = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMouseClickingEnabled
+    {
+        get => _isMouseClickingEnabled;
+        set
+        {
+            if (value == _isMouseClickingEnabled) return;
+            _isMouseClickingEnabled = value;
             OnPropertyChanged();
         }
     }
