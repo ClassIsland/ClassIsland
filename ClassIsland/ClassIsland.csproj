@@ -24,6 +24,7 @@
     <None Remove="Assets\AppLogo%40768w.png" />
     <None Remove="Assets\AppLogo.ico" />
     <None Remove="Assets\AppLogo.png" />
+    <None Remove="Assets\Contributiors\HelloWRC%4064w.jpg" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Black.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Bold.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Light.ttf" />
@@ -51,6 +52,7 @@
     <Resource Include="Assets\AppLogo@384w.png" />
     <Resource Include="Assets\AppLogo@48w.png" />
     <Resource Include="Assets\AppLogo@768w.png" />
+    <Resource Include="Assets\Contributiors\HelloWRC@64w.jpg" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Black.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Bold.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Light.ttf" />
