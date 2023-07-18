@@ -109,10 +109,23 @@ public partial class MainWindow : Window
         UpdateMouseStatus();
         LoadCurrentClassPlan();
 
+        // Deactivate
+        foreach (var i in ViewModel.Profile.TimeLayouts)
+        {
+            i.Value.IsActivated = false;
+        }
+        foreach (var i in ViewModel.Profile.ClassPlans)
+        {
+            i.Value.IsActivated = false;
+        }
+
         if (ViewModel.CurrentClassPlan is null || ViewModel.CurrentClassPlan.TimeLayout is null)
         {
             return;
         }
+        // Activate selected item
+        ViewModel.CurrentClassPlan.IsActivated = true;
+        ViewModel.CurrentClassPlan.TimeLayout.IsActivated = true;
 
         var isLessonConfirmed = false;
         foreach (var i in ViewModel.CurrentClassPlan.TimeLayout.Layouts)

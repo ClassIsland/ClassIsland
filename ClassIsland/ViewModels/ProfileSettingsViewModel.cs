@@ -5,6 +5,7 @@ namespace ClassIsland.ViewModels;
 public class ProfileSettingsViewModel : ObservableRecipient
 {
     private object _drawerContent = new();
+    private bool _isClassPlansEditing = false;
 
     public object DrawerContent
     {
@@ -13,6 +14,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _drawerContent)) return;
             _drawerContent = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClassPlansEditing
+    {
+        get => _isClassPlansEditing;
+        set
+        {
+            if (value == _isClassPlansEditing) return;
+            _isClassPlansEditing = value;
             OnPropertyChanged();
         }
     }

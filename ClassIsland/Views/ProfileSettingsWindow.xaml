@@ -16,9 +16,10 @@
       TextElement.FontWeight="Medium"
       TextElement.FontSize="14"
       FontFamily="{StaticResource HarmonyOsSans}"
-      Title="档案设置"
+      Title="档案编辑"
       d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}"
-      Icon="/Assets/AppLogo.ico">
+      Icon="/Assets/AppLogo.ico"
+      Closing="ProfileSettingsWindow_OnClosing">
     <Window.Resources>
         <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <models:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
@@ -256,7 +257,8 @@
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
-                                    <Button>
+                                    <Button Click="ButtonDuplicateClassPlan_OnClick"
+                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                 </ToolBar>
@@ -311,6 +313,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
                                 <!-- 课表编辑操作 -->
@@ -336,7 +339,9 @@
                                               CanUserSortColumns="False"
                                               RowHeaderWidth="150"
                                               x:Name="DataGridClassPlans"
-                                              UnloadingRow="DataGridClassPlans_OnUnloadingRow">
+                                              UnloadingRow="DataGridClassPlans_OnUnloadingRow"
+                                              BeginningEdit="DataGridClassPlans_OnBeginningEdit"
+                                              CellEditEnding="DataGridClassPlans_OnCellEditEnding">
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn Header="时间">
                                                 <DataGridTemplateColumn.CellTemplate>
@@ -350,13 +355,21 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
                                             <materialDesign:DataGridComboBoxColumn Header="科目"
-                                                                                   ItemsSourceBinding="{Binding MainViewModel.Profile.Subjects.Keys, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}"
+                                                                                   ItemsSourceBinding="{Binding MainViewModel.Profile.Subjects.Keys, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}, UpdateSourceTrigger=PropertyChanged}"
                                                                                    SelectedValueBinding="{Binding SubjectId}"
                                                                                    ElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"
                                                                                    EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
+
+                                    <!-- 关闭前警告 -->
                                 </Grid>
+                                <materialDesign:ColorZone Grid.Row="2" Background="Yellow" 
+                                                          HorizontalAlignment="Stretch" 
+                                                          Visibility="{Binding ViewModel.IsClassPlansEditing, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
+                                                          Mode="Light">
+                                    <controls:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6"/>
+                                </materialDesign:ColorZone>
                             </Grid>
                         </Grid>
                     </TabItem>
@@ -380,7 +393,8 @@
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
-                                    <Button>
+                                    <Button Click="ButtonDuplicateTimeLayout_OnClick"
+                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                 </ToolBar>
@@ -416,7 +430,8 @@
                                 </Grid.RowDefinitions>
 
                                 <!-- 时间表编辑操作 -->
-                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" 
+                                         IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
                                     <!--<TextBlock Text="{Binding Layouts}"/>-->
                                     <Button Click="ButtonAddClassTime_OnClick">
                                         <controls:IconText Kind="NotePlusOutline" Text="上课"/>
@@ -427,6 +442,7 @@
                                     <Button Click="ButtonAddSeparator_OnClick">
                                         <controls:IconText Kind="Add" Text="分割线"/>
                                     </Button>
+                                    <Separator/>
                                     <Button Click="ButtonRemoveTimePoint_OnClick">
                                         <controls:IconText Kind="Remove" Text="删除"/>
                                     </Button>
@@ -494,6 +510,13 @@
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
+
+                                <!-- 禁止编辑叠层 -->
+                                <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
+                                    <TextBlock Text="无法编辑活动时间表。"
+                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </TabItem>
@@ -516,7 +539,7 @@
                                     <Button Click="ButtonAddSubject_OnClick">
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
-                                    <Button>
+                                    <Button Click="ButtonDuplicateSubject_OnClick">
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                 </ToolBar>

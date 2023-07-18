@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using ClassIsland.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,6 +13,7 @@ public class TimeLayout : ObservableRecipient
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
     private string _name = "";
+    private bool _isActivated = false;
 
     public TimeLayout()
     {
@@ -49,6 +51,18 @@ public class TimeLayout : ObservableRecipient
         {
             if (Equals(value, _layouts)) return;
             _layouts = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsActivated
+    {
+        get => _isActivated;
+        set
+        {
+            if (value == _isActivated) return;
+            _isActivated = value;
             OnPropertyChanged();
         }
     }

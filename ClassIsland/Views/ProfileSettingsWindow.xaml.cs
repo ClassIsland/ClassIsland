@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -196,5 +198,69 @@ public partial class ProfileSettingsWindow : Window
     private void ButtonAddSeparator_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(2);
+    }
+
+    private void ButtonDuplicateClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        var s = CopyObject(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value);
+        if (s == null)
+        {
+            return;
+        }
+
+        ViewModel.DrawerContent = FindResource("ClassPlansInfoEditor");
+        MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), s);
+        ListViewClassPlans.SelectedItem = MainViewModel.Profile.ClassPlans.Last();
+    }
+
+    private T? CopyObject<T>(T o) => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize<T>(o));
+
+    private void ButtonDuplicateTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        var s = CopyObject(((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value);
+        if (s == null)
+        {
+            return;
+        }
+
+        ViewModel.DrawerContent = FindResource("TimeLayoutInfoEditor");
+        MainViewModel.Profile.TimeLayouts.Add(Guid.NewGuid().ToString(), s);
+        ListViewTimeLayouts.SelectedItem = MainViewModel.Profile.TimeLayouts.Last();
+    }
+
+    private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
+    {
+        var s = CopyObject(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Value);
+        if (s == null)
+        {
+            return;
+        }
+        
+        MainViewModel.Profile.Subjects.Add(Guid.NewGuid().ToString(), s);
+        ListViewTimeLayouts.SelectedItem = MainViewModel.Profile.Subjects.Last();
+    }
+
+    private void DataGridClassPlans_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
+    {
+        ViewModel.IsClassPlansEditing = true;
+        var hWnd = new WindowInteropHelper(this).Handle;
+        NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE, 
+            NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) & ~NativeWindowHelper.WS_SYSMENU);
+    }
+
+    private void DataGridClassPlans_OnCellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
+    {
+        ViewModel.IsClassPlansEditing = false;
+        var hWnd = new WindowInteropHelper(this).Handle;
+        NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE,
+            NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) | NativeWindowHelper.WS_SYSMENU);
+    }
+
+    private void ProfileSettingsWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        if (ViewModel.IsClassPlansEditing)
+        {
+            e.Cancel = true;
+        }
     }
 }

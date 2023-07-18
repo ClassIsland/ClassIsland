@@ -16,6 +16,7 @@ public class ClassPlan : ObservableRecipient
     private string _name = "新课表";
     private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
     private TimeRule _timeRule = new();
+    private bool _isActivated = false;
 
     public ClassPlan()
     {
@@ -118,6 +119,18 @@ public class ClassPlan : ObservableRecipient
         {
             Classes[i].Index = i;
             Classes[i].CurrentTimeLayout = TimeLayout;
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsActivated
+    {
+        get => _isActivated;
+        set
+        {
+            if (value == _isActivated) return;
+            _isActivated = value;
+            OnPropertyChanged();
         }
     }
 }

@@ -26,7 +26,7 @@ public static class NativeWindowHelper
     public const int GWL_EXSTYLE = -20;
 
     [DllImport("user32", EntryPoint = "SetWindowLong")]
-    public static extern uint SetWindowLong(IntPtr hwnd, int nIndex, uint dwNewLong);
+    public static extern uint SetWindowLong(IntPtr hwnd, int nIndex, long dwNewLong);
 
     [DllImport("user32", EntryPoint = "GetWindowLong")]
     public static extern uint GetWindowLong(IntPtr hwnd, int nIndex);
@@ -57,4 +57,7 @@ public static class NativeWindowHelper
     public const UInt32 SWP_NOMOVE = 0x0002;
     public const UInt32 SWP_NOACTIVATE = 0x0010;
     public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+
+    public const int GWL_STYLE = -16;
+    public const int WS_SYSMENU = 0x80000;
 }
