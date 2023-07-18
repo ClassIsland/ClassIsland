@@ -143,11 +143,11 @@
         <StackPanel x:Key="DeleteClassPlanConfirm" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
             <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
                 <Run Text="删除"/>
-                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewClassPlans}"/>
             </TextBlock>
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
                 <Run Text="确定要删除课表"/>
-                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
+                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewClassPlans}"/>
                 <Run Text="吗？"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
@@ -182,6 +182,7 @@
                           x:Name="ComboBox1"
                           Margin="0 12 0 0"
                           materialDesign:HintAssist.Hint="时间表"
+                          IsEnabled="{Binding Value.IsActivated, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
                           SelectedItem="{Binding Value.TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
                           ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
                     <ComboBox.ItemTemplate>
@@ -191,7 +192,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <controls:IconText Kind="InfoOutline" Text="修改时间表将影响到当前的课程表。" Margin="0 16 0 0" />
+                <TextBlock Text="部分设置在课表处于活动状态下无法修改。" Margin="0 16 0 0" Visibility="{Binding Value.IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <StackPanel DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}"
                             Margin="0 12 0 0">
                     <TextBlock Text="触发规则" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
@@ -343,7 +344,7 @@
                                               BeginningEdit="DataGridClassPlans_OnBeginningEdit"
                                               CellEditEnding="DataGridClassPlans_OnCellEditEnding">
                                         <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="时间">
+                                            <DataGridTemplateColumn Header="时间" IsReadOnly="True">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <TextBlock>

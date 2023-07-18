@@ -355,8 +355,18 @@ public partial class MainWindow : Window
         {
             return false;
         }
-        // TODO: 完成单双周判定
-        return true;
+
+        var dd = DateTime.Now - ViewModel.Settings.SingleWeekStartTime;
+        var dw = Math.Floor(dd.TotalDays / 7) + 1;
+        var w = (int)dw % 2;
+        switch (plan.TimeRule.WeekCountDiv)
+        {
+            case 1 when w != 1:
+            case 2 when w != 0:
+                return false;
+            default:
+                return true;
+        }
     }
 
     public void LoadCurrentClassPlan()

@@ -272,11 +272,9 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <controls:LessonControl Index="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource IndexConverter}}" 
-                                            Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                            CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                            CurrentTimeLayout="{Binding ViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                            CurrentTimeLayoutItem="{Binding ViewModel.CurrentClassPlan.TimeLayout, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
-                                            IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
+                                                Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
                             <controls:LessonControl.Style>
                                 <Style TargetType="controls:LessonControl">
                                     <Style.Triggers>
