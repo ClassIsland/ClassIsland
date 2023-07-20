@@ -44,6 +44,7 @@
     <Folder Include="Models\TimeRules\" />
     <Folder Include="ViewModels\" />
     <Folder Include="Interfaces\" />
+    <Folder Include="Enums\" />
   </ItemGroup>
 
   <ItemGroup>

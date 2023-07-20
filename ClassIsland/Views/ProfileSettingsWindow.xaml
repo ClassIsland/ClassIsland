@@ -515,7 +515,7 @@
                                 <!-- 禁止编辑叠层 -->
                                 <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
-                                    <TextBlock Text="无法编辑活动时间表。"
+                                    <TextBlock Text="无法编辑处于活动状态的时间表。"
                                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                 </Grid>
                             </Grid>

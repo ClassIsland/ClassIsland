@@ -24,6 +24,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
@@ -121,6 +122,8 @@ public partial class MainWindow : Window
 
         if (ViewModel.CurrentClassPlan is null || ViewModel.CurrentClassPlan.TimeLayout is null)
         {
+            ViewModel.CurrentStatus = TimeState.None;
+            ViewModel.CurrentOverlayStatus = TimeState.None;
             return;
         }
         // Activate selected item
@@ -128,20 +131,25 @@ public partial class MainWindow : Window
         ViewModel.CurrentClassPlan.TimeLayout.IsActivated = true;
 
         var isLessonConfirmed = false;
+        // 更新选择
         foreach (var i in ViewModel.CurrentClassPlan.TimeLayout.Layouts)
         {
             if (i.StartSecond.TimeOfDay <= DateTime.Now.TimeOfDay && i.EndSecond.TimeOfDay >= DateTime.Now.TimeOfDay)
             {
                 ViewModel.CurrentSelectedIndex = ViewModel.CurrentClassPlan.TimeLayout.Layouts.IndexOf(i);
+                ViewModel.CurrentTimeLayoutItem = i;
                 isLessonConfirmed = true;
                 break;
             }
         }
 
+        //var isBreaking = false;
         if (!isLessonConfirmed)
         {
             ViewModel.CurrentSelectedIndex = null;
+            ViewModel.CurrentStatus = TimeState.None;
         }
+        // 获取下节课信息
         else if (ViewModel.CurrentSelectedIndex + 1 < ViewModel.CurrentClassPlan.TimeLayout.Layouts.Count && ViewModel.CurrentSelectedIndex is not null)
         {
             var i0 = GetSubjectIndex((int)ViewModel.CurrentSelectedIndex + 1);
@@ -156,37 +164,66 @@ public partial class MainWindow : Window
 
         var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
         ViewModel.OnClassLeftTime = tClassDelta;
-        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds) && !ViewModel.IsOverlayOpened)
+        // 获取状态信息
+        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds))
         {
-            ViewModel.IsOverlayOpened = true;
-            // Notify class start
-            ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
-            ViewModel.CurrentOverlayElement = FindResource("ClassPrepareNotifyOverlay");
-
-            if (ViewModel.Settings.IsClassPrepareNotificationEnabled)
-            {
-                var a1 = BeginStoryboard("OverlayMaskIn");
-                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
-                var a2 = BeginStoryboard("OverlayMaskOut");
-            }
+            ViewModel.CurrentStatus = TimeState.PrepareOnClass;
+        } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
+        {
+            ViewModel.CurrentStatus = TimeState.OnClass;
+        } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 1)
+        {
+            ViewModel.CurrentStatus = TimeState.Breaking;
         }
 
-        if (tClassDelta <= TimeSpan.Zero)
+        switch (ViewModel.CurrentStatus)
         {
-            // Close Notification
-            if (ViewModel.Settings.IsClassChangingNotificationEnabled && ViewModel.CurrentMaskElement != FindResource("ClassOnNotification"))
-            {
+            // 恢复overlay锁定
+            case TimeState.Breaking when ViewModel.CurrentOverlayStatus == TimeState.OnClass:
+                ViewModel.CurrentOverlayStatus = TimeState.None;
+                break;
+            // 下课通知
+            case TimeState.Breaking when ViewModel.CurrentOverlayStatus != TimeState.Breaking
+                                         && ViewModel.Settings.IsClassChangingNotificationEnabled:
+                //ViewModel.IsOverlayOpened = true;
+                //ViewModel.CurrentOverlayStatus = TimeState.Breaking;
+                //ViewModel.CurrentMaskElement = FindResource("ClassOnNotification");
+                //BeginStoryboard("OverlayMaskIn");
+                break;
+            // 上课通知
+            case TimeState.OnClass when ViewModel.CurrentOverlayStatus != TimeState.OnClass
+                                        && ViewModel.Settings.IsClassChangingNotificationEnabled:
+                ViewModel.IsOverlayOpened = true;
+                ViewModel.CurrentOverlayStatus = TimeState.OnClass;
                 ViewModel.CurrentMaskElement = FindResource("ClassOnNotification");
                 BeginStoryboard("OverlayMaskIn");
                 await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
                 ViewModel.IsOverlayOpened = false;
+                //ViewModel.CurrentOverlayStatus = TimeState.None;
                 BeginStoryboard("OverlayMaskOutDirect");
-            }
-            else if (ViewModel.IsOverlayOpened )
-            {
+                break;
+            // 关闭准备上课通知
+            case TimeState.OnClass when ViewModel.CurrentOverlayStatus == TimeState.PrepareOnClass
+                                        && !ViewModel.Settings.IsClassChangingNotificationEnabled:
+                ViewModel.CurrentOverlayStatus = TimeState.None;
                 ViewModel.IsOverlayOpened = false;
-                var a1 = BeginStoryboard("OverlayOut");
-            }
+                BeginStoryboard("OverlayOut");
+                break;
+            // 准备上课通知
+            case TimeState.PrepareOnClass when ViewModel.CurrentOverlayStatus != TimeState.PrepareOnClass 
+                                               && ViewModel.Settings.IsClassPrepareNotificationEnabled:
+                ViewModel.IsOverlayOpened = true;
+                ViewModel.CurrentOverlayStatus = TimeState.PrepareOnClass;
+                ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
+                ViewModel.CurrentOverlayElement = FindResource("ClassPrepareNotifyOverlay");
+                BeginStoryboard("OverlayMaskIn");
+                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
+                BeginStoryboard("OverlayMaskOut");
+                break;
+            case TimeState.None when ViewModel.CurrentOverlayStatus != TimeState.None:
+                break;
+            default:
+                break;
         }
 
         // Finished update

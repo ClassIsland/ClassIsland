@@ -1,4 +1,5 @@
 ﻿using System;
+using ClassIsland.Enums;
 using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -18,6 +19,9 @@ public class MainViewModel : ObservableRecipient
     private TimeSpan _onClassLeftTime = TimeSpan.Zero;
     private DateTime _today = DateTime.Now;
     private bool _isMouseIn = false;
+    private TimeState _currentStatus = TimeState.None;
+    private TimeState _currentOverlayStatus = TimeState.None;
+    private TimeLayoutItem _currentTimeLayoutItem = new();
 
     public Profile Profile
     {
@@ -147,6 +151,39 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isMouseIn) return;
             _isMouseIn = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeState CurrentStatus
+    {
+        get => _currentStatus;
+        set
+        {
+            if (value == _currentStatus) return;
+            _currentStatus = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeState CurrentOverlayStatus
+    {
+        get => _currentOverlayStatus;
+        set
+        {
+            if (value == _currentOverlayStatus) return;
+            _currentOverlayStatus = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeLayoutItem CurrentTimeLayoutItem
+    {
+        get => _currentTimeLayoutItem;
+        set
+        {
+            if (Equals(value, _currentTimeLayoutItem)) return;
+            _currentTimeLayoutItem = value;
             OnPropertyChanged();
         }
     }

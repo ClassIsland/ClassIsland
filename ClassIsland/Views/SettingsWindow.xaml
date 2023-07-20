@@ -83,6 +83,7 @@
                                 <controls:SettingsCard IconGlyph="Alarm"
                                                        Header="上下课提醒" Description="在上课、下课时在应用界面发出醒目提醒"
                                                        IsOn="{Binding Settings.IsClassChangingNotificationEnabled, Mode=TwoWay}" />
+                                <controls:SettingsCard/>
                             </StackPanel>
                         </ScrollViewer>
 

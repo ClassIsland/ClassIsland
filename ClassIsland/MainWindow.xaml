@@ -52,6 +52,7 @@
             </MenuItem>
         </ContextMenu>
         
+        <!-- 准备上课 遮罩 -->
         <StackPanel Orientation="Horizontal" x:Key="ClassPrepareNotifyMask" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
@@ -60,8 +61,9 @@
             <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
         </StackPanel>
-
         <converters:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
+
+        <!-- 准备上课 -->
         <Grid x:Key="ClassPrepareNotifyOverlay">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -86,10 +88,9 @@
                     </Run><Run Text="{Binding ViewModel.NextTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
                 </TextBlock>
             </StackPanel>
-
-
         </Grid>
-
+        
+        <!-- 上课遮罩 -->
         <StackPanel Orientation="Horizontal" x:Key="ClassOnNotification" 
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
@@ -98,6 +99,42 @@
             <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
         </StackPanel>
+
+        <!-- 下课遮罩 -->
+        <StackPanel Orientation="Horizontal" x:Key="ClassOffNotification" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+            <TextBlock Text="课间休息" FontSize="18" Margin="8 0" FontWeight="Bold"/>
+            <materialDesign:PackIcon Kind="Clock" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+        </StackPanel>
+
+        <!-- 下课提醒 -->
+        <Grid x:Key="ClassOffOverlay">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 课间时间 -->
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">
+                <Run Text="本节课间休息长"/>
+                <Run Text="XX" FontWeight="Bold"/>
+            </TextBlock>
+
+            <!-- 科目信息 -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
+                        TextElement.FontSize="16">
+                <TextBlock VerticalAlignment="Center" Text="下节课是："/>
+                <TextBlock Text="{Binding ViewModel.NextSubject.Name}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center"/>
+                <TextBlock Margin="6 0 0 0" FontSize="14" VerticalAlignment="Bottom">
+                    <Run Text="{Binding ViewModel.NextTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                    </Run><Run Text="-">
+                    </Run><Run Text="{Binding ViewModel.NextTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
 
         <!--#region StoryBoards-->
         <Storyboard x:Key="OverlayMaskIn">
@@ -210,6 +247,7 @@
                         <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
                     </DataTrigger.ExitActions>
                 </DataTrigger>
+
             </Style.Triggers>
         </Style>
     </Window.Style>
