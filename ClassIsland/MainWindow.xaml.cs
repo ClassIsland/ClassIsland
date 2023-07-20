@@ -185,10 +185,16 @@ public partial class MainWindow : Window
             // 下课通知
             case TimeState.Breaking when ViewModel.CurrentOverlayStatus != TimeState.Breaking
                                          && ViewModel.Settings.IsClassChangingNotificationEnabled:
-                //ViewModel.IsOverlayOpened = true;
-                //ViewModel.CurrentOverlayStatus = TimeState.Breaking;
-                //ViewModel.CurrentMaskElement = FindResource("ClassOnNotification");
-                //BeginStoryboard("OverlayMaskIn");
+                ViewModel.IsOverlayOpened = true;
+                ViewModel.CurrentOverlayStatus = TimeState.Breaking;
+                ViewModel.CurrentMaskElement = FindResource("ClassOffNotification");
+                ViewModel.CurrentOverlayElement = FindResource("ClassOffOverlay");
+                BeginStoryboard("OverlayMaskIn");
+                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(2)));
+                BeginStoryboard("OverlayMaskOut");
+                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(10)));
+                BeginStoryboard("OverlayOut");
+                ViewModel.IsOverlayOpened = false;
                 break;
             // 上课通知
             case TimeState.OnClass when ViewModel.CurrentOverlayStatus != TimeState.OnClass
