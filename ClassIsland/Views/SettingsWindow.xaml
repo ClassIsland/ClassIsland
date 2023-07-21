@@ -34,6 +34,23 @@
         </Style>
         <converters:IntToStringConverter x:Key="IntToStringConverter" />
         <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+
+        <Grid x:Key="OpenSourceLicense" Margin="16" Height="400" Width="550" MaxHeight="{Binding Height}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="开放源代码许可" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <TextBox Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0 12 0 0"
+                     Padding="8" Text="{Binding ViewModel.License, Mode=OneWay}" IsReadOnly="True"
+                     VerticalScrollBarVisibility="Auto" FontFamily="Consolas"/>
+            <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定" 
+                    HorizontalAlignment="Right" Margin="0 8 0 0"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                
+            </Button>
+        </Grid>
     </Window.Resources>
 
     <materialDesign:DialogHost Identifier="SettingsWindow">
@@ -306,7 +323,7 @@
                                                     <LineBreak/>
                                                     <Run Text="{x:Static ci:App.AppVersion}"/>
                                                     <LineBreak/>
-                                                    <Run Text="Copyright 2023 HelloWRC"/>
+                                                    <Run Text="Copyright (c) 2023 HelloWRC"/>
                                                 </TextBlock>
                                                 <WrapPanel>
                                                     <Button HorizontalAlignment="Left" Margin="6" Style="{StaticResource MaterialDesignFlatButton}">
@@ -321,11 +338,15 @@
                                                             <TextBlock Text="问题反馈" Margin="3 0 0 0" VerticalAlignment="Center"/>
                                                         </StackPanel>
                                                     </Button>
-                                                    <Button HorizontalAlignment="Left" Margin="6" Style="{StaticResource MaterialDesignFlatButton}">
+                                                    <Button HorizontalAlignment="Left" Margin="6" Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                                         <StackPanel Orientation="Horizontal">
                                                             <materialDesign:PackIcon Kind="License" VerticalAlignment="Center"/>
                                                             <TextBlock Text="开源许可" Margin="3 0 0 0" VerticalAlignment="Center"/>
                                                         </StackPanel>
+                                                        <Button.CommandParameter>
+                                                            <StaticResource ResourceKey="OpenSourceLicense"/>
+                                                        </Button.CommandParameter>
                                                     </Button>
                                                 </WrapPanel>
                                             </StackPanel>

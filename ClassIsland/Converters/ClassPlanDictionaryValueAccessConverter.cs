@@ -22,7 +22,7 @@ public class ClassPlanDictionaryValueAccessConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var k = (KeyValuePair<string, TimeLayout>)value;
+        var k = (KeyValuePair<string, TimeLayout>?)value ?? new KeyValuePair<string, TimeLayout>();
         return k.Key;
     }
 }

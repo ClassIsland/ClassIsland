@@ -31,6 +31,7 @@
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
+    <None Remove="Assets\LICENSE.txt" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +61,7 @@
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
+    <Resource Include="Assets\LICENSE.txt" />
   </ItemGroup>
 
 </Project>

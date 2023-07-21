@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
+using Application = System.Windows.Application;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -48,6 +50,8 @@ public partial class SettingsWindow : Window
     protected override void OnInitialized(EventArgs e)
     {
         RefreshMonitors();
+        var r = new StreamReader(Application.GetResourceStream(new Uri("/Assets/LICENSE.txt", UriKind.Relative))!.Stream);
+        ViewModel.License = r.ReadToEnd();
         base.OnInitialized(e);
     }
 

@@ -260,6 +260,15 @@
                                     </Button>
                                     <Button Click="ButtonDuplicateClassPlan_OnClick"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewClassPlans}" Value="-1">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                 </ToolBar>
@@ -267,6 +276,7 @@
                                 <!-- 课表 -->
                                 <ListView Grid.Row="1" Margin="12"
                                           SelectionChanged="ListViewClassPlans_OnSelectionChanged"
+                                          SelectionMode="Single"
                                           ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           x:Name="ListViewClassPlans">
                                     <ListView.ItemTemplate>
@@ -396,12 +406,22 @@
                                     </Button>
                                     <Button Click="ButtonDuplicateTimeLayout_OnClick"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimeLayouts}" Value="-1">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                 </ToolBar>
 
                                 <!-- 时间表 -->
                                 <ListView Grid.Row="1" Margin="12"
+                                          SelectionMode="Single"
                                           ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           x:Name="ListViewTimeLayouts">
                                     <ListView.ItemTemplate>
@@ -445,10 +465,28 @@
                                     </Button>
                                     <Separator/>
                                     <Button Click="ButtonRemoveTimePoint_OnClick">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimePoints}" Value="-1">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                         <controls:IconText Kind="Remove" Text="删除"/>
                                     </Button>
                                     <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" 
                                             Click="ButtonEditTimePoint_OnClick">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimePoints}" Value="-1">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                         <controls:IconText Kind="EditOutline" Text="编辑"/>
                                     </Button>
                                     <Separator/>
@@ -463,6 +501,7 @@
 
                                 <!-- 时间点 -->
                                 <ListView Grid.Row="1" Margin="12"
+                                          SelectionMode="Single"
                                           ItemsSource="{Binding Layouts}" x:Name="ListViewTimePoints">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
@@ -541,12 +580,22 @@
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
                                     <Button Click="ButtonDuplicateSubject_OnClick">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewSubjects}" Value="-1">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                 </ToolBar>
 
                                 <!-- 科目 -->
                                 <ListView Grid.Row="1" Margin="12"
+                                          SelectionMode="Single"
                                           ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                           x:Name="ListViewSubjects">
                                     <ListView.ItemTemplate>

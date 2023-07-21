@@ -91,7 +91,7 @@ public class ClassPlan : ObservableRecipient
     public void RefreshClassesList()
     {
         // 对齐长度
-        if (!TimeLayouts.ContainsKey(TimeLayoutId))
+        if (TimeLayoutId == null || !TimeLayouts.ContainsKey(TimeLayoutId))
         {
             return;
         }
