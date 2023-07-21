@@ -239,6 +239,7 @@
     <Window.Style>
         <Style TargetType="Window">
             <Style.Triggers>
+                <!-- 鼠标移入 -->
                 <DataTrigger Binding="{Binding ViewModel.IsMouseIn}" Value="True">
                     <DataTrigger.EnterActions>
                         <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
@@ -248,7 +249,25 @@
                     </DataTrigger.ExitActions>
                 </DataTrigger>
 
+                <!-- 窗口上课隐藏 -->
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ViewModel.Settings.HideOnClass}" Value="True"/>
+                        <Condition Binding="{Binding ViewModel.CurrentStatus}" Value="OnClass"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </MultiDataTrigger>
+                <!-- 窗口全屏隐藏 -->
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ViewModel.Settings.HideOnFullscreen}" Value="True"/>
+                        <Condition Binding="{Binding ViewModel.IsForegroundFullscreen}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </MultiDataTrigger>
             </Style.Triggers>
+            <!-- 默认状态 -->
+            <Setter Property="Visibility" Value="Visible"/>
         </Style>
     </Window.Style>
     <Grid ContextMenu="{StaticResource AppContextMenu}" 

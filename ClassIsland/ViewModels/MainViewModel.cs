@@ -22,6 +22,7 @@ public class MainViewModel : ObservableRecipient
     private TimeState _currentStatus = TimeState.None;
     private TimeState _currentOverlayStatus = TimeState.None;
     private TimeLayoutItem _currentTimeLayoutItem = new();
+    private bool _isForegroundFullscreen = false;
 
     public Profile Profile
     {
@@ -184,6 +185,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (Equals(value, _currentTimeLayoutItem)) return;
             _currentTimeLayoutItem = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsForegroundFullscreen
+    {
+        get => _isForegroundFullscreen;
+        set
+        {
+            if (value == _isForegroundFullscreen) return;
+            _isForegroundFullscreen = value;
             OnPropertyChanged();
         }
     }

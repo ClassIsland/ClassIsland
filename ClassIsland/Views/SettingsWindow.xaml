@@ -56,34 +56,66 @@
                                         <DatePicker SelectedDate="{Binding Settings.SingleWeekStartTime}" Width="120" />
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
-                                <!-- 启用课前提醒 -->
-                                <controls:SettingsCard IconGlyph="Alarm"
-                                                       Header="启用课前提醒" Description="在上课前在界面上发出醒目提醒。"
-                                                       IsOn="{Binding Settings.IsClassPrepareNotificationEnabled, Mode=TwoWay}" />
-                                <!-- 课前提醒时间 -->
-                                <controls:SettingsCard IconGlyph="ClockAlertOutline" Header="课前提醒时间"
-                                                       Description="在上课前指定时间进行上课提醒。">
-                                    <controls:SettingsCard.Switcher>
-                                        <controls:NumbericTextBox MaxValue="3600" MinValue="0"
-                                                                  Text="{Binding Settings.ClassPrepareNotifySeconds, Converter={StaticResource IntToStringConverter}}"
-                                                                  Width="120"
-                                                                  Style="{StaticResource MaterialDesignTextBoxBase}"
-                                                                  materialDesign:TextFieldAssist.SuffixText="秒" />
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
                                 <!-- 显示日期 -->
                                 <controls:SettingsCard IconGlyph="DateRange"
                                                        Header="显示日期" Description="在界面上显示当前日期。"  
                                                        IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
-                                <!-- 上课隐藏 -->
-                                <controls:SettingsCard IconGlyph="HideOutline"
-                                                       Header="上课隐藏" Description="在上课时隐藏应用界面。"
-                                                       IsOn="{Binding Settings.HideOnClass, Mode=TwoWay}" />
-                                <!-- 上下课提醒 -->
-                                <controls:SettingsCard IconGlyph="Alarm"
-                                                       Header="上下课提醒" Description="在上课、下课时在应用界面发出醒目提醒"
-                                                       IsOn="{Binding Settings.IsClassChangingNotificationEnabled, Mode=TwoWay}" />
-                                <controls:SettingsCard/>
+                                <!-- 提醒 -->
+                                <materialDesign:Card Margin="0 0 0 6">
+                                    <Expander Background="Transparent" IsExpanded="True">
+                                        <Expander.Header>
+                                            <controls:SettingsControl IconGlyph="Alarm" 
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Header="提醒" HasSwitcher="False"
+                                                                      Description="在下方选定的时间点时发出醒目提醒。"
+                                                                      Margin="-12 0"/>
+                                        </Expander.Header>
+                                        <StackPanel Margin="32 0 64 12">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                    <Setter Property="Margin" Value="0 3"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <CheckBox Content="课前准备时" IsChecked="{Binding Settings.IsClassChangingNotificationEnabled}"/>
+                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.IsClassPrepareNotificationEnabled}"/>
+                                            <CheckBox Content="下课时" IsChecked="{Binding Settings.IsClassOffNotificationEnabled}"/>
+                                            <Separator Margin="0 8"/>
+                                            <!-- 课前提醒时间 -->
+                                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="课前提醒时间"
+                                                                   Description="在上课前指定时间进行上课提醒。"
+                                                                   IsCompact="True">
+                                                <controls:SettingsControl.Switcher>
+                                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                                                              Text="{Binding Settings.ClassPrepareNotifySeconds, Converter={StaticResource IntToStringConverter}}"
+                                                                              Width="120"
+                                                                              Style="{StaticResource MaterialDesignTextBoxBase}"
+                                                                              materialDesign:TextFieldAssist.SuffixText="秒" />
+                                                </controls:SettingsControl.Switcher>
+                                            </controls:SettingsControl>
+                                        </StackPanel>
+                                    </Expander>
+                                </materialDesign:Card>
+                                <!-- 隐藏窗口 -->
+                                <materialDesign:Card Margin="0 0 0 6">
+                                    <Expander Background="Transparent" IsExpanded="True">
+                                        <Expander.Header>
+                                            <controls:SettingsControl IconGlyph="HideOutline" 
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Header="隐藏窗口" HasSwitcher="False"
+                                                                      Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
+                                                                      Margin="-12 0"/>
+                                        </Expander.Header>
+                                        <StackPanel Margin="32 0 64 12">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                    <Setter Property="Margin" Value="0 3"/>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}"/>
+                                            <CheckBox Content="有全屏应用时" IsChecked="{Binding Settings.HideOnFullscreen}"/>
+                                        </StackPanel>
+                                    </Expander>
+                                </materialDesign:Card>
                             </StackPanel>
                         </ScrollViewer>
 

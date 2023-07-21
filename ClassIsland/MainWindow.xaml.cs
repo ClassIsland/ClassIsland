@@ -28,10 +28,12 @@ using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
+using HandyControl.Controls;
 using HandyControl.Tools;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using Path = System.IO.Path;
+using Window = System.Windows.Window;
 
 namespace ClassIsland;
 /// <summary>
@@ -110,6 +112,11 @@ public partial class MainWindow : Window
         UpdateMouseStatus();
         LoadCurrentClassPlan();
 
+        // Detect fullscreen
+        ViewModel.IsForegroundFullscreen =
+            NativeWindowHelper.IsForegroundFullScreen(Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] ??
+                                                      Screen.PrimaryScreen);
+
         // Deactivate
         foreach (var i in ViewModel.Profile.TimeLayouts)
         {
@@ -184,7 +191,7 @@ public partial class MainWindow : Window
                 break;
             // 下课通知
             case TimeState.Breaking when ViewModel.CurrentOverlayStatus != TimeState.Breaking
-                                         && ViewModel.Settings.IsClassChangingNotificationEnabled:
+                                         && ViewModel.Settings.IsClassOffNotificationEnabled:
                 ViewModel.IsOverlayOpened = true;
                 ViewModel.CurrentOverlayStatus = TimeState.Breaking;
                 ViewModel.CurrentMaskElement = FindResource("ClassOffNotification");

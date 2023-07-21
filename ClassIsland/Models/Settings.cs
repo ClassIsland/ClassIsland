@@ -13,7 +13,7 @@ public class Settings : ObservableRecipient
     private DateTime _singleWeekStartTime = DateTime.Now;
     private int _classPrepareNotifySeconds = 60;
     private bool _showDate = true;
-    private bool _hideOnClass = true;
+    private bool _hideOnClass = false;
     private bool _isClassChangingNotificationEnabled = true;
     private bool _isClassPrepareNotificationEnabled = true;
     private int _windowDockingLocation = 1;
@@ -22,6 +22,8 @@ public class Settings : ObservableRecipient
     private int _windowDockingMonitorIndex = 0;
     private int _windowLayer = 0;
     private bool _isMouseClickingEnabled = true;
+    private bool _hideOnFullscreen = true;
+    private bool _isClassOffNotificationEnabled = true;
 
     #region Gerneral
 
@@ -87,6 +89,28 @@ public class Settings : ObservableRecipient
         {
             if (value == _isClassChangingNotificationEnabled) return;
             _isClassChangingNotificationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClassOffNotificationEnabled
+    {
+        get => _isClassOffNotificationEnabled;
+        set
+        {
+            if (value == _isClassOffNotificationEnabled) return;
+            _isClassOffNotificationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool HideOnFullscreen
+    {
+        get => _hideOnFullscreen;
+        set
+        {
+            if (value == _hideOnFullscreen) return;
+            _hideOnFullscreen = value;
             OnPropertyChanged();
         }
     }

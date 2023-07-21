@@ -1,5 +1,8 @@
 ﻿using System.Runtime.InteropServices;
 using System;
+using System.Drawing;
+using static HandyControl.Tools.Interop.InteropValues;
+using System.Windows.Forms;
 
 namespace ClassIsland;
 
@@ -60,4 +63,22 @@ public static class NativeWindowHelper
 
     public const int GWL_STYLE = -16;
     public const int WS_SYSMENU = 0x80000;
+
+    [DllImport("user32.dll")]
+    private static extern bool GetWindowRect(HandleRef hWnd, [In, Out] ref RECT rect);
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr GetForegroundWindow();
+    
+
+    public static bool IsForegroundFullScreen(Screen screen)
+    {
+        if (screen == null)
+        {
+            screen = Screen.PrimaryScreen;
+        }
+        RECT rect = new RECT();
+        GetWindowRect(new HandleRef(null, GetForegroundWindow()), ref rect);
+        return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.Bounds);
+    }
 }
