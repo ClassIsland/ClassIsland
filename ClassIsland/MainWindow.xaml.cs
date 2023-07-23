@@ -45,7 +45,7 @@ public partial class MainWindow : Window
     {
         get;
         set;
-    } = new();
+    }
 
     public ProfileSettingsWindow ProfileSettingsWindow
     {
@@ -72,6 +72,7 @@ public partial class MainWindow : Window
         UpdateTimer.Tick += UpdateTimerOnTick;
         DataContext = this;
         UpdateTimer.Start();
+        ViewModel = new MainViewModel();
         ProfileSettingsWindow = new ProfileSettingsWindow
         {
             MainViewModel = ViewModel
@@ -122,11 +123,16 @@ public partial class MainWindow : Window
         UpdateWindowPos();
         UpdateMouseStatus();
         LoadCurrentClassPlan();
+        if (ViewModel.Settings.WindowLayer == 0)
+        {
+            SetBottom();
+        }
 
         // Detect fullscreen
-        ViewModel.IsForegroundFullscreen =
-            NativeWindowHelper.IsForegroundFullScreen(Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] ??
-                                                      Screen.PrimaryScreen);
+        var screen = Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] ??
+                            Screen.PrimaryScreen;
+        ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
+        ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
 
         // Deactivate
         foreach (var i in ViewModel.Profile.TimeLayouts)
@@ -266,9 +272,6 @@ public partial class MainWindow : Window
     {
         UpdateTheme();
         base.OnContentRendered(e);
-
-        ProfileSettingsWindow.Owner = this;
-        SettingsWindow.Owner = this;
     }
 
     public void LoadProfile()
@@ -303,6 +306,7 @@ public partial class MainWindow : Window
         {
             ViewModel.Settings = r;
             ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
+            SettingsWindow.Settings = r;
         }
     }
 
@@ -415,7 +419,7 @@ public partial class MainWindow : Window
         if (!ProfileSettingsWindow.IsOpened)
         {
             ProfileSettingsWindow.IsOpened = true;
-            ProfileSettingsWindow.ShowDialog();
+            ProfileSettingsWindow.Show();
         }
         else
         {
@@ -486,7 +490,7 @@ public partial class MainWindow : Window
         if (!SettingsWindow.IsOpened)
         {
             SettingsWindow.IsOpened = true;
-            SettingsWindow.ShowDialog();
+            SettingsWindow.Show();
         }
         else
         {

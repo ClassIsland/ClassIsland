@@ -26,6 +26,7 @@ public class MainViewModel : ObservableRecipient
     private bool _isForegroundFullscreen = false;
     private KeyValuePair<string, ClassPlan>? _temporaryClassPlan = null;
     private DateTime _temporaryClassPlanSetupTime = DateTime.Now;
+    private bool _isForegroundMaxWindow = false;
 
     public Profile Profile
     {
@@ -199,6 +200,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isForegroundFullscreen) return;
             _isForegroundFullscreen = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsForegroundMaxWindow
+    {
+        get => _isForegroundMaxWindow;
+        set
+        {
+            if (value == _isForegroundMaxWindow) return;
+            _isForegroundMaxWindow = value;
             OnPropertyChanged();
         }
     }

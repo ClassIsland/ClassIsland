@@ -132,7 +132,8 @@
                                                 </Style>
                                             </StackPanel.Resources>
                                             <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}"/>
-                                            <CheckBox Content="有全屏应用时" IsChecked="{Binding Settings.HideOnFullscreen}"/>
+                                            <CheckBox Content="前台是最大化窗口时" IsChecked="{Binding Settings.HideOnMaxWindow}"/>
+                                            <CheckBox Content="前台是全屏窗口时" IsChecked="{Binding Settings.HideOnFullscreen}"/>
                                         </StackPanel>
                                     </Expander>
                                 </materialDesign:Card>
@@ -176,6 +177,16 @@
                                                        Description="应用次要显示的主题颜色。">
                                     <controls:SettingsCard.Switcher>
                                         <controls:ColorPicker Color="{Binding Settings.SecondaryColor}" />
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <!-- 背景透明度 -->
+                                <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
+                                                       Description="课表背景颜色的不透明度。">
+                                    <controls:SettingsCard.Switcher>
+                                        <Slider Width="180" Minimum="0" Maximum="1" 
+                                                Value="{Binding Settings.Opacity}"
+                                                AutoToolTipPlacement="BottomRight"
+                                                AutoToolTipPrecision="2"/>
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
                             </StackPanel>
@@ -282,7 +293,7 @@
                                 <controls:SettingsCard IconGlyph="LayersOutline" Header="窗口层级"
                                                        Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
                                     <controls:SettingsCard.Switcher>
-                                        <ComboBox SelectedIndex="{Binding Settings.WindowLayer}" Foreground="{DynamicResource MaterialDesignBody}">
+                                        <ComboBox SelectedIndex="{Binding Settings.WindowLayer, Mode=TwoWay}" Foreground="{DynamicResource MaterialDesignBody}">
                                             <ComboBoxItem>
                                                 <controls:IconText Kind="LayersMinus" Text="置底"/>
                                             </ComboBoxItem>

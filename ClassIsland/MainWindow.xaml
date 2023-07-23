@@ -257,6 +257,14 @@
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </MultiDataTrigger>
+                <!-- 窗口最大化隐藏 -->
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ViewModel.Settings.HideOnMaxWindow}" Value="True"/>
+                        <Condition Binding="{Binding ViewModel.IsForegroundMaxWindow}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </MultiDataTrigger>
                 <!-- 窗口全屏隐藏 -->
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
@@ -280,7 +288,7 @@
           ClipToBounds="True"
           IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}">
         <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>
-        <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.6"/>
+        <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}"/>
         
         <!-- Content -->
         <Grid Margin="16 0">

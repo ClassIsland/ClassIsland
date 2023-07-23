@@ -95,4 +95,22 @@ public static class NativeWindowHelper
         }
         return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.Bounds);
     }
+
+    public static bool IsForegroundMaxWindow(Screen screen)
+    {
+        if (screen == null)
+        {
+            screen = Screen.PrimaryScreen;
+        }
+        RECT rect = new RECT();
+        var win = GetForegroundWindow();
+        GetWindowRect(new HandleRef(null, win), ref rect);
+        GetWindowThreadProcessId(win, out var pid);
+        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
+        if (Process.GetProcessById(pid).ProcessName == "explorer")
+        {
+            return false;
+        }
+        return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.WorkingArea);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
+using System.Windows.Media.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignColors;
 
@@ -29,6 +30,9 @@ public class Settings : ObservableRecipient
     {
         "explorer"
     };
+
+    private bool _hideOnMaxWindow = true;
+    private double _opacity = 0.5;
 
     #region Gerneral
 
@@ -131,6 +135,17 @@ public class Settings : ObservableRecipient
         }
     }
 
+    public bool HideOnMaxWindow
+    {
+        get => _hideOnMaxWindow;
+        set
+        {
+            if (value == _hideOnMaxWindow) return;
+            _hideOnMaxWindow = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
@@ -164,6 +179,17 @@ public class Settings : ObservableRecipient
         {
             if (value.Equals(_secondaryColor)) return;
             _secondaryColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double Opacity
+    {
+        get => _opacity;
+        set
+        {
+            if (value.Equals(_opacity)) return;
+            _opacity = value;
             OnPropertyChanged();
         }
     }
