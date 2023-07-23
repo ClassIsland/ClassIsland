@@ -139,11 +139,12 @@ public partial class MainWindow : Window
 
         var isLessonConfirmed = false;
         // 更新选择
-        foreach (var i in ViewModel.CurrentClassPlan.TimeLayout.Layouts)
+        var currentLayout = ViewModel.CurrentClassPlan.TimeLayout.Layouts;
+        foreach (var i in currentLayout)
         {
             if (i.StartSecond.TimeOfDay <= DateTime.Now.TimeOfDay && i.EndSecond.TimeOfDay >= DateTime.Now.TimeOfDay)
             {
-                ViewModel.CurrentSelectedIndex = ViewModel.CurrentClassPlan.TimeLayout.Layouts.IndexOf(i);
+                ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
                 ViewModel.CurrentTimeLayoutItem = i;
                 isLessonConfirmed = true;
                 break;
@@ -157,22 +158,28 @@ public partial class MainWindow : Window
             ViewModel.CurrentStatus = TimeState.None;
         }
         // 获取下节课信息
-        else if (ViewModel.CurrentSelectedIndex + 1 < ViewModel.CurrentClassPlan.TimeLayout.Layouts.Count && ViewModel.CurrentSelectedIndex is not null)
+        else if (ViewModel.CurrentSelectedIndex + 1 < currentLayout.Count && ViewModel.CurrentSelectedIndex is not null)
         {
-            var i0 = GetSubjectIndex((int)ViewModel.CurrentSelectedIndex + 1);
-            var i1  = (int)ViewModel.CurrentSelectedIndex + 1;
-            if (ViewModel.CurrentClassPlan.Classes.Count > i0 && ViewModel.CurrentClassPlan.TimeLayout.Layouts.Count > i1 && i0 >= 0)
+            var nextTimeLayoutItems = (from i in currentLayout
+                where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
+                      && i.TimeType == 0
+                select i).ToList();
+            if (nextTimeLayoutItems.Count > 0)
             {
+                var i0 = GetSubjectIndex(currentLayout.IndexOf(nextTimeLayoutItems[0]));
                 var index = ViewModel.CurrentClassPlan.Classes[i0].SubjectId;
                 ViewModel.NextSubject = ViewModel.Profile.Subjects[index];
-                ViewModel.NextTimeLayoutItem = ViewModel.CurrentClassPlan.TimeLayout.Layouts[i1];
+                ViewModel.NextTimeLayoutItem = nextTimeLayoutItems[0];
             }
         }
 
         var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
         ViewModel.OnClassLeftTime = tClassDelta;
         // 获取状态信息
-        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds))
+        if (ViewModel.CurrentSelectedIndex == null)
+        {
+            ViewModel.CurrentStatus = TimeState.None;
+        } else if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds))
         {
             ViewModel.CurrentStatus = TimeState.PrepareOnClass;
         } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
@@ -406,12 +413,13 @@ public partial class MainWindow : Window
             return false;
         }
 
-        var dd = DateTime.Now - ViewModel.Settings.SingleWeekStartTime;
+        var dd = DateTime.Now.Date - ViewModel.Settings.SingleWeekStartTime.Date;
         var dw = Math.Floor(dd.TotalDays / 7) + 1;
         var w = (int)dw % 2;
         switch (plan.TimeRule.WeekCountDiv)
         {
             case 1 when w != 1:
+                return false;
             case 2 when w != 0:
                 return false;
             default:

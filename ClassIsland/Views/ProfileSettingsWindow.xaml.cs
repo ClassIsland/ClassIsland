@@ -76,9 +76,12 @@ public partial class ProfileSettingsWindow : Window
     private void AddTimeLayoutItem(int timeType)
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
+        var selected = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
         timeLayout.Layouts.Add(new TimeLayoutItem()
         {
-            TimeType = timeType
+            TimeType = timeType,
+            StartSecond = selected?.EndSecond ?? DateTime.Now,
+            EndSecond = selected?.EndSecond ?? DateTime.Now
         });
         UpdateTimeLayout();
     }
@@ -109,9 +112,9 @@ public partial class ProfileSettingsWindow : Window
 
     private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ListViewTimePoints.SelectedItem != null)
+        if (ListViewTimePoints.SelectedValue != null)
         {
-            ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value.Layouts.Remove((TimeLayoutItem)ListViewTimePoints.SelectedItem);
+            ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedValue).Value.Layouts.Remove((TimeLayoutItem)ListViewTimePoints.SelectedValue);
         }
 
         UpdateTimeLayout();

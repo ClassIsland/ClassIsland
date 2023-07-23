@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using static HandyControl.Tools.Interop.InteropValues;
 using System.Windows.Forms;
@@ -69,7 +70,13 @@ public static class NativeWindowHelper
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetForegroundWindow();
-    
+
+    [DllImport("user32.dll")]
+    private static extern int GetWindowThreadProcessId(
+        [In] IntPtr hWnd,
+        out int id
+    );
+
 
     public static bool IsForegroundFullScreen(Screen screen)
     {
@@ -78,7 +85,14 @@ public static class NativeWindowHelper
             screen = Screen.PrimaryScreen;
         }
         RECT rect = new RECT();
-        GetWindowRect(new HandleRef(null, GetForegroundWindow()), ref rect);
+        var win = GetForegroundWindow();
+        GetWindowRect(new HandleRef(null, win), ref rect);
+        GetWindowThreadProcessId(win, out var pid);
+        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
+        if (Process.GetProcessById(pid).ProcessName == "explorer")
+        {
+            return false;
+        }
         return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.Bounds);
     }
 }

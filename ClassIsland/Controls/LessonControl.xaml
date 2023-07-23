@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              d:DesignHeight="450" d:DesignWidth="800"
              >
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControl}}}">
@@ -61,7 +62,8 @@
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                  Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
                  Maximum="{Binding TotalSeconds}"
-                 Value="{Binding Seconds}"/>
+                 Value="{Binding Seconds}"
+                 materialDesign:TransitionAssist.DisableTransitions="True"/>
         <!--<TextBlock Text="{Binding Index}" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>-->
     </Grid>
 </UserControl>

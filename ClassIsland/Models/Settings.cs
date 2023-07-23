@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignColors;
@@ -24,6 +25,10 @@ public class Settings : ObservableRecipient
     private bool _isMouseClickingEnabled = true;
     private bool _hideOnFullscreen = true;
     private bool _isClassOffNotificationEnabled = true;
+    private ObservableCollection<string> _excludedFullscreenWindow = new()
+    {
+        "explorer"
+    };
 
     #region Gerneral
 
@@ -111,6 +116,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _hideOnFullscreen) return;
             _hideOnFullscreen = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<string> ExcludedFullscreenWindow
+    {
+        get => _excludedFullscreenWindow;
+        set
+        {
+            if (Equals(value, _excludedFullscreenWindow)) return;
+            _excludedFullscreenWindow = value;
             OnPropertyChanged();
         }
     }

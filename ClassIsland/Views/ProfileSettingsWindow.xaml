@@ -54,9 +54,9 @@
 
         <!-- 时间节点编辑 -->
         <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
-                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+                    DataContext="{Binding SelectedValue, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-            <!--<TextBlock Text="{Binding}"/>-->
+            <TextBlock Text="{Binding}"/>
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
                                        WithSeconds="True" Is24Hours="True"
                                        Style="{StaticResource MaterialDesignOutlinedTimePicker}"
@@ -75,7 +75,7 @@
                     <controls:IconText Kind="ClockOutline" Text="课间休息"/>
                 </ListBoxItem>
                 <ListBoxItem>
-                    <controls:IconText Kind="ClockOutline" Text="分割线"/>
+                    <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                 </ListBoxItem>
             </ListBox>
 
@@ -502,7 +502,7 @@
                                 <!-- 时间点 -->
                                 <ListView Grid.Row="1" Margin="12"
                                           SelectionMode="Single"
-                                          ItemsSource="{Binding Layouts}" x:Name="ListViewTimePoints">
+                                          ItemsSource="{Binding Layouts, Mode=OneWay}" x:Name="ListViewTimePoints">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
