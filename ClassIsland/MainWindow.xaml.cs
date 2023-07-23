@@ -430,10 +430,14 @@ public partial class MainWindow : Window
     public void LoadCurrentClassPlan()
     {
         ViewModel.Profile.RefreshTimeLayouts();
+        if (ViewModel.TemporaryClassPlanSetupTime.Date < DateTime.Now.Date)  // 清除过期临时课表
+        {
+            ViewModel.TemporaryClassPlan = null;
+        }
         var a = (from p in ViewModel.Profile.ClassPlans
             where CheckClassPlan(p.Value)
             select p.Value).ToList();
-        ViewModel.CurrentClassPlan = a.Count < 1 ? null : a[0]!;
+        ViewModel.CurrentClassPlan = ViewModel.TemporaryClassPlan?.Value ?? (a.Count < 1 ? null : a[0]!);
     }
 
     private void ListView_OnMouseDown(object sender, MouseButtonEventArgs e)

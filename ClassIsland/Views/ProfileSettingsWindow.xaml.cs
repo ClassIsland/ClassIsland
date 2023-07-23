@@ -266,4 +266,19 @@ public partial class ProfileSettingsWindow : Window
             e.Cancel = true;
         }
     }
+
+    private void ButtonTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DrawerContent = FindResource("TemporaryClassPlan");
+    }
+
+    private void ButtonClearTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        MainViewModel.TemporaryClassPlan = null;
+    }
+
+    private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
+    }
 }

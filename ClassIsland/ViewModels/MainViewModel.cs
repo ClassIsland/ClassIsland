@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ClassIsland.Enums;
 using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -23,6 +24,8 @@ public class MainViewModel : ObservableRecipient
     private TimeState _currentOverlayStatus = TimeState.None;
     private TimeLayoutItem _currentTimeLayoutItem = new();
     private bool _isForegroundFullscreen = false;
+    private KeyValuePair<string, ClassPlan>? _temporaryClassPlan = null;
+    private DateTime _temporaryClassPlanSetupTime = DateTime.Now;
 
     public Profile Profile
     {
@@ -196,6 +199,28 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isForegroundFullscreen) return;
             _isForegroundFullscreen = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public KeyValuePair<string, ClassPlan>? TemporaryClassPlan
+    {
+        get => _temporaryClassPlan;
+        set
+        {
+            if (Equals(value, _temporaryClassPlan)) return;
+            _temporaryClassPlan = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime TemporaryClassPlanSetupTime
+    {
+        get => _temporaryClassPlanSetupTime;
+        set
+        {
+            if (value.Equals(_temporaryClassPlanSetupTime)) return;
+            _temporaryClassPlanSetupTime = value;
             OnPropertyChanged();
         }
     }

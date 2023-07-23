@@ -56,7 +56,7 @@
         <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
                     DataContext="{Binding SelectedValue, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-            <TextBlock Text="{Binding}"/>
+            <!--<TextBlock Text="{Binding}"/>-->
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
                                        WithSeconds="True" Is24Hours="True"
                                        Style="{StaticResource MaterialDesignOutlinedTimePicker}"
@@ -223,9 +223,44 @@
         </ScrollViewer>
 
         <!-- 课程表规则编辑 -->
-        <StackPanel Margin="16" Width="300" x:Key="ClassPlanRulesEditor" 
-                    DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}">
-            
+        <StackPanel Margin="16" Width="300" x:Key="ClassPlanRulesEditor">
+            <TextBlock Text="Deprecated."/>
+        </StackPanel>
+
+        <!-- 课程表规则编辑 -->
+        <StackPanel Margin="16" Width="300" x:Key="TemporaryClassPlan">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="临时课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天的本次运行有效。" TextWrapping="Wrap"
+                               Margin="0 6 0 0"/>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                            HorizontalAlignment="Left"
+                            Margin="0 6 0 0"
+                            Click="ButtonClearTemporaryClassPlan_OnClick">
+                        <controls:IconText Kind="ClearOutline" Text="清除临时课表"/>
+                    </Button>
+                </StackPanel>
+                <ListBox Grid.Row="1" ItemsSource="{Binding MainViewModel.Profile.ClassPlans}"
+                         Margin="0 12 0 0"
+                         SelectionMode="Single"
+                         SelectedValue="{Binding MainViewModel.TemporaryClassPlan, Mode=TwoWay}"
+                         SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
+                         HorizontalContentAlignment="Stretch"
+                         VerticalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}"
+                                      Content="{Binding Value.Name}"
+                                      HorizontalAlignment="Stretch"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
         </StackPanel>
 
     </Window.Resources>
@@ -238,6 +273,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                <!-- Main -->
                 <TabControl Grid.Row="0" TabStripPlacement="Left">
                     <!-- 课表 -->
                     <TabItem Header="课表">
@@ -708,9 +744,20 @@
                     
                 </TabControl>
                 <!-- 档案操作 -->
-                <StackPanel Grid.Row="1">
-
-                </StackPanel>
+                <WrapPanel Grid.Row="1" Margin="4" Orientation="Horizontal">
+                    <WrapPanel.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <Setter Property="Margin" Value="0 0 6 0"/>
+                        </Style>
+                    </WrapPanel.Resources>
+                    <Button ToolTip="管理所有保存的档案。">
+                        <controls:IconText Kind="FileDocumentMultipleOutline" Text="管理档案"/>
+                    </Button>
+                    <Button ToolTip="临时启用某个课表。" Click="ButtonTemporaryClassPlan_OnClick"
+                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                        <controls:IconText Kind="FileChartOutline" Text="临时课表"/>
+                    </Button>
+                </WrapPanel>
             </Grid>
         </materialDesign:DialogHost>
     </materialDesign:DrawerHost>

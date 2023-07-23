@@ -37,8 +37,9 @@
         <models:ClassPlan x:Key="FallbackClassPlan"/>
 
         <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu">
-            <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick"/>
+            <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick"/>
             <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="设置…" Click="MenuItemSettings_OnClick"/>
+            <MenuItem Icon="{materialDesign:PackIcon FileDocumentAddOutline}" Header="加载临时档案…"/>
             <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
             <Separator/>
