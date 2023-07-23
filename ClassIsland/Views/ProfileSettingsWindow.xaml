@@ -55,7 +55,7 @@
 
         <!-- 时间节点编辑 -->
         <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
-                    DataContext="{Binding SelectedValue, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
             <!--<TextBlock Text="{Binding}"/>-->
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
@@ -241,6 +241,7 @@
                                Margin="0 6 0 0"/>
                     <Button Style="{StaticResource MaterialDesignFlatButton}" 
                             HorizontalAlignment="Left"
+                            ToolTip="清除选择的临时课表，并恢复至正常课表安排。"
                             Margin="0 6 0 0"
                             Click="ButtonClearTemporaryClassPlan_OnClick">
                         <controls:IconText Kind="ClearOutline" Text="清除临时课表"/>
@@ -266,7 +267,8 @@
 
     </Window.Resources>
     <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
-                               DrawerClosing="DrawerHost_OnDrawerClosing">
+                               DrawerClosing="DrawerHost_OnDrawerClosing"
+                               x:Name="MyDrawerHost">
         <materialDesign:DialogHost Identifier="ProfileWindow">
             <!-- Content -->
             <Grid>
@@ -275,7 +277,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <!-- Main -->
-                <TabControl Grid.Row="0" TabStripPlacement="Left">
+                <TabControl Grid.Row="0" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged">
                     <!-- 课表 -->
                     <TabItem Header="课表">
                         <Grid>
@@ -291,11 +293,11 @@
                                 </Grid.RowDefinitions>
                                 <!-- 课表操作 -->
                                 <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddClassPlan_OnClick"
+                                    <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
-                                    <Button Click="ButtonDuplicateClassPlan_OnClick"
+                                    <Button Click="ButtonDuplicateClassPlan_OnClick" ToolTip="复制选中的课表。"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
@@ -307,6 +309,10 @@
                                             </Style>
                                         </Button.Style>
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                    </Button>
+                                    <Button ToolTip="临时启用某个课表。" Click="ButtonTemporaryClassPlan_OnClick"
+                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                        <controls:IconText Kind="FileChartOutline" Text="临时课表"/>
                                     </Button>
                                 </ToolBar>
 
@@ -369,12 +375,12 @@
                                     <!--<Button Click="ButtonDebugAddNewClass_OnClick">
                                         <controls:IconText Kind="Add" Text="DebugAddNew"/>
                                     </Button>-->
-                                    <Button Click="ButtonClassPlanInfoEdit_OnClick"
+                                    <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="InfoOutline" Text="课表信息"/>
                                     </Button>
                                     <Separator/>
-                                    <Button Click="ButtonDeleteClassPlan_OnClick">
+                                    <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
                                         <controls:IconText Kind="Delete" Text="删除课表"/>
                                     </Button>
                                 </ToolBar>
@@ -437,11 +443,11 @@
                                 </Grid.RowDefinitions>
                                 <!-- 时间表操作 -->
                                 <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddTimeLayout_OnClick"
+                                    <Button Click="ButtonAddTimeLayout_OnClick" ToolTip="新建时间表。"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
-                                    <Button Click="ButtonDuplicateTimeLayout_OnClick"
+                                    <Button Click="ButtonDuplicateTimeLayout_OnClick" ToolTip="复制选中的时间表。"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
@@ -491,17 +497,17 @@
                                 <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" 
                                          IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
                                     <!--<TextBlock Text="{Binding Layouts}"/>-->
-                                    <Button Click="ButtonAddClassTime_OnClick">
+                                    <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。">
                                         <controls:IconText Kind="NotePlusOutline" Text="上课"/>
                                     </Button>
-                                    <Button Click="ButtonAddBreakTime_OnClick">
+                                    <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。">
                                         <controls:IconText Kind="ClockPlusOutline" Text="课间"/>
                                     </Button>
-                                    <Button Click="ButtonAddSeparator_OnClick">
+                                    <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
                                         <controls:IconText Kind="Add" Text="分割线"/>
                                     </Button>
                                     <Separator/>
-                                    <Button Click="ButtonRemoveTimePoint_OnClick">
+                                    <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                                                 <Style.Triggers>
@@ -514,7 +520,8 @@
                                         <controls:IconText Kind="Remove" Text="删除"/>
                                     </Button>
                                     <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" 
-                                            Click="ButtonEditTimePoint_OnClick">
+                                            Click="ButtonEditTimePoint_OnClick"
+                                            ToolTip="编辑选中的时间点。">
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                                                 <Style.Triggers>
@@ -528,10 +535,12 @@
                                     </Button>
                                     <Separator/>
                                     <Button Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
-                                            Click="ButtonEditTimeLayoutInfo_OnClick">
+                                            Click="ButtonEditTimeLayoutInfo_OnClick"
+                                            ToolTip="查看并编辑时间表的基本信息。">
                                         <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
                                     </Button>
-                                    <Button Click="ButtonDeleteTimeLayout_OnClick">
+                                    <Button Click="ButtonDeleteTimeLayout_OnClick"
+                                            ToolTip="删除该时间表。">
                                         <controls:IconText Kind="Delete" Text="删除时间表"/>
                                     </Button>
                                 </ToolBar>
@@ -613,10 +622,10 @@
                                 </Grid.RowDefinitions>
                                 <!-- 科目操作 -->
                                 <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddSubject_OnClick">
+                                    <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
                                         <controls:IconText Kind="Add" Text="添加"/>
                                     </Button>
-                                    <Button Click="ButtonDuplicateSubject_OnClick">
+                                    <Button Click="ButtonDuplicateSubject_OnClick" ToolTip="复制选中的科目。">
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
                                                 <Style.Triggers>
@@ -700,7 +709,7 @@
 
                                 <!-- 科目编辑操作 -->
                                 <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonSubject_OnClick">
+                                    <Button Click="ButtonSubject_OnClick" ToolTip="删除该科目。">
                                         <controls:IconText Kind="Delete" Text="删除科目"/>
                                     </Button>
                                 </ToolBar>
@@ -754,11 +763,9 @@
                     <Button ToolTip="管理所有保存的档案。">
                         <controls:IconText Kind="FileDocumentMultipleOutline" Text="管理档案"/>
                     </Button>
-                    <Button ToolTip="临时启用某个课表。" Click="ButtonTemporaryClassPlan_OnClick"
-                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                        <controls:IconText Kind="FileChartOutline" Text="临时课表"/>
-                    </Button>
                 </WrapPanel>
+                <!-- SnackBar -->
+                <materialDesign:Snackbar Grid.Row="0" Grid.RowSpan="2" MessageQueue="{Binding ViewModel.MessageQueue}"/>
             </Grid>
         </materialDesign:DialogHost>
     </materialDesign:DrawerHost>

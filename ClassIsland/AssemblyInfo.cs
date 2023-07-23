@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Resources;
+using System.Runtime.Versioning;
 using System.Windows;
 
 [assembly: ThemeInfo(
@@ -15,3 +16,4 @@ using System.Windows;
 [assembly: AssemblyFileVersion("0.3")]
 [assembly: AssemblyTitle("ClassIsland")]
 [assembly: AssemblyProduct("ClassIsland")]
+[assembly: SupportedOSPlatform("Windows")]

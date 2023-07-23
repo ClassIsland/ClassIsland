@@ -457,7 +457,7 @@
                                             </TextBlock>
                                         </Expander.Header>
                                         <StackPanel Margin="12">
-
+                                            <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}"/>
                                         </StackPanel>
                                     </Expander>
                                 </materialDesign:Card>

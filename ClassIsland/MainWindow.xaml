@@ -38,11 +38,12 @@
         <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu">
             <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick"/>
             <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="设置…" Click="MenuItemSettings_OnClick"/>
-            <MenuItem Icon="{materialDesign:PackIcon FileDocumentAddOutline}" Header="加载临时档案…"/>
+            <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick"/>
             <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
-            <Separator/>
-            <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试">
+            <Separator Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试"
+                      Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <MenuItem Header="SizeToContentTest" Click="ButtonResizeDebug_OnClick"/>
                 <Separator/>
                 <MenuItem Header="OverlayMaskIn" Click="MenuItemDebugOverlayMaskIn_OnClick"/>

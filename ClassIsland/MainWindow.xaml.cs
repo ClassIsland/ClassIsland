@@ -125,7 +125,7 @@ public partial class MainWindow : Window
         LoadCurrentClassPlan();
         if (ViewModel.Settings.WindowLayer == 0)
         {
-            SetBottom();
+            //SetBottom();
         }
 
         // Detect fullscreen
@@ -416,15 +416,7 @@ public partial class MainWindow : Window
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!ProfileSettingsWindow.IsOpened)
-        {
-            ProfileSettingsWindow.IsOpened = true;
-            ProfileSettingsWindow.Show();
-        }
-        else
-        {
-            ProfileSettingsWindow.Activate();
-        }
+        OpenProfileSettingsWindow();
     }
 
     public bool CheckClassPlan(ClassPlan plan)
@@ -487,6 +479,11 @@ public partial class MainWindow : Window
 
     private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
     {
+        OpenSettingsWindow();
+    }
+
+    private void OpenSettingsWindow()
+    {
         if (!SettingsWindow.IsOpened)
         {
             SettingsWindow.IsOpened = true;
@@ -494,6 +491,11 @@ public partial class MainWindow : Window
         }
         else
         {
+            if (SettingsWindow.WindowState == WindowState.Minimized)
+            {
+                SettingsWindow.WindowState = WindowState.Normal;
+            }
+
             SettingsWindow.Activate();
         }
     }
@@ -603,5 +605,28 @@ public partial class MainWindow : Window
     private void MainWindow_OnStateChanged(object? sender, EventArgs e)
     {
         SetBottom();
+    }
+
+    private void MenuItemTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileSettingsWindow.OpenDrawer("TemporaryClassPlan");
+        OpenProfileSettingsWindow();
+    }
+
+    private void OpenProfileSettingsWindow()
+    {
+        if (!ProfileSettingsWindow.IsOpened)
+        {
+            ProfileSettingsWindow.IsOpened = true;
+            ProfileSettingsWindow.Show();
+        }
+        else
+        {
+            if (ProfileSettingsWindow.WindowState == WindowState.Minimized)
+            {
+                ProfileSettingsWindow.WindowState = WindowState.Normal;
+            }
+            ProfileSettingsWindow.Activate();
+        }
     }
 }

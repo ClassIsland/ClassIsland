@@ -14,10 +14,10 @@ public class ClassPlanDictionaryValueAccessConverter : IValueConverter
         set;
     } = new();
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         var k = (string)value;
-        return new KeyValuePair<string, TimeLayout>(k, SourceDictionary[k]);
+        return k == "" ? null : new KeyValuePair<string, TimeLayout>(k, SourceDictionary[k]);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

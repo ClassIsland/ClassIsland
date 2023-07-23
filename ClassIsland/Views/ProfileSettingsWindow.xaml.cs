@@ -53,6 +53,12 @@ public partial class ProfileSettingsWindow : Window
         set;
     } = false;
 
+    public void OpenDrawer(string key)
+    {
+        ViewModel.DrawerContent = FindResource(key);
+        DrawerHost.OpenDrawerCommand.Execute(null, MyDrawerHost);
+    } 
+
     protected override void OnContentRendered(EventArgs e)
     {
         var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
@@ -128,6 +134,15 @@ public partial class ProfileSettingsWindow : Window
 
     private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
     {
+        var c = (from i in MainViewModel.Profile.ClassPlans
+            where i.Value.TimeLayoutId == ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Key
+            select i.Value).Count();
+        if (c > 0)
+        {
+            ViewModel.MessageQueue.Enqueue("仍有课表在使用该时间表。删除时间表前需要删除所有使用该时间表的课表。");
+            return;
+        }
+
         var r = (bool?)await DialogHost.Show(FindResource("DeleteTimeLayoutConfirm"), dialogIdentifier: "ProfileWindow");
         if (r == true)
         {
@@ -288,5 +303,11 @@ public partial class ProfileSettingsWindow : Window
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
+    }
+
+    private void TabControlSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var c = (KeyValuePair<string, ClassPlan>?)ListViewClassPlans.SelectedValue;
+        c?.Value.RefreshClassesList();
     }
 }

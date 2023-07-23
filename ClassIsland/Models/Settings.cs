@@ -33,6 +33,7 @@ public class Settings : ObservableRecipient
 
     private bool _hideOnMaxWindow = true;
     private double _opacity = 0.5;
+    private bool _isDebugEnabled = false;
 
     #region Gerneral
 
@@ -285,4 +286,15 @@ public class Settings : ObservableRecipient
     }
 
     #endregion
+
+    public bool IsDebugEnabled
+    {
+        get => _isDebugEnabled;
+        set
+        {
+            if (value == _isDebugEnabled) return;
+            _isDebugEnabled = value;
+            OnPropertyChanged();
+        }
+    }
 }
