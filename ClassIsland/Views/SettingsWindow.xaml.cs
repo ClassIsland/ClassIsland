@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -40,6 +41,12 @@ public partial class SettingsWindow : Window
         get;
         set;
     } = new();
+
+    public bool IsOpened
+    {
+        get;
+        set;
+    } = false;
 
     public SettingsWindow()
     {
@@ -82,5 +89,12 @@ public partial class SettingsWindow : Window
                 parent.RaiseEvent(eventArg);
             }
         }
+    }
+
+    private void SettingsWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        e.Cancel = true;
+        Hide();
+        IsOpened = false;
     }
 }

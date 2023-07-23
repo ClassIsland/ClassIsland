@@ -25,7 +25,6 @@
         ShowInTaskbar="False"
         WindowStyle="None"
         d:Width="600"
-        Topmost="True"
         Closing="MainWindow_OnClosing"
         SizeChanged="MainWindow_OnSizeChanged"
         AllowsTransparency="True"
@@ -266,15 +265,22 @@
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </MultiDataTrigger>
+
+                <!-- 窗口层级 -->
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowLayer}" Value="1">
+                    <Setter Property="Topmost" Value="True"/>
+                </DataTrigger>
             </Style.Triggers>
             <!-- 默认状态 -->
             <Setter Property="Visibility" Value="Visible"/>
+            <Setter Property="Topmost" Value="False"/>
         </Style>
     </Window.Style>
     <Grid ContextMenu="{StaticResource AppContextMenu}" 
-          Background="{DynamicResource MaterialDesignPaper}"
+          ClipToBounds="True"
           IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}">
         <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>
+        <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.6"/>
         
         <!-- Content -->
         <Grid Margin="16 0">

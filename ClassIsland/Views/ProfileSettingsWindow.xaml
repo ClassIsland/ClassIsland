@@ -9,6 +9,7 @@
       xmlns:controls="clr-namespace:ClassIsland.Controls"
       xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
       xmlns:converters="clr-namespace:ClassIsland.Converters"
+      xmlns:dd="urn:gong-wpf-dragdrop"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -313,7 +314,7 @@
                                 <ListView Grid.Row="1" Margin="12"
                                           SelectionChanged="ListViewClassPlans_OnSelectionChanged"
                                           SelectionMode="Single"
-                                          ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                          ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                           x:Name="ListViewClassPlans">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>

@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="HandyControls" Version="3.4.5" />
     <PackageReference Include="HandyControls.Lang.zh-CN" Version="3.4.5" />
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />

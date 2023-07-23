@@ -47,13 +47,13 @@ public partial class MainWindow : Window
         set;
     } = new();
 
-    public ProfileSettingsWindow? ProfileSettingsWindow
+    public ProfileSettingsWindow ProfileSettingsWindow
     {
         get;
         set;
     }
 
-    public SettingsWindow? SettingsWindow
+    public SettingsWindow SettingsWindow
     {
         get;
         set;
@@ -69,10 +69,21 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
-        InitializeComponent();
         UpdateTimer.Tick += UpdateTimerOnTick;
         DataContext = this;
         UpdateTimer.Start();
+        ProfileSettingsWindow = new ProfileSettingsWindow
+        {
+            MainViewModel = ViewModel
+        };
+        ProfileSettingsWindow.Closing += (o, args) => SaveProfile();
+        SettingsWindow = new SettingsWindow()
+        {
+            MainViewModel = ViewModel,
+            Settings = ViewModel.Settings
+        };
+        SettingsWindow.Closed += (o, args) => SaveSettings();
+        InitializeComponent();
     }
 
     private int GetSubjectIndex(int index)
@@ -255,6 +266,9 @@ public partial class MainWindow : Window
     {
         UpdateTheme();
         base.OnContentRendered(e);
+
+        ProfileSettingsWindow.Owner = this;
+        SettingsWindow.Owner = this;
     }
 
     public void LoadProfile()
@@ -306,6 +320,7 @@ public partial class MainWindow : Window
         LoadProfile();
         LoadSettings();
         UpdateTheme();
+
     }
 
     private void SetBottom()
@@ -397,13 +412,15 @@ public partial class MainWindow : Window
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        ProfileSettingsWindow = new ProfileSettingsWindow
+        if (!ProfileSettingsWindow.IsOpened)
         {
-            MainViewModel = ViewModel,
-            Owner = this
-        };
-        ProfileSettingsWindow.Closed += (o, args) => SaveProfile();
-        ProfileSettingsWindow.Show();
+            ProfileSettingsWindow.IsOpened = true;
+            ProfileSettingsWindow.ShowDialog();
+        }
+        else
+        {
+            ProfileSettingsWindow.Activate();
+        }
     }
 
     public bool CheckClassPlan(ClassPlan plan)
@@ -466,14 +483,15 @@ public partial class MainWindow : Window
 
     private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsWindow = new SettingsWindow()
+        if (!SettingsWindow.IsOpened)
         {
-            Owner = this,
-            MainViewModel = ViewModel,
-            Settings = ViewModel.Settings
-        };
-        SettingsWindow.Closed += (o, args) => SaveSettings();
-        SettingsWindow.ShowDialog();
+            SettingsWindow.IsOpened = true;
+            SettingsWindow.ShowDialog();
+        }
+        else
+        {
+            SettingsWindow.Activate();
+        }
     }
 
     private void MenuItemDebugOverlayMaskIn_OnClick(object sender, RoutedEventArgs e)

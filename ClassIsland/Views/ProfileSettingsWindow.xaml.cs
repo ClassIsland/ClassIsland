@@ -47,6 +47,12 @@ public partial class ProfileSettingsWindow : Window
         DataContext = this;
     }
 
+    public bool IsOpened
+    {
+        get;
+        set;
+    } = false;
+
     protected override void OnContentRendered(EventArgs e)
     {
         var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
@@ -261,9 +267,11 @@ public partial class ProfileSettingsWindow : Window
 
     private void ProfileSettingsWindow_OnClosing(object? sender, CancelEventArgs e)
     {
-        if (ViewModel.IsClassPlansEditing)
+        e.Cancel = true;
+        if (!ViewModel.IsClassPlansEditing)
         {
-            e.Cancel = true;
+            Hide();
+            IsOpened = false;
         }
     }
 
