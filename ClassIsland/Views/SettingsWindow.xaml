@@ -62,7 +62,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Grid.Row="0" Text="设置" Style="{StaticResource MaterialDesignHeadline4TextBlock}" Margin="12"/>
-                <TabControl Grid.Row="1" TabStripPlacement="Left">
+                <TabControl Grid.Row="1" TabStripPlacement="Left" x:Name="RootTabControl">
                     <!-- 基本 -->
                     <TabItem Header="基本">
                         <ScrollViewer>
@@ -458,6 +458,8 @@
                                         </Expander.Header>
                                         <StackPanel Margin="12">
                                             <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}"/>
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}" Content="CrashTest"
+                                                    Click="ButtonCrash_OnClick" HorizontalAlignment="Left"/>
                                         </StackPanel>
                                     </Expander>
                                 </materialDesign:Card>

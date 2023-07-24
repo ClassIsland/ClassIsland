@@ -2,8 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text.Json.Serialization;
+using System.Windows;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
+using GongSolutions.Wpf.DragDrop;
 
 namespace ClassIsland.Models;
 

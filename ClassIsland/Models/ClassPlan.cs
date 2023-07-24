@@ -97,7 +97,7 @@ public class ClassPlan : ObservableRecipient
         }
         
         var l = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).Count();
-        Debug.WriteLine(l);
+        //Debug.WriteLine(l);
         if (Classes.Count < l)
         {
             var d = l - Classes.Count;

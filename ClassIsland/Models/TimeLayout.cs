@@ -23,7 +23,7 @@ public class TimeLayout : ObservableRecipient
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        Debug.WriteLine(e.PropertyName);
+        //Debug.WriteLine(e.PropertyName);
         switch (e.PropertyName)
         {
             case nameof(Layouts):

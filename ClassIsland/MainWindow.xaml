@@ -36,8 +36,21 @@
         <models:ClassPlan x:Key="FallbackClassPlan"/>
 
         <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu">
+            <MenuItem Click="MenuItemAbout_OnClick">
+                <MenuItem.Icon>
+                    <Image Source="/Assets/AppLogo.ico"/>
+                </MenuItem.Icon>
+                <MenuItem.Header>
+                    <TextBlock>
+                        <Run Text="ClassIsland"/>
+                        <Run Text="{x:Static local:App.AppVersion}"/>
+                    </TextBlock>
+                </MenuItem.Header>
+            </MenuItem>
+            <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…"/>
+            <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick"/>
-            <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="设置…" Click="MenuItemSettings_OnClick"/>
+            <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick"/>
             <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick"/>
             <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>

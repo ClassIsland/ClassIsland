@@ -55,7 +55,7 @@
 
         <!-- 时间节点编辑 -->
         <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
-                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, Mode=OneWay, FallbackValue={StaticResource TimeLayoutItemFallback}}">
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
             <!--<TextBlock Text="{Binding}"/>-->
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
@@ -335,7 +335,7 @@
                                                 </Grid.ColumnDefinitions>
                                                 <!-- Icon -->
                                                 <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0" 
-                                                                         Kind="FileChart"/>
+                                                                         Kind="FileChartOutline"/>
 
                                                 <!-- Name -->
                                                 <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"

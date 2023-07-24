@@ -97,4 +97,9 @@ public partial class SettingsWindow : Window
         Hide();
         IsOpened = false;
     }
+
+    private void ButtonCrash_OnClick(object sender, RoutedEventArgs e)
+    {
+        throw new Exception("Crash test.");
+    }
 }

@@ -629,4 +629,10 @@ public partial class MainWindow : Window
             ProfileSettingsWindow.Activate();
         }
     }
+
+    private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenSettingsWindow();
+        SettingsWindow.RootTabControl.SelectedIndex = 3;
+    }
 }

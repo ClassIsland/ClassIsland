@@ -138,7 +138,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         get
         {
             // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null)
+            if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null || Index >= CurrentTimeLayout.Layouts.Count)
             // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             {
                 return ErrorSubject;
@@ -174,7 +174,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
                 }
                 CurrentClassPlan.PropertyChanged += CurrentClassPlanOnPropertyChanged;
                 CurrentClassPlan.Classes.CollectionChanged += ClassesOnCollectionChanged;
-                Debug.WriteLine("Add event listener to CurrentClassPlan.PropertyChanged.");
+                //Debug.WriteLine("Add event listener to CurrentClassPlan.PropertyChanged.");
                 break;
         }
 
@@ -195,11 +195,16 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void Update()
     {
-        if (CurrentClassPlan is null || Index >= CurrentTimeLayout?.Layouts.Count)
+        if (CurrentClassPlan is null)
         {
             return;
         }
         CurrentTimeLayout = CurrentClassPlan.TimeLayout;
+
+        if (Index >= CurrentTimeLayout?.Layouts.Count || CurrentTimeLayout == null)
+        {
+            return;
+        }
         CurrentTimeLayoutItem = CurrentTimeLayout.Layouts[Index];
 
         TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
