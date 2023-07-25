@@ -126,4 +126,5 @@ public class ProfileSettingsViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
 }

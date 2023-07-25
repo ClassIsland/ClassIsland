@@ -36,7 +36,7 @@
         <models:ClassPlan x:Key="FallbackClassPlan"/>
 
         <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu">
-            <MenuItem Click="MenuItemAbout_OnClick">
+            <MenuItem Click="MenuItemAbout_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}">
                 <MenuItem.Icon>
                     <Image Source="/Assets/AppLogo.ico"/>
                 </MenuItem.Icon>
@@ -47,12 +47,12 @@
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…"/>
+            <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <Separator/>
-            <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick"/>
-            <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick"/>
-            <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick"/>
-            <Separator/>
+            <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
             <Separator Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试"
@@ -63,6 +63,9 @@
                 <MenuItem Header="OverlayMaskOut" Click="MenuItemDebugOverlayMaskOut_OnClick"/>
                 <MenuItem Header="OverlayOut" Click="MenuItemDebugOverlayOut_OnClick"/>
                 <MenuItem Header="OverlayMaskOutDirect" Click="MenuItemDebugOverlayMaskOutDirect_OnClick"/>
+                <Separator/>
+                <MenuItem Header="WelcomeWindow" Click="MenuItemDebugWelcomeWindow_OnClick"/>
+                <MenuItem Header="WelcomeWindow (Full)" Click="MenuItemDebugWelcomeWindow2_OnClick"/>
             </MenuItem>
         </ContextMenu>
         

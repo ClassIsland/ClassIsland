@@ -334,6 +334,25 @@ public partial class MainWindow : Window
         LoadProfile();
         UpdateTheme();
 
+        if (!ViewModel.Settings.IsWelcomeWindowShowed)
+        {
+            var w = new WelcomeWindow()
+            {
+                ViewModel =
+                {
+                    Settings = ViewModel.Settings
+                }
+            };
+            var r = w.ShowDialog();
+            if (r == false)
+            {
+                Close();
+            }
+            else
+            {
+                ViewModel.Settings.IsWelcomeWindowShowed = true;
+            }
+        }
     }
 
     private void SetBottom()
@@ -643,5 +662,17 @@ public partial class MainWindow : Window
     {
         OpenSettingsWindow();
         SettingsWindow.RootTabControl.SelectedIndex = 3;
+    }
+
+    private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
+    {
+        var ww = new WelcomeWindow();
+        ww.ShowDialog();
+    }
+
+    private void MenuItemDebugWelcomeWindow2_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.Settings.IsWelcomeWindowShowed = false;
+        SaveSettings();
     }
 }

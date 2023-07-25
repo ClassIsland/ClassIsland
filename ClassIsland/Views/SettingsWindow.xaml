@@ -67,6 +67,10 @@
                     <TabItem Header="基本">
                         <ScrollViewer>
                             <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <!-- 开机自启 -->
+                                <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
+                                                       Description="在系统启动时自动运行本应用。"
+                                                       IsOn="{Binding Settings.IsAutoStartEnabled, Mode=TwoWay}"/>
                                 <!-- 学期开始时间 -->
                                 <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
                                                        Description="此时间将作为学期的第一周，用于应用对单双周的计算。">

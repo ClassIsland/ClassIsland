@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
+using IWshRuntimeLibrary;
 using MaterialDesignColors;
+using File = System.IO.File;
 
 namespace ClassIsland.Models;
 
@@ -35,6 +38,7 @@ public class Settings : ObservableRecipient
     private double _opacity = 0.5;
     private bool _isDebugEnabled = false;
     private string _selectedProfile = "Default.json";
+    private bool _isWelcomeWindowShowed = false;
 
     public string SelectedProfile
     {
@@ -43,6 +47,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _selectedProfile) return;
             _selectedProfile = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsWelcomeWindowShowed
+    {
+        get => _isWelcomeWindowShowed;
+        set
+        {
+            if (value == _isWelcomeWindowShowed) return;
+            _isWelcomeWindowShowed = value;
             OnPropertyChanged();
         }
     }
@@ -156,6 +171,37 @@ public class Settings : ObservableRecipient
             if (value == _hideOnMaxWindow) return;
             _hideOnMaxWindow = value;
             OnPropertyChanged();
+        }
+    }
+
+    public bool IsAutoStartEnabled
+    {
+        get => File.Exists(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk"));
+        set
+        {
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
+            try
+            {
+                if (value)
+                {
+                    var shell = new WshShell();
+                    var shortcut = (IWshShortcut)shell.CreateShortcut(path);//创建快捷方式对象
+                    shortcut.TargetPath = Environment.ProcessPath;
+                    shortcut.WorkingDirectory = Environment.CurrentDirectory;
+                    shortcut.WindowStyle = 1;
+                    shortcut.Save();
+                }
+                else
+                {
+                    File.Delete(path);
+                }
+                OnPropertyChanged();
+            }
+            catch
+            {
+                // ignored
+            }
         }
     }
 
