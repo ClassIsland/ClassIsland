@@ -276,11 +276,13 @@ public partial class MainWindow : Window
 
     public void LoadProfile()
     {
-        if (!File.Exists("./Profile.json"))
+        var path = $"./Profiles/{ViewModel.CurrentProfilePath}";
+        if (!File.Exists(path))
         {
-            return;
+            SaveProfile();
         }
-        var json = File.ReadAllText("./Profile.json");
+
+        var json = File.ReadAllText(path);
         var r = JsonSerializer.Deserialize<Profile>(json);
         if (r != null)
         {
@@ -291,7 +293,9 @@ public partial class MainWindow : Window
 
     public void SaveProfile()
     {
-        File.WriteAllText("./Profile.json", JsonSerializer.Serialize<Profile>(ViewModel.Profile));
+        var json = JsonSerializer.Serialize<Profile>(ViewModel.Profile);
+        //File.WriteAllText("./Profile.json", json);
+        File.WriteAllText($"./Profiles/{ViewModel.CurrentProfilePath}", json);
     }
 
     private void LoadSettings()
@@ -318,11 +322,16 @@ public partial class MainWindow : Window
 
     protected override void OnInitialized(EventArgs e)
     {
+        if (!Directory.Exists("./Profiles"))
+        {
+            Directory.CreateDirectory("./Profiles");
+        }
         base.OnInitialized(e);
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
-        LoadProfile();
         LoadSettings();
+        ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
+        LoadProfile();
         UpdateTheme();
 
     }

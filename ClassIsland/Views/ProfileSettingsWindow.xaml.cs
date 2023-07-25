@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -12,6 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -22,6 +24,8 @@ using ClassIsland.Converters;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
+using Application = System.Windows.Application;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -57,7 +61,7 @@ public partial class ProfileSettingsWindow : Window
     {
         ViewModel.DrawerContent = FindResource(key);
         DrawerHost.OpenDrawerCommand.Execute(null, MyDrawerHost);
-    } 
+    }
 
     protected override void OnContentRendered(EventArgs e)
     {
@@ -66,7 +70,28 @@ public partial class ProfileSettingsWindow : Window
         var d2 = (ClassPlanDictionaryValueAccessConverter)FindResource("ClassPlanDictionaryValueAccessConverter");
         d2.SourceDictionary = MainViewModel.Profile.TimeLayouts;
 
+        MainViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        RefreshProfiles();
+
         base.OnInitialized(e);
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        switch (e.PropertyName)
+        {
+            case nameof(MainViewModel.Settings.SelectedProfile):
+                ViewModel.IsRestartSnackbarActive = true;
+                break;
+        }
+    }
+
+    private void RefreshProfiles()
+    {
+        ViewModel.Profiles = new ObservableCollection<string>
+            (from i in Directory.GetFiles("./Profiles")
+            where i.EndsWith(".json")
+            select Path.GetFileName(i));
     }
 
     private void ButtonAddTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -309,5 +334,135 @@ public partial class ProfileSettingsWindow : Window
     {
         var c = (KeyValuePair<string, ClassPlan>?)ListViewClassPlans.SelectedValue;
         c?.Value.RefreshClassesList();
+    }
+
+    private void ButtonProfileManage_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ProfileManager");
+    }
+
+    private void SnackbarRestartMessage_OnActionClick(object sender, RoutedEventArgs e)
+    {
+        var mw = (MainWindow)Application.Current.MainWindow!;
+        mw.SaveProfile();
+        mw.SaveSettings();
+        Application.Current.Shutdown();
+        System.Windows.Forms.Application.Restart();
+    }
+
+    private async void ButtonCreateProfile_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.CreateProfileName = "";
+        var r = await DialogHost.Show(FindResource("CreateProfileDialog"), "ProfileWindow");
+        Debug.WriteLine(r);
+
+        var path = $"./Profiles/{r}.json";
+        if (r == null || File.Exists(path))
+        {
+            return;
+        }
+
+        var json = JsonSerializer.Serialize(new Profile());
+        await File.WriteAllTextAsync(path, json);
+        RefreshProfiles();
+    }
+
+    private void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Path.GetFullPath("./Profiles/"),
+            UseShellExecute = true
+        });
+    }
+
+    private void ButtonRefreshProfiles_OnClick(object sender, RoutedEventArgs e)
+    {
+        RefreshProfiles();
+    }
+
+    private async void MenuItemRenameProfile_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.RenameProfileName = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile);
+        var r = await DialogHost.Show(FindResource("RenameProfileDialog"), "ProfileWindow");
+        Debug.WriteLine(r);
+
+        var raw = $"./Profiles/{ViewModel.SelectedProfile}";
+        var path = $"./Profiles/{r}.json";
+        if (r == null || !File.Exists(raw) || File.Exists(path))
+        {
+            return;
+        }
+
+        File.Move(raw, path);
+        if (MainViewModel.CurrentProfilePath == Path.GetFileName(raw))
+        {
+            MainViewModel.CurrentProfilePath = Path.GetFileName(path);
+            MainViewModel.Settings.SelectedProfile = Path.GetFileName(path);
+        }
+        RefreshProfiles();
+    }
+
+    private async void MenuItemDeleteProfile_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DeleteConfirmField = "";
+        var path = $"./Profiles/{ViewModel.SelectedProfile}";
+        if (ViewModel.SelectedProfile == MainViewModel.CurrentProfilePath ||
+            ViewModel.SelectedProfile == MainViewModel.Settings.SelectedProfile)
+        {
+            ViewModel.MessageQueue.Enqueue("无法删除已加载或将要加载的档案。");
+            return;
+        }
+        var r = await DialogHost.Show(FindResource("DeleteProfileDialog"), "ProfileWindow");
+        Debug.WriteLine(r);
+
+        if ((bool?)r == true)
+        {
+            File.Delete(path);
+        }
+        RefreshProfiles();
+    }
+
+    private void MenuItemProfileDuplicate_OnClick(object sender, RoutedEventArgs e)
+    {
+        var raw = $"./Profiles/{ViewModel.SelectedProfile}";
+        var d = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile) + " - 副本.json";
+        var d1 = $"./Profiles/{d}";
+        File.Copy(raw, d1);
+        RefreshProfiles();
+    }
+
+    public static async void OpenFromFile(string path)
+    {
+        var o = JsonSerializer.Deserialize<Profile>(await File.ReadAllTextAsync(path));
+        if (o == null)
+        {
+            return;
+        }
+        var pw = new ProfileSettingsWindow()
+        {
+            MainViewModel =
+            {
+                Profile = o,
+                CurrentProfilePath = Path.GetFileName(path)
+            },
+            ViewModel =
+            {
+                IsOfflineEditor = true
+            }
+        };
+        pw.ShowDialog();
+        await File.WriteAllTextAsync(path, JsonSerializer.Serialize(o));
+        GC.Collect();
+    }
+
+    private void MenuItemProfileEdit_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedProfile == MainViewModel.CurrentProfilePath)
+        {
+            ViewModel.MessageQueue.Enqueue("无法编辑已加载的档案。");
+            return;
+        }
+        OpenFromFile($"./Profiles/{ViewModel.SelectedProfile}");
     }
 }

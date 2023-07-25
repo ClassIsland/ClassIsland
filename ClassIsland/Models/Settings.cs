@@ -34,6 +34,18 @@ public class Settings : ObservableRecipient
     private bool _hideOnMaxWindow = true;
     private double _opacity = 0.5;
     private bool _isDebugEnabled = false;
+    private string _selectedProfile = "Default.json";
+
+    public string SelectedProfile
+    {
+        get => _selectedProfile;
+        set
+        {
+            if (value == _selectedProfile) return;
+            _selectedProfile = value;
+            OnPropertyChanged();
+        }
+    }
 
     #region Gerneral
 

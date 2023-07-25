@@ -10,6 +10,8 @@
       xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
       xmlns:converters="clr-namespace:ClassIsland.Converters"
       xmlns:dd="urn:gong-wpf-dragdrop"
+      xmlns:validations="clr-namespace:ClassIsland.Validations"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -55,7 +57,7 @@
 
         <!-- 时间节点编辑 -->
         <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
-                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, Mode=OneWay, FallbackValue={StaticResource TimeLayoutItemFallback}}">
+                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, Mode=OneWay, FallbackValue={StaticResource TimeLayoutItemFallback}, UpdateSourceTrigger=PropertyChanged}">
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
             <!--<TextBlock Text="{Binding}"/>-->
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
@@ -265,11 +267,142 @@
             </Grid>
         </StackPanel>
 
+        <!-- 新建档案 -->
+        <StackPanel x:Key="CreateProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="新建档案"/>
+            <TextBox Margin="0 6 0 0" TextWrapping="Wrap" x:Name="TextBoxProfileName" 
+                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                     Text="{Binding ViewModel.CreateProfileName}"
+                     materialDesign:HintAssist.Hint="档案名"
+                     materialDesign:TextFieldAssist.SuffixText=".json"/>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="新建" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                        CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 重命名档案 -->
+        <StackPanel x:Key="RenameProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="重命名档案"/>
+            <TextBox Margin="0 6 0 0" TextWrapping="Wrap" x:Name="TextBoxProfileName" 
+                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                     Text="{Binding ViewModel.RenameProfileName}"
+                     materialDesign:HintAssist.Hint="档案名"
+                     materialDesign:TextFieldAssist.SuffixText=".json"/>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="重命名" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                        CommandParameter="{Binding ViewModel.RenameProfileName, Mode=OneWay}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 删除档案 -->
+        <converters:StringConnectConverter x:Key="StringConnectConverter" />
+        <StackPanel x:Key="DeleteProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="删除档案"/>
+            <TextBlock TextWrapping="Wrap" Margin="0 12 0 0">
+                <Run Text="你确定要删除这个档案吗？一旦删除，这个操作将无法撤销，该档案的所有数据都将丢失！"/>
+            </TextBlock>
+            <controls:IconText Text="{Binding ViewModel.SelectedProfile}" HorizontalAlignment="Center"
+                               Margin="0 6 0 0"
+                               Kind="FileDocumentOutline"
+                               FontFamily="Consolas"/>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Grid HorizontalAlignment="Right">
+                    <Button Content="删除" 
+                            Style="{DynamicResource MaterialDesignFlatButton}" 
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                        <Button.CommandParameter>
+                            <system:Boolean>
+                                True
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                    </Button>
+                </Grid>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 管理档案 -->
+        <Grid x:Key="ProfileManager" Margin="16" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" >
+                <TextBlock Text="管理档案" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                <TextBlock Text="管理与切换保存的档案。切换档案需要重新启动应用。" TextWrapping="Wrap"
+                           Margin="0 6 0 0"/>
+                <!--<TextBlock Text="{Binding MainViewModel.Settings.SelectedProfile, Mode=OneWay}"/>-->
+                <WrapPanel Margin="0 6 0 0">
+                    <WrapPanel.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                            <Setter Property="Margin" Value="0 0 6 0"/>
+                        </Style>
+                    </WrapPanel.Resources>
+                    <Button ToolTip="新建档案。" Click="ButtonCreateProfile_OnClick">
+                        <controls:IconText Kind="FileDocumentAddOutline" Text="新建档案"/>
+                    </Button>
+                    <Button ToolTip="打开档案文件夹" Click="ButtonOpenProfileFolder_OnClick">
+                        <controls:IconText Kind="FolderOpenOutline" Text="打开文件夹"/>
+                    </Button>
+                    <Button ToolTip="重新加载档案列表。" Click="ButtonRefreshProfiles_OnClick">
+                        <controls:IconText Kind="Refresh" Text="刷新"/>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+            <ListBox Grid.Row="1" Margin="0 12 0 0"
+                     SelectedValue="{Binding ViewModel.SelectedProfile, Mode=TwoWay}"
+                     SelectionMode="Single"
+                     HorizontalContentAlignment="Stretch"
+                     ItemsSource="{Binding ViewModel.Profiles, Mode=OneWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Background="Transparent">
+                            <StackPanel.ContextMenu>
+                                <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
+                                    <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑" Click="MenuItemProfileEdit_OnClick"/>
+                                    <Separator/>
+                                    <MenuItem Icon="{materialDesign:PackIcon RenameOutline}" Header="重命名" Click="MenuItemRenameProfile_OnClick"/>
+                                    <MenuItem Icon="{materialDesign:PackIcon ContentCopy}" Header="复制" Click="MenuItemProfileDuplicate_OnClick"/>
+                                    <!--<MenuItem Icon="{materialDesign:PackIcon FileExportOutline}" Header="导出"/>-->
+                                    <MenuItem Icon="{materialDesign:PackIcon DeleteOutline}" Header="删除" Click="MenuItemDeleteProfile_OnClick"/>
+                                </ContextMenu>
+                            </StackPanel.ContextMenu>
+                            <StackPanel.Resources>
+                                <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                            </StackPanel.Resources>
+                            <RadioButton GroupName="ProfileSelection" VerticalAlignment="Center">
+                                <RadioButton.IsChecked>
+                                    <MultiBinding Converter="{StaticResource StringToRadioButtonSelectionConverter}">
+                                        <Binding Path="MainViewModel.Settings.SelectedProfile" 
+                                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}"/>
+                                        <Binding Mode="OneWay"/>
+                                    </MultiBinding>
+                                </RadioButton.IsChecked>
+                            </RadioButton>
+                            <TextBlock Text="{Binding}" VerticalAlignment="Center" Margin="6 0 0 0"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <materialDesign:Snackbar Grid.Row="0" Grid.RowSpan="2" 
+                                     IsActive="{Binding ViewModel.IsRestartSnackbarActive, Mode=OneWay}"
+                                     Margin="0 0 0 -16"
+                                     ActionButtonPlacement="Inline">
+                <materialDesign:SnackbarMessage
+                    ActionContent="重启"
+                    ActionClick="SnackbarRestartMessage_OnActionClick"
+                    Content="切换档案需要重启应用程序。" />
+            </materialDesign:Snackbar>
+        </Grid>
+
     </Window.Resources>
-    <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
-                               DrawerClosing="DrawerHost_OnDrawerClosing"
-                               x:Name="MyDrawerHost">
-        <materialDesign:DialogHost Identifier="ProfileWindow">
+    <materialDesign:DialogHost Identifier="ProfileWindow">
+        <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
+                                   DrawerClosing="DrawerHost_OnDrawerClosing"
+                                   x:Name="MyDrawerHost">
             <!-- Content -->
             <Grid>
                 <Grid.RowDefinitions>
@@ -760,13 +893,17 @@
                             <Setter Property="Margin" Value="0 0 6 0"/>
                         </Style>
                     </WrapPanel.Resources>
-                    <Button ToolTip="管理所有保存的档案。">
+                    <Button ToolTip="管理所有保存的档案。" Click="ButtonProfileManage_OnClick"
+                            IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
                         <controls:IconText Kind="FileDocumentMultipleOutline" Text="管理档案"/>
                     </Button>
+                    <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
+                                       Margin="0 0 6 0"
+                                       ToolTip="当前加载的档案。"/>
                 </WrapPanel>
                 <!-- SnackBar -->
                 <materialDesign:Snackbar Grid.Row="0" Grid.RowSpan="2" MessageQueue="{Binding ViewModel.MessageQueue}"/>
             </Grid>
-        </materialDesign:DialogHost>
-    </materialDesign:DrawerHost>
+        </materialDesign:DrawerHost>
+    </materialDesign:DialogHost>
 </Window>

@@ -27,6 +27,7 @@ public class MainViewModel : ObservableRecipient
     private KeyValuePair<string, ClassPlan>? _temporaryClassPlan = null;
     private DateTime _temporaryClassPlanSetupTime = DateTime.Now;
     private bool _isForegroundMaxWindow = false;
+    private string _currentProfilePath = "Profile.json";
 
     public Profile Profile
     {
@@ -233,6 +234,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_temporaryClassPlanSetupTime)) return;
             _temporaryClassPlanSetupTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CurrentProfilePath
+    {
+        get => _currentProfilePath;
+        set
+        {
+            if (value == _currentProfilePath) return;
+            _currentProfilePath = value;
             OnPropertyChanged();
         }
     }

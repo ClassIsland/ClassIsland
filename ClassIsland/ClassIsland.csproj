@@ -50,6 +50,7 @@
     <Folder Include="ViewModels\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Enums\" />
+    <Folder Include="Validations\" />
   </ItemGroup>
 
   <ItemGroup>
