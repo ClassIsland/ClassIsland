@@ -67,6 +67,11 @@ public partial class MainWindow : Window
         Interval = TimeSpan.FromMilliseconds(25)
     };
 
+    private HelpsWindow HelpsWindow
+    {
+        get;
+    }
+
     public MainWindow()
     {
         UpdateTimer.Tick += UpdateTimerOnTick;
@@ -84,6 +89,7 @@ public partial class MainWindow : Window
             Settings = ViewModel.Settings
         };
         SettingsWindow.Closed += (o, args) => SaveSettings();
+        HelpsWindow = new HelpsWindow();
         InitializeComponent();
     }
 
@@ -674,5 +680,24 @@ public partial class MainWindow : Window
     {
         ViewModel.Settings.IsWelcomeWindowShowed = false;
         SaveSettings();
+    }
+
+    private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenHelpsWindow();
+    }
+
+    private void OpenHelpsWindow()
+    {
+        if (HelpsWindow.ViewModel.IsOpened)
+        {
+            HelpsWindow.WindowState = HelpsWindow.WindowState == WindowState.Minimized ? WindowState.Normal : HelpsWindow.WindowState;
+            HelpsWindow.Activate();
+        }
+        else
+        {
+            HelpsWindow.ViewModel.IsOpened = true;
+            HelpsWindow.ShowDialog();
+        }
     }
 }

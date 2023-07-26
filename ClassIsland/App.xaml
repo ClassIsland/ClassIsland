@@ -11,9 +11,87 @@
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <FontFamily x:Key="HarmonyOsSans" >/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
             <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
+
+            <Style x:Key="MarkdownImageStyle" TargetType="Image">
+                <Setter Property="Stretch" Value="Uniform"/>
+                <Setter Property="MaxWidth" Value="700"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+            </Style>
+
+            <Style x:Key="MarkdownHeadline1Style" TargetType="Paragraph">
+                <Setter Property="Margin" Value="0, 10, 0, 10"/>
+                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
+                <Setter Property="FontSize"    Value="36"/>
+                <Setter Property="FontWeight"  Value="UltraBold" />
+            </Style>
+
+            <Style x:Key="MarkdownHeadline2Style" TargetType="Paragraph">
+                <Setter Property="Margin" Value="0, 10, 0, 8"/>
+                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
+                <Setter Property="FontSize"    Value="28"/>
+                <Setter Property="FontWeight"  Value="Medium" />
+            </Style>
+
+            <Style x:Key="MarkdownHeadline3Style" TargetType="Paragraph">
+                <Setter Property="Margin" Value="0, 6, 0, 4"/>
+                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
+                <Setter Property="FontSize"    Value="18" />
+                <Setter Property="FontWeight"  Value="Light" />
+            </Style>
+
+            <Style x:Key="MarkdownHeadline4Style" TargetType="Paragraph">
+                <Setter Property="Margin" Value="0, 6, 0, 2"/>
+                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
+                <Setter Property="FontSize"    Value="16"/>
+                <Setter Property="FontWeight"  Value="Light" />
+            </Style>
+
+            <Style x:Key="MarkdownCodeBlockStyle" TargetType="Paragraph">
+                <Setter Property="FontFamily"      Value="Courier New"/>
+                <Setter Property="Foreground"      Value="DarkBlue"/>
+                <Setter Property="Background"      Value="#EEEEEE"/>
+                <Setter Property="BorderBrush"     Value="#DEDEDE"/>
+                <Setter Property="BorderThickness" Value="0,5,0,5"/>
+                <Setter Property="Margin"          Value="5,0,5,0"/>
+            </Style>
+
+            <Style x:Key="MarkdownNoteStyle" TargetType="Paragraph">
+                <Setter Property="Margin"      Value="5,0,5,0"/>
+                <Setter Property="Padding"     Value="10, 5"/>
+                <Setter Property="BorderBrush" Value="#DEDEDE"/>
+                <Setter Property="BorderThickness" Value="3,3,3,3"/>
+                <Setter Property="Background"  Value="#FAFAFA"/>
+            </Style>
+
+            <Style TargetType="Table" >
+                <Setter Property="CellSpacing" Value="0"/>
+                <Setter Property="BorderThickness" Value="0.5"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
+            </Style>
+
+            <Style TargetType="TableRowGroup">
+                <Style.Triggers>
+                    <Trigger Property="Tag" Value="TableHeader">
+                        <Setter Property="FontWeight" Value="DemiBold"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style TargetType="TableCell">
+                <Setter Property="BorderThickness" Value="0.5"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
+                <Setter Property="Padding" Value="8"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TableRow}}, Path=Tag}" Value="EvenTableRow">
+                        <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground
+}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

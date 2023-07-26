@@ -1,0 +1,67 @@
+﻿<Window x:Class="ClassIsland.Views.HelpsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
+        xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        Title="帮助"
+        d:DataContext="{d:DesignInstance local:HelpsWindow}"
+        Icon="/Assets/AppLogo.ico"
+        Height="600" Width="1200"
+        MinWidth="1040"
+        Closing="HelpsWindow_OnClosing"
+        >
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="256"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!-- 操作中心 -->
+        <ListBox Grid.Column="0" 
+                 ItemsSource="{Binding ViewModel.HelpDocuments, Mode=OneWay}"
+                 SelectedValue="{Binding ViewModel.SelectedDocumentName}"
+                 SelectedValuePath="Key"
+                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                 SelectionChanged="Selector_OnSelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Key}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- 文档 -->
+        <materialDesign:ColorZone Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ScrollViewer >
+                <FlowDocumentScrollViewer Grid.Column="1" Document="{Binding ViewModel.Document}"
+                                          FontFamily="{StaticResource HarmonyOsSans}"
+                                          FontWeight="Normal"
+                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                          HorizontalContentAlignment="Center"
+                                          PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+
+                </FlowDocumentScrollViewer>
+            </ScrollViewer></materialDesign:ColorZone >
+        <!--<materialDesign:ColorZone Grid.Column="1" Mode="Light" VerticalAlignment="Stretch">
+            <mdxaml:MarkdownScrollViewer Source="/Assets/Documents/HelloWorld.md"
+                                         FontFamily="{StaticResource HarmonyOsSans}"/>
+        </materialDesign:ColorZone>-->
+
+        <Button Grid.Column="0" 
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Content="Refresh"
+                Style="{StaticResource MaterialDesignFlatButton}"
+                Click="ButtonRefresh_OnClick"/>
+    </Grid>
+</Window>

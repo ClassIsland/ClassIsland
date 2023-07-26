@@ -399,7 +399,7 @@
         </Grid>
 
     </Window.Resources>
-    <materialDesign:DialogHost Identifier="ProfileWindow">
+    <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
         <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
                                    DrawerClosing="DrawerHost_OnDrawerClosing"
                                    x:Name="MyDrawerHost">

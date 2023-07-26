@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignThemes.Wpf;
 
@@ -127,4 +128,8 @@ public class ProfileSettingsViewModel : ObservableRecipient
         }
     }
 
+    public Guid DialogHostId
+    {
+        get;
+    } = Guid.NewGuid();
 }

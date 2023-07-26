@@ -168,7 +168,7 @@ public partial class ProfileSettingsWindow : Window
             return;
         }
 
-        var r = (bool?)await DialogHost.Show(FindResource("DeleteTimeLayoutConfirm"), dialogIdentifier: "ProfileWindow");
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteTimeLayoutConfirm"), dialogIdentifier: ViewModel.DialogHostId);
         if (r == true)
         {
             MainViewModel.Profile.TimeLayouts.Remove(((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Key);
@@ -183,7 +183,7 @@ public partial class ProfileSettingsWindow : Window
 
     private async void ButtonSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        var r = (bool?)await DialogHost.Show(FindResource("DeleteSubjectConfirm"),dialogIdentifier: "ProfileWindow");
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteSubjectConfirm"),dialogIdentifier: ViewModel.DialogHostId);
         if (r == true)
         {
             MainViewModel.Profile.Subjects.Remove(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Key);
@@ -218,7 +218,7 @@ public partial class ProfileSettingsWindow : Window
 
     private async void ButtonDeleteClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        var r = (bool?)await DialogHost.Show(FindResource("DeleteClassPlanConfirm"), dialogIdentifier: "ProfileWindow");
+        var r = (bool?)await DialogHost.Show(FindResource("DeleteClassPlanConfirm"), dialogIdentifier: ViewModel.DialogHostId);
         if (r == true)
         {
             MainViewModel.Profile.ClassPlans.Remove(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
@@ -353,7 +353,7 @@ public partial class ProfileSettingsWindow : Window
     private async void ButtonCreateProfile_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.CreateProfileName = "";
-        var r = await DialogHost.Show(FindResource("CreateProfileDialog"), "ProfileWindow");
+        var r = await DialogHost.Show(FindResource("CreateProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
 
         var path = $"./Profiles/{r}.json";
@@ -384,7 +384,7 @@ public partial class ProfileSettingsWindow : Window
     private async void MenuItemRenameProfile_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.RenameProfileName = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile);
-        var r = await DialogHost.Show(FindResource("RenameProfileDialog"), "ProfileWindow");
+        var r = await DialogHost.Show(FindResource("RenameProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
 
         var raw = $"./Profiles/{ViewModel.SelectedProfile}";
@@ -413,7 +413,7 @@ public partial class ProfileSettingsWindow : Window
             ViewModel.MessageQueue.Enqueue("无法删除已加载或将要加载的档案。");
             return;
         }
-        var r = await DialogHost.Show(FindResource("DeleteProfileDialog"), "ProfileWindow");
+        var r = await DialogHost.Show(FindResource("DeleteProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
 
         if ((bool?)r == true)
