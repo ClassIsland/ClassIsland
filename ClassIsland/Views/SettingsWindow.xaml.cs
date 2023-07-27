@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -101,5 +102,14 @@ public partial class SettingsWindow : Window
     private void ButtonCrash_OnClick(object sender, RoutedEventArgs e)
     {
         throw new Exception("Crash test.");
+    }
+
+    private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = "https://learn.microsoft.com/zh-cn/appcenter/sdk/data-collected",
+            UseShellExecute = true
+        });
     }
 }

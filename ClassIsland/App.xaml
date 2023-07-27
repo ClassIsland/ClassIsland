@@ -7,6 +7,7 @@
              xmlns:hc="https://handyorg.github.io/handycontrol"
              StartupUri="MainWindow.xaml"
              ShutdownMode="OnMainWindowClose"
+             Startup="App_OnStartup"
              DispatcherUnhandledException="App_OnDispatcherUnhandledException">
     <Application.Resources>
         <ResourceDictionary>

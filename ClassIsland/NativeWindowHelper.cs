@@ -2,7 +2,6 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using static HandyControl.Tools.Interop.InteropValues;
 using System.Windows.Forms;
 
 namespace ClassIsland;

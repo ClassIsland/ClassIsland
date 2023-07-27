@@ -26,7 +26,7 @@ public class Settings : ObservableRecipient
     private int _windowDockingOffsetY = 0;
     private int _windowDockingMonitorIndex = 0;
     private int _windowLayer = 0;
-    private bool _isMouseClickingEnabled = true;
+    private bool _isMouseClickingEnabled = false;
     private bool _hideOnFullscreen = true;
     private bool _isClassOffNotificationEnabled = true;
     private ObservableCollection<string> _excludedFullscreenWindow = new()
@@ -34,11 +34,12 @@ public class Settings : ObservableRecipient
         "explorer"
     };
 
-    private bool _hideOnMaxWindow = true;
+    private bool _hideOnMaxWindow = false;
     private double _opacity = 0.5;
     private bool _isDebugEnabled = false;
     private string _selectedProfile = "Default.json";
     private bool _isWelcomeWindowShowed = false;
+    private bool _isReportingEnabled = false;
 
     public string SelectedProfile
     {
@@ -205,6 +206,17 @@ public class Settings : ObservableRecipient
         }
     }
 
+    public bool IsReportingEnabled
+    {
+        get => _isReportingEnabled;
+        set
+        {
+            if (value == _isReportingEnabled) return;
+            _isReportingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
@@ -252,6 +264,7 @@ public class Settings : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
 
     #endregion
 

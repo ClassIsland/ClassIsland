@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.ViewModels;
 using MdXaml;
+using Microsoft.AppCenter.Analytics;
 
 namespace ClassIsland.Views;
 
@@ -61,6 +62,10 @@ public partial class HelpsWindow : Window
     {
         if (ViewModel.SelectedDocumentName != null)
         {
+            Analytics.TrackEvent("浏览帮助文档",
+            new Dictionary<string, string>{
+                {"Name", ViewModel.SelectedDocumentName}
+            });
             ScrollViewerDocument.ScrollToTop();
             ConvertMarkdown(ViewModel.HelpDocuments[ViewModel.SelectedDocumentName]);
         }

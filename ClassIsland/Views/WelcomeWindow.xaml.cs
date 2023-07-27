@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -74,5 +75,14 @@ public partial class WelcomeWindow : Window
 
         var mw = (MainWindow)Application.Current.MainWindow!;
         mw.OpenHelpsWindow();
+    }
+
+    private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = "https://learn.microsoft.com/zh-cn/appcenter/sdk/data-collected",
+            UseShellExecute = true
+        });
     }
 }

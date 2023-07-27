@@ -32,6 +32,7 @@
         </Style>
         <Style TargetType="ScrollViewer">
             <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="materialDesign:ScrollViewerAssist.IsAutoHideEnabled" Value="True"/>
         </Style>
         <converters:IntToStringConverter x:Key="IntToStringConverter" />
         <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
@@ -71,6 +72,11 @@
                                 <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
                                                        Description="在系统启动时自动运行本应用。"
                                                        IsOn="{Binding Settings.IsAutoStartEnabled, Mode=TwoWay}"/>
+                                <!-- 启用匿名信息收集 -->
+                                <controls:SettingsCard IconGlyph="MicrosoftAzureDevops"
+                                                       Header="启用匿名信息收集"
+                                                       IsOn="{Binding Settings.IsReportingEnabled, Mode=TwoWay}"
+                                                       Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
                                 <!-- 学期开始时间 -->
                                 <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
                                                        Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
@@ -143,7 +149,6 @@
                                 </materialDesign:Card>
                             </StackPanel>
                         </ScrollViewer>
-
                     </TabItem>
 
                     <!-- 外观 -->
@@ -317,6 +322,31 @@
                         </ScrollViewer>
                     </TabItem>
 
+                    <!-- 隐私 -->
+                    <TabItem Header="隐私">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Margin="0 0 0 8">
+                                    <TextBlock Text="匿名使用情况分析" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                               FontWeight="Light"
+                                               Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                               FontWeight="Light">
+                                        <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
+                                        </Run><Hyperlink Click="HyperlinkMsAppCenter_OnClick">
+                                            此处
+                                        </Hyperlink>。
+                                    </TextBlock>
+                                </StackPanel>
+                                <controls:SettingsCard IconGlyph="ReportLine"
+                                                       Header="启用匿名使用情况分析"
+                                                       IsOn="{Binding Settings.IsReportingEnabled, Mode=TwoWay}"
+                                                       Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
                     <!-- 关于 -->
                     <TabItem Header="关于">
                         <ScrollViewer>
@@ -444,7 +474,7 @@
                                             </ListView.ItemTemplate>
                                             <models:ContributionLabel Title="MaterialDesignInXamlToolkit" License="MIT License" Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/"/>
                                             <models:ContributionLabel Title="gong-wpf-dragdrop" License="BSD 3-Clause" Website="https://github.com/punker76/gong-wpf-dragdrop"/>
-                                            <models:ContributionLabel Title="HandyControls" License="MIT license" Website="https://github.com/ghost1372/HandyControls"/>
+                                            <models:ContributionLabel Title="wpf-notifyicon" License="The Code Project Open License (CPOL) 1.02" Website="https://github.com/hardcodet/wpf-notifyicon"/>
                                             <models:ContributionLabel Title="HarmonyOS Sans" License="-" Website="https://developer.harmonyos.com/cn/design/resource"/>
                                             <models:ContributionLabel Title="MVVM Toolkit" Website="https://github.com/CommunityToolkit/dotnet" License="MIT License"/>
                                             <models:ContributionLabel Title="WPF" License="MIT License" Website="https://github.com/dotnet/wpf"/>

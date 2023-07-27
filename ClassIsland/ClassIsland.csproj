@@ -11,6 +11,7 @@
     <AssemblyVersion>0.3</AssemblyVersion>
     <FileVersion>0.3</FileVersion>
 	  <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+	  <UserSecretsId>0702af86-626c-4e4a-94e4-f506e4e2beb7</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -84,12 +85,15 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
-    <PackageReference Include="HandyControls" Version="3.4.5" />
-    <PackageReference Include="HandyControls.Lang.zh-CN" Version="3.4.5" />
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
     <PackageReference Include="MdXaml" Version="1.21.0" />
     <PackageReference Include="MdXaml.AnimatedGif" Version="1.21.0" />
     <PackageReference Include="MdXaml.Html" Version="1.21.0" />
+    <PackageReference Include="Microsoft.AppCenter" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>

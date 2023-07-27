@@ -13,6 +13,7 @@
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{x:Null}"
         TextElement.FontWeight="Medium"
@@ -43,7 +44,6 @@
                 <MenuItem.Header>
                     <TextBlock>
                         <Run Text="ClassIsland"/>
-                        <Run Text="{x:Static local:App.AppVersion}"/>
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
@@ -304,7 +304,12 @@
     <Grid ContextMenu="{StaticResource AppContextMenu}" 
           ClipToBounds="True"
           IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}">
-        <hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>
+        <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
+        <tb:TaskbarIcon ContextMenu="{StaticResource AppContextMenu}"
+                        IconSource="/Assets/AppLogo.ico"
+                        MenuActivation="LeftOrRightClick"
+                        ToolTip="ClassIsland">
+        </tb:TaskbarIcon>
         <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}"/>
         
         <!-- Content -->

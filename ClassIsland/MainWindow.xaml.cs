@@ -28,9 +28,9 @@ using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
-using HandyControl.Controls;
-using HandyControl.Tools;
 using MaterialDesignThemes.Wpf;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
@@ -222,6 +222,7 @@ public partial class MainWindow : Window
             // 下课通知
             case TimeState.Breaking when ViewModel.CurrentOverlayStatus != TimeState.Breaking
                                          && ViewModel.Settings.IsClassOffNotificationEnabled:
+                Analytics.TrackEvent("提醒 · 下课");
                 ViewModel.IsOverlayOpened = true;
                 ViewModel.CurrentOverlayStatus = TimeState.Breaking;
                 ViewModel.CurrentMaskElement = FindResource("ClassOffNotification");
@@ -236,6 +237,7 @@ public partial class MainWindow : Window
             // 上课通知
             case TimeState.OnClass when ViewModel.CurrentOverlayStatus != TimeState.OnClass
                                         && ViewModel.Settings.IsClassChangingNotificationEnabled:
+                Analytics.TrackEvent("提醒 · 上课");
                 ViewModel.IsOverlayOpened = true;
                 ViewModel.CurrentOverlayStatus = TimeState.OnClass;
                 ViewModel.CurrentMaskElement = FindResource("ClassOnNotification");
@@ -255,6 +257,7 @@ public partial class MainWindow : Window
             // 准备上课通知
             case TimeState.PrepareOnClass when ViewModel.CurrentOverlayStatus != TimeState.PrepareOnClass 
                                                && ViewModel.Settings.IsClassPrepareNotificationEnabled:
+                Analytics.TrackEvent("提醒 · 准备上课");
                 ViewModel.IsOverlayOpened = true;
                 ViewModel.CurrentOverlayStatus = TimeState.PrepareOnClass;
                 ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
@@ -372,8 +375,14 @@ public partial class MainWindow : Window
         NativeWindowHelper.SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0, NativeWindowHelper.SWP_NOSIZE | NativeWindowHelper.SWP_NOMOVE | NativeWindowHelper.SWP_NOACTIVATE);
     }
 
-    private void UpdateTheme()
+    private async void UpdateTheme()
     {
+        var aState = await AppCenter.IsEnabledAsync();
+        if (aState != ViewModel.Settings.IsReportingEnabled)
+        {
+            await AppCenter.SetEnabledAsync(ViewModel.Settings.IsReportingEnabled);
+        }
+
         UpdateWindowPos();
         var hWnd = new WindowInteropHelper(this).Handle;
         var style = NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE);
@@ -520,6 +529,7 @@ public partial class MainWindow : Window
     {
         if (!SettingsWindow.IsOpened)
         {
+            Analytics.TrackEvent("打开设置窗口");
             SettingsWindow.IsOpened = true;
             SettingsWindow.Show();
         }
@@ -651,6 +661,7 @@ public partial class MainWindow : Window
     {
         if (!ProfileSettingsWindow.IsOpened)
         {
+            Analytics.TrackEvent("打开档案设置窗口");
             ProfileSettingsWindow.IsOpened = true;
             ProfileSettingsWindow.Show();
         }
@@ -689,6 +700,7 @@ public partial class MainWindow : Window
 
     public void OpenHelpsWindow()
     {
+        Analytics.TrackEvent("打开帮助窗口");
         if (HelpsWindow.ViewModel.IsOpened)
         {
             HelpsWindow.WindowState = HelpsWindow.WindowState == WindowState.Minimized ? WindowState.Normal : HelpsWindow.WindowState;
