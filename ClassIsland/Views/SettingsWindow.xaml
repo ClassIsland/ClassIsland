@@ -173,14 +173,14 @@
                                 <controls:SettingsCard IconGlyph="PaletteOutline" Header="第一主题色"
                                                        Description="应用主要显示的主题颜色。">
                                     <controls:SettingsCard.Switcher>
-                                        <controls:ColorPicker Color="{Binding Settings.PrimaryColor}" />
+                                        <controls:ColorPicker Color="{Binding Settings.PrimaryColor, Mode=TwoWay}"/>
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
                                 <!-- 第二主题色 -->
                                 <controls:SettingsCard IconGlyph="PaletteOutline" Header="第二主题色"
                                                        Description="应用次要显示的主题颜色。">
                                     <controls:SettingsCard.Switcher>
-                                        <controls:ColorPicker Color="{Binding Settings.SecondaryColor}" />
+                                        <controls:ColorPicker Color="{Binding Settings.SecondaryColor, Mode=TwoWay}"/>
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
                                 <!-- 背景透明度 -->

@@ -3,47 +3,60 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:gif="clr-namespace:WpfAnimatedGif;assembly=WpfAnimatedGif"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
              StartupUri="MainWindow.xaml"
              ShutdownMode="OnMainWindowClose"
              DispatcherUnhandledException="App_OnDispatcherUnhandledException">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <!--hc:Theme/>
+                <hc:ThemeResources/>-->
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
 
+            <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
+                <Setter Property="LineHeight" Value="25"/>
+            </Style>
+
+            <Style TargetType="Paragraph" BasedOn="{StaticResource MarkdownParagraphBaseStyle}"/>
+
             <Style x:Key="MarkdownImageStyle" TargetType="Image">
                 <Setter Property="Stretch" Value="Uniform"/>
                 <Setter Property="MaxWidth" Value="700"/>
+                <Setter Property="Margin" Value="0 0"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="gif:ImageBehavior.AutoStart" Value="True"/>
+                <Setter Property="gif:ImageBehavior.AnimationSpeedRatio" Value="1"/>
             </Style>
 
             <Style x:Key="MarkdownHeadline1Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 10, 0, 10"/>
+                <Setter Property="Margin" Value="0, 10, 0, 32"/>
                 <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="36"/>
-                <Setter Property="FontWeight"  Value="UltraBold" />
+                <Setter Property="FontSize"    Value="42"/>
+                <Setter Property="FontWeight"  Value="Bold" />
             </Style>
 
             <Style x:Key="MarkdownHeadline2Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 10, 0, 8"/>
+                <Setter Property="Margin" Value="0, 10, 0, 12"/>
                 <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="28"/>
+                <Setter Property="FontSize"    Value="32"/>
                 <Setter Property="FontWeight"  Value="Medium" />
             </Style>
 
             <Style x:Key="MarkdownHeadline3Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 6, 0, 4"/>
+                <Setter Property="Margin" Value="0, 6, 0, 6"/>
                 <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
                 <Setter Property="FontSize"    Value="18" />
                 <Setter Property="FontWeight"  Value="Light" />
             </Style>
 
             <Style x:Key="MarkdownHeadline4Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 6, 0, 2"/>
+                <Setter Property="Margin" Value="0, 6, 0, 4"/>
                 <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
                 <Setter Property="FontSize"    Value="16"/>
                 <Setter Property="FontWeight"  Value="Light" />

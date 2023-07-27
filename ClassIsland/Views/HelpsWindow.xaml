@@ -25,9 +25,14 @@
             <ColumnDefinition Width="256"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
 
         <!-- 操作中心 -->
-        <ListBox Grid.Column="0" 
+        <ListBox Grid.Column="0" Grid.Row="1" 
                  ItemsSource="{Binding ViewModel.HelpDocuments, Mode=OneWay}"
                  SelectedValue="{Binding ViewModel.SelectedDocumentName}"
                  SelectedValuePath="Key"
@@ -41,27 +46,38 @@
         </ListBox>
 
         <!-- 文档 -->
-        <materialDesign:ColorZone Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <ScrollViewer >
-                <FlowDocumentScrollViewer Grid.Column="1" Document="{Binding ViewModel.Document}"
-                                          FontFamily="{StaticResource HarmonyOsSans}"
-                                          FontWeight="Normal"
-                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                          HorizontalContentAlignment="Center"
-                                          PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+        <materialDesign:ColorZone Grid.Column="1" Grid.Row="1"
+                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ScrollViewer x:Name="ScrollViewerDocument" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+                <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.Document}"
+                                             FontFamily="{StaticResource HarmonyOsSans}"
+                                             FontWeight="Normal"
+                                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                             HorizontalContentAlignment="Center"
+                                             PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
 
-                </FlowDocumentScrollViewer>
-            </ScrollViewer></materialDesign:ColorZone >
+                </mdxaml:MarkdownScrollViewer>
+            </ScrollViewer>
+        </materialDesign:ColorZone >
         <!--<materialDesign:ColorZone Grid.Column="1" Mode="Light" VerticalAlignment="Stretch">
             <mdxaml:MarkdownScrollViewer Source="/Assets/Documents/HelloWorld.md"
                                          FontFamily="{StaticResource HarmonyOsSans}"/>
         </materialDesign:ColorZone>-->
 
-        <Button Grid.Column="0" 
+        <Button Grid.Column="0" Grid.Row="1"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Content="Refresh"
                 Style="{StaticResource MaterialDesignFlatButton}"
                 Click="ButtonRefresh_OnClick"/>
+
+        <!-- 标题栏 -->
+        <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" 
+                                  materialDesign:ElevationAssist.Elevation="Dp4"
+                                  Mode="PrimaryMid">
+            <TextBlock Text="帮助" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="16"/>
+        </materialDesign:ColorZone>
     </Grid>
 </Window>

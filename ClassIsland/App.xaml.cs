@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using ClassIsland.Views;
+using HandyControl.Themes;
 
 namespace ClassIsland;
 /// <summary>
@@ -15,6 +16,11 @@ namespace ClassIsland;
 public partial class App : Application
 {
     private CrashWindow? CrashWindow;
+
+    public App()
+    {
+        ThemeManager.Current.SystemThemeChanged += (sender, args) => args.Handled = true;
+    }
 
     public static string AppVersion
     {

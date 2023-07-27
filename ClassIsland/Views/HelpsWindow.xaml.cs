@@ -46,7 +46,7 @@ public partial class HelpsWindow : Window
         ViewModel.Document = new FlowDocument();
         ViewModel.HelpDocuments.Clear();
 
-        ViewModel.HelpDocuments.Add("测试", "/Assets/Documents/HelloWorld.md");
+        //ViewModel.HelpDocuments.Add("测试", "/Assets/Documents/HelloWorld.md");
         ViewModel.HelpDocuments.Add("欢迎", "/Assets/Documents/Welcome.md");
         ViewModel.HelpDocuments.Add("基本", "/Assets/Documents/Basic.md");
         ViewModel.HelpDocuments.Add("档案设置", "/Assets/Documents/ProfileSettingsPage.md");
@@ -61,6 +61,7 @@ public partial class HelpsWindow : Window
     {
         if (ViewModel.SelectedDocumentName != null)
         {
+            ScrollViewerDocument.ScrollToTop();
             ConvertMarkdown(ViewModel.HelpDocuments[ViewModel.SelectedDocumentName]);
         }
     }
