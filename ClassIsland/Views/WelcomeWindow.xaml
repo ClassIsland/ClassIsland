@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ClassIsland.Views"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:gif="clr-namespace:WpfAnimatedGif;assembly=WpfAnimatedGif"
         mc:Ignorable="d"
         Height="600" Width="480"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -213,7 +214,19 @@
                                 <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                                 <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
                                            FontWeight="Light"
-                                           Text="应用的基本设置已经完成，感谢您使用本应用。" />
+                                           Text="应用的基本设置已经完成，感谢您使用本应用。要访问应用的主菜单，请右键应用托盘图标。您可以点击下方按钮查看应用帮助，熟悉本应用。" />
+                                <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left" 
+                                        Click="ButtonViewHelp_OnClick"
+                                        Margin="0 6 0 0">
+                                    <controls:IconText Kind="HelpCircleOutline" Text="查看帮助文档"/>
+                                </Button>
+                                <Image Source="/Assets/MainMenuOpenDemo.gif" HorizontalAlignment="Center"
+                                       Height="180"
+                                       Stretch="Uniform"
+                                       Margin="0 8 0 0"
+                                       gif:ImageBehavior.AnimatedSource="/Assets/MainMenuOpenDemo.gif"
+                                       gif:ImageBehavior.RepeatBehavior="Forever"
+                                       gif:ImageBehavior.AnimationSpeedRatio="2"/>
                             </StackPanel>
                         </ScrollViewer>
                         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">

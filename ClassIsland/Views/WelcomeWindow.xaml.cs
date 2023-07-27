@@ -65,4 +65,14 @@ public partial class WelcomeWindow : Window
             Close();
         }
     }
+
+    private void ButtonViewHelp_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsExitConfirmed = true;
+        DialogResult = true;
+        Close();
+
+        var mw = (MainWindow)Application.Current.MainWindow!;
+        mw.OpenHelpsWindow();
+    }
 }

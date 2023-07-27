@@ -19,7 +19,17 @@ public partial class App : Application
 
     public App()
     {
-        ThemeManager.Current.SystemThemeChanged += (sender, args) => args.Handled = true;
+        ThemeManager.Current.SystemThemeChanged += (sender, args) =>
+        {
+            try
+            {
+                args.Handled = true;
+            }
+            catch
+            {
+                // ignored
+            }
+        };
     }
 
     public static string AppVersion

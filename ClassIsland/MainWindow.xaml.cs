@@ -687,7 +687,7 @@ public partial class MainWindow : Window
         OpenHelpsWindow();
     }
 
-    private void OpenHelpsWindow()
+    public void OpenHelpsWindow()
     {
         if (HelpsWindow.ViewModel.IsOpened)
         {
