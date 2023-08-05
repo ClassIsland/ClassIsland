@@ -4,5 +4,6 @@ public enum UpdateWorkingStatus
 {
     Idle,
     CheckingUpdates,
-    DownloadingUpdates
+    DownloadingUpdates,
+    NetworkError
 }

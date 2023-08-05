@@ -10,15 +10,22 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Threading;
 using ClassIsland.Enums;
 using ClassIsland.Models;
+using Downloader;
 using Microsoft.Extensions.Hosting;
+using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 
 namespace ClassIsland;
 
 public class UpdateService : BackgroundService, INotifyPropertyChanged
 {
     private UpdateWorkingStatus _currentWorkingStatus = UpdateWorkingStatus.Idle;
+    private long _downloadedSize = 0;
+    private long _totalSize = 0;
+    private double _downloadSpeed = 0;
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
@@ -40,6 +47,23 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
         SettingsService = settingsService;
     }
 
+    public long DownloadedSize
+    {
+        get => _downloadedSize;
+        set => SetField(ref _downloadedSize, value);
+    }
+
+    public long TotalSize
+    {
+        get => _totalSize;
+        set => SetField(ref _totalSize, value);
+    }
+
+    public double DownloadSpeed
+    {
+        get => _downloadSpeed;
+        set => SetField(ref _downloadSpeed, value);
+    }
 
     public static async Task<List<AppCenterReleaseInfoMin>> GetUpdateVersionsAsync(string queryRoot)
     {
@@ -87,7 +111,40 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
-        
+        try
+        {
+            TotalSize = 0;
+            DownloadedSize = 0;
+            DownloadSpeed = 0;
+            CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
+
+            var downloader = DownloadBuilder.New()
+                .WithUrl(Settings.LastCheckUpdateInfoCache.DownloadUrl)
+                .Configure((c) =>
+                {
+                    c.ParallelCount = 32;
+                    c.ParallelDownload = true;
+                })
+                .WithDirectory(@".\UpdateTemp")
+                .Build();
+            downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
+            await downloader.StartAsync();
+            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+            Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
+            
+        }
+        catch
+        {
+            CurrentWorkingStatus = UpdateWorkingStatus.NetworkError;
+        }
+
+    }
+
+    private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
+    {
+        TotalSize = e.TotalBytesToReceive;
+        DownloadedSize = e.ReceivedBytesSize;
+        DownloadSpeed = e.BytesPerSecondSpeed;
     }
 
     public async Task ExtractUpdateAsync()

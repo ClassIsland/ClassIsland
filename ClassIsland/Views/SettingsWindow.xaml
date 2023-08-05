@@ -400,6 +400,7 @@
                                             <!-- 更新状态图标 -->
                                             <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
                                                                      Width="48" Height="48"
+                                                                     Margin="0 0 8 0"
                                                                      Kind="Update"/>
 
                                             <!-- 更新状态说明 -->
@@ -478,9 +479,18 @@
                                                                              Value="CheckingUpdates">
                                                                     <Setter Property="Text" Value="正在检查更新……"/>
                                                                 </DataTrigger>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="NetworkError">
+                                                                    <Setter Property="Text" Value="网络错误。请检查网络连接，然后再试一遍。"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="DownloadingUpdates">
+                                                                    <Setter Property="Text" Value="正在下载更新……"/>
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </TextBlock.Style>
+
                                                 </TextBlock>
 
                                                 <ProgressBar>
@@ -491,6 +501,12 @@
                                                                              Value="CheckingUpdates">
                                                                     <Setter Property="IsIndeterminate" Value="True"/>
                                                                 </DataTrigger>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="DownloadingUpdates">
+                                                                    <Setter Property="IsIndeterminate" Value="False"/>
+                                                                    <Setter Property="Value" Value="{Binding UpdateService.DownloadedSize, Mode=OneWay}"/>
+                                                                    <Setter Property="Maximum" Value="{Binding UpdateService.TotalSize, Mode=OneWay}"/>
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </ProgressBar.Style>
@@ -500,28 +516,107 @@
                                             <!-- 更新操作栏 -->
                                             <WrapPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
                                                        Visibility="Visible">
+                                                <WrapPanel.Style>
+                                                    <Style TargetType="WrapPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                         Value="CheckingUpdates">
+                                                                <Setter Property="IsEnabled" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </WrapPanel.Style>
                                                 <!-- 检查更新 -->
                                                 <Button Margin="0 0 6 0" Click="ButtonCheckUpdate_OnClick">
-                                                    <controls:IconText Kind="Refresh" Text="检查更新" />
-                                                </Button>
-                                                <!-- 检查更新 paper  -->
-                                                <Button Margin="0 0 6 0"
-                                                        Style="{StaticResource MaterialDesignPaperButton}">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                             Value="UpToDate">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </Button.Style>
                                                     <controls:IconText Kind="Refresh" Text="检查更新" />
                                                 </Button>
                                                 <!-- 下载更新  -->
-                                                <Button Margin="0 0 6 0">
+                                                <Button Margin="0 0 6 0" Click="ButtonStartDownloading_OnClick">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                             Value="UpdateAvailable">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="DownloadingUpdates">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </Button.Style>
                                                     <controls:IconText Kind="Download" Text="下载更新" />
+                                                </Button>
+                                                <!-- 检查更新 paper  -->
+                                                <Button Margin="0 0 6 0"
+                                                        Click="ButtonCheckUpdate_OnClick">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                             Value="UpdateAvailable">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="DownloadingUpdates">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </Button.Style>
+                                                    <controls:IconText Kind="Refresh" Text="检查更新" />
                                                 </Button>
                                                 <!-- 重启并安装更新  -->
                                                 <Button Margin="0 0 6 0">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                             Value="UpdateDownloaded">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </Button.Style>
                                                     <controls:IconText Kind="MonitorDownload" Text="重启并安装更新" />
                                                 </Button>
                                                 <!-- 取消更新  -->
-                                                <Button Margin="0 0 6 0"
-                                                        Style="{StaticResource MaterialDesignPaperButton}">
+                                                <Button Margin="0 0 6 0">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="DownloadingUpdates">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                             Value="UpdateDownloaded">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </Button.Style>
                                                     <controls:IconText Kind="Cancel" Text="取消更新" />
                                                 </Button>
+                                                <!-- debug -->
+                                                <Button Content="（debug）重置更新状态" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugResetUpdate_OnClick"/>
+                                                <Button Content="（debug）下载完成" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugDownloaded_OnClick"/>
                                             </WrapPanel>
 
                                             <!-- 加载中 -->
@@ -535,14 +630,40 @@
                                             <!-- 重启更新 -->
                                             <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                                                       Margin="0 8 0 0"
-                                                      Content="在下次启动应用时自动安装更新。" />
+                                                      Content="在下次启动应用时自动安装更新。" >
+                                                <CheckBox.Style>
+                                                    <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                         Value="UpdateDownloaded">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </Style>
+                                                </CheckBox.Style>
+                                            </CheckBox>
 
                                             <!-- 更新日志 -->
                                             <Expander Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
                                                       Margin="0 12 0 0"
                                                       Background="Transparent"
                                                       Header="更新日志">
-
+                                                <Expander.Style>
+                                                    <Style TargetType="Expander" BasedOn="{StaticResource MaterialDesignExpander}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                         Value="UpdateAvailable">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                         Value="UpdateDownloaded">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </Style>
+                                                </Expander.Style>
                                             </Expander>
 
                                         </Grid>

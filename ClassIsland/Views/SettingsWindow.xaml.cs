@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
@@ -128,5 +129,20 @@ public partial class SettingsWindow : Window
     {
         Settings.SelectedChannel = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta";
         await UpdateService.CheckUpdateAsync();
+    }
+
+    private void ButtonDebugResetUpdate_OnClick(object sender, RoutedEventArgs e)
+    {
+        Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+    }
+
+    private void ButtonDebugDownloaded_OnClick(object sender, RoutedEventArgs e)
+    {
+        Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
+    }
+
+    private async void ButtonStartDownloading_OnClick(object sender, RoutedEventArgs e)
+    {
+        await UpdateService.DownloadUpdateAsync();
     }
 }
