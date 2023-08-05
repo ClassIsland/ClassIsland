@@ -68,6 +68,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Content="Refresh"
+                Visibility="Collapsed"
                 Style="{StaticResource MaterialDesignFlatButton}"
                 Click="ButtonRefresh_OnClick"/>
 

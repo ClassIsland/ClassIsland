@@ -50,458 +50,748 @@
             <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定" 
                     HorizontalAlignment="Right" Margin="0 8 0 0"
                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
-                
+
             </Button>
+        </Grid>
+
+        <!-- Drawers -->
+        <Grid Margin="16" Width="300" x:Key="AdvancedUpdateSettings" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="更新高级设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                <materialDesign:Snackbar Margin="0 12 0 0"
+                                         Message="警告！随意修改这些设置可能会损坏应用的更新功能或使应用无法正常工作，在修改时请务必谨慎！" />
+            </StackPanel>
+
+            <TabControl Grid.Row="1">
+                <TabItem Header="基本">
+
+                </TabItem>
+                <TabItem Header="更新源">
+
+                </TabItem>
+            </TabControl>
         </Grid>
     </Window.Resources>
 
     <materialDesign:DialogHost Identifier="SettingsWindow">
-        <Grid>
+        <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
+                                   DrawerClosing="MyDrawerHost_OnDrawerClosing"
+                                   x:Name="MyDrawerHost">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Text="设置" Style="{StaticResource MaterialDesignHeadline4TextBlock}" Margin="12"/>
-                <TabControl Grid.Row="1" TabStripPlacement="Left" x:Name="RootTabControl">
-                    <!-- 基本 -->
-                    <TabItem Header="基本">
-                        <ScrollViewer>
-                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                <!-- 开机自启 -->
-                                <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
-                                                       Description="在系统启动时自动运行本应用。"
-                                                       IsOn="{Binding Settings.IsAutoStartEnabled, Mode=TwoWay}"/>
-                                <!-- 启用匿名信息收集 -->
-                                <controls:SettingsCard IconGlyph="MicrosoftAzureDevops"
-                                                       Header="启用匿名信息收集"
-                                                       IsOn="{Binding Settings.IsReportingEnabled, Mode=TwoWay}"
-                                                       Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
-                                <!-- 学期开始时间 -->
-                                <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
-                                                       Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
-                                    <controls:SettingsCard.Switcher>
-                                        <DatePicker SelectedDate="{Binding Settings.SingleWeekStartTime}" Width="120" 
-                                                    Foreground="{DynamicResource MaterialDesignBody}"/>
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
-                                <!-- 显示日期 -->
-                                <controls:SettingsCard IconGlyph="DateRange"
-                                                       Header="显示日期" Description="在界面上显示当前日期。"  
-                                                       IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
-                                <!-- 提醒 -->
-                                <materialDesign:Card Margin="0 0 0 6">
-                                    <Expander Background="Transparent" IsExpanded="True">
-                                        <Expander.Header>
-                                            <controls:SettingsControl IconGlyph="Alarm" 
-                                                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Header="提醒" HasSwitcher="False"
-                                                                      Description="在下方选定的时间点时发出醒目提醒。"
-                                                                      Margin="-12 0"/>
-                                        </Expander.Header>
-                                        <StackPanel Margin="32 0 64 12">
-                                            <StackPanel.Resources>
-                                                <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                                    <Setter Property="Margin" Value="0 3"/>
-                                                </Style>
-                                            </StackPanel.Resources>
-                                            <CheckBox Content="课前准备时" IsChecked="{Binding Settings.IsClassChangingNotificationEnabled}"/>
-                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.IsClassPrepareNotificationEnabled}"/>
-                                            <CheckBox Content="下课时" IsChecked="{Binding Settings.IsClassOffNotificationEnabled}"/>
-                                            <Separator Margin="0 8"/>
-                                            <!-- 课前提醒时间 -->
-                                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="课前提醒时间"
-                                                                   Description="在上课前指定时间进行上课提醒。"
-                                                                   IsCompact="True">
-                                                <controls:SettingsControl.Switcher>
-                                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
-                                                                              Text="{Binding Settings.ClassPrepareNotifySeconds, Converter={StaticResource IntToStringConverter}}"
-                                                                              Width="120"
-                                                                              Foreground="{DynamicResource MaterialDesignBody}"
-                                                                              Style="{StaticResource MaterialDesignTextBoxBase}"
-                                                                              materialDesign:TextFieldAssist.SuffixText="秒" />
-                                                </controls:SettingsControl.Switcher>
-                                            </controls:SettingsControl>
-                                        </StackPanel>
-                                    </Expander>
-                                </materialDesign:Card>
-                                <!-- 隐藏窗口 -->
-                                <materialDesign:Card Margin="0 0 0 6">
-                                    <Expander Background="Transparent" IsExpanded="True">
-                                        <Expander.Header>
-                                            <controls:SettingsControl IconGlyph="HideOutline" 
-                                                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Header="隐藏窗口" HasSwitcher="False"
-                                                                      Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
-                                                                      Margin="-12 0"/>
-                                        </Expander.Header>
-                                        <StackPanel Margin="32 0 64 12">
-                                            <StackPanel.Resources>
-                                                <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                                    <Setter Property="Margin" Value="0 3"/>
-                                                </Style>
-                                            </StackPanel.Resources>
-                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}"/>
-                                            <CheckBox Content="前台是最大化窗口时" IsChecked="{Binding Settings.HideOnMaxWindow}"/>
-                                            <CheckBox Content="前台是全屏窗口时" IsChecked="{Binding Settings.HideOnFullscreen}"/>
-                                        </StackPanel>
-                                    </Expander>
-                                </materialDesign:Card>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
-
-                    <!-- 外观 -->
-                    <TabItem Header="外观">
-                        <ScrollViewer>
-                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                <!-- 应用主题 -->
-                                <controls:SettingsCard IconGlyph="ThemeLightDark" Header="应用主题"
-                                                       Description="控制应用的明暗主题。">
-                                    <controls:SettingsCard.Switcher>
-                                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                  SelectedIndex="{Binding Settings.Theme}"
-                                                  HorizontalContentAlignment="Left">
-                                            <ComboBoxItem HorizontalContentAlignment="Left">
-                                                <controls:IconText Kind="ThemeLightDark" Text="跟随系统" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem HorizontalContentAlignment="Left">
-                                                <controls:IconText Kind="WhiteBalanceSunny" Text="明亮" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem HorizontalContentAlignment="Left">
-                                                <controls:IconText Kind="WeatherNight" Text="黑暗" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
-                                <!-- 第一主题色 -->
-                                <controls:SettingsCard IconGlyph="PaletteOutline" Header="第一主题色"
-                                                       Description="应用主要显示的主题颜色。">
-                                    <controls:SettingsCard.Switcher>
-                                        <controls:ColorPicker Color="{Binding Settings.PrimaryColor, Mode=TwoWay}"/>
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
-                                <!-- 第二主题色 -->
-                                <controls:SettingsCard IconGlyph="PaletteOutline" Header="第二主题色"
-                                                       Description="应用次要显示的主题颜色。">
-                                    <controls:SettingsCard.Switcher>
-                                        <controls:ColorPicker Color="{Binding Settings.SecondaryColor, Mode=TwoWay}"/>
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
-                                <!-- 背景透明度 -->
-                                <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
-                                                       Description="课表背景颜色的不透明度。">
-                                    <controls:SettingsCard.Switcher>
-                                        <Slider Width="180" Minimum="0" Maximum="1" 
-                                                Value="{Binding Settings.Opacity}"
-                                                AutoToolTipPlacement="BottomRight"
-                                                AutoToolTipPrecision="2"/>
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
-                    
-                    <!-- 窗口 -->
-                    <TabItem Header="窗口">
-                        <ScrollViewer>
-                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                <!-- 窗口停靠位置 -->
-                                <controls:IconText Kind="Monitor" Text="窗口停靠位置"/>
-                                <Grid Margin="0 12 0 0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <StackPanel Grid.Column="0" Margin="0 0 8 0">
-                                        <materialDesign:ColorZone BorderBrush="{DynamicResource MaterialDesignBody}"
-                                                                  BorderThickness="8" CornerRadius="4"
-                                                                  VerticalAlignment="Center"
-                                                                  Height="220">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid Grid.Row="0" Margin="8">
-                                                    <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}"/>
-                                                    <RadioButton VerticalAlignment="Top" HorizontalAlignment="Center" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}"/>
-                                                    <RadioButton VerticalAlignment="Top" HorizontalAlignment="Right" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}"/>
-
-                                                    <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Left" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}"/>
-                                                    <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Center" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}"/>
-                                                    <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Right" IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}"/>
-                                                </Grid>
-                                                <materialDesign:ColorZone Mode="Dark" Grid.Row="1" Height="16"
-                                                                          Background="#99000000" BorderThickness="0">
-                                                    <Grid>
-                                                        <materialDesign:PackIcon Kind="MicrosoftWindows" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="3"/>
-                                                        <TextBlock Text="{Binding MainViewModel.Today, StringFormat={}{0:HH:mm}}" FontSize="8" FontWeight="Light" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3"></TextBlock>
-                                                    </Grid>
-                                                </materialDesign:ColorZone>
-                                            </Grid>
-                                        </materialDesign:ColorZone>
-                                    </StackPanel>
-                                    
-                                    <StackPanel Grid.Column="1" HorizontalAlignment="Stretch"
-                                                Margin="8 0 0 0">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <!-- 向右偏移 -->
-                                            <controls:NumbericTextBox Grid.Column="0"
-                                                                      Style="{StaticResource MaterialDesignOutlinedTextBox}" 
-                                                                      Padding="6" Margin="0 0 4 0"
-                                                                      materialDesign:HintAssist.Hint="向右偏移" 
-                                                                      Text="{Binding Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}"/>
-                                            <!-- 向下偏移 -->
-                                            <controls:NumbericTextBox Grid.Column="1"
-                                                                      Style="{StaticResource MaterialDesignOutlinedTextBox}" 
-                                                                      Padding="6" Margin="4 0 0 0"
-                                                                      materialDesign:HintAssist.Hint="向下偏移" 
-                                                                      Text="{Binding Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}"/>
-                                        </Grid>
-                                        <!-- 显示器 -->
-                                        <ComboBox Margin="0 12 0 0" Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                                  materialDesign:HintAssist.Hint="显示器"
-                                                  SelectedIndex="{Binding Settings.WindowDockingMonitorIndex}"
-                                                  ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <materialDesign:PackIcon Kind="Monitor" VerticalAlignment="Center"/>
-                                                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                                                            <Run Text="{Binding DeviceName, Mode=OneWay}"/>
-                                                            <Run Text="(">
-                                                            </Run><Run Text="{Binding Bounds.Width, Mode=OneWay}">
-                                                            </Run><Run Text="x">
-                                                            </Run><Run Text="{Binding Bounds.Height, Mode=OneWay}">
-                                                            </Run><Run Text=")"/>
-                                                        </TextBlock>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
-
-                                        <Button Margin="0 8 0 0" Style="{StaticResource MaterialDesignFlatButton}"
-                                                HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
-                                            <controls:IconText Kind="Refresh" Text="刷新显示器列表"/>
-                                        </Button>
-
-                                        <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
-                                                   Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。"/>
-                                        <!--<TextBlock Text="{Binding Settings.WindowDockingLocation, Mode=OneWay}"/>-->
-                                    </StackPanel>
-                                </Grid>
-                                <Separator Margin="0 16"/>
-
-                                <!-- 窗口层级 -->
-                                <controls:SettingsCard IconGlyph="LayersOutline" Header="窗口层级"
-                                                       Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
-                                    <controls:SettingsCard.Switcher>
-                                        <ComboBox SelectedIndex="{Binding Settings.WindowLayer, Mode=TwoWay}" Foreground="{DynamicResource MaterialDesignBody}">
-                                            <ComboBoxItem>
-                                                <controls:IconText Kind="LayersMinus" Text="置底"/>
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <controls:IconText Kind="LayersPlus" Text="置顶"/>
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
-
-                                <!-- 指针穿透 -->
-                                <controls:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
-                                                       Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
-                                                       IsOn="{Binding Settings.IsMouseClickingEnabled, Mode=TwoWay}"/>
-
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
-
-                    <!-- 隐私 -->
-                    <TabItem Header="隐私">
-                        <ScrollViewer>
-                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                <StackPanel Margin="0 0 0 8">
-                                    <TextBlock Text="匿名使用情况分析" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                               FontWeight="Light"
-                                               Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
-                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                               FontWeight="Light">
-                                        <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
-                                        </Run><Hyperlink Click="HyperlinkMsAppCenter_OnClick">
-                                            此处
-                                        </Hyperlink>。
-                                    </TextBlock>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="设置" Style="{StaticResource MaterialDesignHeadline4TextBlock}"
+                               Margin="12" />
+                    <TabControl Grid.Row="1" TabStripPlacement="Left" x:Name="RootTabControl">
+                        <!-- 基本 -->
+                        <TabItem Header="基本">
+                            <ScrollViewer>
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                    <!-- 开机自启 -->
+                                    <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
+                                                           Description="在系统启动时自动运行本应用。"
+                                                           IsOn="{Binding Settings.IsAutoStartEnabled, Mode=TwoWay}" />
+                                    <!-- 学期开始时间 -->
+                                    <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
+                                                           Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
+                                        <controls:SettingsCard.Switcher>
+                                            <DatePicker SelectedDate="{Binding Settings.SingleWeekStartTime}"
+                                                        Width="120"
+                                                        Foreground="{DynamicResource MaterialDesignBody}" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <!-- 显示日期 -->
+                                    <controls:SettingsCard IconGlyph="DateRange"
+                                                           Header="显示日期" Description="在界面上显示当前日期。"
+                                                           IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
+                                    <!-- 提醒 -->
+                                    <materialDesign:Card Margin="0 0 0 6">
+                                        <Expander Background="Transparent" IsExpanded="True">
+                                            <Expander.Header>
+                                                <controls:SettingsControl IconGlyph="Alarm"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Header="提醒" HasSwitcher="False"
+                                                                          Description="在下方选定的时间点时发出醒目提醒。"
+                                                                          Margin="-12 0" />
+                                            </Expander.Header>
+                                            <StackPanel Margin="32 0 64 12">
+                                                <StackPanel.Resources>
+                                                    <Style TargetType="CheckBox"
+                                                           BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                        <Setter Property="Margin" Value="0 3" />
+                                                    </Style>
+                                                </StackPanel.Resources>
+                                                <CheckBox Content="课前准备时"
+                                                          IsChecked="{Binding Settings.IsClassChangingNotificationEnabled}" />
+                                                <CheckBox Content="上课时"
+                                                          IsChecked="{Binding Settings.IsClassPrepareNotificationEnabled}" />
+                                                <CheckBox Content="下课时"
+                                                          IsChecked="{Binding Settings.IsClassOffNotificationEnabled}" />
+                                                <Separator Margin="0 8" />
+                                                <!-- 课前提醒时间 -->
+                                                <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="课前提醒时间"
+                                                                          Description="在上课前指定时间进行上课提醒。"
+                                                                          IsCompact="True">
+                                                    <controls:SettingsControl.Switcher>
+                                                        <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                                            Text="{Binding Settings.ClassPrepareNotifySeconds, Converter={StaticResource IntToStringConverter}}"
+                                                            Width="120"
+                                                            Foreground="{DynamicResource MaterialDesignBody}"
+                                                            Style="{StaticResource MaterialDesignTextBoxBase}"
+                                                            materialDesign:TextFieldAssist.SuffixText="秒" />
+                                                    </controls:SettingsControl.Switcher>
+                                                </controls:SettingsControl>
+                                            </StackPanel>
+                                        </Expander>
+                                    </materialDesign:Card>
+                                    <!-- 隐藏窗口 -->
+                                    <materialDesign:Card Margin="0 0 0 6">
+                                        <Expander Background="Transparent" IsExpanded="True">
+                                            <Expander.Header>
+                                                <controls:SettingsControl IconGlyph="HideOutline"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Header="隐藏窗口" HasSwitcher="False"
+                                                                          Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
+                                                                          Margin="-12 0" />
+                                            </Expander.Header>
+                                            <StackPanel Margin="32 0 64 12">
+                                                <StackPanel.Resources>
+                                                    <Style TargetType="CheckBox"
+                                                           BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                        <Setter Property="Margin" Value="0 3" />
+                                                    </Style>
+                                                </StackPanel.Resources>
+                                                <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}" />
+                                                <CheckBox Content="前台是最大化窗口时"
+                                                          IsChecked="{Binding Settings.HideOnMaxWindow}" />
+                                                <CheckBox Content="前台是全屏窗口时"
+                                                          IsChecked="{Binding Settings.HideOnFullscreen}" />
+                                            </StackPanel>
+                                        </Expander>
+                                    </materialDesign:Card>
                                 </StackPanel>
-                                <controls:SettingsCard IconGlyph="ReportLine"
-                                                       Header="启用匿名使用情况分析"
-                                                       IsOn="{Binding Settings.IsReportingEnabled, Mode=TwoWay}"
-                                                       Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
+                            </ScrollViewer>
+                        </TabItem>
 
-                    <!-- 关于 -->
-                    <TabItem Header="关于">
-                        <ScrollViewer>
-                            <StackPanel Margin="6" MaxWidth="750">
-                                <materialDesign:Card>
-                                    <StackPanel>
-                                        <!-- banner -->
-                                        <!--<Grid Height="100">
+                        <!-- 外观 -->
+                        <TabItem Header="外观">
+                            <ScrollViewer>
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                    <!-- 应用主题 -->
+                                    <controls:SettingsCard IconGlyph="ThemeLightDark" Header="应用主题"
+                                                           Description="控制应用的明暗主题。">
+                                        <controls:SettingsCard.Switcher>
+                                            <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                      SelectedIndex="{Binding Settings.Theme}"
+                                                      HorizontalContentAlignment="Left">
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <controls:IconText Kind="ThemeLightDark" Text="跟随系统" />
+                                                </ComboBoxItem>
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <controls:IconText Kind="WhiteBalanceSunny" Text="明亮" />
+                                                </ComboBoxItem>
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <controls:IconText Kind="WeatherNight" Text="黑暗" />
+                                                </ComboBoxItem>
+                                            </ComboBox>
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <!-- 第一主题色 -->
+                                    <controls:SettingsCard IconGlyph="PaletteOutline" Header="第一主题色"
+                                                           Description="应用主要显示的主题颜色。">
+                                        <controls:SettingsCard.Switcher>
+                                            <controls:ColorPicker Color="{Binding Settings.PrimaryColor, Mode=TwoWay}" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <!-- 第二主题色 -->
+                                    <controls:SettingsCard IconGlyph="PaletteOutline" Header="第二主题色"
+                                                           Description="应用次要显示的主题颜色。">
+                                        <controls:SettingsCard.Switcher>
+                                            <controls:ColorPicker
+                                                Color="{Binding Settings.SecondaryColor, Mode=TwoWay}" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <!-- 背景透明度 -->
+                                    <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
+                                                           Description="课表背景颜色的不透明度。">
+                                        <controls:SettingsCard.Switcher>
+                                            <Slider Width="180" Minimum="0" Maximum="1"
+                                                    Value="{Binding Settings.Opacity}"
+                                                    AutoToolTipPlacement="BottomRight"
+                                                    AutoToolTipPrecision="2" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- 窗口 -->
+                        <TabItem Header="窗口">
+                            <ScrollViewer>
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                    <!-- 窗口停靠位置 -->
+                                    <controls:IconText Kind="Monitor" Text="窗口停靠位置" />
+                                    <Grid Margin="0 12 0 0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+
+                                        <StackPanel Grid.Column="0" Margin="0 0 8 0">
+                                            <materialDesign:ColorZone
+                                                BorderBrush="{DynamicResource MaterialDesignBody}"
+                                                BorderThickness="8" CornerRadius="4"
+                                                VerticalAlignment="Center"
+                                                Height="220">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
+                                                    <Grid Grid.Row="0" Margin="8">
+                                                        <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left"
+                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}" />
+                                                        <RadioButton VerticalAlignment="Top"
+                                                                     HorizontalAlignment="Center"
+                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}" />
+                                                        <RadioButton VerticalAlignment="Top"
+                                                                     HorizontalAlignment="Right"
+                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}" />
+
+                                                        <RadioButton VerticalAlignment="Bottom"
+                                                                     HorizontalAlignment="Left"
+                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}" />
+                                                        <RadioButton VerticalAlignment="Bottom"
+                                                                     HorizontalAlignment="Center"
+                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}" />
+                                                        <RadioButton VerticalAlignment="Bottom"
+                                                                     HorizontalAlignment="Right"
+                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}" />
+                                                    </Grid>
+                                                    <materialDesign:ColorZone Mode="Dark" Grid.Row="1" Height="16"
+                                                                              Background="#99000000"
+                                                                              BorderThickness="0">
+                                                        <Grid>
+                                                            <materialDesign:PackIcon Kind="MicrosoftWindows"
+                                                                Height="10" Width="10" VerticalAlignment="Center"
+                                                                HorizontalAlignment="Left" Margin="3" />
+                                                            <TextBlock
+                                                                Text="{Binding MainViewModel.Today, StringFormat={}{0:HH:mm}}"
+                                                                FontSize="8" FontWeight="Light"
+                                                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                                Margin="3" />
+                                                        </Grid>
+                                                    </materialDesign:ColorZone>
+                                                </Grid>
+                                            </materialDesign:ColorZone>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1" HorizontalAlignment="Stretch"
+                                                    Margin="8 0 0 0">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <!-- 向右偏移 -->
+                                                <controls:NumbericTextBox Grid.Column="0"
+                                                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                                          Padding="6" Margin="0 0 4 0"
+                                                                          materialDesign:HintAssist.Hint="向右偏移"
+                                                                          Text="{Binding Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}" />
+                                                <!-- 向下偏移 -->
+                                                <controls:NumbericTextBox Grid.Column="1"
+                                                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                                          Padding="6" Margin="4 0 0 0"
+                                                                          materialDesign:HintAssist.Hint="向下偏移"
+                                                                          Text="{Binding Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}" />
+                                            </Grid>
+                                            <!-- 显示器 -->
+                                            <ComboBox Margin="0 12 0 0"
+                                                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                                      materialDesign:HintAssist.Hint="显示器"
+                                                      SelectedIndex="{Binding Settings.WindowDockingMonitorIndex}"
+                                                      ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <materialDesign:PackIcon Kind="Monitor"
+                                                                VerticalAlignment="Center" />
+                                                            <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                                                                <Run Text="{Binding DeviceName, Mode=OneWay}" />
+                                                                <Run Text="(">
+                                                                </Run>
+                                                                <Run Text="{Binding Bounds.Width, Mode=OneWay}">
+                                                                </Run>
+                                                                <Run Text="x">
+                                                                </Run>
+                                                                <Run Text="{Binding Bounds.Height, Mode=OneWay}">
+                                                                </Run>
+                                                                <Run Text=")" />
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+
+                                            <Button Margin="0 8 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                                                    HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
+                                                <controls:IconText Kind="Refresh" Text="刷新显示器列表" />
+                                            </Button>
+
+                                            <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
+                                                       Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" />
+                                            <!--<TextBlock Text="{Binding Settings.WindowDockingLocation, Mode=OneWay}"/>-->
+                                        </StackPanel>
+                                    </Grid>
+                                    <Separator Margin="0 16" />
+
+                                    <!-- 窗口层级 -->
+                                    <controls:SettingsCard IconGlyph="LayersOutline" Header="窗口层级"
+                                                           Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
+                                        <controls:SettingsCard.Switcher>
+                                            <ComboBox SelectedIndex="{Binding Settings.WindowLayer, Mode=TwoWay}"
+                                                      Foreground="{DynamicResource MaterialDesignBody}">
+                                                <ComboBoxItem>
+                                                    <controls:IconText Kind="LayersMinus" Text="置底" />
+                                                </ComboBoxItem>
+                                                <ComboBoxItem>
+                                                    <controls:IconText Kind="LayersPlus" Text="置顶" />
+                                                </ComboBoxItem>
+                                            </ComboBox>
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+
+                                    <!-- 指针穿透 -->
+                                    <controls:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
+                                                           Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
+                                                           IsOn="{Binding Settings.IsMouseClickingEnabled, Mode=TwoWay}" />
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- 更新 -->
+                        <TabItem Header="更新">
+                            <ScrollViewer>
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                    <!-- 更新状态 -->
+                                    <materialDesign:Card>
+                                        <Grid Margin="16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+
+                                            <!-- 更新状态图标 -->
+                                            <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
+                                                                     Width="48" Height="48"
+                                                                     Kind="Update"/>
+
+                                            <!-- 更新状态说明 -->
+                                            <StackPanel Grid.Column="1" Grid.Row="0" Margin="0 0 0 16">
+                                                <TextBlock FontSize="28" FontWeight="Medium" >
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpToDate">
+                                                                    <Setter Property="Text" Value="您已是最新。"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpdateAvailable">
+                                                                    <Setter Property="Text" Value="更新可用。"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpdateDownloaded">
+                                                                    <Setter Property="Text" Value="您已准备好安装更新。"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+
+                                                <TextBlock Margin="0 4 0 0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                             Value="UpToDate">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                    <Run Text="上次检查更新：">
+                                                    </Run><Run Text="{Binding Settings.LastCheckUpdateTime, Mode=OneWay, ConverterCulture=zh-cn}" />
+                                                </TextBlock>
+
+                                                <TextBlock Margin="0 4 0 0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                             Value="UpToDate">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                    <Run Text="新版本：">
+                                                    </Run><Run Text="{Binding Settings.LastCheckUpdateInfoCache.Version, Mode=OneWay}" />
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <!-- 进度条 -->
+                                            <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" 
+                                                        HorizontalAlignment="Stretch"
+                                                        Margin="0 0 0 8">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                         Value="Idle">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+
+                                                <TextBlock>
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="CheckingUpdates">
+                                                                    <Setter Property="Text" Value="正在检查更新……"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+
+                                                <ProgressBar>
+                                                    <ProgressBar.Style>
+                                                        <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                             Value="CheckingUpdates">
+                                                                    <Setter Property="IsIndeterminate" Value="True"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </ProgressBar.Style>
+                                                </ProgressBar>
+                                            </StackPanel>
+
+                                            <!-- 更新操作栏 -->
+                                            <WrapPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+                                                       Visibility="Visible">
+                                                <!-- 检查更新 -->
+                                                <Button Margin="0 0 6 0" Click="ButtonCheckUpdate_OnClick">
+                                                    <controls:IconText Kind="Refresh" Text="检查更新" />
+                                                </Button>
+                                                <!-- 检查更新 paper  -->
+                                                <Button Margin="0 0 6 0"
+                                                        Style="{StaticResource MaterialDesignPaperButton}">
+                                                    <controls:IconText Kind="Refresh" Text="检查更新" />
+                                                </Button>
+                                                <!-- 下载更新  -->
+                                                <Button Margin="0 0 6 0">
+                                                    <controls:IconText Kind="Download" Text="下载更新" />
+                                                </Button>
+                                                <!-- 重启并安装更新  -->
+                                                <Button Margin="0 0 6 0">
+                                                    <controls:IconText Kind="MonitorDownload" Text="重启并安装更新" />
+                                                </Button>
+                                                <!-- 取消更新  -->
+                                                <Button Margin="0 0 6 0"
+                                                        Style="{StaticResource MaterialDesignPaperButton}">
+                                                    <controls:IconText Kind="Cancel" Text="取消更新" />
+                                                </Button>
+                                            </WrapPanel>
+
+                                            <!-- 加载中 -->
+                                            <ProgressBar Grid.Column="0" Grid.Row="2"
+                                                         HorizontalAlignment="Left"
+                                                         Visibility="Collapsed"
+                                                         Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                         IsIndeterminate="True"
+                                                         Value="0"/>
+
+                                            <!-- 重启更新 -->
+                                            <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                                                      Margin="0 8 0 0"
+                                                      Content="在下次启动应用时自动安装更新。" />
+
+                                            <!-- 更新日志 -->
+                                            <Expander Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                                                      Margin="0 12 0 0"
+                                                      Background="Transparent"
+                                                      Header="更新日志">
+
+                                            </Expander>
+
+                                        </Grid>
+                                    </materialDesign:Card>
+
+                                    <!-- 更新模式 -->
+                                    <controls:SettingsCard Header="更新模式" IconGlyph="Update"
+                                                           Description="应用自动检查、下载和安装更新的行为。">
+                                        <controls:SettingsCard.Switcher>
+                                            <ComboBox MinWidth="150" Foreground="{DynamicResource MaterialDesignBody}">
+                                                <controls:IconText Kind="SyncDisabled" Text="从不自动检查更新" />
+                                                <controls:IconText Kind="SyncAlert" Text="自动检查更新" />
+                                                <controls:IconText Kind="DownloadOutline" Text="自动检查并下载更新" />
+                                                <controls:IconText Kind="MonitorArrowDown" Text="自动检查、下载并安装更新" />
+                                            </ComboBox>
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- 隐私 -->
+                        <TabItem Header="隐私">
+                            <ScrollViewer>
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                    <StackPanel Margin="0 0 0 8">
+                                        <TextBlock Text="匿名使用情况分析"
+                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                   FontWeight="Light"
+                                                   Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
+                                        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                   FontWeight="Light">
+                                            <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
+                                            </Run>
+                                            <Hyperlink Click="HyperlinkMsAppCenter_OnClick">
+                                                此处
+                                            </Hyperlink>
+                                            。
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <controls:SettingsCard IconGlyph="ReportLine"
+                                                           Header="启用匿名使用情况分析"
+                                                           IsOn="{Binding Settings.IsReportingEnabled, Mode=TwoWay}"
+                                                           Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <!-- 关于 -->
+                        <TabItem Header="关于">
+                            <ScrollViewer>
+                                <StackPanel Margin="6" MaxWidth="750">
+                                    <materialDesign:Card>
+                                        <StackPanel>
+                                            <!-- banner -->
+                                            <!--<Grid Height="100">
                             <Image Source="/Assets/banner.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>-->
-                                        <Grid HorizontalAlignment="Stretch" Margin="12">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <!-- icon -->
-                                            <Image Grid.Column="0" Source="/Assets/AppLogo.ico" Width="40" Height="40" VerticalAlignment="Top"/>
-                                            <!-- about -->
-                                            <StackPanel Grid.Column="1" Margin="10 0 0 0">
-                                                <TextBlock>
-                                                    <Run Text="ClassIsland" FontSize="24" FontWeight="Bold"/>
-                                                    <LineBreak/>
-                                                    <Run Text="{x:Static ci:App.AppVersion}"/>
-                                                    <LineBreak/>
-                                                    <Run Text="Copyright (c) 2023 HelloWRC"/>
-                                                </TextBlock>
-                                                <WrapPanel>
-                                                    <Button HorizontalAlignment="Left" Margin="6" Style="{StaticResource MaterialDesignFlatButton}">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <materialDesign:PackIcon Kind="Github" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="GitHub" Margin="3 0 0 0" VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                    <Button HorizontalAlignment="Left" Margin="6" Style="{StaticResource MaterialDesignFlatButton}">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <materialDesign:PackIcon Kind="BugOutline" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="问题反馈" Margin="3 0 0 0" VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                    </Button>
-                                                    <Button HorizontalAlignment="Left" Margin="6" Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <materialDesign:PackIcon Kind="License" VerticalAlignment="Center"/>
-                                                            <TextBlock Text="开源许可" Margin="3 0 0 0" VerticalAlignment="Center"/>
-                                                        </StackPanel>
-                                                        <Button.CommandParameter>
-                                                            <StaticResource ResourceKey="OpenSourceLicense"/>
-                                                        </Button.CommandParameter>
-                                                    </Button>
-                                                </WrapPanel>
-                                            </StackPanel>
-                                        </Grid>
+                                            <Grid HorizontalAlignment="Stretch" Margin="12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <!-- icon -->
+                                                <Image Grid.Column="0" Source="/Assets/AppLogo.ico" Width="40"
+                                                       Height="40" VerticalAlignment="Top" />
+                                                <!-- about -->
+                                                <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                                                    <TextBlock>
+                                                        <Run Text="ClassIsland" FontSize="24" FontWeight="Bold" />
+                                                        <LineBreak />
+                                                        <Run Text="{x:Static ci:App.AppVersion}" />
+                                                        <LineBreak />
+                                                        <Run Text="Copyright (c) 2023 HelloWRC" />
+                                                    </TextBlock>
+                                                    <WrapPanel>
+                                                        <Button HorizontalAlignment="Left" Margin="6"
+                                                                Style="{StaticResource MaterialDesignFlatButton}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <materialDesign:PackIcon Kind="Github"
+                                                                    VerticalAlignment="Center" />
+                                                                <TextBlock Text="GitHub" Margin="3 0 0 0"
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button HorizontalAlignment="Left" Margin="6"
+                                                                Style="{StaticResource MaterialDesignFlatButton}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <materialDesign:PackIcon Kind="BugOutline"
+                                                                    VerticalAlignment="Center" />
+                                                                <TextBlock Text="问题反馈" Margin="3 0 0 0"
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </Button>
+                                                        <Button HorizontalAlignment="Left" Margin="6"
+                                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <materialDesign:PackIcon Kind="License"
+                                                                    VerticalAlignment="Center" />
+                                                                <TextBlock Text="开源许可" Margin="3 0 0 0"
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                            <Button.CommandParameter>
+                                                                <StaticResource ResourceKey="OpenSourceLicense" />
+                                                            </Button.CommandParameter>
+                                                        </Button>
+                                                    </WrapPanel>
+                                                </StackPanel>
+                                            </Grid>
 
-                                    </StackPanel>
-                                </materialDesign:Card>
-                                <materialDesign:Card Margin="0 6 0 0">
-                                    <StackPanel Margin="12">
-                                        <TextBlock Text="贡献人员" FontWeight="Bold" FontSize="14"/>
-                                        <ListView Margin="0 6 0 0" materialDesign:ListBoxItemAssist.ShowSelection="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate DataType="{x:Type models:ContributionMember}">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <Image Grid.Column="0" VerticalAlignment="Center" Margin="0 0 6 0" Source="{Binding AvatarImage}" Width="32" Height="32">
-                                                            <Image.Clip>
-                                                                <RectangleGeometry RadiusX="16" RadiusY="16" Rect="0,0,32,32"/>
-                                                            </Image.Clip>
-                                                        </Image>
-                                                        <TextBlock Grid.Column="1">
-                                                        <Run FontSize="15"
-                                                             FontWeight="Bold"
-                                                             Text="{Binding Name, Mode=OneWay}"/>
-                                                        <LineBreak/>
-                                                        <Run FontSize="11"
-                                                             Text="{Binding Description, Mode=OneWay}"/>
-                                                        </TextBlock>
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                            <models:ContributionMember AvatarImage="/Assets/Contributiors/HelloWRC@64w.jpg" Name="HelloWRC" Description="软件作者，写代码巨水（划掉）"/>
-                                        </ListView>
-                                    </StackPanel>
-                                </materialDesign:Card>
-                                <materialDesign:Card Margin="0 6 0 0">
-                                    <StackPanel Margin="12">
-                                        <TextBlock Text="第三方库" FontWeight="Bold" FontSize="14"/>
-                                        <ListView Margin="0 6 0 0" HorizontalContentAlignment="Stretch" materialDesign:ListBoxItemAssist.ShowSelection="False" HorizontalAlignment="Stretch" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                            <ListView.ItemTemplate>
-                                                <DataTemplate DataType="{x:Type models:ContributionLabel}">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="Auto"/>
-                                                        </Grid.RowDefinitions>
-                                                        <materialDesign:PackIcon Grid.Row="0" Grid.Column="0" Kind="PackageVariant" VerticalAlignment="Center"  Margin="0 0 6 0"/>
-                                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Title}" VerticalAlignment="Center" FontSize="14" FontWeight="Bold" TextWrapping="Wrap"/>
-                                                        <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
-                                                        <WrapPanel Grid.Row="2" Grid.Column="1" Margin="0 6 0 0" Orientation="Horizontal">
-                                                            <!--<StackPanel Orientation="Horizontal">
+                                        </StackPanel>
+                                    </materialDesign:Card>
+                                    <materialDesign:Card Margin="0 6 0 0">
+                                        <StackPanel Margin="12">
+                                            <TextBlock Text="贡献人员" FontWeight="Bold" FontSize="14" />
+                                            <ListView Margin="0 6 0 0"
+                                                      materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type models:ContributionMember}">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Image Grid.Column="0" VerticalAlignment="Center"
+                                                                   Margin="0 0 6 0" Source="{Binding AvatarImage}"
+                                                                   Width="32" Height="32">
+                                                                <Image.Clip>
+                                                                    <RectangleGeometry RadiusX="16" RadiusY="16"
+                                                                        Rect="0,0,32,32" />
+                                                                </Image.Clip>
+                                                            </Image>
+                                                            <TextBlock Grid.Column="1">
+                                                                <Run FontSize="15"
+                                                                     FontWeight="Bold"
+                                                                     Text="{Binding Name, Mode=OneWay}" />
+                                                                <LineBreak />
+                                                                <Run FontSize="11"
+                                                                     Text="{Binding Description, Mode=OneWay}" />
+                                                            </TextBlock>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                                <models:ContributionMember
+                                                    AvatarImage="/Assets/Contributiors/HelloWRC@64w.jpg"
+                                                    Name="HelloWRC" Description="软件作者，写代码巨水（划掉）" />
+                                            </ListView>
+                                        </StackPanel>
+                                    </materialDesign:Card>
+                                    <materialDesign:Card Margin="0 6 0 0">
+                                        <StackPanel Margin="12">
+                                            <TextBlock Text="第三方库" FontWeight="Bold" FontSize="14" />
+                                            <ListView Margin="0 6 0 0" HorizontalContentAlignment="Stretch"
+                                                      materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                                      HorizontalAlignment="Stretch"
+                                                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate DataType="{x:Type models:ContributionLabel}">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                            </Grid.RowDefinitions>
+                                                            <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
+                                                                Kind="PackageVariant" VerticalAlignment="Center"
+                                                                Margin="0 0 6 0" />
+                                                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                                                       Text="{Binding Title}"
+                                                                       VerticalAlignment="Center" FontSize="14"
+                                                                       FontWeight="Bold" TextWrapping="Wrap" />
+                                                            <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
+                                                            <WrapPanel Grid.Row="2" Grid.Column="1" Margin="0 6 0 0"
+                                                                       Orientation="Horizontal">
+                                                                <!--<StackPanel Orientation="Horizontal">
                                                                 <materialDesign:PackIcon Kind="Person" Margin="0 0 3 0"/>
                                                                 <TextBlock Text="{Binding Owner}" Margin="0 0 12 0" TextWrapping="Wrap"/>
                                                             </StackPanel>-->
 
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <materialDesign:PackIcon Kind="License" Margin="0 0 3 0"/>
-                                                                <TextBlock Text="{Binding License}" Margin="0 0 12 0" TextWrapping="Wrap"/>
-                                                            </StackPanel>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <materialDesign:PackIcon Kind="License"
+                                                                        Margin="0 0 3 0" />
+                                                                    <TextBlock Text="{Binding License}"
+                                                                               Margin="0 0 12 0" TextWrapping="Wrap" />
+                                                                </StackPanel>
 
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <materialDesign:PackIcon Kind="Web" Margin="0 0 3 0"/>
-                                                                <TextBlock Text="{Binding Website}" Margin="0 0 12 0" TextWrapping="Wrap"/>
-                                                            </StackPanel>
-                                                        </WrapPanel>
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListView.ItemTemplate>
-                                            <models:ContributionLabel Title="MaterialDesignInXamlToolkit" License="MIT License" Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/"/>
-                                            <models:ContributionLabel Title="gong-wpf-dragdrop" License="BSD 3-Clause" Website="https://github.com/punker76/gong-wpf-dragdrop"/>
-                                            <models:ContributionLabel Title="wpf-notifyicon" License="The Code Project Open License (CPOL) 1.02" Website="https://github.com/hardcodet/wpf-notifyicon"/>
-                                            <models:ContributionLabel Title="HarmonyOS Sans" License="-" Website="https://developer.harmonyos.com/cn/design/resource"/>
-                                            <models:ContributionLabel Title="MVVM Toolkit" Website="https://github.com/CommunityToolkit/dotnet" License="MIT License"/>
-                                            <models:ContributionLabel Title="WPF" License="MIT License" Website="https://github.com/dotnet/wpf"/>
-                                            <models:ContributionLabel Title=".NET" License="MIT License" Website="https://github.com/microsoft/dotnet"/>
-                                        </ListView>
-                                    </StackPanel>
-                                </materialDesign:Card>
-                                <materialDesign:Card Margin="0 6 0 0">
-                                    <Expander Background="Transparent">
-                                        <Expander.Header>
-                                            <TextBlock Margin="-12 0">
-                                            <Run FontWeight="Bold" FontSize="14" Text="调试"/><LineBreak/>
-                                            <Run Text="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"></Run>
-                                            </TextBlock>
-                                        </Expander.Header>
-                                        <StackPanel Margin="12">
-                                            <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}"/>
-                                            <Button Style="{StaticResource MaterialDesignFlatButton}" Content="CrashTest"
-                                                    Click="ButtonCrash_OnClick" HorizontalAlignment="Left"/>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <materialDesign:PackIcon Kind="Web"
+                                                                        Margin="0 0 3 0" />
+                                                                    <TextBlock Text="{Binding Website}"
+                                                                               Margin="0 0 12 0" TextWrapping="Wrap" />
+                                                                </StackPanel>
+                                                            </WrapPanel>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                                <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
+                                                                          License="MIT License"
+                                                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/" />
+                                                <models:ContributionLabel Title="gong-wpf-dragdrop"
+                                                                          License="BSD 3-Clause"
+                                                                          Website="https://github.com/punker76/gong-wpf-dragdrop" />
+                                                <models:ContributionLabel Title="wpf-notifyicon"
+                                                                          License="The Code Project Open License (CPOL) 1.02"
+                                                                          Website="https://github.com/hardcodet/wpf-notifyicon" />
+                                                <models:ContributionLabel Title="HarmonyOS Sans" License="-"
+                                                                          Website="https://developer.harmonyos.com/cn/design/resource" />
+                                                <models:ContributionLabel Title="MVVM Toolkit"
+                                                                          Website="https://github.com/CommunityToolkit/dotnet"
+                                                                          License="MIT License" />
+                                                <models:ContributionLabel Title="WPF" License="MIT License"
+                                                                          Website="https://github.com/dotnet/wpf" />
+                                                <models:ContributionLabel Title=".NET" License="MIT License"
+                                                                          Website="https://github.com/microsoft/dotnet" />
+                                            </ListView>
                                         </StackPanel>
-                                    </Expander>
-                                </materialDesign:Card>
-                            </StackPanel>
-                        </ScrollViewer>
-                    </TabItem>
-                </TabControl>
+                                    </materialDesign:Card>
+                                    <materialDesign:Card Margin="0 6 0 0">
+                                        <Expander Background="Transparent">
+                                            <Expander.Header>
+                                                <TextBlock Margin="-12 0">
+                                                    <Run FontWeight="Bold" FontSize="14" Text="调试" /><LineBreak />
+                                                    <Run Text="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"></Run>
+                                                </TextBlock>
+                                            </Expander.Header>
+                                            <StackPanel Margin="12">
+                                                <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}" />
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Content="CrashTest"
+                                                        Click="ButtonCrash_OnClick" HorizontalAlignment="Left" />
+                                            </StackPanel>
+                                        </Expander>
+                                    </materialDesign:Card>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
             </Grid>
-        </Grid>
+        </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
 </Window>

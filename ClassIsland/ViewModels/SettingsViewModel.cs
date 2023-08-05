@@ -9,6 +9,7 @@ public class SettingsViewModel : ObservableRecipient
 {
     private Screen[] _screens = Array.Empty<Screen>();
     private string _license = "";
+    private object? _drawerContent = new();
 
     public Screen[] Screens
     {
@@ -28,6 +29,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _license) return;
             _license = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public object? DrawerContent
+    {
+        get => _drawerContent;
+        set
+        {
+            if (Equals(value, _drawerContent)) return;
+            _drawerContent = value;
             OnPropertyChanged();
         }
     }

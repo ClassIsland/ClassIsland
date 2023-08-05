@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
+using MaterialDesignThemes.Wpf;
 using Application = System.Windows.Application;
 
 namespace ClassIsland.Views;
@@ -48,9 +49,15 @@ public partial class SettingsWindow : Window
         get;
         set;
     } = false;
+    
+    public UpdateService UpdateService
+    {
+        get;
+    }
 
     public SettingsWindow()
     {
+        UpdateService = App.GetService<UpdateService>();
         InitializeComponent();
         DataContext = this;
     }
@@ -111,5 +118,15 @@ public partial class SettingsWindow : Window
             FileName = "https://learn.microsoft.com/zh-cn/appcenter/sdk/data-collected",
             UseShellExecute = true
         });
+    }
+
+    private void MyDrawerHost_OnDrawerClosing(object? sender, DrawerClosingEventArgs e)
+    {
+    }
+
+    private async void ButtonCheckUpdate_OnClick(object sender, RoutedEventArgs e)
+    {
+        Settings.SelectedChannel = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta";
+        await UpdateService.CheckUpdateAsync();
     }
 }

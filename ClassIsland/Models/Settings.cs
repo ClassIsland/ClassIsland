@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
+using ClassIsland.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IWshRuntimeLibrary;
 using MaterialDesignColors;
@@ -39,7 +41,20 @@ public class Settings : ObservableRecipient
     private bool _isDebugEnabled = false;
     private string _selectedProfile = "Default.json";
     private bool _isWelcomeWindowShowed = false;
-    private bool _isReportingEnabled = false;
+    private bool _isReportingEnabled = true;
+    private bool _isAutoUpdateCheckingEnabled = true;
+    private bool _isAutoUpdateDownloadingEnabled = true;
+    private bool _isAutoUpdateInstallingEnabled = true;
+    private Dictionary<string, string> _releaseChannels = new()
+    {
+        {"Release", "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public/public_releases"},
+        {"Beta", "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta/public_releases"}
+    };
+
+    private string _selectedChannel = "Release";
+    private DateTime _lastCheckUpdateTime = DateTime.MinValue;
+    private AppCenterReleaseInfo _lastCheckUpdateInfoCache = new();
+    private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;
 
     public string SelectedProfile
     {
@@ -265,6 +280,98 @@ public class Settings : ObservableRecipient
         }
     }
 
+
+    #endregion
+
+    #region AppUpgrades
+
+    public bool IsAutoUpdateCheckingEnabled
+    {
+        get => _isAutoUpdateCheckingEnabled;
+        set
+        {
+            if (value == _isAutoUpdateCheckingEnabled) return;
+            _isAutoUpdateCheckingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAutoUpdateDownloadingEnabled
+    {
+        get => _isAutoUpdateDownloadingEnabled;
+        set
+        {
+            if (value == _isAutoUpdateDownloadingEnabled) return;
+            _isAutoUpdateDownloadingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAutoUpdateInstallingEnabled
+    {
+        get => _isAutoUpdateInstallingEnabled;
+        set
+        {
+            if (value == _isAutoUpdateInstallingEnabled) return;
+            _isAutoUpdateInstallingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Dictionary<string, string> ReleaseChannels
+    {
+        get => _releaseChannels;
+        set
+        {
+            if (Equals(value, _releaseChannels)) return;
+            _releaseChannels = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedChannel
+    {
+        get => _selectedChannel;
+        set
+        {
+            if (value == _selectedChannel) return;
+            _selectedChannel = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastCheckUpdateTime
+    {
+        get => _lastCheckUpdateTime;
+        set
+        {
+            if (value.Equals(_lastCheckUpdateTime)) return;
+            _lastCheckUpdateTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public AppCenterReleaseInfo LastCheckUpdateInfoCache
+    {
+        get => _lastCheckUpdateInfoCache;
+        set
+        {
+            if (Equals(value, _lastCheckUpdateInfoCache)) return;
+            _lastCheckUpdateInfoCache = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public UpdateStatus LastUpdateStatus
+    {
+        get => _lastUpdateStatus;
+        set
+        {
+            if (value == _lastUpdateStatus) return;
+            _lastUpdateStatus = value;
+            OnPropertyChanged();
+        }
+    }
 
     #endregion
 

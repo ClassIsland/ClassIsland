@@ -5,7 +5,6 @@
              xmlns:converters="clr-namespace:ClassIsland.Converters"
              xmlns:gif="clr-namespace:WpfAnimatedGif;assembly=WpfAnimatedGif"
              xmlns:hc="https://handyorg.github.io/handycontrol"
-             StartupUri="MainWindow.xaml"
              ShutdownMode="OnMainWindowClose"
              Startup="App_OnStartup"
              DispatcherUnhandledException="App_OnDispatcherUnhandledException">

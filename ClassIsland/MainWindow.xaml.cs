@@ -72,8 +72,18 @@ public partial class MainWindow : Window
         get;
     }
 
+    private SettingsService SettingsService
+    {
+        get;
+    }
+
     public MainWindow()
     {
+        SettingsService = App.GetService<SettingsService>();
+        SettingsService.PropertyChanged += (sender, args) =>
+        {
+            LoadSettings();
+        };
         UpdateTimer.Tick += UpdateTimerOnTick;
         DataContext = this;
         UpdateTimer.Start();
@@ -309,24 +319,16 @@ public partial class MainWindow : Window
 
     private void LoadSettings()
     {
-        if (!File.Exists("./Settings.json"))
-        {
-            return;
+        var r = SettingsService.Settings;
+        ViewModel.Settings = r;
+        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
+        SettingsWindow.Settings = r;
         }
-        var json = File.ReadAllText("./Settings.json");
-        var r = JsonSerializer.Deserialize<Settings>(json);
-        if (r != null)
-        {
-            ViewModel.Settings = r;
-            ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
-            SettingsWindow.Settings = r;
-        }
-    }
 
     public void SaveSettings()
     {
         UpdateTheme();
-        File.WriteAllText("./Settings.json", JsonSerializer.Serialize<Settings>(ViewModel.Settings));
+        SettingsService.SaveSettings();
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -678,7 +680,7 @@ public partial class MainWindow : Window
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 3;
+        SettingsWindow.RootTabControl.SelectedIndex = 4;
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
@@ -709,7 +711,7 @@ public partial class MainWindow : Window
         else
         {
             HelpsWindow.ViewModel.IsOpened = true;
-            HelpsWindow.ShowDialog();
+            HelpsWindow.Show();
         }
     }
 }

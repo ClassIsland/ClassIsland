@@ -12,6 +12,8 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland;
 /// <summary>
@@ -21,6 +23,18 @@ public partial class App : Application
 {
     private CrashWindow? CrashWindow;
     private Mutex? Mutex;
+    public static IHost Host;
+
+    public static T GetService<T>()
+    {
+        var s = Host.Services.GetService(typeof(T));
+        if (s != null)
+        {
+            return (T)s;
+        }
+        
+        throw new ArgumentException($"Service {typeof(T)} is null!");
+    }
 
     public App()
     {
@@ -48,18 +62,30 @@ public partial class App : Application
         CrashWindow.ShowDialog();
     }
 
-    private void App_OnStartup(object sender, StartupEventArgs e)
+    private async void App_OnStartup(object sender, StartupEventArgs e)
     {
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
-        AppCenter.SetEnabledAsync(false);
+        await AppCenter.SetEnabledAsync(false);
         Mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
-        if (createNew)
+        if (!createNew)
         {
-            return;
+            MessageBox.Show("应用已经在运行中，请勿重复启动第二个实例。");
+            Environment.Exit(0);
         }
 
-        MessageBox.Show("应用已经在运行中，请勿重复启动第二个实例。");
-        Environment.Exit(0);
+        Host = Microsoft.Extensions.Hosting.Host.
+            CreateDefaultBuilder().
+            UseContentRoot(AppContext.BaseDirectory).
+            ConfigureServices((context, services) =>
+            {
+                services.AddSingleton<SettingsService>();
+                services.AddSingleton<UpdateService>();
+            }).Build();
+
+        await Host.StartAsync();
+        GetService<SettingsService>().LoadSettings();
+        MainWindow = new MainWindow();
+        MainWindow.Show();
     }
 
     public static void ReleaseLock()
