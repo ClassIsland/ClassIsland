@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,8 +17,10 @@ using System.Windows.Threading;
 using ClassIsland.Enums;
 using ClassIsland.Models;
 using Downloader;
+using IWshRuntimeLibrary;
 using Microsoft.Extensions.Hosting;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
+using File = System.IO.File;
 
 namespace ClassIsland;
 
@@ -26,6 +30,7 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
     private long _downloadedSize = 0;
     private long _totalSize = 0;
     private double _downloadSpeed = 0;
+    private IDownload? Downloader;
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
@@ -63,6 +68,28 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
     {
         get => _downloadSpeed;
         set => SetField(ref _downloadSpeed, value);
+    }
+
+    public static void ReplaceApplicationFile(string target)
+    {
+        if (!File.Exists(target))
+        {
+            return;
+        }
+        var s = Environment.ProcessPath!;
+        var t = target;
+        NativeWindowHelper.WaitForFile(t);
+        File.Move(s, t, true);
+    }
+
+    public static void RemoveUpdateTemporary(string target)
+    {
+        if (!File.Exists(target))
+        {
+            return;
+        }
+        NativeWindowHelper.WaitForFile(target);
+        File.Delete(target);
     }
 
     public static async Task<List<AppCenterReleaseInfoMin>> GetUpdateVersionsAsync(string queryRoot)
@@ -118,7 +145,7 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
             DownloadSpeed = 0;
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
 
-            var downloader = DownloadBuilder.New()
+            Downloader = DownloadBuilder.New()
                 .WithUrl(Settings.LastCheckUpdateInfoCache.DownloadUrl)
                 .Configure((c) =>
                 {
@@ -126,9 +153,10 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
                     c.ParallelDownload = true;
                 })
                 .WithDirectory(@".\UpdateTemp")
+                .WithFileName("update.zip")
                 .Build();
-            downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
-            await downloader.StartAsync();
+            Downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
+            await Downloader.StartAsync();
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
             Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
             
@@ -149,12 +177,26 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
 
     public async Task ExtractUpdateAsync()
     {
-
+        await Task.Run(() =>
+        {
+            ZipFile.ExtractToDirectory(@"./UpdateTemp/update.zip", "./UpdateTemp/extracted", true);
+        });
     }
 
     public async Task RestartAppToUpdateAsync()
     {
-
+        await ExtractUpdateAsync();
+        Application.Current.Shutdown();
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = "./UpdateTemp/extracted/ClassIsland.exe",
+            ArgumentList =
+            { 
+                "-urt", Environment.ProcessPath!,
+                "-m", "true"
+            }
+        });
+        App.ReleaseLock();
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken) => null;

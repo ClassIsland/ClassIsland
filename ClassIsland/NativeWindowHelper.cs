@@ -112,4 +112,30 @@ public static class NativeWindowHelper
         }
         return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.WorkingArea);
     }
+    
+    // 判断文件是否打开
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr _lopen(string lpPathName, int iReadWrite);
+
+    // 关闭文件句柄
+    [DllImport("kernel32.dll")]
+    public static extern bool CloseHandle(IntPtr hObject);
+
+    // 常量
+    public const int OF_READWRITE = 2;
+    public const int OF_SHARE_DENY_NONE = 0x40;
+    public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
+    public static bool IsOccupied(string filePath)
+    {
+        IntPtr handler = _lopen(filePath, OF_READWRITE | OF_SHARE_DENY_NONE);
+        CloseHandle(handler);
+        return handler == HFILE_ERROR;
+    }
+
+    public static void WaitForFile(string path)
+    {
+        while (IsOccupied(path))
+        {
+        }
+    }
 }

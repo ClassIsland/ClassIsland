@@ -145,4 +145,9 @@ public partial class SettingsWindow : Window
     {
         await UpdateService.DownloadUpdateAsync();
     }
+
+    private async void ButtonRestartToUpdate_OnClick(object sender, RoutedEventArgs e)
+    {
+        await UpdateService.RestartAppToUpdateAsync();
+    }
 }

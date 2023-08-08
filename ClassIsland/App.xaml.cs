@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using ClassIsland.Models;
 using ClassIsland.Views;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
@@ -40,6 +45,12 @@ public partial class App : Application
     {
     }
 
+    public ApplicationCommand ApplicationCommand
+    {
+        get;
+        set;
+    } = new();
+
     public static string AppVersion
     {
         get;
@@ -66,11 +77,49 @@ public partial class App : Application
     {
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
+        var command = new RootCommand
+        {
+            new Option<string>(new []{"--updateReplaceTarget", "-urt"}, "更新时要替换的文件"),
+            new Option<string>(new []{"--updateDeleteTarget", "-udt"}, "更新完成要删除的文件"),
+            new Option<bool>(new []{"--waitMutex", "-m"}, "重复启动应用时，等待上一个实例退出而非直接退出应用。")
+        };
+        command.Handler = CommandHandler.Create((ApplicationCommand c) =>
+        {
+            ApplicationCommand = c;
+        });
+        await command.InvokeAsync(e.Args);
+        
         Mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
         if (!createNew)
         {
-            MessageBox.Show("应用已经在运行中，请勿重复启动第二个实例。");
-            Environment.Exit(0);
+            if (ApplicationCommand.WaitMutex)
+            {
+                Mutex.WaitOne();
+            }
+            else
+            {
+                MessageBox.Show("应用已经在运行中，请勿重复启动第二个实例。");
+                Environment.Exit(0);
+            }
+        }
+
+        if (ApplicationCommand.UpdateReplaceTarget != null)
+        {
+            MessageBox.Show($"Update replace {ApplicationCommand.UpdateReplaceTarget}");
+            UpdateService.ReplaceApplicationFile(ApplicationCommand.UpdateReplaceTarget);
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = ApplicationCommand.UpdateReplaceTarget,
+                ArgumentList = { "-udt", Environment.ProcessPath! }
+            });
+            ReleaseLock();
+            Shutdown();
+            return;
+        }
+        if (ApplicationCommand.UpdateDeleteTarget != null)
+        {            
+            MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
+            UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
 
         Host = Microsoft.Extensions.Hosting.Host.
