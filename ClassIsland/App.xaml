@@ -21,6 +21,7 @@
 
             <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
                 <Setter Property="LineHeight" Value="25"/>
+                <Setter Property="FontWeight" Value="Light"></Setter>
             </Style>
 
             <Style TargetType="Paragraph" BasedOn="{StaticResource MarkdownParagraphBaseStyle}"/>
@@ -35,24 +36,24 @@
             </Style>
 
             <Style x:Key="MarkdownHeadline1Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 10, 0, 32"/>
+                <Setter Property="Margin" Value="0, 10, 0, 10"/>
                 <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="42"/>
+                <Setter Property="FontSize"    Value="32"/>
                 <Setter Property="FontWeight"  Value="Bold" />
             </Style>
 
             <Style x:Key="MarkdownHeadline2Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 10, 0, 12"/>
+                <Setter Property="Margin" Value="0, 10, 0, 10"/>
                 <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="32"/>
+                <Setter Property="FontSize"    Value="24"/>
                 <Setter Property="FontWeight"  Value="Medium" />
             </Style>
 
             <Style x:Key="MarkdownHeadline3Style" TargetType="Paragraph">
                 <Setter Property="Margin" Value="0, 6, 0, 6"/>
                 <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="18" />
-                <Setter Property="FontWeight"  Value="Light" />
+                <Setter Property="FontSize"    Value="16" />
+                <Setter Property="FontWeight"  Value="Medium" />
             </Style>
 
             <Style x:Key="MarkdownHeadline4Style" TargetType="Paragraph">

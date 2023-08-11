@@ -105,7 +105,7 @@ public partial class App : Application
 
         if (ApplicationCommand.UpdateReplaceTarget != null)
         {
-            MessageBox.Show($"Update replace {ApplicationCommand.UpdateReplaceTarget}");
+            //MessageBox.Show($"Update replace {ApplicationCommand.UpdateReplaceTarget}");
             UpdateService.ReplaceApplicationFile(ApplicationCommand.UpdateReplaceTarget);
             Process.Start(new ProcessStartInfo()
             {
@@ -118,7 +118,7 @@ public partial class App : Application
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {            
-            MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
+            //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
 
@@ -129,10 +129,13 @@ public partial class App : Application
             {
                 services.AddSingleton<SettingsService>();
                 services.AddSingleton<UpdateService>();
+                services.AddSingleton<TaskBarIconService>();
+                //services.AddHostedService<TaskBarIconService>();
             }).Build();
 
         await Host.StartAsync();
         GetService<SettingsService>().LoadSettings();
+        GetService<TaskBarIconService>().TaskBarIcon.ForceCreate();
         MainWindow = new MainWindow();
         MainWindow.Show();
     }

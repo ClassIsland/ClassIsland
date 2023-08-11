@@ -13,6 +13,7 @@ public class AppCenterReleaseInfo : ObservableRecipient
     private DateTime _uploadTime = DateTime.MinValue;
     private List<string> _packageHashes = new();
     private string _downloadUrl = "";
+    private string _releaseNotes = "";
 
     [JsonPropertyName("version")]
     public string Version
@@ -70,6 +71,18 @@ public class AppCenterReleaseInfo : ObservableRecipient
         {
             if (value == _downloadUrl) return;
             _downloadUrl = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("release_notes")]
+    public string ReleaseNotes
+    {
+        get => _releaseNotes;
+        set
+        {
+            if (value == _releaseNotes) return;
+            _releaseNotes = value;
             OnPropertyChanged();
         }
     }

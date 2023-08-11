@@ -28,6 +28,7 @@ using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
+using H.NotifyIcon;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
@@ -77,6 +78,11 @@ public partial class MainWindow : Window
         get;
     }
 
+    private TaskBarIconService TaskBarIconService
+    {
+        get;
+    } = App.GetService<TaskBarIconService>();
+
     public MainWindow()
     {
         SettingsService = App.GetService<SettingsService>();
@@ -84,6 +90,7 @@ public partial class MainWindow : Window
         {
             LoadSettings();
         };
+        TaskBarIconService.TaskBarIcon.TrayBalloonTipClicked += TaskBarIconOnTrayBalloonTipClicked;
         UpdateTimer.Tick += UpdateTimerOnTick;
         DataContext = this;
         UpdateTimer.Start();
@@ -101,6 +108,12 @@ public partial class MainWindow : Window
         SettingsWindow.Closed += (o, args) => SaveSettings();
         HelpsWindow = new HelpsWindow();
         InitializeComponent();
+    }
+
+    private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
+    {
+        OpenSettingsWindow();
+        SettingsWindow.RootTabControl.SelectedIndex = 3;
     }
 
     private int GetSubjectIndex(int index)
@@ -290,6 +303,7 @@ public partial class MainWindow : Window
     protected override void OnContentRendered(EventArgs e)
     {
         UpdateTheme();
+        TaskBarIconService.TaskBarIcon.ContextMenu = (ContextMenu)FindResource("AppContextMenu");
         base.OnContentRendered(e);
     }
 
@@ -680,7 +694,7 @@ public partial class MainWindow : Window
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 4;
+        SettingsWindow.RootTabControl.SelectedIndex = 5;
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)

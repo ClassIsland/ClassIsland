@@ -1,9 +1,13 @@
-﻿namespace ClassIsland.Enums;
+﻿using System;
+
+namespace ClassIsland.Enums;
 
 public enum UpdateWorkingStatus
 {
     Idle,
     CheckingUpdates,
     DownloadingUpdates,
-    NetworkError
+    [Obsolete]
+    NetworkError,
+    ExtractingUpdates
 }

@@ -19,7 +19,10 @@ using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
+using MdXaml;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -56,11 +59,50 @@ public partial class SettingsWindow : Window
         get;
     }
 
+    private TaskBarIconService TaskBarIconService
+    {
+        get;
+    }
+
     public SettingsWindow()
     {
         UpdateService = App.GetService<UpdateService>();
+        TaskBarIconService = App.GetService<TaskBarIconService>();
         InitializeComponent();
         DataContext = this;
+        var settingsService = App.GetService<SettingsService>();
+        settingsService.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == "Settings")
+            {
+                settingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+            }
+        };
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Settings.LastCheckUpdateInfoCache))
+        {
+            UpdateCache();
+        }
+    }
+
+    private void UpdateCache()
+    {
+        var e = new Markdown()
+        {
+            Heading1Style = (Style)FindResource("MarkdownHeadline1Style"),
+            Heading2Style = (Style)FindResource("MarkdownHeadline2Style"),
+            Heading3Style = (Style)FindResource("MarkdownHeadline3Style"),
+            Heading4Style = (Style)FindResource("MarkdownHeadline4Style"),
+            //CodeBlockStyle = (Style)FindResource("MarkdownCodeBlockStyle"),
+            //NoteStyle = (Style)FindResource("MarkdownNoteStyle"),
+            ImageStyle = (Style)FindResource("MarkdownImageStyle"),
+        };
+        var fd = e.Transform(Settings.LastCheckUpdateInfoCache.ReleaseNotes);
+        fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
+        ViewModel.CurrentMarkdownDocument = fd;
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -69,6 +111,12 @@ public partial class SettingsWindow : Window
         var r = new StreamReader(Application.GetResourceStream(new Uri("/Assets/LICENSE.txt", UriKind.Relative))!.Stream);
         ViewModel.License = r.ReadToEnd();
         base.OnInitialized(e);
+    }
+
+    protected override void OnContentRendered(EventArgs e)
+    {
+        Settings.PropertyChanged += SettingsOnPropertyChanged;
+        base.OnContentRendered(e);
     }
 
     private void RefreshMonitors()
@@ -149,5 +197,33 @@ public partial class SettingsWindow : Window
     private async void ButtonRestartToUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         await UpdateService.RestartAppToUpdateAsync();
+    }
+
+    private void ButtonDebugToastText_OnClick(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    private void ButtonCancelUpdate_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (UpdateService.CurrentWorkingStatus == UpdateWorkingStatus.DownloadingUpdates)
+        {
+            UpdateService.StopDownloading();
+        }
+
+        if (Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+        {
+            UpdateService.RemoveDownloadedFiles();
+        }
+    }
+
+    private void ButtonDebugNetworkError_OnClick(object sender, RoutedEventArgs e)
+    {
+        //UpdateService.CurrentWorkingStatus = UpdateWorkingStatus.NetworkError;
+    }
+
+    private void UpdateErrorMessage_OnActionClick(object sender, RoutedEventArgs e)
+    {
+        UpdateService.NetworkErrorException = null;
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
@@ -18,7 +19,9 @@ using ClassIsland.Enums;
 using ClassIsland.Models;
 using Downloader;
 using IWshRuntimeLibrary;
+using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Toolkit.Uwp.Notifications;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
 
@@ -30,7 +33,9 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
     private long _downloadedSize = 0;
     private long _totalSize = 0;
     private double _downloadSpeed = 0;
-    private IDownload? Downloader;
+    public IDownload? Downloader;
+    private bool _isCanceled = false;
+    private Exception? _networkErrorException;
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
@@ -47,9 +52,21 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
 
     private Settings Settings => SettingsService.Settings;
 
-    public UpdateService(SettingsService settingsService)
+    private TaskBarIconService TaskBarIconService
+    {
+        get;
+    }
+
+    public UpdateService(SettingsService settingsService, TaskBarIconService taskBarIconService)
     {
         SettingsService = settingsService;
+        TaskBarIconService = taskBarIconService;
+    }
+
+    public bool IsCanceled
+    {
+        get => _isCanceled;
+        set => SetField(ref _isCanceled, value);
     }
 
     public long DownloadedSize
@@ -68,6 +85,12 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
     {
         get => _downloadSpeed;
         set => SetField(ref _downloadSpeed, value);
+    }
+
+    public Exception? NetworkErrorException
+    {
+        get => _networkErrorException;
+        set => SetField(ref _networkErrorException, value);
     }
 
     public static void ReplaceApplicationFile(string target)
@@ -118,22 +141,40 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
 
     public async Task CheckUpdateAsync()
     {
-        CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
-        var versions = await GetUpdateVersionsAsync(CurrentUpdateSourceUrl + "/public_releases");
-        if (versions.Count <= 0)
+        try
         {
-            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
-            return;
-        }
-        var v = (from i in versions orderby i.UploadTime select i).Reverse().ToList()[0]!;
-        var verCode = Version.Parse(v.Version);
-        if (verCode > Assembly.GetExecutingAssembly().GetName().Version)
-        {
-            Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
-            Settings.LastCheckUpdateInfoCache = await GetVersionArtifactsAsync(CurrentUpdateSourceUrl + $"/releases/{v.Id}");
+
+            CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
+            var versions = await GetUpdateVersionsAsync(CurrentUpdateSourceUrl + "/public_releases");
+            if (versions.Count <= 0)
+            {
+                CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+                return;
+            }
+
+            var v = (from i in versions orderby i.UploadTime select i).Reverse().ToList()[0]!;
+            var verCode = Version.Parse(v.Version);
+            if (verCode > Assembly.GetExecutingAssembly().GetName().Version)
+            {
+                Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
+                Settings.LastCheckUpdateInfoCache =
+                    await GetVersionArtifactsAsync(CurrentUpdateSourceUrl + $"/releases/{v.Id}");
+                TaskBarIconService.TaskBarIcon.ShowNotification("发现新版本",
+                    $"{Assembly.GetExecutingAssembly().GetName().Version} -> {verCode}\n" +
+                    "点击以查看详细信息。");
+            }
+
             Settings.LastCheckUpdateTime = DateTime.Now;
         }
-        CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+        catch (Exception ex)
+        {
+            Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+            NetworkErrorException = ex;
+        }
+        finally
+        {
+            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+        }
     }
 
     public async Task DownloadUpdateAsync()
@@ -157,15 +198,51 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
                 .Build();
             Downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
             await Downloader.StartAsync();
-            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+            if (IsCanceled)
+            {
+                IsCanceled = false;
+                return;
+            }
+
             Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
-            
+
+        }
+        catch (Exception ex)
+        {
+            NetworkErrorException = ex;
+        }
+        finally
+        {
+            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+        }
+
+    }
+
+    public async void StopDownloading()
+    {
+        if (Downloader == null)
+        {
+            return;
+        }
+
+        IsCanceled = true;
+        Downloader.Pause();
+        Downloader.Dispose();
+        CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+        await RemoveDownloadedFiles();
+    }
+
+    public async Task RemoveDownloadedFiles()
+    {
+        try
+        {
+            Directory.Delete("./UpdateTemp", true);
         }
         catch
         {
-            CurrentWorkingStatus = UpdateWorkingStatus.NetworkError;
+            // ignored
         }
-
+        await CheckUpdateAsync();
     }
 
     private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
@@ -177,6 +254,7 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
 
     public async Task ExtractUpdateAsync()
     {
+        CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
         await Task.Run(() =>
         {
             ZipFile.ExtractToDirectory(@"./UpdateTemp/update.zip", "./UpdateTemp/extracted", true);

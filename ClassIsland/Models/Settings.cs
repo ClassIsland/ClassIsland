@@ -42,9 +42,6 @@ public class Settings : ObservableRecipient
     private string _selectedProfile = "Default.json";
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
-    private bool _isAutoUpdateCheckingEnabled = true;
-    private bool _isAutoUpdateDownloadingEnabled = true;
-    private bool _isAutoUpdateInstallingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
     {
         {"Release", "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public/public_releases"},
@@ -55,6 +52,8 @@ public class Settings : ObservableRecipient
     private DateTime _lastCheckUpdateTime = DateTime.MinValue;
     private AppCenterReleaseInfo _lastCheckUpdateInfoCache = new();
     private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;
+    private int _updateMode = 1;
+    private bool _autoInstallUpdateNextStartup = true;
 
     public string SelectedProfile
     {
@@ -285,35 +284,17 @@ public class Settings : ObservableRecipient
 
     #region AppUpgrades
 
-    public bool IsAutoUpdateCheckingEnabled
+    /// <summary>
+    /// 更新模式
+    /// </summary>
+    /// 
+    public int UpdateMode
     {
-        get => _isAutoUpdateCheckingEnabled;
+        get => _updateMode;
         set
         {
-            if (value == _isAutoUpdateCheckingEnabled) return;
-            _isAutoUpdateCheckingEnabled = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsAutoUpdateDownloadingEnabled
-    {
-        get => _isAutoUpdateDownloadingEnabled;
-        set
-        {
-            if (value == _isAutoUpdateDownloadingEnabled) return;
-            _isAutoUpdateDownloadingEnabled = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsAutoUpdateInstallingEnabled
-    {
-        get => _isAutoUpdateInstallingEnabled;
-        set
-        {
-            if (value == _isAutoUpdateInstallingEnabled) return;
-            _isAutoUpdateInstallingEnabled = value;
+            if (value == _updateMode) return;
+            _updateMode = value;
             OnPropertyChanged();
         }
     }
@@ -369,6 +350,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _lastUpdateStatus) return;
             _lastUpdateStatus = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AutoInstallUpdateNextStartup
+    {
+        get => _autoInstallUpdateNextStartup;
+        set
+        {
+            if (value == _autoInstallUpdateNextStartup) return;
+            _autoInstallUpdateNextStartup = value;
             OnPropertyChanged();
         }
     }
