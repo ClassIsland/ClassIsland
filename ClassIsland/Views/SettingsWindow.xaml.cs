@@ -250,4 +250,29 @@ public partial class SettingsWindow : Window
         MyDrawerHost.IsRightDrawerOpen = false;
         await UpdateService.CheckUpdateAsync(isForce:true);
     }
+
+    private void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ContributorsDrawer");
+    }
+
+    private void ButtonThirdPartyLibs_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ThirdPartyLibs");
+    }
+
+    private void AppIcon_OnMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        ViewModel.AppIconClickCount++;
+        if (ViewModel.AppIconClickCount >= 10)
+        {
+            Settings.IsDebugOptionsEnabled = true;
+        }
+    }
+
+    private void ButtonCloseDebug_OnClick(object sender, RoutedEventArgs e)
+    {
+        Settings.IsDebugOptionsEnabled = false;
+        ViewModel.AppIconClickCount = 0;
+    }
 }

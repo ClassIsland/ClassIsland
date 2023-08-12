@@ -52,6 +52,7 @@ public class Settings : ObservableRecipient
     private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;
     private int _updateMode = 1;
     private bool _autoInstallUpdateNextStartup = true;
+    private bool _isDebugOptionsEnabled = false;
 
     public string SelectedProfile
     {
@@ -462,6 +463,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _isDebugEnabled) return;
             _isDebugEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsDebugOptionsEnabled
+    {
+        get => _isDebugOptionsEnabled;
+        set
+        {
+            if (value == _isDebugOptionsEnabled) return;
+            _isDebugOptionsEnabled = value;
             OnPropertyChanged();
         }
     }

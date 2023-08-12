@@ -81,6 +81,115 @@
             </Grid>
         </ScrollViewer>
 
+        <Grid Margin="16" x:Key="ContributorsDrawer" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="贡献人员" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <ListView Grid.Row="1" Margin="0 6 0 0"
+                      materialDesign:ListBoxItemAssist.ShowSelection="False">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:ContributionMember}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Image Grid.Column="0" VerticalAlignment="Center"
+                                   Margin="0 0 6 0" Source="{Binding AvatarImage}"
+                                   Width="32" Height="32">
+                                <Image.Clip>
+                                    <RectangleGeometry RadiusX="16" RadiusY="16"
+                                                       Rect="0,0,32,32" />
+                                </Image.Clip>
+                            </Image>
+                            <TextBlock Grid.Column="1" TextWrapping="Wrap">
+                                <Run FontSize="15"
+                                     Text="{Binding Name, Mode=OneWay}" />
+                                <LineBreak />
+                                <Run FontSize="11"
+                                     FontWeight="Light"
+                                     Text="{Binding Description, Mode=OneWay}" />
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <models:ContributionMember
+                    AvatarImage="/Assets/Contributiors/HelloWRC@64w.jpg"
+                    Name="HelloWRC" Description="软件作者，写代码巨水（划掉）" />
+            </ListView>
+        </Grid>
+
+        <Grid Margin="16" x:Key="ThirdPartyLibs" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="第三方库" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <ListView Grid.Row="1" Margin="0 6 0 0" HorizontalContentAlignment="Stretch">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:ContributionLabel}">
+                        <Grid>
+                            <Grid.ToolTip>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="License"
+                                                                 Margin="0 0 3 0" />
+                                        <TextBlock Text="{Binding License}"
+                                                   Margin="0 0 12 0" TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Web"
+                                                                 Margin="0 0 3 0" />
+                                        <TextBlock Text="{Binding Website}"
+                                                   Margin="0 0 12 0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid.ToolTip>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
+                                                     Kind="PackageVariant" VerticalAlignment="Center"
+                                                     Margin="0 0 6 0" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       VerticalAlignment="Center" FontSize="14"
+                                       FontWeight="Bold" TextWrapping="Wrap" />
+                            <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
+                                          License="MIT License"
+                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/" />
+                <models:ContributionLabel Title="gong-wpf-dragdrop"
+                                          License="BSD 3-Clause"
+                                          Website="https://github.com/punker76/gong-wpf-dragdrop" />
+                <models:ContributionLabel Title="wpf-notifyicon"
+                                          License="The Code Project Open License (CPOL) 1.02"
+                                          Website="https://github.com/hardcodet/wpf-notifyicon" />
+                <models:ContributionLabel Title="HarmonyOS Sans" License="-"
+                                          Website="https://developer.harmonyos.com/cn/design/resource" />
+                <models:ContributionLabel Title="MVVM Toolkit"
+                                          Website="https://github.com/CommunityToolkit/dotnet"
+                                          License="MIT License" />
+                <models:ContributionLabel Title="WPF" License="MIT License"
+                                          Website="https://github.com/dotnet/wpf" />
+                <models:ContributionLabel Title=".NET" License="MIT License"
+                                          Website="https://github.com/microsoft/dotnet" />
+            </ListView>
+        </Grid>
+
         <!-- Enabled style -->
         <Style TargetType="FrameworkElement" x:Key="UpdateEnabledStyle">
             <Style.Triggers>
@@ -865,180 +974,65 @@
                         <TabItem Header="关于">
                             <ScrollViewer>
                                 <StackPanel Margin="6" MaxWidth="750">
-                                    <materialDesign:Card>
-                                        <StackPanel>
-                                            <!-- banner -->
-                                            <!--<Grid Height="100">
+                                    <StackPanel>
+                                        <!-- banner -->
+                                        <!--<Grid Height="100">
                             <Image Source="/Assets/banner.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>-->
-                                            <Grid HorizontalAlignment="Stretch" Margin="12">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition />
-                                                </Grid.ColumnDefinitions>
-                                                <!-- icon -->
-                                                <Image Grid.Column="0" Source="/Assets/AppLogo.ico" Width="40"
+                                        <Grid HorizontalAlignment="Stretch" Margin="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- icon -->
+                                            <materialDesign:Ripple Grid.Column="0" VerticalAlignment="Top"
+                                                                   MouseDown="AppIcon_OnMouseDown">
+                                                <Image Source="/Assets/AppLogo.ico" Width="40"
                                                        Height="40" VerticalAlignment="Top" />
-                                                <!-- about -->
-                                                <StackPanel Grid.Column="1" Margin="10 0 0 0">
-                                                    <TextBlock>
+                                            </materialDesign:Ripple>
+                                            <!-- about -->
+                                            <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                                                <TextBlock>
                                                         <Run Text="ClassIsland" FontSize="24" FontWeight="Bold" />
                                                         <LineBreak />
                                                         <Run Text="{x:Static ci:App.AppVersion}" />
                                                         <LineBreak />
                                                         <Run Text="Copyright (c) 2023 HelloWRC" />
-                                                    </TextBlock>
-                                                    <WrapPanel>
-                                                        <Button HorizontalAlignment="Left" Margin="6"
+                                                </TextBlock>
+                                                <WrapPanel>
+                                                    <Button HorizontalAlignment="Left" Margin="6"
                                                                 Style="{StaticResource MaterialDesignFlatButton}">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <materialDesign:PackIcon Kind="Github"
-                                                                    VerticalAlignment="Center" />
-                                                                <TextBlock Text="GitHub" Margin="3 0 0 0"
-                                                                           VerticalAlignment="Center" />
-                                                            </StackPanel>
-                                                        </Button>
-                                                        <Button HorizontalAlignment="Left" Margin="6"
+                                                        <controls:IconText Kind="MicrosoftGithub" Text="GitHub"/>
+                                                    </Button>
+                                                    <Button HorizontalAlignment="Left" Margin="6"
                                                                 Style="{StaticResource MaterialDesignFlatButton}">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <materialDesign:PackIcon Kind="BugOutline"
-                                                                    VerticalAlignment="Center" />
-                                                                <TextBlock Text="问题反馈" Margin="3 0 0 0"
-                                                                           VerticalAlignment="Center" />
-                                                            </StackPanel>
-                                                        </Button>
-                                                        <Button HorizontalAlignment="Left" Margin="6"
+                                                        <controls:IconText Kind="BugOutline" Text="问题反馈"/>
+                                                    </Button>
+                                                    <Button HorizontalAlignment="Left" Margin="6"
                                                                 Style="{StaticResource MaterialDesignFlatButton}"
                                                                 Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <materialDesign:PackIcon Kind="License"
-                                                                    VerticalAlignment="Center" />
-                                                                <TextBlock Text="开源许可" Margin="3 0 0 0"
-                                                                           VerticalAlignment="Center" />
-                                                            </StackPanel>
-                                                            <Button.CommandParameter>
-                                                                <StaticResource ResourceKey="OpenSourceLicense" />
-                                                            </Button.CommandParameter>
-                                                        </Button>
-                                                    </WrapPanel>
-                                                </StackPanel>
-                                            </Grid>
+                                                        <controls:IconText Kind="License" Text="开源许可"/>
+                                                        <Button.CommandParameter>
+                                                            <StaticResource ResourceKey="OpenSourceLicense" />
+                                                        </Button.CommandParameter>
+                                                    </Button>
+                                                    <Button HorizontalAlignment="Left" Margin="6"
+                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Click="ButtonContributors_OnClick">
+                                                        <controls:IconText Kind="PeopleGroupOutline" Text="贡献人员"/>
+                                                    </Button>
+                                                    <Button HorizontalAlignment="Left" Margin="6"
+                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Click="ButtonThirdPartyLibs_OnClick">
+                                                        <controls:IconText Kind="PackageVariant" Text="第三方库"/>
+                                                    </Button>
+                                                </WrapPanel>
+                                            </StackPanel>
+                                        </Grid>
 
-                                        </StackPanel>
-                                    </materialDesign:Card>
-                                    <materialDesign:Card Margin="0 6 0 0">
-                                        <StackPanel Margin="12">
-                                            <TextBlock Text="贡献人员" FontWeight="Bold" FontSize="14" />
-                                            <ListView Margin="0 6 0 0"
-                                                      materialDesign:ListBoxItemAssist.ShowSelection="False"
-                                                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                                <ListView.ItemTemplate>
-                                                    <DataTemplate DataType="{x:Type models:ContributionMember}">
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto" />
-                                                                <ColumnDefinition />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Image Grid.Column="0" VerticalAlignment="Center"
-                                                                   Margin="0 0 6 0" Source="{Binding AvatarImage}"
-                                                                   Width="32" Height="32">
-                                                                <Image.Clip>
-                                                                    <RectangleGeometry RadiusX="16" RadiusY="16"
-                                                                        Rect="0,0,32,32" />
-                                                                </Image.Clip>
-                                                            </Image>
-                                                            <TextBlock Grid.Column="1">
-                                                                <Run FontSize="15"
-                                                                     FontWeight="Bold"
-                                                                     Text="{Binding Name, Mode=OneWay}" />
-                                                                <LineBreak />
-                                                                <Run FontSize="11"
-                                                                     Text="{Binding Description, Mode=OneWay}" />
-                                                            </TextBlock>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ListView.ItemTemplate>
-                                                <models:ContributionMember
-                                                    AvatarImage="/Assets/Contributiors/HelloWRC@64w.jpg"
-                                                    Name="HelloWRC" Description="软件作者，写代码巨水（划掉）" />
-                                            </ListView>
-                                        </StackPanel>
-                                    </materialDesign:Card>
-                                    <materialDesign:Card Margin="0 6 0 0">
-                                        <StackPanel Margin="12">
-                                            <TextBlock Text="第三方库" FontWeight="Bold" FontSize="14" />
-                                            <ListView Margin="0 6 0 0" HorizontalContentAlignment="Stretch"
-                                                      materialDesign:ListBoxItemAssist.ShowSelection="False"
-                                                      HorizontalAlignment="Stretch"
-                                                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-                                                <ListView.ItemTemplate>
-                                                    <DataTemplate DataType="{x:Type models:ContributionLabel}">
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto" />
-                                                                <ColumnDefinition />
-                                                            </Grid.ColumnDefinitions>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                            </Grid.RowDefinitions>
-                                                            <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
-                                                                Kind="PackageVariant" VerticalAlignment="Center"
-                                                                Margin="0 0 6 0" />
-                                                            <TextBlock Grid.Row="0" Grid.Column="1"
-                                                                       Text="{Binding Title}"
-                                                                       VerticalAlignment="Center" FontSize="14"
-                                                                       FontWeight="Bold" TextWrapping="Wrap" />
-                                                            <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
-                                                            <WrapPanel Grid.Row="2" Grid.Column="1" Margin="0 6 0 0"
-                                                                       Orientation="Horizontal">
-                                                                <!--<StackPanel Orientation="Horizontal">
-                                                                <materialDesign:PackIcon Kind="Person" Margin="0 0 3 0"/>
-                                                                <TextBlock Text="{Binding Owner}" Margin="0 0 12 0" TextWrapping="Wrap"/>
-                                                            </StackPanel>-->
+                                    </StackPanel>
 
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <materialDesign:PackIcon Kind="License"
-                                                                        Margin="0 0 3 0" />
-                                                                    <TextBlock Text="{Binding License}"
-                                                                               Margin="0 0 12 0" TextWrapping="Wrap" />
-                                                                </StackPanel>
-
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <materialDesign:PackIcon Kind="Web"
-                                                                        Margin="0 0 3 0" />
-                                                                    <TextBlock Text="{Binding Website}"
-                                                                               Margin="0 0 12 0" TextWrapping="Wrap" />
-                                                                </StackPanel>
-                                                            </WrapPanel>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ListView.ItemTemplate>
-                                                <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
-                                                                          License="MIT License"
-                                                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/" />
-                                                <models:ContributionLabel Title="gong-wpf-dragdrop"
-                                                                          License="BSD 3-Clause"
-                                                                          Website="https://github.com/punker76/gong-wpf-dragdrop" />
-                                                <models:ContributionLabel Title="wpf-notifyicon"
-                                                                          License="The Code Project Open License (CPOL) 1.02"
-                                                                          Website="https://github.com/hardcodet/wpf-notifyicon" />
-                                                <models:ContributionLabel Title="HarmonyOS Sans" License="-"
-                                                                          Website="https://developer.harmonyos.com/cn/design/resource" />
-                                                <models:ContributionLabel Title="MVVM Toolkit"
-                                                                          Website="https://github.com/CommunityToolkit/dotnet"
-                                                                          License="MIT License" />
-                                                <models:ContributionLabel Title="WPF" License="MIT License"
-                                                                          Website="https://github.com/dotnet/wpf" />
-                                                <models:ContributionLabel Title=".NET" License="MIT License"
-                                                                          Website="https://github.com/microsoft/dotnet" />
-                                            </ListView>
-                                        </StackPanel>
-                                    </materialDesign:Card>
-                                    <materialDesign:Card Margin="0 6 0 0">
+                                    <materialDesign:Card Margin="0 6 0 0" Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <Expander Background="Transparent">
                                             <Expander.Header>
                                                 <TextBlock Margin="-12 0">
@@ -1053,6 +1047,10 @@
                                                         Click="ButtonCrash_OnClick" HorizontalAlignment="Left" />
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                         Content="ToastMe!"
+                                                        Click="ButtonDebugToastText_OnClick"
+                                                        HorizontalAlignment="Left"/>
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Content="关闭调试菜单"
                                                         Click="ButtonDebugToastText_OnClick"
                                                         HorizontalAlignment="Left"/>
                                             </StackPanel>

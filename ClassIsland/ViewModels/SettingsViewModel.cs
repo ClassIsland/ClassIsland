@@ -13,6 +13,7 @@ public class SettingsViewModel : ObservableRecipient
     private object? _drawerContent = new();
     private FlowDocument _currentMarkdownDocument = new();
     private UpdateChannel _selectedChannelModel = new();
+    private int _appIconClickCount = 0;
 
     public Screen[] Screens
     {
@@ -65,6 +66,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _selectedChannelModel)) return;
             _selectedChannelModel = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AppIconClickCount
+    {
+        get => _appIconClickCount;
+        set
+        {
+            if (value == _appIconClickCount) return;
+            _appIconClickCount = value;
             OnPropertyChanged();
         }
     }
