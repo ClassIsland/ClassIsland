@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland;
 
-public class SettingsService : BackgroundService, INotifyPropertyChanged
+public class SettingsService : IHostedService, INotifyPropertyChanged
 {
     private Settings _settings = new();
 
@@ -21,7 +21,11 @@ public class SettingsService : BackgroundService, INotifyPropertyChanged
         set => SetField(ref _settings, value);
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken) => null;
+    public SettingsService(IHostApplicationLifetime appLifetime)
+    {
+        LoadSettings();
+        appLifetime.ApplicationStopping.Register(SaveSettings);
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -58,12 +62,12 @@ public class SettingsService : BackgroundService, INotifyPropertyChanged
         return true;
     }
 
-    public async override Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         LoadSettings();
     }
 
-    public async override Task StopAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         SaveSettings();
     }

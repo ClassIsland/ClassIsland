@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -19,6 +20,7 @@ using Microsoft.AppCenter.Crashes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using UpdateStatus = ClassIsland.Enums.UpdateStatus;
 
 namespace ClassIsland;
 /// <summary>
@@ -51,10 +53,7 @@ public partial class App : Application
         set;
     } = new();
 
-    public static string AppVersion
-    {
-        get;
-    } = "1.0 pre-release 1";
+    public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
@@ -134,8 +133,13 @@ public partial class App : Application
             }).Build();
 
         await Host.StartAsync();
-        GetService<SettingsService>().LoadSettings();
         GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();
+        if (ApplicationCommand.UpdateDeleteTarget != null)
+        {
+            GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+            GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
+        }
+        GetService<UpdateService>().AppStartup();
         MainWindow = new MainWindow();
         MainWindow.Show();
     }

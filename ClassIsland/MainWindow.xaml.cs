@@ -731,4 +731,10 @@ public partial class MainWindow : Window
             HelpsWindow.Show();
         }
     }
+
+    private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenSettingsWindow();
+        SettingsWindow.RootTabControl.SelectedIndex = 3;
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -27,7 +28,7 @@ using File = System.IO.File;
 
 namespace ClassIsland;
 
-public class UpdateService : BackgroundService, INotifyPropertyChanged
+public class UpdateService : IHostedService, INotifyPropertyChanged
 {
     private UpdateWorkingStatus _currentWorkingStatus = UpdateWorkingStatus.Idle;
     private long _downloadedSize = 0;
@@ -57,7 +58,7 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
         get;
     }
 
-    public UpdateService(SettingsService settingsService, TaskBarIconService taskBarIconService)
+    public UpdateService(SettingsService settingsService, TaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime)
     {
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
@@ -93,6 +94,56 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
         set => SetField(ref _networkErrorException, value);
     }
 
+    public async void AppStartup()
+    {
+        if (Settings.AutoInstallUpdateNextStartup 
+            && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+        {
+            await RestartAppToUpdateAsync();
+        }
+
+        if (Settings.UpdateMode < 1)
+        {
+            return;
+        }
+        await CheckUpdateAsync();
+
+        if (Settings.UpdateMode < 2)
+        {
+            return;
+        }
+        if (Settings.LastUpdateStatus == UpdateStatus.UpdateAvailable)
+        {
+            await DownloadUpdateAsync();
+            Settings.AutoInstallUpdateNextStartup = false;
+        }
+
+        if (Settings.UpdateMode < 3)
+        {
+            return;
+        }
+        if (Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+        {
+            Settings.AutoInstallUpdateNextStartup = true;
+        }
+    }
+
+    public static readonly ObservableCollection<UpdateChannel> UpdateChannels = new()
+    {
+        new UpdateChannel
+        {
+            Name = "稳定通道",
+            Description = "接收应用稳定版的更新，包含较新且稳定的特性和改进。",
+            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public"
+        },
+        new UpdateChannel
+        {
+            Name = "测试通道",
+            Description = "接收应用最新的测试版更新，包含最新的特性和改进，可能包含较多的缺陷和未完工的功能。",
+            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta"
+        },
+    };
+
     public static void ReplaceApplicationFile(string target)
     {
         if (!File.Exists(target))
@@ -113,6 +164,14 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
         }
         NativeWindowHelper.WaitForFile(target);
         File.Delete(target);
+        try
+        {
+            Directory.Delete("./UpdateTemp", true);
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     public static async Task<List<AppCenterReleaseInfoMin>> GetUpdateVersionsAsync(string queryRoot)
@@ -139,7 +198,7 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
         throw new ArgumentException("Release package info array is null!");
     }
 
-    public async Task CheckUpdateAsync()
+    public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
         try
         {
@@ -154,7 +213,10 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
 
             var v = (from i in versions orderby i.UploadTime select i).Reverse().ToList()[0]!;
             var verCode = Version.Parse(v.Version);
-            if (verCode > Assembly.GetExecutingAssembly().GetName().Version)
+            if ((verCode > Assembly.GetExecutingAssembly().GetName().Version &&
+                 (Settings.LastUpdateStatus != UpdateStatus.UpdateDownloaded || isCancel)) // 正常更新
+                || isForce // 强制更新 
+                ) 
             {
                 Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
                 Settings.LastCheckUpdateInfoCache =
@@ -242,7 +304,7 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
         {
             // ignored
         }
-        await CheckUpdateAsync();
+        await CheckUpdateAsync(isCancel:true);
     }
 
     private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
@@ -263,8 +325,8 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
 
     public async Task RestartAppToUpdateAsync()
     {
+        TaskBarIconService.MainTaskBarIcon.ShowNotification("正在安装应用更新", "这可能需要10-30秒的时间，请稍后……");
         await ExtractUpdateAsync();
-        Application.Current.Shutdown();
         Process.Start(new ProcessStartInfo()
         {
             FileName = "./UpdateTemp/extracted/ClassIsland.exe",
@@ -274,12 +336,16 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
                 "-m", "true"
             }
         });
+        Application.Current.Shutdown();
         App.ReleaseLock();
     }
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken) => null;
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        return;
+    }
 
-    public override async Task StartAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
         return;
     }

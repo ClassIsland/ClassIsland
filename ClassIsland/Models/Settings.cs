@@ -44,11 +44,9 @@ public class Settings : ObservableRecipient
     private bool _isReportingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
     {
-        {"Release", "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public/public_releases"},
-        {"Beta", "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta/public_releases"}
     };
 
-    private string _selectedChannel = "Release";
+    private string _selectedChannel = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public";
     private DateTime _lastCheckUpdateTime = DateTime.MinValue;
     private AppCenterReleaseInfo _lastCheckUpdateInfoCache = new();
     private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;

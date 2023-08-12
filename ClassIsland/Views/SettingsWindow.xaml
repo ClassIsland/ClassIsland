@@ -56,26 +56,30 @@
         </Grid>
 
         <!-- Drawers -->
-        <Grid Margin="16" Width="300" x:Key="AdvancedUpdateSettings" >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0">
-                <TextBlock Text="更新高级设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-                <materialDesign:Snackbar Margin="0 12 0 0"
-                                         Message="警告！随意修改这些设置可能会损坏应用的更新功能或使应用无法正常工作，在修改时请务必谨慎！" />
-            </StackPanel>
+        <ScrollViewer Width="300" x:Key="AdvancedUpdateSettings" 
+                      VerticalScrollBarVisibility="Auto"
+                      materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+            <Grid Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="更新高级设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                </StackPanel>
 
-            <TabControl Grid.Row="1">
-                <TabItem Header="基本">
-
-                </TabItem>
-                <TabItem Header="更新源">
-
-                </TabItem>
-            </TabControl>
-        </Grid>
+                <StackPanel Grid.Row="1" Margin="0 16 0 0">
+                    <!-- 强制更新 -->
+                    <TextBlock Text="强制更新" Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <TextBlock Text="将应用强制更新到当前分支的最新版本，即使当前版本高于该分支的最新版本。" FontWeight="Light" TextWrapping="Wrap" Margin="0 6 0 0"/>
+                    <Button Margin="0 3 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                            HorizontalAlignment="Left"
+                            Click="ButtonForceUpdate_OnClick">
+                        <controls:IconText Kind="AlertOutline" Text="强制更新"/>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
 
         <!-- Enabled style -->
         <Style TargetType="FrameworkElement" x:Key="UpdateEnabledStyle">
@@ -426,8 +430,24 @@
                                         <!-- 更新状态图标 -->
                                         <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
                                                                  Width="48" Height="48"
-                                                                 Margin="0 0 8 0"
-                                                                 Kind="Update"/>
+                                                                 Margin="0 0 8 0">
+                                            <materialDesign:PackIcon.Style>
+                                                <Style TargetType="materialDesign:PackIcon">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpToDate">
+                                                            <Setter Property="Kind" Value="Recent"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpdateAvailable">
+                                                            <Setter Property="Kind" Value="Upload"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpdateDownloaded">
+                                                            <Setter Property="Kind" Value="MonitorDownload"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Kind" Value="Recent"/>
+                                                </Style>
+                                            </materialDesign:PackIcon.Style>
+                                        </materialDesign:PackIcon>
 
                                         <!-- 更新状态说明 -->
                                         <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,0,16">
@@ -671,9 +691,9 @@
                                                 <controls:IconText Kind="Cancel" Text="取消更新" />
                                             </Button>
                                             <!-- debug -->
-                                            <Button Content="（debug）重置更新状态" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugResetUpdate_OnClick"/>
-                                            <Button Content="（debug）下载完成" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugDownloaded_OnClick"/>
-                                            <Button Content="（debug）网络错误" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugNetworkError_OnClick"/>
+                                            <Button Content="（debug）重置更新状态" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugResetUpdate_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <Button Content="（debug）下载完成" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugDownloaded_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <Button Content="（debug）网络错误" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugNetworkError_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                         </WrapPanel>
 
                                         <!-- 加载中 -->
@@ -685,8 +705,8 @@
                                                      Value="0" Margin="0,9,0,9"/>
 
                                         <!-- 重启更新 -->
-                                        <CheckBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
-                                                  Margin="0,8,0,-8"
+                                        <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                                                  Margin="0,8,0,0"
                                                   IsChecked="{Binding Settings.AutoInstallUpdateNextStartup}"
                                                   Content="在下次启动应用时自动安装更新。" >
                                             <CheckBox.Style>
@@ -703,10 +723,10 @@
                                         </CheckBox>
 
                                         <!-- 更新日志 -->
-                                        <Expander Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                                        <Expander Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
                                                   Margin="0,12,0,-12"
                                                   Background="Transparent"
-                                                  Header="更新日志" Grid.RowSpan="2">
+                                                  Header="更新日志">
                                             <Expander.Style>
                                                 <Style TargetType="Expander" BasedOn="{StaticResource MaterialDesignExpander}">
                                                     <Style.Triggers>
@@ -756,7 +776,7 @@
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="1">
                                                                 <Setter Property="Kind" Value="RefreshAuto"/>
-                                                                <Setter Property="Text" Value="自动检查更新，并在有更新时提醒我。（推荐）"/>
+                                                                <Setter Property="Text" Value="自动检查更新，并在有更新时提醒我。"/>
                                                             </DataTrigger>
                                                             <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="2">
                                                                 <Setter Property="Kind" Value="AutoDownload"/>
@@ -779,13 +799,25 @@
                                             <controls:SettingsControl IconGlyph="DownloadOutline" Header="更新通道"
                                                                       Description="控制应用从何处获取更新。">
                                                 <controls:SettingsControl.Switcher>
-                                                    <ComboBox Width="150" />
+                                                    <ComboBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
+                                                              ItemsSource="{x:Static ci:UpdateService.UpdateChannels}"
+                                                              SelectedValue="{Binding Settings.SelectedChannel}"
+                                                              SelectedValuePath="RootUrl">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Name}"/>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
                                                 </controls:SettingsControl.Switcher>
                                             </controls:SettingsControl>
-                                            <TextBlock Margin="0 8 0 0" FontSize="13" Text="频道说明123123" />
-                                            <Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"
+                                            <TextBlock Margin="0 8 0 0"
+                                                       FontWeight="Light"
+                                                       Text="{Binding ViewModel.SelectedChannelModel.Description, Mode=OneWay}" />
+                                            <!--<TextBlock Text="{Binding Settings.SelectedChannel, Mode=OneWay}"/>-->
+                                            <!--<Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"
                                                     HorizontalAlignment="Left"
-                                                    Margin="0 3 0 0" />
+                                                    Margin="0 3 0 0" />-->
                                         </StackPanel>
                                     </materialDesign:Card>
 
@@ -794,7 +826,8 @@
                                         <Button Content="高级设置" 
                                                 Style="{StaticResource MaterialDesignFlatButton}"
                                                 HorizontalAlignment="Left"
-                                                Margin="0 8 0 0" />
+                                                Margin="0 8 0 0" 
+                                                Click="ButtonAdvancedSettings_OnClick"/>
                                     </Border>
                                 </StackPanel>
                             </ScrollViewer>

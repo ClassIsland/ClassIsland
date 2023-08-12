@@ -86,6 +86,7 @@ public partial class SettingsWindow : Window
         {
             UpdateCache();
         }
+        RefreshDescription();
     }
 
     private void UpdateCache()
@@ -116,7 +117,14 @@ public partial class SettingsWindow : Window
     protected override void OnContentRendered(EventArgs e)
     {
         Settings.PropertyChanged += SettingsOnPropertyChanged;
+        RefreshDescription();
         base.OnContentRendered(e);
+    }
+
+    private void RefreshDescription()
+    {
+        var m = from c in UpdateService.UpdateChannels where c.RootUrl == Settings.SelectedChannel select c;
+        ViewModel.SelectedChannelModel = m.ToList().Count > 0 ? m.ToList()[0] : new UpdateChannel();
     }
 
     private void RefreshMonitors()
@@ -175,7 +183,6 @@ public partial class SettingsWindow : Window
 
     private async void ButtonCheckUpdate_OnClick(object sender, RoutedEventArgs e)
     {
-        Settings.SelectedChannel = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta";
         await UpdateService.CheckUpdateAsync();
     }
 
@@ -225,5 +232,22 @@ public partial class SettingsWindow : Window
     private void UpdateErrorMessage_OnActionClick(object sender, RoutedEventArgs e)
     {
         UpdateService.NetworkErrorException = null;
+    }
+
+    private void ButtonAdvancedSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("AdvancedUpdateSettings");
+    }
+
+    private void OpenDrawer(string key)
+    {
+        MyDrawerHost.IsRightDrawerOpen = true;
+        ViewModel.DrawerContent = FindResource(key);
+    }
+
+    private async void ButtonForceUpdate_OnClick(object sender, RoutedEventArgs e)
+    {
+        MyDrawerHost.IsRightDrawerOpen = false;
+        await UpdateService.CheckUpdateAsync(isForce:true);
     }
 }

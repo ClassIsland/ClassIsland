@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland;
 
-public class TaskBarIconService : BackgroundService
+public class TaskBarIconService : IHostedService
 {
     public TaskbarIcon MainTaskBarIcon
     {
@@ -29,12 +29,13 @@ public class TaskBarIconService : BackgroundService
         ToolTipText = "ClassIsland"
     };
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken) => new Task(() =>
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-    });
+        return;
+    }
 
-    public override Task StartAsync(CancellationToken cancellationToken)
+    public async Task StopAsync(CancellationToken cancellationToken)
     {
-        return base.StartAsync(cancellationToken);
+        return;
     }
 }
