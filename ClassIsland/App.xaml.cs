@@ -130,12 +130,12 @@ public partial class App : Application
                 services.AddSingleton<SettingsService>();
                 services.AddSingleton<UpdateService>();
                 services.AddSingleton<TaskBarIconService>();
-                //services.AddHostedService<TaskBarIconService>();
+                services.AddHostedService<TaskBarIconService>();
             }).Build();
 
         await Host.StartAsync();
         GetService<SettingsService>().LoadSettings();
-        GetService<TaskBarIconService>().TaskBarIcon.ForceCreate();
+        GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();
         MainWindow = new MainWindow();
         MainWindow.Show();
     }

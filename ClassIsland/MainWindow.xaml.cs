@@ -90,7 +90,7 @@ public partial class MainWindow : Window
         {
             LoadSettings();
         };
-        TaskBarIconService.TaskBarIcon.TrayBalloonTipClicked += TaskBarIconOnTrayBalloonTipClicked;
+        TaskBarIconService.MainTaskBarIcon.TrayBalloonTipClicked += TaskBarIconOnTrayBalloonTipClicked;
         UpdateTimer.Tick += UpdateTimerOnTick;
         DataContext = this;
         UpdateTimer.Start();
@@ -303,7 +303,10 @@ public partial class MainWindow : Window
     protected override void OnContentRendered(EventArgs e)
     {
         UpdateTheme();
-        TaskBarIconService.TaskBarIcon.ContextMenu = (ContextMenu)FindResource("AppContextMenu");
+        var menu = (ContextMenu)FindResource("AppContextMenu");
+        menu.DataContext = this;
+        TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
+        TaskBarIconService.MainTaskBarIcon.DataContext = this;
         base.OnContentRendered(e);
     }
 
@@ -337,7 +340,7 @@ public partial class MainWindow : Window
         ViewModel.Settings = r;
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
         SettingsWindow.Settings = r;
-        }
+    }
 
     public void SaveSettings()
     {

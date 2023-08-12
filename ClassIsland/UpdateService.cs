@@ -159,7 +159,7 @@ public class UpdateService : BackgroundService, INotifyPropertyChanged
                 Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
                 Settings.LastCheckUpdateInfoCache =
                     await GetVersionArtifactsAsync(CurrentUpdateSourceUrl + $"/releases/{v.Id}");
-                TaskBarIconService.TaskBarIcon.ShowNotification("发现新版本",
+                TaskBarIconService.MainTaskBarIcon.ShowNotification("发现新版本",
                     $"{Assembly.GetExecutingAssembly().GetName().Version} -> {verCode}\n" +
                     "点击以查看详细信息。");
             }

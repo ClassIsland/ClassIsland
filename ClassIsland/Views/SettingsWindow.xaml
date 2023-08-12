@@ -549,8 +549,8 @@
 
                                         <!-- 网络错误 -->
                                         <materialDesign:Snackbar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                                                                 IsActive="True"
                                                                  HorizontalAlignment="Stretch"
+                                                                 IsActive="True"
                                                                  Margin="0 6">
                                             <materialDesign:Snackbar.Style>
                                                 <Style TargetType="materialDesign:Snackbar">

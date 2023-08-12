@@ -10,7 +10,7 @@ namespace ClassIsland;
 
 public class TaskBarIconService : BackgroundService
 {
-    public TaskbarIcon TaskBarIcon
+    public TaskbarIcon MainTaskBarIcon
     {
         get;
     } = new()
@@ -20,5 +20,21 @@ public class TaskBarIconService : BackgroundService
         ToolTipText = "ClassIsland"
     };
 
-    protected override Task ExecuteAsync(CancellationToken stoppingToken) => null;
+    public TaskbarIcon UpdateNotificationIcon
+    {
+        get;
+    } = new()
+    {
+        IconSource = new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.ico", UriKind.Absolute)),
+        ToolTipText = "ClassIsland"
+    };
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) => new Task(() =>
+    {
+    });
+
+    public override Task StartAsync(CancellationToken cancellationToken)
+    {
+        return base.StartAsync(cancellationToken);
+    }
 }

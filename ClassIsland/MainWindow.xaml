@@ -306,6 +306,8 @@
           IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}">
         <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
         <!--<tb:TaskbarIcon ContextMenu="{StaticResource AppContextMenu}"
+                        DataContext="{Binding}"
+                        x:Name="MyTaskBarIcon"
                         IconSource="/Assets/AppLogo.ico"
                         MenuActivation="LeftOrRightClick"
                         ToolTipText="ClassIsland"
