@@ -54,6 +54,11 @@ public class Settings : ObservableRecipient
     private bool _autoInstallUpdateNextStartup = true;
     private bool _isDebugOptionsEnabled = false;
 
+    public void NotifyPropertyChanged(string propertyName)
+    {
+        OnPropertyChanged(propertyName);
+    }
+ 
     public string SelectedProfile
     {
         get => _selectedProfile;

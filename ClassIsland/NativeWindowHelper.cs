@@ -87,9 +87,9 @@ public static class NativeWindowHelper
         var win = GetForegroundWindow();
         GetWindowRect(new HandleRef(null, win), ref rect);
         GetWindowThreadProcessId(win, out var pid);
-        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
         try
         {
+            //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
             if (Process.GetProcessById(pid).ProcessName == "explorer")
             {
                 return false;

@@ -279,45 +279,47 @@
                         <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
                     </DataTrigger.ExitActions>
                 </DataTrigger>
-
-                <!-- 窗口上课隐藏 -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding ViewModel.Settings.HideOnClass}" Value="True"/>
-                        <Condition Binding="{Binding ViewModel.CurrentStatus}" Value="OnClass"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                </MultiDataTrigger>
-                <!-- 窗口最大化隐藏 -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding ViewModel.Settings.HideOnMaxWindow}" Value="True"/>
-                        <Condition Binding="{Binding ViewModel.IsForegroundMaxWindow}" Value="True"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                </MultiDataTrigger>
-                <!-- 窗口全屏隐藏 -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding ViewModel.Settings.HideOnFullscreen}" Value="True"/>
-                        <Condition Binding="{Binding ViewModel.IsForegroundFullscreen}" Value="True"/>
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                </MultiDataTrigger>
-
-                <!-- 窗口层级 -->
-                <DataTrigger Binding="{Binding ViewModel.Settings.WindowLayer}" Value="1">
-                    <Setter Property="Topmost" Value="True"/>
-                </DataTrigger>
             </Style.Triggers>
             <!-- 默认状态 -->
-            <Setter Property="Visibility" Value="Visible"/>
             <Setter Property="Topmost" Value="False"/>
         </Style>
     </Window.Style>
     <Grid ContextMenu="{StaticResource AppContextMenu}" 
           ClipToBounds="True"
           IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+
+                    <!-- 窗口上课隐藏 -->
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}" Value="True"/>
+                            <Condition Binding="{Binding ViewModel.CurrentStatus, Mode=OneWay}" Value="OnClass"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </MultiDataTrigger>
+                    <!-- 窗口最大化隐藏 -->
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding ViewModel.Settings.HideOnMaxWindow, Mode=OneWay}" Value="True"/>
+                            <Condition Binding="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </MultiDataTrigger>
+                    <!-- 窗口全屏隐藏 -->
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding ViewModel.Settings.HideOnFullscreen, Mode=OneWay}" Value="True"/>
+                            <Condition Binding="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </MultiDataTrigger>
+                </Style.Triggers>
+
+                <Setter Property="Visibility" Value="Visible"/>
+            </Style>
+        </Grid.Style>
         <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
         <!--<tb:TaskbarIcon ContextMenu="{StaticResource AppContextMenu}"
                         DataContext="{Binding}"

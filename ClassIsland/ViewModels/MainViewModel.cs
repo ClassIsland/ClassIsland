@@ -202,6 +202,7 @@ public class MainViewModel : ObservableRecipient
             if (value == _isForegroundFullscreen) return;
             _isForegroundFullscreen = value;
             OnPropertyChanged();
+            Settings.NotifyPropertyChanged(nameof(Settings.HideOnFullscreen));
         }
     }
 
@@ -213,6 +214,7 @@ public class MainViewModel : ObservableRecipient
             if (value == _isForegroundMaxWindow) return;
             _isForegroundMaxWindow = value;
             OnPropertyChanged();
+            Settings.NotifyPropertyChanged(nameof(Settings.HideOnMaxWindow));
         }
     }
 
@@ -248,4 +250,6 @@ public class MainViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public SettingsService SettingsService => App.GetService<SettingsService>();
 }
