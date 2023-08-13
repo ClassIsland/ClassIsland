@@ -79,7 +79,8 @@ jobs:
       - name: Publish application
         run: |
           cd $Wap_Project_Directory
-          dotnet publish -p:PublishProfile=FolderProfile
+          ls
+          dotnet publish ./ClassIsland.csproj -p:PublishProfile=FolderProfile -c Release -
           
       - name: Package application
         run: |
