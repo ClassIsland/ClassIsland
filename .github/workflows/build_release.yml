@@ -66,6 +66,9 @@ jobs:
           $env:app_ver = (git describe --abbrev=0 --tags)
           echo $env:app_ver
       
+      - name: List files
+        run: ls
+      
       # Install the .NET Core workload
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
@@ -78,13 +81,13 @@ jobs:
       
       - name: Publish application
         run: |
-          cd $Wap_Project_Directory
+          cd ./ClassIsland
           ls
           dotnet publish ./ClassIsland.csproj -p:PublishProfile=FolderProfile -c Release -
           
       - name: Package application
         run: |
-          cd ClassIsland\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\
+          cd .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\
           zip ClassIsland.zip ClassIsland.exe
           
       - name: Upload artefact to App Center
@@ -93,7 +96,7 @@ jobs:
           appName: HelloWRC/ClassIsland
           token: ${{secrets.APPCENTER_TOKEN}}
           group: Collaborators
-          file: ClassIsland\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip
+          file: .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip
           notifyTesters: true
           debug: false
           buildVersion: $env:app_ver
