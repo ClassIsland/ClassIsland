@@ -50,7 +50,7 @@ public class Settings : ObservableRecipient
     private DateTime _lastCheckUpdateTime = DateTime.MinValue;
     private AppCenterReleaseInfo _lastCheckUpdateInfoCache = new();
     private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;
-    private int _updateMode = 1;
+    private int _updateMode = 3;
     private bool _autoInstallUpdateNextStartup = true;
     private bool _isDebugOptionsEnabled = false;
 

@@ -117,6 +117,7 @@ public partial class SettingsWindow : Window
     protected override void OnContentRendered(EventArgs e)
     {
         Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateCache();
         RefreshDescription();
         base.OnContentRendered(e);
     }

@@ -12,8 +12,8 @@ using System.Windows;
                                               // app, or any theme specific resource dictionaries)
 )]
 
-[assembly: AssemblyVersion("0.9.1")]
-[assembly: AssemblyFileVersion("0.9.1")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyTitle("ClassIsland")]
 [assembly: AssemblyProduct("ClassIsland")]
 [assembly: SupportedOSPlatform("Windows")]

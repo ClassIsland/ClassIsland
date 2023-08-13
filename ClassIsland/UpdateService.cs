@@ -225,6 +225,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     $"{Assembly.GetExecutingAssembly().GetName().Version} -> {verCode}\n" +
                     "点击以查看详细信息。");
             }
+            else
+            {
+                Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+            }
 
             Settings.LastCheckUpdateTime = DateTime.Now;
         }

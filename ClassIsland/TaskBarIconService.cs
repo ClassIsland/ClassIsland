@@ -15,17 +15,11 @@ public class TaskBarIconService : IHostedService
         get;
     } = new()
     {
-        IconSource = new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.ico", UriKind.Absolute)),
+        IconSource = new GeneratedIconSource()
+        {
+            BackgroundSource = new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png", UriKind.Absolute)),
+        },
         MenuActivation = PopupActivationMode.LeftOrRightClick,
-        ToolTipText = "ClassIsland"
-    };
-
-    public TaskbarIcon UpdateNotificationIcon
-    {
-        get;
-    } = new()
-    {
-        IconSource = new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.ico", UriKind.Absolute)),
         ToolTipText = "ClassIsland"
     };
 

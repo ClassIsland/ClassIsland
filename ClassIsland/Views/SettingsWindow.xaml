@@ -175,6 +175,18 @@
                 <models:ContributionLabel Title="gong-wpf-dragdrop"
                                           License="BSD 3-Clause"
                                           Website="https://github.com/punker76/gong-wpf-dragdrop" />
+                <models:ContributionLabel Title="H.NotifyIcon.Wpf"
+                                          License="MIT License"
+                                          Website="https://github.com/HavenDV/H.NotifyIcon" />
+                <models:ContributionLabel Title="MdXaml"
+                                          License="MIT License"
+                                          Website="https://github.com/whistyun/MdXaml" />
+                <models:ContributionLabel Title="Microsoft.AppCenter"
+                                          License="MIT License"
+                                          Website="https://aka.ms/telgml" />
+                <models:ContributionLabel Title="Downloader"
+                                          License="MIT License"
+                                          Website="https://github.com/bezzad/Downloader" />
                 <models:ContributionLabel Title="wpf-notifyicon"
                                           License="The Code Project Open License (CPOL) 1.02"
                                           Website="https://github.com/hardcodet/wpf-notifyicon" />
@@ -493,10 +505,10 @@
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
 
-                                    <!-- 指针穿透 -->
+                                    <!-- 指针穿透 --><!--
                                     <controls:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
                                                            Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
-                                                           IsOn="{Binding Settings.IsMouseClickingEnabled, Mode=TwoWay}" />
+                                                           IsOn="{Binding Settings.IsMouseClickingEnabled, Mode=TwoWay}" />-->
 
                                 </StackPanel>
                             </ScrollViewer>
@@ -1016,21 +1028,72 @@
                                                             <StaticResource ResourceKey="OpenSourceLicense" />
                                                         </Button.CommandParameter>
                                                     </Button>
-                                                    <Button HorizontalAlignment="Left" Margin="6"
-                                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Click="ButtonContributors_OnClick">
-                                                        <controls:IconText Kind="PeopleGroupOutline" Text="贡献人员"/>
-                                                    </Button>
-                                                    <Button HorizontalAlignment="Left" Margin="6"
-                                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Click="ButtonThirdPartyLibs_OnClick">
-                                                        <controls:IconText Kind="PackageVariant" Text="第三方库"/>
-                                                    </Button>
+                                                    
                                                 </WrapPanel>
                                             </StackPanel>
                                         </Grid>
 
                                     </StackPanel>
+
+                                    <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                              IsSelectionEnabled="{Binding Settings.IsDebugEnabled, Mode=OneWay}"
+                                                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                        <FlowDocument FontFamily="{StaticResource HarmonyOsSans}">
+                                            <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
+                                                关于本应用
+                                            </Paragraph>
+                                            <Paragraph>
+                                                ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表等信息显示工具，信息一目了然。
+                                            </Paragraph>
+                                            <Paragraph Style="{StaticResource MarkdownHeadline2Style}"
+                                                       LineHeight="2">
+                                                鸣谢：
+                                                <LineBreak/>
+                                                <Button HorizontalAlignment="Left" Margin="6"
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Click="ButtonContributors_OnClick">
+                                                    <controls:IconText Kind="PeopleGroupOutline" Text="贡献人员"/>
+                                                </Button>
+                                                <Button HorizontalAlignment="Left" Margin="6"
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Click="ButtonThirdPartyLibs_OnClick">
+                                                    <controls:IconText Kind="PackageVariant" Text="第三方库"/>
+                                                </Button>
+                                            </Paragraph>
+                                            <List LineHeight="6">
+                                                <ListItem>
+                                                    <Paragraph>
+                                                        界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。
+                                                    </Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>
+                                                        应用字体使用了华为出品的 HarmonyOS Sans。
+                                                    </Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>
+                                                        协助本应用测试的同学。
+                                                    </Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>
+                                                        应用分发、匿名使用情况统计使用了 App Center 的服务。
+                                                    </Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>
+                                                        其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
+                                                    </Paragraph>
+                                                </ListItem>
+                                            </List>
+
+                                            <Paragraph Foreground="#02f7d1ec">
+                                                永远喜欢爱莉希雅
+                                            </Paragraph>
+
+                                        </FlowDocument>
+                                    </FlowDocumentScrollViewer>
 
                                     <materialDesign:Card Margin="0 6 0 0" Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <Expander Background="Transparent">
@@ -1051,7 +1114,7 @@
                                                         HorizontalAlignment="Left"/>
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                         Content="关闭调试菜单"
-                                                        Click="ButtonDebugToastText_OnClick"
+                                                        Click="ButtonCloseDebug_OnClick"
                                                         HorizontalAlignment="Left"/>
                                             </StackPanel>
                                         </Expander>
