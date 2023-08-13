@@ -57,7 +57,7 @@
 
         <!-- 时间节点编辑 -->
         <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
-                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, Mode=OneWay, FallbackValue={StaticResource TimeLayoutItemFallback}, UpdateSourceTrigger=PropertyChanged}">
+                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
             <!--<TextBlock Text="{Binding}"/>-->
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"

@@ -88,9 +88,16 @@ public static class NativeWindowHelper
         GetWindowRect(new HandleRef(null, win), ref rect);
         GetWindowThreadProcessId(win, out var pid);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (Process.GetProcessById(pid).ProcessName == "explorer")
+        try
         {
-            return false;
+            if (Process.GetProcessById(pid).ProcessName == "explorer")
+            {
+                return false;
+            }
+        }
+        catch
+        {
+            // ignored
         }
         return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.Bounds);
     }
