@@ -53,7 +53,7 @@ jobs:
       Solution_Name: ClassIsland.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
       # Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       Wap_Project_Directory: ClassIsland    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
 
     steps:
       - name: Checkout
@@ -83,7 +83,7 @@ jobs:
           
       - name: Package application
         run: |
-          cd ClassIsland\bin\Release\net6.0-windows\publish\win-x64\
+          cd ClassIsland\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\
           zip ClassIsland.zip ClassIsland.exe
           
       - name: Upload artefact to App Center
@@ -92,7 +92,7 @@ jobs:
           appName: HelloWRC/ClassIsland
           token: ${{secrets.APPCENTER_TOKEN}}
           group: Collaborators
-          file: ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip
+          file: ClassIsland\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip
           notifyTesters: true
           debug: false
           buildVersion: $env:app_ver
