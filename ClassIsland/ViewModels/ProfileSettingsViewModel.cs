@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignThemes.Wpf;
 
@@ -17,6 +18,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private string _selectedProfile = "";
     private string _deleteConfirmField = "";
     private bool _isOfflineEditor = false;
+    private TimeLayoutItem? _selectedTimePoint;
 
     public object DrawerContent
     {
@@ -132,4 +134,15 @@ public class ProfileSettingsViewModel : ObservableRecipient
     {
         get;
     } = Guid.NewGuid();
+
+    public TimeLayoutItem? SelectedTimePoint
+    {
+        get => _selectedTimePoint;
+        set
+        {
+            if (Equals(value, _selectedTimePoint)) return;
+            _selectedTimePoint = value;
+            OnPropertyChanged();
+        }
+    }
 }

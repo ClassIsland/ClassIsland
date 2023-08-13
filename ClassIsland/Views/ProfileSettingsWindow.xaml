@@ -56,21 +56,20 @@
         </StackPanel>
 
         <!-- 时间节点编辑 -->
-        <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" 
-                    DataContext="{Binding SelectedItem, ElementName=ListViewTimePoints, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+        <StackPanel Margin="16" Width="300" x:Key="TimePointEditor" >
             <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
             <!--<TextBlock Text="{Binding}"/>-->
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
                                        WithSeconds="True" Is24Hours="True"
                                        Style="{StaticResource MaterialDesignOutlinedTimePicker}"
-                                       SelectedTime="{Binding StartSecond}"/>
+                                       SelectedTime="{Binding ViewModel.SelectedTimePoint.StartSecond}"/>
             <materialDesign:TimePicker materialDesign:HintAssist.Hint="结束时间" Margin="0 12 0 0"
                                        WithSeconds="True" Is24Hours="True"
                                        Style="{StaticResource MaterialDesignOutlinedTimePicker}"
-                                       SelectedTime="{Binding EndSecond}" />
+                                       SelectedTime="{Binding ViewModel.SelectedTimePoint.EndSecond}" />
             <TextBlock Text="类型" Margin="0 16 0 0"/>
             <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                     SelectedIndex="{Binding TimeType}">
+                     SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}">
                 <ListBoxItem>
                     <controls:IconText Kind="BookOutline" Text="上课"/>
                 </ListBoxItem>
@@ -681,6 +680,7 @@
                                 <!-- 时间点 -->
                                 <ListView Grid.Row="1" Margin="12"
                                           SelectionMode="Single"
+                                          SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
                                           ItemsSource="{Binding Layouts, Mode=OneWay}" x:Name="ListViewTimePoints">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
