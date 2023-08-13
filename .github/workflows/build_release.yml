@@ -83,7 +83,7 @@ jobs:
         run: |
           cd ./ClassIsland
           ls
-          dotnet publish ./ClassIsland.csproj -p:PublishProfile=FolderProfile -c Release -
+          dotnet publish ./ClassIsland.csproj -p:PublishProfile=FolderProfile -c Release
           
       - name: Package application
         run: |
