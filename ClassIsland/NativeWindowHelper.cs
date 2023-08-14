@@ -9,7 +9,7 @@ namespace ClassIsland;
 public static class NativeWindowHelper
 {
     [DllImport("user32.dll", EntryPoint = "FindWindow")]
-    public static extern IntPtr FindWindow(string lp1, string lp2);
+    public static extern IntPtr FindWindow(string? lp1, string? lp2);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

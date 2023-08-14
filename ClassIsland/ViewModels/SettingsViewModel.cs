@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Media.Imaging;
 using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Color = System.Windows.Media.Color;
 
 namespace ClassIsland.ViewModels;
 
@@ -14,6 +18,9 @@ public class SettingsViewModel : ObservableRecipient
     private FlowDocument _currentMarkdownDocument = new();
     private UpdateChannel _selectedChannelModel = new();
     private int _appIconClickCount = 0;
+    private BitmapImage _testImage = new();
+    private string _debugOutputs = "";
+    private ObservableCollection<Color> _debugImageAccentColors = new();
 
     public Screen[] Screens
     {
@@ -77,6 +84,39 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _appIconClickCount) return;
             _appIconClickCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public BitmapImage TestImage
+    {
+        get => _testImage;
+        set
+        {
+            if (Equals(value, _testImage)) return;
+            _testImage = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DebugOutputs
+    {
+        get => _debugOutputs;
+        set
+        {
+            if (value == _debugOutputs) return;
+            _debugOutputs = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<Color> DebugImageAccentColors
+    {
+        get => _debugImageAccentColors;
+        set
+        {
+            if (Equals(value, _debugImageAccentColors)) return;
+            _debugImageAccentColors = value;
             OnPropertyChanged();
         }
     }

@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:ci="clr-namespace:ClassIsland"
+        xmlns:cv="clr-namespace:ClassIsland.Converters"
         xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:SettingsWindow}"
@@ -22,6 +23,7 @@
         Closing="SettingsWindow_OnClosing"
         Icon="/Assets/AppLogo.ico">
     <Window.Resources>
+        <cv:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
         <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">
             <Setter Property="Margin" Value="12"/>
             <Setter Property="MaxWidth" Value="750"/>
@@ -1117,6 +1119,24 @@
                                                         Content="ToastMe!"
                                                         Click="ButtonDebugToastText_OnClick"
                                                         HorizontalAlignment="Left"/>
+                                                <MenuItem Icon="{materialDesign:PackIcon MonitorScreenshot}" Header="测试桌面截图" Click="MenuItemDebugScreenShot_OnClick"/>
+                                                <Image Stretch="UniformToFill" Source="{Binding ViewModel.TestImage, Mode=OneWay}"/>
+                                                <ItemsControl ItemsSource="{Binding ViewModel.DebugImageAccentColors, Mode=TwoWay}">
+                                                    <ItemsControl.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel IsItemsHost="True"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ItemsControl.ItemsPanel>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Rectangle Width="32" Height="32" Fill="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                         AcceptsReturn="True"
+                                                         Text="{Binding ViewModel.DebugOutputs}"/>
+                                                <Separator Margin="0 6"/>
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                         Content="关闭调试菜单"
                                                         Click="ButtonCloseDebug_OnClick"
@@ -1141,8 +1161,17 @@
                             <TextBlock Grid.Column="1" Text="应用设置" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                        HorizontalAlignment="Left"
                                        VerticalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Text="{x:Static ci:App.AppVersion}"
-                                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="{x:Static ci:App.AppVersion}"
+                                           VerticalAlignment="Center" 
+                                           ToolTip="应用版本。"/>
+
+                                <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多…">
+                                    <StackPanel>
+                                        <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"/>
+                                    </StackPanel>
+                                </materialDesign:PopupBox>
+                            </StackPanel>
                         </Grid>
                     </materialDesign:ColorZone>
                 </Grid>

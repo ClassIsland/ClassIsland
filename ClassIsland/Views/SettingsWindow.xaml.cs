@@ -276,4 +276,32 @@ public partial class SettingsWindow : Window
         Settings.IsDebugOptionsEnabled = false;
         ViewModel.AppIconClickCount = 0;
     }
+
+    private void MenuItemDebugScreenShot_OnClick(object sender, RoutedEventArgs e)
+    {
+        var screenShot = WallpaperPickingService.GetScreenShot();
+        ViewModel.TestImage = BitmapConveters.ConvertToBitmapImage(screenShot);
+        screenShot.Save("./desktop.png");
+        var w = new Stopwatch();
+        w.Start();
+        var r = ColorOctTreeNode.ProcessImage(screenShot)
+            .OrderByDescending(i=>
+            {
+                var c = (Color)ColorConverter.ConvertFromString(i.Key);
+                WallpaperPickingService.ColorToHSV(c, out var h, out var s, out var v);
+                return (s + v * (- (v - 0.1) * (v - 1.1) * 4)) * Math.Log2(i.Value);
+            })
+            .ThenByDescending(i => i.Value)
+            .ToList();
+        ViewModel.DebugImageAccentColors.Clear();
+        ViewModel.DebugOutputs = "";
+        ViewModel.DebugOutputs += $"主题色提取用了{w.ElapsedMilliseconds}ms.\n";
+        ViewModel.DebugOutputs += $"主题色：\n";
+        for (var i = 0; i < Math.Min(r.Count, 15); i++)
+        {
+            ViewModel.DebugOutputs += $"{r[i].Key} - {r[i].Value}\n";
+            ViewModel.DebugImageAccentColors.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
+        }
+        //Debugger.Break();
+    }
 }
