@@ -172,9 +172,9 @@
 
         <!-- 课程表信息 -->
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="300"
+                      Margin="16"
                       VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="16"
-                        DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans}">
+            <StackPanel DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans}">
                 <TextBlock Text="课程表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Margin="0 12 0 0"
@@ -284,7 +284,7 @@
         <!-- 重命名档案 -->
         <StackPanel x:Key="RenameProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
             <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="重命名档案"/>
-            <TextBox Margin="0 6 0 0" TextWrapping="Wrap" x:Name="TextBoxProfileName" 
+            <TextBox Margin="0 6 0 0" TextWrapping="Wrap"
                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                      Text="{Binding ViewModel.RenameProfileName}"
                      materialDesign:HintAssist.Hint="档案名"
@@ -343,7 +343,7 @@
                     <Button ToolTip="新建档案。" Click="ButtonCreateProfile_OnClick">
                         <controls:IconText Kind="FileDocumentAddOutline" Text="新建档案"/>
                     </Button>
-                    <Button ToolTip="打开档案文件夹" Click="ButtonOpenProfileFolder_OnClick">
+                    <Button ToolTip="打开档案文件夹。" Click="ButtonOpenProfileFolder_OnClick">
                         <controls:IconText Kind="FolderOpenOutline" Text="打开文件夹"/>
                     </Button>
                     <Button ToolTip="重新加载档案列表。" Click="ButtonRefreshProfiles_OnClick">
@@ -405,11 +405,11 @@
             <!-- Content -->
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <!-- Main -->
-                <TabControl Grid.Row="0" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged">
+                <TabControl Grid.Row="1" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged">
                     <!-- 课表 -->
                     <TabItem Header="课表">
                         <Grid>
@@ -733,8 +733,11 @@
                                 <!-- 禁止编辑叠层 -->
                                 <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
-                                    <TextBlock Text="无法编辑处于活动状态的时间表。"
-                                               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Image Source="/Assets/Forbidden.png" Width="72" Height="72" Margin="0 0 0 8"/>
+                                        <TextBlock Text="无法编辑处于活动状态的时间表。"
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </StackPanel>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -887,20 +890,37 @@
                     
                 </TabControl>
                 <!-- 档案操作 -->
-                <WrapPanel Grid.Row="1" Margin="4" Orientation="Horizontal">
+                <!--<WrapPanel Grid.Row="0" Margin="4" Orientation="Horizontal">
                     <WrapPanel.Resources>
                         <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                             <Setter Property="Margin" Value="0 0 6 0"/>
                         </Style>
                     </WrapPanel.Resources>
-                    <Button ToolTip="管理所有保存的档案。" Click="ButtonProfileManage_OnClick"
-                            IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                        <controls:IconText Kind="FileDocumentMultipleOutline" Text="管理档案"/>
-                    </Button>
                     <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
                                        Margin="0 0 6 0"
                                        ToolTip="当前加载的档案。"/>
-                </WrapPanel>
+                </WrapPanel>-->
+                <!-- AppBar -->
+                <materialDesign:ColorZone Grid.Row="0" Padding="16" Mode="PrimaryMid"
+                                          materialDesign:ElevationAssist.Elevation="Dp4">
+                    <Grid Margin="4 0 4 0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                            <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" Margin="0,0,20,0"/>
+                            <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
+                                               Margin="0 0 8 0"
+                                               VerticalAlignment="Center"
+                                               ToolTip="当前加载的档案。"/>
+                            <Button ToolTip="管理所有保存的档案。" Click="ButtonProfileManage_OnClick"
+                                    VerticalAlignment="Center"
+                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
+                                    Content="{materialDesign:PackIcon Menu, Size=16}"/>
+                            
+                        </StackPanel>
+                    </Grid>
+                </materialDesign:ColorZone>
                 <!-- SnackBar -->
                 <materialDesign:Snackbar Grid.Row="0" Grid.RowSpan="2" MessageQueue="{Binding ViewModel.MessageQueue}"/>
             </Grid>

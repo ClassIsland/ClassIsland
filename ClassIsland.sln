@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland", "ClassIsland\ClassIsland.csproj", "{F78DB747-AB6C-4B83-9139-37DFC58C0146}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland", "ClassIsland\ClassIsland.csproj", "{F78DB747-AB6C-4B83-9139-37DFC58C0146}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.UnitTests", "ClassIsland.UnitTests\ClassIsland.UnitTests.csproj", "{0513FA8E-72C8-4CCE-A7B9-9507EC0BFBBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{F78DB747-AB6C-4B83-9139-37DFC58C0146}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F78DB747-AB6C-4B83-9139-37DFC58C0146}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F78DB747-AB6C-4B83-9139-37DFC58C0146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0513FA8E-72C8-4CCE-A7B9-9507EC0BFBBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0513FA8E-72C8-4CCE-A7B9-9507EC0BFBBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0513FA8E-72C8-4CCE-A7B9-9507EC0BFBBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0513FA8E-72C8-4CCE-A7B9-9507EC0BFBBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

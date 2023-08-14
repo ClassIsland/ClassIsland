@@ -67,6 +67,7 @@
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
+    <None Remove="Assets\Forbidden.png" />
     <None Remove="Assets\LICENSE.txt" />
     <None Remove="Assets\MainMenuOpenDemo.gif" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
+    <Resource Include="Assets\Forbidden.png" />
     <Resource Include="Assets\LICENSE.txt" />
     <Resource Include="Assets\MainMenuOpenDemo.gif" />
   </ItemGroup>

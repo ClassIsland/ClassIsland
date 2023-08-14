@@ -58,8 +58,9 @@
         <!-- Drawers -->
         <ScrollViewer Width="300" x:Key="AdvancedUpdateSettings" 
                       VerticalScrollBarVisibility="Auto"
+                      Margin="16"
                       materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
-            <Grid Margin="16">
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
@@ -223,8 +224,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Text="设置" Style="{StaticResource MaterialDesignHeadline4TextBlock}"
-                               Margin="12" />
                     <TabControl Grid.Row="1" TabStripPlacement="Left" x:Name="RootTabControl">
                         <!-- 基本 -->
                         <TabItem Header="基本">
@@ -1037,7 +1036,8 @@
 
                                     <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                                               IsSelectionEnabled="{Binding Settings.IsDebugEnabled, Mode=OneWay}"
-                                                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                              ContextMenu="{x:Null}">
                                         <FlowDocument FontFamily="{StaticResource HarmonyOsSans}">
                                             <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
                                                 关于本应用
@@ -1083,6 +1083,11 @@
                                                 </ListItem>
                                                 <ListItem>
                                                     <Paragraph>
+                                                        部分图像资源（/Assets/Forbidden.png）来自米游社表情包，版权归 miHoYo 所有。
+                                                    </Paragraph>
+                                                </ListItem>
+                                                <ListItem>
+                                                    <Paragraph>
                                                         其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
                                                     </Paragraph>
                                                 </ListItem>
@@ -1123,6 +1128,23 @@
                             </ScrollViewer>
                         </TabItem>
                     </TabControl>
+                    <materialDesign:ColorZone Grid.Row="0" Padding="16" Mode="PrimaryMid"
+                                              materialDesign:ElevationAssist.Elevation="Dp4"
+                                              Margin="0 0 0 4">
+                        <Grid Margin="4 0 4 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <!--<ToggleButton Grid.Column="0"
+                                Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
+                            <TextBlock Grid.Column="1" Text="应用设置" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{x:Static ci:App.AppVersion}"
+                                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </materialDesign:ColorZone>
                 </Grid>
             </Grid>
         </materialDesign:DrawerHost>
