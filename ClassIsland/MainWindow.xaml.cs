@@ -653,6 +653,13 @@ public partial class MainWindow : Window
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
+
+        var scale = ViewModel.Settings.Scale;
+        Width = GridRoot.ActualWidth * scale;
+        Height = GridRoot.ActualHeight * scale;
+        ViewModel.GridRootLeft = Width / 10 * (scale - 1);
+        ViewModel.GridRootTop = Height / 10 * (scale - 1);
+
         var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length 
             ? Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] 
             : Screen.PrimaryScreen;
@@ -786,5 +793,11 @@ public partial class MainWindow : Window
     {
         OpenSettingsWindow();
         SettingsWindow.RootTabControl.SelectedIndex = 3;
+    }
+
+    private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        Width = e.NewSize.Width * ViewModel.Settings.Scale;
+        Height = e.NewSize.Height * ViewModel.Settings.Scale;
     }
 }

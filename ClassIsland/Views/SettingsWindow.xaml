@@ -321,6 +321,16 @@
                         <TabItem Header="外观">
                             <ScrollViewer>
                                 <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                    <!-- 界面缩放 -->
+                                    <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
+                                                           Description="主界面的缩放比例。">
+                                        <controls:SettingsCard.Switcher>
+                                            <Slider Width="180" Minimum="0.75" Maximum="2"
+                                                    Value="{Binding Settings.Scale}"
+                                                    AutoToolTipPlacement="BottomRight"
+                                                    AutoToolTipPrecision="2" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
                                     <!-- 应用主题 -->
                                     <controls:SettingsCard IconGlyph="ThemeLightDark" Header="应用主题"
                                                            Description="控制应用的明暗主题。">
@@ -1271,8 +1281,14 @@
                             </Grid.ColumnDefinitions>
                             <!--<ToggleButton Grid.Column="0"
                                 Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
+                            <Button ToolTip="导航栏"
+                                    VerticalAlignment="Center"
+                                    Padding="0"
+                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                    Content="{materialDesign:PackIcon Menu, Size=24}"/>
                             <TextBlock Grid.Column="1" Text="应用设置" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                        HorizontalAlignment="Left"
+                                       Margin="20 0 0 0"
                                        VerticalAlignment="Center"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                 <TextBlock Text="{x:Static ci:App.AppVersion}"

@@ -61,6 +61,7 @@ public class Settings : ObservableRecipient
     private int _colorSource = 1;
     private string _wallpaperClassName = "";
     private double _targetLightValue = 0.6;
+    private double _scale = 1.0;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -351,6 +352,16 @@ public class Settings : ObservableRecipient
         }
     }
 
+    public double Scale
+    {
+        get => _scale;
+        set
+        {
+            if (value.Equals(_scale)) return;
+            _scale = value;
+            OnPropertyChanged();
+        }
+    }
 
     #endregion
 

@@ -28,6 +28,8 @@ public class MainViewModel : ObservableRecipient
     private DateTime _temporaryClassPlanSetupTime = DateTime.Now;
     private bool _isForegroundMaxWindow = false;
     private string _currentProfilePath = "Profile.json";
+    private double _gridRootLeft = 0;
+    private double _gridRootTop = 0;
 
     public Profile Profile
     {
@@ -247,6 +249,28 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _currentProfilePath) return;
             _currentProfilePath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double GridRootLeft
+    {
+        get => _gridRootLeft;
+        set
+        {
+            if (value.Equals(_gridRootLeft)) return;
+            _gridRootLeft = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double GridRootTop
+    {
+        get => _gridRootTop;
+        set
+        {
+            if (value.Equals(_gridRootTop)) return;
+            _gridRootTop = value;
             OnPropertyChanged();
         }
     }
