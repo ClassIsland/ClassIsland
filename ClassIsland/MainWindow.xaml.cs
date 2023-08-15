@@ -479,7 +479,16 @@ public partial class MainWindow : Window
 
         }
 
+        ((Theme)theme).ColorAdjustment = new ColorAdjustment()
+        {
+            DesiredContrastRatio = 4.5F,
+            Contrast = Contrast.Medium,
+            Colors = ColorSelection.All
+        };
+        
+
         var lastTheme = paletteHelper.GetTheme();
+        
         if (lastPrimary == theme.PrimaryMid.Color &&
             lastSecondary == theme.SecondaryMid.Color &&
             lastBaseTheme == theme.GetBaseTheme())

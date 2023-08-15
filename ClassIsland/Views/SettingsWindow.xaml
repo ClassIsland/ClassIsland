@@ -359,21 +359,33 @@
                                             </ComboBox>
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
-                                    <!-- 第一主题色 -->
-                                    <controls:SettingsCard IconGlyph="PaletteOutline" Header="第一主题色"
-                                                           Description="应用主要显示的主题颜色。">
-                                        <controls:SettingsCard.Switcher>
-                                            <controls:ColorPicker Color="{Binding Settings.PrimaryColor, Mode=TwoWay}" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-                                    <!-- 第二主题色 -->
-                                    <controls:SettingsCard IconGlyph="PaletteOutline" Header="第二主题色"
-                                                           Description="应用次要显示的主题颜色。">
-                                        <controls:SettingsCard.Switcher>
-                                            <controls:ColorPicker
-                                                Color="{Binding Settings.SecondaryColor, Mode=TwoWay}" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.ColorSource}" Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <!-- 第一主题色 -->
+                                        <controls:SettingsCard IconGlyph="PaletteOutline" Header="第一主题色"
+                                                               Description="应用主要显示的主题颜色。">
+                                            <controls:SettingsCard.Switcher>
+                                                <controls:ColorPicker Color="{Binding Settings.PrimaryColor, Mode=TwoWay}" />
+                                            </controls:SettingsCard.Switcher>
+                                        </controls:SettingsCard>
+                                        <!-- 第二主题色 -->
+                                        <controls:SettingsCard IconGlyph="PaletteOutline" Header="第二主题色"
+                                                               Description="应用次要显示的主题颜色。">
+                                            <controls:SettingsCard.Switcher>
+                                                <controls:ColorPicker
+                                                    Color="{Binding Settings.SecondaryColor, Mode=TwoWay}" />
+                                            </controls:SettingsCard.Switcher>
+                                        </controls:SettingsCard>
+                                    </StackPanel>
                                     <!-- 背景透明度 -->
                                     <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
                                                            Description="课表背景颜色的不透明度。">
@@ -386,8 +398,19 @@
                                     </controls:SettingsCard>
                                     <Separator Margin="0 16 0 8"/>
                                     <!-- 壁纸主题色 -->
-                                    <controls:IconText Kind="Wallpaper" Text="壁纸主题色"/>
-                                    <Grid>
+                                    <StackPanel>
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.ColorSource}" Value="1">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <controls:IconText Kind="Wallpaper" Text="壁纸主题色" Margin="0 0 0 8"/>
+                                        <Grid>
                                         <Image Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}" Stretch="UniformToFill"/>
                                         <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
                                             <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.85"/>
@@ -431,6 +454,7 @@
                                                          Width="50" Height="50"/>
                                         </Grid>
                                     </Grid>
+                                    </StackPanel>
                                     <!-- 高级 -->
                                     <Expander Header="高级" Padding="0">
                                         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Margin="0">
