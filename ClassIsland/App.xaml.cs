@@ -129,6 +129,7 @@ public partial class App : Application
                 services.AddSingleton<SettingsService>();
                 services.AddSingleton<UpdateService>();
                 services.AddSingleton<TaskBarIconService>();
+                services.AddSingleton<WallpaperPickingService>();
                 services.AddHostedService<TaskBarIconService>();
             }).Build();
 
@@ -140,6 +141,7 @@ public partial class App : Application
             GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
         }
         GetService<UpdateService>().AppStartup();
+        _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         MainWindow = new MainWindow();
         MainWindow.Show();
     }

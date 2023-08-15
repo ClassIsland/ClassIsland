@@ -59,6 +59,11 @@ public partial class SettingsWindow : Window
         get;
     }
 
+    public WallpaperPickingService WallpaperPickingService
+    {
+        get;
+    }
+
     private TaskBarIconService TaskBarIconService
     {
         get;
@@ -68,6 +73,7 @@ public partial class SettingsWindow : Window
     {
         UpdateService = App.GetService<UpdateService>();
         TaskBarIconService = App.GetService<TaskBarIconService>();
+        WallpaperPickingService = App.GetService<WallpaperPickingService>();
         InitializeComponent();
         DataContext = this;
         var settingsService = App.GetService<SettingsService>();
@@ -279,7 +285,7 @@ public partial class SettingsWindow : Window
 
     private void MenuItemDebugScreenShot_OnClick(object sender, RoutedEventArgs e)
     {
-        var screenShot = WallpaperPickingService.GetScreenShot();
+        var screenShot = WallpaperPickingService.GetScreenShot("Progman");
         ViewModel.TestImage = BitmapConveters.ConvertToBitmapImage(screenShot);
         screenShot.Save("./desktop.png");
         var w = new Stopwatch();
@@ -288,7 +294,7 @@ public partial class SettingsWindow : Window
             .OrderByDescending(i=>
             {
                 var c = (Color)ColorConverter.ConvertFromString(i.Key);
-                WallpaperPickingService.ColorToHSV(c, out var h, out var s, out var v);
+                WallpaperPickingService.ColorToHsv(c, out var h, out var s, out var v);
                 return (s + v * (- (v - 0.1) * (v - 1.1) * 4)) * Math.Log2(i.Value);
             })
             .ThenByDescending(i => i.Value)
@@ -303,5 +309,10 @@ public partial class SettingsWindow : Window
             ViewModel.DebugImageAccentColors.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
         }
         //Debugger.Break();
+    }
+
+    private async void ButtonUpdateWallpaper_OnClick(object sender, RoutedEventArgs e)
+    {
+        await WallpaperPickingService.GetWallpaperAsync();
     }
 }

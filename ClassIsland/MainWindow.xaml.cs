@@ -462,8 +462,22 @@ public partial class MainWindow : Window
                 theme.SetBaseTheme(new MaterialDesignDarkTheme());
                 break;
         }
-        theme.SetPrimaryColor(ViewModel.Settings.PrimaryColor);
-        theme.SetSecondaryColor(ViewModel.Settings.SecondaryColor);
+
+        switch (ViewModel.Settings.ColorSource)
+        {
+            case 0: //custom
+                theme.SetPrimaryColor(ViewModel.Settings.PrimaryColor);
+                theme.SetSecondaryColor(ViewModel.Settings.SecondaryColor);
+                break;
+            case 1:
+                theme.SetPrimaryColor(ViewModel.Settings.SelectedPlatte);
+                theme.SetSecondaryColor(ViewModel.Settings.SelectedPlatte);
+                break;
+            case 2:
+                // TODO: 从系统获取主题色
+                break;
+
+        }
 
         var lastTheme = paletteHelper.GetTheme();
         if (lastPrimary == theme.PrimaryMid.Color &&

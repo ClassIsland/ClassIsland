@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using ClassIsland.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IWshRuntimeLibrary;
 using MaterialDesignColors;
+using Newtonsoft.Json;
 using File = System.IO.File;
 
 namespace ClassIsland.Models;
@@ -53,6 +55,12 @@ public class Settings : ObservableRecipient
     private int _updateMode = 3;
     private bool _autoInstallUpdateNextStartup = true;
     private bool _isDebugOptionsEnabled = false;
+    private Color _selectedPlatte = Colors.DodgerBlue;
+    private int _selectedPlatteIndex = 0;
+    private ObservableCollection<Color> _wallpaperColorPlatte = new(Enumerable.Repeat(Colors.DodgerBlue, 5));
+    private int _colorSource = 1;
+    private string _wallpaperClassName = "";
+    private double _targetLightValue = 0.6;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -268,6 +276,66 @@ public class Settings : ObservableRecipient
         {
             if (value.Equals(_secondaryColor)) return;
             _secondaryColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ColorSource
+    {
+        get => _colorSource;
+        set
+        {
+            if (value == _colorSource) return;
+            _colorSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<Color> WallpaperColorPlatte
+    {
+        get => _wallpaperColorPlatte;
+        set
+        {
+            if (Equals(value, _wallpaperColorPlatte)) return;
+            _wallpaperColorPlatte = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1 
+        ? Colors.DodgerBlue 
+        : WallpaperColorPlatte[SelectedPlatteIndex];
+
+    public int SelectedPlatteIndex
+    {
+        get => _selectedPlatteIndex;
+        set
+        {
+            if (value == _selectedPlatteIndex) return;
+            _selectedPlatteIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string WallpaperClassName
+    {
+        get => _wallpaperClassName;
+        set
+        {
+            if (value == _wallpaperClassName) return;
+            _wallpaperClassName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double TargetLightValue
+    {
+        get => _targetLightValue;
+        set
+        {
+            if (value.Equals(_targetLightValue)) return;
+            _targetLightValue = value;
             OnPropertyChanged();
         }
     }
