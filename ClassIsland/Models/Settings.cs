@@ -62,6 +62,7 @@ public class Settings : ObservableRecipient
     private string _wallpaperClassName = "";
     private double _targetLightValue = 0.6;
     private double _scale = 1.0;
+    private bool _isMainWindowDebugEnabled = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -558,6 +559,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _isDebugOptionsEnabled) return;
             _isDebugOptionsEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMainWindowDebugEnabled
+    {
+        get => _isMainWindowDebugEnabled;
+        set
+        {
+            if (value == _isMainWindowDebugEnabled) return;
+            _isMainWindowDebugEnabled = value;
             OnPropertyChanged();
         }
     }

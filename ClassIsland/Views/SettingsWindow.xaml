@@ -325,9 +325,13 @@
                                     <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
                                                            Description="主界面的缩放比例。">
                                         <controls:SettingsCard.Switcher>
-                                            <Slider Width="180" Minimum="0.75" Maximum="2"
+                                            <Slider Width="150" Minimum="0.75" Maximum="2"
+                                                    VerticalAlignment="Center"
                                                     Value="{Binding Settings.Scale}"
                                                     AutoToolTipPlacement="BottomRight"
+                                                    TickFrequency="0.05"
+                                                    TickPlacement="None"
+                                                    IsSnapToTickEnabled="True"
                                                     AutoToolTipPrecision="2" />
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
@@ -1235,6 +1239,7 @@
                                             </Expander.Header>
                                             <StackPanel Margin="12">
                                                 <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}" />
+                                                <CheckBox Content="MainWindowDebug" IsChecked="{Binding Settings.IsMainWindowDebugEnabled}"/>
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                         Content="CrashTest"
                                                         Click="ButtonCrash_OnClick" HorizontalAlignment="Left" />
