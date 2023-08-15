@@ -14,6 +14,21 @@ public class IntToStringConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        return int.Parse((string)value);
+        if (targetType == typeof(int))
+        {
+            return int.Parse((string)value);
+        }
+
+        if (targetType == typeof(double))
+        {
+            return double.Parse((string)value);
+        }
+
+        if (targetType == typeof(float))
+        {
+            return float.Parse((string)value);
+        }
+
+        return 0;
     }
 }

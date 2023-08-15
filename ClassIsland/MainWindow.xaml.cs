@@ -83,6 +83,11 @@ public partial class MainWindow : Window
         get;
     } = App.GetService<TaskBarIconService>();
 
+    private Stopwatch UserPrefrenceUpdateStopwatch
+    {
+        get;
+    } = new();
+
     public MainWindow()
     {
         SettingsService = App.GetService<SettingsService>();
@@ -361,6 +366,8 @@ public partial class MainWindow : Window
         ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
         UpdateTheme();
+        UserPrefrenceUpdateStopwatch.Start();
+        SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
 
         if (!ViewModel.Settings.IsWelcomeWindowShowed)
         {
@@ -383,13 +390,23 @@ public partial class MainWindow : Window
         }
     }
 
+    private void OnSystemEventsOnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs args)
+    {
+        if (UserPrefrenceUpdateStopwatch.ElapsedMilliseconds < 1000)
+        {
+            return;
+        }
+        //Debug.WriteLine("Updated theme.");
+        UserPrefrenceUpdateStopwatch.Restart();
+        UpdateTheme();
+    }
+
     private void SetBottom()
     {
         if (ViewModel.Settings.WindowLayer != 0)
         {
             return;
         }
-
         var hWnd = new WindowInteropHelper(this).Handle;
         NativeWindowHelper.SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0, NativeWindowHelper.SWP_NOSIZE | NativeWindowHelper.SWP_NOMOVE | NativeWindowHelper.SWP_NOACTIVATE);
     }
@@ -474,7 +491,17 @@ public partial class MainWindow : Window
                 theme.SetSecondaryColor(ViewModel.Settings.SelectedPlatte);
                 break;
             case 2:
-                // TODO: 从系统获取主题色
+                try
+                {
+                    NativeWindowHelper.DwmGetColorizationColor(out var color, out _);
+                    var c = NativeWindowHelper.GetColor(color);
+                    theme.SetPrimaryColor(c);
+                    theme.SetSecondaryColor(c);
+                }
+                catch
+                {
+                    // ignored
+                }
                 break;
 
         }

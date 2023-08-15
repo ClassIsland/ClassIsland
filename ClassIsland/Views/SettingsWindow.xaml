@@ -396,7 +396,6 @@
                                                     AutoToolTipPrecision="2" />
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
-                                    <Separator Margin="0 16 0 8"/>
                                     <!-- 壁纸主题色 -->
                                     <StackPanel>
                                         <StackPanel.Style>
@@ -409,75 +408,76 @@
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                             </Style>
                                         </StackPanel.Style>
+                                        <Separator Margin="0 16 0 8"/>
                                         <controls:IconText Kind="Wallpaper" Text="壁纸主题色" Margin="0 0 0 8"/>
                                         <Grid>
-                                        <Image Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}" Stretch="UniformToFill"/>
-                                        <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.85"/>
-                                            <!-- 刷新 -->
-                                            <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonUpdateWallpaper_OnClick"
-                                                    HorizontalAlignment="Left" Margin="8 0">
-                                                <controls:IconText Kind="Refresh" Text="刷新"/>
-                                            </Button>
-                                            <!-- 颜色选择 -->
-                                            <ListBox ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
-                                                     SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
-                                                     HorizontalAlignment="Right">
-                                                <ListBox.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel IsItemsHost="True"/>
-                                                    </ItemsPanelTemplate>
-                                                </ListBox.ItemsPanel>
-                                                <ListBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <materialDesign:ColorZone Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
-                                                                                  Width="32" Height="32"
-                                                                                  Mode="Custom">
-                                                            <materialDesign:PackIcon Kind="Check" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                                                                                     Width="14" Height="14"
-                                                                                     Background="White"
-                                                                                     Foreground="Black"
-                                                                                     Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                        </materialDesign:ColorZone>
-                                                    </DataTemplate>
-                                                </ListBox.ItemTemplate>
-                                            </ListBox>
+                                            <Image Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}" Stretch="UniformToFill"/>
+                                            <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                                <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.85"/>
+                                                <!-- 刷新 -->
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonUpdateWallpaper_OnClick"
+                                                        HorizontalAlignment="Left" Margin="8 0">
+                                                    <controls:IconText Kind="Refresh" Text="刷新"/>
+                                                </Button>
+                                                <!-- 颜色选择 -->
+                                                <ListBox ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
+                                                         SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
+                                                         HorizontalAlignment="Right">
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel IsItemsHost="True"/>
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <materialDesign:ColorZone Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                                                                                      Width="32" Height="32"
+                                                                                      Mode="Custom">
+                                                                <materialDesign:PackIcon Kind="Check" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                                                                                         Width="14" Height="14"
+                                                                                         Background="White"
+                                                                                         Foreground="Black"
+                                                                                         Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                            </materialDesign:ColorZone>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            </Grid>
+                                            <!-- Loading -->
+                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                  Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                                        Background="{DynamicResource MaterialDesignPaper}"
+                                                        Opacity="0.8"/>
+                                                <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" 
+                                                             IsIndeterminate="True" Value="0"
+                                                             Width="50" Height="50"/>
+                                            </Grid>
                                         </Grid>
-                                        <!-- Loading -->
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                              Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                                    Background="{DynamicResource MaterialDesignPaper}"
-                                                    Opacity="0.8"/>
-                                            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" 
-                                                         IsIndeterminate="True" Value="0"
-                                                         Width="50" Height="50"/>
-                                        </Grid>
-                                    </Grid>
+                                        <Expander Header="高级" Padding="0">
+                                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Margin="0">
+                                                <!-- 壁纸层窗口类名 -->
+                                                <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
+                                                                       Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
+                                                    <controls:SettingsCard.Switcher>
+                                                        <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
+                                                                 Text="{Binding Settings.WallpaperClassName}"/>
+                                                    </controls:SettingsCard.Switcher>
+                                                </controls:SettingsCard>
+                                                <!-- 取色亮度波峰 -->
+                                                <controls:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
+                                                                       Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
+                                                    <controls:SettingsCard.Switcher>
+                                                        <controls:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
+                                                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                                                  Style="{StaticResource MaterialDesignTextBox}"
+                                                                                  Text="{Binding Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                                    </controls:SettingsCard.Switcher>
+                                                </controls:SettingsCard>
+                                            </StackPanel>
+                                        </Expander>
                                     </StackPanel>
                                     <!-- 高级 -->
-                                    <Expander Header="高级" Padding="0">
-                                        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Margin="0">
-                                            <!-- 壁纸层窗口类名 -->
-                                            <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
-                                                                   Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
-                                                <controls:SettingsCard.Switcher>
-                                                    <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
-                                                             Text="{Binding Settings.WallpaperClassName}"/>
-                                                </controls:SettingsCard.Switcher>
-                                            </controls:SettingsCard>
-                                            <!-- 取色亮度波峰 -->
-                                            <controls:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
-                                                                   Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
-                                                <controls:SettingsCard.Switcher>
-                                                    <controls:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
-                                                                              Foreground="{DynamicResource MaterialDesignBody}"
-                                                                              Style="{StaticResource MaterialDesignTextBox}"
-                                                                              Text="{Binding Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
-                                                </controls:SettingsCard.Switcher>
-                                            </controls:SettingsCard>
-                                        </StackPanel>
-                                    </Expander>
                                 </StackPanel>
                             </ScrollViewer>
                         </TabItem>

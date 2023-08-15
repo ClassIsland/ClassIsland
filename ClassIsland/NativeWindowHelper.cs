@@ -145,4 +145,15 @@ public static class NativeWindowHelper
         {
         }
     }
+
+    [DllImport("dwmapi.dll", PreserveSig = false)]
+    public static extern void DwmGetColorizationColor(out int pcrColorization, out bool pfOpaqueBlend);
+    
+    public static System.Windows.Media.Color GetColor(int argb) => new System.Windows.Media.Color()
+    {
+        A = (byte)(argb >> 24),
+        R = (byte)(argb >> 16),
+        G = (byte)(argb >> 8),
+        B = (byte)(argb)
+    };
 }

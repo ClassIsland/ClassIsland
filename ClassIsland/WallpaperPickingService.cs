@@ -138,12 +138,14 @@ public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
             WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap);
             var w = new Stopwatch();
             w.Start();
+            var right = SettingsService.Settings.TargetLightValue - 0.5;
+            var left = SettingsService.Settings.TargetLightValue + 0.5;
             var r = ColorOctTreeNode.ProcessImage(bitmap)
                 .OrderByDescending(i =>
                 {
                     var c = (Color)ColorConverter.ConvertFromString(i.Key);
                     WallpaperPickingService.ColorToHsv(c, out var h, out var s, out var v);
-                    return (s + v * (-(v - 0.1) * (v - 1.1) * 4)) * Math.Log2(i.Value);
+                    return (s + v * (-(v - right) * (v - left) * 4)) * Math.Log2(i.Value);
                 })
                 .ThenByDescending(i => i.Value)
                 .ToList();
