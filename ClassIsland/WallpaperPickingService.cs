@@ -13,6 +13,7 @@ using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
+using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 
@@ -26,6 +27,11 @@ public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
     private ObservableCollection<Color> _wallpaperColorPlatte = new();
     private BitmapImage _wallpaperImage = new();
     private bool _isWorking = false;
+
+    public RegistryNotifier RegistryNotifier
+    {
+        get;
+    }
 
     public static void ColorToHsv(System.Windows.Media.Color color, out double hue, out double saturation, out double value)
     {
@@ -63,10 +69,17 @@ public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
     {
         SettingsService = settingsService;
         SystemEvents.UserPreferenceChanged += SystemEventsOnUserPreferenceChanged;
-        
+        RegistryNotifier = new RegistryNotifier(RegistryNotifier.HKEY_CURRENT_USER, "Control Panel\\Desktop");
+        RegistryNotifier.RegistryKeyUpdated += RegistryNotifierOnRegistryKeyUpdated;
+        RegistryNotifier.Start();
+    }
 
-        var hWnd = HwndSource.FromHwnd(NativeWindowHelper.FindWindow("Progman", null));
-        hWnd?.AddHook(HwndSourceHookProcess);
+    private async void RegistryNotifierOnRegistryKeyUpdated()
+    {
+        Application.Current.Dispatcher.InvokeAsync(async () =>
+        {
+            await GetWallpaperAsync();
+        });
     }
 
     private IntPtr HwndSourceHookProcess(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
