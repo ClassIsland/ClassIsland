@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Documents;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +12,10 @@ public class HelpsViewModel : ObservableRecipient
     private string? _selectedDocumentName = "";
     private ObservableDictionary<string, string> _helpDocuments = new();
     private bool _isOpened = false;
+    private ObservableCollection<string> _navigationHistory = new();
+    private int _navigationIndex = -1;
+    private bool _canForward = false;
+    private bool _canBack = false;
 
     public FlowDocument Document
     {
@@ -52,6 +57,50 @@ public class HelpsViewModel : ObservableRecipient
         {
             if (value == _isOpened) return;
             _isOpened = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<string> NavigationHistory
+    {
+        get => _navigationHistory;
+        set
+        {
+            if (Equals(value, _navigationHistory)) return;
+            _navigationHistory = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int NavigationIndex
+    {
+        get => _navigationIndex;
+        set
+        {
+            if (value == _navigationIndex) return;
+            _navigationIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CanBack
+    {
+        get => _canBack;
+        set
+        {
+            if (value == _canBack) return;
+            _canBack = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CanForward
+    {
+        get => _canForward;
+        set
+        {
+            if (value == _canForward) return;
+            _canForward = value;
             OnPropertyChanged();
         }
     }

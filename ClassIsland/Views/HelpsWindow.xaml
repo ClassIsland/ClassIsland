@@ -7,6 +7,7 @@
         xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
         xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
         mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -75,10 +76,36 @@
         <!-- 标题栏 -->
         <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" 
                                   materialDesign:ElevationAssist.Elevation="Dp4"
-                                  Mode="PrimaryMid">
-            <TextBlock Text="帮助" VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                       Margin="16"/>
+                                  Mode="PrimaryMid"
+                                  Padding="16">
+            <Grid>
+                <StackPanel Orientation="Horizontal">
+                    <Button ToolTip="后退"
+                            VerticalAlignment="Center"
+                            Padding="0"
+                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Content="{materialDesign:PackIcon ArrowBack, Size=24}"
+                            Click="ButtonBack_OnClick"
+                            IsEnabled="{Binding ViewModel.CanBack, Mode=OneWay}"
+                            Margin="4 0 20 0"/>
+                    <Button ToolTip="前进"
+                            VerticalAlignment="Center"
+                            Padding="0"
+                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Content="{materialDesign:PackIcon ArrowForward, Size=24}"
+                            IsEnabled="{Binding ViewModel.CanForward, Mode=OneWay}"
+                            Click="ButtonForward_OnClick"
+                            Margin="0 0 20 0"/>
+                    <TextBlock Text="帮助" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Margin="0 0 16 0"/>
+                    <controls:IconText Kind="FileDocumentOutline" 
+                                       VerticalAlignment="Center"
+                                       ToolTip="当前的帮助文档"
+                                       Text="{Binding ViewModel.SelectedDocumentName, Mode=OneWay}"/>
+                </StackPanel>
+            </Grid>
         </materialDesign:ColorZone>
     </Grid>
 </Window>

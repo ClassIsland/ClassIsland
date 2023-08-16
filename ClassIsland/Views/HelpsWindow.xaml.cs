@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,12 @@ public partial class HelpsWindow : Window
         set;
     } = new();
 
+    public bool IsAutoNavigating
+    {
+        get;
+        set;
+    } = false;
+
     public HelpsWindow()
     {
         DataContext = this;
@@ -39,6 +46,8 @@ public partial class HelpsWindow : Window
     protected override void OnContentRendered(EventArgs e)
     {
         RefreshDocuments();
+        UpdateNavigationState();
+        ViewModel.NavigationIndex = 0;
         base.OnContentRendered(e);
     }
 
@@ -60,15 +69,29 @@ public partial class HelpsWindow : Window
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (ViewModel.SelectedDocumentName != null)
+        if (ViewModel.SelectedDocumentName != null && !IsAutoNavigating)
         {
-            Analytics.TrackEvent("浏览帮助文档",
-            new Dictionary<string, string>{
-                {"Name", ViewModel.SelectedDocumentName}
-            });
-            ScrollViewerDocument.ScrollToTop();
-            ConvertMarkdown(ViewModel.HelpDocuments[ViewModel.SelectedDocumentName]);
+            CoreNavigateTo(ViewModel.SelectedDocumentName);
+            while (ViewModel.NavigationHistory.Count > ViewModel.NavigationIndex + 1)
+            {
+                ViewModel.NavigationHistory.RemoveAt(ViewModel.NavigationIndex + 1);
+            }
+            ViewModel.NavigationHistory.Add(ViewModel.SelectedDocumentName);
+            ViewModel.NavigationIndex++;
+            UpdateNavigationState();
         }
+    }
+
+    private void CoreNavigateTo(string name)
+    {
+        Analytics.TrackEvent("浏览帮助文档",
+        new Dictionary<string, string>
+        {
+            { "Name", name }
+        });
+        ScrollViewerDocument.ScrollToTop();
+        ConvertMarkdown(ViewModel.HelpDocuments[name]);
+        ViewModel.SelectedDocumentName = name;
     }
 
     private void ConvertMarkdown(string path)
@@ -124,5 +147,39 @@ public partial class HelpsWindow : Window
                 parent.RaiseEvent(eventArg);
             }
         }
+    }
+
+    private void ButtonBack_OnClick(object sender, RoutedEventArgs e)
+    {
+        IsAutoNavigating = true;
+        Debug.WriteLine($"{ViewModel.NavigationIndex} {string.Join(' ', ViewModel.NavigationHistory)}");
+        if (ViewModel.NavigationIndex <= 0)
+        {
+            return;
+        }
+        CoreNavigateTo(ViewModel.NavigationHistory[ViewModel.NavigationIndex - 1]);
+        ViewModel.NavigationIndex--;
+        IsAutoNavigating = false;
+        UpdateNavigationState();
+    }
+
+    private void ButtonForward_OnClick(object sender, RoutedEventArgs e)
+    {
+        IsAutoNavigating = true;
+        Debug.WriteLine($"{ViewModel.NavigationIndex} {string.Join(' ', ViewModel.NavigationHistory)}");
+        if (ViewModel.NavigationIndex + 1 >= ViewModel.NavigationHistory.Count)
+        {
+            return;
+        }
+        CoreNavigateTo(ViewModel.NavigationHistory[ViewModel.NavigationIndex + 1]);
+        ViewModel.NavigationIndex++;
+        IsAutoNavigating = false;
+        UpdateNavigationState();
+    }
+
+    private void UpdateNavigationState()
+    {
+        ViewModel.CanBack = ViewModel.NavigationIndex > 0;
+        ViewModel.CanForward = ViewModel.NavigationIndex + 1 < ViewModel.NavigationHistory.Count;
     }
 }

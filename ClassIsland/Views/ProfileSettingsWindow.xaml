@@ -471,7 +471,7 @@
 
                                                 <!-- Name -->
                                                 <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
-                                                           ToolTip="课表名称"/>
+                                                           ToolTip="课表名称" HorizontalAlignment="Left"/>
 
                                                 <!-- Info -->
                                                 <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
@@ -797,7 +797,7 @@
 
                                                 <!-- Subject -->
                                                 <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
-                                                           ToolTip="科目名"/>
+                                                           ToolTip="科目名" HorizontalAlignment="Left"/>
 
                                                 <!-- Info -->
                                                 <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
@@ -911,7 +911,7 @@
                             <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
                                                Margin="0 0 8 0"
                                                VerticalAlignment="Center"
-                                               ToolTip="当前加载的档案。"/>
+                                               ToolTip="当前加载的档案"/>
                             <Button ToolTip="管理所有保存的档案。" Click="ButtonProfileManage_OnClick"
                                     VerticalAlignment="Center"
                                     Style="{StaticResource MaterialDesignToolForegroundButton}"
