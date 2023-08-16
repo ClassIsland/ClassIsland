@@ -8,8 +8,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
@@ -17,7 +15,7 @@ using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
 
-namespace ClassIsland;
+namespace ClassIsland.Services;
 
 public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
 {

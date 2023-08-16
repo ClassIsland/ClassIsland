@@ -11,6 +11,7 @@
         xmlns:ci="clr-namespace:ClassIsland"
         xmlns:cv="clr-namespace:ClassIsland.Converters"
         xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
+        xmlns:services="clr-namespace:ClassIsland.Services"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:SettingsWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -1049,7 +1050,7 @@
                                                                       Description="控制应用从何处获取更新。">
                                                 <controls:SettingsControl.Switcher>
                                                     <ComboBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
-                                                              ItemsSource="{x:Static ci:UpdateService.UpdateChannels}"
+                                                              ItemsSource="{x:Static services:UpdateService.UpdateChannels}"
                                                               SelectedValue="{Binding Settings.SelectedChannel}"
                                                               SelectedValuePath="RootUrl">
                                                         <ComboBox.ItemTemplate>

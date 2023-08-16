@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ClassIsland.Enums;
 using ClassIsland.Models;
+using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;

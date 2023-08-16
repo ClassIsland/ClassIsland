@@ -26,6 +26,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Enums;
 using ClassIsland.Models;
+using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
 using H.NotifyIcon;

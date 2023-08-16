@@ -6,10 +6,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Models;
-using ClassIsland.Views;
 using Microsoft.Extensions.Hosting;
 
-namespace ClassIsland;
+namespace ClassIsland.Services;
 
 public class SettingsService : IHostedService, INotifyPropertyChanged
 {

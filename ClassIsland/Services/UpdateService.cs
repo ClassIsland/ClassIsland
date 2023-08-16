@@ -6,27 +6,21 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using ClassIsland.Enums;
 using ClassIsland.Models;
 using Downloader;
-using IWshRuntimeLibrary;
-using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Toolkit.Uwp.Notifications;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
 
-namespace ClassIsland;
+namespace ClassIsland.Services;
 
 public class UpdateService : IHostedService, INotifyPropertyChanged
 {

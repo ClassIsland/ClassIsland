@@ -6,7 +6,7 @@ using H.NotifyIcon;
 using H.NotifyIcon.Core;
 using Microsoft.Extensions.Hosting;
 
-namespace ClassIsland;
+namespace ClassIsland.Services;
 
 public class TaskBarIconService : IHostedService
 {
