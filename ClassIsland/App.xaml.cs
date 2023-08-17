@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Threading;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Views;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
@@ -131,10 +132,11 @@ public partial class App : Application
                 services.AddSingleton<UpdateService>();
                 services.AddSingleton<TaskBarIconService>();
                 services.AddSingleton<WallpaperPickingService>();
-                services.AddHostedService<TaskBarIconService>();
+                services.AddSingleton<NotificationHostService>();
+                // 提醒提供方
+                services.AddHostedService<ClassNotificationProvider>();
             }).Build();
 
-        await Host.StartAsync();
         GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
@@ -145,6 +147,8 @@ public partial class App : Application
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         MainWindow = new MainWindow();
         MainWindow.Show();
+
+        await Host.StartAsync();
     }
 
     public static void ReleaseLock()

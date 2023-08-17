@@ -63,6 +63,9 @@ public class Settings : ObservableRecipient
     private double _targetLightValue = 0.6;
     private double _scale = 1.0;
     private bool _isMainWindowDebugEnabled = false;
+    private ObservableDictionary<string, bool> _notificationProvidersEnableStates = new();
+    private ObservableCollection<string> _notificationProvidersPriority = new();
+    private ObservableDictionary<string, object?> _notificationProvidersSettings = new();
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -360,6 +363,43 @@ public class Settings : ObservableRecipient
         {
             if (value.Equals(_scale)) return;
             _scale = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Notifications
+
+    public ObservableDictionary<string, bool> NotificationProvidersEnableStates
+    {
+        get => _notificationProvidersEnableStates;
+        set
+        {
+            if (Equals(value, _notificationProvidersEnableStates)) return;
+            _notificationProvidersEnableStates = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<string> NotificationProvidersPriority
+    {
+        get => _notificationProvidersPriority;
+        set
+        {
+            if (Equals(value, _notificationProvidersPriority)) return;
+            _notificationProvidersPriority = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableDictionary<string, object?> NotificationProvidersSettings
+    {
+        get => _notificationProvidersSettings;
+        set
+        {
+            if (Equals(value, _notificationProvidersSettings)) return;
+            _notificationProvidersSettings = value;
             OnPropertyChanged();
         }
     }

@@ -84,6 +84,12 @@ public partial class MainWindow : Window
         get;
     } = App.GetService<TaskBarIconService>();
 
+    private NotificationHostService NotificationHostService
+    {
+        get; 
+
+    } = App.GetService<NotificationHostService>();
+
     private Stopwatch UserPrefrenceUpdateStopwatch
     {
         get;
@@ -183,6 +189,7 @@ public partial class MainWindow : Window
         {
             ViewModel.CurrentStatus = TimeState.None;
             ViewModel.CurrentOverlayStatus = TimeState.None;
+            ViewModel.CurrentOverlayEventStatus = TimeState.None;
             return;
         }
         // Activate selected item
@@ -215,7 +222,8 @@ public partial class MainWindow : Window
             var nextTimeLayoutItems = (from i in currentLayout
                 where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
                       && i.TimeType == 0
-                select i).ToList();
+                select i)
+                .ToList();
             if (nextTimeLayoutItems.Count > 0)
             {
                 var i0 = GetSubjectIndex(currentLayout.IndexOf(nextTimeLayoutItems[0]));
@@ -297,8 +305,50 @@ public partial class MainWindow : Window
                 break;
             case TimeState.None when ViewModel.CurrentOverlayStatus != TimeState.None:
                 break;
+            // 向提醒提供方传递事件
+            // 下课事件
+            case TimeState.Breaking when ViewModel.CurrentOverlayEventStatus != TimeState.Breaking:
+                NotificationHostService.OnOnBreakingTime(this, EventArgs.Empty);
+                ViewModel.CurrentOverlayEventStatus = TimeState.Breaking;
+                break;
+            // 上课事件
+            case TimeState.OnClass when ViewModel.CurrentOverlayEventStatus != TimeState.OnClass:
+                NotificationHostService.OnOnClass(this, EventArgs.Empty);
+                ViewModel.CurrentOverlayEventStatus = TimeState.OnClass;
+                break;
             default:
                 break;
+        }
+        
+        // 处理提醒请求队列
+        if (!ViewModel.IsOverlayOpened)
+        {
+            ViewModel.IsOverlayOpened = true;
+            while (NotificationHostService.RequestQueue.Count > 0)
+            {
+                var request = NotificationHostService.RequestQueue.Dequeue();
+                ViewModel.CurrentMaskElement = request.MaskContent;
+                ViewModel.CurrentOverlayElement = request.OverlayContent;
+                
+                BeginStoryboard("OverlayMaskIn");
+                await Task.Run(() => Thread.Sleep(request.MaskDuration));
+                if (request.OverlayContent is null)
+                {
+                    BeginStoryboard("OverlayMaskOutDirect");
+                }
+                else
+                {
+                    BeginStoryboard("OverlayMaskOut");
+                    await Task.Run(() => Thread.Sleep(request.OverlayDuration));
+                }
+
+                if (NotificationHostService.RequestQueue.Count < 1)
+                {
+                    BeginStoryboard("OverlayOut");
+                }
+            }
+
+            ViewModel.IsOverlayOpened = false;
         }
 
         // Finished update

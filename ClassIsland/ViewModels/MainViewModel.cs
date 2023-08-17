@@ -31,6 +31,7 @@ public class MainViewModel : ObservableRecipient
     private string _currentProfilePath = "Profile.json";
     private double _gridRootLeft = 0;
     private double _gridRootTop = 0;
+    private TimeState _currentOverlayEventStatus = TimeState.None;
 
     public Profile Profile
     {
@@ -277,4 +278,15 @@ public class MainViewModel : ObservableRecipient
     }
 
     public SettingsService SettingsService => App.GetService<SettingsService>();
+
+    public TimeState CurrentOverlayEventStatus
+    {
+        get => _currentOverlayEventStatus;
+        set
+        {
+            if (value == _currentOverlayEventStatus) return;
+            _currentOverlayEventStatus = value;
+            OnPropertyChanged();
+        }
+    }
 }
