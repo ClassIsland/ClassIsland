@@ -12,6 +12,8 @@
         xmlns:cv="clr-namespace:ClassIsland.Converters"
         xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
         xmlns:services="clr-namespace:ClassIsland.Services"
+        xmlns:interfaces="clr-namespace:ClassIsland.Interfaces"
+        xmlns:dd="urn:gong-wpf-dragdrop"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:SettingsWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -215,6 +217,7 @@
             </Style.Triggers>
             <Setter Property="IsEnabled" Value="False"/>
         </Style>
+        <converters:GuidToNotificationProviderConverter x:Key="GuidToNotificationProviderConverter" />
     </Window.Resources>
 
     <materialDesign:DialogHost Identifier="SettingsWindow">
@@ -495,6 +498,76 @@
                                     <!-- 高级 -->
                                 </StackPanel>
                             </ScrollViewer>
+                        </TabItem>
+
+                        <!-- 提醒 -->
+                        <TabItem Header="提醒">
+                            <Grid Margin="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <!-- 提醒提供方 -->
+                                <Grid Grid.Column="0" Margin="0 0 4 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <!-- 提醒开关 -->
+                                    <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
+                                                           Header="启用提醒"
+                                                           IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
+                                                           Description="启用提醒后，将会在对重要事件发出醒目提醒。"/>
+                                    <!-- 提醒提供方列表 -->
+                                    <ListBox Grid.Row="1" ItemsSource="{Binding Settings.NotificationProvidersPriority}"
+                                             Margin="0 12 0 0"
+                                             dd:DragDrop.IsDragSource="True"
+                                             dd:DragDrop.IsDropTarget="True"
+                                             dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
+                                             x:Name="ListViewNotificationProviders">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
+                                                      d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- 图标 -->
+                                                    <ContentPresenter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                                                      Width="32" Height="32" VerticalAlignment="Center"
+                                                                      ClipToBounds="True" Margin="0 0 6 0"
+                                                                      Content="{Binding IconElement}"/>
+                                                    <!-- 标题 -->
+                                                    <TextBlock Grid.Column="1" Grid.Row="0"
+                                                               TextWrapping="Wrap"
+                                                               Text="{Binding Name}"
+                                                               FontSize="16" FontWeight="Bold"/>
+                                                    <!-- 描述 -->
+                                                    <TextBlock Grid.Column="1" Grid.Row="1"
+                                                               TextWrapping="Wrap"
+                                                               Text="{Binding Description}"
+                                                               FontSize="12"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+                                <!-- 提醒详细信息 -->
+                                <Grid Grid.Column="1" Margin="4 0 0 0"
+                                      DataContext="{Binding SelectedItem, ElementName=ListViewNotificationProviders, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                                      d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                    <ContentPresenter ClipToBounds="True"
+                                                      Content="{Binding SettingsElement}"/>
+
+                                </Grid>
+
+                            </Grid>
                         </TabItem>
 
                         <!-- 窗口 -->
@@ -1299,7 +1372,7 @@
                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                 <TextBlock Text="{x:Static ci:App.AppVersion}"
                                            VerticalAlignment="Center" 
-                                           ToolTip="应用版本。"/>
+                                           ToolTip="应用版本"/>
 
                                 <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多…">
                                     <StackPanel>

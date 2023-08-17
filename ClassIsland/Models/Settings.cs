@@ -66,6 +66,7 @@ public class Settings : ObservableRecipient
     private ObservableDictionary<string, bool> _notificationProvidersEnableStates = new();
     private ObservableCollection<string> _notificationProvidersPriority = new();
     private ObservableDictionary<string, object?> _notificationProvidersSettings = new();
+    private bool _isNotificationEnabled = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -370,6 +371,17 @@ public class Settings : ObservableRecipient
     #endregion
 
     #region Notifications
+
+    public bool IsNotificationEnabled
+    {
+        get => _isNotificationEnabled;
+        set
+        {
+            if (value == _isNotificationEnabled) return;
+            _isNotificationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
 
     public ObservableDictionary<string, bool> NotificationProvidersEnableStates
     {

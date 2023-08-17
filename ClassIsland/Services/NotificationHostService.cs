@@ -75,4 +75,9 @@ public class NotificationHostService : IHostedService
     {
         return new Task(()=>{});
     }
+
+    public T? GetNotificationProviderSettings<T>(Guid id)
+    {
+        return (T?)Settings.NotificationProvidersSettings[id.ToString()];
+    }
 }
