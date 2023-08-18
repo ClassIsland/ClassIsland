@@ -502,72 +502,86 @@
 
                         <!-- 提醒 -->
                         <TabItem Header="提醒">
-                            <Grid Margin="12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <!-- 提醒提供方 -->
-                                <Grid Grid.Column="0" Margin="0 0 4 0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <!-- 提醒开关 -->
-                                    <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
-                                                           Header="启用提醒"
-                                                           IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
-                                                           Description="启用提醒后，将会在对重要事件发出醒目提醒。"/>
-                                    <!-- 提醒提供方列表 -->
-                                    <ListBox Grid.Row="1" ItemsSource="{Binding Settings.NotificationProvidersPriority}"
-                                             Margin="0 12 0 0"
-                                             dd:DragDrop.IsDragSource="True"
-                                             dd:DragDrop.IsDropTarget="True"
-                                             dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
-                                             x:Name="ListViewNotificationProviders">
-                                        <ListBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
-                                                      d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition/>
-                                                        <RowDefinition/>
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition/>
-                                                    </Grid.ColumnDefinitions>
+                            <controls:ListDetailView Margin="12" 
+                                                     ShowTitleWhenNotCompressed="True" 
+                                                     IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
+                                <controls:ListDetailView.TitleElement>
+                                    <TextBlock Text="提醒提供方设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                               VerticalAlignment="Center"/>
+                                </controls:ListDetailView.TitleElement>
+                                <controls:ListDetailView.LeftContent>
+                                    <!-- 提醒提供方 -->
+                                    <Grid Grid.Column="0" Margin="0 0 4 0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <!-- 提醒开关 -->
+                                        <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
+                                                               Header="启用提醒"
+                                                               IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
+                                                               Description="启用提醒后，将会在对重要事件发出醒目提醒。"/>
+                                        <!-- 提醒提供方列表 -->
+                                        <ListBox Grid.Row="1" ItemsSource="{Binding Settings.NotificationProvidersPriority}"
+                                                 Margin="0 12 0 0"
+                                                 SelectionMode="Single"
+                                                 dd:DragDrop.IsDragSource="True"
+                                                 dd:DragDrop.IsDropTarget="True"
+                                                 SelectionChanged="Selector_OnSelected"
+                                                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
+                                                 SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                    <EventSetter Event="MouseDoubleClick" Handler="EventSetter_OnHandler"/>
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
+                                                          d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition/>
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
 
-                                                    <!-- 图标 -->
-                                                    <ContentPresenter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                                                      Width="32" Height="32" VerticalAlignment="Center"
-                                                                      ClipToBounds="True" Margin="0 0 6 0"
-                                                                      Content="{Binding IconElement}"/>
-                                                    <!-- 标题 -->
-                                                    <TextBlock Grid.Column="1" Grid.Row="0"
-                                                               TextWrapping="Wrap"
-                                                               Text="{Binding Name}"
-                                                               FontSize="16" FontWeight="Bold"/>
-                                                    <!-- 描述 -->
-                                                    <TextBlock Grid.Column="1" Grid.Row="1"
-                                                               TextWrapping="Wrap"
-                                                               Text="{Binding Description}"
-                                                               FontSize="12"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
-                                </Grid>
-                                <!-- 提醒详细信息 -->
-                                <Grid Grid.Column="1" Margin="4 0 0 0"
-                                      DataContext="{Binding SelectedItem, ElementName=ListViewNotificationProviders, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                                      d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
-                                    <ContentPresenter ClipToBounds="True"
-                                                      Content="{Binding SettingsElement}"/>
-
-                                </Grid>
-
-                            </Grid>
+                                                        <!-- 图标 -->
+                                                        <ContentPresenter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                                                          Width="32" Height="32" VerticalAlignment="Center"
+                                                                          ClipToBounds="True" Margin="0 0 6 0"
+                                                                          Content="{Binding IconElement}"/>
+                                                        <!-- 标题 -->
+                                                        <TextBlock Grid.Column="1" Grid.Row="0"
+                                                                   TextWrapping="Wrap"
+                                                                   Text="{Binding Name}"
+                                                                   FontSize="16" FontWeight="Bold"/>
+                                                        <!-- 描述 -->
+                                                        <TextBlock Grid.Column="1" Grid.Row="1"
+                                                                   TextWrapping="Wrap"
+                                                                   Text="{Binding Description}"
+                                                                   FontSize="12"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                        <!--<TextBlock Grid.Row="1" Text="{Binding ViewModel.NotificationSettingsSelectedProvider}"></TextBlock>-->
+                                    </Grid>
+                                </controls:ListDetailView.LeftContent>
+                                <controls:ListDetailView.RightContent>
+                                    <!-- 提醒详细信息 -->
+                                    <Grid>
+                                        <Grid Margin="4 0 0 0"
+                                              DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                                              d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                            <ContentPresenter ClipToBounds="True"
+                                                              Content="{Binding SettingsElement}" />
+                                        </Grid>
+                                    </Grid>
+                                </controls:ListDetailView.RightContent>
+                            </controls:ListDetailView>
                         </TabItem>
 
                         <!-- 窗口 -->

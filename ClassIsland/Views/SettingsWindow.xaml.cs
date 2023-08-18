@@ -316,4 +316,24 @@ public partial class SettingsWindow : Window
     {
         await WallpaperPickingService.GetWallpaperAsync();
     }
+
+    private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        ViewModel.IsNotificationSettingsPanelOpened = true;
+    }
+
+    private void Selector_OnSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (ViewModel.NotificationSettingsSelectedProvider == null)
+        {
+            return;
+        }
+        ViewModel.IsNotificationSettingsPanelOpened = true;
+
+    }
+
+    private void EventSetter_OnHandler(object sender, MouseButtonEventArgs e)
+    {
+        ViewModel.IsNotificationSettingsPanelOpened = true;
+    }
 }

@@ -21,6 +21,8 @@ public class SettingsViewModel : ObservableRecipient
     private BitmapImage _testImage = new();
     private string _debugOutputs = "";
     private ObservableCollection<Color> _debugImageAccentColors = new();
+    private bool _isNotificationSettingsPanelOpened = false;
+    private string? _notificationSettingsSelectedProvider = null;
 
     public Screen[] Screens
     {
@@ -117,6 +119,28 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _debugImageAccentColors)) return;
             _debugImageAccentColors = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationSettingsPanelOpened
+    {
+        get => _isNotificationSettingsPanelOpened;
+        set
+        {
+            if (value == _isNotificationSettingsPanelOpened) return;
+            _isNotificationSettingsPanelOpened = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? NotificationSettingsSelectedProvider
+    {
+        get => _notificationSettingsSelectedProvider;
+        set
+        {
+            if (value == _notificationSettingsSelectedProvider) return;
+            _notificationSettingsSelectedProvider = value;
             OnPropertyChanged();
         }
     }
