@@ -125,7 +125,7 @@ public partial class MainWindow : Window
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 3;
+        SettingsWindow.RootTabControl.SelectedIndex = 4;
     }
 
     private int GetSubjectIndex(int index)
@@ -168,6 +168,7 @@ public partial class MainWindow : Window
         {
             //SetBottom();
         }
+        NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
 
         // Detect fullscreen
         var screen = Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] ??
@@ -190,8 +191,10 @@ public partial class MainWindow : Window
             ViewModel.CurrentStatus = TimeState.None;
             ViewModel.CurrentOverlayStatus = TimeState.None;
             ViewModel.CurrentOverlayEventStatus = TimeState.None;
+            NotificationHostService.IsClassPlanLoaded = false;
             return;
         }
+        NotificationHostService.IsClassPlanLoaded = true;
         // Activate selected item
         ViewModel.CurrentClassPlan.IsActivated = true;
         ViewModel.CurrentClassPlan.TimeLayout.IsActivated = true;
@@ -219,29 +222,42 @@ public partial class MainWindow : Window
         // 获取下节课信息
         else if (ViewModel.CurrentSelectedIndex + 1 < currentLayout.Count && ViewModel.CurrentSelectedIndex is not null)
         {
-            var nextTimeLayoutItems = (from i in currentLayout
+            var nextClassTimeLayoutItems = (from i in currentLayout
                 where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
                       && i.TimeType == 0
                 select i)
                 .ToList();
-            if (nextTimeLayoutItems.Count > 0)
+            var nextBreakingTimeLayoutItems = (from i in currentLayout
+                    where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
+                          && i.TimeType == 1
+                    select i)
+                .ToList();
+            if (nextClassTimeLayoutItems.Count > 0)
             {
-                var i0 = GetSubjectIndex(currentLayout.IndexOf(nextTimeLayoutItems[0]));
+                var i0 = GetSubjectIndex(currentLayout.IndexOf(nextClassTimeLayoutItems[0]));
                 var index = ViewModel.CurrentClassPlan.Classes[i0].SubjectId;
-                ViewModel.NextSubject = ViewModel.Profile.Subjects[index];
-                ViewModel.NextTimeLayoutItem = nextTimeLayoutItems[0];
+                NotificationHostService.NextClassSubject = ViewModel.NextSubject = ViewModel.Profile.Subjects[index];
+                NotificationHostService.NextClassTimeLayoutItem = ViewModel.NextTimeLayoutItem = nextClassTimeLayoutItems[0];
+            }
+
+            if (nextBreakingTimeLayoutItems.Count > 0)
+            {
+                NotificationHostService.NextBreakingTimeLayoutItem = ViewModel.NextBreakingLayoutItem = nextBreakingTimeLayoutItems[0];
             }
         }
 
         var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
         ViewModel.OnClassLeftTime = tClassDelta;
+        NotificationHostService.OnClassDeltaTime = tClassDelta;
+        NotificationHostService.OnBreakingTimeDeltaTime =
+            ViewModel.NextBreakingLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
         // 获取状态信息
         if (ViewModel.CurrentSelectedIndex == null)
         {
             ViewModel.CurrentStatus = TimeState.None;
-        } else if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds))
-        {
-            ViewModel.CurrentStatus = TimeState.PrepareOnClass;
+        //} else if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds))
+        //{
+        //    ViewModel.CurrentStatus = TimeState.PrepareOnClass;
         } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
         {
             ViewModel.CurrentStatus = TimeState.OnClass;
@@ -252,59 +268,6 @@ public partial class MainWindow : Window
 
         switch (ViewModel.CurrentStatus)
         {
-            // 恢复overlay锁定
-            case TimeState.Breaking when ViewModel.CurrentOverlayStatus == TimeState.OnClass:
-                ViewModel.CurrentOverlayStatus = TimeState.None;
-                break;
-            // 下课通知
-            case TimeState.Breaking when ViewModel.CurrentOverlayStatus != TimeState.Breaking
-                                         && ViewModel.Settings.IsClassOffNotificationEnabled:
-                Analytics.TrackEvent("提醒 · 下课");
-                ViewModel.IsOverlayOpened = true;
-                ViewModel.CurrentOverlayStatus = TimeState.Breaking;
-                ViewModel.CurrentMaskElement = FindResource("ClassOffNotification");
-                ViewModel.CurrentOverlayElement = FindResource("ClassOffOverlay");
-                BeginStoryboard("OverlayMaskIn");
-                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(2)));
-                BeginStoryboard("OverlayMaskOut");
-                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(10)));
-                BeginStoryboard("OverlayOut");
-                ViewModel.IsOverlayOpened = false;
-                break;
-            // 上课通知
-            case TimeState.OnClass when ViewModel.CurrentOverlayStatus != TimeState.OnClass
-                                        && ViewModel.Settings.IsClassChangingNotificationEnabled:
-                Analytics.TrackEvent("提醒 · 上课");
-                ViewModel.IsOverlayOpened = true;
-                ViewModel.CurrentOverlayStatus = TimeState.OnClass;
-                ViewModel.CurrentMaskElement = FindResource("ClassOnNotification");
-                BeginStoryboard("OverlayMaskIn");
-                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
-                ViewModel.IsOverlayOpened = false;
-                //ViewModel.CurrentOverlayStatus = TimeState.None;
-                BeginStoryboard("OverlayMaskOutDirect");
-                break;
-            // 关闭准备上课通知
-            case TimeState.OnClass when ViewModel.CurrentOverlayStatus == TimeState.PrepareOnClass
-                                        && !ViewModel.Settings.IsClassChangingNotificationEnabled:
-                ViewModel.CurrentOverlayStatus = TimeState.None;
-                ViewModel.IsOverlayOpened = false;
-                BeginStoryboard("OverlayOut");
-                break;
-            // 准备上课通知
-            case TimeState.PrepareOnClass when ViewModel.CurrentOverlayStatus != TimeState.PrepareOnClass 
-                                               && ViewModel.Settings.IsClassPrepareNotificationEnabled:
-                Analytics.TrackEvent("提醒 · 准备上课");
-                ViewModel.IsOverlayOpened = true;
-                ViewModel.CurrentOverlayStatus = TimeState.PrepareOnClass;
-                ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
-                ViewModel.CurrentOverlayElement = FindResource("ClassPrepareNotifyOverlay");
-                BeginStoryboard("OverlayMaskIn");
-                await Task.Run(() => Thread.Sleep(TimeSpan.FromSeconds(5)));
-                BeginStoryboard("OverlayMaskOut");
-                break;
-            case TimeState.None when ViewModel.CurrentOverlayStatus != TimeState.None:
-                break;
             // 向提醒提供方传递事件
             // 下课事件
             case TimeState.Breaking when ViewModel.CurrentOverlayEventStatus != TimeState.Breaking:
@@ -315,6 +278,10 @@ public partial class MainWindow : Window
             case TimeState.OnClass when ViewModel.CurrentOverlayEventStatus != TimeState.OnClass:
                 NotificationHostService.OnOnClass(this, EventArgs.Empty);
                 ViewModel.CurrentOverlayEventStatus = TimeState.OnClass;
+                break;
+            case TimeState.None:
+                break;
+            case TimeState.PrepareOnClass:
                 break;
             default:
                 break;
@@ -327,21 +294,33 @@ public partial class MainWindow : Window
             while (NotificationHostService.RequestQueue.Count > 0)
             {
                 var request = NotificationHostService.RequestQueue.Dequeue();
+                if (request.TargetMaskEndTime != null)
+                {
+                    request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
+                }
+                if (request.TargetOverlayEndTime != null)
+                {
+                    request.OverlayDuration = request.TargetOverlayEndTime.Value - DateTime.Now - request.MaskDuration;
+                }
                 ViewModel.CurrentMaskElement = request.MaskContent;
-                ViewModel.CurrentOverlayElement = request.OverlayContent;
-                
-                BeginStoryboard("OverlayMaskIn");
-                await Task.Run(() => Thread.Sleep(request.MaskDuration));
-                if (request.OverlayContent is null)
-                {
-                    BeginStoryboard("OverlayMaskOutDirect");
-                }
-                else
-                {
-                    BeginStoryboard("OverlayMaskOut");
-                    await Task.Run(() => Thread.Sleep(request.OverlayDuration));
-                }
 
+                if (request.MaskDuration >= TimeSpan.Zero &&
+                    request.OverlayDuration >= TimeSpan.Zero)
+                {
+                    BeginStoryboard("OverlayMaskIn");
+                    await Task.Run(() => Thread.Sleep(request.MaskDuration));
+                    if (request.OverlayContent is null)
+                    {
+                        BeginStoryboard("OverlayMaskOutDirect");
+                    }
+                    else
+                    {
+                        ViewModel.CurrentOverlayElement = request.OverlayContent;
+                        BeginStoryboard("OverlayMaskOut");
+                        await Task.Run(() => Thread.Sleep(request.OverlayDuration));
+                    }
+
+                }
                 if (NotificationHostService.RequestQueue.Count < 1)
                 {
                     BeginStoryboard("OverlayOut");
@@ -805,7 +784,7 @@ public partial class MainWindow : Window
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 5;
+        SettingsWindow.RootTabControl.SelectedIndex = 6;
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
@@ -843,7 +822,7 @@ public partial class MainWindow : Window
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 3;
+        SettingsWindow.RootTabControl.SelectedIndex = 4;
     }
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)

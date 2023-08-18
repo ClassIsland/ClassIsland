@@ -9,6 +9,8 @@ public class NotificationRequest : ObservableRecipient
     private object _maskContent = new();
     private TimeSpan _overlayDuration = TimeSpan.FromSeconds(5);
     private TimeSpan _maskDuration = TimeSpan.FromSeconds(5);
+    private DateTime? _targetOverlayEndTime;
+    private DateTime? _targetMaskEndTime;
 
     public object? OverlayContent
     {
@@ -50,6 +52,28 @@ public class NotificationRequest : ObservableRecipient
         {
             if (value.Equals(_maskDuration)) return;
             _maskDuration = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime? TargetOverlayEndTime
+    {
+        get => _targetOverlayEndTime;
+        set
+        {
+            if (Nullable.Equals(value, _targetOverlayEndTime)) return;
+            _targetOverlayEndTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime? TargetMaskEndTime
+    {
+        get => _targetMaskEndTime;
+        set
+        {
+            if (Nullable.Equals(value, _targetMaskEndTime)) return;
+            _targetMaskEndTime = value;
             OnPropertyChanged();
         }
     }

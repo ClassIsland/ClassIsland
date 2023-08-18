@@ -32,6 +32,7 @@ public class MainViewModel : ObservableRecipient
     private double _gridRootLeft = 0;
     private double _gridRootTop = 0;
     private TimeState _currentOverlayEventStatus = TimeState.None;
+    private TimeLayoutItem _nextBreakingLayoutItem = new();
 
     public Profile Profile
     {
@@ -128,6 +129,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (Equals(value, _nextTimeLayoutItem)) return;
             _nextTimeLayoutItem = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeLayoutItem NextBreakingLayoutItem
+    {
+        get => _nextBreakingLayoutItem;
+        set
+        {
+            if (Equals(value, _nextBreakingLayoutItem)) return;
+            _nextBreakingLayoutItem = value;
             OnPropertyChanged();
         }
     }
