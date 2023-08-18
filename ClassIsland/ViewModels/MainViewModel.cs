@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -33,6 +34,8 @@ public class MainViewModel : ObservableRecipient
     private double _gridRootTop = 0;
     private TimeState _currentOverlayEventStatus = TimeState.None;
     private TimeLayoutItem _nextBreakingLayoutItem = new();
+    private double _overlayRemainTimePercents = 1;
+    private NotificationRequest _currentNotificationRequest = new();
 
     public Profile Profile
     {
@@ -298,6 +301,30 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _currentOverlayEventStatus) return;
             _currentOverlayEventStatus = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double OverlayRemainTimePercents
+    {
+        get => _overlayRemainTimePercents;
+        set
+        {
+            if (value.Equals(_overlayRemainTimePercents)) return;
+            _overlayRemainTimePercents = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Stopwatch OverlayRemainStopwatch { get; } = new();
+
+    public NotificationRequest CurrentNotificationRequest
+    {
+        get => _currentNotificationRequest;
+        set
+        {
+            if (Equals(value, _currentNotificationRequest)) return;
+            _currentNotificationRequest = value;
             OnPropertyChanged();
         }
     }

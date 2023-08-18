@@ -371,7 +371,7 @@
                                   x:Name="RootDropShadowEffect"
                                   Color="Black"/>
             </Grid.Effect>
-            <Grid ClipToBounds="True">
+            <Grid x:Name="GridWrapper" ClipToBounds="True">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
@@ -401,7 +401,8 @@
                         Background="{DynamicResource MaterialDesignPaper}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}" />
 
-                <Grid Height="40" Margin="16 0">                    <Grid.ColumnDefinitions>
+                <Grid Height="40" Margin="16 0">
+                    <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
@@ -485,6 +486,14 @@
                 <Grid x:Name="GridOverlay"
                     Background="{DynamicResource MaterialDesignPaper}"
                     Opacity="0">
+                    <ProgressBar VerticalAlignment="Stretch"
+                                 Maximum="1"
+                                 Height="{Binding Height, ElementName=GridWrapper}"
+                                 Value="{Binding ViewModel.OverlayRemainTimePercents, Mode=OneWay}"
+                                 Foreground="{DynamicResource MaterialDesignBody}"
+                                 Background="Transparent"
+                                 BorderBrush="Transparent"
+                                 Opacity="0.16"/>
                     <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}" />
                 </Grid>
 

@@ -293,7 +293,7 @@ public partial class MainWindow : Window
             ViewModel.IsOverlayOpened = true;
             while (NotificationHostService.RequestQueue.Count > 0)
             {
-                var request = NotificationHostService.RequestQueue.Dequeue();
+                var request = ViewModel.CurrentNotificationRequest = NotificationHostService.RequestQueue.Dequeue();
                 if (request.TargetMaskEndTime != null)
                 {
                     request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
@@ -317,7 +317,9 @@ public partial class MainWindow : Window
                     {
                         ViewModel.CurrentOverlayElement = request.OverlayContent;
                         BeginStoryboard("OverlayMaskOut");
+                        ViewModel.OverlayRemainStopwatch.Restart();
                         await Task.Run(() => Thread.Sleep(request.OverlayDuration));
+                        ViewModel.OverlayRemainStopwatch.Stop();
                     }
 
                 }
@@ -328,6 +330,19 @@ public partial class MainWindow : Window
             }
 
             ViewModel.IsOverlayOpened = false;
+        }
+
+        // Update percents
+        if (ViewModel.IsOverlayOpened && 
+            ViewModel.OverlayRemainStopwatch.IsRunning)
+        {
+            var request = ViewModel.CurrentNotificationRequest;
+            var totalMs = request.OverlayDuration.TotalMilliseconds;
+            var ms = ViewModel.OverlayRemainStopwatch.ElapsedMilliseconds;
+            if (totalMs > 0)
+            {
+                ViewModel.OverlayRemainTimePercents = (totalMs - ms) / totalMs;
+            }
         }
 
         // Finished update

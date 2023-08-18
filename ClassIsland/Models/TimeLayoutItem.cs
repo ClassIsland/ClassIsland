@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
@@ -40,6 +41,7 @@ public class TimeLayoutItem : ObservableRecipient, IComparable
         }
     }
 
+    [JsonIgnore]
     public TimeSpan Last => EndSecond.TimeOfDay - StartSecond.TimeOfDay;
 
     /// <summary>
