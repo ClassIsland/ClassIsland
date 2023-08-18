@@ -82,6 +82,7 @@
                 <Button Content="{materialDesign:PackIcon ArrowBack}" Style="{StaticResource MaterialDesignIconForegroundButton}"
                         Click="ButtonBack_OnClick"
                         ToolTip="返回"
+                        Margin="0 0 6 0"
                         Visibility="{Binding IsCompressedMode, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ListDetailView}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <ContentPresenter Content="{Binding TitleElement, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ListDetailView}}" />
             </DockPanel>

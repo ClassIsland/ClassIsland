@@ -252,46 +252,6 @@
                                     <controls:SettingsCard IconGlyph="DateRange"
                                                            Header="显示日期" Description="在界面上显示当前日期。"
                                                            IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
-                                    <!-- 提醒 -->
-                                    <materialDesign:Card Margin="0 0 0 6">
-                                        <Expander Background="Transparent" IsExpanded="True">
-                                            <Expander.Header>
-                                                <controls:SettingsControl IconGlyph="Alarm"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Header="提醒" HasSwitcher="False"
-                                                                          Description="在下方选定的时间点时发出醒目提醒。"
-                                                                          Margin="-12 0" />
-                                            </Expander.Header>
-                                            <StackPanel Margin="32 0 64 12">
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="CheckBox"
-                                                           BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                                        <Setter Property="Margin" Value="0 3" />
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <CheckBox Content="课前准备时"
-                                                          IsChecked="{Binding Settings.IsClassChangingNotificationEnabled}" />
-                                                <CheckBox Content="上课时"
-                                                          IsChecked="{Binding Settings.IsClassPrepareNotificationEnabled}" />
-                                                <CheckBox Content="下课时"
-                                                          IsChecked="{Binding Settings.IsClassOffNotificationEnabled}" />
-                                                <Separator Margin="0 8" />
-                                                <!-- 课前提醒时间 -->
-                                                <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="课前提醒时间"
-                                                                          Description="在上课前指定时间进行上课提醒。"
-                                                                          IsCompact="True">
-                                                    <controls:SettingsControl.Switcher>
-                                                        <controls:NumbericTextBox MaxValue="3600" MinValue="0"
-                                                            Text="{Binding Settings.ClassPrepareNotifySeconds, Converter={StaticResource IntToStringConverter}}"
-                                                            Width="120"
-                                                            Foreground="{DynamicResource MaterialDesignBody}"
-                                                            Style="{StaticResource MaterialDesignTextBoxBase}"
-                                                            materialDesign:TextFieldAssist.SuffixText="秒" />
-                                                    </controls:SettingsControl.Switcher>
-                                                </controls:SettingsControl>
-                                            </StackPanel>
-                                        </Expander>
-                                    </materialDesign:Card>
                                     <!-- 隐藏窗口 -->
                                     <materialDesign:Card Margin="0 0 0 6">
                                         <Expander Background="Transparent" IsExpanded="True">
@@ -506,8 +466,15 @@
                                                      ShowTitleWhenNotCompressed="True" 
                                                      IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
                                 <controls:ListDetailView.TitleElement>
-                                    <TextBlock Text="提醒提供方设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                               VerticalAlignment="Center"/>
+                                    <Grid>
+                                        <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                                              d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                            <TextBlock Text="{Binding Name}"
+                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Grid>
                                 </controls:ListDetailView.TitleElement>
                                 <controls:ListDetailView.LeftContent>
                                     <!-- 提醒提供方 -->
@@ -573,12 +540,27 @@
                                 <controls:ListDetailView.RightContent>
                                     <!-- 提醒详细信息 -->
                                     <Grid>
-                                        <Grid Margin="4 0 0 0"
-                                              DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                                        <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
                                               d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
                                             <ContentPresenter ClipToBounds="True"
                                                               Content="{Binding SettingsElement}" />
                                         </Grid>
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <StackPanel.Style>
+                                                <Style TargetType="StackPanel">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ViewModel.NotificationSettingsSelectedProvider}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </Style>
+                                            </StackPanel.Style>
+                                            <Image Source="/Assets/ListBoxNotificationProviders_NoSelection.png" Width="72" Height="72"
+                                                   ToolTip="普罗米修斯_查询"/>
+                                            <TextBlock Text="在左侧选择一个提醒提供方，然后在此处进行设置。" TextWrapping="Wrap"
+                                                       Margin="0 4 0 0"/>
+                                        </StackPanel>
                                     </Grid>
                                 </controls:ListDetailView.RightContent>
                             </controls:ListDetailView>
@@ -1300,7 +1282,7 @@
                                                 </ListItem>
                                                 <ListItem>
                                                     <Paragraph>
-                                                        部分图像资源（/Assets/Forbidden.png）来自米游社表情包，版权归 miHoYo 所有。
+                                                        部分图像资源（/Assets/Forbidden.png, /Assets/ListBoxNotificationProviders_NoSelection.png）来自米游社表情包，版权归 miHoYo 所有。
                                                     </Paragraph>
                                                 </ListItem>
                                                 <ListItem>

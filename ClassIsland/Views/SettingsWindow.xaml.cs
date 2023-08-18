@@ -324,8 +324,9 @@ public partial class SettingsWindow : Window
 
     private void Selector_OnSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (ViewModel.NotificationSettingsSelectedProvider == null)
+        if (e.AddedItems.Count == 0)
         {
+            ViewModel.IsNotificationSettingsPanelOpened = false;
             return;
         }
         ViewModel.IsNotificationSettingsPanelOpened = true;
@@ -334,6 +335,11 @@ public partial class SettingsWindow : Window
 
     private void EventSetter_OnHandler(object sender, MouseButtonEventArgs e)
     {
+        if (ViewModel.NotificationSettingsSelectedProvider == null)
+        {
+            ViewModel.IsNotificationSettingsPanelOpened = false;
+            return;
+        }
         ViewModel.IsNotificationSettingsPanelOpened = true;
     }
 }

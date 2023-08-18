@@ -288,7 +288,7 @@ public partial class MainWindow : Window
         }
         
         // 处理提醒请求队列
-        if (!ViewModel.IsOverlayOpened)
+        if (!ViewModel.IsOverlayOpened && ViewModel.Settings.IsNotificationEnabled)
         {
             ViewModel.IsOverlayOpened = true;
             while (NotificationHostService.RequestQueue.Count > 0)
@@ -844,5 +844,10 @@ public partial class MainWindow : Window
     {
         Width = e.NewSize.Width * ViewModel.Settings.Scale;
         Height = e.NewSize.Height * ViewModel.Settings.Scale;
+    }
+
+    private void GridContent_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        GridWrapper.Width = e.NewSize.Width + 32;
     }
 }

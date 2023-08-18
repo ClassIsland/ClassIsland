@@ -315,7 +315,7 @@
               Canvas.Top="0"
               IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}"
               VerticalAlignment="Top"
-              HorizontalAlignment="Left"
+              HorizontalAlignment="Center"
               SizeChanged="GridRoot_OnSizeChanged"
               x:Name="GridRoot"
               RenderTransformOrigin="0,0">
@@ -371,7 +371,8 @@
                                   x:Name="RootDropShadowEffect"
                                   Color="Black"/>
             </Grid.Effect>
-            <Grid x:Name="GridWrapper" ClipToBounds="True">
+            <Grid x:Name="GridWrapper" ClipToBounds="True"
+                  HorizontalAlignment="Center">
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
@@ -401,86 +402,92 @@
                         Background="{DynamicResource MaterialDesignPaper}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}" />
 
-                <Grid Height="40" Margin="16 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                <Canvas HorizontalAlignment="Left" 
+                        Height="40"
+                        Margin="16 0">
+                    <Grid Canvas.Left="0" 
+                          SizeChanged="GridContent_OnSizeChanged">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
 
-                    <!-- 日历 -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal"
-                        Margin="6 0 12 0"
-                        VerticalAlignment="Center"
-                        Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                        <TextBlock FontSize="16"
-                            Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
-                    </StackPanel>
+                        <!-- 日历 -->
+                        <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            Margin="6 0 12 0"
+                            VerticalAlignment="Center"
+                            Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                            <TextBlock FontSize="16"
+                                Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
+                        </StackPanel>
 
-                    <!-- 没有课程提示 -->
-                    <TextBlock Grid.Column="1"
-                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Text="今天没有课程。" FontSize="16"
-                        Margin="128 0">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewModel.CurrentClassPlan}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <!-- 课表 -->
-                    <ListBox Grid.Column="1"
-                        VerticalAlignment="Center"
-                        ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
-                        SelectionChanged="Selector_OnSelectionChanged"
-                        IsHitTestVisible="False"
-                        Margin="0 0 0 0"
-                        x:Name="MainListBox"
-                        IsTabStop="False">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemContainerStyle>
-                            <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
-                                <Setter Property="Padding" Value="0" />
-                                <Setter Property="IsTabStop" Value="False" />
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <controls:LessonControl
-                                    Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                    Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
-                                    CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
-                                    IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
-                                    <controls:LessonControl.Style>
-                                        <Style TargetType="{x:Type controls:LessonControl}">
+                        <!-- 没有课程提示 -->
+                        <TextBlock Grid.Column="1"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Text="今天没有课程。" FontSize="16"
+                            Margin="128 0">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel.CurrentClassPlan}" Value="{x:Null}">
                                             <Setter Property="Visibility" Value="Visible" />
-                                            <Style.Triggers>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding TimeType}" Value="1" />
-                                                        <Condition
-                                                            Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                                            Value="False" />
-                                                    </MultiDataTrigger.Conditions>
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </MultiDataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </controls:LessonControl.Style>
-                                </controls:LessonControl>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <!-- 课表 -->
+                        <ListBox Grid.Column="1"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Left"
+                            ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
+                            SelectionChanged="Selector_OnSelectionChanged"
+                            IsHitTestVisible="False"
+                            Margin="0 0 0 0"
+                            x:Name="MainListBox"
+                            IsTabStop="False">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemContainerStyle>
+                                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="IsTabStop" Value="False" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <controls:LessonControl
+                                        Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                        Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
+                                        CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
+                                        IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
+                                        <controls:LessonControl.Style>
+                                            <Style TargetType="{x:Type controls:LessonControl}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding TimeType}" Value="1" />
+                                                            <Condition
+                                                                Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                                                Value="False" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </controls:LessonControl.Style>
+                                    </controls:LessonControl>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </Canvas>
 
                 <!-- Overlay View -->
                 <Grid x:Name="GridOverlay"
