@@ -135,6 +135,7 @@ public partial class App : Application
                 services.AddSingleton<NotificationHostService>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
+                services.AddHostedService<AfterSchoolNotificationProvider>();
             }).Build();
 
         GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Enums;
 using ClassIsland.Interfaces;
 using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
@@ -27,23 +29,27 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
 
     #region Events
 
-    public EventHandler? UpdateTimerTick;
+    public event EventHandler? UpdateTimerTick;
     public void OnUpdateTimerTick(object sender, EventArgs args) => UpdateTimerTick?.Invoke(sender, args);
     
-    public EventHandler? OnClass;
+    public event EventHandler? OnClass;
     public void OnOnClass(object sender, EventArgs args) => OnClass?.Invoke(sender, args);
 
-    
+    public event EventHandler? OnBreakingTime;
     public void OnOnBreakingTime(object sender, EventArgs args) => OnBreakingTime?.Invoke(sender, args);
 
+    public event EventHandler? CurrentStateChanged;
+    public void OnCurrentStateChanged(object sender, EventArgs args) => CurrentStateChanged?.Invoke(sender, args);
+
     #endregion
-    public EventHandler? OnBreakingTime;
     private TimeSpan _onClassDeltaTime = TimeSpan.Zero;
     private TimeSpan _onBreakingTimeDeltaTime = TimeSpan.Zero;
     private Subject _nextClassSubject = new Subject();
     private TimeLayoutItem _nextClassTimeLayoutItem = new();
     private TimeLayoutItem _nextBreakingTimeLayoutItem = new();
     private bool _isClassPlanLoaded = false;
+    private bool _isClassConfirmed = false;
+    private TimeState _currentState = TimeState.None;
 
     public TimeSpan OnClassDeltaTime
     {
@@ -79,6 +85,18 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
     {
         get => _isClassPlanLoaded;
         set => SetField(ref _isClassPlanLoaded, value);
+    }
+
+    public bool IsClassConfirmed
+    {
+        get => _isClassConfirmed;
+        set => SetField(ref _isClassConfirmed, value);
+    }
+
+    public TimeState CurrentState
+    {
+        get => _currentState;
+        set => SetField(ref _currentState, value);
     }
 
     public void RegisterNotificationProvider(INotificationProvider provider)
@@ -117,7 +135,18 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
 
     public T? GetNotificationProviderSettings<T>(Guid id)
     {
+        var o = Settings.NotificationProvidersSettings[id.ToString()];
+        if (o is JsonElement)
+        {
+            var o1 = (JsonElement)o;
+            return o1.Deserialize<T>();
+        }
         return (T?)Settings.NotificationProvidersSettings[id.ToString()];
+    }
+
+    public void WriteNotificationProviderSettings<T>(Guid id, T settings)
+    {
+        Settings.NotificationProvidersSettings[id.ToString()] = settings;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

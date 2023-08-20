@@ -20,8 +20,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     public object? IconElement { get; set; } = new PackIcon()
     {
         Kind = PackIconKind.Notifications,
-        Width = 32,
-        Height = 32
+        Width = 24,
+        Height = 24
     };
 
     private ClassNotificationSettings Settings
@@ -42,9 +42,10 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         NotificationHostService.OnBreakingTime += OnBreakingTime;
         NotificationHostService.UpdateTimerTick += UpdateTimerTick;
         Settings = NotificationHostService.GetNotificationProviderSettings
-                       <ClassNotificationSettings>(this.ProviderGuid)
+                       <ClassNotificationSettings>(ProviderGuid)
                    ?? new ClassNotificationSettings();
         SettingsElement = new ClassNotificationProviderSettingsControl(Settings);
+        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
     }
 
     private void UpdateTimerTick(object? sender, EventArgs e)

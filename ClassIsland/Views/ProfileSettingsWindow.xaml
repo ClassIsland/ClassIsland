@@ -22,7 +22,8 @@
       Title="档案编辑"
       d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}"
       Icon="/Assets/AppLogo.ico"
-      Closing="ProfileSettingsWindow_OnClosing">
+      Closing="ProfileSettingsWindow_OnClosing"
+      MinWidth="750">
     <Window.Resources>
         <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <models:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
@@ -547,9 +548,8 @@
                                                                                    EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
-
-                                    <!-- 关闭前警告 -->
                                 </Grid>
+                                <!-- 关闭前警告 -->
                                 <materialDesign:ColorZone Grid.Row="2" Background="Yellow" 
                                                           HorizontalAlignment="Stretch" 
                                                           Visibility="{Binding ViewModel.IsClassPlansEditing, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
@@ -557,6 +557,23 @@
                                     <controls:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6"/>
                                 </materialDesign:ColorZone>
                             </Grid>
+                            <StackPanel Grid.Column="1" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </StackPanel.Style>
+                                <materialDesign:PackIcon Kind="FileChartOutline" Width="72" Height="72"
+                                                         HorizontalAlignment="Center"/>
+                                <TextBlock Text="在左侧选择一个课表，然后在此处进行设置。" TextWrapping="Wrap"
+                                           Margin="0 8 0 0"/>
+                            </StackPanel>
                         </Grid>
                     </TabItem>
 
@@ -741,6 +758,23 @@
                                     </StackPanel>
                                 </Grid>
                             </Grid>
+                            <StackPanel Grid.Column="1" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </StackPanel.Style>
+                                <materialDesign:PackIcon Kind="Timetable" Width="72" Height="72"
+                                                         HorizontalAlignment="Center"/>
+                                <TextBlock Text="在左侧选择一个时间表，然后在此处进行设置。" TextWrapping="Wrap"
+                                           Margin="0 8 0 0"/>
+                            </StackPanel>
                         </Grid>
                     </TabItem>
 
@@ -886,6 +920,24 @@
                                                        Margin="0 16 0 0" ToolTip="Guid"/>
                                 </StackPanel>
                             </Grid>
+                            <StackPanel Grid.Column="1" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewSubjects}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </StackPanel.Style>
+                                <materialDesign:PackIcon Kind="BookMultipleOutline" Width="72" Height="72"
+                                                         HorizontalAlignment="Center"/>
+                                <TextBlock Text="在左侧选择一个科目，然后在此处进行设置。" TextWrapping="Wrap"
+                                           Margin="0 8 0 0"/>
+                            </StackPanel>
+
                         </Grid> 
                     </TabItem>
                     

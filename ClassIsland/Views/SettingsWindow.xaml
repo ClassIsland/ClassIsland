@@ -487,7 +487,7 @@
                                         <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
                                                                Header="启用提醒"
                                                                IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
-                                                               Description="启用提醒后，将会在对重要事件发出醒目提醒。"/>
+                                                               Description="启用提醒后，将会在对重要事件发出醒目提醒。拖动下方的元素以对提醒优先级进行排序，靠前的提醒提供方优先级更高。"/>
                                         <!-- 提醒提供方列表 -->
                                         <ListBox Grid.Row="1" ItemsSource="{Binding Settings.NotificationProvidersPriority}"
                                                  Margin="0 12 0 0"
@@ -517,8 +517,8 @@
 
                                                         <!-- 图标 -->
                                                         <ContentPresenter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                                                          Width="32" Height="32" VerticalAlignment="Center"
-                                                                          ClipToBounds="True" Margin="0 0 6 0"
+                                                                          Width="24" Height="24" VerticalAlignment="Center"
+                                                                          ClipToBounds="True" Margin="6"
                                                                           Content="{Binding IconElement}"/>
                                                         <!-- 标题 -->
                                                         <TextBlock Grid.Column="1" Grid.Row="0"
@@ -540,10 +540,40 @@
                                 <controls:ListDetailView.RightContent>
                                     <!-- 提醒详细信息 -->
                                     <Grid>
-                                        <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                                              d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
-                                            <ContentPresenter ClipToBounds="True"
-                                                              Content="{Binding SettingsElement}" />
+                                        <Grid>
+                                            <Grid.Style>
+                                                <Style TargetType="Grid">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Grid.Style>
+                                            <Grid
+                                                DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                                                d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                                <ContentPresenter ClipToBounds="True"
+                                                                  Content="{Binding SettingsElement}" />
+                                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                    <StackPanel.Style>
+                                                        <Style TargetType="StackPanel">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding SettingsElement}"
+                                                                             Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Style>
+                                                    </StackPanel.Style>
+                                                    <materialDesign:PackIcon Kind="Cog" Width="72" Height="72"
+                                                                             HorizontalAlignment="Center" />
+                                                    <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
+                                                               Margin="0 8 0 0" />
+                                                </StackPanel>
+
+                                            </Grid>
                                         </Grid>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <StackPanel.Style>

@@ -405,7 +405,8 @@
                 <Canvas HorizontalAlignment="Left" 
                         Height="40"
                         Margin="16 0">
-                    <Grid Canvas.Left="0" 
+                    <Grid Canvas.Left="0"
+                          Height="40"
                           SizeChanged="GridContent_OnSizeChanged">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />

@@ -119,7 +119,17 @@ public partial class MainWindow : Window
         };
         SettingsWindow.Closed += (o, args) => SaveSettings();
         HelpsWindow = new HelpsWindow();
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
+    }
+
+    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ViewModel.CurrentStatus))
+        {
+            NotificationHostService.CurrentState = ViewModel.CurrentStatus;
+            NotificationHostService.OnCurrentStateChanged(this, EventArgs.Empty);
+        }
     }
 
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
@@ -192,7 +202,7 @@ public partial class MainWindow : Window
             ViewModel.CurrentOverlayStatus = TimeState.None;
             ViewModel.CurrentOverlayEventStatus = TimeState.None;
             NotificationHostService.IsClassPlanLoaded = false;
-            return;
+            goto final;
         }
         NotificationHostService.IsClassPlanLoaded = true;
         // Activate selected item
@@ -208,7 +218,7 @@ public partial class MainWindow : Window
             {
                 ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
                 ViewModel.CurrentTimeLayoutItem = i;
-                isLessonConfirmed = true;
+                NotificationHostService.IsClassConfirmed = isLessonConfirmed = true;
                 break;
             }
         }
@@ -286,7 +296,8 @@ public partial class MainWindow : Window
             default:
                 break;
         }
-        
+
+        final:
         // 处理提醒请求队列
         if (!ViewModel.IsOverlayOpened && ViewModel.Settings.IsNotificationEnabled)
         {
