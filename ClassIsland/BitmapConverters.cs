@@ -25,7 +25,7 @@ public class BitmapConveters
         DeleteObject(intPtrl);
         return bitmapSource;
     }
-    public static BitmapImage ConvertToBitmapImage(Bitmap bitmap)
+    public static BitmapImage ConvertToBitmapImage(Bitmap bitmap, int? w=null, int? h=null)
     {
         using (MemoryStream stream = new MemoryStream())
         {
@@ -34,6 +34,15 @@ public class BitmapConveters
             BitmapImage result = new BitmapImage();
             result.BeginInit();
             result.CacheOption = BitmapCacheOption.OnLoad;
+            if (h != null)
+            {
+                    result.DecodePixelWidth = (int)((double)bitmap.Width / (double)bitmap.Height * (double)h);
+            }
+            else
+            {
+                   result.DecodePixelWidth = bitmap.Width;
+            }
+            result.DecodePixelHeight = h ?? bitmap.Height;
             result.StreamSource = stream;
             result.EndInit();
             result.Freeze();

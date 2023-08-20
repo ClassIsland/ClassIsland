@@ -342,4 +342,19 @@ public partial class SettingsWindow : Window
         }
         ViewModel.IsNotificationSettingsPanelOpened = true;
     }
+
+    private async void ButtonBrowseWindows_OnClick(object sender, RoutedEventArgs e)
+    {
+        var w = new WindowsPicker(Settings.WallpaperClassName)
+        {
+            Owner = this,
+        };
+        var r = w.ShowDialog();
+        Settings.WallpaperClassName = w.SelectedResult ?? "";
+        if (r == true)
+        {
+            await WallpaperPickingService.GetWallpaperAsync();
+        }
+        GC.Collect();
+    }
 }

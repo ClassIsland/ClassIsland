@@ -438,8 +438,14 @@
                                                 <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
                                                                        Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
                                                     <controls:SettingsCard.Switcher>
-                                                        <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
-                                                                 Text="{Binding Settings.WallpaperClassName}"/>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
+                                                                     Text="{Binding Settings.WallpaperClassName}"/>
+                                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                    Content="{materialDesign:PackIcon WindowMaximize}"
+                                                                    ToolTip="浏览…"
+                                                                    Click="ButtonBrowseWindows_OnClick"/>
+                                                        </StackPanel>
                                                     </controls:SettingsCard.Switcher>
                                                 </controls:SettingsCard>
                                                 <!-- 取色亮度波峰 -->

@@ -1,8 +1,12 @@
 ﻿using System.Runtime.InteropServices;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using ClassIsland.Models;
 
 namespace ClassIsland;
 
@@ -63,6 +67,7 @@ public static class NativeWindowHelper
 
     public const int GWL_STYLE = -16;
     public const int WS_SYSMENU = 0x80000;
+    public const int WS_EX_TOOLWINDOW = 0x00000080;
 
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(HandleRef hWnd, [In, Out] ref RECT rect);
@@ -71,9 +76,15 @@ public static class NativeWindowHelper
     private static extern IntPtr GetForegroundWindow();
 
     [DllImport("user32.dll")]
-    private static extern int GetWindowThreadProcessId(
+    public static extern int GetWindowThreadProcessId(
         [In] IntPtr hWnd,
         out int id
+    );
+    [DllImport("user32", SetLastError = true)]
+    public static extern int GetWindowText(
+        IntPtr hWnd,//窗口句柄
+        StringBuilder lpString,//标题
+        int nMaxCount //最大值
     );
 
 
@@ -156,4 +167,74 @@ public static class NativeWindowHelper
         G = (byte)(argb >> 8),
         B = (byte)(argb)
     };
+
+    [DllImport("user32.dll", CharSet = CharSet.Ansi, EntryPoint = "FindWindowEx")]
+    public static extern IntPtr FindWindowEx(
+        IntPtr hWndParent,
+        IntPtr hWndChildAfter,
+        string? lpszClass,
+        string? lpszWindow
+    );
+
+    [DllImport("user32.dll", CharSet = CharSet.Ansi, EntryPoint = "GetClassName")]
+    public static extern int GetClassName(
+        IntPtr hWnd,
+        StringBuilder lpClassName,
+        int nMaxCount
+    );
+
+    public static IntPtr FindWindowByClass(string className)
+    {
+        var windows =  GetAllWindows();
+        var q = (from i in windows
+            where i.ClassName == className
+            select i)
+            .ToList();
+        return q.Count > 0 ? q[0].HWnd : IntPtr.Zero;
+    }
+
+    public static List<DesktopWindow> GetAllWindows(bool isDetailed=false)
+    {
+        var windows = new List<DesktopWindow>();
+        string className;
+        var queue = new Queue<IntPtr>();
+        queue.Enqueue(IntPtr.Zero);
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            var win = FindWindowEx(current, IntPtr.Zero, null, null);
+            while (win != IntPtr.Zero)
+            {
+                // 检查是否存在子窗口
+                var child = FindWindowEx(win, IntPtr.Zero, null, null);
+                // 获取窗口信息
+                try
+                {
+                    windows.Add(isDetailed
+                        ? DesktopWindow.GetWindowByHWndDetailed(win)
+                        : DesktopWindow.GetWindowByHWnd(win));
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                // 前往下一个窗口
+                win = FindWindowEx(current, win, null, null);
+                if (child == IntPtr.Zero)
+                {
+                    continue;
+                }
+
+                if (win != IntPtr.Zero)
+                {
+                    queue.Enqueue(win);
+                }
+            }
+        }
+
+
+        return windows;
+    }
 }

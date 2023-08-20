@@ -110,7 +110,6 @@
   <ItemGroup>
     <Folder Include="Models\TimeRules\" />
     <Folder Include="Services\NotificationProviders\" />
-    <Folder Include="ViewModels\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Enums\" />
     <Folder Include="Validations\" />

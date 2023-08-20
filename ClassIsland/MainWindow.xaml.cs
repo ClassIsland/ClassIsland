@@ -315,8 +315,8 @@ public partial class MainWindow : Window
                 }
                 ViewModel.CurrentMaskElement = request.MaskContent;
 
-                if (request.MaskDuration >= TimeSpan.Zero &&
-                    request.OverlayDuration >= TimeSpan.Zero)
+                if (request.MaskDuration > TimeSpan.Zero &&
+                    request.OverlayDuration > TimeSpan.Zero)
                 {
                     BeginStoryboard("OverlayMaskIn");
                     await Task.Run(() => Thread.Sleep(request.MaskDuration));
@@ -480,6 +480,7 @@ public partial class MainWindow : Window
         UpdateWindowPos();
         var hWnd = new WindowInteropHelper(this).Handle;
         var style = NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE);
+        style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
         if (!ViewModel.Settings.IsMouseClickingEnabled)
         {
             var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);

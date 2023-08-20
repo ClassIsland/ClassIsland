@@ -1,0 +1,124 @@
+﻿<Window x:Class="ClassIsland.Views.WindowsPicker"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:WindowsPicker}"
+        Height="600" Width="1300"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Medium"
+        TextElement.FontSize="14"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        Title="选择壁纸窗口">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <!-- Main -->
+        <ListBox Grid.Row="1" ItemsSource="{Binding ViewModel.DesktopWindows, Mode=OneWay}"
+                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                 SelectedValue="{Binding ViewModel.SelectedClassName}"
+                 SelectionMode="Single"
+                 SelectedValuePath="ClassName">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <Grid ClipToBounds="True" 
+                        >
+                            <Image Source="{Binding ScreenShot}" Height="150" Stretch="Uniform"
+                                />
+                            <materialDesign:ColorZone Mode="PrimaryMid" 
+                                                      Width="40" Height="40"
+                                                      CornerRadius="20"
+                                                      Margin="8"
+                                                      Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                      VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                                <materialDesign:ColorZone.Effect>
+                                    <DropShadowEffect BlurRadius="6" Opacity="0.5" Direction="0" ShadowDepth="0"/>
+                                </materialDesign:ColorZone.Effect>
+                                <materialDesign:PackIcon Kind="Check" Width="32" Height="32"
+                                                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </materialDesign:ColorZone>
+                        </Grid>
+                        <TextBlock Text="{Binding Description}" FontSize="18" FontWeight="Bold" Margin="0 4 0 0"/>
+                        <TextBlock Text="{Binding ClassName}" FontSize="13"/>
+                        <TextBlock Text="{Binding WindowText}" FontSize="13"/>
+                        <TextBlock Text="{Binding OwnerProcess.ProcessName}" FontSize="13"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- 分割线 -->
+        <Separator Grid.Row="2" Margin="0 8 0 0"/>
+        <!-- 底栏 -->
+        <Grid Grid.Row="3" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <materialDesign:PackIcon Grid.Column="0" Kind="WindowMaximize" VerticalAlignment="Center"/>
+            <TextBox Grid.Column="1" Margin="8 0"
+                     VerticalAlignment="Center"
+                     Text="{Binding ViewModel.SelectedClassName}"
+                     materialDesign:HintAssist.Hint="窗口类名"/>
+            <StackPanel Grid.Column="2" Orientation="Horizontal">
+                <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
+                        Click="ButtonCancel_OnClick">
+                    <controls:IconText Kind="Cancel" Text="取消"/>
+                </Button>
+                <Button Click="ButtonDone_OnClick">
+                    <controls:IconText Kind="Check" Text="确定"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- 标题栏 -->
+        <materialDesign:ColorZone Grid.Row="0" 
+                                  materialDesign:ElevationAssist.Elevation="Dp4"
+                                  Mode="PrimaryMid"
+                                  Padding="16">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="选择窗口" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Margin="0 0 16 0"/>
+                </StackPanel>
+                <Button ToolTip="刷新"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
+                        Padding="0"
+                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                        Content="{materialDesign:PackIcon Refresh, Size=24}"
+                        Click="ButtonRefresh_OnClick"
+                        Margin="0 0 8 0"/>
+            </Grid>
+        </materialDesign:ColorZone>
+
+        <Grid Grid.Row="0" Grid.RowSpan="4" 
+              HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+              Visibility="{Binding ViewModel.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                    Background="{DynamicResource MaterialDesignPaper}"
+                    Opacity="0.8"/>
+            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" 
+                         IsIndeterminate="True" Value="0"
+                         Width="50" Height="50"/>
+        </Grid>
+    </Grid>
+</Window>

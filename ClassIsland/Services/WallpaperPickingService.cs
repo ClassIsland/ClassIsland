@@ -98,15 +98,16 @@ public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
         }
     }
 
+
     public static Bitmap GetScreenShot(string className)
     {
-        var win = NativeWindowHelper.FindWindow(className, null);
+        var win = NativeWindowHelper.FindWindowByClass(className);
         if (win == IntPtr.Zero)
         {
             return new Bitmap(1920, 1080);
         }
 
-        return WindowCaptureHelper.GetShotCutImage(win);
+        return WindowCaptureHelper.CaptureWindowBitBlt(win);
     }
 
     public bool IsWorking

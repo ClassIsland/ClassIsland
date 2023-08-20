@@ -408,39 +408,39 @@
                 </Canvas>
                 <Grid Height="40"
                       Margin="16 0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                        <!-- 日历 -->
-                        <StackPanel Grid.Column="0" Orientation="Horizontal"
+                    <!-- 日历 -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal"
                             Margin="6 0 12 0"
                             VerticalAlignment="Center"
                             Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                            <TextBlock FontSize="16"
+                        <TextBlock FontSize="16"
                                 Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
-                        </StackPanel>
+                    </StackPanel>
 
-                        <!-- 没有课程提示 -->
-                        <TextBlock Grid.Column="1"
+                    <!-- 没有课程提示 -->
+                    <TextBlock Grid.Column="1"
                             HorizontalAlignment="Center" VerticalAlignment="Center"
                             Text="今天没有课程。" FontSize="16"
                             Margin="128 0">
-                            <TextBlock.Style>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ViewModel.CurrentClassPlan}" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
 
-                        <!-- 课表 -->
-                        <ListBox Grid.Column="1"
+                    <!-- 课表 -->
+                    <ListBox Grid.Column="1"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Left"
                             ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
@@ -449,45 +449,45 @@
                             Margin="0 0 0 0"
                             x:Name="MainListBox"
                             IsTabStop="False">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemContainerStyle>
-                                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="Padding" Value="0" />
-                                    <Setter Property="IsTabStop" Value="False" />
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <controls:LessonControl
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemContainerStyle>
+                            <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Padding" Value="0" />
+                                <Setter Property="IsTabStop" Value="False" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <controls:LessonControl
                                         Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
                                         Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
                                         CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
                                         IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
-                                        <controls:LessonControl.Style>
-                                            <Style TargetType="{x:Type controls:LessonControl}">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding TimeType}" Value="1" />
-                                                            <Condition
+                                    <controls:LessonControl.Style>
+                                        <Style TargetType="{x:Type controls:LessonControl}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                            <Style.Triggers>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding TimeType}" Value="1" />
+                                                        <Condition
                                                                 Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
                                                                 Value="False" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </controls:LessonControl.Style>
-                                    </controls:LessonControl>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </Grid>
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </controls:LessonControl.Style>
+                                </controls:LessonControl>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
 
                 <!-- Overlay View -->
                 <Grid x:Name="GridOverlay"
