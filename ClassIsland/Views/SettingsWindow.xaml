@@ -432,34 +432,45 @@
                                                              Width="50" Height="50"/>
                                             </Grid>
                                         </Grid>
-                                        <Expander Header="高级" Padding="0">
-                                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Margin="0">
-                                                <!-- 壁纸层窗口类名 -->
-                                                <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
-                                                                       Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
-                                                    <controls:SettingsCard.Switcher>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
-                                                                     Text="{Binding Settings.WallpaperClassName}"/>
-                                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                                    Content="{materialDesign:PackIcon WindowMaximize}"
-                                                                    ToolTip="浏览…"
-                                                                    Click="ButtonBrowseWindows_OnClick"/>
-                                                        </StackPanel>
-                                                    </controls:SettingsCard.Switcher>
-                                                </controls:SettingsCard>
-                                                <!-- 取色亮度波峰 -->
-                                                <controls:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
-                                                                       Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
-                                                    <controls:SettingsCard.Switcher>
-                                                        <controls:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
-                                                                                  Foreground="{DynamicResource MaterialDesignBody}"
-                                                                                  Style="{StaticResource MaterialDesignTextBox}"
-                                                                                  Text="{Binding Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
-                                                    </controls:SettingsCard.Switcher>
-                                                </controls:SettingsCard>
-                                            </StackPanel>
-                                        </Expander>
+                                        <!-- 启用自动提取主题色 -->
+                                        <controls:SettingsCard IconGlyph="RefreshAuto" Header="启用自动提取主题色" Margin="0 12 0 6"
+                                                               Description="若启用，将会在每分钟刷新一次壁纸主题色，适用于会随时间大幅变化主题色的动态壁纸。"
+                                                               IsOn="{Binding Settings.IsWallpaperAutoUpdateEnabled, Mode=TwoWay}"/>
+                                        <!-- 取色亮度波峰 -->
+                                        <controls:SettingsCard IconGlyph="ClockOutline" Header="自动提取主题色间隔"
+                                                               Description="自动从壁纸提取主题色时间隔的时间，建议以动态壁纸更新速度按需设置，不宜低于10秒。">
+                                            <controls:SettingsCard.Switcher>
+                                                <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="150"
+                                                                          materialDesign:TextFieldAssist.SuffixText="秒"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Style="{StaticResource MaterialDesignTextBox}"
+                                                                          Text="{Binding Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                            </controls:SettingsCard.Switcher>
+                                        </controls:SettingsCard>
+                                        <!-- 壁纸层窗口类名 -->
+                                        <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
+                                                               Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
+                                            <controls:SettingsCard.Switcher>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
+                                                             Text="{Binding Settings.WallpaperClassName}"/>
+                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Content="{materialDesign:PackIcon WindowMaximize}"
+                                                            ToolTip="浏览…"
+                                                            Click="ButtonBrowseWindows_OnClick"/>
+                                                </StackPanel>
+                                            </controls:SettingsCard.Switcher>
+                                        </controls:SettingsCard>
+                                        <!-- 取色亮度波峰 -->
+                                        <controls:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
+                                                               Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
+                                            <controls:SettingsCard.Switcher>
+                                                <controls:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Style="{StaticResource MaterialDesignTextBox}"
+                                                                          Text="{Binding Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                            </controls:SettingsCard.Switcher>
+                                        </controls:SettingsCard>
                                     </StackPanel>
                                     <!-- 高级 -->
                                 </StackPanel>

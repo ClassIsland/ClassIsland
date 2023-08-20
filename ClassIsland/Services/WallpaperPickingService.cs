@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
 using Application = System.Windows.Application;
@@ -17,7 +18,7 @@ using ColorConverter = System.Windows.Media.ColorConverter;
 
 namespace ClassIsland.Services;
 
-public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
+public sealed class WallpaperPickingService : IHostedService, INotifyPropertyChanged
 {
     private SettingsService SettingsService { get; }
 
@@ -30,6 +31,14 @@ public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
     {
         get;
     }
+
+    private DispatcherTimer UpdateTimer
+    {
+        get;
+    } = new DispatcherTimer()
+    {
+        Interval = TimeSpan.FromMinutes(1)
+    };
 
     public static void ColorToHsv(System.Windows.Media.Color color, out double hue, out double saturation, out double value)
     {
@@ -70,6 +79,28 @@ public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
         RegistryNotifier = new RegistryNotifier(RegistryNotifier.HKEY_CURRENT_USER, "Control Panel\\Desktop");
         RegistryNotifier.RegistryKeyUpdated += RegistryNotifierOnRegistryKeyUpdated;
         RegistryNotifier.Start();
+        UpdateTimer.Tick += UpdateTimerOnTick;
+        UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+        SettingsService.Settings.PropertyChanged += SettingsServiceOnPropertyChanged;
+        UpdateTimer.Start();
+    }
+
+    private void SettingsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds))
+        {
+            UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+        }
+    }
+
+    private async void UpdateTimerOnTick(object? sender, EventArgs e)
+    {
+        if (!SettingsService.Settings.IsWallpaperAutoUpdateEnabled)
+        {
+            return;
+        }
+
+        await GetWallpaperAsync();
     }
 
     private async void RegistryNotifierOnRegistryKeyUpdated()
@@ -184,12 +215,12 @@ public class WallpaperPickingService : IHostedService, INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;

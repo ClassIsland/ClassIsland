@@ -67,6 +67,8 @@ public class Settings : ObservableRecipient
     private ObservableCollection<string> _notificationProvidersPriority = new();
     private ObservableDictionary<string, object?> _notificationProvidersSettings = new();
     private bool _isNotificationEnabled = true;
+    private bool _isWallpaperAutoUpdateEnabled = false;
+    private int _wallpaperAutoUpdateIntervalSeconds = 60;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -320,6 +322,28 @@ public class Settings : ObservableRecipient
         {
             if (value == _selectedPlatteIndex) return;
             _selectedPlatteIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsWallpaperAutoUpdateEnabled
+    {
+        get => _isWallpaperAutoUpdateEnabled;
+        set
+        {
+            if (value == _isWallpaperAutoUpdateEnabled) return;
+            _isWallpaperAutoUpdateEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WallpaperAutoUpdateIntervalSeconds
+    {
+        get => _wallpaperAutoUpdateIntervalSeconds;
+        set
+        {
+            if (value == _wallpaperAutoUpdateIntervalSeconds) return;
+            _wallpaperAutoUpdateIntervalSeconds = value;
             OnPropertyChanged();
         }
     }
