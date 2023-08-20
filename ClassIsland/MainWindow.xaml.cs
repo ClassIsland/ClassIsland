@@ -340,6 +340,8 @@ public partial class MainWindow : Window
                 }
             }
 
+            ViewModel.CurrentOverlayElement = null;
+            ViewModel.CurrentMaskElement = null;
             ViewModel.IsOverlayOpened = false;
         }
 

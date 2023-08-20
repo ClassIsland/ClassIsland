@@ -25,7 +25,7 @@
             <Grid>
                 <TextBlock Text="{Binding Message, Mode=OneWay}"
                            FontSize="16" 
-                           Margin="8 0"
+                           Margin="24 0"
                            VerticalAlignment="Center" 
                            HorizontalAlignment="Center"
                            TextTrimming="CharacterEllipsis"/>

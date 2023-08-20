@@ -405,9 +405,9 @@
                 <Canvas HorizontalAlignment="Left" 
                         Height="40"
                         Margin="16 0">
-                    <Grid Canvas.Left="0"
-                          Height="40"
-                          SizeChanged="GridContent_OnSizeChanged">
+                </Canvas>
+                <Grid Height="40"
+                      Margin="16 0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
@@ -488,7 +488,6 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </Grid>
-                </Canvas>
 
                 <!-- Overlay View -->
                 <Grid x:Name="GridOverlay"
