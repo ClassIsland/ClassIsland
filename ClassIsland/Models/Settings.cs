@@ -69,6 +69,7 @@ public class Settings : ObservableRecipient
     private bool _isNotificationEnabled = true;
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
+    private bool _isFallbackModeEnabled = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -355,6 +356,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _wallpaperClassName) return;
             _wallpaperClassName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsFallbackModeEnabled
+    {
+        get => _isFallbackModeEnabled;
+        set
+        {
+            if (value == _isFallbackModeEnabled) return;
+            _isFallbackModeEnabled = value;
             OnPropertyChanged();
         }
     }

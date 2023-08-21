@@ -130,15 +130,29 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
     }
 
 
-    public static Bitmap GetScreenShot(string className)
+    public static Bitmap? GetScreenShot(string className)
     {
         var win = NativeWindowHelper.FindWindowByClass(className);
         if (win == IntPtr.Zero)
         {
-            return new Bitmap(1920, 1080);
+            return null;
         }
 
         return WindowCaptureHelper.CaptureWindowBitBlt(win);
+    }
+
+    public static Bitmap? GetFallbackWallpaper()
+    {
+        try
+        {
+            var k = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop");
+            var path = (string?)k?.GetValue("WallPaper");
+            return path == null? null : new Bitmap(Image.FromFile(path));
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public bool IsWorking
@@ -162,9 +176,18 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         IsWorking = true;
         await Task.Run(() =>
         {
-            var bitmap = GetScreenShot(SettingsService.Settings.WallpaperClassName == ""
-                ? DesktopWindowClassName
-                : SettingsService.Settings.WallpaperClassName);
+            var bitmap = SettingsService.Settings.IsFallbackModeEnabled ?
+                (GetFallbackWallpaper())
+                :
+                (GetScreenShot(
+                    SettingsService.Settings.WallpaperClassName == ""
+                    ? DesktopWindowClassName
+                    : SettingsService.Settings.WallpaperClassName
+                ));
+            if (bitmap is null)
+            {
+                return;
+            }
             WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap);
             var w = new Stopwatch();
             w.Start();
@@ -179,11 +202,11 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                 })
                 .ThenByDescending(i => i.Value)
                 .ToList();
-        WallpaperColorPlatte.Clear();
-        for (var i = 0; i < Math.Min(r.Count, 5); i++)
-        {
-            WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
-        }
+            WallpaperColorPlatte.Clear();
+            for (var i = 0; i < Math.Min(r.Count, 5); i++)
+            {
+                WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
+            }
         });
 
         // Update cached platte

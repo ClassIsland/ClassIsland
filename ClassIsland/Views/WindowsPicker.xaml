@@ -52,6 +52,19 @@
                                 <materialDesign:PackIcon Kind="Check" Width="32" Height="32"
                                                          VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </materialDesign:ColorZone>
+                            <materialDesign:ColorZone Mode="Light"
+                                                      Width="32" Height="32"
+                                                      CornerRadius="4"
+                                                      Margin="8"
+                                                      VerticalAlignment="Bottom" HorizontalAlignment="Left">
+                                <materialDesign:ColorZone.Effect>
+                                    <DropShadowEffect BlurRadius="6" Opacity="0.5" Direction="0" ShadowDepth="0"/>
+                                </materialDesign:ColorZone.Effect>
+                                <Image VerticalAlignment="Center" HorizontalAlignment="Center"
+                                       Stretch="UniformToFill"
+                                       Width="20" Height="20"
+                                       Source="{Binding Icon}"/>
+                            </materialDesign:ColorZone>
                         </Grid>
                         <TextBlock Text="{Binding Description}" FontSize="18" FontWeight="Bold" Margin="0 4 0 0"/>
                         <TextBlock Text="{Binding ClassName}" FontSize="13"/>

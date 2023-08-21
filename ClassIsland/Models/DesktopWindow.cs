@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using static ClassIsland.NativeWindowHelper;
 
 namespace ClassIsland.Models;
@@ -18,6 +19,7 @@ public class DesktopWindow : ObservableRecipient
     private BitmapImage _screenShot = new BitmapImage();
     private Process _ownerProcess = Process.GetCurrentProcess();
     private RECT _windowRect = new RECT();
+    private BitmapImage _icon = new BitmapImage();
 
     public string ClassName
     {
@@ -102,6 +104,17 @@ public class DesktopWindow : ObservableRecipient
         set;
     } = "";
 
+    public BitmapImage Icon
+    {
+        get => _icon;
+        set
+        {
+            if (Equals(value, _icon)) return;
+            _icon = value;
+            OnPropertyChanged();
+        }
+    }
+
     public static DesktopWindow GetWindowByHWnd(IntPtr hWnd)
     {
         var sb = new StringBuilder(255);
@@ -136,7 +149,8 @@ public class DesktopWindow : ObservableRecipient
             WindowText = sb2.ToString(),
             WindowRect = rect,
             ScreenShot = bitmap,
-            Description = (description == "") ? (process.ProcessName) : description ?? process.ProcessName
+            Description = (description == "") ? (process.ProcessName) : description ?? process.ProcessName,
+            Icon = BitmapConveters.ConvertToBitmapImage(System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule!.FileName!)!.ToBitmap(), h:32)
         };
     }
 }
