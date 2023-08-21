@@ -398,6 +398,11 @@
             </materialDesign:Snackbar>
         </Grid>
 
+        <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+               x:Key="NavigationListBox">
+            
+        </Style>
+
     </Window.Resources>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
         <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
@@ -450,12 +455,13 @@
                                 </ToolBar>
 
                                 <!-- 课表 -->
-                                <ListView Grid.Row="1" Margin="12"
-                                          SelectionChanged="ListViewClassPlans_OnSelectionChanged"
-                                          SelectionMode="Single"
-                                          ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          x:Name="ListViewClassPlans">
-                                    <ListView.ItemTemplate>
+                                <ListBox Grid.Row="1" Margin="0 12"
+                                         SelectionChanged="ListViewClassPlans_OnSelectionChanged"
+                                         SelectionMode="Single"
+                                         Style="{StaticResource NavigationListBox}"
+                                         ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         x:Name="ListViewClassPlans">
+                                    <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
                                                 <Grid.RowDefinitions>
@@ -480,8 +486,8 @@
                                                 </WrapPanel>
                                             </Grid>
                                         </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
                             </Grid>
 
                             <!-- 课表编辑 -->
@@ -612,16 +618,23 @@
                                 </ToolBar>
 
                                 <!-- 时间表 -->
-                                <ListView Grid.Row="1" Margin="12"
-                                          SelectionMode="Single"
-                                          ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                          x:Name="ListViewTimeLayouts">
-                                    <ListView.ItemTemplate>
+                                <ListBox Grid.Row="1" Margin="0 12"
+                                         SelectionMode="Single"
+                                         Style="{StaticResource NavigationListBox}"
+                                         HorizontalContentAlignment="Stretch"
+                                         ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                         x:Name="ListViewTimeLayouts">
+                                    <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock Text="{Binding Value.Name}"/>
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left"/>
+                                                <materialDesign:PackIcon Kind="Lock" HorizontalAlignment="Right"
+                                                                         ToolTip="已锁定活动的时间表。"
+                                                                         Visibility="{Binding Value.IsActivated, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            </Grid>
                                         </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
                             </Grid>
 
                             <!-- 时间节点编辑 -->
@@ -653,7 +666,7 @@
                                         <controls:IconText Kind="ClockPlusOutline" Text="课间"/>
                                     </Button>
                                     <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
-                                        <controls:IconText Kind="Add" Text="分割线"/>
+                                        <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                                     </Button>
                                     <Separator/>
                                     <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
@@ -695,11 +708,17 @@
                                 </ToolBar>
 
                                 <!-- 时间点 -->
-                                <ListView Grid.Row="1" Margin="12"
+                                <ListBox Grid.Row="1" Margin="12"
                                           SelectionMode="Single"
                                           SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
-                                          ItemsSource="{Binding Layouts, Mode=OneWay}" x:Name="ListViewTimePoints">
-                                    <ListView.ItemTemplate>
+                                          ItemsSource="{Binding Layouts, Mode=OneWay}" x:Name="ListViewTimePoints"
+                                          Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
+                                            <EventSetter Event="MouseDoubleClick" Handler="TimePointDoubleClick_OnHandler"/>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
                                                 <Grid.RowDefinitions>
@@ -744,8 +763,8 @@
                                                                    Margin="0 3 0 0" ToolTip="持续时间"/>
                                             </Grid>
                                         </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
 
                                 <!-- 禁止编辑叠层 -->
                                 <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -811,11 +830,12 @@
                                 </ToolBar>
 
                                 <!-- 科目 -->
-                                <ListView Grid.Row="1" Margin="12"
-                                          SelectionMode="Single"
-                                          ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                          x:Name="ListViewSubjects">
-                                    <ListView.ItemTemplate>
+                                <ListBox Grid.Row="1" Margin="0 12"
+                                         SelectionMode="Single"
+                                         Style="{StaticResource NavigationListBox}"
+                                         ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                         x:Name="ListViewSubjects">
+                                    <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
                                                 <Grid.RowDefinitions>
@@ -856,8 +876,8 @@
                                                 </WrapPanel>
                                             </Grid>
                                         </DataTemplate>
-                                    </ListView.ItemTemplate>
-                                </ListView>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
                             </Grid>
 
                             <!-- 科目编辑 -->
@@ -895,6 +915,7 @@
                                         </Grid.ColumnDefinitions>
                                         <!-- 科目名 -->
                                         <TextBox Grid.Column="0" 
+                                                 x:Name="TextBoxSubjectName"
                                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                                  materialDesign:HintAssist.Hint="科目名"
                                                  Text="{Binding Name}"/>

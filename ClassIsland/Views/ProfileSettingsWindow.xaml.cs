@@ -125,13 +125,16 @@ public partial class ProfileSettingsWindow : Window
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var selected = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
-        timeLayout.Layouts.Add(new TimeLayoutItem()
+        var newItem = new TimeLayoutItem()
         {
             TimeType = timeType,
             StartSecond = selected?.EndSecond ?? DateTime.Now,
             EndSecond = selected?.EndSecond ?? DateTime.Now
-        });
+        };
+        timeLayout.Layouts.Add(newItem);
+        ListViewTimePoints.SelectedValue = newItem;
         UpdateTimeLayout();
+        OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 创建时间点", new Dictionary<string, string>
         {
             {"Type", timeType.ToString()}
@@ -215,6 +218,7 @@ public partial class ProfileSettingsWindow : Window
     {
         MainViewModel.Profile.Subjects.Add(Guid.NewGuid().ToString(), new Subject());
         ListViewSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
+        TextBoxSubjectName.Focus();
         Analytics.TrackEvent("档案设置 · 添加科目");
     }
 
@@ -569,5 +573,11 @@ public partial class ProfileSettingsWindow : Window
             {"IsSuccess", "true"}
         });
         OpenFromFile($"./Profiles/{ViewModel.SelectedProfile}");
+    }
+
+    private void TimePointDoubleClick_OnHandler(object sender, MouseButtonEventArgs e)
+    {
+        OpenDrawer("TimePointEditor");
+        Analytics.TrackEvent("档案设置 · 编辑时间点");
     }
 }
