@@ -183,6 +183,9 @@ public static class NativeWindowHelper
         int nMaxCount
     );
 
+    [DllImport("User32.dll")]
+    public static extern bool IsWindowVisible(IntPtr hWnd);
+
     public static IntPtr FindWindowByClass(string className)
     {
         var windows =  GetAllWindows();

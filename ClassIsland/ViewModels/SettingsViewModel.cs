@@ -23,6 +23,7 @@ public class SettingsViewModel : ObservableRecipient
     private ObservableCollection<Color> _debugImageAccentColors = new();
     private bool _isNotificationSettingsPanelOpened = false;
     private string? _notificationSettingsSelectedProvider = null;
+    private bool _isPopupMenuOpened = false;
 
     public Screen[] Screens
     {
@@ -141,6 +142,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _notificationSettingsSelectedProvider) return;
             _notificationSettingsSelectedProvider = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsPopupMenuOpened
+    {
+        get => _isPopupMenuOpened;
+        set
+        {
+            if (value == _isPopupMenuOpened) return;
+            _isPopupMenuOpened = value;
             OnPropertyChanged();
         }
     }

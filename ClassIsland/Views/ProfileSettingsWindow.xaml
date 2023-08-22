@@ -460,7 +460,7 @@
                                          SelectionMode="Single"
                                          Style="{StaticResource NavigationListBox}"
                                          ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         x:Name="ListViewClassPlans">
+                                         x:Name="ListViewClassPlans" ScrollViewer.CanContentScroll="False">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>
@@ -531,6 +531,7 @@
                                               CanUserAddRows="False" 
                                               CanUserSortColumns="False"
                                               RowHeaderWidth="150"
+                                              ScrollViewer.CanContentScroll="False"
                                               x:Name="DataGridClassPlans"
                                               UnloadingRow="DataGridClassPlans_OnUnloadingRow"
                                               BeginningEdit="DataGridClassPlans_OnBeginningEdit"
@@ -622,6 +623,7 @@
                                          SelectionMode="Single"
                                          Style="{StaticResource NavigationListBox}"
                                          HorizontalContentAlignment="Stretch"
+                                         ScrollViewer.CanContentScroll="False"
                                          ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                          x:Name="ListViewTimeLayouts">
                                     <ListBox.ItemTemplate>
@@ -710,6 +712,7 @@
                                 <!-- 时间点 -->
                                 <ListBox Grid.Row="1" Margin="12"
                                           SelectionMode="Single"
+                                          ScrollViewer.CanContentScroll="False"
                                           SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
                                           ItemsSource="{Binding Layouts, Mode=OneWay}" x:Name="ListViewTimePoints"
                                           Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
@@ -833,6 +836,7 @@
                                 <ListBox Grid.Row="1" Margin="0 12"
                                          SelectionMode="Single"
                                          Style="{StaticResource NavigationListBox}"
+                                         ScrollViewer.CanContentScroll="False"
                                          ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                          x:Name="ListViewSubjects">
                                     <ListBox.ItemTemplate>

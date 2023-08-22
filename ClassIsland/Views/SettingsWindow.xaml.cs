@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,6 +26,7 @@ using MdXaml;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -85,6 +88,8 @@ public partial class SettingsWindow : Window
                 settingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
             }
         };
+        var style = (Style)FindResource("NotificationsListBoxItemStyle");
+        //style.Setters.Add(new EventSetter(ListBoxItem.MouseDoubleClickEvent, new System.Windows.Input.MouseEventHandler(EventSetter_OnHandler)));
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -333,7 +338,7 @@ public partial class SettingsWindow : Window
 
     }
 
-    private void EventSetter_OnHandler(object sender, MouseButtonEventArgs e)
+    private void EventSetter_OnHandler(object sender, MouseEventArgs e)
     {
         if (ViewModel.NotificationSettingsSelectedProvider == null)
         {
@@ -356,5 +361,11 @@ public partial class SettingsWindow : Window
             await WallpaperPickingService.GetWallpaperAsync();
         }
         GC.Collect();
+    }
+
+    private void MenuItemExperimentalSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPopupMenuOpened = false;
+        OpenDrawer("ExperimentalSettings");
     }
 }

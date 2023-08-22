@@ -9,6 +9,7 @@ public class WindowsPickerViewModel : ObservableRecipient
     private ObservableCollection<DesktopWindow> _desktopWindows = new();
     private string _selectedClassName = "";
     private bool _isWorking = false;
+    private bool _isFilteredFullscreen = true;
 
     public ObservableCollection<DesktopWindow> DesktopWindows
     {
@@ -39,6 +40,17 @@ public class WindowsPickerViewModel : ObservableRecipient
         {
             if (value == _isWorking) return;
             _isWorking = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsFilteredFullscreen
+    {
+        get => _isFilteredFullscreen;
+        set
+        {
+            if (value == _isFilteredFullscreen) return;
+            _isFilteredFullscreen = value;
             OnPropertyChanged();
         }
     }

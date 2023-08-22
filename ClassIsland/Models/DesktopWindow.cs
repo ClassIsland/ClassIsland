@@ -20,6 +20,7 @@ public class DesktopWindow : ObservableRecipient
     private Process _ownerProcess = Process.GetCurrentProcess();
     private RECT _windowRect = new RECT();
     private BitmapImage _icon = new BitmapImage();
+    private bool _isVisible = false;
 
     public string ClassName
     {
@@ -115,6 +116,17 @@ public class DesktopWindow : ObservableRecipient
         }
     }
 
+    public bool IsVisible
+    {
+        get => _isVisible;
+        set
+        {
+            if (value == _isVisible) return;
+            _isVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
     public static DesktopWindow GetWindowByHWnd(IntPtr hWnd)
     {
         var sb = new StringBuilder(255);
@@ -125,7 +137,8 @@ public class DesktopWindow : ObservableRecipient
         {
             HWnd = hWnd,
             WindowRect = rect,
-            ClassName = sb.ToString()
+            ClassName = sb.ToString(),
+            IsVisible = IsWindowVisible(hWnd)
         };
     }
 
@@ -150,6 +163,7 @@ public class DesktopWindow : ObservableRecipient
             WindowRect = rect,
             ScreenShot = bitmap,
             Description = (description == "") ? (process.ProcessName) : description ?? process.ProcessName,
+            IsVisible = IsWindowVisible(hWnd),
             Icon = BitmapConveters.ConvertToBitmapImage(System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule!.FileName!)!.ToBitmap(), h:32)
         };
     }

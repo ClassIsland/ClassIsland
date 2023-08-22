@@ -34,15 +34,16 @@ public class BitmapConveters
             BitmapImage result = new BitmapImage();
             result.BeginInit();
             result.CacheOption = BitmapCacheOption.OnLoad;
-            if (h != null)
+            if (h != null && h<=bitmap.Height)
             {
-                    result.DecodePixelWidth = (int)((double)bitmap.Width / (double)bitmap.Height * (double)h);
+                result.DecodePixelWidth = (int)((double)bitmap.Width / (double)bitmap.Height * (double)h);
+                result.DecodePixelHeight = h.Value;
             }
             else
             {
-                   result.DecodePixelWidth = bitmap.Width;
+                result.DecodePixelWidth = bitmap.Width;
+                result.DecodePixelHeight = bitmap.Height;
             }
-            result.DecodePixelHeight = h ?? bitmap.Height;
             result.StreamSource = stream;
             result.EndInit();
             result.Freeze();

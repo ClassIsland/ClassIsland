@@ -57,11 +57,29 @@ public partial class WindowsPicker : Window
     private void UpdateWindows()
     {
         var w = NativeWindowHelper.GetAllWindows();
-        var q = (from i in w
+        var q = ViewModel.IsFilteredFullscreen ?
+            (from i in w
             where Screen.AllScreens.Any(s => new System.Drawing.Rectangle(i.WindowRect.Left, i.WindowRect.Top,
-                i.WindowRect.Right - i.WindowRect.Left, i.WindowRect.Bottom - i.WindowRect.Top).Contains(s.Bounds))
-            select i);
-        ViewModel.DesktopWindows = new ObservableCollection<DesktopWindow>((from i in q.ToList() select DesktopWindow.GetWindowByHWndDetailed(i.HWnd)));
+                i.WindowRect.Right - i.WindowRect.Left, i.WindowRect.Bottom - i.WindowRect.Top).Contains(s.Bounds) &&
+                                             i.IsVisible && i.ClassName != "WorkerW")
+            select i)
+            :
+            from i in w where i.IsVisible select i;
+        var c = new ObservableCollection<DesktopWindow>();
+        foreach (var i in q)
+        {
+            if (i == null) continue;
+            try
+            {
+                c.Add(DesktopWindow.GetWindowByHWndDetailed(i.HWnd));
+            }
+            catch
+            {
+                // ignored
+            }
+        }
+
+        ViewModel.DesktopWindows = c;
     }
 
     private void ButtonCancel_OnClick(object sender, RoutedEventArgs e)

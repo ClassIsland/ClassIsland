@@ -24,8 +24,13 @@
         Title="应用设置" Height="550" Width="1200"
         MinWidth="600"
         Closing="SettingsWindow_OnClosing"
-        Icon="/Assets/AppLogo.ico">
+        Icon="/Assets/AppLogo.ico"
+    xmlns:mdWpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
     <Window.Resources>
+        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
+               x:Key="NotificationsListBoxItemStyle">
+                                                         
+        </Style>
         <cv:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
         <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">
             <Setter Property="Margin" Value="12"/>
@@ -39,6 +44,7 @@
         <Style TargetType="ScrollViewer">
             <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
             <Setter Property="materialDesign:ScrollViewerAssist.IsAutoHideEnabled" Value="True"/>
+            <Setter Property="PanningMode" Value="Both"/>
         </Style>
         <converters:IntToStringConverter x:Key="IntToStringConverter" />
         <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
@@ -178,9 +184,9 @@
                 <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
                                           License="MIT License"
                                           Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/" />
-                <models:ContributionLabel Title="gong-wpf-dragdrop"
+                <models:ContributionLabel Title="gong-mdWpf-dragdrop"
                                           License="BSD 3-Clause"
-                                          Website="https://github.com/punker76/gong-wpf-dragdrop" />
+                                          Website="https://github.com/punker76/gong-mdWpf-dragdrop" />
                 <models:ContributionLabel Title="H.NotifyIcon.Wpf"
                                           License="MIT License"
                                           Website="https://github.com/HavenDV/H.NotifyIcon" />
@@ -193,20 +199,33 @@
                 <models:ContributionLabel Title="Downloader"
                                           License="MIT License"
                                           Website="https://github.com/bezzad/Downloader" />
-                <models:ContributionLabel Title="wpf-notifyicon"
+                <models:ContributionLabel Title="mdWpf-notifyicon"
                                           License="The Code Project Open License (CPOL) 1.02"
-                                          Website="https://github.com/hardcodet/wpf-notifyicon" />
+                                          Website="https://github.com/hardcodet/mdWpf-notifyicon" />
                 <models:ContributionLabel Title="HarmonyOS Sans" License="-"
                                           Website="https://developer.harmonyos.com/cn/design/resource" />
                 <models:ContributionLabel Title="MVVM Toolkit"
                                           Website="https://github.com/CommunityToolkit/dotnet"
                                           License="MIT License" />
                 <models:ContributionLabel Title="WPF" License="MIT License"
-                                          Website="https://github.com/dotnet/wpf" />
+                                          Website="https://github.com/dotnet/mdWpf" />
                 <models:ContributionLabel Title=".NET" License="MIT License"
                                           Website="https://github.com/microsoft/dotnet" />
             </ListView>
         </Grid>
+
+        <ScrollViewer Width="300" x:Key="ExperimentalSettings" 
+                      VerticalScrollBarVisibility="Auto"
+                      Margin="16"
+                      materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+            <StackPanel>
+                <TextBlock Text="实验性功能" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Margin="0 0 0 4"/>
+                <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
+                           Margin="0 0 0 16"/>
+
+            </StackPanel>
+        </ScrollViewer>
 
         <!-- Enabled style -->
         <Style TargetType="FrameworkElement" x:Key="UpdateEnabledStyle">
@@ -225,885 +244,817 @@
                                    DrawerClosing="MyDrawerHost_OnDrawerClosing"
                                    x:Name="MyDrawerHost">
             <Grid>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <TabControl Grid.Row="1" TabStripPlacement="Left" x:Name="RootTabControl">
-                        <!-- 基本 -->
-                        <TabItem Header="基本">
-                            <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                    <!-- 开机自启 -->
-                                    <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
-                                                           Description="在系统启动时自动运行本应用。"
-                                                           IsOn="{Binding Settings.IsAutoStartEnabled, Mode=TwoWay}" />
-                                    <!-- 学期开始时间 -->
-                                    <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
-                                                           Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
-                                        <controls:SettingsCard.Switcher>
-                                            <DatePicker SelectedDate="{Binding Settings.SingleWeekStartTime}"
-                                                        Width="120"
-                                                        Foreground="{DynamicResource MaterialDesignBody}" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-                                    <!-- 显示日期 -->
-                                    <controls:SettingsCard IconGlyph="DateRange"
-                                                           Header="显示日期" Description="在界面上显示当前日期。"
-                                                           IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
-                                    <!-- 隐藏窗口 -->
-                                    <materialDesign:Card Margin="0 0 0 6">
-                                        <Expander Background="Transparent" IsExpanded="True">
-                                            <Expander.Header>
-                                                <controls:SettingsControl IconGlyph="HideOutline"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Header="隐藏窗口" HasSwitcher="False"
-                                                                          Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
-                                                                          Margin="-12 0" />
-                                            </Expander.Header>
-                                            <StackPanel Margin="32 0 64 12">
-                                                <StackPanel.Resources>
-                                                    <Style TargetType="CheckBox"
-                                                           BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                                        <Setter Property="Margin" Value="0 3" />
-                                                    </Style>
-                                                </StackPanel.Resources>
-                                                <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}" />
-                                                <CheckBox Content="前台是最大化窗口时"
-                                                          IsChecked="{Binding Settings.HideOnMaxWindow}" />
-                                                <CheckBox Content="前台是全屏窗口时"
-                                                          IsChecked="{Binding Settings.HideOnFullscreen}" />
-                                            </StackPanel>
-                                        </Expander>
-                                    </materialDesign:Card>
-                                </StackPanel>
-                            </ScrollViewer>
-                        </TabItem>
-
-                        <!-- 外观 -->
-                        <TabItem Header="外观">
-                            <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                    <!-- 界面缩放 -->
-                                    <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
-                                                           Description="主界面的缩放比例。">
-                                        <controls:SettingsCard.Switcher>
-                                            <Slider Width="150" Minimum="0.75" Maximum="2"
-                                                    VerticalAlignment="Center"
-                                                    Value="{Binding Settings.Scale}"
-                                                    AutoToolTipPlacement="BottomRight"
-                                                    TickFrequency="0.05"
-                                                    TickPlacement="None"
-                                                    IsSnapToTickEnabled="True"
-                                                    AutoToolTipPrecision="2" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-                                    <!-- 应用主题 -->
-                                    <controls:SettingsCard IconGlyph="ThemeLightDark" Header="应用主题"
-                                                           Description="控制应用的明暗主题。">
-                                        <controls:SettingsCard.Switcher>
-                                            <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                      SelectedIndex="{Binding Settings.Theme}"
-                                                      HorizontalContentAlignment="Left">
-                                                <ComboBoxItem HorizontalContentAlignment="Left">
-                                                    <controls:IconText Kind="ThemeLightDark" Text="跟随系统" />
-                                                </ComboBoxItem>
-                                                <ComboBoxItem HorizontalContentAlignment="Left">
-                                                    <controls:IconText Kind="WhiteBalanceSunny" Text="明亮" />
-                                                </ComboBoxItem>
-                                                <ComboBoxItem HorizontalContentAlignment="Left">
-                                                    <controls:IconText Kind="WeatherNight" Text="黑暗" />
-                                                </ComboBoxItem>
-                                            </ComboBox>
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-                                    <!-- 主题色来源 -->
-                                    <controls:SettingsCard IconGlyph="PaletteSwatchOutline" Header="主题色来源"
-                                                           Description="控制应用选取主题色的途径。">
-                                        <controls:SettingsCard.Switcher>
-                                            <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                      HorizontalContentAlignment="Left"
-                                                      SelectedIndex="{Binding Settings.ColorSource}">
-                                                <ComboBoxItem HorizontalContentAlignment="Left">
-                                                    <controls:IconText Kind="UserOutline" Text="自定义" />
-                                                </ComboBoxItem>
-                                                <ComboBoxItem HorizontalContentAlignment="Left">
-                                                    <controls:IconText Kind="Wallpaper" Text="系统壁纸" />
-                                                </ComboBoxItem>
-                                                <ComboBoxItem HorizontalContentAlignment="Left">
-                                                    <controls:IconText Kind="MicrosoftWindows" Text="系统" />
-                                                </ComboBoxItem>
-                                            </ComboBox>
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-                                    <StackPanel>
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Settings.ColorSource}" Value="0">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </Style>
-                                        </StackPanel.Style>
-                                        <!-- 第一主题色 -->
-                                        <controls:SettingsCard IconGlyph="PaletteOutline" Header="第一主题色"
-                                                               Description="应用主要显示的主题颜色。">
-                                            <controls:SettingsCard.Switcher>
-                                                <controls:ColorPicker Color="{Binding Settings.PrimaryColor, Mode=TwoWay}" />
-                                            </controls:SettingsCard.Switcher>
-                                        </controls:SettingsCard>
-                                        <!-- 第二主题色 -->
-                                        <controls:SettingsCard IconGlyph="PaletteOutline" Header="第二主题色"
-                                                               Description="应用次要显示的主题颜色。">
-                                            <controls:SettingsCard.Switcher>
-                                                <controls:ColorPicker
-                                                    Color="{Binding Settings.SecondaryColor, Mode=TwoWay}" />
-                                            </controls:SettingsCard.Switcher>
-                                        </controls:SettingsCard>
-                                    </StackPanel>
-                                    <!-- 背景透明度 -->
-                                    <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
-                                                           Description="课表背景颜色的不透明度。">
-                                        <controls:SettingsCard.Switcher>
-                                            <Slider Width="180" Minimum="0" Maximum="1"
-                                                    Value="{Binding Settings.Opacity}"
-                                                    AutoToolTipPlacement="BottomRight"
-                                                    AutoToolTipPrecision="2" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-                                    <!-- 壁纸主题色 -->
-                                    <StackPanel>
-                                        <StackPanel.Style>
-                                            <Style TargetType="StackPanel">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Settings.ColorSource}" Value="1">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </Style>
-                                        </StackPanel.Style>
-                                        <Separator Margin="0 16 0 8"/>
-                                        <controls:IconText Kind="Wallpaper" Text="壁纸主题色" Margin="0 0 0 8"/>
-                                        <Grid>
-                                            <Image Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}" Stretch="UniformToFill"/>
-                                            <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                                <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.85"/>
-                                                <!-- 刷新 -->
-                                                <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonUpdateWallpaper_OnClick"
-                                                        HorizontalAlignment="Left" Margin="8 0">
-                                                    <controls:IconText Kind="Refresh" Text="刷新"/>
-                                                </Button>
-                                                <!-- 颜色选择 -->
-                                                <ListBox ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
-                                                         SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
-                                                         HorizontalAlignment="Right">
-                                                    <ListBox.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <WrapPanel IsItemsHost="True"/>
-                                                        </ItemsPanelTemplate>
-                                                    </ListBox.ItemsPanel>
-                                                    <ListBox.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <materialDesign:ColorZone Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
-                                                                                      Width="32" Height="32"
-                                                                                      Mode="Custom">
-                                                                <materialDesign:PackIcon Kind="Check" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                                                                                         Width="14" Height="14"
-                                                                                         Background="White"
-                                                                                         Foreground="Black"
-                                                                                         Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                            </materialDesign:ColorZone>
-                                                        </DataTemplate>
-                                                    </ListBox.ItemTemplate>
-                                                </ListBox>
-                                            </Grid>
-                                            <!-- Loading -->
-                                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                  Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                                        Background="{DynamicResource MaterialDesignPaper}"
-                                                        Opacity="0.8"/>
-                                                <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" 
-                                                             IsIndeterminate="True" Value="0"
-                                                             Width="50" Height="50"/>
-                                            </Grid>
-                                        </Grid>
-                                        <!-- 启用自动提取主题色 -->
-                                        <controls:SettingsCard IconGlyph="RefreshAuto" Header="启用自动提取主题色" Margin="0 12 0 6"
-                                                               Description="若启用，将会在每分钟刷新一次壁纸主题色，适用于会随时间大幅变化主题色的动态壁纸。"
-                                                               IsOn="{Binding Settings.IsWallpaperAutoUpdateEnabled, Mode=TwoWay}"/>
-                                        <!-- 自动提取主题色间隔 -->
-                                        <controls:SettingsCard IconGlyph="ClockOutline" Header="自动提取主题色间隔"
-                                                               Description="自动从壁纸提取主题色时间隔的时间，建议以动态壁纸更新速度按需设置，不宜低于10秒。">
-                                            <controls:SettingsCard.Switcher>
-                                                <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="150"
-                                                                          materialDesign:TextFieldAssist.SuffixText="秒"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Style="{StaticResource MaterialDesignTextBox}"
-                                                                          Text="{Binding Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
-                                            </controls:SettingsCard.Switcher>
-                                        </controls:SettingsCard>
-                                        <!-- 兼容模式 -->
-                                        <controls:SettingsCard IconGlyph="CogOutline" Header="启用兼容模式"
-                                                               Description="若启用，将从注册表提取壁纸，而非桌面句柄，不兼容动态壁纸。可能可以解决一些壁纸提取中的玄学问题。"
-                                                               IsOn="{Binding Settings.IsFallbackModeEnabled, Mode=TwoWay}"/>
-                                        <!-- 壁纸层窗口类名 -->
-                                        <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
-                                                               Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
-                                            <controls:SettingsCard.Switcher>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
-                                                             Text="{Binding Settings.WallpaperClassName}"/>
-                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Content="{materialDesign:PackIcon WindowMaximize}"
-                                                            ToolTip="浏览…"
-                                                            Click="ButtonBrowseWindows_OnClick"/>
-                                                </StackPanel>
-                                            </controls:SettingsCard.Switcher>
-                                        </controls:SettingsCard>
-                                        <!-- 取色亮度波峰 -->
-                                        <controls:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
-                                                               Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
-                                            <controls:SettingsCard.Switcher>
-                                                <controls:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Style="{StaticResource MaterialDesignTextBox}"
-                                                                          Text="{Binding Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
-                                            </controls:SettingsCard.Switcher>
-                                        </controls:SettingsCard>
-                                    </StackPanel>
-                                    <!-- 高级 -->
-                                </StackPanel>
-                            </ScrollViewer>
-                        </TabItem>
-
-                        <!-- 提醒 -->
-                        <TabItem Header="提醒">
-                            <controls:ListDetailView Margin="12" 
-                                                     ShowTitleWhenNotCompressed="True" 
-                                                     IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
-                                <controls:ListDetailView.TitleElement>
-                                    <Grid>
-                                        <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                                              d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
-                                            <TextBlock Text="{Binding Name}"
-                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       VerticalAlignment="Center"/>
-                                        </Grid>
-                                    </Grid>
-                                </controls:ListDetailView.TitleElement>
-                                <controls:ListDetailView.LeftContent>
-                                    <!-- 提醒提供方 -->
-                                    <Grid Grid.Column="0" Margin="0 0 4 0">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition/>
-                                        </Grid.RowDefinitions>
-                                        <!-- 提醒开关 -->
-                                        <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
-                                                               Header="启用提醒"
-                                                               IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
-                                                               Description="启用提醒后，将会在对重要事件发出醒目提醒。拖动下方的元素以对提醒优先级进行排序，靠前的提醒提供方优先级更高。"/>
-                                        <!-- 提醒提供方列表 -->
-                                        <ListBox Grid.Row="1" ItemsSource="{Binding Settings.NotificationProvidersPriority}"
-                                                 Margin="0 12 0 0"
-                                                 SelectionMode="Single"
-                                                 dd:DragDrop.IsDragSource="True"
-                                                 dd:DragDrop.IsDropTarget="True"
-                                                 SelectionChanged="Selector_OnSelected"
-                                                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
-                                                 SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}">
-                                            <ListBox.ItemContainerStyle>
-                                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                                    <EventSetter Event="MouseDoubleClick" Handler="EventSetter_OnHandler"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!-- 内容 -->
+                <TabControl Grid.Column="2" Grid.Row="1" TabStripPlacement="Left" x:Name="RootTabControl">
+                    <!-- 基本 -->
+                    <TabItem  Header="基本">
+                        <ScrollViewer >
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <!-- 开机自启 -->
+                                <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
+                                                       Description="在系统启动时自动运行本应用。"
+                                                       IsOn="{Binding Settings.IsAutoStartEnabled, Mode=TwoWay}" />
+                                <!-- 学期开始时间 -->
+                                <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
+                                                       Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
+                                    <controls:SettingsCard.Switcher>
+                                        <DatePicker SelectedDate="{Binding Settings.SingleWeekStartTime}"
+                                                    Width="120"
+                                                    Foreground="{DynamicResource MaterialDesignBody}" />
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <!-- 显示日期 -->
+                                <controls:SettingsCard IconGlyph="DateRange"
+                                                       Header="显示日期" Description="在界面上显示当前日期。"
+                                                       IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
+                                <!-- 隐藏窗口 -->
+                                <materialDesign:Card Margin="0 0 0 6">
+                                    <Expander Background="Transparent" IsExpanded="True">
+                                        <Expander.Header>
+                                            <controls:SettingsControl IconGlyph="HideOutline"
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Header="隐藏窗口" HasSwitcher="False"
+                                                                      Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
+                                                                      Margin="-12 0" />
+                                        </Expander.Header>
+                                        <StackPanel Margin="32 0 64 12">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="CheckBox"
+                                                       BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                    <Setter Property="Margin" Value="0 3" />
                                                 </Style>
-                                            </ListBox.ItemContainerStyle>
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
-                                                          d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition/>
-                                                            <RowDefinition/>
-                                                        </Grid.RowDefinitions>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition/>
-                                                        </Grid.ColumnDefinitions>
+                                            </StackPanel.Resources>
+                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}" />
+                                            <CheckBox Content="前台是最大化窗口时"
+                                                      IsChecked="{Binding Settings.HideOnMaxWindow}" />
+                                            <CheckBox Content="前台是全屏窗口时"
+                                                      IsChecked="{Binding Settings.HideOnFullscreen}" />
+                                        </StackPanel>
+                                    </Expander>
+                                </materialDesign:Card>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
 
-                                                        <!-- 图标 -->
-                                                        <ContentPresenter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                                                          Width="24" Height="24" VerticalAlignment="Center"
-                                                                          ClipToBounds="True" Margin="6"
-                                                                          Content="{Binding IconElement}"/>
-                                                        <!-- 标题 -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="0"
-                                                                   TextWrapping="Wrap"
-                                                                   Text="{Binding Name}"
-                                                                   FontSize="16" FontWeight="Bold"/>
-                                                        <!-- 描述 -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="1"
-                                                                   TextWrapping="Wrap"
-                                                                   Text="{Binding Description}"
-                                                                   FontSize="12"/>
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
-                                        <!--<TextBlock Grid.Row="1" Text="{Binding ViewModel.NotificationSettingsSelectedProvider}"></TextBlock>-->
-                                    </Grid>
-                                </controls:ListDetailView.LeftContent>
-                                <controls:ListDetailView.RightContent>
-                                    <!-- 提醒详细信息 -->
+                    <!-- 外观 -->
+                    <TabItem Header="外观">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <!-- 界面缩放 -->
+                                <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
+                                                       Description="主界面的缩放比例。">
+                                    <controls:SettingsCard.Switcher>
+                                        <Slider Width="150" Minimum="0.75" Maximum="2"
+                                                VerticalAlignment="Center"
+                                                Value="{Binding Settings.Scale}"
+                                                AutoToolTipPlacement="BottomRight"
+                                                TickFrequency="0.05"
+                                                TickPlacement="None"
+                                                IsSnapToTickEnabled="True"
+                                                AutoToolTipPrecision="2" />
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <!-- 应用主题 -->
+                                <controls:SettingsCard IconGlyph="ThemeLightDark" Header="应用主题"
+                                                       Description="控制应用的明暗主题。">
+                                    <controls:SettingsCard.Switcher>
+                                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                  SelectedIndex="{Binding Settings.Theme}"
+                                                  HorizontalContentAlignment="Left">
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="ThemeLightDark" Text="跟随系统" />
+                                            </ComboBoxItem>
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="WhiteBalanceSunny" Text="明亮" />
+                                            </ComboBoxItem>
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="WeatherNight" Text="黑暗" />
+                                            </ComboBoxItem>
+                                        </ComboBox>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <!-- 主题色来源 -->
+                                <controls:SettingsCard IconGlyph="PaletteSwatchOutline" Header="主题色来源"
+                                                       Description="控制应用选取主题色的途径。">
+                                    <controls:SettingsCard.Switcher>
+                                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                  HorizontalContentAlignment="Left"
+                                                  SelectedIndex="{Binding Settings.ColorSource}">
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="UserOutline" Text="自定义" />
+                                            </ComboBoxItem>
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="Wallpaper" Text="系统壁纸" />
+                                            </ComboBoxItem>
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="MicrosoftWindows" Text="系统" />
+                                            </ComboBoxItem>
+                                        </ComboBox>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Settings.ColorSource}" Value="0">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <!-- 第一主题色 -->
+                                    <controls:SettingsCard IconGlyph="PaletteOutline" Header="第一主题色"
+                                                           Description="应用主要显示的主题颜色。">
+                                        <controls:SettingsCard.Switcher>
+                                            <controls:ColorPicker Color="{Binding Settings.PrimaryColor, Mode=TwoWay}" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <!-- 第二主题色 -->
+                                    <controls:SettingsCard IconGlyph="PaletteOutline" Header="第二主题色"
+                                                           Description="应用次要显示的主题颜色。">
+                                        <controls:SettingsCard.Switcher>
+                                            <controls:ColorPicker
+                                                Color="{Binding Settings.SecondaryColor, Mode=TwoWay}" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                </StackPanel>
+                                <!-- 背景透明度 -->
+                                <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
+                                                       Description="课表背景颜色的不透明度。">
+                                    <controls:SettingsCard.Switcher>
+                                        <Slider Width="180" Minimum="0" Maximum="1"
+                                                Value="{Binding Settings.Opacity}"
+                                                AutoToolTipPlacement="BottomRight"
+                                                AutoToolTipPrecision="2" />
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <!-- 壁纸主题色 -->
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Settings.ColorSource}" Value="1">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <Separator Margin="0 16 0 8"/>
+                                    <controls:IconText Kind="Wallpaper" Text="壁纸主题色" Margin="0 0 0 8"/>
                                     <Grid>
+                                        <Image Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}" Stretch="UniformToFill"/>
+                                        <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                            <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.85"/>
+                                            <!-- 刷新 -->
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonUpdateWallpaper_OnClick"
+                                                    HorizontalAlignment="Left" Margin="8 0">
+                                                <controls:IconText Kind="Refresh" Text="刷新"/>
+                                            </Button>
+                                            <!-- 颜色选择 -->
+                                            <ListBox ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
+                                                     SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
+                                                     HorizontalAlignment="Right">
+                                                <ListBox.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel IsItemsHost="True"/>
+                                                    </ItemsPanelTemplate>
+                                                </ListBox.ItemsPanel>
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <materialDesign:ColorZone Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                                                                                  Width="32" Height="32"
+                                                                                  Mode="Custom">
+                                                            <materialDesign:PackIcon Kind="Check" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                                                                                     Width="14" Height="14"
+                                                                                     Background="White"
+                                                                                     Foreground="Black"
+                                                                                     Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                        </materialDesign:ColorZone>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </Grid>
+                                        <!-- Loading -->
+                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                              Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                                                    Background="{DynamicResource MaterialDesignPaper}"
+                                                    Opacity="0.8"/>
+                                            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" 
+                                                         IsIndeterminate="True" Value="0"
+                                                         Width="50" Height="50"/>
+                                        </Grid>
+                                    </Grid>
+                                    <!-- 启用自动提取主题色 -->
+                                    <controls:SettingsCard IconGlyph="RefreshAuto" Header="启用自动提取主题色" Margin="0 12 0 6"
+                                                           Description="若启用，将会在每分钟刷新一次壁纸主题色，适用于会随时间大幅变化主题色的动态壁纸。"
+                                                           IsOn="{Binding Settings.IsWallpaperAutoUpdateEnabled, Mode=TwoWay}"/>
+                                    <!-- 自动提取主题色间隔 -->
+                                    <controls:SettingsCard IconGlyph="ClockOutline" Header="自动提取主题色间隔"
+                                                           Description="自动从壁纸提取主题色时间隔的时间，建议以动态壁纸更新速度按需设置，不宜低于10秒。">
+                                        <controls:SettingsCard.Switcher>
+                                            <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="150"
+                                                                      materialDesign:TextFieldAssist.SuffixText="秒"
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Style="{StaticResource MaterialDesignTextBox}"
+                                                                      Text="{Binding Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <!-- 兼容模式 -->
+                                    <controls:SettingsCard IconGlyph="CogOutline" Header="启用兼容模式"
+                                                           Description="若启用，将从注册表提取壁纸，而非桌面句柄，不兼容动态壁纸。可能可以解决一些壁纸提取中的玄学问题。"
+                                                           IsOn="{Binding Settings.IsFallbackModeEnabled, Mode=TwoWay}"/>
+                                    <!-- 壁纸层窗口类名 -->
+                                    <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
+                                                           Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
+                                        <controls:SettingsCard.Switcher>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
+                                                         Text="{Binding Settings.WallpaperClassName}"/>
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Content="{materialDesign:PackIcon WindowMaximize}"
+                                                        ToolTip="浏览…"
+                                                        Click="ButtonBrowseWindows_OnClick"/>
+                                            </StackPanel>
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <!-- 取色亮度波峰 -->
+                                    <controls:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
+                                                           Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
+                                        <controls:SettingsCard.Switcher>
+                                            <controls:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Style="{StaticResource MaterialDesignTextBox}"
+                                                                      Text="{Binding Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                </StackPanel>
+                                <!-- 高级 -->
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <!-- 提醒 -->
+                    <TabItem Header="提醒">
+                        <controls:ListDetailView Margin="12" 
+                                                 ShowTitleWhenNotCompressed="True" 
+                                                 IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
+                            <controls:ListDetailView.TitleElement>
+                                <Grid>
+                                    <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                                          d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                        <TextBlock Text="{Binding Name}"
+                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   VerticalAlignment="Center"/>
+                                    </Grid>
+                                </Grid>
+                            </controls:ListDetailView.TitleElement>
+                            <controls:ListDetailView.LeftContent>
+                                <!-- 提醒提供方 -->
+                                <Grid Grid.Column="0" Margin="0 0 4 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <!-- 提醒开关 -->
+                                    <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
+                                                           Header="启用提醒"
+                                                           IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
+                                                           Description="启用提醒后，将会在对重要事件发出醒目提醒。"/>
+                                    <!-- 提醒提供方列表 -->
+                                    <ListBox Grid.Row="1" ItemsSource="{Binding Settings.NotificationProvidersPriority}"
+                                             Margin="0 12 0 0"
+                                             SelectionMode="Single"
+                                             dd:DragDrop.IsDragSource="True"
+                                             dd:DragDrop.IsDropTarget="True"
+                                             SelectionChanged="Selector_OnSelected"
+                                             HorizontalContentAlignment="Stretch"
+                                             dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
+                                             SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
+                                             ItemContainerStyle="{StaticResource NotificationsListBoxItemStyle}"
+                                             Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
+                                                      d:DataContext="{d:DesignInstance interfaces:INotificationProvider}"
+                                                      Background="Transparent">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- 图标 -->
+                                                    <ContentPresenter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                                                      Width="24" Height="24" VerticalAlignment="Center"
+                                                                      ClipToBounds="True" Margin="6"
+                                                                      Content="{Binding IconElement}"/>
+                                                    <!-- 标题 -->
+                                                    <TextBlock Grid.Column="1" Grid.Row="0"
+                                                               TextWrapping="Wrap"
+                                                               Text="{Binding Name}"
+                                                               FontSize="16" FontWeight="Bold"/>
+                                                    <!-- 描述 -->
+                                                    <TextBlock Grid.Column="1" Grid.Row="1"
+                                                               TextWrapping="Wrap"
+                                                               Text="{Binding Description}"
+                                                               FontSize="12"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <!--<TextBlock Grid.Row="1" Text="{Binding ViewModel.NotificationSettingsSelectedProvider}"></TextBlock>-->
+                                </Grid>
+                            </controls:ListDetailView.LeftContent>
+                            <controls:ListDetailView.RightContent>
+                                <!-- 提醒详细信息 -->
+                                <Grid>
+                                    <Grid>
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid
+                                            DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                                            d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                            <ContentPresenter ClipToBounds="True"
+                                                              Content="{Binding SettingsElement}" />
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SettingsElement}"
+                                                                         Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <materialDesign:PackIcon Kind="Cog" Width="72" Height="72"
+                                                                         HorizontalAlignment="Center" />
+                                                <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
+                                                           Margin="0 8 0 0" />
+                                            </StackPanel>
+
+                                        </Grid>
+                                    </Grid>
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ViewModel.NotificationSettingsSelectedProvider}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <Image Source="/Assets/ListBoxNotificationProviders_NoSelection.png" Width="72" Height="72"
+                                               ToolTip="普罗米修斯_查询"/>
+                                        <TextBlock Text="在左侧选择一个提醒提供方，然后在此处进行设置。" TextWrapping="Wrap"
+                                                   Margin="0 4 0 0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </controls:ListDetailView.RightContent>
+                        </controls:ListDetailView>
+                    </TabItem>
+
+                    <!-- 窗口 -->
+                    <TabItem Header="窗口">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <!-- 窗口停靠位置 -->
+                                <controls:IconText Kind="Monitor" Text="窗口停靠位置" />
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0" Margin="0 0 8 0">
+                                        <materialDesign:ColorZone
+                                            BorderBrush="{DynamicResource MaterialDesignBody}"
+                                            BorderThickness="8" CornerRadius="4"
+                                            VerticalAlignment="Center"
+                                            Height="220">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0" Margin="8">
+                                                    <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left"
+                                                                 IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}" />
+                                                    <RadioButton VerticalAlignment="Top"
+                                                                 HorizontalAlignment="Center"
+                                                                 IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}" />
+                                                    <RadioButton VerticalAlignment="Top"
+                                                                 HorizontalAlignment="Right"
+                                                                 IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}" />
+
+                                                    <RadioButton VerticalAlignment="Bottom"
+                                                                 HorizontalAlignment="Left"
+                                                                 IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}" />
+                                                    <RadioButton VerticalAlignment="Bottom"
+                                                                 HorizontalAlignment="Center"
+                                                                 IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}" />
+                                                    <RadioButton VerticalAlignment="Bottom"
+                                                                 HorizontalAlignment="Right"
+                                                                 IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}" />
+                                                </Grid>
+                                                <materialDesign:ColorZone Mode="Dark" Grid.Row="1" Height="16"
+                                                                          Background="#99000000"
+                                                                          BorderThickness="0">
+                                                    <Grid>
+                                                        <materialDesign:PackIcon Kind="MicrosoftWindows"
+                                                            Height="10" Width="10" VerticalAlignment="Center"
+                                                            HorizontalAlignment="Left" Margin="3" />
+                                                        <TextBlock
+                                                            Text="{Binding MainViewModel.Today, StringFormat={}{0:HH:mm}}"
+                                                            FontSize="8" FontWeight="Light"
+                                                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                            Margin="3" />
+                                                    </Grid>
+                                                </materialDesign:ColorZone>
+                                            </Grid>
+                                        </materialDesign:ColorZone>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" HorizontalAlignment="Stretch"
+                                                Margin="8 0 0 0">
                                         <Grid>
-                                            <Grid.Style>
-                                                <Style TargetType="Grid">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+                                            <!-- 向右偏移 -->
+                                            <controls:NumbericTextBox Grid.Column="0"
+                                                                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                                      Padding="6" Margin="0 0 4 0"
+                                                                      materialDesign:HintAssist.Hint="向右偏移"
+                                                                      Text="{Binding Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}" />
+                                            <!-- 向下偏移 -->
+                                            <controls:NumbericTextBox Grid.Column="1"
+                                                                      Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                                      Padding="6" Margin="4 0 0 0"
+                                                                      materialDesign:HintAssist.Hint="向下偏移"
+                                                                      Text="{Binding Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}" />
+                                        </Grid>
+                                        <!-- 显示器 -->
+                                        <ComboBox Margin="0 12 0 0"
+                                                  Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                                  materialDesign:HintAssist.Hint="显示器"
+                                                  SelectedIndex="{Binding Settings.WindowDockingMonitorIndex}"
+                                                  ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Monitor"
+                                                            VerticalAlignment="Center" />
+                                                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                                                            <Run Text="{Binding DeviceName, Mode=OneWay}" />
+                                                            <Run Text="(">
+                                                            </Run>
+                                                            <Run Text="{Binding Bounds.Width, Mode=OneWay}">
+                                                            </Run>
+                                                            <Run Text="x">
+                                                            </Run>
+                                                            <Run Text="{Binding Bounds.Height, Mode=OneWay}">
+                                                            </Run>
+                                                            <Run Text=")" />
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+
+                                        <Button Margin="0 8 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
+                                            <controls:IconText Kind="Refresh" Text="刷新显示器列表" />
+                                        </Button>
+
+                                        <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
+                                                   Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" />
+                                        <!--<TextBlock Text="{Binding Settings.WindowDockingLocation, Mode=OneWay}"/>-->
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Margin="0 16" />
+
+                                <!-- 窗口层级 -->
+                                <controls:SettingsCard IconGlyph="LayersOutline" Header="窗口层级"
+                                                       Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
+                                    <controls:SettingsCard.Switcher>
+                                        <ComboBox SelectedIndex="{Binding Settings.WindowLayer, Mode=TwoWay}"
+                                                  Foreground="{DynamicResource MaterialDesignBody}">
+                                            <ComboBoxItem>
+                                                <controls:IconText Kind="LayersMinus" Text="置底" />
+                                            </ComboBoxItem>
+                                            <ComboBoxItem>
+                                                <controls:IconText Kind="LayersPlus" Text="置顶" />
+                                            </ComboBoxItem>
+                                        </ComboBox>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+
+                                <!-- 指针穿透 -->
+                                <!--
+                                <controls:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
+                                                       Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
+                                                       IsOn="{Binding Settings.IsMouseClickingEnabled, Mode=TwoWay}" />-->
+
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <!-- 更新 -->
+                    <TabItem>
+                        <TabItem.Header>
+                            <materialDesign:Badged>
+                                <materialDesign:Badged.Style>
+                                    <Style TargetType="materialDesign:Badged">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpToDate">
+                                                <Setter Property="Badge" Value="{x:Null}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Badge" Value="{materialDesign:PackIcon Upload}"/>
+                                    </Style>
+                                </materialDesign:Badged.Style>
+                                <TextBlock Text="更新"/>
+                            </materialDesign:Badged>
+                        </TabItem.Header>
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <!-- 更新状态 -->
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!-- 更新状态图标 -->
+                                    <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
+                                                             Width="48" Height="48"
+                                                             Margin="0 0 8 0">
+                                        <materialDesign:PackIcon.Style>
+                                            <Style TargetType="materialDesign:PackIcon">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpToDate">
+                                                        <Setter Property="Kind" Value="Recent"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpdateAvailable">
+                                                        <Setter Property="Kind" Value="Upload"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpdateDownloaded">
+                                                        <Setter Property="Kind" Value="MonitorDownload"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Kind" Value="Recent"/>
+                                            </Style>
+                                        </materialDesign:PackIcon.Style>
+                                    </materialDesign:PackIcon>
+
+                                    <!-- 更新状态说明 -->
+                                    <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,0,16">
+                                        <TextBlock FontSize="28" FontWeight="Medium" >
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpToDate">
+                                                            <Setter Property="Text" Value="您已是最新。"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpdateAvailable">
+                                                            <Setter Property="Text" Value="更新可用。"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpdateDownloaded">
+                                                            <Setter Property="Text" Value="您已准备好安装更新。"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
-                                            </Grid.Style>
-                                            <Grid
-                                                DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                                                d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
-                                                <ContentPresenter ClipToBounds="True"
-                                                                  Content="{Binding SettingsElement}" />
-                                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                                    <StackPanel.Style>
-                                                        <Style TargetType="StackPanel">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding SettingsElement}"
-                                                                             Value="{x:Null}">
-                                                                    <Setter Property="Visibility" Value="Visible" />
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                        </Style>
-                                                    </StackPanel.Style>
-                                                    <materialDesign:PackIcon Kind="Cog" Width="72" Height="72"
-                                                                             HorizontalAlignment="Center" />
-                                                    <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
-                                                               Margin="0 8 0 0" />
-                                                </StackPanel>
+                                            </TextBlock.Style>
+                                        </TextBlock>
 
-                                            </Grid>
-                                        </Grid>
-                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <StackPanel.Style>
-                                                <Style TargetType="StackPanel">
+                                        <TextBlock Margin="0 4 0 0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ViewModel.NotificationSettingsSelectedProvider}" Value="{x:Null}">
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                     Value="UpToDate">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                 </Style>
-                                            </StackPanel.Style>
-                                            <Image Source="/Assets/ListBoxNotificationProviders_NoSelection.png" Width="72" Height="72"
-                                                   ToolTip="普罗米修斯_查询"/>
-                                            <TextBlock Text="在左侧选择一个提醒提供方，然后在此处进行设置。" TextWrapping="Wrap"
-                                                       Margin="0 4 0 0"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </controls:ListDetailView.RightContent>
-                            </controls:ListDetailView>
-                        </TabItem>
+                                            </TextBlock.Style>
+                                            <Run Text="上次检查更新：">
+                                            </Run><Run Text="{Binding Settings.LastCheckUpdateTime, Mode=OneWay, ConverterCulture=zh-cn}" />
+                                        </TextBlock>
 
-                        <!-- 窗口 -->
-                        <TabItem Header="窗口">
-                            <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                    <!-- 窗口停靠位置 -->
-                                    <controls:IconText Kind="Monitor" Text="窗口停靠位置" />
-                                    <Grid Margin="0 12 0 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-
-                                        <StackPanel Grid.Column="0" Margin="0 0 8 0">
-                                            <materialDesign:ColorZone
-                                                BorderBrush="{DynamicResource MaterialDesignBody}"
-                                                BorderThickness="8" CornerRadius="4"
-                                                VerticalAlignment="Center"
-                                                Height="220">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition />
-                                                        <RowDefinition Height="Auto" />
-                                                    </Grid.RowDefinitions>
-                                                    <Grid Grid.Row="0" Margin="8">
-                                                        <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left"
-                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}" />
-                                                        <RadioButton VerticalAlignment="Top"
-                                                                     HorizontalAlignment="Center"
-                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}" />
-                                                        <RadioButton VerticalAlignment="Top"
-                                                                     HorizontalAlignment="Right"
-                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}" />
-
-                                                        <RadioButton VerticalAlignment="Bottom"
-                                                                     HorizontalAlignment="Left"
-                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}" />
-                                                        <RadioButton VerticalAlignment="Bottom"
-                                                                     HorizontalAlignment="Center"
-                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}" />
-                                                        <RadioButton VerticalAlignment="Bottom"
-                                                                     HorizontalAlignment="Right"
-                                                                     IsChecked="{Binding Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}" />
-                                                    </Grid>
-                                                    <materialDesign:ColorZone Mode="Dark" Grid.Row="1" Height="16"
-                                                                              Background="#99000000"
-                                                                              BorderThickness="0">
-                                                        <Grid>
-                                                            <materialDesign:PackIcon Kind="MicrosoftWindows"
-                                                                Height="10" Width="10" VerticalAlignment="Center"
-                                                                HorizontalAlignment="Left" Margin="3" />
-                                                            <TextBlock
-                                                                Text="{Binding MainViewModel.Today, StringFormat={}{0:HH:mm}}"
-                                                                FontSize="8" FontWeight="Light"
-                                                                HorizontalAlignment="Right" VerticalAlignment="Center"
-                                                                Margin="3" />
-                                                        </Grid>
-                                                    </materialDesign:ColorZone>
-                                                </Grid>
-                                            </materialDesign:ColorZone>
-                                        </StackPanel>
-
-                                        <StackPanel Grid.Column="1" HorizontalAlignment="Stretch"
-                                                    Margin="8 0 0 0">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition />
-                                                    <ColumnDefinition />
-                                                </Grid.ColumnDefinitions>
-                                                <!-- 向右偏移 -->
-                                                <controls:NumbericTextBox Grid.Column="0"
-                                                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                                                          Padding="6" Margin="0 0 4 0"
-                                                                          materialDesign:HintAssist.Hint="向右偏移"
-                                                                          Text="{Binding Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}" />
-                                                <!-- 向下偏移 -->
-                                                <controls:NumbericTextBox Grid.Column="1"
-                                                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                                                          Padding="6" Margin="4 0 0 0"
-                                                                          materialDesign:HintAssist.Hint="向下偏移"
-                                                                          Text="{Binding Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}" />
-                                            </Grid>
-                                            <!-- 显示器 -->
-                                            <ComboBox Margin="0 12 0 0"
-                                                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                                      materialDesign:HintAssist.Hint="显示器"
-                                                      SelectedIndex="{Binding Settings.WindowDockingMonitorIndex}"
-                                                      ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <materialDesign:PackIcon Kind="Monitor"
-                                                                VerticalAlignment="Center" />
-                                                            <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                                                                <Run Text="{Binding DeviceName, Mode=OneWay}" />
-                                                                <Run Text="(">
-                                                                </Run>
-                                                                <Run Text="{Binding Bounds.Width, Mode=OneWay}">
-                                                                </Run>
-                                                                <Run Text="x">
-                                                                </Run>
-                                                                <Run Text="{Binding Bounds.Height, Mode=OneWay}">
-                                                                </Run>
-                                                                <Run Text=")" />
-                                                            </TextBlock>
-                                                        </StackPanel>
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
-
-                                            <Button Margin="0 8 0 0" Style="{StaticResource MaterialDesignFlatButton}"
-                                                    HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
-                                                <controls:IconText Kind="Refresh" Text="刷新显示器列表" />
-                                            </Button>
-
-                                            <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
-                                                       Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" />
-                                            <!--<TextBlock Text="{Binding Settings.WindowDockingLocation, Mode=OneWay}"/>-->
-                                        </StackPanel>
-                                    </Grid>
-                                    <Separator Margin="0 16" />
-
-                                    <!-- 窗口层级 -->
-                                    <controls:SettingsCard IconGlyph="LayersOutline" Header="窗口层级"
-                                                           Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
-                                        <controls:SettingsCard.Switcher>
-                                            <ComboBox SelectedIndex="{Binding Settings.WindowLayer, Mode=TwoWay}"
-                                                      Foreground="{DynamicResource MaterialDesignBody}">
-                                                <ComboBoxItem>
-                                                    <controls:IconText Kind="LayersMinus" Text="置底" />
-                                                </ComboBoxItem>
-                                                <ComboBoxItem>
-                                                    <controls:IconText Kind="LayersPlus" Text="置顶" />
-                                                </ComboBoxItem>
-                                            </ComboBox>
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-
-                                    <!-- 指针穿透 --><!--
-                                    <controls:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
-                                                           Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
-                                                           IsOn="{Binding Settings.IsMouseClickingEnabled, Mode=TwoWay}" />-->
-
-                                </StackPanel>
-                            </ScrollViewer>
-                        </TabItem>
-
-                        <!-- 更新 -->
-                        <TabItem>
-                            <TabItem.Header>
-                                <materialDesign:Badged>
-                                    <materialDesign:Badged.Style>
-                                        <Style TargetType="materialDesign:Badged">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpToDate">
-                                                    <Setter Property="Badge" Value="{x:Null}"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                            <Setter Property="Badge" Value="{materialDesign:PackIcon Upload}"/>
-                                        </Style>
-                                    </materialDesign:Badged.Style>
-                                    <TextBlock Text="更新"/>
-                                </materialDesign:Badged>
-                            </TabItem.Header>
-                            <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                    <!-- 更新状态 -->
-                                    <Grid Margin="0 12 0 0">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition />
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-
-                                        <!-- 更新状态图标 -->
-                                        <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
-                                                                 Width="48" Height="48"
-                                                                 Margin="0 0 8 0">
-                                            <materialDesign:PackIcon.Style>
-                                                <Style TargetType="materialDesign:PackIcon">
+                                        <TextBlock Margin="0 4 0 0">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpToDate">
-                                                            <Setter Property="Kind" Value="Recent"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpdateAvailable">
-                                                            <Setter Property="Kind" Value="Upload"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus}" Value="UpdateDownloaded">
-                                                            <Setter Property="Kind" Value="MonitorDownload"/>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                     Value="UpToDate">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
-                                                    <Setter Property="Kind" Value="Recent"/>
+                                                    <Setter Property="Visibility" Value="Visible"/>
                                                 </Style>
-                                            </materialDesign:PackIcon.Style>
-                                        </materialDesign:PackIcon>
+                                            </TextBlock.Style>
+                                            <Run Text="新版本：">
+                                            </Run><Run Text="{Binding Settings.LastCheckUpdateInfoCache.Version, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </StackPanel>
 
-                                        <!-- 更新状态说明 -->
-                                        <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,0,16">
-                                            <TextBlock FontSize="28" FontWeight="Medium" >
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpToDate">
-                                                                <Setter Property="Text" Value="您已是最新。"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpdateAvailable">
-                                                                <Setter Property="Text" Value="更新可用。"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}" Value="UpdateDownloaded">
-                                                                <Setter Property="Text" Value="您已准备好安装更新。"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                            </TextBlock>
-
-                                            <TextBlock Margin="0 4 0 0">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                         Value="UpToDate">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
+                                    <!-- 进度条 -->
+                                    <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" 
+                                                HorizontalAlignment="Stretch"
+                                                Margin="0 0 0 8">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                 Value="Idle">
                                                         <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                                <Run Text="上次检查更新：">
-                                                </Run><Run Text="{Binding Settings.LastCheckUpdateTime, Mode=OneWay, ConverterCulture=zh-cn}" />
-                                            </TextBlock>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
 
-                                            <TextBlock Margin="0 4 0 0">
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                         Value="UpToDate">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </Style>
-                                                </TextBlock.Style>
-                                                <Run Text="新版本：">
-                                                </Run><Run Text="{Binding Settings.LastCheckUpdateInfoCache.Version, Mode=OneWay}" />
-                                            </TextBlock>
-                                        </StackPanel>
-
-                                        <!-- 进度条 -->
-                                        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" 
-                                                    HorizontalAlignment="Stretch"
-                                                    Margin="0 0 0 8">
-                                            <StackPanel.Style>
-                                                <Style TargetType="StackPanel">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                     Value="Idle">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </StackPanel.Style>
-
-                                            <TextBlock>
-                                                <TextBlock.Style>
-                                                    <Style TargetType="TextBlock">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="CheckingUpdates">
-                                                                <Setter Property="Text" Value="正在检查更新……"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="NetworkError">
-                                                                <Setter Property="Text" Value="网络错误。请检查网络连接，然后再试一遍。"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="DownloadingUpdates">
-                                                                <Setter Property="Text" Value="正在下载更新……"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="ExtractingUpdates">
-                                                                <Setter Property="Text" Value="正在解压更新……"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </TextBlock.Style>
-
-                                            </TextBlock>
-
-                                            <ProgressBar Margin="0 3 0 0">
-                                                <ProgressBar.Style>
-                                                    <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="CheckingUpdates">
-                                                                <Setter Property="IsIndeterminate" Value="True"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="ExtractingUpdates">
-                                                                <Setter Property="IsIndeterminate" Value="True"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="DownloadingUpdates">
-                                                                <Setter Property="IsIndeterminate" Value="False"/>
-                                                                <Setter Property="Value" Value="{Binding UpdateService.DownloadedSize, Mode=OneWay}"/>
-                                                                <Setter Property="Maximum" Value="{Binding UpdateService.TotalSize, Mode=OneWay}"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </ProgressBar.Style>
-                                            </ProgressBar>
-                                        </StackPanel>
-
-                                        <!-- 网络错误 -->
-                                        <materialDesign:Snackbar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
-                                                                 HorizontalAlignment="Stretch"
-                                                                 IsActive="True"
-                                                                 Margin="0 6">
-                                            <materialDesign:Snackbar.Style>
-                                                <Style TargetType="materialDesign:Snackbar">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding UpdateService.NetworkErrorException}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </materialDesign:Snackbar.Style>
-                                            <materialDesign:Snackbar.Message>
-                                                <materialDesign:SnackbarMessage ActionContent="确定"
-                                                                                Content="网络错误，请检查网络连接，然后再试一遍。"
-                                                                                ActionClick="UpdateErrorMessage_OnActionClick"/>
-                                            </materialDesign:Snackbar.Message>
-                                        </materialDesign:Snackbar>
-
-                                        <!-- 更新操作栏 -->
-                                        <WrapPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3"
-                                                   Margin="0 6 0 0"
-                                                   Visibility="Visible">
-                                            <WrapPanel.Style>
-                                                <Style TargetType="WrapPanel">
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
                                                                      Value="CheckingUpdates">
-                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                            <Setter Property="Text" Value="正在检查更新……"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="NetworkError">
+                                                            <Setter Property="Text" Value="网络错误。请检查网络连接，然后再试一遍。"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="DownloadingUpdates">
+                                                            <Setter Property="Text" Value="正在下载更新……"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="ExtractingUpdates">
+                                                            <Setter Property="Text" Value="正在解压更新……"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
-                                            </WrapPanel.Style>
-                                            <!-- 检查更新 -->
-                                            <Button Margin="0 0 6 0" Click="ButtonCheckUpdate_OnClick">
-                                                <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                         Value="UpToDate">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </Style>
-                                                </Button.Style>
-                                                <controls:IconText Kind="Refresh" Text="检查更新" />
-                                            </Button>
-                                            <!-- 下载更新  -->
-                                            <Button Margin="0 0 6 0" Click="ButtonStartDownloading_OnClick">
-                                                <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                         Value="UpdateAvailable">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="DownloadingUpdates">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </Style>
-                                                </Button.Style>
-                                                <controls:IconText Kind="Download" Text="下载更新" />
-                                            </Button>
-                                            <!-- 检查更新 paper  -->
-                                            <Button Margin="0 0 6 0"
-                                                    Click="ButtonCheckUpdate_OnClick">
-                                                <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                         Value="UpdateAvailable">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="DownloadingUpdates">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </Style>
-                                                </Button.Style>
-                                                <controls:IconText Kind="Refresh" Text="检查更新" />
-                                            </Button>
-                                            <!-- 重启并安装更新  -->
-                                            <Button Margin="0 0 6 0" Click="ButtonRestartToUpdate_OnClick">
-                                                <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                         Value="UpdateDownloaded">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </Style>
-                                                </Button.Style>
-                                                <controls:IconText Kind="MonitorDownload" Text="重启并安装更新" />
-                                            </Button>
-                                            <!-- 取消更新  -->
-                                            <Button Margin="0 0 6 0" Click="ButtonCancelUpdate_OnClick">
-                                                <Button.Style>
-                                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
-                                                                         Value="DownloadingUpdates">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                         Value="UpdateDownloaded">
-                                                                <Setter Property="Visibility" Value="Visible"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </Style>
-                                                </Button.Style>
-                                                <controls:IconText Kind="Cancel" Text="取消更新" />
-                                            </Button>
-                                            <!-- debug -->
-                                            <Button Content="（debug）重置更新状态" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugResetUpdate_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                            <Button Content="（debug）下载完成" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugDownloaded_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                            <Button Content="（debug）网络错误" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugNetworkError_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                        </WrapPanel>
+                                            </TextBlock.Style>
 
-                                        <!-- 加载中 -->
-                                        <ProgressBar Grid.Column="0" Grid.Row="3"
-                                                     HorizontalAlignment="Left"
-                                                     Visibility="Collapsed"
-                                                     Style="{StaticResource MaterialDesignCircularProgressBar}"
-                                                     IsIndeterminate="True"
-                                                     Value="0" Margin="0,9,0,9"/>
+                                        </TextBlock>
 
-                                        <!-- 重启更新 -->
-                                        <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
-                                                  Margin="0,8,0,0"
-                                                  IsChecked="{Binding Settings.AutoInstallUpdateNextStartup}"
-                                                  Content="在下次启动应用时自动安装更新。" >
-                                            <CheckBox.Style>
-                                                <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                        <ProgressBar Margin="0 3 0 0">
+                                            <ProgressBar.Style>
+                                                <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="CheckingUpdates">
+                                                            <Setter Property="IsIndeterminate" Value="True"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="ExtractingUpdates">
+                                                            <Setter Property="IsIndeterminate" Value="True"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="DownloadingUpdates">
+                                                            <Setter Property="IsIndeterminate" Value="False"/>
+                                                            <Setter Property="Value" Value="{Binding UpdateService.DownloadedSize, Mode=OneWay}"/>
+                                                            <Setter Property="Maximum" Value="{Binding UpdateService.TotalSize, Mode=OneWay}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ProgressBar.Style>
+                                        </ProgressBar>
+                                    </StackPanel>
+
+                                    <!-- 网络错误 -->
+                                    <materialDesign:Snackbar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                             HorizontalAlignment="Stretch"
+                                                             IsActive="True"
+                                                             Margin="0 6">
+                                        <materialDesign:Snackbar.Style>
+                                            <Style TargetType="materialDesign:Snackbar">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding UpdateService.NetworkErrorException}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </materialDesign:Snackbar.Style>
+                                        <materialDesign:Snackbar.Message>
+                                            <materialDesign:SnackbarMessage ActionContent="确定"
+                                                                            Content="网络错误，请检查网络连接，然后再试一遍。"
+                                                                            ActionClick="UpdateErrorMessage_OnActionClick"/>
+                                        </materialDesign:Snackbar.Message>
+                                    </materialDesign:Snackbar>
+
+                                    <!-- 更新操作栏 -->
+                                    <WrapPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3"
+                                               Margin="0 6 0 0"
+                                               Visibility="Visible">
+                                        <WrapPanel.Style>
+                                            <Style TargetType="WrapPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                 Value="CheckingUpdates">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </WrapPanel.Style>
+                                        <!-- 检查更新 -->
+                                        <Button Margin="0 0 6 0" Click="ButtonCheckUpdate_OnClick">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
-                                                                     Value="UpdateDownloaded">
+                                                                     Value="UpToDate">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                 </Style>
-                                            </CheckBox.Style>
-                                        </CheckBox>
-
-                                        <!-- 更新日志 -->
-                                        <Expander Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
-                                                  Margin="0,12,0,-12"
-                                                  Background="Transparent"
-                                                  Header="更新日志">
-                                            <Expander.Style>
-                                                <Style TargetType="Expander" BasedOn="{StaticResource MaterialDesignExpander}">
+                                            </Button.Style>
+                                            <controls:IconText Kind="Refresh" Text="检查更新" />
+                                        </Button>
+                                        <!-- 下载更新  -->
+                                        <Button Margin="0 0 6 0" Click="ButtonStartDownloading_OnClick">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
                                                                      Value="UpdateAvailable">
                                                             <Setter Property="Visibility" Value="Visible"/>
                                                         </DataTrigger>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="DownloadingUpdates">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </Style>
+                                            </Button.Style>
+                                            <controls:IconText Kind="Download" Text="下载更新" />
+                                        </Button>
+                                        <!-- 检查更新 paper  -->
+                                        <Button Margin="0 0 6 0"
+                                                Click="ButtonCheckUpdate_OnClick">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                     Value="UpdateAvailable">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="DownloadingUpdates">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </Style>
+                                            </Button.Style>
+                                            <controls:IconText Kind="Refresh" Text="检查更新" />
+                                        </Button>
+                                        <!-- 重启并安装更新  -->
+                                        <Button Margin="0 0 6 0" Click="ButtonRestartToUpdate_OnClick">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                                    <Style.Triggers>
                                                         <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
                                                                      Value="UpdateDownloaded">
                                                             <Setter Property="Visibility" Value="Visible"/>
@@ -1111,325 +1062,398 @@
                                                     </Style.Triggers>
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                 </Style>
-                                            </Expander.Style>
-                                            <!-- Markdown -->
-                                            <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.CurrentMarkdownDocument, Mode=OneWay}"
-                                                                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                            </Button.Style>
+                                            <controls:IconText Kind="MonitorDownload" Text="重启并安装更新" />
+                                        </Button>
+                                        <!-- 取消更新  -->
+                                        <Button Margin="0 0 6 0" Click="ButtonCancelUpdate_OnClick">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                                                     Value="DownloadingUpdates">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                     Value="UpdateDownloaded">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </Style>
+                                            </Button.Style>
+                                            <controls:IconText Kind="Cancel" Text="取消更新" />
+                                        </Button>
+                                        <!-- debug -->
+                                        <Button Content="（debug）重置更新状态" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugResetUpdate_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        <Button Content="（debug）下载完成" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugDownloaded_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        <Button Content="（debug）网络错误" Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonDebugNetworkError_OnClick" Visibility="{Binding Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    </WrapPanel>
 
-                                            </mdxaml:MarkdownScrollViewer>
-                                        </Expander>
+                                    <!-- 加载中 -->
+                                    <ProgressBar Grid.Column="0" Grid.Row="3"
+                                                 HorizontalAlignment="Left"
+                                                 Visibility="Collapsed"
+                                                 Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                 IsIndeterminate="True"
+                                                 Value="0" Margin="0,9,0,9"/>
 
+                                    <!-- 重启更新 -->
+                                    <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                                              Margin="0,8,0,0"
+                                              IsChecked="{Binding Settings.AutoInstallUpdateNextStartup}"
+                                              Content="在下次启动应用时自动安装更新。" >
+                                        <CheckBox.Style>
+                                            <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                 Value="UpdateDownloaded">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </CheckBox.Style>
+                                    </CheckBox>
+
+                                    <!-- 更新日志 -->
+                                    <Expander Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2"
+                                              Margin="0,12,0,-12"
+                                              Background="Transparent"
+                                              Header="更新日志">
+                                        <Expander.Style>
+                                            <Style TargetType="Expander" BasedOn="{StaticResource MaterialDesignExpander}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                 Value="UpdateAvailable">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Settings.LastUpdateStatus, Mode=OneWay}"
+                                                                 Value="UpdateDownloaded">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </Expander.Style>
+                                        <!-- Markdown -->
+                                        <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.CurrentMarkdownDocument, Mode=OneWay}"
+                                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+
+                                        </mdxaml:MarkdownScrollViewer>
+                                    </Expander>
+
+                                </Grid>
+
+                                <Separator Margin="0 16"/>
+
+                                <!-- 更新模式 -->
+                                <materialDesign:Card Style="{StaticResource UpdateEnabledStyle}">
+                                    <StackPanel Margin="12">
+                                        <controls:IconText Kind="Upload" Text="更新模式" Margin="0 0 0 8"/>
+                                        <Slider Margin="12" Minimum="0" Maximum="3"
+                                                Value="{Binding Settings.UpdateMode}"
+                                                TickFrequency="1"
+                                                Height="32"
+                                                ClipToBounds="False"
+                                                IsSnapToTickEnabled="True"
+                                                TickPlacement="BottomRight"/>
+                                        <!-- 更新模式说明 -->
+                                        <controls:IconText Margin="0 -8 0 0">
+                                            <controls:IconText.Style>
+                                                <Style TargetType="controls:IconText">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="0">
+                                                            <Setter Property="Kind" Value="Cancel"/>
+                                                            <Setter Property="Text" Value="从不自动检查更新。"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="1">
+                                                            <Setter Property="Kind" Value="RefreshAuto"/>
+                                                            <Setter Property="Text" Value="自动检查更新，并在有更新时提醒我。"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="2">
+                                                            <Setter Property="Kind" Value="AutoDownload"/>
+                                                            <Setter Property="Text" Value="自动检查更新，并在有更新时自动下载。"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="3">
+                                                            <Setter Property="Kind" Value="MonitorDownload"/>
+                                                            <Setter Property="Text" Value="自动检查并下载更新，并自动安装。"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </controls:IconText.Style>
+                                        </controls:IconText>
+                                    </StackPanel>
+                                </materialDesign:Card>
+
+                                <!-- 更新通道 -->
+                                <materialDesign:Card Margin="0 6 0 0" Style="{StaticResource UpdateEnabledStyle}">
+                                    <StackPanel Margin="12">
+                                        <controls:SettingsControl IconGlyph="DownloadOutline" Header="更新通道"
+                                                                  Description="控制应用从何处获取更新。">
+                                            <controls:SettingsControl.Switcher>
+                                                <ComboBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
+                                                          ItemsSource="{x:Static services:UpdateService.UpdateChannels}"
+                                                          SelectedValue="{Binding Settings.SelectedChannel}"
+                                                          SelectedValuePath="RootUrl">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Name}"/>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </controls:SettingsControl.Switcher>
+                                        </controls:SettingsControl>
+                                        <TextBlock Margin="0 8 0 0"
+                                                   FontWeight="Light"
+                                                   Text="{Binding ViewModel.SelectedChannelModel.Description, Mode=OneWay}" />
+                                        <!--<TextBlock Text="{Binding Settings.SelectedChannel, Mode=OneWay}"/>-->
+                                        <!--<Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Left"
+                                                Margin="0 3 0 0" />-->
+                                    </StackPanel>
+                                </materialDesign:Card>
+
+                                <!-- 高级设置 -->
+                                <Border Style="{StaticResource UpdateEnabledStyle}">
+                                    <Button Content="高级设置" 
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            HorizontalAlignment="Left"
+                                            Margin="0 8 0 0" 
+                                            Click="ButtonAdvancedSettings_OnClick"/>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <!-- 隐私 -->
+                    <TabItem Header="隐私">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Margin="0 0 0 16">
+                                    <TextBlock Text="匿名使用情况分析"
+                                               Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                               FontWeight="Light"
+                                               Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                               FontWeight="Light">
+                                        <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
+                                        </Run>
+                                        <Hyperlink Click="HyperlinkMsAppCenter_OnClick">
+                                            此处
+                                        </Hyperlink>
+                                        。
+                                    </TextBlock>
+                                </StackPanel>
+                                <controls:SettingsCard IconGlyph="ReportLine"
+                                                       Header="启用匿名使用情况分析"
+                                                       IsOn="{Binding Settings.IsReportingEnabled, Mode=TwoWay}"
+                                                       Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
+                    <!-- 关于 -->
+                    <TabItem Header="关于">
+                        <ScrollViewer>
+                            <StackPanel Margin="6" MaxWidth="750">
+                                <StackPanel>
+                                    <!-- banner -->
+                                    <!--<Grid Height="100">
+                        <Image Source="/Assets/banner.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>-->
+                                    <Grid HorizontalAlignment="Stretch" Margin="12">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <!-- icon -->
+                                        <materialDesign:Ripple Grid.Column="0" VerticalAlignment="Top"
+                                                               MouseDown="AppIcon_OnMouseDown">
+                                            <Image Source="/Assets/AppLogo.ico" Width="40"
+                                                   Height="40" VerticalAlignment="Top" />
+                                        </materialDesign:Ripple>
+                                        <!-- about -->
+                                        <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                                            <TextBlock>
+                                                    <Run Text="ClassIsland" FontSize="24" FontWeight="Bold" />
+                                                    <LineBreak />
+                                                    <Run Text="{x:Static ci:App.AppVersion}" />
+                                                    <LineBreak />
+                                                    <Run Text="Copyright (c) 2023 HelloWRC" />
+                                            </TextBlock>
+                                            <WrapPanel>
+                                                <Button HorizontalAlignment="Left" Margin="6"
+                                                            Style="{StaticResource MaterialDesignFlatButton}">
+                                                    <controls:IconText Kind="MicrosoftGithub" Text="GitHub"/>
+                                                </Button>
+                                                <Button HorizontalAlignment="Left" Margin="6"
+                                                            Style="{StaticResource MaterialDesignFlatButton}">
+                                                    <controls:IconText Kind="BugOutline" Text="问题反馈"/>
+                                                </Button>
+                                                <Button HorizontalAlignment="Left" Margin="6"
+                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                                    <controls:IconText Kind="License" Text="开源许可"/>
+                                                    <Button.CommandParameter>
+                                                        <StaticResource ResourceKey="OpenSourceLicense" />
+                                                    </Button.CommandParameter>
+                                                </Button>
+
+                                            </WrapPanel>
+                                        </StackPanel>
                                     </Grid>
 
-                                    <Separator Margin="0 16"/>
+                                </StackPanel>
 
-                                    <!-- 更新模式 -->
-                                    <materialDesign:Card Style="{StaticResource UpdateEnabledStyle}">
+                                <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                          IsSelectionEnabled="{Binding Settings.IsDebugEnabled, Mode=OneWay}"
+                                                          PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                          ContextMenu="{x:Null}">
+                                    <FlowDocument FontFamily="{StaticResource HarmonyOsSans}">
+                                        <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
+                                            关于本应用
+                                        </Paragraph>
+                                        <Paragraph>
+                                            ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表等信息显示工具，信息一目了然。
+                                        </Paragraph>
+                                        <Paragraph Style="{StaticResource MarkdownHeadline2Style}"
+                                                   LineHeight="2">
+                                            鸣谢：
+                                            <LineBreak/>
+                                            <Button HorizontalAlignment="Left" Margin="6"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Click="ButtonContributors_OnClick">
+                                                <controls:IconText Kind="PeopleGroupOutline" Text="贡献人员"/>
+                                            </Button>
+                                            <Button HorizontalAlignment="Left" Margin="6"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Click="ButtonThirdPartyLibs_OnClick">
+                                                <controls:IconText Kind="PackageVariant" Text="第三方库"/>
+                                            </Button>
+                                        </Paragraph>
+                                        <List LineHeight="6">
+                                            <ListItem>
+                                                <Paragraph>
+                                                    界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>
+                                                    应用字体使用了华为出品的 HarmonyOS Sans。
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>
+                                                    协助本应用测试的同学。
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>
+                                                    应用分发、匿名使用情况统计使用了 App Center 的服务。
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>
+                                                    部分图像资源（/Assets/Forbidden.png, /Assets/ListBoxNotificationProviders_NoSelection.png）来自米游社表情包，版权归 miHoYo 所有。
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>
+                                                    其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
+                                                </Paragraph>
+                                            </ListItem>
+                                        </List>
+
+                                        <Paragraph Foreground="#02f7d1ec">
+                                            永远喜欢爱莉希雅
+                                        </Paragraph>
+
+                                    </FlowDocument>
+                                </FlowDocumentScrollViewer>
+
+                                <materialDesign:Card Margin="0 6 0 0" Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Expander Background="Transparent">
+                                        <Expander.Header>
+                                            <TextBlock Margin="-12 0">
+                                                <Run FontWeight="Bold" FontSize="14" Text="调试" /><LineBreak />
+                                                <Run Text="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"></Run>
+                                            </TextBlock>
+                                        </Expander.Header>
                                         <StackPanel Margin="12">
-                                            <controls:IconText Kind="Upload" Text="更新模式" Margin="0 0 0 8"/>
-                                            <Slider Margin="12" Minimum="0" Maximum="3"
-                                                    Value="{Binding Settings.UpdateMode}"
-                                                    TickFrequency="1"
-                                                    Height="32"
-                                                    ClipToBounds="False"
-                                                    IsSnapToTickEnabled="True"
-                                                    TickPlacement="BottomRight"/>
-                                            <!-- 更新模式说明 -->
-                                            <controls:IconText Margin="0 -8 0 0">
-                                                <controls:IconText.Style>
-                                                    <Style TargetType="controls:IconText">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="0">
-                                                                <Setter Property="Kind" Value="Cancel"/>
-                                                                <Setter Property="Text" Value="从不自动检查更新。"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="1">
-                                                                <Setter Property="Kind" Value="RefreshAuto"/>
-                                                                <Setter Property="Text" Value="自动检查更新，并在有更新时提醒我。"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="2">
-                                                                <Setter Property="Kind" Value="AutoDownload"/>
-                                                                <Setter Property="Text" Value="自动检查更新，并在有更新时自动下载。"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Settings.UpdateMode, Mode=OneWay}" Value="3">
-                                                                <Setter Property="Kind" Value="MonitorDownload"/>
-                                                                <Setter Property="Text" Value="自动检查并下载更新，并自动安装。"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </controls:IconText.Style>
-                                            </controls:IconText>
+                                            <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}" />
+                                            <CheckBox Content="MainWindowDebug" IsChecked="{Binding Settings.IsMainWindowDebugEnabled}"/>
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Content="CrashTest"
+                                                    Click="ButtonCrash_OnClick" HorizontalAlignment="Left" />
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Content="ToastMe!"
+                                                    Click="ButtonDebugToastText_OnClick"
+                                                    HorizontalAlignment="Left"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon MonitorScreenshot}" Header="测试桌面截图" Click="MenuItemDebugScreenShot_OnClick"/>
+                                            <Image Stretch="UniformToFill" Source="{Binding ViewModel.TestImage, Mode=OneWay}"/>
+                                            <ItemsControl ItemsSource="{Binding ViewModel.DebugImageAccentColors, Mode=TwoWay}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel IsItemsHost="True"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Rectangle Width="32" Height="32" Fill="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     AcceptsReturn="True"
+                                                     Text="{Binding ViewModel.DebugOutputs}"/>
+                                            <Separator Margin="0 6"/>
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Content="关闭调试菜单"
+                                                    Click="ButtonCloseDebug_OnClick"
+                                                    HorizontalAlignment="Left"/>
                                         </StackPanel>
-                                    </materialDesign:Card>
-
-                                    <!-- 更新通道 -->
-                                    <materialDesign:Card Margin="0 6 0 0" Style="{StaticResource UpdateEnabledStyle}">
-                                        <StackPanel Margin="12">
-                                            <controls:SettingsControl IconGlyph="DownloadOutline" Header="更新通道"
-                                                                      Description="控制应用从何处获取更新。">
-                                                <controls:SettingsControl.Switcher>
-                                                    <ComboBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
-                                                              ItemsSource="{x:Static services:UpdateService.UpdateChannels}"
-                                                              SelectedValue="{Binding Settings.SelectedChannel}"
-                                                              SelectedValuePath="RootUrl">
-                                                        <ComboBox.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding Name}"/>
-                                                            </DataTemplate>
-                                                        </ComboBox.ItemTemplate>
-                                                    </ComboBox>
-                                                </controls:SettingsControl.Switcher>
-                                            </controls:SettingsControl>
-                                            <TextBlock Margin="0 8 0 0"
-                                                       FontWeight="Light"
-                                                       Text="{Binding ViewModel.SelectedChannelModel.Description, Mode=OneWay}" />
-                                            <!--<TextBlock Text="{Binding Settings.SelectedChannel, Mode=OneWay}"/>-->
-                                            <!--<Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"
-                                                    HorizontalAlignment="Left"
-                                                    Margin="0 3 0 0" />-->
-                                        </StackPanel>
-                                    </materialDesign:Card>
-
-                                    <!-- 高级设置 -->
-                                    <Border Style="{StaticResource UpdateEnabledStyle}">
-                                        <Button Content="高级设置" 
-                                                Style="{StaticResource MaterialDesignFlatButton}"
-                                                HorizontalAlignment="Left"
-                                                Margin="0 8 0 0" 
-                                                Click="ButtonAdvancedSettings_OnClick"/>
-                                    </Border>
-                                </StackPanel>
-                            </ScrollViewer>
-                        </TabItem>
-
-                        <!-- 隐私 -->
-                        <TabItem Header="隐私">
-                            <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                    <StackPanel Margin="0 0 0 16">
-                                        <TextBlock Text="匿名使用情况分析"
-                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                                        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                                   FontWeight="Light"
-                                                   Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
-                                        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                                   FontWeight="Light">
-                                            <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
-                                            </Run>
-                                            <Hyperlink Click="HyperlinkMsAppCenter_OnClick">
-                                                此处
-                                            </Hyperlink>
-                                            。
-                                        </TextBlock>
-                                    </StackPanel>
-                                    <controls:SettingsCard IconGlyph="ReportLine"
-                                                           Header="启用匿名使用情况分析"
-                                                           IsOn="{Binding Settings.IsReportingEnabled, Mode=TwoWay}"
-                                                           Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
-                                </StackPanel>
-                            </ScrollViewer>
-                        </TabItem>
-
-                        <!-- 关于 -->
-                        <TabItem Header="关于">
-                            <ScrollViewer>
-                                <StackPanel Margin="6" MaxWidth="750">
-                                    <StackPanel>
-                                        <!-- banner -->
-                                        <!--<Grid Height="100">
-                            <Image Source="/Assets/banner.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>-->
-                                        <Grid HorizontalAlignment="Stretch" Margin="12">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto" />
-                                                <ColumnDefinition />
-                                            </Grid.ColumnDefinitions>
-                                            <!-- icon -->
-                                            <materialDesign:Ripple Grid.Column="0" VerticalAlignment="Top"
-                                                                   MouseDown="AppIcon_OnMouseDown">
-                                                <Image Source="/Assets/AppLogo.ico" Width="40"
-                                                       Height="40" VerticalAlignment="Top" />
-                                            </materialDesign:Ripple>
-                                            <!-- about -->
-                                            <StackPanel Grid.Column="1" Margin="10 0 0 0">
-                                                <TextBlock>
-                                                        <Run Text="ClassIsland" FontSize="24" FontWeight="Bold" />
-                                                        <LineBreak />
-                                                        <Run Text="{x:Static ci:App.AppVersion}" />
-                                                        <LineBreak />
-                                                        <Run Text="Copyright (c) 2023 HelloWRC" />
-                                                </TextBlock>
-                                                <WrapPanel>
-                                                    <Button HorizontalAlignment="Left" Margin="6"
-                                                                Style="{StaticResource MaterialDesignFlatButton}">
-                                                        <controls:IconText Kind="MicrosoftGithub" Text="GitHub"/>
-                                                    </Button>
-                                                    <Button HorizontalAlignment="Left" Margin="6"
-                                                                Style="{StaticResource MaterialDesignFlatButton}">
-                                                        <controls:IconText Kind="BugOutline" Text="问题反馈"/>
-                                                    </Button>
-                                                    <Button HorizontalAlignment="Left" Margin="6"
-                                                                Style="{StaticResource MaterialDesignFlatButton}"
-                                                                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
-                                                        <controls:IconText Kind="License" Text="开源许可"/>
-                                                        <Button.CommandParameter>
-                                                            <StaticResource ResourceKey="OpenSourceLicense" />
-                                                        </Button.CommandParameter>
-                                                    </Button>
-                                                    
-                                                </WrapPanel>
-                                            </StackPanel>
-                                        </Grid>
-
-                                    </StackPanel>
-
-                                    <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                                              IsSelectionEnabled="{Binding Settings.IsDebugEnabled, Mode=OneWay}"
-                                                              PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                                              ContextMenu="{x:Null}">
-                                        <FlowDocument FontFamily="{StaticResource HarmonyOsSans}">
-                                            <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
-                                                关于本应用
-                                            </Paragraph>
-                                            <Paragraph>
-                                                ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表等信息显示工具，信息一目了然。
-                                            </Paragraph>
-                                            <Paragraph Style="{StaticResource MarkdownHeadline2Style}"
-                                                       LineHeight="2">
-                                                鸣谢：
-                                                <LineBreak/>
-                                                <Button HorizontalAlignment="Left" Margin="6"
-                                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                                        Click="ButtonContributors_OnClick">
-                                                    <controls:IconText Kind="PeopleGroupOutline" Text="贡献人员"/>
-                                                </Button>
-                                                <Button HorizontalAlignment="Left" Margin="6"
-                                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                                        Click="ButtonThirdPartyLibs_OnClick">
-                                                    <controls:IconText Kind="PackageVariant" Text="第三方库"/>
-                                                </Button>
-                                            </Paragraph>
-                                            <List LineHeight="6">
-                                                <ListItem>
-                                                    <Paragraph>
-                                                        界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。
-                                                    </Paragraph>
-                                                </ListItem>
-                                                <ListItem>
-                                                    <Paragraph>
-                                                        应用字体使用了华为出品的 HarmonyOS Sans。
-                                                    </Paragraph>
-                                                </ListItem>
-                                                <ListItem>
-                                                    <Paragraph>
-                                                        协助本应用测试的同学。
-                                                    </Paragraph>
-                                                </ListItem>
-                                                <ListItem>
-                                                    <Paragraph>
-                                                        应用分发、匿名使用情况统计使用了 App Center 的服务。
-                                                    </Paragraph>
-                                                </ListItem>
-                                                <ListItem>
-                                                    <Paragraph>
-                                                        部分图像资源（/Assets/Forbidden.png, /Assets/ListBoxNotificationProviders_NoSelection.png）来自米游社表情包，版权归 miHoYo 所有。
-                                                    </Paragraph>
-                                                </ListItem>
-                                                <ListItem>
-                                                    <Paragraph>
-                                                        其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
-                                                    </Paragraph>
-                                                </ListItem>
-                                            </List>
-
-                                            <Paragraph Foreground="#02f7d1ec">
-                                                永远喜欢爱莉希雅
-                                            </Paragraph>
-
-                                        </FlowDocument>
-                                    </FlowDocumentScrollViewer>
-
-                                    <materialDesign:Card Margin="0 6 0 0" Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <Expander Background="Transparent">
-                                            <Expander.Header>
-                                                <TextBlock Margin="-12 0">
-                                                    <Run FontWeight="Bold" FontSize="14" Text="调试" /><LineBreak />
-                                                    <Run Text="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"></Run>
-                                                </TextBlock>
-                                            </Expander.Header>
-                                            <StackPanel Margin="12">
-                                                <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}" />
-                                                <CheckBox Content="MainWindowDebug" IsChecked="{Binding Settings.IsMainWindowDebugEnabled}"/>
-                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                        Content="CrashTest"
-                                                        Click="ButtonCrash_OnClick" HorizontalAlignment="Left" />
-                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                        Content="ToastMe!"
-                                                        Click="ButtonDebugToastText_OnClick"
-                                                        HorizontalAlignment="Left"/>
-                                                <MenuItem Icon="{materialDesign:PackIcon MonitorScreenshot}" Header="测试桌面截图" Click="MenuItemDebugScreenShot_OnClick"/>
-                                                <Image Stretch="UniformToFill" Source="{Binding ViewModel.TestImage, Mode=OneWay}"/>
-                                                <ItemsControl ItemsSource="{Binding ViewModel.DebugImageAccentColors, Mode=TwoWay}">
-                                                    <ItemsControl.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <WrapPanel IsItemsHost="True"/>
-                                                        </ItemsPanelTemplate>
-                                                    </ItemsControl.ItemsPanel>
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <Rectangle Width="32" Height="32" Fill="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                                         AcceptsReturn="True"
-                                                         Text="{Binding ViewModel.DebugOutputs}"/>
-                                                <Separator Margin="0 6"/>
-                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                        Content="关闭调试菜单"
-                                                        Click="ButtonCloseDebug_OnClick"
-                                                        HorizontalAlignment="Left"/>
-                                            </StackPanel>
-                                        </Expander>
-                                    </materialDesign:Card>
-                                </StackPanel>
-                            </ScrollViewer>
-                        </TabItem>
-                    </TabControl>
-                    <materialDesign:ColorZone Grid.Row="0" Padding="16" Mode="PrimaryMid"
-                                              materialDesign:ElevationAssist.Elevation="Dp4"
-                                              Margin="0 0 0 4">
-                        <Grid Margin="4 0 4 0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <!--<ToggleButton Grid.Column="0"
-                                Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
-                            <Button ToolTip="导航栏"
-                                    VerticalAlignment="Center"
-                                    Padding="0"
-                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                    Content="{materialDesign:PackIcon Menu, Size=24}"/>
-                            <TextBlock Grid.Column="1" Text="应用设置" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                       HorizontalAlignment="Left"
-                                       Margin="20 0 0 0"
-                                       VerticalAlignment="Center"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBlock Text="{x:Static ci:App.AppVersion}"
-                                           VerticalAlignment="Center" 
-                                           ToolTip="应用版本"/>
-
-                                <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多…">
-                                    <StackPanel>
-                                        <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"/>
-                                    </StackPanel>
-                                </materialDesign:PopupBox>
+                                    </Expander>
+                                </materialDesign:Card>
                             </StackPanel>
-                        </Grid>
-                    </materialDesign:ColorZone>
-                </Grid>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+                <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16" Mode="PrimaryMid"
+                                          materialDesign:ElevationAssist.Elevation="Dp4"
+                                          Margin="0 0 0 4">
+                    <Grid Margin="4 0 4 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <!--<ToggleButton Grid.Column="0"
+                            Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
+                        <!--<Button ToolTip="导航栏"
+                                VerticalAlignment="Center"
+                                Padding="0"
+                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                Content="{materialDesign:PackIcon Menu, Size=24}"/>-->
+                        <TextBlock Grid.Column="1" Text="应用设置" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   HorizontalAlignment="Left"
+                                   Margin="0 0 0 0"
+                                   VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock Text="{x:Static ci:App.AppVersion}"
+                                       VerticalAlignment="Center" 
+                                       ToolTip="应用版本"/>
+
+                            <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
+                                                     IsPopupOpen="{Binding ViewModel.IsPopupMenuOpened, Mode=TwoWay}">
+                                <StackPanel>
+                                    <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…" Click="MenuItemExperimentalSettings_OnClick"/>
+                                </StackPanel>
+                            </materialDesign:PopupBox>
+                        </StackPanel>
+                    </Grid>
+                </materialDesign:ColorZone>
             </Grid>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
