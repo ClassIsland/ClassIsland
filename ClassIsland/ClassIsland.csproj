@@ -67,10 +67,10 @@
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
-    <None Remove="Assets\Forbidden.png" />
     <None Remove="Assets\LICENSE.txt" />
-    <None Remove="Assets\ListBoxNotificationProviders_NoSelection.png" />
     <None Remove="Assets\MainMenuOpenDemo.gif" />
+    <None Remove="Assets\帕姆_震惊.png" />
+    <None Remove="Assets\普罗米修斯_查询.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -165,9 +165,9 @@
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
-    <Resource Include="Assets\Forbidden.png" />
+    <Resource Include="Assets\帕姆_震惊.png" />
     <Resource Include="Assets\LICENSE.txt" />
-    <Resource Include="Assets\ListBoxNotificationProviders_NoSelection.png" />
+    <Resource Include="Assets\普罗米修斯_查询.png" />
     <Resource Include="Assets\MainMenuOpenDemo.gif" />
   </ItemGroup>
 

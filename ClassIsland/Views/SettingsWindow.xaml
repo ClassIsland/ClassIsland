@@ -630,7 +630,7 @@
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                             </Style>
                                         </StackPanel.Style>
-                                        <Image Source="/Assets/ListBoxNotificationProviders_NoSelection.png" Width="72" Height="72"
+                                        <Image Source="/Assets/普罗米修斯_查询.png" Width="72" Height="72"
                                                ToolTip="普罗米修斯_查询"/>
                                         <TextBlock Text="在左侧选择一个提醒提供方，然后在此处进行设置。" TextWrapping="Wrap"
                                                    Margin="0 4 0 0"/>
@@ -1357,7 +1357,7 @@
                                             </ListItem>
                                             <ListItem>
                                                 <Paragraph>
-                                                    部分图像资源（/Assets/Forbidden.png, /Assets/ListBoxNotificationProviders_NoSelection.png）来自米游社表情包，版权归 miHoYo 所有。
+                                                    部分图像资源（/Assets/帕姆_震惊.png, /Assets/普罗米修斯_查询.png）来自米游社表情包，版权归 miHoYo 所有。
                                                 </Paragraph>
                                             </ListItem>
                                             <ListItem>
