@@ -137,8 +137,14 @@ public partial class App : Application
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
             }).Build();
-
-        GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();
+        try
+        {
+            GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();
+        }
+        catch
+        {
+            // ignored
+        }
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;

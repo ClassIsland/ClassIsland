@@ -106,6 +106,9 @@
                 </Style.Triggers>
             </Style>
 
+            <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                <Setter Property="PanningMode" Value="Both"/>
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

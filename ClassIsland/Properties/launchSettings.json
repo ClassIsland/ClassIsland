@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "ClassIsland": {
+      "commandName": "Project"
+    },
+    "Remote": {
+      "commandName": "Project",
+      "workingDirectory": "X:\\",
+      "remoteDebugEnabled": true,
+      "remoteDebugMachine": "DESKTOP-P5BG208:4026",
+      "authenticationMode": "Windows"
+    }
+  }
+}
