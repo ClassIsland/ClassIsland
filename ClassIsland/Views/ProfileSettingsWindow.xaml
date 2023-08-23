@@ -172,10 +172,10 @@
         </StackPanel>
 
         <!-- 课程表信息 -->
-        <ScrollViewer x:Key="ClassPlansInfoEditor" Width="300"
-                      Margin="16"
+        <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
-            <StackPanel DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans}">
+            <StackPanel DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans}"
+                        Margin="16">
                 <TextBlock Text="课程表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Margin="0 12 0 0"

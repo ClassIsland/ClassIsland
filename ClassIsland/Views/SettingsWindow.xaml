@@ -67,11 +67,10 @@
         </Grid>
 
         <!-- Drawers -->
-        <ScrollViewer Width="300" x:Key="AdvancedUpdateSettings" 
+        <ScrollViewer Width="332" x:Key="AdvancedUpdateSettings" 
                       VerticalScrollBarVisibility="Auto"
-                      Margin="16"
                       materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
-            <Grid>
+            <Grid  Margin="16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
@@ -214,11 +213,10 @@
             </ListView>
         </Grid>
 
-        <ScrollViewer Width="300" x:Key="ExperimentalSettings" 
+        <ScrollViewer Width="332" x:Key="ExperimentalSettings" 
                       VerticalScrollBarVisibility="Auto"
-                      Margin="16"
                       materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
-            <StackPanel>
+            <StackPanel Margin="16">
                 <TextBlock Text="实验性功能" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                            Margin="0 0 0 4"/>
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
