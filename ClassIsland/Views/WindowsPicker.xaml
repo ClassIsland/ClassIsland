@@ -138,9 +138,7 @@
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                     Background="{DynamicResource MaterialDesignPaper}"
                     Opacity="0.8"/>
-            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" 
-                         IsIndeterminate="True" Value="0"
-                         Width="50" Height="50"/>
+            <controls:StarRailLoadingControl VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
     </Grid>
 </controls:MyWindow>
