@@ -195,6 +195,17 @@ public static class NativeWindowHelper
             .ToList();
         return q.Count > 0 ? q[0].HWnd : IntPtr.Zero;
     }
+    
+    [DllImport("dwmapi.dll")]
+    public static extern int DwmSetWindowAttribute(IntPtr hwnd, DwmWindowAttribute dwAttribute, ref int pvAttribute, int cbAttribute);
+    
+    [Flags]
+    public enum DwmWindowAttribute : uint
+    {
+        DWMWA_USE_IMMERSIVE_DARK_MODE = 20,
+        DWMWA_MICA_EFFECT = 1029
+    }
+
 
     public static List<DesktopWindow> GetAllWindows(bool isDetailed=false)
     {

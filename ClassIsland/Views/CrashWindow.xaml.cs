@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using ClassIsland.Controls;
 using Microsoft.AppCenter.Crashes;
 
 namespace ClassIsland.Views;
@@ -7,7 +8,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// CrashWindow.xaml 的交互逻辑
 /// </summary>
-public partial class CrashWindow : Window
+public partial class CrashWindow : MyWindow
 {
     public string? CrashInfo
     {

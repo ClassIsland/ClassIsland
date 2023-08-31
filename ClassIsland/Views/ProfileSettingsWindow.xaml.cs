@@ -20,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
 using ClassIsland.Converters;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
@@ -32,7 +33,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// ProfileSettingsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class ProfileSettingsWindow : Window
+public partial class ProfileSettingsWindow : MyWindow
 {
     public MainViewModel MainViewModel
     {

@@ -84,6 +84,11 @@ public partial class MainWindow : Window
         get;
     } = App.GetService<TaskBarIconService>();
 
+    private ThemeService ThemeService
+    {
+        get;
+    } = App.GetService<ThemeService>();
+
     private NotificationHostService NotificationHostService
     {
         get; 
@@ -501,61 +506,23 @@ public partial class MainWindow : Window
                 break;
         }
 
-        var paletteHelper = new PaletteHelper();
-        var theme = paletteHelper.GetTheme();
-        var lastPrimary = theme.PrimaryMid.Color;
-        var lastSecondary = theme.SecondaryMid.Color;
-        var lastBaseTheme = theme.GetBaseTheme();
-        switch (ViewModel.Settings.Theme)
-        {
-            case 0:
-                try
-                {
-                    var key = Registry.CurrentUser.OpenSubKey(
-                        "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize");
-                    if (key != null)
-                    {
-                        if ((int?)key.GetValue("AppsUseLightTheme") == 0)
-                        {
-                            theme.SetBaseTheme(new MaterialDesignDarkTheme());
-                        }
-                        else
-                        {
-                            theme.SetBaseTheme(new MaterialDesignLightTheme());
-                        }
-                    }
-                }
-                catch
-                {
-                    theme.SetBaseTheme(new MaterialDesignLightTheme());
-                }
-                break;
-
-            case 1:
-                theme.SetBaseTheme(new MaterialDesignLightTheme());
-                break;
-            case 2:
-                theme.SetBaseTheme(new MaterialDesignDarkTheme());
-                break;
-        }
-
+        var primary = Colors.DodgerBlue;
+        var secondary = Colors.DodgerBlue;
         switch (ViewModel.Settings.ColorSource)
         {
             case 0: //custom
-                theme.SetPrimaryColor(ViewModel.Settings.PrimaryColor);
-                theme.SetSecondaryColor(ViewModel.Settings.SecondaryColor);
+                primary = ViewModel.Settings.PrimaryColor;
+                secondary = ViewModel.Settings.SecondaryColor;
                 break;
             case 1:
-                theme.SetPrimaryColor(ViewModel.Settings.SelectedPlatte);
-                theme.SetSecondaryColor(ViewModel.Settings.SelectedPlatte);
+                primary = secondary = ViewModel.Settings.SelectedPlatte;
                 break;
             case 2:
                 try
                 {
                     NativeWindowHelper.DwmGetColorizationColor(out var color, out _);
                     var c = NativeWindowHelper.GetColor(color);
-                    theme.SetPrimaryColor(c);
-                    theme.SetSecondaryColor(c);
+                    primary = secondary = c;
                 }
                 catch
                 {
@@ -564,25 +531,7 @@ public partial class MainWindow : Window
                 break;
 
         }
-
-        ((Theme)theme).ColorAdjustment = new ColorAdjustment()
-        {
-            DesiredContrastRatio = 4.5F,
-            Contrast = Contrast.Medium,
-            Colors = ColorSelection.All
-        };
-        
-
-        var lastTheme = paletteHelper.GetTheme();
-        
-        if (lastPrimary == theme.PrimaryMid.Color &&
-            lastSecondary == theme.SecondaryMid.Color &&
-            lastBaseTheme == theme.GetBaseTheme())
-        {
-            return;
-        }
-
-        paletteHelper.SetTheme(theme);
+        ThemeService.SetTheme(ViewModel.Settings.Theme, primary, secondary);
     }
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)

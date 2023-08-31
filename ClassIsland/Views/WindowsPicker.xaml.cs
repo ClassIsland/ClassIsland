@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
 using static ClassIsland.NativeWindowHelper;
@@ -23,7 +24,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// WindowsPicker.xaml 的交互逻辑
 /// </summary>
-public partial class WindowsPicker : Window
+public partial class WindowsPicker : MyWindow
 {
     public WindowsPickerViewModel ViewModel { get; } = new();
 

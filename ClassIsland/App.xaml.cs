@@ -133,6 +133,7 @@ public partial class App : Application
                 services.AddSingleton<TaskBarIconService>();
                 services.AddSingleton<WallpaperPickingService>();
                 services.AddSingleton<NotificationHostService>();
+                services.AddSingleton<ThemeService>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

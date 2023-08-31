@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
 using ClassIsland.ViewModels;
 using MdXaml;
 using Microsoft.AppCenter.Analytics;
@@ -23,7 +24,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// HelpsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class HelpsWindow : Window
+public partial class HelpsWindow : MyWindow
 {
     public HelpsViewModel ViewModel
     {

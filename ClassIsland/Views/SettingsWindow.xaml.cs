@@ -17,6 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
 using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -32,7 +33,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// SettingsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : MyWindow
 {
     public SettingsViewModel ViewModel
     {

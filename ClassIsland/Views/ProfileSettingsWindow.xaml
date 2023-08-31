@@ -1,29 +1,29 @@
-﻿<Window x:Class="ClassIsland.Views.ProfileSettingsWindow"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ClassIsland.Views"
-      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-      xmlns:models="clr-namespace:ClassIsland.Models"
-      xmlns:controls="clr-namespace:ClassIsland.Controls"
-      xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
-      xmlns:converters="clr-namespace:ClassIsland.Converters"
-      xmlns:dd="urn:gong-wpf-dragdrop"
-      xmlns:validations="clr-namespace:ClassIsland.Validations"
-      xmlns:system="clr-namespace:System;assembly=System.Runtime"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      Background="{DynamicResource MaterialDesignPaper}"
-      TextElement.FontWeight="Medium"
-      TextElement.FontSize="14"
-      FontFamily="{StaticResource HarmonyOsSans}"
-      Title="档案编辑"
-      d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}"
-      Icon="/Assets/AppLogo.ico"
-      Closing="ProfileSettingsWindow_OnClosing"
-      MinWidth="750">
+﻿<controls:MyWindow x:Class="ClassIsland.Views.ProfileSettingsWindow"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                   xmlns:local="clr-namespace:ClassIsland.Views"
+                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   xmlns:models="clr-namespace:ClassIsland.Models"
+                   xmlns:controls="clr-namespace:ClassIsland.Controls"
+                   xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
+                   xmlns:converters="clr-namespace:ClassIsland.Converters"
+                   xmlns:dd="urn:gong-wpf-dragdrop"
+                   xmlns:validations="clr-namespace:ClassIsland.Validations"
+                   xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                   mc:Ignorable="d" 
+                   d:DesignHeight="450" d:DesignWidth="800"
+                   TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                   Background="{DynamicResource MaterialDesignPaper}"
+                   TextElement.FontWeight="Medium"
+                   TextElement.FontSize="14"
+                   FontFamily="{StaticResource HarmonyOsSans}"
+                   Title="档案编辑"
+                   d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}"
+                   Icon="/Assets/AppLogo.ico"
+                   Closing="ProfileSettingsWindow_OnClosing"
+                   MinWidth="750">
     <Window.Resources>
         <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <models:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
@@ -1004,4 +1004,4 @@
             </Grid>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
-</Window>
+</controls:MyWindow>
