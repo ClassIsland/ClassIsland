@@ -236,6 +236,7 @@
         </Style>
         <converters:GuidToNotificationProviderConverter x:Key="GuidToNotificationProviderConverter" />
         <converters:DoubleToPercentStringConverter x:Key="DoubleToPercentStringConverter" />
+        <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
     </Window.Resources>
 
     <materialDesign:DialogHost Identifier="SettingsWindow">
@@ -314,7 +315,7 @@
                                                               ItemsSource="{Binding MiniInfoProviderHostService.Providers}"
                                                               SelectedValuePath="Key"
                                                               SelectedValue="{Binding Settings.SelectedMiniInfoProvider}"
-                                                              SelectedItem="{Binding ViewModel.SelectedMiniInfoProvider, Mode=TwoWay}"
+                                                              SelectedItem="{Binding ViewModel.SelectedMiniInfoProvider, Mode=OneWayToSource}"
                                                               Width="100">
                                                         <ComboBox.ItemTemplate>
                                                             <DataTemplate>
@@ -326,11 +327,19 @@
                                                 </controls:SettingsControl.Switcher>
                                             </controls:SettingsControl>
                                         </Expander.Header>
-                                        <StackPanel Margin="36 0 64 12">
-                                            <TextBlock Text="{Binding ViewModel.SelectedMiniInfoProvider.Value.Description}" TextWrapping="Wrap"/>
+                                        <StackPanel Margin="36 0 64 12" d:DataContext="{d:DesignInstance interfaces:IMiniInfoProvider}">
+                                            <StackPanel.DataContext>
+                                                <MultiBinding Converter="{StaticResource MiniInfoGuidToMiniInfoProviderMultiConverter}">
+                                                    <Binding Path="Settings.SelectedMiniInfoProvider" 
+                                                             RelativeSource="{RelativeSource FindAncestor, AncestorType=local:SettingsWindow}"/>
+                                                    <Binding Path="MiniInfoProviderHostService.Providers" 
+                                                             RelativeSource="{RelativeSource FindAncestor, AncestorType=local:SettingsWindow}"/>
+                                                </MultiBinding>
+                                            </StackPanel.DataContext>
+                                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
                                             <Grid>
                                                 <!-- Content -->
-                                                <ContentPresenter Content="{Binding ViewModel.SelectedMiniInfoProvider.Value.SettingsElement}"/>
+                                                <ContentPresenter Content="{Binding SettingsElement}"/>
                                             </Grid>
                                         </StackPanel>
                                     </Expander>

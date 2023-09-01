@@ -102,6 +102,7 @@
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DotSmallFill4" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <QuadraticEase EasingMode="EaseInOut"/>
@@ -119,6 +120,7 @@
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DotSmallFill2" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.7500000" Value="0">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <QuadraticEase EasingMode="EaseInOut"/>
@@ -145,6 +147,7 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:01.0000000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DotLargeFill3" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.0000000" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1250000" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2500000" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.3750000" Value="0"/>
@@ -153,6 +156,7 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:01.2500000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DotLargeFill2" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2500000" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.3750000" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="0"/>
@@ -161,6 +165,7 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:01.3750000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DotLargeFill1" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.7500000" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.8750000" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:01.0000000" Value="0"/>
