@@ -2,11 +2,11 @@
 using System.Text.Json.Serialization;
 using System.Windows.Documents;
 
-namespace ClassIsland.Models;
+namespace ClassIsland.Models.Weather;
 
-public class XiaomiWeatherInfo
+public class XiaomiWeatherStatusCodes
 {
     // ReSharper disable once StringLiteralTypo
     [JsonPropertyName("weatherinfo")]
-    public List<XiaomiWeatherInfoItem> WeatherInfo { get; set; } = new();
+    public List<XiaomiWeatherStatusCodeItem> WeatherInfo { get; set; } = new();
 }

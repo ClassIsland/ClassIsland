@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ClassIsland.Models;
+namespace ClassIsland.Models.Weather;
 
-public class XiaomiWeatherInfoItem
+public class XiaomiWeatherStatusCodeItem
 {
     [JsonPropertyName("code")]
     public int Code { get; set; } = 99;

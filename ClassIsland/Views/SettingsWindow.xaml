@@ -875,6 +875,21 @@ The quick brown fox jumps over a lazy dog.
                         </ScrollViewer>
                     </TabItem>
 
+                    <!-- 天气 -->
+                    <TabItem Header="天气">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <ItemsControl ItemsSource="{Binding ViewModel.WeatherSampleList}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <controls:WeatherPackIconControl Code="{Binding}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+
                     <!-- 更新 -->
                     <TabItem>
                         <TabItem.Header>

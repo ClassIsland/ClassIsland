@@ -175,4 +175,20 @@ public class SettingsViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public List<string> WeatherSampleList
+    {
+        get
+        {
+            var l = new List<string>();
+            for (var i = 0; i < 36; i++)
+            {
+                l.Add(i.ToString());
+            }
+
+            l.Add("53");
+            l.Add("99");
+            return l;
+        }
+    }
 }

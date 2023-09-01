@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using ClassIsland.Enums;
+using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IWshRuntimeLibrary;
 using MaterialDesignColors;
@@ -73,6 +74,8 @@ public class Settings : ObservableRecipient
     private string _mainWindowFont = "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "D9FC55D6-8061-4C21-B521-6B0532FF735F";
+    private WeatherInfo _lastWeatherInfo = new();
+    private string _cityId = "101010100";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -665,6 +668,31 @@ public class Settings : ObservableRecipient
 
     #endregion
 
+    #region Weather
+
+    public WeatherInfo LastWeatherInfo
+    {
+        get => _lastWeatherInfo;
+        set
+        {
+            if (Equals(value, _lastWeatherInfo)) return;
+            _lastWeatherInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CityId
+    {
+        get => _cityId;
+        set
+        {
+            if (value == _cityId) return;
+            _cityId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
     public bool IsDebugEnabled
     {
         get => _isDebugEnabled;
