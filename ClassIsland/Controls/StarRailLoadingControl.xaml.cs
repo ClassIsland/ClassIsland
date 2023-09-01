@@ -25,7 +25,7 @@ public partial class StarRailLoadingControl : UserControl
     private void BeginStoryBoard(string key)
     {
         var sb = (Storyboard)FindResource(key);
-        BeginStoryboard(sb);
+        sb.Begin(this, true);
     }
 
     public StarRailLoadingControl()
@@ -46,7 +46,8 @@ public partial class StarRailLoadingControl : UserControl
             if ((bool)e.NewValue)
             {
                 loop.Stop();
-                loop.Seek(TimeSpan.Zero);
+                //loop.Seek(TimeSpan.Zero);
+                loop.Remove();
                 BeginStoryBoard("OnLoaded");
                 await Task.Run(() => Thread.Sleep(100));
                 BeginStoryBoard("Loop");
@@ -54,7 +55,8 @@ public partial class StarRailLoadingControl : UserControl
             else
             {
                 loop.Stop();
-                loop.Seek(TimeSpan.Zero);
+                //loop.Seek(TimeSpan.Zero);
+                loop.Remove();
             }
         }
         base.OnPropertyChanged(e);
@@ -62,6 +64,10 @@ public partial class StarRailLoadingControl : UserControl
 
     private void Loop_OnCompleted(object? sender, EventArgs e)
     {
+        if (!IsVisible)
+        {
+            return;
+        }
         var sb = (Storyboard)FindResource("Loop");
         sb.Seek(TimeSpan.Zero);
 

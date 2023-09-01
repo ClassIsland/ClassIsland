@@ -69,6 +69,7 @@
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
     <None Remove="Assets\LICENSE.txt" />
     <None Remove="Assets\MainMenuOpenDemo.gif" />
+    <None Remove="Assets\光辉矢愿_遨游.png" />
     <None Remove="Assets\帕姆_震惊.png" />
     <None Remove="Assets\普罗米修斯_查询.png" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
+    <Resource Include="Assets\光辉矢愿_遨游.png" />
     <Resource Include="Assets\帕姆_震惊.png" />
     <Resource Include="Assets\LICENSE.txt" />
     <Resource Include="Assets\普罗米修斯_查询.png" />
