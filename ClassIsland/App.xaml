@@ -109,6 +109,7 @@
             <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
                 <Setter Property="PanningMode" Value="Both"/>
             </Style>
+            <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -70,6 +70,7 @@ public class Settings : ObservableRecipient
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = false;
+    private string _mainWindowFont = "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -400,6 +401,17 @@ public class Settings : ObservableRecipient
         {
             if (value.Equals(_scale)) return;
             _scale = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string MainWindowFont
+    {
+        get => _mainWindowFont;
+        set
+        {
+            if (value == _mainWindowFont) return;
+            _mainWindowFont = value;
             OnPropertyChanged();
         }
     }

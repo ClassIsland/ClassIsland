@@ -235,6 +235,7 @@
             <Setter Property="IsEnabled" Value="False"/>
         </Style>
         <converters:GuidToNotificationProviderConverter x:Key="GuidToNotificationProviderConverter" />
+        <converters:DoubleToPercentStringConverter x:Key="DoubleToPercentStringConverter" />
     </Window.Resources>
 
     <materialDesign:DialogHost Identifier="SettingsWindow">
@@ -307,11 +308,12 @@
                     <TabItem Header="外观">
                         <ScrollViewer>
                             <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <controls:IconText Kind="CogOutline" Text="基本" Margin="0 0 0 8"/>
                                 <!-- 界面缩放 -->
                                 <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
                                                        Description="主界面的缩放比例。">
                                     <controls:SettingsCard.Switcher>
-                                        <Slider Width="150" Minimum="0.75" Maximum="2"
+                                        <Slider Width="180" Minimum="0.75" Maximum="2"
                                                 VerticalAlignment="Center"
                                                 Value="{Binding Settings.Scale}"
                                                 AutoToolTipPlacement="BottomRight"
@@ -321,6 +323,20 @@
                                                 AutoToolTipPrecision="2" />
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
+                                <!-- 背景透明度 -->
+                                <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
+                                                       Description="课表背景颜色的不透明度。">
+                                    <controls:SettingsCard.Switcher>
+                                        <Slider Width="180" Minimum="0" Maximum="1"
+                                                Value="{Binding Settings.Opacity}"
+                                                AutoToolTipPlacement="BottomRight"
+                                                TickFrequency="0.01"
+                                                IsSnapToTickEnabled="True"
+                                                AutoToolTipPrecision="2" />
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <Separator Margin="0 16 0 8"/>
+                                <controls:IconText Kind="PaletteOutline" Text="主题" Margin="0 0 0 8"/>
                                 <!-- 应用主题 -->
                                 <controls:SettingsCard IconGlyph="ThemeLightDark" Header="应用主题"
                                                        Description="控制应用的明暗主题。">
@@ -386,16 +402,6 @@
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
                                 </StackPanel>
-                                <!-- 背景透明度 -->
-                                <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
-                                                       Description="课表背景颜色的不透明度。">
-                                    <controls:SettingsCard.Switcher>
-                                        <Slider Width="180" Minimum="0" Maximum="1"
-                                                Value="{Binding Settings.Opacity}"
-                                                AutoToolTipPlacement="BottomRight"
-                                                AutoToolTipPrecision="2" />
-                                    </controls:SettingsCard.Switcher>
-                                </controls:SettingsCard>
                                 <!-- 壁纸主题色 -->
                                 <StackPanel>
                                     <StackPanel.Style>
@@ -475,14 +481,15 @@
                                     <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
                                                            Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
                                         <controls:SettingsCard.Switcher>
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBox Width="150" Foreground="{DynamicResource MaterialDesignBody}"
-                                                         Text="{Binding Settings.WallpaperClassName}"/>
+                                            <DockPanel Width="150">
                                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                         Content="{materialDesign:PackIcon WindowMaximize}"
                                                         ToolTip="浏览…"
+                                                        DockPanel.Dock="Right"
                                                         Click="ButtonBrowseWindows_OnClick"/>
-                                            </StackPanel>
+                                                <TextBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                         Text="{Binding Settings.WallpaperClassName}"/>
+                                            </DockPanel>
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
                                     <!-- 取色亮度波峰 -->
@@ -496,7 +503,48 @@
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
                                 </StackPanel>
-                                <!-- 高级 -->
+                                <Separator Margin="0 16 0 8"/>
+                                <controls:IconText Kind="FormatFont" Text="字体" Margin="0 0 0 8"/>
+                                <!-- 自定义字体 -->
+                                <controls:SettingsCard IconGlyph="FormatFont" Header="自定义字体"
+                                                       Description="自定义主界面显示课表的字体。">
+                                    <controls:SettingsCard.Switcher>
+                                        <ComboBox ItemsSource="{Binding ViewModel.FontFamilies}"
+                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                  SelectedItem="{Binding Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock FontFamily="{Binding}" FontWeight="Normal" ToolTip="{Binding Source}">
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Source}" Value="/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC">
+                                                                        <Setter Property="Text" Value="（默认）HarmonyOS Sans SC"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                                <Setter Property="Text" Value="{Binding Source}"/>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <!-- 字体预览 -->
+                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:HintAssist.Hint="字体预览"
+                                         FontSize="17"
+                                         Padding="8"
+                                         IsReadOnly="True"
+                                         FontFamily="{Binding Settings.MainWindowFont}"
+                                         Margin="0 4 0 0"
+                                         TextAlignment="Center"
+                                         xml:space="preserve"
+                                >风带来了故事的种子，时间使之发芽。
+语文 数学 英语 历史 物理 政治 化学 生物 地理
+The quick brown fox jumps over a lazy dog.
+1234567890 +-*/:</TextBox>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>

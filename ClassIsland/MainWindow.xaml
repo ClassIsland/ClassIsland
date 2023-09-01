@@ -19,7 +19,7 @@
         TextElement.FontWeight="Medium"
         TextElement.FontSize="14"
         d:DataContext="{d:DesignInstance local:MainWindow}"
-        FontFamily="{StaticResource HarmonyOsSans}"
+        FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay}"
         ResizeMode="NoResize"
         MouseDown="MainWindow_OnPreviewMouseDown"
         ShowInTaskbar="False"

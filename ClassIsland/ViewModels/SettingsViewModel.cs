@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Color = System.Windows.Media.Color;
+using FontFamily = System.Windows.Media.FontFamily;
 
 namespace ClassIsland.ViewModels;
 
@@ -156,4 +159,7 @@ public class SettingsViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public List<FontFamily> FontFamilies { get; } =
+        new (Fonts.SystemFontFamilies) { new FontFamily("/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC") };
 }
