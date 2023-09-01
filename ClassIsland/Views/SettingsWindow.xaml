@@ -25,7 +25,8 @@
                    MinWidth="600"
                    Closing="SettingsWindow_OnClosing"
                    Icon="/Assets/AppLogo.ico"
-                   xmlns:mdWpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf">
+                   xmlns:mdWpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
+                   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -62,7 +63,7 @@
             <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定" 
                     HorizontalAlignment="Right" Margin="0 8 0 0"
                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
-
+            
             </Button>
         </Grid>
 
@@ -224,6 +225,43 @@
 
             </StackPanel>
         </ScrollViewer>
+
+        <Grid Width="300" Margin="16" x:Key="CitySearcher">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="搜索城市" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Margin="0 0 0 8"/>
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         TextChanged="TextBoxSearchCity_OnTextChanged"
+                         materialDesign:HintAssist.Hint="搜索…"
+                         x:Name="TextBoxSearchCity" 
+                         IsEnabledChanged="TextBoxSearchCity_OnFocusableChanged"
+                >
+                    
+                </TextBox>
+            </StackPanel>
+            <ListBox Grid.Row="1"
+                     Margin="0 8 0 0"
+                     SelectedValuePath="CityId"
+                     SelectedValue="{Binding Settings.CityId}"
+                     ItemsSource="{Binding ViewModel.CitySearchResults}"
+                     SelectionMode="Single"
+                     SelectionChanged="SelectorCity_OnSelectionChanged">
+                <b:Interaction.Behaviors>
+                    <ci:AutoScrollBehavior />
+                </b:Interaction.Behaviors>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <RadioButton Content="{Binding Name}"
+                                  IsChecked="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
 
         <!-- Enabled style -->
         <Style TargetType="FrameworkElement" x:Key="UpdateEnabledStyle">
@@ -879,13 +917,46 @@ The quick brown fox jumps over a lazy dog.
                     <TabItem Header="天气">
                         <ScrollViewer>
                             <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                                <ItemsControl ItemsSource="{Binding ViewModel.WeatherSampleList}">
+                                <controls:IconText Kind="WeatherSunny" Text="天气预览" Margin="0 0 0 8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <controls:WeatherPackIconControl Width="32" Height="32" Code="{Binding Settings.LastWeatherInfo.Current.Weather}" VerticalAlignment="Center"/>
+                                    <TextBlock VerticalAlignment="Center" FontSize="20" Margin="6 0 0 0">
+                                        <Run Text="{Binding Settings.LastWeatherInfo.Current.Temperature.Value}">
+                                        </Run><Run Text="{Binding Settings.LastWeatherInfo.Current.Temperature.Unit}"/>
+                                    </TextBlock>
+                                    <Button Content="刷新" Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                                            Click="ButtonRefreshWeather_OnClick"
+                                            Margin="6 0 0 0"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Settings.LastWeatherInfo.UpdateTime, Mode=OneWay, ConverterCulture=zh-CN}"></TextBlock>
+                                <ItemsControl ItemsSource="{Binding Settings.LastWeatherInfo.Alerts}" Margin="0 3 0 0">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <controls:WeatherPackIconControl Code="{Binding}"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0 2" ToolTip="{Binding Detail}">
+                                                <materialDesign:PackIcon Kind="CloudWarning" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                                                <TextBlock VerticalAlignment="Center">
+                                                    <Run Text="{Binding Title}"/>
+                                                </TextBlock>
+                                            </StackPanel>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
+
+                                <Separator Margin="0 16 0 8"/>
+                                <controls:IconText Kind="CogOutline" Text="设置" Margin="0 0 0 8"/>
+                                <!-- 城市选择 -->
+                                <controls:SettingsCard IconGlyph="MapOutline" Header="城市选择"
+                                                       Description="选择当前所在的城市，以用于天气查询。仅支持国内天气查询。">
+                                    <controls:SettingsCard.Switcher>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Settings.CityName}" VerticalAlignment="Center"/>
+                                            <Button Content="{materialDesign:PackIcon EditOutline}" ToolTip="编辑"
+                                                    Margin="6 0 0 0"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Click="ButtonEditCurrentCity_OnClick"/>
+                                        </StackPanel>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>

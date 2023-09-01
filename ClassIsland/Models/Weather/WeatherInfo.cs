@@ -13,7 +13,7 @@ public class WeatherInfo
     [JsonPropertyName("alerts")] public List<WeatherAlert> Alerts { get; set; } = new();
 
 
-    [JsonPropertyName("updateTime")] public int UpdateTimeUnix { get; set; } = 0;
+    [JsonPropertyName("updateTime")] public long UpdateTimeUnix { get; set; } = 0;
 
-    [JsonIgnore] public DateTime UpdateTime => new DateTime(UpdateTimeUnix);
+    [JsonIgnore] public DateTime UpdateTime => DateTimeOffset.FromUnixTimeMilliseconds(UpdateTimeUnix).LocalDateTime;
 }

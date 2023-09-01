@@ -9,6 +9,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <materialDesign:PackIcon HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                 Width="{Binding Width, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                                 Height="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                                  ToolTip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}">
             <materialDesign:PackIcon.Style>
                 <Style TargetType="materialDesign:PackIcon" >

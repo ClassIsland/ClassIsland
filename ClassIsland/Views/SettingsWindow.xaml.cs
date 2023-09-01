@@ -20,14 +20,18 @@ using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Enums;
 using ClassIsland.Models;
+using ClassIsland.Models.Weather;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
 using Microsoft.Toolkit.Uwp.Notifications;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Application = System.Windows.Application;
+using ListBox = System.Windows.Controls.ListBox;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -78,6 +82,8 @@ public partial class SettingsWindow : MyWindow
     {
         get;
     }
+
+    public WeatherService WeatherService { get; } = App.GetService<WeatherService>();
 
     public SettingsWindow()
     {
@@ -138,6 +144,7 @@ public partial class SettingsWindow : MyWindow
         Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateCache();
         RefreshDescription();
+        ViewModel.CitySearchResults = WeatherService.GetCitiesByName("");
         base.OnContentRendered(e);
     }
 
@@ -374,5 +381,39 @@ public partial class SettingsWindow : MyWindow
     {
         ViewModel.IsPopupMenuOpened = false;
         OpenDrawer("ExperimentalSettings");
+    }
+
+    private async void ButtonRefreshWeather_OnClick(object sender, RoutedEventArgs e)
+    {
+        await WeatherService.QueryWeatherAsync();
+    }
+
+    private void ButtonEditCurrentCity_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("CitySearcher");
+
+    }
+
+    private void TextBoxSearchCity_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        ViewModel.CitySearchResults = WeatherService.GetCitiesByName(((TextBox)sender).Text);
+    }
+
+    private void SelectorCity_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var listbox = (ListBox)sender;
+        var city = (City?)listbox.SelectedItem;
+        if (city == null)
+        {
+            e.Handled = true;
+            Settings.CityName = "";
+            return;
+        }
+        Settings.CityName = city.Name;
+    }
+
+    private void TextBoxSearchCity_OnFocusableChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        ((UIElement)sender).Focus();
     }
 }

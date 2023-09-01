@@ -145,7 +145,7 @@ public partial class MainWindow : Window
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 4;
+        SettingsWindow.RootTabControl.SelectedIndex = 5;
     }
 
     private int GetSubjectIndex(int index)
@@ -767,7 +767,7 @@ public partial class MainWindow : Window
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 6;
+        SettingsWindow.RootTabControl.SelectedIndex = 7;
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
@@ -805,7 +805,7 @@ public partial class MainWindow : Window
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 4;
+        SettingsWindow.RootTabControl.SelectedIndex = 5;
     }
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)

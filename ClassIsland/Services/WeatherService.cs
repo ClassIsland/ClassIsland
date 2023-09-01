@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -7,6 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Threading;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using Microsoft.Data.Sqlite;
@@ -26,11 +28,23 @@ public class WeatherService : IHostedService
 
     public List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; } = new();
 
+    private DispatcherTimer UpdateTimer { get; } = new()
+    {
+        Interval = TimeSpan.FromMinutes(15)
+    };
+
     public WeatherService(SettingsService settingsService, FileFolderService fileFolderService, IHostApplicationLifetime hostApplicationLifetime)
     {
         SettingsService = settingsService;
         hostApplicationLifetime.ApplicationStopping.Register(AppStopping);
         LoadData();
+        UpdateTimer.Tick += UpdateTimerOnTick;
+        UpdateTimer.Start();
+    }
+
+    private async void UpdateTimerOnTick(object? sender, EventArgs e)
+    {
+        await QueryWeatherAsync();
     }
 
     private async void AppStopping()
@@ -61,11 +75,18 @@ public class WeatherService : IHostedService
 
     public async Task QueryWeatherAsync()
     {
-        using var http = new HttpClient();
-        var r = await http.GetAsync(
-            $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn");
-        var str = await r.Content.ReadAsStringAsync();
-        Settings.LastWeatherInfo = (await JsonSerializer.DeserializeAsync<WeatherInfo>(await r.Content.ReadAsStreamAsync()))!;
+        try
+        {
+            using var http = new HttpClient();
+            var r = await http.GetAsync(
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn");
+            var str = await r.Content.ReadAsStringAsync();
+            Settings.LastWeatherInfo = JsonSerializer.Deserialize<WeatherInfo>(str)!;
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     public string GetWeatherTextByCode(string code)
@@ -75,6 +96,28 @@ public class WeatherService : IHostedService
                     select i.Weather)
             .ToList();
         return c.Count > 0 ? c[0] : "未知";
+    }
+
+    public List<City> GetCitiesByName(string name)
+    {
+        var cmd = CitiesDatabaseConnection.CreateCommand();
+        cmd.CommandText = @"
+            SELECT name, city_num
+            FROM citys
+            WHERE name LIKE $name
+            ";
+        cmd.Parameters.AddWithValue("name", $"%{name}%");
+        using var reader = cmd.ExecuteReader();
+        var l = new List<City>();
+        while (reader.Read())
+        {
+            l.Add(new City()
+            {
+                Name = reader.GetString(0),
+                CityId = reader.GetString(1)
+            });
+        }
+        return l;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)

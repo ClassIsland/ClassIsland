@@ -76,6 +76,7 @@ public class Settings : ObservableRecipient
     private string? _selectedMiniInfoProvider = "D9FC55D6-8061-4C21-B521-6B0532FF735F";
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "101010100";
+    private string _cityName = "北京";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -688,6 +689,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _cityId) return;
             _cityId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CityName
+    {
+        get => _cityName;
+        set
+        {
+            if (value == _cityName) return;
+            _cityName = value;
             OnPropertyChanged();
         }
     }
