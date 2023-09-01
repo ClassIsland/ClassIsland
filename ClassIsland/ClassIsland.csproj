@@ -101,6 +101,7 @@
     <PackageReference Include="Microsoft.AppCenter" Version="5.0.2" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.2" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.2" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />

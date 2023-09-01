@@ -136,6 +136,8 @@ public partial class App : Application
                 services.AddSingleton<NotificationHostService>();
                 services.AddSingleton<ThemeService>();
                 services.AddSingleton<MiniInfoProviderHostService>();
+                services.AddSingleton<WeatherService>();
+                services.AddSingleton<FileFolderService>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
@@ -157,6 +159,7 @@ public partial class App : Application
             GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
         }
         GetService<UpdateService>().AppStartup();
+        GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = Host.StartAsync();
 
