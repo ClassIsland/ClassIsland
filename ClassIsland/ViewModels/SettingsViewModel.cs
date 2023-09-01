@@ -6,6 +6,7 @@ using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ClassIsland.Interfaces;
 using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Color = System.Windows.Media.Color;
@@ -27,6 +28,7 @@ public class SettingsViewModel : ObservableRecipient
     private bool _isNotificationSettingsPanelOpened = false;
     private string? _notificationSettingsSelectedProvider = null;
     private bool _isPopupMenuOpened = false;
+    private KeyValuePair<string, IMiniInfoProvider>? _selectedMiniInfoProvider;
 
     public Screen[] Screens
     {
@@ -162,4 +164,15 @@ public class SettingsViewModel : ObservableRecipient
 
     public List<FontFamily> FontFamilies { get; } =
         new (Fonts.SystemFontFamilies) { new FontFamily("/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC") };
+
+    public KeyValuePair<string, IMiniInfoProvider>? SelectedMiniInfoProvider
+    {
+        get => _selectedMiniInfoProvider;
+        set
+        {
+            if (Equals(value, _selectedMiniInfoProvider)) return;
+            _selectedMiniInfoProvider = value;
+            OnPropertyChanged();
+        }
+    }
 }

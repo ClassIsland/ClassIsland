@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Threading;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Views;
 using Microsoft.AppCenter;
@@ -134,9 +135,12 @@ public partial class App : Application
                 services.AddSingleton<WallpaperPickingService>();
                 services.AddSingleton<NotificationHostService>();
                 services.AddSingleton<ThemeService>();
+                services.AddSingleton<MiniInfoProviderHostService>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
+                // 简略信息提供方
+                services.AddHostedService<DateMiniInfoProvider>();
             }).Build();
         try
         {
@@ -154,10 +158,10 @@ public partial class App : Application
         }
         GetService<UpdateService>().AppStartup();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
+        _ = Host.StartAsync();
+
         MainWindow = new MainWindow();
         MainWindow.Show();
-
-        await Host.StartAsync();
     }
 
     public static void ReleaseLock()

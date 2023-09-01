@@ -74,11 +74,17 @@ public partial class SettingsWindow : MyWindow
         get;
     }
 
+    public MiniInfoProviderHostService MiniInfoProviderHostService
+    {
+        get;
+    }
+
     public SettingsWindow()
     {
         UpdateService = App.GetService<UpdateService>();
         TaskBarIconService = App.GetService<TaskBarIconService>();
         WallpaperPickingService = App.GetService<WallpaperPickingService>();
+        MiniInfoProviderHostService = App.GetService<MiniInfoProviderHostService>();
         InitializeComponent();
         DataContext = this;
         var settingsService = App.GetService<SettingsService>();

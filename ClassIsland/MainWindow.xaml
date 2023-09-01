@@ -288,6 +288,7 @@
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <converters:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
         <!--#endregion 1-->
     </Window.Resources>
     <Window.Style>
@@ -418,8 +419,15 @@
                             Margin="6 0 12 0"
                             VerticalAlignment="Center"
                             Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                        <TextBlock FontSize="16"
-                                Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
+
+                        <ContentPresenter>
+                            <ContentPresenter.Content>
+                                <MultiBinding Converter="{StaticResource MiniInfoGuidToMiniInfoProviderElementConverter}">
+                                    <Binding Path="ViewModel.Settings.SelectedMiniInfoProvider"/>
+                                    <Binding Path="MiniInfoProviderHostService.Providers"/>
+                                </MultiBinding>
+                            </ContentPresenter.Content>
+                        </ContentPresenter>
                     </StackPanel>
 
                     <!-- 没有课程提示 -->

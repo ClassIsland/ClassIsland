@@ -100,6 +100,11 @@ public partial class MainWindow : Window
         get;
     } = new();
 
+    public MiniInfoProviderHostService MiniInfoProviderHostService
+    {
+        get;
+    } = App.GetService<MiniInfoProviderHostService>();
+
     public MainWindow()
     {
         SettingsService = App.GetService<SettingsService>();

@@ -271,10 +271,6 @@
                                                     Foreground="{DynamicResource MaterialDesignBody}" />
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
-                                <!-- 显示日期 -->
-                                <controls:SettingsCard IconGlyph="DateRange"
-                                                       Header="显示日期" Description="在界面上显示当前日期。"
-                                                       IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
                                 <!-- 隐藏窗口 -->
                                 <materialDesign:Card Margin="0 0 0 6">
                                     <Expander Background="Transparent" IsExpanded="True">
@@ -285,7 +281,7 @@
                                                                       Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
                                                                       Margin="-12 0" />
                                         </Expander.Header>
-                                        <StackPanel Margin="32 0 64 12">
+                                        <StackPanel Margin="36 0 64 12">
                                             <StackPanel.Resources>
                                                 <Style TargetType="CheckBox"
                                                        BasedOn="{StaticResource MaterialDesignCheckBox}">
@@ -297,6 +293,45 @@
                                                       IsChecked="{Binding Settings.HideOnMaxWindow}" />
                                             <CheckBox Content="前台是全屏窗口时"
                                                       IsChecked="{Binding Settings.HideOnFullscreen}" />
+                                        </StackPanel>
+                                    </Expander>
+                                </materialDesign:Card>
+                                <!-- 显示快速信息 -->
+                                <controls:SettingsCard IconGlyph="CardSearchOutline"
+                                                       Header="显示快速信息" Description="在界面上显示快速信息。"
+                                                       IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
+                                <!-- 简略信息 -->
+                                <materialDesign:Card Margin="0 0 0 6">
+                                    <Expander Background="Transparent" IsExpanded="True" TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                        <Expander.Header>
+                                            <controls:SettingsControl IconGlyph="CardTextOutline"
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Header="快速信息" 
+                                                                      Description="在主界面显示特定的快速信息，以助于快速获取信息。"
+                                                                      Margin="-12 0" >
+                                                <controls:SettingsControl.Switcher>
+                                                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                              ItemsSource="{Binding MiniInfoProviderHostService.Providers}"
+                                                              SelectedValuePath="Key"
+                                                              SelectedValue="{Binding Settings.SelectedMiniInfoProvider}"
+                                                              SelectedItem="{Binding ViewModel.SelectedMiniInfoProvider, Mode=TwoWay}"
+                                                              Width="100">
+                                                        <ComboBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Value.Name}"
+                                                                           ToolTip="{Binding Value.Description}"/>
+                                                            </DataTemplate>
+                                                        </ComboBox.ItemTemplate>
+                                                    </ComboBox>
+                                                </controls:SettingsControl.Switcher>
+                                            </controls:SettingsControl>
+                                        </Expander.Header>
+                                        <StackPanel Margin="36 0 64 12">
+                                            <TextBlock Text="{Binding ViewModel.SelectedMiniInfoProvider.Value.Description}" TextWrapping="Wrap"/>
+                                            <Grid>
+                                                <!-- Content -->
+                                                <ContentPresenter Content="{Binding ViewModel.SelectedMiniInfoProvider.Value.SettingsElement}"/>
+                                            </Grid>
                                         </StackPanel>
                                     </Expander>
                                 </materialDesign:Card>

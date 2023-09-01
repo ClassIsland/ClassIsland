@@ -71,6 +71,8 @@ public class Settings : ObservableRecipient
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = false;
     private string _mainWindowFont = "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
+    private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
+    private string? _selectedMiniInfoProvider = "D9FC55D6-8061-4C21-B521-6B0532FF735F";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -130,6 +132,28 @@ public class Settings : ObservableRecipient
         {
             if (value == _isClassPrepareNotificationEnabled) return;
             _isClassPrepareNotificationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableDictionary<string, object?> MiniInfoProviderSettings
+    {
+        get => _miniInfoProviderSettings;
+        set
+        {
+            if (Equals(value, _miniInfoProviderSettings)) return;
+            _miniInfoProviderSettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? SelectedMiniInfoProvider
+    {
+        get => _selectedMiniInfoProvider;
+        set
+        {
+            if (value == _selectedMiniInfoProvider) return;
+            _selectedMiniInfoProvider = value;
             OnPropertyChanged();
         }
     }

@@ -115,6 +115,7 @@
     <Folder Include="Services\NotificationProviders\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Enums\" />
+    <Folder Include="Services\MiniInfoProviders\" />
     <Folder Include="Validations\" />
   </ItemGroup>
 
