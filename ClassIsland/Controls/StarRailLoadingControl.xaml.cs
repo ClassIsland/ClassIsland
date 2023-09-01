@@ -45,18 +45,19 @@ public partial class StarRailLoadingControl : UserControl
             var loop = (Storyboard)FindResource("Loop");
             if ((bool)e.NewValue)
             {
-                loop.Stop();
-                //loop.Seek(TimeSpan.Zero);
                 loop.Remove();
+                //loop.Seek(TimeSpan.Zero);
                 BeginStoryBoard("OnLoaded");
                 await Task.Run(() => Thread.Sleep(100));
                 BeginStoryBoard("Loop");
+                //Debug.WriteLine("LOADED.");
+
             }
             else
             {
-                loop.Stop();
-                //loop.Seek(TimeSpan.Zero);
                 loop.Remove();
+                //loop.Seek(TimeSpan.Zero);
+                //Debug.WriteLine("Unloaded.");
             }
         }
         base.OnPropertyChanged(e);

@@ -223,7 +223,7 @@
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
-                <EasingThicknessKeyFrame KeyTime="00:00:00.1000000" Value="0,0,2.25000000000364E-05,0">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.1500000" Value="0,0,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -235,7 +235,7 @@
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
-                <EasingThicknessKeyFrame KeyTime="00:00:00.1000000" Value="0,0,0,0">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.1500000" Value="0,0,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -247,7 +247,7 @@
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
-                <EasingThicknessKeyFrame KeyTime="00:00:00.1000000" Value="0,0,0,0">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.1500000" Value="0,0,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -259,7 +259,7 @@
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
-                <EasingThicknessKeyFrame KeyTime="00:00:00.1000000" Value="0,0,0,0">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.1500000" Value="0,0,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -271,7 +271,7 @@
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
                 </EasingThicknessKeyFrame>
-                <EasingThicknessKeyFrame KeyTime="00:00:00.1000000" Value="0,0,0,0">
+                <EasingThicknessKeyFrame KeyTime="00:00:00.1500000" Value="0,0,0,0">
                     <EasingThicknessKeyFrame.EasingFunction>
                         <QuadraticEase EasingMode="EaseOut"/>
                     </EasingThicknessKeyFrame.EasingFunction>
@@ -280,7 +280,7 @@
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_Root" Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.0170000" Value="0"/>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="1">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>
