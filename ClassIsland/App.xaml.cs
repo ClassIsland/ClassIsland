@@ -140,11 +140,12 @@ public partial class App : Application
             }).Build();
         try
         {
-            GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();
+            GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate(false);
         }
-        catch
+        catch (Exception ex)
         {
             // ignored
+            //MessageBox.Show(ex.ToString());
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
