@@ -16,6 +16,7 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
+                <ResourceDictionary Source="/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
 
@@ -110,6 +111,7 @@
                 <Setter Property="PanningMode" Value="Both"/>
             </Style>
             <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

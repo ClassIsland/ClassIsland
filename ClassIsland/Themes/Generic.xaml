@@ -19,4 +19,21 @@
         <Setter Property="Content" Value="{materialDesign:PackIcon Folder}"/>
         <Setter Property="ToolTip" Value="浏览…"/>
     </Style>
+
+    <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Rectangle Margin="-2" StrokeThickness="2" 
+                                   Stroke="{DynamicResource MaterialDesignBody}" 
+                                   SnapsToDevicePixels="true"
+                                   RadiusX="2"
+                                   RadiusY="2"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Control.ToolTip" Value="foo"/>
+    </Style>
 </ResourceDictionary>

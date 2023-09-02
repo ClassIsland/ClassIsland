@@ -25,6 +25,7 @@
                    MinWidth="600"
                    Closing="SettingsWindow_OnClosing"
                    Icon="/Assets/AppLogo.ico"
+                   FrameworkElement.FocusVisualStyle="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"
                    xmlns:mdWpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
     <Window.Resources>
@@ -345,7 +346,7 @@
                                                     <Setter Property="Margin" Value="0 3" />
                                                 </Style>
                                             </StackPanel.Resources>
-                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}" />
+                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}"/>
                                             <CheckBox Content="前台是最大化窗口时"
                                                       IsChecked="{Binding Settings.HideOnMaxWindow}" />
                                             <CheckBox Content="前台是全屏窗口时"
