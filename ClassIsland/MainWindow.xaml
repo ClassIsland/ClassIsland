@@ -46,6 +46,7 @@
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
+            <MenuItem Header="显示主界面" IsCheckable="True" IsChecked="{Binding ViewModel.IsMainWindowVisible}" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}"/>
             <MenuItem Header="更新可用…" Click="MenuItemUpdates_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="UploadOutline"/>
@@ -316,6 +317,7 @@
               ClipToBounds="True"
               Canvas.Left="0"
               Canvas.Top="0"
+              Visibility="{Binding ViewModel.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
               IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}"
               VerticalAlignment="Top"
               HorizontalAlignment="Center"

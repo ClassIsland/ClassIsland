@@ -36,6 +36,7 @@ public class MainViewModel : ObservableRecipient
     private TimeLayoutItem _nextBreakingLayoutItem = new();
     private double _overlayRemainTimePercents = 1;
     private NotificationRequest _currentNotificationRequest = new();
+    private bool _isMainWindowVisible = true;
 
     public Profile Profile
     {
@@ -325,6 +326,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (Equals(value, _currentNotificationRequest)) return;
             _currentNotificationRequest = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMainWindowVisible
+    {
+        get => _isMainWindowVisible;
+        set
+        {
+            if (value == _isMainWindowVisible) return;
+            _isMainWindowVisible = value;
             OnPropertyChanged();
         }
     }
