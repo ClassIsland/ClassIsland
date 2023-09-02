@@ -237,7 +237,7 @@
                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                          materialDesign:TextFieldAssist.HasClearButton="True"
                          TextChanged="TextBoxSearchCity_OnTextChanged"
-                         materialDesign:HintAssist.Hint="搜索…"
+                         materialDesign:HintAssist.Hint="搜索城市或省份…"
                          x:Name="TextBoxSearchCity" 
                          IsEnabledChanged="TextBoxSearchCity_OnFocusableChanged"
                 >

@@ -687,7 +687,7 @@ public class Settings : ObservableRecipient
         get => _cityId;
         set
         {
-            if (value == _cityId) return;
+            if (value == _cityId || value == null) return;
             _cityId = value;
             OnPropertyChanged();
         }

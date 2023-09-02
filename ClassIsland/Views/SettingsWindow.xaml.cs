@@ -406,7 +406,7 @@ public partial class SettingsWindow : MyWindow
         if (city == null)
         {
             e.Handled = true;
-            Settings.CityName = "";
+            //Settings.CityName = "";
             return;
         }
         Settings.CityName = city.Name;

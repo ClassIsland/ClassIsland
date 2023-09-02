@@ -30,7 +30,7 @@ public class WeatherService : IHostedService
 
     private DispatcherTimer UpdateTimer { get; } = new()
     {
-        Interval = TimeSpan.FromMinutes(15)
+        Interval = TimeSpan.FromMinutes(5)
     };
 
     public WeatherService(SettingsService settingsService, FileFolderService fileFolderService, IHostApplicationLifetime hostApplicationLifetime)
@@ -103,9 +103,17 @@ public class WeatherService : IHostedService
     {
         var cmd = CitiesDatabaseConnection.CreateCommand();
         cmd.CommandText = @"
-            SELECT name, city_num
-            FROM citys
-            WHERE name LIKE $name
+            SELECT
+                citys.name,
+                citys.city_num,
+                citys.province_id,
+                provinces.name 
+            FROM
+                citys
+                JOIN provinces ON citys.province_id = provinces._id - 1 
+            WHERE
+                citys.name LIKE $name
+                OR provinces.name LIKE $name
             ";
         cmd.Parameters.AddWithValue("name", $"%{name}%");
         using var reader = cmd.ExecuteReader();
