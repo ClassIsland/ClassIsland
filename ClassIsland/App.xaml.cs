@@ -143,6 +143,7 @@ public partial class App : Application
                 services.AddHostedService<AfterSchoolNotificationProvider>();
                 // 简略信息提供方
                 services.AddHostedService<DateMiniInfoProvider>();
+                services.AddHostedService<WeatherMiniInfoProvider>();
             }).Build();
         try
         {

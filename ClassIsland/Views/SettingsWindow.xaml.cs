@@ -399,7 +399,7 @@ public partial class SettingsWindow : MyWindow
         ViewModel.CitySearchResults = WeatherService.GetCitiesByName(((TextBox)sender).Text);
     }
 
-    private void SelectorCity_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void SelectorCity_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         var listbox = (ListBox)sender;
         var city = (City?)listbox.SelectedItem;
@@ -410,6 +410,7 @@ public partial class SettingsWindow : MyWindow
             return;
         }
         Settings.CityName = city.Name;
+        await WeatherService.QueryWeatherAsync();
     }
 
     private void TextBoxSearchCity_OnFocusableChanged(object sender, DependencyPropertyChangedEventArgs e)

@@ -1,0 +1,41 @@
+﻿<UserControl x:Class="ClassIsland.Controls.MiniInfoProvider.WeatherMiniInfoProviderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.MiniInfoProvider"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:WebImageUrlToBitmapImageConverter x:Key="WebImageUrlToBitmapImageConverter" />
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherMiniInfoProviderControl}}">
+        <StackPanel Orientation="Horizontal">
+            <controls:WeatherPackIconControl Code="{Binding Settings.LastWeatherInfo.Current.Weather}"
+                                             Height="20" Width="20" VerticalAlignment="Center"/>
+            <TextBlock VerticalAlignment="Center" FontSize="16" Margin="6 0 0 0">
+                <Run Text="{Binding Settings.LastWeatherInfo.Current.Temperature.Value}">
+                </Run><Run Text="{Binding Settings.LastWeatherInfo.Current.Temperature.Unit}"/>
+            </TextBlock>
+            <!-- 预警信号 -->
+            <ItemsControl ItemsSource="{Binding Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
+                          Margin="6 0 0 0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding Images[icon]}" 
+                               Width="22" Height="22" Stretch="UniformToFill"
+                               Margin="1"
+                               Opacity="1"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid>
+</UserControl>

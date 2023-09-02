@@ -40,6 +40,7 @@ public class WeatherService : IHostedService
         LoadData();
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Start();
+        _ = QueryWeatherAsync();
     }
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
