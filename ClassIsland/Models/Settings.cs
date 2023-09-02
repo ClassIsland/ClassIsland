@@ -73,7 +73,7 @@ public class Settings : ObservableRecipient
     private bool _isFallbackModeEnabled = false;
     private string _mainWindowFont = "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
-    private string? _selectedMiniInfoProvider = "D9FC55D6-8061-4C21-B521-6B0532FF735F";
+    private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "101010100";
     private string _cityName = "北京";
