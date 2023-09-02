@@ -375,7 +375,7 @@
                                                 </MultiBinding>
                                             </StackPanel.DataContext>
                                             <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
-                                            <Grid>
+                                            <Grid Margin="0 8 0 0">
                                                 <!-- Content -->
                                                 <ContentPresenter Content="{Binding SettingsElement}"/>
                                             </Grid>

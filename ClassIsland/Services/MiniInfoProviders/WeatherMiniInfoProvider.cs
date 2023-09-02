@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.MiniInfoProvider;
+using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Interfaces;
 using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
@@ -20,11 +21,18 @@ public class WeatherMiniInfoProvider : IMiniInfoProvider, IHostedService
 
     private Settings Settings => SettingsService.Settings;
 
+    private WeatherMiniInfoProviderSettings WeatherMiniInfoProviderSettings { get; set; }
+
     public WeatherMiniInfoProvider(SettingsService settingsService, MiniInfoProviderHostService miniInfoProviderHostService)
     {
         SettingsService = settingsService;
-        InfoElement = new WeatherMiniInfoProviderControl(SettingsService);
         miniInfoProviderHostService.RegisterMiniInfoProvider(this);
+        WeatherMiniInfoProviderSettings =
+            miniInfoProviderHostService.GetMiniInfoProviderSettings<WeatherMiniInfoProviderSettings>(ProviderGuid)
+            ?? new();
+        InfoElement = new WeatherMiniInfoProviderControl(SettingsService, WeatherMiniInfoProviderSettings);
+        SettingsElement = new WeatherMiniInfoProviderSettingsControl(WeatherMiniInfoProviderSettings);
+        miniInfoProviderHostService.WriteMiniInfoProviderSettings(ProviderGuid, WeatherMiniInfoProviderSettings);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)

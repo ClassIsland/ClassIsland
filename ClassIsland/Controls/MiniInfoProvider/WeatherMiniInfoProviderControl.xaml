@@ -13,14 +13,15 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherMiniInfoProviderControl}}">
         <StackPanel Orientation="Horizontal">
-            <controls:WeatherPackIconControl Code="{Binding Settings.LastWeatherInfo.Current.Weather}"
+            <controls:WeatherPackIconControl Code="{Binding AppSettings.LastWeatherInfo.Current.Weather}"
                                              Height="20" Width="20" VerticalAlignment="Center"/>
             <TextBlock VerticalAlignment="Center" FontSize="16" Margin="6 0 0 0">
-                <Run Text="{Binding Settings.LastWeatherInfo.Current.Temperature.Value}">
-                </Run><Run Text="{Binding Settings.LastWeatherInfo.Current.Temperature.Unit}"/>
+                <Run Text="{Binding AppSettings.LastWeatherInfo.Current.Temperature.Value}">
+                </Run><Run Text="{Binding AppSettings.LastWeatherInfo.Current.Temperature.Unit}"/>
             </TextBlock>
             <!-- 预警信号 -->
-            <ItemsControl ItemsSource="{Binding Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
+            <ItemsControl ItemsSource="{Binding AppSettings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
+                          Visibility="{Binding Settings.IsAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                           Margin="6 0 0 0">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

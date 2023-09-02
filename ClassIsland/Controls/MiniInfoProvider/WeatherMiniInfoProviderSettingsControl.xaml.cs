@@ -13,25 +13,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Models;
-using ClassIsland.Services;
 
 namespace ClassIsland.Controls.MiniInfoProvider;
 
 /// <summary>
-/// WeatherMiniInfoProviderControl.xaml 的交互逻辑
+/// WeatherMiniInfoProviderSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class WeatherMiniInfoProviderControl : UserControl
+public partial class WeatherMiniInfoProviderSettingsControl : UserControl
 {
-    private SettingsService SettingsService { get; }
-
-    public Settings AppSettings => SettingsService.Settings;
-
     public WeatherMiniInfoProviderSettings Settings { get; }
 
-    public WeatherMiniInfoProviderControl(SettingsService settingsService, WeatherMiniInfoProviderSettings weatherMiniInfoProviderSettings)
+    public WeatherMiniInfoProviderSettingsControl(WeatherMiniInfoProviderSettings settings)
     {
-        Settings = weatherMiniInfoProviderSettings;
-        SettingsService = settingsService;
+        Settings = settings;
         InitializeComponent();
     }
 }
