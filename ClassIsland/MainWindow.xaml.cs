@@ -380,6 +380,7 @@ public partial class MainWindow : Window
         menu.DataContext = this;
         TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
         TaskBarIconService.MainTaskBarIcon.DataContext = this;
+        ViewModel.OverlayRemainTimePercents = 0.5;
         base.OnContentRendered(e);
     }
 
@@ -666,7 +667,6 @@ public partial class MainWindow : Window
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
-
         var scale = ViewModel.Settings.Scale;
         Width = GridRoot.ActualWidth * scale;
         Height = GridRoot.ActualHeight * scale;
@@ -817,5 +817,10 @@ public partial class MainWindow : Window
     private void GridContent_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
         GridWrapper.Width = e.NewSize.Width + 32;
+    }
+
+    private async void MenuItemDebugFitSize_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.OverlayRemainTimePercents = 0.5;
     }
 }

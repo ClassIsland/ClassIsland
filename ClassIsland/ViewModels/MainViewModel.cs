@@ -15,7 +15,7 @@ public class MainViewModel : ObservableRecipient
     private int? _currentSelectedIndex = null;
     private Settings _settings = new();
     private object? _currentMaskElement;
-    private object? _currentOverlayElement;
+    private object? _currentOverlayElement = new object();
     private bool _isOverlayOpened = false;
     private Subject _nextSubject = new();
     private TimeLayoutItem _nextTimeLayoutItem = new();

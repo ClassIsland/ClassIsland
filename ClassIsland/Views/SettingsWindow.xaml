@@ -340,7 +340,8 @@
                                                        Header="显示快速信息" Description="在界面上显示快速信息。"
                                                        IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
                                 <!-- 简略信息 -->
-                                <materialDesign:Card Margin="0 0 0 6">
+                                <materialDesign:Card Margin="0 0 0 6" 
+                                                     Visibility="{Binding Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Expander Background="Transparent" IsExpanded="True" TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                                         <Expander.Header>
                                             <controls:SettingsControl IconGlyph="CardTextOutline"

@@ -79,6 +79,8 @@
                 <Separator/>
                 <MenuItem Header="WelcomeWindow" Click="MenuItemDebugWelcomeWindow_OnClick"/>
                 <MenuItem Header="WelcomeWindow (Full)" Click="MenuItemDebugWelcomeWindow2_OnClick"/>
+                <Separator/>
+                <MenuItem Header="FitSize" Click="MenuItemDebugFitSize_OnClick"></MenuItem>
             </MenuItem>
         </ContextMenu>
 
@@ -408,27 +410,25 @@
                         Margin="16 0">
                 </Canvas>
                 <Grid Height="40"
+                      x:Name="GridContentRoot"
                       Margin="16 0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <!-- 日历 -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal"
-                            Margin="6 0 12 0"
-                            VerticalAlignment="Center"
-                            Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
 
-                        <ContentPresenter>
-                            <ContentPresenter.Content>
-                                <MultiBinding Converter="{StaticResource MiniInfoGuidToMiniInfoProviderElementConverter}">
-                                    <Binding Path="ViewModel.Settings.SelectedMiniInfoProvider"/>
-                                    <Binding Path="MiniInfoProviderHostService.Providers"/>
-                                </MultiBinding>
-                            </ContentPresenter.Content>
-                        </ContentPresenter>
-                    </StackPanel>
+                    <ContentPresenter Grid.Column="0" 
+                                      Margin="6 0 12 0"
+                                      VerticalAlignment="Center"
+                                      Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        <ContentPresenter.Content>
+                            <MultiBinding Converter="{StaticResource MiniInfoGuidToMiniInfoProviderElementConverter}">
+                                <Binding Path="ViewModel.Settings.SelectedMiniInfoProvider"/>
+                                <Binding Path="MiniInfoProviderHostService.Providers"/>
+                            </MultiBinding>
+                        </ContentPresenter.Content>
+                    </ContentPresenter>
 
                     <!-- 没有课程提示 -->
                     <TextBlock Grid.Column="1"

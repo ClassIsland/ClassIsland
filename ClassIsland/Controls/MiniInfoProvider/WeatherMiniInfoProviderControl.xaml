@@ -33,7 +33,11 @@
                         <Image Source="{Binding Images[icon]}" 
                                Width="22" Height="22" Stretch="UniformToFill"
                                Margin="1"
-                               Opacity="1"/>
+                               Opacity="1">
+                            <Image.Effect>
+                                <DropShadowEffect BlurRadius="6" Direction="0" ShadowDepth="0" Opacity="0.5"/>
+                            </Image.Effect>
+                        </Image>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
