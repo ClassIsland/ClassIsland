@@ -19,7 +19,7 @@
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    Background="{DynamicResource MaterialDesignPaper}"
                    FontFamily="{StaticResource HarmonyOsSans}"
-                   TextElement.FontWeight="Medium"
+                   TextElement.FontWeight="Regular"
                    TextElement.FontSize="14"
                    Title="应用设置" Height="550" Width="1200"
                    MinWidth="600"

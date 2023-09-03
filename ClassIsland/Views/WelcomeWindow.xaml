@@ -11,7 +11,7 @@
                    Height="600" Width="480"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    Background="{DynamicResource MaterialDesignPaper}"
-                   TextElement.FontWeight="Medium"
+                   TextElement.FontWeight="Regular"
                    TextElement.FontSize="14"
                    FontFamily="{StaticResource HarmonyOsSans}"
                    Title="ClassIsland"

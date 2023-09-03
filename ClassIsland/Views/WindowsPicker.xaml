@@ -11,7 +11,7 @@
                    Height="600" Width="1300"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    Background="{DynamicResource MaterialDesignPaper}"
-                   TextElement.FontWeight="Medium"
+                   TextElement.FontWeight="Regular"
                    TextElement.FontSize="14"
                    FontFamily="{StaticResource HarmonyOsSans}"
                    Title="选择壁纸窗口">
