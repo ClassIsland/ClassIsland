@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using ClassIsland.Enums;
@@ -77,6 +78,7 @@ public class Settings : ObservableRecipient
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "101010100";
     private string _cityName = "北京";
+    private FontWeight _mainWindowFontWeight = FontWeights.Medium;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -440,6 +442,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _mainWindowFont) return;
             _mainWindowFont = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public FontWeight MainWindowFontWeight
+    {
+        get => _mainWindowFontWeight;
+        set
+        {
+            if (value.Equals(_mainWindowFontWeight)) return;
+            _mainWindowFontWeight = value;
             OnPropertyChanged();
         }
     }

@@ -16,7 +16,7 @@
         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{x:Null}"
-        TextElement.FontWeight="Regular"
+        TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight}"
         TextElement.FontSize="14"
         d:DataContext="{d:DesignInstance local:MainWindow}"
         FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay}"

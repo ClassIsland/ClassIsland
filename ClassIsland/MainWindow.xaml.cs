@@ -711,7 +711,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void GetCurrentDpi(out double dpiX, out double dpiY)
+    public void GetCurrentDpi(out double dpiX, out double dpiY)
     {
         var source = PresentationSource.FromVisual(this);
 

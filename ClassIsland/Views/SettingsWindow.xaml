@@ -27,7 +27,8 @@
                    Icon="/Assets/AppLogo.ico"
                    FrameworkElement.FocusVisualStyle="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"
                    xmlns:mdWpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
-                   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+                   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -633,8 +634,39 @@
                                         </ComboBox>
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
+                                <controls:SettingsCard IconGlyph="FormatLineWeight" Header="自定义字重"
+                                                       Description="自定义主界面显示的字体的字重，需要对应字体支持。">
+                                    <controls:SettingsCard.Switcher>
+                                        <ComboBox SelectedItem="{Binding Settings.MainWindowFontWeight}"
+                                                  Foreground="{DynamicResource MaterialDesignBody}">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding}" FontWeight="{Binding}"
+                                                               ToolTip="{Binding}"/>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                            <x:Static Member="FontWeights.Thin"/>
+                                            <!--<x:Static Member="FontWeights.UltraLight"/>-->
+                                            <x:Static Member="FontWeights.ExtraLight"/>
+                                            <x:Static Member="FontWeights.Light"/>
+                                            <x:Static Member="FontWeights.Normal"/>
+                                            <!--<x:Static Member="FontWeights.Regular"/>-->
+                                            <x:Static Member="FontWeights.Medium"/>
+                                            <!--<x:Static Member="FontWeights.DemiBold"/>-->
+                                            <x:Static Member="FontWeights.SemiBold"/>
+                                            <x:Static Member="FontWeights.Bold"/>
+                                            <x:Static Member="FontWeights.ExtraBold"/>
+                                            <!--<x:Static Member="FontWeights.UltraBold"/>-->
+                                            <x:Static Member="FontWeights.Black"/>
+                                            <!--<x:Static Member="FontWeights.Heavy"/>-->
+                                            <x:Static Member="FontWeights.ExtraBlack"/>
+                                            <!--<x:Static Member="FontWeights.UltraBlack"/>-->
+                                        </ComboBox>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
                                 <!-- 字体预览 -->
                                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         FontWeight="{Binding Settings.MainWindowFontWeight}"
                                          materialDesign:HintAssist.Hint="字体预览"
                                          FontSize="17"
                                          Padding="8"
