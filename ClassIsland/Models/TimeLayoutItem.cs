@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class TimeLayoutItem : ObservableRecipient, IComparable
+public class TimeLayoutItem : AttachableSettingsObject, IComparable
 {
     private DateTime _startSecond = DateTime.Now;
     private DateTime _endSecond = DateTime.Now;

@@ -20,7 +20,7 @@ public class AttachedSettingsHostService : IHostedService
     }
 
     public ObservableCollection<Type> TimePointSettingsAttachedSettingsControls { get; } = new();
-    public ObservableCollection<Type> TimeTableSettingsAttachedSettingsControls { get; } = new();
+    public ObservableCollection<Type> TimeLayoutSettingsAttachedSettingsControls { get; } = new();
     public ObservableCollection<Type> ClassPlanSettingsAttachedSettingsControls { get; } = new();
     public ObservableCollection<Type> SubjectSettingsAttachedSettingsControls { get; } = new();
 }
