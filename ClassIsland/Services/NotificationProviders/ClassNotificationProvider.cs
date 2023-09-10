@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Enums;
 using ClassIsland.Interfaces;
@@ -34,7 +35,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
     private NotificationHostService NotificationHostService { get; }
 
-    public ClassNotificationProvider(NotificationHostService notificationHostService)
+    public ClassNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
     {
         NotificationHostService = notificationHostService;
         NotificationHostService.RegisterNotificationProvider(this);
@@ -46,6 +47,12 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                    ?? new ClassNotificationSettings();
         SettingsElement = new ClassNotificationProviderSettingsControl(Settings);
         NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
+
+        var item = typeof(ClassNotificationAttachedSettingsControl);
+        attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(item);
+        attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(item);
+        attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(item);
+        attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(item);
     }
 
     private void UpdateTimerTick(object? sender, EventArgs e)

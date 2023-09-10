@@ -46,7 +46,6 @@
                     </TextBlock>
                 </MenuItem.Header>
             </MenuItem>
-            <MenuItem Header="显示主界面" IsCheckable="True" IsChecked="{Binding ViewModel.IsMainWindowVisible}" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}"/>
             <MenuItem Header="更新可用…" Click="MenuItemUpdates_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="UploadOutline"/>
@@ -62,6 +61,14 @@
                 </MenuItem.Style>
             </MenuItem>
             <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…" Click="MenuItemHelps_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Separator/>
+            <MenuItem Header="显示主界面" IsCheckable="True" IsChecked="{Binding ViewModel.IsMainWindowVisible}" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}"/>
+            <MenuItem Icon="{materialDesign:PackIcon BellNotificationOutline}" Header="通知">
+                <MenuItem Header="共xx个通知"/>
+                <Separator/>
+                <MenuItem Icon="{materialDesign:PackIcon ClearOutline}" Header="全部清除"/>
+                <MenuItem Icon="{materialDesign:PackIcon NotificationSettingsOutline}" Header="通知设置…"/>
+            </MenuItem>
             <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>

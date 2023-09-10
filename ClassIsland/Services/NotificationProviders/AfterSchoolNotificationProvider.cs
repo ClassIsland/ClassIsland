@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Enums;
 using ClassIsland.Interfaces;
@@ -36,7 +37,7 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
         get;
     }
 
-    public AfterSchoolNotificationProvider(NotificationHostService notificationHostService)
+    public AfterSchoolNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
     {
         NotificationHostService = notificationHostService;
         NotificationHostService.RegisterNotificationProvider(this);
@@ -46,6 +47,10 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
         NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
         NotificationHostService.CurrentStateChanged += NotificationHostServiceOnCurrentStateChanged;
         SettingsElement = new AfterSchoolNotificationProviderSettingsControl(Settings);
+
+        var item = typeof(AfterSchoolNotificationAttachedSettingsControl);
+        attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(item);
+        attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(item);
     }
 
     private void NotificationHostServiceOnCurrentStateChanged(object? sender, EventArgs e)

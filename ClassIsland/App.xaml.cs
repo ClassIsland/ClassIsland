@@ -172,10 +172,6 @@ public partial class App : Application
         GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = Host.StartAsync();
-        GetService<AttachedSettingsHostService>().ClassPlanSettingsAttachedSettingsControls.Add(typeof(TestAttachedSettingsControl));
-        GetService<AttachedSettingsHostService>().SubjectSettingsAttachedSettingsControls.Add(typeof(TestAttachedSettingsControl));
-        GetService<AttachedSettingsHostService>().TimeLayoutSettingsAttachedSettingsControls.Add(typeof(TestAttachedSettingsControl));
-        GetService<AttachedSettingsHostService>().TimePointSettingsAttachedSettingsControls.Add(typeof(TestAttachedSettingsControl));
 
         MainWindow = new MainWindow();
         MainWindow.Show();
