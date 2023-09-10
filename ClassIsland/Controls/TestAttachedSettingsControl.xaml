@@ -1,0 +1,16 @@
+﻿<UserControl x:Class="ClassIsland.Controls.TestAttachedSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:att="clr-namespace:ClassIsland.Models.AttachedSettings"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TestAttachedSettingsControl}}">
+            <TextBox Text="{Binding Settings.Foo}"/>
+            <TextBlock Text="{Binding Settings.Foo}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

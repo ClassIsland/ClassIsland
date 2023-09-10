@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class ClassPlan : ObservableRecipient
+public class ClassPlan : AttachableSettingsObject
 {
     private string _timeLayoutId = "";
     private ObservableCollection<ClassInfo> _classes = new();

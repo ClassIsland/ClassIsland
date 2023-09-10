@@ -12,6 +12,8 @@
                    xmlns:dd="urn:gong-wpf-dragdrop"
                    xmlns:validations="clr-namespace:ClassIsland.Validations"
                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                   xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -174,19 +176,19 @@
         <!-- 课程表信息 -->
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
-            <StackPanel DataContext="{Binding SelectedItem, ElementName=ListViewClassPlans}"
+            <StackPanel DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}"
                         Margin="16">
                 <TextBlock Text="课程表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Margin="0 12 0 0"
-                         Text="{Binding Value.Name}"
+                         Text="{Binding Name}"
                          materialDesign:HintAssist.Hint="名称" />
                 <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           x:Name="ComboBox1"
                           Margin="0 12 0 0"
                           materialDesign:HintAssist.Hint="时间表"
-                          IsEnabled="{Binding Value.IsActivated, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
-                          SelectedItem="{Binding Value.TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
+                          IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
+                          SelectedItem="{Binding TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
                           ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
@@ -195,7 +197,7 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TextBlock Text="部分设置在课表处于活动状态下无法修改。" Margin="0 16 0 0" Visibility="{Binding Value.IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                <TextBlock Text="部分设置在课表处于活动状态下无法修改。" Margin="0 16 0 0" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <StackPanel DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}"
                             Margin="0 12 0 0">
                     <TextBlock Text="触发规则" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
@@ -221,7 +223,19 @@
                         <ListBoxItem Content="单周" />
                         <ListBoxItem Content="双周" />
                     </ListBox>
+
                 </StackPanel>
+                <!-- 附加属性 -->
+                <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
+                                                                           TargetObject="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
             </StackPanel>
         </ScrollViewer>
 

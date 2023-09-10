@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
+using ClassIsland.Controls;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.MiniInfoProviders;
@@ -145,6 +146,7 @@ public partial class App : Application
                 services.AddSingleton<MiniInfoProviderHostService>();
                 services.AddSingleton<WeatherService>();
                 services.AddSingleton<FileFolderService>();
+                services.AddSingleton<AttachedSettingsHostService>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
@@ -170,6 +172,7 @@ public partial class App : Application
         GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = Host.StartAsync();
+        GetService<AttachedSettingsHostService>().ClassPlanSettingsAttachedSettingsControls.Add(typeof(TestAttachedSettingsControl));
 
         MainWindow = new MainWindow();
         MainWindow.Show();

@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Converters;
 using ClassIsland.Models;
+using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter.Analytics;
@@ -58,6 +59,9 @@ public partial class ProfileSettingsWindow : MyWindow
         get;
         set;
     } = false;
+
+    public AttachedSettingsHostService AttachedSettingsHostService { get; } =
+        App.GetService<AttachedSettingsHostService>();
 
     public void OpenDrawer(string key)
     {
