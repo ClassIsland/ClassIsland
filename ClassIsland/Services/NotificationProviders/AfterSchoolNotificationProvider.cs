@@ -6,6 +6,7 @@ using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Enums;
 using ClassIsland.Interfaces;
 using ClassIsland.Models;
+using ClassIsland.Models.AttachedSettings;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 
@@ -55,16 +56,36 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
 
     private void NotificationHostServiceOnCurrentStateChanged(object? sender, EventArgs e)
     {
-        if (!Settings.IsEnabled || NotificationHostService.CurrentState != TimeState.None || !NotificationHostService.IsClassPlanLoaded)
+        var settings = GetAttachedSettings();
+        var isEnabled = settings?.IsAttachSettingsEnabled == true ?
+            settings.IsEnabled
+            : Settings.IsEnabled;
+        var msg = settings?.IsAttachSettingsEnabled == true ?
+            settings.NotificationMsg
+            : Settings.NotificationMsg;
+        if (!isEnabled || NotificationHostService.CurrentState != TimeState.None || !NotificationHostService.IsClassPlanLoaded)
         {
             return;
         }
 
         NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
         {
-            MaskContent = new AfterSchoolNotificationProviderControl(Settings.NotificationMsg, "AfterSchoolMask"),
-            OverlayContent = new AfterSchoolNotificationProviderControl(Settings.NotificationMsg, "AfterSchoolOverlay"),
+            MaskContent = new AfterSchoolNotificationProviderControl(msg, "AfterSchoolMask"),
+            OverlayContent = new AfterSchoolNotificationProviderControl(msg, "AfterSchoolOverlay"),
             OverlayDuration = TimeSpan.FromSeconds(30)
         });
+    }
+
+    private AfterSchoolNotificationAttachedSettings? GetAttachedSettings()
+    {
+        var mvm = App.GetService<MainWindow>().ViewModel;
+        var settings = AttachedSettingsHostService
+            .GetAttachedSettingsByPriority<
+                AfterSchoolNotificationAttachedSettings>(
+                ProviderGuid,
+                classPlan: mvm.CurrentClassPlan,
+                timeLayout: mvm.CurrentClassPlan?.TimeLayout
+            );
+        return settings;
     }
 }
