@@ -86,7 +86,8 @@
                                            SelectedTime="{Binding ViewModel.SelectedTimePoint.EndSecond}" />
                 <TextBlock Text="类型" Margin="0 16 0 0"/>
                 <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                         SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}">
+                         SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                     <ListBoxItem>
                         <controls:IconText Kind="BookOutline" Text="上课"/>
                     </ListBoxItem>
@@ -99,12 +100,11 @@
                 </ListBox>
                 <ItemsControl Margin="0 8 0 0" 
                               x:Name="ItemsControlTimePointAttachedSettingsControls"
-                              DataContext="{Binding RelativeSource={RelativeSource Self}}"
                               ItemsSource="{Binding AttachedSettingsHostService.TimePointSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
-                                                                       TargetObject="{Binding ViewModel.SelectedTimePoint, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
+                                                                       TargetObject="{Binding ViewModel.SelectedTimePoint, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}"/>
                             
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -233,7 +233,8 @@
 
                     <TextBlock Text="当今天是：" Margin="0 16 0 0" />
                     <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                             SelectedIndex="{Binding WeekDay}">
+                             SelectedIndex="{Binding WeekDay}"
+                             PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                         <ListBoxItem Content="周日" />
                         <ListBoxItem Content="周一" />
                         <ListBoxItem Content="周二" />
@@ -245,7 +246,8 @@
 
                     <TextBlock Text="当本周是：" Margin="0 16 0 0" />
                     <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                             SelectedIndex="{Binding WeekCountDiv}">
+                             SelectedIndex="{Binding WeekCountDiv}"
+                             PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                         <ListBoxItem Content="不限" />
                         <ListBoxItem Content="单周" />
                         <ListBoxItem Content="双周" />
