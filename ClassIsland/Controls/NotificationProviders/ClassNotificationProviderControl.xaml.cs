@@ -1,13 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace ClassIsland.Controls.NotificationProviders;
 
 public partial class ClassNotificationProviderControl : UserControl, INotifyPropertyChanged
 {
     private object? _element;
+    private string _message = "";
+    private int _slideIndex = 0;
 
     public object? Element
     {
@@ -20,10 +24,47 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         }
     }
 
+    public string Message
+    {
+        get => _message;
+        set
+        {
+            if (value == _message) return;
+            _message = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int SlideIndex
+    {
+        get => _slideIndex;
+        set
+        {
+            if (value == _slideIndex) return;
+            _slideIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private DispatcherTimer Timer { get; } = new()
+    {
+        Interval = TimeSpan.FromSeconds(10)
+    };
+
     public ClassNotificationProviderControl(string key)
     {
         InitializeComponent();
         Element = FindResource(key);
+        Timer.Tick += TimerOnTick;
+        if (key == "ClassPrepareNotifyOverlay")
+        {
+            Timer.Start();
+        }
+    }
+
+    private void TimerOnTick(object? sender, EventArgs e)
+    {
+        SlideIndex = SlideIndex == 1 ? 0 : 1;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

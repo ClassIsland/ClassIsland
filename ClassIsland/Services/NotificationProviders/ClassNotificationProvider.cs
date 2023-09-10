@@ -70,6 +70,9 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var settingsOutDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ?
                 settings!.ClassPreparingDeltaTime
                 : Settings.OutDoorClassPreparingDeltaTime;
+        var message = isAttachedSettingsEnabled
+            ? settings!.ClassOnPreparingText
+            : Settings.ClassOnPreparingText;
         if (settingsIsClassOnPreparingNotificationEnabled &&
             ((tClassDelta > TimeSpan.Zero &&
               tClassDelta <= TimeSpan.FromSeconds(settingsInDoorClassPreparingDeltaTime) &&
@@ -86,7 +89,10 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             {
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
                 MaskDuration = TimeSpan.FromSeconds(5),
-                OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay"),
+                OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
+                {
+                    Message = message
+                },
                 TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond)
             });
 
