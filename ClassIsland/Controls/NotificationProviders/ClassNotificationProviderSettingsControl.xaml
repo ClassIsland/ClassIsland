@@ -14,7 +14,7 @@
     </UserControl.Resources>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderSettingsControl}}">
 
-        <StackPanel>
+        <StackPanel Margin="12">
             <StackPanel.Resources>
                 <Style TargetType="CheckBox" BasedOn="{StaticResource MaterialDesignCheckBox}">
                     <Setter Property="Margin" Value="0 3" />
