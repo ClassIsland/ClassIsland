@@ -10,10 +10,10 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AfterSchoolNotificationAttachedSettingsControl}}">
         <!-- 启用特定的放学提醒设置 -->
-        <CheckBox IsChecked="{Binding Settings.IsStandaloneSettingsEnabled}" 
+        <CheckBox IsChecked="{Binding Settings.IsAttachSettingsEnabled}" 
                   Content="启用特定的放学提醒设置。"
                   Margin="0 0 0 6"/>
-        <StackPanel Visibility="{Binding Settings.IsStandaloneSettingsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <StackPanel Visibility="{Binding Settings.IsAttachSettingsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
             <!-- 启用放学提醒 -->
             <CheckBox IsChecked="{Binding Settings.IsEnabled}" 
                       Content="启用放学提醒。"

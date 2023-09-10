@@ -1,23 +1,13 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClassIsland.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AttachedSettings;
 
-public class AfterSchoolNotificationAttachedSettings : ObservableRecipient
+public class AfterSchoolNotificationAttachedSettings : ObservableRecipient, IAttachedSettings
 {
-    private bool _isStandaloneSettingsEnabled = false;
     private bool _isEnabled = true;
     private string _notificationMsg = "今天的课程已结束，请同学们有序离开。";
-
-    public bool IsStandaloneSettingsEnabled
-    {
-        get => _isStandaloneSettingsEnabled;
-        set
-        {
-            if (value == _isStandaloneSettingsEnabled) return;
-            _isStandaloneSettingsEnabled = value;
-            OnPropertyChanged();
-        }
-    }
+    private bool _isAttachSettingsEnabled = false;
 
     public bool IsEnabled
     {
@@ -37,6 +27,17 @@ public class AfterSchoolNotificationAttachedSettings : ObservableRecipient
         {
             if (value == _notificationMsg) return;
             _notificationMsg = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAttachSettingsEnabled
+    {
+        get => _isAttachSettingsEnabled;
+        set
+        {
+            if (value == _isAttachSettingsEnabled) return;
+            _isAttachSettingsEnabled = value;
             OnPropertyChanged();
         }
     }

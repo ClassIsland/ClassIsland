@@ -147,6 +147,9 @@ public partial class App : Application
                 services.AddSingleton<WeatherService>();
                 services.AddSingleton<FileFolderService>();
                 services.AddSingleton<AttachedSettingsHostService>();
+                //services.AddHostedService<BootService>();
+                // Views
+                services.AddSingleton<MainWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
@@ -173,8 +176,7 @@ public partial class App : Application
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = Host.StartAsync();
 
-        MainWindow = new MainWindow();
-        MainWindow.Show();
+        GetService<MainWindow>().Show();
     }
 
     public static void ReleaseLock()

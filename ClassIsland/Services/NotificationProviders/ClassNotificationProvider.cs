@@ -7,6 +7,7 @@ using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Enums;
 using ClassIsland.Interfaces;
 using ClassIsland.Models;
+using ClassIsland.Models.AttachedSettings;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 
@@ -58,13 +59,24 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private void UpdateTimerTick(object? sender, EventArgs e)
     {
         var tClassDelta = NotificationHostService.OnClassDeltaTime;
-        if (Settings.IsClassOnPreparingNotificationEnabled &&
+        var settings = GetAttachedSettingsNext();
+        var isAttachedSettingsEnabled = settings?.IsAttachSettingsEnabled == true;
+        var settingsIsClassOnPreparingNotificationEnabled = isAttachedSettingsEnabled ?
+            settings!.IsClassOnPreparingNotificationEnabled
+            : Settings.IsClassOnPreparingNotificationEnabled;
+        var settingsInDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ? 
+                settings!.ClassPreparingDeltaTime
+                : Settings.InDoorClassPreparingDeltaTime;
+        var settingsOutDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ?
+                settings!.ClassPreparingDeltaTime
+                : Settings.OutDoorClassPreparingDeltaTime;
+        if (settingsIsClassOnPreparingNotificationEnabled &&
             ((tClassDelta > TimeSpan.Zero &&
-              tClassDelta <= TimeSpan.FromSeconds(Settings.InDoorClassPreparingDeltaTime) &&
+              tClassDelta <= TimeSpan.FromSeconds(settingsInDoorClassPreparingDeltaTime) &&
               !NotificationHostService.NextClassSubject.IsOutDoor) // indoor
              ||
              (tClassDelta > TimeSpan.Zero &&
-              tClassDelta <= TimeSpan.FromSeconds(Settings.OutDoorClassPreparingDeltaTime) &&
+              tClassDelta <= TimeSpan.FromSeconds(settingsOutDoorClassPreparingDeltaTime) &&
               NotificationHostService.NextClassSubject.IsOutDoor) // outdoor
             ) &&
             !IsClassPreparingNotified)
@@ -88,7 +100,11 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private void OnBreakingTime(object? sender, EventArgs e)
     {
         IsClassPreparingNotified = false;
-        if (!Settings.IsClassOffNotificationEnabled)
+        var settings = GetAttachedSettings();
+        var settingsIsClassOffNotificationEnabled = settings?.IsAttachSettingsEnabled == true ?
+            settings.IsClassOffNotificationEnabled
+            : Settings.IsClassOffNotificationEnabled;
+        if (!settingsIsClassOffNotificationEnabled)
         {
             return;
         }
@@ -103,7 +119,12 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
     private void OnClass(object? sender, EventArgs e)
     {
-        if (!Settings.IsClassOnNotificationEnabled)
+        var settings = GetAttachedSettings();
+        var settingsIsClassOnNotificationEnabled = settings?.IsAttachSettingsEnabled == true ? 
+            settings.IsClassOnNotificationEnabled 
+            : Settings.IsClassOnNotificationEnabled;
+        
+        if (!settingsIsClassOnNotificationEnabled)
         {
             return;
         }
@@ -117,6 +138,36 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
         });
+    }
+
+    private ClassNotificationAttachedSettings? GetAttachedSettings()
+    {
+        var mvm = App.GetService<MainWindow>().ViewModel;
+        var settings = AttachedSettingsHostService
+            .GetAttachedSettingsByPriority<
+                ClassNotificationAttachedSettings>(
+                ProviderGuid,
+                mvm.CurrentSubject,
+                mvm.CurrentTimeLayoutItem,
+                mvm.CurrentClassPlan,
+                mvm.CurrentClassPlan?.TimeLayout
+            );
+        return settings;
+    }
+
+    private ClassNotificationAttachedSettings? GetAttachedSettingsNext()
+    {
+        var mvm = App.GetService<MainWindow>().ViewModel;
+        var settings = AttachedSettingsHostService
+            .GetAttachedSettingsByPriority<
+                ClassNotificationAttachedSettings>(
+                ProviderGuid,
+                mvm.NextSubject,
+                mvm.NextTimeLayoutItem,
+                mvm.CurrentClassPlan,
+                mvm.CurrentClassPlan?.TimeLayout
+            );
+        return settings;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

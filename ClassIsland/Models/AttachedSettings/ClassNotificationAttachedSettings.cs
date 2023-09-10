@@ -1,26 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClassIsland.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AttachedSettings;
 
-public class ClassNotificationAttachedSettings : ObservableRecipient
+public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedSettings
 {
-    private bool _isEnabled = false;
     private bool _isClassOnNotificationEnabled = true;
     private bool _isClassOnPreparingNotificationEnabled = true;
     private bool _isClassOffNotificationEnabled = true;
     private int _classPreparingDeltaTime = 60;
     private string _classOnPreparingText = "准备上课，请回到座位并保持安静，做好上课准备。";
-
-    public bool IsEnabled
-    {
-        get => _isEnabled;
-        set
-        {
-            if (value == _isEnabled) return;
-            _isEnabled = value;
-            OnPropertyChanged();
-        }
-    }
+    private bool _isAttachSettingsEnabled;
 
     public bool IsClassOnNotificationEnabled
     {
@@ -73,6 +63,17 @@ public class ClassNotificationAttachedSettings : ObservableRecipient
         {
             if (value == _classOnPreparingText) return;
             _classOnPreparingText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAttachSettingsEnabled
+    {
+        get => _isAttachSettingsEnabled;
+        set
+        {
+            if (value == _isAttachSettingsEnabled) return;
+            _isAttachSettingsEnabled = value;
             OnPropertyChanged();
         }
     }

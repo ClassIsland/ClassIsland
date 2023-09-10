@@ -14,10 +14,10 @@
     </UserControl.Resources>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationAttachedSettingsControl}}">
         <!-- 启用特定的上课提醒设置 -->
-        <CheckBox IsChecked="{Binding Settings.IsEnabled}" 
+        <CheckBox IsChecked="{Binding Settings.IsAttachSettingsEnabled}" 
                   Content="启用特定的上课提醒设置。"
                   Margin="0 0 0 6"/>
-        <StackPanel Visibility="{Binding Settings.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <StackPanel Visibility="{Binding Settings.IsAttachSettingsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
             <!-- 启用准备上课提醒 -->
             <CheckBox IsChecked="{Binding Settings.IsClassOnPreparingNotificationEnabled}" 
                       Content="启用准备上课提醒。"

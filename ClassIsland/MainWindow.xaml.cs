@@ -229,6 +229,15 @@ public partial class MainWindow : Window
                 ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
                 ViewModel.CurrentTimeLayoutItem = i;
                 NotificationHostService.IsClassConfirmed = isLessonConfirmed = true;
+                if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
+                {
+                    var i0 = GetSubjectIndex(currentLayout.IndexOf(i));
+                    ViewModel.CurrentSubject = ViewModel.Profile.Subjects[ViewModel.CurrentClassPlan.Classes[i0].SubjectId];
+                }
+                else
+                {
+                    ViewModel.CurrentSubject = null;
+                }
                 break;
             }
         }

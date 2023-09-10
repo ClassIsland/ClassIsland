@@ -37,6 +37,7 @@ public class MainViewModel : ObservableRecipient
     private double _overlayRemainTimePercents = 1;
     private NotificationRequest _currentNotificationRequest = new();
     private bool _isMainWindowVisible = true;
+    private Subject? _currentSubject = new();
 
     public Profile Profile
     {
@@ -337,6 +338,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isMainWindowVisible) return;
             _isMainWindowVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Subject? CurrentSubject
+    {
+        get => _currentSubject;
+        set
+        {
+            if (Equals(value, _currentSubject)) return;
+            _currentSubject = value;
             OnPropertyChanged();
         }
     }
