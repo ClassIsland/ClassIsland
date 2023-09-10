@@ -671,7 +671,7 @@
                                          FontSize="17"
                                          Padding="8"
                                          IsReadOnly="True"
-                                         FontFamily="{Binding Settings.MainWindowFont}"
+                                         FontFamily="{Binding Settings.MainWindowFont, Mode=OneWay}"
                                          Margin="0 4 0 0"
                                          TextAlignment="Center"
                                          xml:space="preserve"

@@ -38,6 +38,7 @@ public class MainViewModel : ObservableRecipient
     private NotificationRequest _currentNotificationRequest = new();
     private bool _isMainWindowVisible = true;
     private Subject? _currentSubject = new();
+    private bool _isClosing = false;
 
     public Profile Profile
     {
@@ -349,6 +350,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (Equals(value, _currentSubject)) return;
             _currentSubject = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClosing
+    {
+        get => _isClosing;
+        set
+        {
+            if (value == _isClosing) return;
+            _isClosing = value;
             OnPropertyChanged();
         }
     }

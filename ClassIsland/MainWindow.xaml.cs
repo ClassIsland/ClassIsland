@@ -459,6 +459,7 @@ public partial class MainWindow : Window
             var r = w.ShowDialog();
             if (r == false)
             {
+                ViewModel.IsClosing = true;
                 Close();
             }
             else
@@ -663,11 +664,17 @@ public partial class MainWindow : Window
 
     private void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {
+        ViewModel.IsClosing = true;
         Close();
     }
 
     private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
     {
+        if (!ViewModel.IsClosing)
+        {
+            e.Cancel = true;
+            return;
+        }
         SaveProfile();
         SaveSettings();
     }
