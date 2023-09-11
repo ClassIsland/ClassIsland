@@ -89,7 +89,7 @@ public partial class MainWindow : Window
         get;
     } = App.GetService<ThemeService>();
 
-    private NotificationHostService NotificationHostService
+    public NotificationHostService NotificationHostService
     {
         get; 
 
@@ -318,12 +318,16 @@ public partial class MainWindow : Window
 
         final:
         // 处理提醒请求队列
-        if (!ViewModel.IsOverlayOpened && ViewModel.Settings.IsNotificationEnabled)
+        if (!ViewModel.IsOverlayOpened)
         {
             ViewModel.IsOverlayOpened = true;
+            if (!ViewModel.Settings.IsNotificationEnabled)
+            {
+                NotificationHostService.RequestQueue.Clear();
+            }
             while (NotificationHostService.RequestQueue.Count > 0)
             {
-                var request = ViewModel.CurrentNotificationRequest = NotificationHostService.RequestQueue.Dequeue();
+                var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();
                 if (request.TargetMaskEndTime != null)
                 {
                     request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
@@ -333,13 +337,14 @@ public partial class MainWindow : Window
                     request.OverlayDuration = request.TargetOverlayEndTime.Value - DateTime.Now - request.MaskDuration;
                 }
                 ViewModel.CurrentMaskElement = request.MaskContent;
+                var cancellationToken = request.CancellationTokenSource.Token;
 
                 if (request.MaskDuration > TimeSpan.Zero &&
                     request.OverlayDuration > TimeSpan.Zero)
                 {
                     BeginStoryboard("OverlayMaskIn");
-                    await Task.Run(() => Thread.Sleep(request.MaskDuration));
-                    if (request.OverlayContent is null)
+                    await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
+                    if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
                     {
                         BeginStoryboard("OverlayMaskOutDirect");
                     }
@@ -348,7 +353,7 @@ public partial class MainWindow : Window
                         ViewModel.CurrentOverlayElement = request.OverlayContent;
                         BeginStoryboard("OverlayMaskOut");
                         ViewModel.OverlayRemainStopwatch.Restart();
-                        await Task.Run(() => Thread.Sleep(request.OverlayDuration));
+                        await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.OverlayDuration), cancellationToken);
                         ViewModel.OverlayRemainStopwatch.Stop();
                     }
 
@@ -390,6 +395,27 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
         TaskBarIconService.MainTaskBarIcon.DataContext = this;
         ViewModel.OverlayRemainTimePercents = 0.5;
+
+        if (!ViewModel.Settings.IsWelcomeWindowShowed)
+        {
+            var w = new WelcomeWindow()
+            {
+                ViewModel =
+                {
+                    Settings = ViewModel.Settings
+                }
+            };
+            var r = w.ShowDialog();
+            if (r == false)
+            {
+                ViewModel.IsClosing = true;
+                Close();
+            }
+            else
+            {
+                ViewModel.Settings.IsWelcomeWindowShowed = true;
+            }
+        }
         base.OnContentRendered(e);
     }
 
@@ -446,27 +472,6 @@ public partial class MainWindow : Window
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
         SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
-
-        if (!ViewModel.Settings.IsWelcomeWindowShowed)
-        {
-            var w = new WelcomeWindow()
-            {
-                ViewModel =
-                {
-                    Settings = ViewModel.Settings
-                }
-            };
-            var r = w.ShowDialog();
-            if (r == false)
-            {
-                ViewModel.IsClosing = true;
-                Close();
-            }
-            else
-            {
-                ViewModel.Settings.IsWelcomeWindowShowed = true;
-            }
-        }
     }
 
     private void OnSystemEventsOnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs args)
@@ -838,5 +843,36 @@ public partial class MainWindow : Window
     private async void MenuItemDebugFitSize_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.OverlayRemainTimePercents = 0.5;
+    }
+
+    private void MenuItemClearAllNotifications_OnClick(object sender, RoutedEventArgs e)
+    {
+        NotificationHostService.CurrentRequest?.CancellationTokenSource.Cancel();
+    }
+
+    private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsWindow.RootTabControl.SelectedIndex = 2;
+        OpenSettingsWindow();
+    }
+
+    private void MenuItemShowMainWindow_OnChecked(object sender, RoutedEventArgs e)
+    {
+        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
+        {
+            BackgroundSource =
+                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png",
+                    UriKind.Absolute)),
+        };
+    }
+
+    private void MenuItemShowMainWindow_OnUnchecked(object sender, RoutedEventArgs e)
+    {
+        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
+        {
+            BackgroundSource =
+                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo_Fade.png",
+                    UriKind.Absolute)),
+        };
     }
 }

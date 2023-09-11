@@ -22,7 +22,6 @@ public class MiniInfoProviderHostService : IHostedService
         SettingsService = settingsService;
     }
 
-
     public void RegisterMiniInfoProvider(IMiniInfoProvider provider)
     {
         var guid = provider.ProviderGuid.ToString();

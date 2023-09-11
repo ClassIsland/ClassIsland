@@ -61,15 +61,10 @@
                 </MenuItem.Style>
             </MenuItem>
             <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…" Click="MenuItemHelps_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <Separator/>
-            <MenuItem Header="显示主界面" IsCheckable="True" IsChecked="{Binding ViewModel.IsMainWindowVisible}" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}"/>
-            <MenuItem Icon="{materialDesign:PackIcon BellNotificationOutline}" Header="通知">
-                <MenuItem Header="共xx个通知"/>
-                <Separator/>
-                <MenuItem Icon="{materialDesign:PackIcon ClearOutline}" Header="全部清除"/>
-                <MenuItem Icon="{materialDesign:PackIcon NotificationSettingsOutline}" Header="通知设置…"/>
-            </MenuItem>
-            <Separator/>
+            <Separator />
+            <MenuItem Header="显示主界面" IsCheckable="True" Checked="MenuItemShowMainWindow_OnChecked" Unchecked="MenuItemShowMainWindow_OnUnchecked" IsChecked="{Binding ViewModel.IsMainWindowVisible}" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon NotificationClearAll}" Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -518,6 +513,7 @@
                                  BorderBrush="Transparent"
                                  Opacity="0.16"/>
                     <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}" />
+                    
                 </Grid>
 
                 <!-- Mask -->

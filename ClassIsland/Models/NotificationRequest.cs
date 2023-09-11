@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
@@ -11,6 +12,7 @@ public class NotificationRequest : ObservableRecipient
     private TimeSpan _maskDuration = TimeSpan.FromSeconds(5);
     private DateTime? _targetOverlayEndTime;
     private DateTime? _targetMaskEndTime;
+    private CancellationTokenSource _cancellationTokenSource = new();
 
     public object? OverlayContent
     {
@@ -74,6 +76,17 @@ public class NotificationRequest : ObservableRecipient
         {
             if (Nullable.Equals(value, _targetMaskEndTime)) return;
             _targetMaskEndTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public CancellationTokenSource CancellationTokenSource
+    {
+        get => _cancellationTokenSource;
+        set
+        {
+            if (Equals(value, _cancellationTokenSource)) return;
+            _cancellationTokenSource = value;
             OnPropertyChanged();
         }
     }
