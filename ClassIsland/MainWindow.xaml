@@ -491,6 +491,16 @@
                                                     </MultiDataTrigger.Conditions>
                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                 </MultiDataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding TimeType}" Value="0" />
+                                                        <Condition Binding="{Binding IsHideDefault}" Value="True" />
+                                                        <Condition
+                                                            Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                                            Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </MultiDataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </controls:LessonControl.Style>

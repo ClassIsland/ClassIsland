@@ -102,6 +102,20 @@
                         <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                     </ListBoxItem>
                 </ListBox>
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ViewModel.SelectedTimePoint.TimeType}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </Style>
+                    </StackPanel.Style>
+                    <CheckBox Margin="0 8 0 0" Content="默认隐藏" IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}"/>
+                    <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap"/>
+                </StackPanel>
                 <Separator Margin="0 20 0 8"/>
                 <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
                 <ItemsControl x:Name="ItemsControlTimePointAttachedSettingsControls"

@@ -10,6 +10,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     private DateTime _endSecond = DateTime.Now;
     private bool _isOnClass = true;
     private int _timeType = 0;
+    private bool _isHideDefault = false;
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
@@ -59,6 +60,20 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         {
             if (value == _timeType) return;
             _timeType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否默认隐藏
+    /// </summary>
+    public bool IsHideDefault
+    {
+        get => _isHideDefault;
+        set
+        {
+            if (value == _isHideDefault) return;
+            _isHideDefault = value;
             OnPropertyChanged();
         }
     }
