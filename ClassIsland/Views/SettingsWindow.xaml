@@ -1615,7 +1615,12 @@ The quick brown fox jumps over a lazy dog.
                                             </ListItem>
                                             <ListItem>
                                                 <Paragraph>
-                                                    部分图像资源（/Assets/帕姆_震惊.png, /Assets/普罗米修斯_查询.png）来自米游社表情包，版权归 miHoYo 所有。
+                                                    天气数据来源于小米天气。
+                                                </Paragraph>
+                                            </ListItem>
+                                            <ListItem>
+                                                <Paragraph>
+                                                    部分图像资源（/Assets/帕姆_震惊.png, /Assets/普罗米修斯_查询.png, /Assets/光辉矢愿_遨游.png, /Assets/光辉矢愿_回眸.png, /Assets/光辉矢愿_瞄准.png, /Assets/光辉矢愿_想我了吗.png, /Assets/光辉矢愿_小喇叭.png）来自米游社和Bilibili装扮表情包，版权归 miHoYo 所有。
                                                 </Paragraph>
                                             </ListItem>
                                             <ListItem>
