@@ -42,7 +42,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <classIsland:SourceAdapterWrapper x:Key="RootSource" Model="{Binding ViewModel, Mode=OneTime}"/>
 
         <!-- 时间表信息 -->
         <ScrollViewer x:Key="TimeLayoutInfoEditor" Width="332" VerticalScrollBarVisibility="Auto">
@@ -467,6 +466,9 @@
             
         </Style>
 
+        
+        <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+
     </Window.Resources>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
         <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
@@ -479,9 +481,10 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <!-- Main -->
-                <TabControl Grid.Row="1" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged">
+                <TabControl Grid.Row="1" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged"
+                            x:Name="RootTabControl">
                     <!-- 课表 -->
-                    <TabItem Header="课表">
+                    <TabItem Header="课表" Visibility="Collapsed">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -649,7 +652,7 @@
                     </TabItem>
 
                     <!-- 时间表 -->
-                    <TabItem Header="时间表">
+                    <TabItem Header="时间表" Visibility="Collapsed">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -774,64 +777,91 @@
                                 </ToolBar>
 
                                 <!-- 时间点 -->
-                                <ListBox Grid.Row="1" Margin="12"
-                                          SelectionMode="Single"
-                                          ScrollViewer.CanContentScroll="False"
-                                          SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
-                                          ItemsSource="{Binding Layouts, Mode=OneWay}" x:Name="ListViewTimePoints"
-                                          Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
-                                    <ListBox.ItemContainerStyle>
-                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
-                                            <EventSetter Event="MouseDoubleClick" Handler="TimePointDoubleClick_OnHandler"/>
-                                        </Style>
-                                    </ListBox.ItemContainerStyle>
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition/>
-                                                </Grid.ColumnDefinitions>
-                                                <!-- Icon -->
-                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0">
-                                                    <materialDesign:PackIcon.Style>
-                                                        <Style TargetType="materialDesign:PackIcon">
-                                                            <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding TimeType}" Value="0">
-                                                                    <Setter Property="Kind" Value="BookOutline"/>
-                                                                    <Setter Property="ToolTip" Value="上课时间"/>
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding TimeType}" Value="1">
-                                                                    <Setter Property="Kind" Value="ClockOutline"/>
-                                                                    <Setter Property="ToolTip" Value="课间休息"/>
-                                                                </DataTrigger>
-                                                                <DataTrigger Binding="{Binding TimeType}" Value="2">
-                                                                    <Setter Property="Kind" Value="ArrowSplitHorizontal"/>
-                                                                    <Setter Property="ToolTip" Value="分割线"/>
-                                                                </DataTrigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </materialDesign:PackIcon.Style>
-                                                </materialDesign:PackIcon>
+                                <TabControl Grid.Row="1" Margin="12"
+                                            TabStripPlacement="Bottom"
+                                            HorizontalContentAlignment="Left">
+                                    <!-- 旧版编辑器 -->
+                                    <TabItem Header="旧版编辑器">
+                                        <ListBox SelectionMode="Single"
+                                                 ScrollViewer.CanContentScroll="False"
+                                                 SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
+                                                 ItemsSource="{Binding Layouts, Mode=OneWay}"
+                                                 x:Name="ListViewTimePoints"
+                                                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                                            <ListBox.ItemContainerStyle>
+                                                <Style TargetType="ListBoxItem"
+                                                       BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
+                                                    <EventSetter Event="MouseDoubleClick"
+                                                                 Handler="TimePointDoubleClick_OnHandler" />
+                                                </Style>
+                                            </ListBox.ItemContainerStyle>
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+                                                        <!-- Icon -->
+                                                        <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
+                                                            Margin="0 0 6 0">
+                                                            <materialDesign:PackIcon.Style>
+                                                                <Style TargetType="materialDesign:PackIcon">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding TimeType}"
+                                                                            Value="0">
+                                                                            <Setter Property="Kind" Value="BookOutline" />
+                                                                            <Setter Property="ToolTip" Value="上课时间" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding TimeType}"
+                                                                            Value="1">
+                                                                            <Setter Property="Kind"
+                                                                                Value="ClockOutline" />
+                                                                            <Setter Property="ToolTip" Value="课间休息" />
+                                                                        </DataTrigger>
+                                                                        <DataTrigger Binding="{Binding TimeType}"
+                                                                            Value="2">
+                                                                            <Setter Property="Kind"
+                                                                                Value="ArrowSplitHorizontal" />
+                                                                            <Setter Property="ToolTip" Value="分割线" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </materialDesign:PackIcon.Style>
+                                                        </materialDesign:PackIcon>
 
-                                                <!-- Time -->
-                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14" ToolTip="时间段">
-                                                    <Run Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}"/>
-                                                    <Run Text="-"/>
-                                                    <Run Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}"/>
-                                                </TextBlock>
-                                                
-                                                <!-- Last Time -->
-                                                <controls:IconText Grid.Column="1" Grid.Row="1" Kind="ClockAutoOutline" Text="{Binding Last}" 
-                                                                   Margin="0 3 0 0" ToolTip="持续时间"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
+                                                        <!-- Time -->
+                                                        <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14"
+                                                                   ToolTip="时间段">
+                                                            <Run
+                                                                Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
+                                                            <Run Text="-" />
+                                                            <Run
+                                                                Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
+                                                        </TextBlock>
+
+                                                        <!-- Last Time -->
+                                                        <controls:IconText Grid.Column="1" Grid.Row="1"
+                                                                           Kind="ClockAutoOutline"
+                                                                           Text="{Binding Last}"
+                                                                           Margin="0 3 0 0" ToolTip="持续时间" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </TabItem>
+                                    <!-- 新编辑器 -->
+                                    <TabItem Header="新编辑器（实验）">
+                                        <controls:TimeLineListControl SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
+                                                                      ItemsSource="{Binding Layouts, Mode=OneWay}">
+
+                                        </controls:TimeLineListControl>
+                                    </TabItem>
+                                </TabControl>
 
                                 <!-- 禁止编辑叠层 -->
                                 <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -865,7 +895,7 @@
                     </TabItem>
 
                     <!-- 科目 -->
-                    <TabItem Header="科目">
+                    <TabItem Header="科目" Visibility="Collapsed">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
@@ -1060,21 +1090,87 @@
                 <materialDesign:ColorZone Grid.Row="0" Padding="16" Mode="PrimaryMid"
                                           materialDesign:ElevationAssist.Elevation="Dp4">
                     <Grid Margin="4 0 4 0">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" 
+                                    Orientation="Horizontal" HorizontalAlignment="Left">
+                            <StackPanel.Resources>
+                                <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
+                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                    <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                    <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
+                                    <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                </Style>
+                            </StackPanel.Resources>
                             <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                        HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" Margin="0,0,20,0"/>
-                            <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
-                                               Margin="0 0 8 0"
-                                               VerticalAlignment="Center"
-                                               ToolTip="当前加载的档案"/>
-                            <Button ToolTip="管理所有保存的档案。" Click="ButtonProfileManage_OnClick"
-                                    VerticalAlignment="Center"
-                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
-                                    Content="{materialDesign:PackIcon Menu, Size=16}"/>
-                            
+                                       VerticalAlignment="Center" Margin="0,0,12,0"/>
+                            <materialDesign:Chip
+                                ToolTip="档案"
+                                Icon="{materialDesign:PackIcon FileDocumentOutline}"
+                                Click="ButtonProfileManage_OnClick"
+                                IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
+                                <TextBlock>
+                                    <Run Text="{Binding MainViewModel.CurrentProfilePath}"/>
+                                </TextBlock>
+                            </materialDesign:Chip>
+                            <materialDesign:Chip
+                                Icon="{materialDesign:PackIcon FileChartOutline}">
+                                <TextBlock FontFamily="{StaticResource HarmonyOsSans}">
+                                    <Run Text="课表"/>
+                                </TextBlock>
+                            </materialDesign:Chip>
                         </StackPanel>
+                        <ListBox Grid.Column="1"
+                                 Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                 VerticalContentAlignment="Stretch"
+                                 SelectedIndex="{Binding SelectedIndex, ElementName=RootTabControl}"
+                                 materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                 Margin="0 -15">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                    <Setter Property="Padding" Value="0"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <DataTemplate.Resources>
+                                        <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButton}">
+                                            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                            <Setter Property="FontSize" Value="20"/>
+                                            <Setter Property="Opacity" Value="0.75"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Opacity" Value="1.0"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                    <Setter Property="BorderThickness" Value="0 0 0 3"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                            <Style.Resources>
+                                                <Style TargetType="materialDesign:Ripple">
+                                                    <Setter Property="Feedback" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                                </Style>
+                                            </Style.Resources>
+                                        </Style>
+                                        <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                    </DataTemplate.Resources>
+                                    <RadioButton Content="{Binding}" 
+                                                 IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                    </RadioButton>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <system:String>课表</system:String>
+                            <system:String>时间表</system:String>
+                            <system:String>科目</system:String>
+                        </ListBox>
                     </Grid>
                 </materialDesign:ColorZone>
                 <!-- SnackBar -->

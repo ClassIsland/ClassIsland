@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -21,6 +22,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         set
         {
             if (value == _startSecond) return;
+            //EnsureTime(value, EndSecond);
             _startSecond = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
@@ -36,9 +38,18 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         set
         {
             if (value == _endSecond) return;
+            //EnsureTime(StartSecond, value);
             _endSecond = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
+        }
+    }
+
+    private void EnsureTime(DateTime start, DateTime end)
+    {
+        if (start.TimeOfDay > end.TimeOfDay)
+        {
+            throw new ArgumentException("时间点起始时间无效。");
         }
     }
 
