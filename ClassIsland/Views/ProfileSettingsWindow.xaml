@@ -722,6 +722,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
                                 <!-- 时间表编辑操作 -->
@@ -777,11 +778,14 @@
                                 </ToolBar>
 
                                 <!-- 时间点 -->
-                                <TabControl Grid.Row="1" Margin="12"
+                                <TabControl Grid.Row="1"
                                             TabStripPlacement="Bottom"
-                                            HorizontalContentAlignment="Left">
+                                            HorizontalContentAlignment="Left"
+                                            x:Name="TabTimeLayoutEditors">
                                     <!-- 旧版编辑器 -->
-                                    <TabItem Header="旧版编辑器">
+                                    <TabItem Header="{materialDesign:PackIcon ListBoxOutline}" 
+                                             Visibility="Collapsed"
+                                             ToolTip="列表" Padding="4">
                                         <ListBox SelectionMode="Single"
                                                  ScrollViewer.CanContentScroll="False"
                                                  SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
@@ -855,37 +859,90 @@
                                         </ListBox>
                                     </TabItem>
                                     <!-- 新编辑器 -->
-                                    <TabItem Header="新编辑器（实验）">
+                                    <TabItem Header="{materialDesign:PackIcon TimelineOutline}" ToolTip="时间线"
+                                             Visibility="Collapsed">
                                         <controls:TimeLineListControl SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
                                                                       ItemsSource="{Binding Layouts, Mode=OneWay}"
                                                                       Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}"
                                                                       x:Name="TimeLineListControl">
-
+                                            <!-- 回应我吧，爱莉希雅 -->
                                         </controls:TimeLineListControl>
                                     </TabItem>
                                 </TabControl>
 
                                 <!-- 新编辑器大小调整 -->
-                                <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                <StackPanel Grid.Row="2" Orientation="Horizontal"
                                             VerticalAlignment="Bottom"
-                                            Margin="12"
                                             HorizontalAlignment="Right">
                                     <TextBlock Text="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay, StringFormat={}{0:P0}}" 
+                                               Margin="0 0 4 0"
+                                               ToolTip="缩放比例"
                                                VerticalAlignment="Center"/>
                                     <Button Content="{materialDesign:PackIcon ZoomOut}"
                                             ToolTip="缩小"
                                             VerticalAlignment="Center"
+                                            Margin="2 0"
                                             Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Click="ButtonZoomOut_OnClick"/>
                                     <Button Content="{materialDesign:PackIcon ZoomIn}"
                                             ToolTip="放大"
                                             VerticalAlignment="Center"
+                                            Margin="2 0"
                                             Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Click="ButtonZoomIn_OnClick"/>
                                 </StackPanel>
 
+                                <ListBox Grid.Row="2"
+                                         Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                         VerticalContentAlignment="Stretch"
+                                         VerticalAlignment="Bottom"
+                                         HorizontalAlignment="Left"
+                                         SelectedIndex="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
+                                         materialDesign:ListBoxItemAssist.ShowSelection="False">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                            <Setter Property="Padding" Value="0"/>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <DataTemplate.Resources>
+                                                <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButtonTop}">
+                                                    <!--<Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                                    <Setter Property="FontSize" Value="18"/>
+                                                    <Setter Property="Opacity" Value="0.75"/>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsChecked" Value="True">
+                                                            <Setter Property="Opacity" Value="1.0"/>
+                                                            <Setter Property="FontWeight" Value="Bold"/>
+                                                            <Setter Property="BorderThickness" Value="0 0 0 3"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                    <Style.Resources>
+                                                        <Style TargetType="materialDesign:Ripple">
+                                                            <Setter Property="Feedback" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                                        </Style>
+                                                    </Style.Resources>-->
+                                                </Style>
+                                                <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                            </DataTemplate.Resources>
+                                            <RadioButton ToolTip="{Binding ToolTip}"
+                                                         IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                                <materialDesign:PackIcon Kind="{Binding Kind}"/>
+                                            </RadioButton>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                    <materialDesign:PackIcon Kind="ListBoxOutline" ToolTip="列表视图"/>
+                                    <materialDesign:PackIcon Kind="TimelineOutline" ToolTip="时间线视图"/>
+                                </ListBox>
+
                                 <!-- 禁止编辑叠层 -->
-                                <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Grid Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Image Source="/Assets/帕姆_震惊.png" Width="72" Height="72" Margin="0 0 0 8"

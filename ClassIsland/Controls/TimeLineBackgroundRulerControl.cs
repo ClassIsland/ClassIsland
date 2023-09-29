@@ -101,7 +101,7 @@ public class TimeLineBackgroundRulerControl : Control
             var text = new FormattedText(ts.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface(fontFamily, new FontStyle(), FontWeights.Regular,
                     new FontStretch()), 12, body);
-            drawingContext.DrawText(text, new Point(0, y - 6));
+            drawingContext.DrawText(text, new Point(0, y - 8));
 
             done:
             ts += BaseSpan;
