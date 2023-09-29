@@ -46,6 +46,17 @@ namespace ClassIsland.Controls;
 /// </summary>
 public class TimeLineListControl : ListBox
 {
+    public static readonly DependencyProperty ScaleProperty = DependencyProperty.Register(
+        nameof(Scale), typeof(double), typeof(TimeLineListControl), new PropertyMetadata(1.0));
+
+    public double Scale
+    {
+        get { return (double)GetValue(ScaleProperty); }
+        set { SetValue(ScaleProperty, value); }
+    }
+
+    private static double BaseTicks { get; } = 1000000000.0;
+
     static TimeLineListControl()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLineListControl), new FrameworkPropertyMetadata(typeof(TimeLineListControl)));

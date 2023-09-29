@@ -4,7 +4,8 @@
     xmlns:local="clr-namespace:ClassIsland"
     xmlns:controls="clr-namespace:ClassIsland.Controls"
     xmlns:models="clr-namespace:ClassIsland.Models"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:converters="clr-namespace:ClassIsland.Converters">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -37,21 +38,119 @@
         <Setter Property="Control.ToolTip" Value="foo"/>
     </Style>
 
+    <converters:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
     <Style TargetType="{x:Type controls:TimeLineListControl}" BasedOn="{StaticResource MaterialDesignListBox}">
+        <Style.Resources>
+            <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.Resources>
+                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                    </Grid.Resources>
+                    <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                    <Border SnapsToDevicePixels="True" Width="200">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TimeType}" Value="0">
+                                        <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TimeType}" Value="1">
+                                        <Setter Property="Background" Value="{DynamicResource PrimaryHueDarkBrush}"/>
+                                    </DataTrigger>
+                                    <!-- Selected -->
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateSeparator">
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.Resources>
+                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                    </Grid.Resources>
+                    <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                    <Border SnapsToDevicePixels="True" Width="500" Height="2" Background="Red">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                    <Border Height="6">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Style.Triggers>
+                                    <!-- Selected -->
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                    </Border>
+                    <Ellipse Width="16" Height="16" 
+                             Stroke="{DynamicResource PrimaryHueMidBrush}"
+                             StrokeThickness="2"
+                             Fill="{DynamicResource MaterialDesignBody}"
+                             Cursor="SizeAll"
+                             Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        
+                    </Ellipse>
+                </Grid>
+            </DataTemplate>
+        </Style.Resources>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <Canvas IsItemsHost="True"/>
+                    <Canvas IsItemsHost="True" Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                    
+                    <Style.Resources>
+                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                    </Style.Resources>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
+                            <Setter Property="Height" Value="20"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
+                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
+                    <Setter Property="Canvas.Top" Value="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Height">
+                        <Setter.Value>
+                            <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeDeltaToCanvasPosConverter}">
+                                <Binding Path="StartSecond" Mode="OneWay"/>
+                                <Binding Path="EndSecond" Mode="OneWay"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplateSelector">
+            <Setter.Value>
+                <controls:TimeLineListControlDataTemplateSelector/>
             </Setter.Value>
         </Setter>
     </Style>
