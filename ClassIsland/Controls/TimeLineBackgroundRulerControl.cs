@@ -72,12 +72,15 @@ public class TimeLineBackgroundRulerControl : Control
         var lastY = 0.0;
         var c = 0;
         var p = 12;
-        var bs = TimeSpan.FromHours(24).Ticks / 1000000000.0 / Scale / 36;
+        var bs = TimeSpan.FromHours(24).Ticks / 1000000000.0 * Scale / 36;
+        var body = (SolidColorBrush)FindResource("MaterialDesignBody");
+        var pen = new Pen(body, 1);
+        var fontFamily = (FontFamily)TryFindResource("HarmonyOsSans");
         p = bs switch
         {
-            <= 24 => 6,
-            > 24 and <= 48 => 3,
-            > 48 => 1,
+            <= 36 => 12,
+            > 36 and <= 72 => 6,
+            > 72 => 2,
             _ => p
         };
         do
@@ -85,25 +88,25 @@ public class TimeLineBackgroundRulerControl : Control
             var y = ts.Ticks / BaseTicks * Scale;
             var yDelta = y - lastY;
             lastY = y;
-            if (c * 2.0 % bs != 0)
+            if (c * 2 % p != 0)
             {
                 goto done;
             }
-            var pen = new Pen((SolidColorBrush)FindResource("MaterialDesignBody"), 1);
-            drawingContext.DrawLine(pen, new Point(0, y), new Point(ActualWidth, y));
-            if (c % bs != 0)
+            drawingContext.DrawLine(pen, new Point(55, y), new Point(ActualWidth, y));
+            if (c % p != 0)
             {
                 goto done;
             }
+
             var text = new FormattedText(ts.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
-                new Typeface((FontFamily)TryFindResource("HarmonyOsSans"), new FontStyle(), FontWeights.Regular,
-                    new FontStretch()), 12, (SolidColorBrush)FindResource("MaterialDesignBody"));
-            drawingContext.DrawText(text, new Point(0, y));
+                new Typeface(fontFamily, new FontStyle(), FontWeights.Regular,
+                    new FontStretch()), 12, body);
+            drawingContext.DrawText(text, new Point(0, y - 6));
 
             done:
             ts += BaseSpan;
             c++;
-        } while (ts <= TimeSpan.FromHours(24));
+        } while (ts < TimeSpan.FromHours(24));
 
         base.OnRender(drawingContext);
     }

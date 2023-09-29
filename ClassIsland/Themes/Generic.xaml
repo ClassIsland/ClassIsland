@@ -52,6 +52,8 @@
                     <materialDesign:ColorZone SnapsToDevicePixels="True" Width="200" VerticalAlignment="Stretch">
                         <materialDesign:ColorZone.Style>
                             <Style TargetType="materialDesign:ColorZone">
+                                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                <Setter Property="BorderThickness" Value="1"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding TimeType}" Value="0">
                                         <Setter Property="Mode" Value="PrimaryLight"/>
@@ -126,7 +128,7 @@
                                           ClipToBounds="False"
                                           Focusable="false">
                                 <Grid>
-                                    <controls:TimeLineBackgroundRulerControl/>
+                                    <controls:TimeLineBackgroundRulerControl Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
                                     <ItemsPresenter SnapsToDevicePixels="True"/>
                                 </Grid>
                             </ScrollViewer>
@@ -144,7 +146,7 @@
                     </Style.Resources>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
-                            <Setter Property="Height" Value="16"/>
+                            <Setter Property="Height" Value="2"/>
                             <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                                 <Setter.Value>
                                     <materialDesign:BehaviorCollection>
@@ -178,13 +180,23 @@
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
-                    <Setter Property="Canvas.Top" Value="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>
+                    <!--<Setter Property="Canvas.Top" />-->
+                    <Setter Property="Canvas.Top">
+                        <Setter.Value>
+                            <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeToCanvasPosConverter}">
+                                <Binding Path="StartSecond"/>
+                                <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Height">
                         <Setter.Value>
                             <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeDeltaToCanvasPosConverter}">
                                 <Binding Path="StartSecond" Mode="OneWay"/>
                                 <Binding Path="EndSecond" Mode="OneWay"/>
+                                <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
+
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>

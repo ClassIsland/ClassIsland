@@ -19,8 +19,10 @@ public class TimeLineListItemAdorner : Adorner
         _visualCollection = new VisualCollection(this);
         _control = new Control()
         {
-            Template = template
+            Template = template,
+            ClipToBounds = false
         };
+        ClipToBounds = false;
         _visualCollection.Add(_control);
     }
 

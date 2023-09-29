@@ -604,4 +604,24 @@ public partial class ProfileSettingsWindow : MyWindow
         OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 编辑时间点");
     }
+
+    private void ButtonZoomOut_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.TimeLineScale > 1.0)
+        {
+            ViewModel.TimeLineScale -= 0.2;
+        }
+        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
+        TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+    }
+
+    private void ButtonZoomIn_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.TimeLineScale < 5.0)
+        {
+            ViewModel.TimeLineScale += 0.2;
+        }
+        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
+        TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+    }
 }

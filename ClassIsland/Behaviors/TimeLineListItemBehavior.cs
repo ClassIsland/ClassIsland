@@ -43,6 +43,10 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
 
     private void RemoveAdorner()
     {
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         if (_adorner != null)
         {
             var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
@@ -53,6 +57,10 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
 
     private void AssociatedObjectOnSelected(object sender, RoutedEventArgs e)
     {
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
         if (_adorner != null)
         {

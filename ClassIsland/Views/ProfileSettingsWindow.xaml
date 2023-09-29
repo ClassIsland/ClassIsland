@@ -857,11 +857,32 @@
                                     <!-- 新编辑器 -->
                                     <TabItem Header="新编辑器（实验）">
                                         <controls:TimeLineListControl SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
-                                                                      ItemsSource="{Binding Layouts, Mode=OneWay}">
+                                                                      ItemsSource="{Binding Layouts, Mode=OneWay}"
+                                                                      Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}"
+                                                                      x:Name="TimeLineListControl">
 
                                         </controls:TimeLineListControl>
                                     </TabItem>
                                 </TabControl>
+
+                                <!-- 新编辑器大小调整 -->
+                                <StackPanel Grid.Row="1" Orientation="Horizontal"
+                                            VerticalAlignment="Bottom"
+                                            Margin="12"
+                                            HorizontalAlignment="Right">
+                                    <TextBlock Text="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay, StringFormat={}{0:P0}}" 
+                                               VerticalAlignment="Center"/>
+                                    <Button Content="{materialDesign:PackIcon ZoomOut}"
+                                            ToolTip="缩小"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                            Click="ButtonZoomOut_OnClick"/>
+                                    <Button Content="{materialDesign:PackIcon ZoomIn}"
+                                            ToolTip="放大"
+                                            VerticalAlignment="Center"
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                            Click="ButtonZoomIn_OnClick"/>
+                                </StackPanel>
 
                                 <!-- 禁止编辑叠层 -->
                                 <Grid Grid.Row="0" Grid.RowSpan="2" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -1145,7 +1166,7 @@
                                     <DataTemplate.Resources>
                                         <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButton}">
                                             <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                            <Setter Property="FontSize" Value="20"/>
+                                            <Setter Property="FontSize" Value="18"/>
                                             <Setter Property="Opacity" Value="0.75"/>
                                             <Style.Triggers>
                                                 <Trigger Property="IsChecked" Value="True">
