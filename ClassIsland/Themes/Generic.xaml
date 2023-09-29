@@ -5,7 +5,8 @@
     xmlns:controls="clr-namespace:ClassIsland.Controls"
     xmlns:models="clr-namespace:ClassIsland.Models"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:converters="clr-namespace:ClassIsland.Converters">
+    xmlns:converters="clr-namespace:ClassIsland.Converters"
+    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -48,25 +49,35 @@
                         <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Grid.Resources>
                     <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
-                    <Border SnapsToDevicePixels="True" Width="200">
-                        <Border.Style>
-                            <Style TargetType="Border">
+                    <materialDesign:ColorZone SnapsToDevicePixels="True" Width="200" VerticalAlignment="Stretch">
+                        <materialDesign:ColorZone.Style>
+                            <Style TargetType="materialDesign:ColorZone">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding TimeType}" Value="0">
-                                        <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
+                                        <Setter Property="Mode" Value="PrimaryLight"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding TimeType}" Value="1">
-                                        <Setter Property="Background" Value="{DynamicResource PrimaryHueDarkBrush}"/>
+                                        <Setter Property="Mode" Value="PrimaryDark"/>
                                     </DataTrigger>
                                     <!-- Selected -->
                                     <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
-                                        <Setter Property="BorderThickness" Value="2"/>
+                                        <!--<Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>-->
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Border.Style>
-                    </Border>
+                        </materialDesign:ColorZone.Style>
+                        <Grid>
+                            <TextBlock Grid.Row="0" FontSize="14"
+                                       ToolTip="时间段">
+                                <Run
+                                    Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
+                                <Run Text="-" />
+                                <Run
+                                    Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
+                            </TextBlock>
+                        </Grid>
+                    </materialDesign:ColorZone>
                 </Grid>
             </DataTemplate>
             <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateSeparator">
@@ -84,27 +95,6 @@
                             </Style>
                         </Border.Style>
                     </Border>
-                    <Border Height="6">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Style.Triggers>
-                                    <!-- Selected -->
-                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
-                                        <Setter Property="BorderThickness" Value="2"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                    </Border>
-                    <Ellipse Width="16" Height="16" 
-                             Stroke="{DynamicResource PrimaryHueMidBrush}"
-                             StrokeThickness="2"
-                             Fill="{DynamicResource MaterialDesignBody}"
-                             Cursor="SizeAll"
-                             Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        
-                    </Ellipse>
                 </Grid>
             </DataTemplate>
         </Style.Resources>
@@ -115,8 +105,34 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <Canvas IsItemsHost="True" Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"/>
+                    <Canvas IsItemsHost="True" 
+                                Margin="60 0 0 0"
+                                Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
+                    />
                 </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Grid>
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                ClipToBounds="False"
+                                SnapsToDevicePixels="true">
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                          ClipToBounds="False"
+                                          Focusable="false">
+                                <Grid>
+                                    <controls:TimeLineBackgroundRulerControl/>
+                                    <ItemsPresenter SnapsToDevicePixels="True"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="ItemContainerStyle">
@@ -128,7 +144,34 @@
                     </Style.Resources>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
-                            <Setter Property="Height" Value="20"/>
+                            <Setter Property="Height" Value="16"/>
+                            <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
+                                <Setter.Value>
+                                    <materialDesign:BehaviorCollection>
+                                        <behaviors:TimeLineListItemBehavior>
+                                            <behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                                <ControlTemplate>
+                                                    <Grid SnapsToDevicePixels="True">
+                                                        <Border Margin="-1" BorderThickness="1.5"
+                                                                BorderBrush="{DynamicResource MaterialDesignPaper}"/>
+                                                        <Border Margin="-3" BorderThickness="2.5" 
+                                                                CornerRadius="1"
+                                                                BorderBrush="{DynamicResource MaterialDesignBody}"/>
+                                                        <Grid>
+                                                            <Ellipse Width="16" Height="16" 
+                                                                     VerticalAlignment="Center"
+                                                                     Stroke="{DynamicResource PrimaryHueMidBrush}"
+                                                                     StrokeThickness="2"
+                                                                     Fill="White"
+                                                                     Cursor="SizeAll"/>
+                                                        </Grid>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                        </behaviors:TimeLineListItemBehavior>
+                                    </materialDesign:BehaviorCollection>
+                                </Setter.Value>
+                            </Setter>
                         </DataTrigger>
                     </Style.Triggers>
                     <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
@@ -145,6 +188,39 @@
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
+                    <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
+                        <Setter.Value>
+                            <materialDesign:BehaviorCollection>
+                                <behaviors:TimeLineListItemBehavior>
+                                    <behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                        <ControlTemplate>
+                                            <Grid SnapsToDevicePixels="True">
+                                                <Border Margin="-1" BorderThickness="1.5" 
+                                                        BorderBrush="{DynamicResource MaterialDesignPaper}"/>
+                                                <Border Margin="-3" BorderThickness="2.5" 
+                                                        CornerRadius="1"
+                                                        BorderBrush="{DynamicResource MaterialDesignBody}"/>
+                                                <Grid Margin="0 -8">
+                                                    <Ellipse Width="16" Height="16" 
+                                                             VerticalAlignment="Top"
+                                                             Stroke="{DynamicResource PrimaryHueMidBrush}"
+                                                             StrokeThickness="2"
+                                                             Fill="White"
+                                                             Cursor="SizeNS"/>
+                                                    <Ellipse Width="16" Height="16" 
+                                                             VerticalAlignment="Bottom"
+                                                             Stroke="{DynamicResource PrimaryHueMidBrush}"
+                                                             StrokeThickness="2"
+                                                             Fill="White"
+                                                             Cursor="SizeNS"/>
+                                                </Grid>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                </behaviors:TimeLineListItemBehavior>
+                            </materialDesign:BehaviorCollection>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </Setter.Value>
         </Setter>
@@ -154,4 +230,6 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type controls:TimeLineBackgroundRulerControl}"/>
 </ResourceDictionary>

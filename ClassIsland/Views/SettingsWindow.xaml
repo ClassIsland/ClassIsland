@@ -1674,6 +1674,16 @@ The quick brown fox jumps over a lazy dog.
                                                      Text="{Binding ViewModel.DebugOutputs}"/>
                                             <Separator Margin="0 6"/>
                                             <controls:StarRailLoadingControl Height="150"/>
+                                            <Canvas Height="300">
+                                                <Thumb Canvas.Left="10" Canvas.Top="20" Canvas.ZIndex="99"
+                                                       BorderThickness="1">
+                                                    <Thumb.Template>
+                                                        <ControlTemplate>
+                                                            <TextBlock Text="123"></TextBlock>
+                                                        </ControlTemplate>
+                                                    </Thumb.Template>
+                                                </Thumb>
+                                            </Canvas>
                                             <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                     Content="关闭调试菜单"
                                                     Click="ButtonCloseDebug_OnClick"
