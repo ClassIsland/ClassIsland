@@ -156,8 +156,8 @@ public partial class ProfileSettingsWindow : MyWindow
             EndSecond = selected?.EndSecond ?? DateTime.Now
         };
         timeLayout.Layouts.Add(newItem);
+        ReSortTimeLayout(newItem);
         ListViewTimePoints.SelectedValue = newItem;
-        UpdateTimeLayout();
         OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 创建时间点", new Dictionary<string, string>
         {
@@ -324,10 +324,39 @@ public partial class ProfileSettingsWindow : MyWindow
     private void DrawerHost_OnDrawerClosing(object? sender, DrawerClosingEventArgs e)
     {
         var timeLayoutItemEdit = FindResource("TimePointEditor");
-        if (ViewModel.DrawerContent == timeLayoutItemEdit)
+        if (ViewModel.DrawerContent == timeLayoutItemEdit && ViewModel.SelectedTimePoint != null)
         {
-            UpdateTimeLayout();
+            ReSortTimeLayout(ViewModel.SelectedTimePoint);
         }
+    }
+
+    private void ReSortTimeLayout(TimeLayoutItem item)
+    {
+        var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
+        var l = timeLayout.Layouts;
+        l.Remove(item);
+        var c = l.Count;
+        var p = c;
+        for (var i = 0; i < c; i++)
+        {
+            if (l[i].StartSecond.TimeOfDay <= item.StartSecond.TimeOfDay) 
+                continue;
+            p = i;
+            break;
+        }
+        l.Insert(p, item);
+
+        // 验证
+        for (int i = 0; i < l.Count - 1; i++)
+        {
+            if (l[i].StartSecond.TimeOfDay > l[i + 1].StartSecond.TimeOfDay)
+            {
+                UpdateTimeLayout();
+                break;
+            }
+        }
+
+        ViewModel.SelectedTimePoint = item;
     }
 
     private void DataGridClassPlans_OnUnloadingRow(object? sender, DataGridRowEventArgs e)

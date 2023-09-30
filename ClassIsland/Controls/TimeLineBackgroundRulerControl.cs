@@ -74,7 +74,12 @@ public class TimeLineBackgroundRulerControl : Control
         var p = 12;
         var bs = TimeSpan.FromHours(24).Ticks / 1000000000.0 * Scale / 36;
         var body = (SolidColorBrush)FindResource("MaterialDesignBody");
+        var bodyA = new SolidColorBrush(body.Color)
+        {
+            Opacity = 0.3
+        };
         var pen = new Pen(body, 1);
+        var penA = new Pen(bodyA, 1);
         var fontFamily = (FontFamily)TryFindResource("HarmonyOsSans");
         p = bs switch
         {
@@ -92,7 +97,8 @@ public class TimeLineBackgroundRulerControl : Control
             {
                 goto done;
             }
-            drawingContext.DrawLine(pen, new Point(55, y), new Point(ActualWidth, y));
+
+            drawingContext.DrawLine(c % p == 0 ? pen : penA, new Point(55, y), new Point(ActualWidth, y));
             if (c % p != 0)
             {
                 goto done;

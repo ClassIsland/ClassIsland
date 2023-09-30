@@ -24,13 +24,13 @@ public class TimeLayout : AttachableSettingsObject
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         //Debug.WriteLine(e.PropertyName);
-        switch (e.PropertyName)
-        {
-            case nameof(Layouts):
-                Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
-                break;
+        //switch (e.PropertyName)
+        //{
+        //    case nameof(Layouts):
+        //        Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
+        //        break;
 
-        }
+        //}
     }
 
     public string Name
