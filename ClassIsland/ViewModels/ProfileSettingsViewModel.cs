@@ -19,7 +19,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private string _deleteConfirmField = "";
     private bool _isOfflineEditor = false;
     private TimeLayoutItem? _selectedTimePoint;
-    private double _timeLineScale = 2.8;
+    private double _timeLineScale = 3.0;
 
     public object DrawerContent
     {

@@ -17,7 +17,7 @@
     <Grid SnapsToDevicePixels="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Border Margin="-1" BorderThickness="1" 
                 BorderBrush="{DynamicResource MaterialDesignPaper}"/>
-        <Border Margin="-3" BorderThickness="2.5" 
+        <Border Margin="-3" BorderThickness="2" 
                 CornerRadius="1"
                 BorderBrush="{DynamicResource MaterialDesignBody}"/>
         <Grid Margin="0 -8">

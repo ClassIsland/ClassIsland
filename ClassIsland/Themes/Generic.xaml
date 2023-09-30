@@ -46,13 +46,13 @@
     <Style TargetType="{x:Type controls:TimeLineListControl}" BasedOn="{StaticResource MaterialDesignListBox}">
         <Style.Resources>
             <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
-                <Grid VerticalAlignment="Stretch">
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Grid.Resources>
                         <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
                         <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Grid.Resources>
                     <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
-                    <materialDesign:ColorZone SnapsToDevicePixels="True" Width="200" VerticalAlignment="Stretch">
+                    <materialDesign:ColorZone SnapsToDevicePixels="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <materialDesign:ColorZone.Style>
                             <Style TargetType="materialDesign:ColorZone">
                                 <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
@@ -72,15 +72,11 @@
                                 </Style.Triggers>
                             </Style>
                         </materialDesign:ColorZone.Style>
+                        <materialDesign:ColorZone.ToolTip>
+                            <controls:TimeLineListItemControl TimePoint="{Binding}" IsAlwaysExpanded="True"/>
+                        </materialDesign:ColorZone.ToolTip>
                         <Grid>
-                            <TextBlock Grid.Row="0" FontSize="14"
-                                       ToolTip="时间段">
-                                <Run
-                                    Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                                <Run Text="-" />
-                                <Run
-                                    Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                            </TextBlock>
+                            <controls:TimeLineListItemControl TimePoint="{Binding}"/>
                         </Grid>
                     </materialDesign:ColorZone>
                 </Grid>
@@ -92,7 +88,10 @@
                         <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Grid.Resources>
                     <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
-                    <Border SnapsToDevicePixels="True" Width="500" Height="2" Background="Red">
+                    <Border SnapsToDevicePixels="True" Height="4" Background="Red">
+                        <Border.ToolTip>
+                            <controls:TimeLineListItemControl TimePoint="{Binding}"/>
+                        </Border.ToolTip>
                         <Border.Style>
                             <Style TargetType="Border">
                                 <Style.Triggers>
@@ -111,8 +110,9 @@
             <Setter.Value>
                 <ItemsPanelTemplate>
                     <Canvas IsItemsHost="True" 
-                                Margin="60 0 0 0"
-                                Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
+                            HorizontalAlignment="Stretch"
+                            Margin="60 0 0 0"
+                            Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
                     />
                 </ItemsPanelTemplate>
             </Setter.Value>
@@ -149,28 +149,18 @@
                     </Style.Resources>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
-                            <Setter Property="Height" Value="2"/>
+                            <Setter Property="Height" Value="Auto"/>
                             <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                                 <Setter.Value>
                                     <materialDesign:BehaviorCollection>
                                         <behaviors:TimeLineListItemBehavior>
                                             <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                                 <ControlTemplate>
-                                                    <Grid SnapsToDevicePixels="True">
-                                                        <Border Margin="-1" BorderThickness="1.5"
-                                                                BorderBrush="{DynamicResource MaterialDesignPaper}"/>
-                                                        <Border Margin="-3" BorderThickness="2.5" 
-                                                                CornerRadius="1"
-                                                                BorderBrush="{DynamicResource MaterialDesignBody}"/>
-                                                        <Grid>
-                                                            <Ellipse Width="16" Height="16" 
-                                                                     VerticalAlignment="Center"
-                                                                     Stroke="{DynamicResource PrimaryHueMidBrush}"
-                                                                     StrokeThickness="2"
-                                                                     Fill="White"
-                                                                     Cursor="SizeAll"/>
-                                                        </Grid>
-                                                    </Grid>
+                                                    <controls:TimeLineListItemSeparatorAdornerControl 
+                                                        VerticalAlignment="Stretch"
+                                                        HorizontalAlignment="Stretch"
+                                                        TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                        Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
                                                 </ControlTemplate>
                                             </behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         </behaviors:TimeLineListItemBehavior>
@@ -179,6 +169,7 @@
                             </Setter>
                         </DataTrigger>
                     </Style.Triggers>
+                    <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"/>
                     <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -209,15 +200,12 @@
                                 <behaviors:TimeLineListItemBehavior>
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         <ControlTemplate>
-                                            <Grid>
-                                                <controls:TimeLineListItemExpandingAdornerControl 
-                                                    VerticalAlignment="Stretch"
-                                                    HorizontalAlignment="Stretch"
-                                                    TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
-                                                    TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
-                                                    Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
-                                                <!--<TextBlock Text="{Binding}"/>-->
-                                            </Grid>
+                                            <controls:TimeLineListItemExpandingAdornerControl 
+                                                VerticalAlignment="Stretch"
+                                                HorizontalAlignment="Stretch"
+                                                TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
                                         </ControlTemplate>
                                     </behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                 </behaviors:TimeLineListItemBehavior>
