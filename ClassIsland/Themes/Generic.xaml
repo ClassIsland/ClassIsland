@@ -6,7 +6,10 @@
     xmlns:models="clr-namespace:ClassIsland.Models"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:converters="clr-namespace:ClassIsland.Converters"
-    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors">
+    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    mc:Ignorable="d" >
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -206,26 +209,14 @@
                                 <behaviors:TimeLineListItemBehavior>
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         <ControlTemplate>
-                                            <Grid SnapsToDevicePixels="True">
-                                                <Border Margin="-1" BorderThickness="1.5" 
-                                                        BorderBrush="{DynamicResource MaterialDesignPaper}"/>
-                                                <Border Margin="-3" BorderThickness="2.5" 
-                                                        CornerRadius="1"
-                                                        BorderBrush="{DynamicResource MaterialDesignBody}"/>
-                                                <Grid Margin="0 -8">
-                                                    <Ellipse Width="16" Height="16" 
-                                                             VerticalAlignment="Top"
-                                                             Stroke="{DynamicResource PrimaryHueMidBrush}"
-                                                             StrokeThickness="2"
-                                                             Fill="White"
-                                                             Cursor="SizeNS"/>
-                                                    <Ellipse Width="16" Height="16" 
-                                                             VerticalAlignment="Bottom"
-                                                             Stroke="{DynamicResource PrimaryHueMidBrush}"
-                                                             StrokeThickness="2"
-                                                             Fill="White"
-                                                             Cursor="SizeNS"/>
-                                                </Grid>
+                                            <Grid>
+                                                <controls:TimeLineListItemExpandingAdornerControl 
+                                                    VerticalAlignment="Stretch"
+                                                    HorizontalAlignment="Stretch"
+                                                    TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                    TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                    Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
+                                                <!--<TextBlock Text="{Binding}"/>-->
                                             </Grid>
                                         </ControlTemplate>
                                     </behaviors:TimeLineListItemBehavior.ThumbTemplate>

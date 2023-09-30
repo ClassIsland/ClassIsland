@@ -72,7 +72,7 @@ public class TimeLineBackgroundRulerControl : Control
         var lastY = 0.0;
         var c = 0;
         var p = 12;
-        var bs = TimeSpan.FromHours(24).Ticks / 1000000000.0 * Scale / 36;
+        var bs = TimeSpan.FromHours(24).Ticks / BaseTicks * Scale / 36;
         var body = (SolidColorBrush)FindResource("MaterialDesignBody");
         var bodyA = new SolidColorBrush(body.Color)
         {

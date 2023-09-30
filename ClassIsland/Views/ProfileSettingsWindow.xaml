@@ -910,24 +910,9 @@
                                         </Style>
                                     </ListBox.ItemContainerStyle>
                                     <ListBox.ItemTemplate>
-                                        <DataTemplate>
+                                        <DataTemplate DataType="{x:Type materialDesign:PackIcon}">
                                             <DataTemplate.Resources>
                                                 <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButtonTop}">
-                                                    <!--<Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                                    <Setter Property="FontSize" Value="18"/>
-                                                    <Setter Property="Opacity" Value="0.75"/>
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsChecked" Value="True">
-                                                            <Setter Property="Opacity" Value="1.0"/>
-                                                            <Setter Property="FontWeight" Value="Bold"/>
-                                                            <Setter Property="BorderThickness" Value="0 0 0 3"/>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                    <Style.Resources>
-                                                        <Style TargetType="materialDesign:Ripple">
-                                                            <Setter Property="Feedback" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                                        </Style>
-                                                    </Style.Resources>-->
                                                 </Style>
                                                 <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
                                             </DataTemplate.Resources>
