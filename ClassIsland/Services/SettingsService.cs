@@ -34,12 +34,20 @@ public class SettingsService : IHostedService, INotifyPropertyChanged
         {
             return;
         }
-        var json = File.ReadAllText("./Settings.json");
-        var r = JsonSerializer.Deserialize<Settings>(json);
-        if (r != null)
-        { 
-            Settings = r;
-            Settings.PropertyChanged += (sender, args) => SaveSettings();
+
+        try
+        {
+            var json = File.ReadAllText("./Settings.json");
+            var r = JsonSerializer.Deserialize<Settings>(json);
+            if (r != null)
+            {
+                Settings = r;
+                Settings.PropertyChanged += (sender, args) => SaveSettings();
+            }
+        }
+        catch
+        {
+            // ignored
         }
     }
 

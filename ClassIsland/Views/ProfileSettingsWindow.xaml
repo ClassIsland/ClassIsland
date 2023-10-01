@@ -225,6 +225,32 @@
             <StackPanel DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}"
                         Margin="16">
                 <TextBlock Text="课程表信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                <Border Padding="14" 
+                        Visibility="{Binding IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Margin="0 8 0 0"
+                        BorderBrush="{DynamicResource MaterialDesignDivider}" 
+                        BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <materialDesign:PackIcon Kind="InfoCircleOutline" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        <TextBlock TextWrapping="Wrap" FontSize="13" Margin="0 4 0 0">
+                            这是一个临时层课表，将在使用过后自动删除。
+                        </TextBlock>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                HorizontalAlignment="Left"
+                                Padding="4"
+                                Margin="0 4 0 0"
+                                FontSize="13">
+                            <controls:IconText Kind="CogTransferOutline" Text="转换为普通课表"/>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                HorizontalAlignment="Left"
+                                Padding="4"
+                                Margin="0 2 0 0"
+                                FontSize="13">
+                            <controls:IconText Kind="FileReplaceOutline" Text="覆盖原课表"/>
+                        </Button>
+                    </StackPanel>
+                </Border>
                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Margin="0 12 0 0"
                          Text="{Binding Name}"
@@ -294,27 +320,71 @@
         </StackPanel>
 
         <!-- 课程表规则编辑 -->
-        <StackPanel Margin="16" Width="300" x:Key="TemporaryClassPlan">
+        <Grid  Margin="16" Width="300" x:Key="TemporaryClassPlan">
+            <Grid.Resources>
+                <CollectionViewSource x:Key="ClassPlanSource" 
+                                      Source="{Binding MainViewModel.Profile.ClassPlans}"
+                                      Filter="ClassPlanSource_OnFilter"/>
+            </Grid.Resources>
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0">
-                    <TextBlock Text="临时课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天的本次运行有效。" TextWrapping="Wrap"
-                               Margin="0 6 0 0"/>
+                    <TextBlock Text="当前启用的课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
+                        <ToggleButton VerticalAlignment="Center" Margin="0 0 4 0"/>
+                        <TextBlock Text="加载课表" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ProfileService.Profile.OverlayClassPlanId}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <Separator Margin="0 16 0 4"/>
+                        <controls:IconText Kind="LayersOutline" Text="临时层" Margin="0 0 0 8"/>
+                        <TextBlock Text="临时层课表将优先于临时课表应用。临时层课表将在该课表过期后自动清除。"
+                                   TextWrapping="Wrap"
+                                   Margin="0 0 0 4"/>
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleButton VerticalAlignment="Center" Margin="0 0 4 0"
+                                          IsChecked="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled}"/>
+                            <TextBlock Text="启用临时层" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Margin="0 4 0 0"
+                                HorizontalAlignment="Left"
+                                Click="ButtonClearTempOverlay_OnClick">
+                            <controls:IconText Kind="ClearOutline" Text="清除临时层"/>
+                        </Button>
+                    </StackPanel>
+
+                    <Separator Margin="0 16 0 4"/>
+                    <controls:IconText Kind="FileChartOutline" Text="临时课表" Margin="0 0 0 8"/>
+                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天的本次运行有效。" TextWrapping="Wrap"/>
                     <Button Style="{StaticResource MaterialDesignFlatButton}" 
                             HorizontalAlignment="Left"
                             ToolTip="清除选择的临时课表，并恢复至正常课表安排。"
                             Margin="0 6 0 0"
-                            Click="ButtonClearTemporaryClassPlan_OnClick">
+                            Click="ButtonClearTemporaryClassPlan_OnClick"
+                            Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
                         <controls:IconText Kind="ClearOutline" Text="清除临时课表"/>
                     </Button>
+                    <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
+                               TextWrapping="Wrap"
+                               Margin="0 4 0 0"
+                               Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </StackPanel>
-                <ListBox Grid.Row="1" ItemsSource="{Binding MainViewModel.Profile.ClassPlans}"
+                <ListBox Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassPlanSource}}"
                          Margin="0 12 0 0"
                          SelectionMode="Single"
+                         Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                          SelectedValue="{Binding MainViewModel.TemporaryClassPlan, Mode=TwoWay}"
                          SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
                          HorizontalContentAlignment="Stretch"
@@ -328,7 +398,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </Grid>
-        </StackPanel>
+        </Grid>
 
         <!-- 新建档案 -->
         <StackPanel x:Key="CreateProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
@@ -506,6 +576,7 @@
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <Button.Style>
                                             <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                <Setter Property="IsEnabled" Value="{Binding SelectedItem.Value.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}, ElementName=ListViewClassPlans}"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewClassPlans}" Value="-1">
                                                         <Setter Property="IsEnabled" Value="False"/>
@@ -515,16 +586,13 @@
                                         </Button.Style>
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
-                                    <Button ToolTip="临时启用某个课表。" Click="ButtonTemporaryClassPlan_OnClick"
-                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                        <controls:IconText Kind="FileChartOutline" Text="临时课表"/>
-                                    </Button>
                                 </ToolBar>
 
                                 <!-- 课表 -->
                                 <ListBox Grid.Row="1" Margin="0 12"
                                          SelectionChanged="ListViewClassPlans_OnSelectionChanged"
                                          SelectionMode="Single"
+                                         HorizontalContentAlignment="Stretch"
                                          Style="{StaticResource NavigationListBox}"
                                          ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          x:Name="ListViewClassPlans" ScrollViewer.CanContentScroll="False">
@@ -551,6 +619,17 @@
                                                 <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
                                                     <controls:IconText Kind="ClockOutline" Text="{Binding Value.TimeLayout.Name}" ToolTip="时间表" IconMargin="3"/>
                                                 </WrapPanel>
+
+                                                <!-- Status -->
+                                                <StackPanel Grid.Column="0" Grid.Row="0"
+                                                            Grid.RowSpan="2" Grid.ColumnSpan="2"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="LayersOutline"
+                                                                             ToolTip="该课表是临时层课表。"
+                                                                             Visibility="{Binding Value.IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
@@ -584,6 +663,10 @@
                                     <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
                                             Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                         <controls:IconText Kind="InfoOutline" Text="课表信息"/>
+                                    </Button>
+                                    <Button Click="ButtonCreateTempOverlayClassPlan_OnClick" ToolTip="创建临时课表层。"
+                                            IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <controls:IconText Kind="LayersOutline" Text="创建临时层"/>
                                     </Button>
                                     <Separator/>
                                     <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
@@ -1166,11 +1249,12 @@
                                     <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
                                     <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
                                     <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                    <Setter Property="Margin" Value="0 -8 6 -8"/>
                                 </Style>
                             </StackPanel.Resources>
                             <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                        HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                       VerticalAlignment="Center" Margin="0,0,16,0"/>
                             <materialDesign:Chip
                                 ToolTip="档案"
                                 Icon="{materialDesign:PackIcon FileDocumentOutline}"
@@ -1181,9 +1265,23 @@
                                 </TextBlock>
                             </materialDesign:Chip>
                             <materialDesign:Chip
-                                Icon="{materialDesign:PackIcon FileChartOutline}">
+                                Click="ButtonTemporaryClassPlan_OnClick"
+                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+                                Icon="{materialDesign:PackIcon FileChartOutline}"
+                                ToolTip="当前课表">
                                 <TextBlock FontFamily="{StaticResource HarmonyOsSans}">
-                                    <Run Text="课表"/>
+                                    <Run>
+                                        <Run.Style>
+                                            <Style TargetType="Run">
+                                                <Setter Property="Text" Value="{Binding MainViewModel.CurrentClassPlan.Name}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                                        <Setter Property="Text" Value="（无课表）"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Run.Style>
+                                    </Run>
                                 </TextBlock>
                             </materialDesign:Chip>
                         </StackPanel>
@@ -1192,7 +1290,7 @@
                                  VerticalContentAlignment="Stretch"
                                  SelectedIndex="{Binding SelectedIndex, ElementName=RootTabControl}"
                                  materialDesign:ListBoxItemAssist.ShowSelection="False"
-                                 Margin="0 -15">
+                                 Margin="6 -15 0 -15">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" IsItemsHost="True"/>

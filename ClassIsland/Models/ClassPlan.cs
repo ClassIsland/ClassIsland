@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.DirectoryServices;
@@ -17,6 +18,9 @@ public class ClassPlan : AttachableSettingsObject
     private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
     private TimeRule _timeRule = new();
     private bool _isActivated = false;
+    private bool _isOverlay = false;
+    private string? _overlaySourceId;
+    private ClassPlan? _overlaySource = null;
 
     public ClassPlan()
     {
@@ -132,5 +136,50 @@ public class ClassPlan : AttachableSettingsObject
             _isActivated = value;
             OnPropertyChanged();
         }
+    }
+
+    public bool IsOverlay
+    {
+        get => _isOverlay;
+        set
+        {
+            if (value == _isOverlay) return;
+            _isOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? OverlaySourceId
+    {
+        get => _overlaySourceId;
+        set
+        {
+            if (value == _overlaySourceId) return;
+            _overlaySourceId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public ClassPlan? OverlaySource
+    {
+        get => _overlaySource;
+        set
+        {
+            if (Equals(value, _overlaySource)) return;
+            _overlaySource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public void SetupOverlay(ClassPlan source)
+    {
+        if (!IsOverlay)
+        {
+            return;
+        }
+        OverlaySource = source;
+
+
     }
 }

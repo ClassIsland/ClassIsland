@@ -147,6 +147,7 @@ public partial class App : Application
                 services.AddSingleton<WeatherService>();
                 services.AddSingleton<FileFolderService>();
                 services.AddSingleton<AttachedSettingsHostService>();
+                services.AddSingleton<ProfileService>();
                 //services.AddHostedService<BootService>();
                 // Views
                 services.AddSingleton<MainWindow>();

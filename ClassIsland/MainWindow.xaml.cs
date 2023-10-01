@@ -82,18 +82,22 @@ public partial class MainWindow : Window
     private TaskBarIconService TaskBarIconService
     {
         get;
-    } = App.GetService<TaskBarIconService>();
+    }
 
     private ThemeService ThemeService
     {
         get;
-    } = App.GetService<ThemeService>();
+    }
 
     public NotificationHostService NotificationHostService
     {
-        get; 
+        get;
+    }
 
-    } = App.GetService<NotificationHostService>();
+    public ProfileService ProfileService
+    {
+        get;
+    }
 
     private Stopwatch UserPrefrenceUpdateStopwatch
     {
@@ -105,9 +109,14 @@ public partial class MainWindow : Window
         get;
     } = App.GetService<MiniInfoProviderHostService>();
 
-    public MainWindow()
+    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService)
     {
-        SettingsService = App.GetService<SettingsService>();
+        SettingsService = settingsService;
+        TaskBarIconService = taskBarIconService;
+        NotificationHostService = notificationHostService;
+        ThemeService = themeService;
+        ProfileService = profileService;
+
         SettingsService.PropertyChanged += (sender, args) =>
         {
             LoadSettings();
@@ -421,26 +430,13 @@ public partial class MainWindow : Window
 
     public void LoadProfile()
     {
-        var path = $"./Profiles/{ViewModel.CurrentProfilePath}";
-        if (!File.Exists(path))
-        {
-            SaveProfile();
-        }
-
-        var json = File.ReadAllText(path);
-        var r = JsonSerializer.Deserialize<Profile>(json);
-        if (r != null)
-        {
-            ViewModel.Profile = r;
-            ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
-        }
+        ProfileService.LoadProfile();
+        ViewModel.Profile = ProfileService.Profile;
     }
 
     public void SaveProfile()
     {
-        var json = JsonSerializer.Serialize<Profile>(ViewModel.Profile);
-        //File.WriteAllText("./Profile.json", json);
-        File.WriteAllText($"./Profiles/{ViewModel.CurrentProfilePath}", json);
+        ProfileService.SaveProfile();
     }
 
     private void LoadSettings()
@@ -588,9 +584,18 @@ public partial class MainWindow : Window
         {
             ViewModel.TemporaryClassPlan = null;
         }
+
+        if (ViewModel.Profile.IsOverlayClassPlanEnabled && 
+            ViewModel.Profile.OverlayClassPlanId != null &&
+            ViewModel.Profile.ClassPlans.ContainsKey(ViewModel.Profile.OverlayClassPlanId))
+        {
+            ViewModel.CurrentClassPlan = ViewModel.Profile.ClassPlans[ViewModel.Profile.OverlayClassPlanId];
+            return;
+        }
         var a = (from p in ViewModel.Profile.ClassPlans
             where CheckClassPlan(p.Value)
-            select p.Value).ToList();
+            select p.Value)
+            .ToList();
         ViewModel.CurrentClassPlan = ViewModel.TemporaryClassPlan?.Value ?? (a.Count < 1 ? null : a[0]!);
     }
 

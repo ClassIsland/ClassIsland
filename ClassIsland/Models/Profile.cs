@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Text.Json.Serialization;
@@ -15,6 +16,8 @@ public class Profile : ObservableRecipient
     private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
     private ObservableDictionary<string, ClassPlan> _classPlans = new();
     private ObservableDictionary<string, Subject> _subjects = new();
+    private bool _isOverlayClassPlanEnabled = false;
+    private string? _overlayClassPlanId = null;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -75,6 +78,28 @@ public class Profile : ObservableRecipient
         {
             if (Equals(value, _subjects)) return;
             _subjects = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsOverlayClassPlanEnabled
+    {
+        get => _isOverlayClassPlanEnabled;
+        set
+        {
+            if (value == _isOverlayClassPlanEnabled) return;
+            _isOverlayClassPlanEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? OverlayClassPlanId
+    {
+        get => _overlayClassPlanId;
+        set
+        {
+            if (value == _overlayClassPlanId) return;
+            _overlayClassPlanId = value;
             OnPropertyChanged();
         }
     }

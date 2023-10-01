@@ -136,4 +136,10 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
         }
         TimePoint.EndSecond += d;
     }
+
+    private void UIElement_OnPreviewTouchMove(object? sender, TouchEventArgs e)
+    {
+        e.Handled = true;
+        RaiseEvent(e);
+    }
 }

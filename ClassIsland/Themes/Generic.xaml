@@ -129,7 +129,8 @@
                                 SnapsToDevicePixels="true">
                             <ScrollViewer Padding="{TemplateBinding Padding}"
                                           ClipToBounds="False"
-                                          Focusable="false">
+                                          Focusable="false"
+                                          PanningMode="None">
                                 <Grid>
                                     <controls:TimeLineBackgroundRulerControl Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
                                     <ItemsPresenter SnapsToDevicePixels="True"/>

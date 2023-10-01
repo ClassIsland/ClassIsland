@@ -63,6 +63,8 @@ public partial class ProfileSettingsWindow : MyWindow
     public AttachedSettingsHostService AttachedSettingsHostService { get; } =
         App.GetService<AttachedSettingsHostService>();
 
+    public ProfileService ProfileService { get; } = App.GetService<ProfileService>();
+
     public void OpenDrawer(string key)
     {
         ViewModel.DrawerContent = FindResource(key);
@@ -304,7 +306,16 @@ public partial class ProfileSettingsWindow : MyWindow
             {
                 {"IsSuccess", "true"}
             });
-            MainViewModel.Profile.ClassPlans.Remove(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
+
+            var kvp = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem);
+            if (kvp.Value.IsOverlay)
+            {
+                ProfileService.ClearTempClassPlan();
+            }
+            else
+            {
+                MainViewModel.Profile.ClassPlans.Remove(kvp.Key);
+            }
         }
         else
         {
@@ -652,5 +663,31 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
         TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+    }
+
+    private void ButtonCreateTempOverlayClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ProfileService.Profile.OverlayClassPlanId != null &&
+            ProfileService.Profile.ClassPlans.ContainsKey(ProfileService.Profile.OverlayClassPlanId))
+        {
+            ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
+        }
+        var id = ProfileService.CreateTempClassPlan(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
+        if (id != null)
+        {
+            ListViewClassPlans.SelectedItem = new KeyValuePair<string,ClassPlan>(id, ProfileService.Profile.ClassPlans[id]);
+            OpenDrawer("ClassPlansInfoEditor");
+        }
+    }
+
+    private void ClassPlanSource_OnFilter(object sender, FilterEventArgs e)
+    {
+        var cp = (KeyValuePair<string, ClassPlan>)e.Item;
+        e.Accepted = !cp.Value.IsOverlay;
+    }
+
+    private void ButtonClearTempOverlay_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.ClearTempClassPlan();
     }
 }
