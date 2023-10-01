@@ -593,7 +593,7 @@ public partial class MainWindow : Window
             return;
         }
         var a = (from p in ViewModel.Profile.ClassPlans
-            where CheckClassPlan(p.Value)
+            where CheckClassPlan(p.Value) && !p.Value.IsOverlay
             select p.Value)
             .ToList();
         ViewModel.CurrentClassPlan = ViewModel.TemporaryClassPlan?.Value ?? (a.Count < 1 ? null : a[0]!);

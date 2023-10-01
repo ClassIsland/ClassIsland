@@ -113,4 +113,16 @@ public class ProfileService
                 return true;
         }
     }
+
+    public void ConvertToStdClassPlan()
+    {
+        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        {
+            return;
+        }
+
+        Profile.IsOverlayClassPlanEnabled = false;
+        Profile.ClassPlans[Profile.OverlayClassPlanId].IsOverlay = false;
+        Profile.OverlayClassPlanId = null;
+    }
 }

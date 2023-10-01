@@ -239,16 +239,17 @@
                                 HorizontalAlignment="Left"
                                 Padding="4"
                                 Margin="0 4 0 0"
-                                FontSize="13">
+                                FontSize="13"
+                                Click="ButtonConvertToStdClassPlan_OnClick">
                             <controls:IconText Kind="CogTransferOutline" Text="转换为普通课表"/>
                         </Button>
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        <!--<Button Style="{StaticResource MaterialDesignFlatButton}"
                                 HorizontalAlignment="Left"
                                 Padding="4"
                                 Margin="0 2 0 0"
                                 FontSize="13">
                             <controls:IconText Kind="FileReplaceOutline" Text="覆盖原课表"/>
-                        </Button>
+                        </Button>-->
                     </StackPanel>
                 </Border>
                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -1267,8 +1268,29 @@
                             <materialDesign:Chip
                                 Click="ButtonTemporaryClassPlan_OnClick"
                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
-                                Icon="{materialDesign:PackIcon FileChartOutline}"
-                                ToolTip="当前课表">
+                                ToolTip="当前启用的课表">
+                                <materialDesign:Chip.Style>
+                                    <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding MainViewModel.TemporaryClassPlan}" Value="{x:Null}">
+                                                <Setter Property="Icon" Value="{materialDesign:PackIcon FileChartOutline}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan.IsOverlay}" Value="True">
+                                                <Setter Property="Icon" Value="{materialDesign:PackIcon LayersOutline}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                                <Setter Property="Icon" Value="{materialDesign:PackIcon FileOutline}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                        <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
+                                        <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                        <Setter Property="Margin" Value="0 -8 6 -8"/>
+
+                                        <Setter Property="Icon" Value="{materialDesign:PackIcon FileDocumentMultipleOutline}"/>
+                                    </Style>
+                                </materialDesign:Chip.Style>
                                 <TextBlock FontFamily="{StaticResource HarmonyOsSans}">
                                     <Run>
                                         <Run.Style>

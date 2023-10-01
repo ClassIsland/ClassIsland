@@ -690,4 +690,9 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         ProfileService.ClearTempClassPlan();
     }
+
+    private void ButtonConvertToStdClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.ConvertToStdClassPlan();
+    }
 }
