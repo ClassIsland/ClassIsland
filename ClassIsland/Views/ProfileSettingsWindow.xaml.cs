@@ -695,4 +695,17 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         ProfileService.ConvertToStdClassPlan();
     }
+
+    private void ButtonTimeLayoutEditScrollToContent_OnClick(object sender, RoutedEventArgs e)
+    {
+        var tpr = ViewModel.SelectedTimePoint;
+        if (tpr == null)
+        {
+            return;
+        }
+        ViewModel.SelectedTimePoint = null;
+        ViewModel.SelectedTimePoint = tpr;
+        TimeLineListControl.ScrollIntoView(tpr);
+        ListViewTimePoints.ScrollIntoView(tpr);
+    }
 }

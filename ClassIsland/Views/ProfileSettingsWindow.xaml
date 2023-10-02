@@ -804,7 +804,8 @@
 
                             <!-- 时间节点编辑 -->
                             <Grid Grid.Column="1" Margin="3 0 0 0" 
-                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}">
+                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}"
+                                  IsEnabled="{Binding IsActivated, Converter={StaticResource InvertBooleanConverter}}">
                                 <Grid.Style>
                                     <Style TargetType="Grid">
                                         <Style.Triggers>
@@ -970,8 +971,25 @@
                                 <StackPanel Grid.Row="2" Orientation="Horizontal"
                                             VerticalAlignment="Bottom"
                                             HorizontalAlignment="Right">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
+                                                             Value="1">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <Button Content="{materialDesign:PackIcon Target}"
+                                            ToolTip="定位选中项目"
+                                            VerticalAlignment="Center"
+                                            Margin="2 0"
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                            Click="ButtonTimeLayoutEditScrollToContent_OnClick"/>
                                     <TextBlock Text="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay, StringFormat={}{0:P0}}" 
-                                               Margin="0 0 4 0"
+                                               Margin="4 0 4 0"
                                                ToolTip="缩放比例"
                                                VerticalAlignment="Center"/>
                                     <Button Content="{materialDesign:PackIcon ZoomOut}"
@@ -987,6 +1005,26 @@
                                             Style="{StaticResource MaterialDesignToolForegroundButton}"
                                             Click="ButtonZoomIn_OnClick"/>
                                 </StackPanel>
+
+                                <Button Grid.Row="2"
+                                        VerticalAlignment="Bottom"
+                                        HorizontalAlignment="Right"
+                                        Content="{materialDesign:PackIcon Target}"
+                                        ToolTip="定位选中项目"
+                                        Margin="2 0"
+                                        Click="ButtonTimeLayoutEditScrollToContent_OnClick">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolForegroundButton}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
+                                                             Value="0">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
 
                                 <ListBox Grid.Row="2"
                                          Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
