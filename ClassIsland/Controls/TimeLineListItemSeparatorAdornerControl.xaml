@@ -20,10 +20,21 @@
                     <Thumb.Template>
                         <ControlTemplate>
                             <Ellipse Width="16" Height="16" 
-                                     VerticalAlignment="Center"
-                                     Stroke="{DynamicResource PrimaryHueMidBrush}"
-                                     StrokeThickness="2"
-                                     Fill="White"/>
+                                     Stroke="{DynamicResource PrimaryHueMidBrush}">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="StrokeThickness" Value="2"/>
+                                        <Setter Property="Fill" Value="White"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDragging, RelativeSource={RelativeSource FindAncestor, AncestorType=Thumb}}"
+                                                         Value="True">
+                                                <Setter Property="Fill" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                <Setter Property="StrokeThickness" Value="0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
                         </ControlTemplate>
                     </Thumb.Template>
                 </Thumb>

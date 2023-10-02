@@ -88,17 +88,12 @@
                         <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Grid.Resources>
                     <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
-                    <Border SnapsToDevicePixels="True" Height="4" Background="Red">
-                        <Border.ToolTip>
+                    <Line SnapsToDevicePixels="True" StrokeThickness="6" Stroke="Red"
+                          X1="0" X2="{Binding ActualWidth, RelativeSource={RelativeSource Self}}">
+                        <Line.ToolTip>
                             <controls:TimeLineListItemControl TimePoint="{Binding}"/>
-                        </Border.ToolTip>
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Style.Triggers>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                    </Border>
+                        </Line.ToolTip>
+                    </Line>
                 </Grid>
             </DataTemplate>
         </Style.Resources>
