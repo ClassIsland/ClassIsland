@@ -22,6 +22,7 @@ public class ClassPlan : AttachableSettingsObject
     private string? _overlaySourceId;
     private ClassPlan? _overlaySource = null;
     private bool _isEnabled = true;
+    private DateTime _overlaySetupTime = DateTime.Now;
 
     public ClassPlan()
     {
@@ -169,6 +170,17 @@ public class ClassPlan : AttachableSettingsObject
         {
             if (Equals(value, _overlaySource)) return;
             _overlaySource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime OverlaySetupTime
+    {
+        get => _overlaySetupTime;
+        set
+        {
+            if (value.Equals(_overlaySetupTime)) return;
+            _overlaySetupTime = value;
             OnPropertyChanged();
         }
     }

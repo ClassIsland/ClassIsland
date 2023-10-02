@@ -240,7 +240,8 @@
                                 Padding="4"
                                 Margin="0 4 0 0"
                                 FontSize="13"
-                                Click="ButtonConvertToStdClassPlan_OnClick">
+                                Click="ButtonConvertToStdClassPlan_OnClick"
+                                ToolTip="将当前临时层课表转换为正常课表。">
                             <controls:IconText Kind="CogTransferOutline" Text="转换为普通课表"/>
                         </Button>
                         <!--<Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -371,7 +372,8 @@
                         </StackPanel>
                         <Button Style="{StaticResource MaterialDesignFlatButton}" Margin="0 4 0 0"
                                 HorizontalAlignment="Left"
-                                Click="ButtonClearTempOverlay_OnClick">
+                                Click="ButtonClearTempOverlay_OnClick"
+                                ToolTip="清除临时层课表。">
                             <controls:IconText Kind="ClearOutline" Text="清除临时层"/>
                         </Button>
                     </StackPanel>

@@ -60,7 +60,8 @@ public class ProfileService
 
         newCp.IsOverlay = true;
         newCp.OverlaySourceId = id;
-        newCp.Name += "（副本）";
+        newCp.Name += "（临时层）";
+        newCp.OverlaySetupTime = DateTime.Now;
         Profile.IsOverlayClassPlanEnabled = true;
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
@@ -87,7 +88,8 @@ public class ProfileService
             return;
         }
 
-        if (!CheckClassPlan(Profile.ClassPlans[Profile.OverlayClassPlanId]))
+        var cp = Profile.ClassPlans[Profile.OverlayClassPlanId];
+        if (cp.OverlaySetupTime.Date < DateTime.Now.Date)
         {
             ClearTempClassPlan();
         }
