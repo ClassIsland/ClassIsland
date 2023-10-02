@@ -21,6 +21,7 @@ public class ClassPlan : AttachableSettingsObject
     private bool _isOverlay = false;
     private string? _overlaySourceId;
     private ClassPlan? _overlaySource = null;
+    private bool _isEnabled = true;
 
     public ClassPlan()
     {
@@ -179,7 +180,16 @@ public class ClassPlan : AttachableSettingsObject
             return;
         }
         OverlaySource = source;
+    }
 
-
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set
+        {
+            if (value == _isEnabled) return;
+            _isEnabled = value;
+            OnPropertyChanged();
+        }
     }
 }

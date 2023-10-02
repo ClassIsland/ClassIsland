@@ -39,6 +39,7 @@ public class MainViewModel : ObservableRecipient
     private bool _isMainWindowVisible = true;
     private Subject? _currentSubject = new();
     private bool _isClosing = false;
+    private bool _isClassPlanEnabled = true;
 
     public Profile Profile
     {
@@ -361,6 +362,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isClosing) return;
             _isClosing = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClassPlanEnabled
+    {
+        get => _isClassPlanEnabled;
+        set
+        {
+            if (value == _isClassPlanEnabled) return;
+            _isClassPlanEnabled = value;
             OnPropertyChanged();
         }
     }

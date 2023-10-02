@@ -585,6 +585,11 @@ public partial class MainWindow : Window
             ViewModel.TemporaryClassPlan = null;
         }
 
+        if (!ViewModel.IsClassPlanEnabled)
+        {
+            ViewModel.CurrentClassPlan = null;
+            return; 
+        }
         if (ViewModel.Profile.IsOverlayClassPlanEnabled && 
             ViewModel.Profile.OverlayClassPlanId != null &&
             ViewModel.Profile.ClassPlans.ContainsKey(ViewModel.Profile.OverlayClassPlanId))
@@ -593,7 +598,7 @@ public partial class MainWindow : Window
             return;
         }
         var a = (from p in ViewModel.Profile.ClassPlans
-            where CheckClassPlan(p.Value) && !p.Value.IsOverlay
+            where CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled
             select p.Value)
             .ToList();
         ViewModel.CurrentClassPlan = ViewModel.TemporaryClassPlan?.Value ?? (a.Count < 1 ? null : a[0]!);
