@@ -176,8 +176,8 @@
                                       materialDesign:HintAssist.Hint="换课成…"
                                       Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                       ItemsSource="{Binding ProfileService.Profile.Subjects, UpdateSourceTrigger=PropertyChanged}"
-                                      SelectedValuePath="Value"
-                                      SelectedValue="{Binding ViewModel.TargetSubject}">
+                                      SelectedValuePath="Key"
+                                      SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Value.Name}"/>
@@ -260,7 +260,7 @@
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding ViewModel.IsSwapMode}" Value="False"/>
-                                    <Condition Binding="{Binding ViewModel.TargetSubject}" Value="{x:Null}"/>
+                                    <Condition Binding="{Binding ViewModel.TargetSubjectIndex}" Value="{x:Null}"/>
                                 </MultiDataTrigger.Conditions>
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </MultiDataTrigger>
@@ -272,7 +272,8 @@
                           ToolTip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
                           IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
                           Visibility="{Binding ClassPlan.IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}"/>
-                <Button Margin="12 0 0 0" ToolTip="确认并应用换课。">
+                <Button Margin="12 0 0 0" ToolTip="确认并应用换课。"
+                        Click="ButtonConfirmClassChanging_OnClick">
                     <controls:IconText Kind="Check" Text="确认换课"/>
                 </Button>
             </StackPanel>

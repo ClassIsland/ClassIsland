@@ -12,6 +12,7 @@ public class ClassChangingViewModel : ObservableRecipient
     private int _swapModeTargetIndex = -1;
     private Subject? _targetSubject;
     private bool _isAutoNextStep = false;
+    private string? _targetSubjectIndex;
 
     public bool WriteToSourceClassPlan
     {
@@ -64,6 +65,17 @@ public class ClassChangingViewModel : ObservableRecipient
         {
             if (Equals(value, _targetSubject)) return;
             _targetSubject = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? TargetSubjectIndex
+    {
+        get => _targetSubjectIndex;
+        set
+        {
+            if (value == _targetSubjectIndex) return;
+            _targetSubjectIndex = value;
             OnPropertyChanged();
         }
     }

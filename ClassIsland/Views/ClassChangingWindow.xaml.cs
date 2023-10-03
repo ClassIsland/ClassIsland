@@ -35,6 +35,13 @@ public partial class ClassChangingWindow : MyWindow
         get { return (ClassPlan)GetValue(ClassPlanProperty); }
         set { SetValue(ClassPlanProperty, value); }
     }
+    private int GetSubjectIndex(int index)
+    {
+        var k = ClassPlan?.TimeLayout.Layouts[index];
+        var l = (from t in ClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
+        var i = l.IndexOf(k);
+        return i;
+    }
 
     public ClassChangingWindow()
     {
@@ -58,5 +65,50 @@ public partial class ClassChangingWindow : MyWindow
     private void ButtonNext_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SlideIndex = 1;
+    }
+
+    private void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
+    {
+        var l = ProfileService.Profile.ClassPlans.Where(i => i.Value == ClassPlan).ToList();
+        if (l.Count <= 0)
+        {
+            return;
+        }
+        var key = l[0].Key;
+
+        if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay)
+        {
+            key = ProfileService.CreateTempClassPlan(key);
+        }
+
+        if (key == null)
+        {
+            return;
+        }
+        var cp = ProfileService.Profile.ClassPlans[key];
+        var aI = GetSubjectIndex(ViewModel.SourceIndex);
+
+        if (ViewModel.IsSwapMode)
+        {
+            var bI = GetSubjectIndex(ViewModel.SwapModeTargetIndex);
+            var a = cp.Classes[aI];
+            var b = cp.Classes[bI];
+            cp.Classes[aI] = b;
+            cp.Classes[bI] = a;
+        }
+        else
+        {
+            if (ViewModel.TargetSubjectIndex == null)
+            {
+                return;
+            }
+            cp.Classes[aI] = new ClassInfo()
+            {
+                SubjectId = ViewModel.TargetSubjectIndex
+            };
+        }
+
+        ProfileService.SaveProfile();
+        Close();
     }
 }
