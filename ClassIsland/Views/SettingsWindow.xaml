@@ -672,12 +672,14 @@
                                          materialDesign:HintAssist.Hint="字体预览"
                                          FontSize="17"
                                          Padding="8"
-                                         IsReadOnly="True"
+                                         IsReadOnly="False"
+                                         AcceptsReturn="True"
                                          FontFamily="{Binding Settings.MainWindowFont, Mode=OneWay}"
                                          Margin="0 4 0 0"
                                          TextAlignment="Center"
                                          xml:space="preserve"
-                                >风带来了故事的种子，时间使之发芽。
+                                >送给你纯白色的花 塞西莉亚 塞西莉亚
+盛开在起风的地方 沐浴九月的骄阳
 语文 数学 英语 历史 物理 政治 化学 生物 地理
 The quick brown fox jumps over a lazy dog.
 1234567890 +-*/:</TextBox>
@@ -1379,7 +1381,7 @@ The quick brown fox jumps over a lazy dog.
                                                 </StackPanel.Style>
                                                 <Image Source="/Assets/光辉矢愿_遨游.png" Width="81" Height="81"
                                                        ToolTip="光辉矢愿_遨游"/>
-                                                <TextBlock Text="真棒，您已是最新！" TextWrapping="Wrap"
+                                                <TextBlock Text="你已是最新，真棒，夸夸你哦♪" TextWrapping="Wrap"
                                                            Margin="0 8 0 0"/>
                                             </StackPanel>
                                             <!-- Loading -->
@@ -1461,7 +1463,7 @@ The quick brown fox jumps over a lazy dog.
                                                         </controls:SettingsControl.Switcher>
                                                     </controls:SettingsControl>
                                                     <TextBlock Margin="0 8 0 0"
-                                                               FontWeight="Light"
+                                                               FontWeight="Regular"
                                                                Text="{Binding ViewModel.SelectedChannelModel.Description, Mode=OneWay}" />
                                                     <!--<TextBlock Text="{Binding Settings.SelectedChannel, Mode=OneWay}"/>-->
                                                     <!--<Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"

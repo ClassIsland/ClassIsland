@@ -75,7 +75,14 @@ public partial class App : Application
             CrashInfo = e.Exception.ToString(),
             Exception = e.Exception
         };
+#if DEBUG
+        if (e.Exception.GetType() != typeof(ResourceReferenceKeyNotFoundException))
+        {
+            CrashWindow.ShowDialog();
+        }
+#else
         CrashWindow.ShowDialog();
+#endif
     }
 
     private async void App_OnStartup(object sender, StartupEventArgs e)

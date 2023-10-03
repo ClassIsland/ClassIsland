@@ -885,4 +885,16 @@ public partial class MainWindow : Window
                     UriKind.Absolute)),
         };
     }
+
+    private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.CurrentClassPlan == null)
+        {
+            return;
+        }
+        new ClassChangingWindow()
+        {
+            ClassPlan = ViewModel.CurrentClassPlan
+        }.ShowDialog();
+    }
 }

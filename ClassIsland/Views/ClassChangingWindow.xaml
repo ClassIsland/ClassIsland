@@ -1,0 +1,340 @@
+﻿<controls:MyWindow x:Class="ClassIsland.Views.ClassChangingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:ClassIsland.Converters"
+        xmlns:models="clr-namespace:ClassIsland.Models"
+        mc:Ignorable="d"
+        Title="换课" 
+        Height="250" Width="600"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        Icon="/Assets/AppLogo.ico"
+        SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance local:ClassChangingWindow}">
+    <controls:MyWindow.Resources>
+        <Style x:Key="ClassPlanListBoxItemStyle" BasedOn="{StaticResource MaterialDesignListBoxItem}"
+               TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding TimeType}" Value="2">
+                    <Setter Property="IsHitTestVisible" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+
+        <converters:IndexConverter x:Key="IndexConverter" />
+        <Style x:Key="ClassPlanListBoxStyle" TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle" Value="{StaticResource ClassPlanListBoxItemStyle}"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="{x:Type models:TimeLayoutItem}">
+                        <controls:LessonControl
+                                        Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                        Subjects="{Binding ProfileService.Profile.Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassChangingWindow}}"
+                                        CurrentClassPlan="{Binding ClassPlan, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassChangingWindow}}"
+                                        IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                        IsTimerEnabled="False">
+                            <controls:LessonControl.Style>
+                                <Style TargetType="{x:Type controls:LessonControl}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding TimeType}" Value="1" />
+                                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                                           Value="False" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </MultiDataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:LessonControl.Style>
+                        </controls:LessonControl>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </controls:MyWindow.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Content -->
+        <materialDesign:Transitioner Grid.Row="1" SelectedIndex="{Binding ViewModel.SlideIndex}">
+            <materialDesign:TransitionerSlide>
+                <materialDesign:TransitionerSlide.ForwardWipe>
+                    <materialDesign:SlideOutWipe/>
+                </materialDesign:TransitionerSlide.ForwardWipe>
+                <Grid>
+                    <ListBox VerticalAlignment="Center"
+                             HorizontalAlignment="Center"
+                             Margin="0 8"
+                             ItemsSource="{Binding ClassPlan.TimeLayout.Layouts}"
+                             Style="{StaticResource ClassPlanListBoxStyle}"
+                             SelectedIndex="{Binding ViewModel.SourceIndex}"
+                             SelectionChanged="Selector_OnSelectionChanged">
+                    </ListBox>
+                </Grid>
+            </materialDesign:TransitionerSlide>
+            <materialDesign:TransitionerSlide>
+                <materialDesign:TransitionerSlide.BackwardWipe>
+                    <materialDesign:SlideOutWipe/>
+                </materialDesign:TransitionerSlide.BackwardWipe>
+                <Grid Margin="8" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <controls:LessonControl
+                        VerticalAlignment="Center"
+                        Grid.Column="0"
+                        Index="{Binding ViewModel.SourceIndex}"
+                        Subjects="{Binding ProfileService.Profile.Subjects}"
+                        CurrentClassPlan="{Binding ClassPlan}"
+                        IsSelected="True"
+                        IsTimerEnabled="False"/>
+                    <ToggleButton
+                        Margin="8 0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Grid.Column="1"
+                        materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon SwapHorizontal}"
+                        Content="{materialDesign:PackIcon ArrowRight}"
+                        IsChecked="{Binding ViewModel.IsSwapMode}">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignActionToggleButton}">
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter Property="ToolTip" Value="互换两个课程。"/>
+                                    </Trigger>
+                                    <Trigger Property="IsChecked" Value="False">
+                                        <Setter Property="ToolTip" Value="将左侧课程调整为右侧课程。"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+                    <materialDesign:Transitioner Grid.Column="2"
+                                                 VerticalAlignment="Center"
+                                                 HorizontalAlignment="Stretch">
+                        <materialDesign:Transitioner.Style>
+                            <Style TargetType="materialDesign:Transitioner">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel.IsSwapMode}" Value="True">
+                                        <Setter Property="SelectedIndex" Value="0"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ViewModel.IsSwapMode}" Value="False">
+                                        <Setter Property="SelectedIndex" Value="1"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:Transitioner.Style>
+                        <materialDesign:TransitionerSlide>
+                            <materialDesign:TransitionerSlide.ForwardWipe>
+                                <materialDesign:SlideOutWipe/>
+                            </materialDesign:TransitionerSlide.ForwardWipe>
+                            <ListBox VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     ItemsSource="{Binding ClassPlan.TimeLayout.Layouts}"
+                                     Style="{StaticResource ClassPlanListBoxStyle}"
+                                     SelectedIndex="{Binding ViewModel.SwapModeTargetIndex}">
+                            </ListBox>
+                        </materialDesign:TransitionerSlide>
+                        <materialDesign:TransitionerSlide>
+                            <materialDesign:TransitionerSlide.BackwardWipe>
+                                <materialDesign:SlideOutWipe/>
+                            </materialDesign:TransitionerSlide.BackwardWipe>
+                            <ComboBox HorizontalAlignment="Left"
+                                      MinWidth="100"
+                                      VerticalAlignment="Center"
+                                      materialDesign:HintAssist.Hint="换课成…"
+                                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                      ItemsSource="{Binding ProfileService.Profile.Subjects, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValuePath="Value"
+                                      SelectedValue="{Binding ViewModel.TargetSubject}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Value.Name}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </materialDesign:TransitionerSlide>
+                    </materialDesign:Transitioner>
+                </Grid>
+            </materialDesign:TransitionerSlide>
+        </materialDesign:Transitioner>
+
+        <!-- Separator -->
+        <Separator Grid.Row="2" Margin="0 8 0 0"/>
+
+        <!-- Bottom -->
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Bottom"
+                    Margin="6">
+            <Button Style="{StaticResource MaterialDesignPaperButton}"
+                    Margin="0 0 4 0"
+                    IsCancel="True"
+                    ToolTip="取消换课操作。">
+                <controls:IconText Kind="Cancel" Text="取消"/>
+            </Button>
+            <Button Margin="0 0 4 0"
+                    Click="ButtonPrev_OnClick"
+                    ToolTip="返回上一步。">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignPaperButton}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.SlideIndex}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+            </Button>
+        </StackPanel>
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Bottom"
+                    Margin="6">
+            <StackPanel Orientation="Horizontal">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.SlideIndex}" Value="1">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ViewModel.SourceIndex}" Value="-1">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <Button Margin="12 0 0 0" Click="ButtonNext_OnClick"
+                        ToolTip="进入下一步。">
+                    <controls:IconText Kind="ArrowRight" Text="下一步"/>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.SlideIndex}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ViewModel.IsSwapMode}" Value="True"/>
+                                    <Condition Binding="{Binding ViewModel.SwapModeTargetIndex}" Value="-1"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ViewModel.IsSwapMode}" Value="False"/>
+                                    <Condition Binding="{Binding ViewModel.TargetSubject}" Value="{x:Null}"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <CheckBox Margin="4 0 0 0"
+                          Content="永久换课"
+                          ToolTip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
+                          IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
+                          Visibility="{Binding ClassPlan.IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}"/>
+                <Button Margin="12 0 0 0" ToolTip="确认并应用换课。">
+                    <controls:IconText Kind="Check" Text="确认换课"/>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- AppBar -->
+        <materialDesign:ColorZone Grid.Row="0" Mode="PrimaryMid"
+                                  Padding="16"
+                                  materialDesign:ElevationAssist.Elevation="Dp4">
+            <StackPanel Orientation="Horizontal" Margin="4 0">
+                <StackPanel.Resources>
+                    <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
+                        <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                        <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
+                        <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                        <Setter Property="Margin" Value="0 -8 6 -8"/>
+                    </Style>
+                </StackPanel.Resources>
+                <TextBlock Text="换课" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <materialDesign:Chip
+                    ToolTip="要换课的课表">
+                    <materialDesign:Chip.Style>
+                        <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ClassPlan.IsOverlay}" Value="True">
+                                    <Setter Property="Icon" Value="{materialDesign:PackIcon LayersOutline}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                            <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
+                            <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                            <Setter Property="Margin" Value="0 -8 6 -8"/>
+
+                            <Setter Property="Icon" Value="{materialDesign:PackIcon FileDocumentOutline}"/>
+                        </Style>
+                    </materialDesign:Chip.Style>
+                    <TextBlock>
+                        <Run Text="{Binding ClassPlan.Name}"/>
+                    </TextBlock>
+                </materialDesign:Chip>
+                <materialDesign:PackIcon Kind="ArrowRight"
+                                         VerticalAlignment="Center"
+                                         Margin="4 0"/>
+                <TextBlock VerticalAlignment="Center">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ViewModel.SlideIndex}" Value="0">
+                                    <Setter Property="Text" Value="选择要调换的课程。"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ViewModel.SlideIndex}" Value="1">
+                                    <Setter Property="Text" Value="选择要与刚刚选择的课程调换的课程。点击高亮按钮可以切换调换模式。"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+            </StackPanel>
+        </materialDesign:ColorZone>
+    </Grid>
+</controls:MyWindow>
