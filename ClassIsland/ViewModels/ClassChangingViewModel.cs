@@ -1,4 +1,5 @@
-﻿using ClassIsland.Models;
+﻿using System;
+using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;
@@ -101,4 +102,6 @@ public class ClassChangingViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public Guid DialogIdentifier { get; } = Guid.NewGuid();
 }

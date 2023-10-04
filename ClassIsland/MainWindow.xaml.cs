@@ -104,6 +104,8 @@ public partial class MainWindow : Window
         get;
     } = new();
 
+    public ClassChangingWindow? ClassChangingWindow { get; set; }
+
     public MiniInfoProviderHostService MiniInfoProviderHostService
     {
         get;
@@ -888,13 +890,18 @@ public partial class MainWindow : Window
 
     private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentClassPlan == null)
+        if (ViewModel.CurrentClassPlan == null || ClassChangingWindow != null)
         {
             return;
         }
-        new ClassChangingWindow()
+
+        ViewModel.IsBusy = true;
+        ClassChangingWindow = new ClassChangingWindow()
         {
             ClassPlan = ViewModel.CurrentClassPlan
-        }.ShowDialog();
+        };
+        ClassChangingWindow.ShowDialog();
+        ClassChangingWindow = null;
+        ViewModel.IsBusy = false;
     }
 }

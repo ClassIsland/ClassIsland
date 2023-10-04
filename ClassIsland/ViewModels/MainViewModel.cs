@@ -40,6 +40,7 @@ public class MainViewModel : ObservableRecipient
     private Subject? _currentSubject = new();
     private bool _isClosing = false;
     private bool _isClassPlanEnabled = true;
+    private bool _isBusy = false;
 
     public Profile Profile
     {
@@ -373,6 +374,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isClassPlanEnabled) return;
             _isClassPlanEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsBusy
+    {
+        get => _isBusy;
+        set
+        {
+            if (value == _isBusy) return;
+            _isBusy = value;
             OnPropertyChanged();
         }
     }

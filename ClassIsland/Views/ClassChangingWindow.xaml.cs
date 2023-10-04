@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Views;
 
@@ -67,7 +68,7 @@ public partial class ClassChangingWindow : MyWindow
         ViewModel.SlideIndex = 1;
     }
 
-    private void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
     {
         var l = ProfileService.Profile.ClassPlans.Where(i => i.Value == ClassPlan).ToList();
         if (l.Count <= 0)
@@ -75,6 +76,15 @@ public partial class ClassChangingWindow : MyWindow
             return;
         }
         var key = l[0].Key;
+        if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay && ProfileService.Profile.OverlayClassPlanId != null)
+        {
+            var r = (bool?)await DialogHost.Show(FindResource("OverwriteConfirm"), ViewModel.DialogIdentifier);
+            if (r != true)
+            {
+                return;
+            }
+            ProfileService.ClearTempClassPlan();
+        }
 
         if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay)
         {

@@ -35,7 +35,8 @@
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
 
-        <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu">
+        <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu" 
+                     IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InvertBooleanConverter}}">
             <MenuItem Click="MenuItemAbout_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}">
                 <MenuItem.Icon>
                     <Image Source="/Assets/AppLogo.ico"/>
