@@ -901,6 +901,7 @@ public partial class MainWindow : Window
             ClassPlan = ViewModel.CurrentClassPlan
         };
         ClassChangingWindow.ShowDialog();
+        ClassChangingWindow.DataContext = null;
         ClassChangingWindow = null;
         ViewModel.IsBusy = false;
     }

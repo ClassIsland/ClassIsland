@@ -46,7 +46,7 @@ public partial class ClassChangingWindow : MyWindow
 
     public ClassChangingWindow()
     {
-        DataContext = this;
+        //DataContext = this;
         InitializeComponent();
     }
 
@@ -120,5 +120,11 @@ public partial class ClassChangingWindow : MyWindow
 
         ProfileService.SaveProfile();
         Close();
+    }
+
+    protected override void OnContentRendered(EventArgs e)
+    {
+        DataContext = this;
+        base.OnContentRendered(e);
     }
 }

@@ -20,7 +20,8 @@
         FontFamily="{StaticResource HarmonyOsSans}"
         Icon="/Assets/AppLogo.ico"
         SizeToContent="WidthAndHeight"
-        d:DataContext="{d:DesignInstance local:ClassChangingWindow}">
+        d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
+        WindowStartupLocation="CenterScreen">
     <controls:MyWindow.Resources>
         <Style x:Key="ClassPlanListBoxItemStyle" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                TargetType="{x:Type ListBoxItem}">
@@ -101,6 +102,12 @@
                 </Button>
             </StackPanel>
         </StackPanel>
+        <Storyboard x:Key="OverlayFadeOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LoadingOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </controls:MyWindow.Resources>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogIdentifier}">
         <Grid>
@@ -372,5 +379,30 @@
                     </TextBlock>
                 </StackPanel>
             </materialDesign:ColorZone>
-        </Grid></materialDesign:DialogHost>
+
+            <!-- Loading -->
+            <Border Grid.Row="0" Grid.RowSpan="4"
+                    Margin="-1"
+                    Padding="1"
+                    d:Visibility="Visible"
+                    Cursor="Wait"
+                    x:Name="LoadingOverlay"
+                    Background="{DynamicResource MaterialDesignPaper}">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                    </Style>
+                </Border.Style>
+                <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                            Margin="0 0 36 24">
+                    <controls:TeyvatLoadingControl/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </materialDesign:DialogHost>
 </controls:MyWindow>

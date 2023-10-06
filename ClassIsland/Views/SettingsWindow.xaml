@@ -1464,6 +1464,7 @@ The quick brown fox jumps over a lazy dog.
                                                     </controls:SettingsControl>
                                                     <TextBlock Margin="0 8 0 0"
                                                                FontWeight="Regular"
+                                                               TextWrapping="Wrap"
                                                                Text="{Binding ViewModel.SelectedChannelModel.Description, Mode=OneWay}" />
                                                     <!--<TextBlock Text="{Binding Settings.SelectedChannel, Mode=OneWay}"/>-->
                                                     <!--<Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"
@@ -1632,7 +1633,7 @@ The quick brown fox jumps over a lazy dog.
                                             </ListItem>
                                         </List>
 
-                                        <Paragraph Foreground="#02f7d1ec">
+                                        <Paragraph Foreground="#fff7d1ec">
                                             永远喜欢爱莉希雅
                                         </Paragraph>
 
@@ -1676,16 +1677,7 @@ The quick brown fox jumps over a lazy dog.
                                                      Text="{Binding ViewModel.DebugOutputs}"/>
                                             <Separator Margin="0 6"/>
                                             <controls:StarRailLoadingControl Height="150"/>
-                                            <Canvas Height="300">
-                                                <Thumb Canvas.Left="10" Canvas.Top="20" Canvas.ZIndex="99"
-                                                       BorderThickness="1">
-                                                    <Thumb.Template>
-                                                        <ControlTemplate>
-                                                            <TextBlock Text="123"></TextBlock>
-                                                        </ControlTemplate>
-                                                    </Thumb.Template>
-                                                </Thumb>
-                                            </Canvas>
+                                            <controls:TeyvatLoadingControl/>
                                             <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                     Content="关闭调试菜单"
                                                     Click="ButtonCloseDebug_OnClick"
