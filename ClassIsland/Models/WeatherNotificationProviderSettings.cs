@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using ClassIsland.Enums;
+using ClassIsland.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class WeatherNotificationProviderSettings : ObservableRecipient
+public class WeatherNotificationProviderSettings : ObservableRecipient, IWeatherNotificationSettingsBase
 {
-    public bool IsWeatherAlertsNotifyEnabled { get; set; } = true;
-
-    public bool IsWeatherForecastEnabled { get; set; } = true;
+    public NotificationModes AlertShowMode { get; set; }
+    public NotificationModes ForecastShowMode { get; set; }
 }

@@ -219,4 +219,9 @@
     </Style>
 
     <Style TargetType="{x:Type controls:TimeLineBackgroundRulerControl}"/>
+
+    <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignFloatingHintComboBox}"
+           x:Key="NotificationModeComboBox">
+        
+    </Style>
 </ResourceDictionary>

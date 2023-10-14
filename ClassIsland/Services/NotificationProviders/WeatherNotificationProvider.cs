@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Interfaces;
 using ClassIsland.Models;
@@ -39,6 +40,8 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         WeatherService = weatherService;
         SettingsService = settingsService;
         NotificationHostService.RegisterNotificationProvider(this);
+        attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
+        //attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
 
         Settings = NotificationHostService.GetNotificationProviderSettings
                        <WeatherNotificationProviderSettings>(ProviderGuid)
