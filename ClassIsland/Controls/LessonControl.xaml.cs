@@ -197,7 +197,11 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     }
 
     private void CurrentClassPlanOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    { 
+    {
+        if (e.PropertyName == nameof(CurrentClassPlan.IsActivated))
+        {
+            return;
+        }
         OnPropertyChanged(nameof(CurrentSubject));
         Update();
     }
