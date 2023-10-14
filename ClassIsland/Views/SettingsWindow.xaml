@@ -1639,52 +1639,79 @@ The quick brown fox jumps over a lazy dog.
 
                                     </FlowDocument>
                                 </FlowDocumentScrollViewer>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
 
-                                <materialDesign:Card Margin="0 6 0 0" Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Expander Background="Transparent">
-                                        <Expander.Header>
-                                            <TextBlock Margin="-12 0">
-                                                <Run FontWeight="Bold" FontSize="14" Text="调试" /><LineBreak />
-                                                <Run Text="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"></Run>
-                                            </TextBlock>
-                                        </Expander.Header>
-                                        <StackPanel Margin="12">
-                                            <CheckBox Content="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}" />
-                                            <CheckBox Content="MainWindowDebug" IsChecked="{Binding Settings.IsMainWindowDebugEnabled}"/>
-                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                    Content="CrashTest"
-                                                    Click="ButtonCrash_OnClick" HorizontalAlignment="Left" />
-                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                    Content="ToastMe!"
-                                                    Click="ButtonDebugToastText_OnClick"
-                                                    HorizontalAlignment="Left"/>
-                                            <MenuItem Icon="{materialDesign:PackIcon MonitorScreenshot}" Header="测试桌面截图" Click="MenuItemDebugScreenShot_OnClick"/>
-                                            <Image Stretch="UniformToFill" Source="{Binding ViewModel.TestImage, Mode=OneWay}"/>
-                                            <ItemsControl ItemsSource="{Binding ViewModel.DebugImageAccentColors, Mode=TwoWay}">
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel IsItemsHost="True"/>
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Rectangle Width="32" Height="32" Fill="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                    <!-- 调试 -->
+                    <TabItem Header="调试" Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel.Resources>
+                                    <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                        <Style.Resources>
+                                            <Style TargetType="materialDesign:PackIcon">
+                                                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                            </Style>
+                                        </Style.Resources>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <TextBlock Text="调试" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                                <TextBlock Margin="0 12">
+                                    <Run Text="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"></Run>
+                                </TextBlock>
+
+                                <MenuItem Icon="{materialDesign:PackIcon Close}"
+                                          Header="关闭调试菜单"
+                                          Click="ButtonCloseDebug_OnClick"/>
+                                <Separator/>
+                                <MenuItem IsCheckable="True" Header="调试菜单" IsChecked="{Binding Settings.IsDebugEnabled}" />
+                                <MenuItem IsCheckable="True" Header="MainWindowDebug" IsChecked="{Binding Settings.IsMainWindowDebugEnabled}"/>
+                                <MenuItem Icon="{materialDesign:PackIcon Bomb}"
+                                          Header="CrashTest"
+                                          Click="ButtonCrash_OnClick" />
+                                <MenuItem Icon="{materialDesign:PackIcon MessageOutline}"
+                                          Header="ToastMe!"
+                                          Click="ButtonDebugToastText_OnClick"/>
+                                <Separator/>
+                                <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发下课" Click="MenuItemDebugTriggerAfterClass_OnClick"/>
+                                <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发上课" Click="MenuItemDebugTriggerOnClass_OnClick"/>
+
+                                <Separator/>
+                                <MenuItem Icon="{materialDesign:PackIcon MonitorScreenshot}" Header="测试桌面截图" Click="MenuItemDebugScreenShot_OnClick"/>
+                                <Image Stretch="UniformToFill" Source="{Binding ViewModel.TestImage, Mode=OneWay}"/>
+                                <ItemsControl ItemsSource="{Binding ViewModel.DebugImageAccentColors, Mode=TwoWay}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Rectangle Width="32" Height="32" Fill="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                                      AcceptsReturn="True"
                                                      Text="{Binding ViewModel.DebugOutputs}"/>
-                                            <Separator Margin="0 6"/>
-                                            <controls:StarRailLoadingControl Height="150"/>
-                                            <controls:TeyvatLoadingControl/>
-                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                    Content="关闭调试菜单"
-                                                    Click="ButtonCloseDebug_OnClick"
-                                                    HorizontalAlignment="Left"/>
-                                        </StackPanel>
-                                    </Expander>
-                                </materialDesign:Card>
+                                <Separator Margin="0 6"/>
+                                <controls:StarRailLoadingControl Height="150"/>
+                                <controls:TeyvatLoadingControl/>
+                                <Separator Margin="0 6"/>
+
+                                <MenuItem Icon="{materialDesign:PackIcon AnimationPlayOutline}" Header="测试天气滚动字幕"
+                                          Click="MenuItemTestWeatherNotificationControl_OnClick"/>
+                                <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                                        BorderThickness="1"
+                                        Padding="8"
+                                        CornerRadius="4">
+                                    <ContentPresenter Content="{Binding ViewModel.WeatherNotificationControlTest}"
+                                                      HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Stretch"
+                                                      Height="40"
+                                                      ClipToBounds="True"/>
+                                </Border>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>

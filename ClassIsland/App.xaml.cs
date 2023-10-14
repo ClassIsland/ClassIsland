@@ -161,6 +161,7 @@ public partial class App : Application
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
+                services.AddHostedService<WeatherNotificationProvider>();
                 // 简略信息提供方
                 services.AddHostedService<DateMiniInfoProvider>();
                 services.AddHostedService<WeatherMiniInfoProvider>();

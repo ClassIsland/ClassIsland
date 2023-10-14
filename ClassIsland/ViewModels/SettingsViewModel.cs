@@ -31,6 +31,7 @@ public class SettingsViewModel : ObservableRecipient
     private bool _isPopupMenuOpened = false;
     private KeyValuePair<string, IMiniInfoProvider>? _selectedMiniInfoProvider;
     private List<City> _citySearchResults = new();
+    private object? _weatherNotificationControlTest;
 
     public Screen[] Screens
     {
@@ -201,6 +202,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _citySearchResults)) return;
             _citySearchResults = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public object? WeatherNotificationControlTest
+    {
+        get => _weatherNotificationControlTest;
+        set
+        {
+            if (Equals(value, _weatherNotificationControlTest)) return;
+            _weatherNotificationControlTest = value;
             OnPropertyChanged();
         }
     }

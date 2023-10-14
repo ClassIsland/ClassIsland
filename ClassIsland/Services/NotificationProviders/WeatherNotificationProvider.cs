@@ -1,0 +1,72 @@
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Interfaces;
+using ClassIsland.Models;
+using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Hosting;
+
+namespace ClassIsland.Services.NotificationProviders;
+
+public class WeatherNotificationProvider : INotificationProvider, IHostedService
+{
+    public string Name { get; set; } = "天气预警";
+    public string Description { get; set; } = "当有降雨或者极端天气时发出提醒。";
+    public Guid ProviderGuid { get; set; } = new Guid("7625DE96-38AA-4B71-B478-3F156DD9458D");
+    public object? SettingsElement { get; set; }
+    public object? IconElement { get; set; } = new PackIcon()
+    {
+        Kind = PackIconKind.CloudWarning,
+        Width = 24,
+        Height = 24
+    };
+
+    private WeatherService WeatherService { get; }
+
+    private SettingsService SettingsService { get; }
+
+    private WeatherNotificationProviderSettings Settings { get; }
+
+    private NotificationHostService NotificationHostService { get; }
+
+    public WeatherNotificationProvider(NotificationHostService notificationHostService,
+        AttachedSettingsHostService attachedSettingsHostService,
+        WeatherService weatherService,
+        SettingsService settingsService)
+    {
+        NotificationHostService = notificationHostService;
+        WeatherService = weatherService;
+        SettingsService = settingsService;
+        NotificationHostService.RegisterNotificationProvider(this);
+
+        Settings = NotificationHostService.GetNotificationProviderSettings
+                       <WeatherNotificationProviderSettings>(ProviderGuid)
+                   ?? new WeatherNotificationProviderSettings();
+        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
+
+        NotificationHostService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
+    }
+
+    private void NotificationHostServiceOnOnBreakingTime(object? sender, EventArgs e)
+    {
+        foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts)
+        {
+            NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+            {
+                MaskContent = new WeatherNotificationProviderControl(true, i),
+                OverlayContent = new WeatherNotificationProviderControl(false, i),
+                OverlayDuration = TimeSpan.FromSeconds(40),
+                MaskDuration = TimeSpan.FromSeconds(5)
+            });
+        }
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+    }
+
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+    }
+}

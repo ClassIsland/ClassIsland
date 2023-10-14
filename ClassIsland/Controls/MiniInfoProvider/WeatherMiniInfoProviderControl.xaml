@@ -34,11 +34,7 @@
                                Width="22" Height="22" Stretch="UniformToFill"
                                VerticalAlignment="Center"
                                Margin="2 0 0 0"
-                               Opacity="1">
-                            <Image.Effect>
-                                <DropShadowEffect BlurRadius="2" Direction="0" ShadowDepth="0" Opacity="0.5"/>
-                            </Image.Effect>
-                        </Image>
+                               Opacity="1"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

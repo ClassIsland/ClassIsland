@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
+using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
@@ -416,5 +417,23 @@ public partial class SettingsWindow : MyWindow
     private void TextBoxSearchCity_OnFocusableChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         ((UIElement)sender).Focus();
+    }
+
+    private void MenuItemTestWeatherNotificationControl_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.WeatherNotificationControlTest = new WeatherNotificationProviderControl(false, new WeatherAlert()
+        {
+            Detail = "测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试"
+        });
+    }
+
+    private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<NotificationHostService>().OnOnBreakingTime(this, EventArgs.Empty);
+    }
+
+    private void MenuItemDebugTriggerOnClass_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<NotificationHostService>().OnOnClass(this, EventArgs.Empty);
     }
 }
