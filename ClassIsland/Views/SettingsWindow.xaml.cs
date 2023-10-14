@@ -421,10 +421,8 @@ public partial class SettingsWindow : MyWindow
 
     private void MenuItemTestWeatherNotificationControl_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.WeatherNotificationControlTest = new WeatherNotificationProviderControl(false, new WeatherAlert()
-        {
-            Detail = "测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试"
-        });
+        ViewModel.WeatherNotificationControlTest =
+            new WeatherForecastNotificationProvider(false, Settings.LastWeatherInfo);
     }
 
     private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)

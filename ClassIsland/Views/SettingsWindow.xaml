@@ -30,7 +30,8 @@
                    FrameworkElement.FocusVisualStyle="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"
                    xmlns:mdWpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-                   xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+                   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+                   xmlns:weather="clr-namespace:ClassIsland.Models.Weather">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -1698,6 +1699,16 @@ The quick brown fox jumps over a lazy dog.
                                 <Separator Margin="0 6"/>
                                 <controls:StarRailLoadingControl Height="150"/>
                                 <controls:TeyvatLoadingControl/>
+                                <controls:WeatherRangePackIconControl>
+                                    <controls:WeatherRangePackIconControl.Value>
+                                        <weather:RangedValue From="0" To="1"/>
+                                    </controls:WeatherRangePackIconControl.Value>
+                                </controls:WeatherRangePackIconControl>
+                                <controls:WeatherRangePackIconControl>
+                                    <controls:WeatherRangePackIconControl.Value>
+                                        <weather:RangedValue From="0" To="0"/>
+                                    </controls:WeatherRangePackIconControl.Value>
+                                </controls:WeatherRangePackIconControl>
                                 <Separator Margin="0 6"/>
 
                                 <MenuItem Icon="{materialDesign:PackIcon AnimationPlayOutline}" Header="测试天气滚动字幕"

@@ -49,6 +49,18 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
 
         NotificationHostService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
+        NotificationHostService.OnClass += NotificationHostServiceOnOnClass;
+    }
+
+    private void NotificationHostServiceOnOnClass(object? sender, EventArgs e)
+    {
+        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        {
+            MaskContent = new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
+            OverlayContent = new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
+            OverlayDuration = TimeSpan.FromSeconds(15),
+            MaskDuration = TimeSpan.FromSeconds(5)
+        });
     }
 
     private void NotificationHostServiceOnOnBreakingTime(object? sender, EventArgs e)
