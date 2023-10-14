@@ -15,5 +15,7 @@ public class WeatherInfo
 
     [JsonPropertyName("updateTime")] public long UpdateTimeUnix { get; set; } = 0;
 
+    [JsonPropertyName("forecastDaily")] public ForecastDaily ForecastDaily { get; set; } = new();
+
     [JsonIgnore] public DateTime UpdateTime => DateTimeOffset.FromUnixTimeMilliseconds(UpdateTimeUnix).LocalDateTime;
 }

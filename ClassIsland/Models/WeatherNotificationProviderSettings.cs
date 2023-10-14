@@ -5,16 +5,7 @@ namespace ClassIsland.Models;
 
 public class WeatherNotificationProviderSettings : ObservableRecipient
 {
-    private List<string> _showedList = new();
+    public bool IsWeatherAlertsNotifyEnabled { get; set; } = true;
 
-    public List<string> ShowedList
-    {
-        get => _showedList;
-        set
-        {
-            if (Equals(value, _showedList)) return;
-            _showedList = value;
-            OnPropertyChanged();
-        }
-    }
+    public bool IsWeatherForecastEnabled { get; set; } = true;
 }
