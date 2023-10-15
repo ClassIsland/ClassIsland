@@ -231,6 +231,8 @@ public partial class SettingsWindow : MyWindow
 
     private async void ButtonRestartToUpdate_OnClick(object sender, RoutedEventArgs e)
     {
+        if (!File.Exists(".\\UpdateTemp\\update.zip"))
+            return;
         await UpdateService.RestartAppToUpdateAsync();
     }
 

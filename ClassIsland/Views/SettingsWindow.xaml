@@ -1014,6 +1014,9 @@ The quick brown fox jumps over a lazy dog.
                                         </StackPanel>
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
+                                <TextBlock TextWrapping="Wrap" FontWeight="Regular" Margin="0 8 0 0">
+                                    要调整天气提醒设置，请转到【提醒】选项卡。要调整天气快速信息设置，请在【基本】中快速信息相关选项中调整。
+                                </TextBlock>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
