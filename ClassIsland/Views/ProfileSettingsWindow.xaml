@@ -1316,6 +1316,7 @@
                                 </TextBlock>
                             </materialDesign:Chip>
                             <materialDesign:Chip
+                                Visibility="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource InverseBoolToVisConverter}, Mode=OneWay}"
                                 Click="ButtonTemporaryClassPlan_OnClick"
                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
                                 ToolTip="当前启用的课表">

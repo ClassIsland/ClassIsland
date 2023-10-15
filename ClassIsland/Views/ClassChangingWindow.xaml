@@ -70,6 +70,9 @@
                                             </MultiDataTrigger.Conditions>
                                             <Setter Property="Visibility" Value="Collapsed" />
                                         </MultiDataTrigger>
+                                        <DataTrigger Binding="{Binding IsHideDefault}" Value="True">
+                                            <Setter Property="Opacity" Value="0.4"/>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </controls:LessonControl.Style>
