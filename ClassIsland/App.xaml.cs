@@ -11,9 +11,12 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
+using ClassIsland.Controls;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Views;
 using Microsoft.AppCenter;
@@ -47,6 +50,7 @@ public partial class App : Application
 
     public App()
     {
+        
     }
 
     public ApplicationCommand ApplicationCommand
@@ -71,11 +75,23 @@ public partial class App : Application
             CrashInfo = e.Exception.ToString(),
             Exception = e.Exception
         };
+#if DEBUG
+        if (e.Exception.GetType() != typeof(ResourceReferenceKeyNotFoundException))
+        {
+            CrashWindow.ShowDialog();
+        }
+#else
         CrashWindow.ShowDialog();
+#endif
     }
 
     private async void App_OnStartup(object sender, StartupEventArgs e)
     {
+        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
+            Resources[SystemParameters.FocusVisualStyleKey]);
+        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ButtonBase.FocusVisualStyleProperty,
+            Resources[SystemParameters.FocusVisualStyleKey]);
+
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
         var command = new RootCommand
@@ -133,17 +149,31 @@ public partial class App : Application
                 services.AddSingleton<TaskBarIconService>();
                 services.AddSingleton<WallpaperPickingService>();
                 services.AddSingleton<NotificationHostService>();
+                services.AddSingleton<ThemeService>();
+                services.AddSingleton<MiniInfoProviderHostService>();
+                services.AddSingleton<WeatherService>();
+                services.AddSingleton<FileFolderService>();
+                services.AddSingleton<AttachedSettingsHostService>();
+                services.AddSingleton<ProfileService>();
+                //services.AddHostedService<BootService>();
+                // Views
+                services.AddSingleton<MainWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
+                services.AddHostedService<WeatherNotificationProvider>();
+                // 简略信息提供方
+                services.AddHostedService<DateMiniInfoProvider>();
+                services.AddHostedService<WeatherMiniInfoProvider>();
             }).Build();
         try
         {
-            GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate();
+            GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate(false);
         }
-        catch
+        catch (Exception ex)
         {
             // ignored
+            //MessageBox.Show(ex.ToString());
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
@@ -151,11 +181,11 @@ public partial class App : Application
             GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
         }
         GetService<UpdateService>().AppStartup();
+        GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
-        MainWindow = new MainWindow();
-        MainWindow.Show();
+        _ = Host.StartAsync();
 
-        await Host.StartAsync();
+        GetService<MainWindow>().Show();
     }
 
     public static void ReleaseLock()

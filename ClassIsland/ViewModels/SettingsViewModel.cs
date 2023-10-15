@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ClassIsland.Interfaces;
 using ClassIsland.Models;
+using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Color = System.Windows.Media.Color;
+using FontFamily = System.Windows.Media.FontFamily;
 
 namespace ClassIsland.ViewModels;
 
@@ -24,6 +29,9 @@ public class SettingsViewModel : ObservableRecipient
     private bool _isNotificationSettingsPanelOpened = false;
     private string? _notificationSettingsSelectedProvider = null;
     private bool _isPopupMenuOpened = false;
+    private KeyValuePair<string, IMiniInfoProvider>? _selectedMiniInfoProvider;
+    private List<City> _citySearchResults = new();
+    private object? _weatherNotificationControlTest;
 
     public Screen[] Screens
     {
@@ -153,6 +161,58 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _isPopupMenuOpened) return;
             _isPopupMenuOpened = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public List<FontFamily> FontFamilies { get; } =
+        new (Fonts.SystemFontFamilies) { new FontFamily("/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC") };
+
+    public KeyValuePair<string, IMiniInfoProvider>? SelectedMiniInfoProvider
+    {
+        get => _selectedMiniInfoProvider;
+        set
+        {
+            if (Equals(value, _selectedMiniInfoProvider)) return;
+            _selectedMiniInfoProvider = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public List<string> WeatherSampleList
+    {
+        get
+        {
+            var l = new List<string>();
+            for (var i = 0; i < 36; i++)
+            {
+                l.Add(i.ToString());
+            }
+
+            l.Add("53");
+            l.Add("99");
+            return l;
+        }
+    }
+
+    public List<City> CitySearchResults
+    {
+        get => _citySearchResults;
+        set
+        {
+            if (Equals(value, _citySearchResults)) return;
+            _citySearchResults = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public object? WeatherNotificationControlTest
+    {
+        get => _weatherNotificationControlTest;
+        set
+        {
+            if (Equals(value, _weatherNotificationControlTest)) return;
+            _weatherNotificationControlTest = value;
             OnPropertyChanged();
         }
     }

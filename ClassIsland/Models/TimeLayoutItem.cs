@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text.Json.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class TimeLayoutItem : ObservableRecipient, IComparable
+public class TimeLayoutItem : AttachableSettingsObject, IComparable
 {
     private DateTime _startSecond = DateTime.Now;
     private DateTime _endSecond = DateTime.Now;
     private bool _isOnClass = true;
     private int _timeType = 0;
+    private bool _isHideDefault = false;
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
@@ -20,6 +22,7 @@ public class TimeLayoutItem : ObservableRecipient, IComparable
         set
         {
             if (value == _startSecond) return;
+            //EnsureTime(value, EndSecond);
             _startSecond = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
@@ -35,9 +38,18 @@ public class TimeLayoutItem : ObservableRecipient, IComparable
         set
         {
             if (value == _endSecond) return;
+            //EnsureTime(StartSecond, value);
             _endSecond = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
+        }
+    }
+
+    private void EnsureTime(DateTime start, DateTime end)
+    {
+        if (start.TimeOfDay > end.TimeOfDay)
+        {
+            throw new ArgumentException("时间点起始时间无效。");
         }
     }
 
@@ -59,6 +71,20 @@ public class TimeLayoutItem : ObservableRecipient, IComparable
         {
             if (value == _timeType) return;
             _timeType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否默认隐藏
+    /// </summary>
+    public bool IsHideDefault
+    {
+        get => _isHideDefault;
+        set
+        {
+            if (value == _isHideDefault) return;
+            _isHideDefault = value;
             OnPropertyChanged();
         }
     }

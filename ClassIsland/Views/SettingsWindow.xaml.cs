@@ -17,22 +17,28 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
+using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Enums;
 using ClassIsland.Models;
+using ClassIsland.Models.Weather;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
 using Microsoft.Toolkit.Uwp.Notifications;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Application = System.Windows.Application;
+using ListBox = System.Windows.Controls.ListBox;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace ClassIsland.Views;
 /// <summary>
 /// SettingsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : MyWindow
 {
     public SettingsViewModel ViewModel
     {
@@ -73,11 +79,19 @@ public partial class SettingsWindow : Window
         get;
     }
 
+    public MiniInfoProviderHostService MiniInfoProviderHostService
+    {
+        get;
+    }
+
+    public WeatherService WeatherService { get; } = App.GetService<WeatherService>();
+
     public SettingsWindow()
     {
         UpdateService = App.GetService<UpdateService>();
         TaskBarIconService = App.GetService<TaskBarIconService>();
         WallpaperPickingService = App.GetService<WallpaperPickingService>();
+        MiniInfoProviderHostService = App.GetService<MiniInfoProviderHostService>();
         InitializeComponent();
         DataContext = this;
         var settingsService = App.GetService<SettingsService>();
@@ -131,6 +145,7 @@ public partial class SettingsWindow : Window
         Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateCache();
         RefreshDescription();
+        ViewModel.CitySearchResults = WeatherService.GetCitiesByName("");
         base.OnContentRendered(e);
     }
 
@@ -216,6 +231,8 @@ public partial class SettingsWindow : Window
 
     private async void ButtonRestartToUpdate_OnClick(object sender, RoutedEventArgs e)
     {
+        if (!File.Exists(".\\UpdateTemp\\update.zip"))
+            return;
         await UpdateService.RestartAppToUpdateAsync();
     }
 
@@ -367,5 +384,56 @@ public partial class SettingsWindow : Window
     {
         ViewModel.IsPopupMenuOpened = false;
         OpenDrawer("ExperimentalSettings");
+    }
+
+    private async void ButtonRefreshWeather_OnClick(object sender, RoutedEventArgs e)
+    {
+        await WeatherService.QueryWeatherAsync();
+    }
+
+    private void ButtonEditCurrentCity_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("CitySearcher");
+
+    }
+
+    private void TextBoxSearchCity_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        ViewModel.CitySearchResults = WeatherService.GetCitiesByName(((TextBox)sender).Text);
+    }
+
+    private async void SelectorCity_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var listbox = (ListBox)sender;
+        var city = (City?)listbox.SelectedItem;
+        if (city == null)
+        {
+            e.Handled = true;
+            //Settings.CityName = "";
+            return;
+        }
+        Settings.CityName = city.Name;
+        await WeatherService.QueryWeatherAsync();
+    }
+
+    private void TextBoxSearchCity_OnFocusableChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        ((UIElement)sender).Focus();
+    }
+
+    private void MenuItemTestWeatherNotificationControl_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.WeatherNotificationControlTest =
+            new WeatherForecastNotificationProvider(false, Settings.LastWeatherInfo);
+    }
+
+    private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<NotificationHostService>().OnOnBreakingTime(this, EventArgs.Empty);
+    }
+
+    private void MenuItemDebugTriggerOnClass_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<NotificationHostService>().OnOnClass(this, EventArgs.Empty);
     }
 }

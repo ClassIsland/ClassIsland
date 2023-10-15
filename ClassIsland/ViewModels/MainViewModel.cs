@@ -15,7 +15,7 @@ public class MainViewModel : ObservableRecipient
     private int? _currentSelectedIndex = null;
     private Settings _settings = new();
     private object? _currentMaskElement;
-    private object? _currentOverlayElement;
+    private object? _currentOverlayElement = new object();
     private bool _isOverlayOpened = false;
     private Subject _nextSubject = new();
     private TimeLayoutItem _nextTimeLayoutItem = new();
@@ -36,6 +36,11 @@ public class MainViewModel : ObservableRecipient
     private TimeLayoutItem _nextBreakingLayoutItem = new();
     private double _overlayRemainTimePercents = 1;
     private NotificationRequest _currentNotificationRequest = new();
+    private bool _isMainWindowVisible = true;
+    private Subject? _currentSubject = new();
+    private bool _isClosing = false;
+    private bool _isClassPlanEnabled = true;
+    private bool _isBusy = false;
 
     public Profile Profile
     {
@@ -325,6 +330,61 @@ public class MainViewModel : ObservableRecipient
         {
             if (Equals(value, _currentNotificationRequest)) return;
             _currentNotificationRequest = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMainWindowVisible
+    {
+        get => _isMainWindowVisible;
+        set
+        {
+            if (value == _isMainWindowVisible) return;
+            _isMainWindowVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Subject? CurrentSubject
+    {
+        get => _currentSubject;
+        set
+        {
+            if (Equals(value, _currentSubject)) return;
+            _currentSubject = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClosing
+    {
+        get => _isClosing;
+        set
+        {
+            if (value == _isClosing) return;
+            _isClosing = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClassPlanEnabled
+    {
+        get => _isClassPlanEnabled;
+        set
+        {
+            if (value == _isClassPlanEnabled) return;
+            _isClassPlanEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsBusy
+    {
+        get => _isBusy;
+        set
+        {
+            if (value == _isBusy) return;
+            _isBusy = value;
             OnPropertyChanged();
         }
     }

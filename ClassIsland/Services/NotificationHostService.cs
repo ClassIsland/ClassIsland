@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -97,6 +98,18 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
     {
         get => _currentState;
         set => SetField(ref _currentState, value);
+    }
+
+    public NotificationRequest? CurrentRequest { get; set; }
+
+    public NotificationRequest GetRequest()
+    {
+        CurrentRequest = RequestQueue.Dequeue();
+        CurrentRequest.CancellationTokenSource.Token.Register(() =>
+        {
+            RequestQueue.Clear();
+        });
+        return CurrentRequest;
     }
 
     public void RegisterNotificationProvider(INotificationProvider provider)

@@ -61,9 +61,20 @@
         </Line>
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                  Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"
-                 Maximum="{Binding TotalSeconds}"
-                 Value="{Binding Seconds}"
-                 materialDesign:TransitionAssist.DisableTransitions="True"/>
+                 materialDesign:TransitionAssist.DisableTransitions="True">
+            <ProgressBar.Style>
+                <Style TargetType="ProgressBar" BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsTimerEnabled}" Value="False">
+                            <Setter Property="Value" Value="1"/>
+                            <Setter Property="Maximum" Value="1"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="Value" Value="{Binding Seconds}"/>
+                    <Setter Property="Maximum" Value="{Binding TotalSeconds}"/>
+                </Style>
+            </ProgressBar.Style>
+        </ProgressBar>
         <!--<TextBlock Text="{Binding Index}" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>-->
     </Grid>
 </UserControl>

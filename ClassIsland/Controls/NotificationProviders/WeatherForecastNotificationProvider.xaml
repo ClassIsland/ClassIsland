@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="ClassIsland.Controls.NotificationProviders.WeatherForecastNotificationProvider"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherForecastNotificationProvider}}">
+        <StackPanel Orientation="Horizontal" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="{Binding IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+            <TextBlock Text="天气预报" FontSize="18" Margin="8 0" FontWeight="Bold"/>
+            <controls:WeatherPackIconControl Code="{Binding Info.ForecastDaily.Weather.Value[0].To}" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+        </StackPanel>
+        <Grid HorizontalAlignment="Center" Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12 0">
+                <!-- Today -->
+                <TextBlock Text="今天" FontWeight="Bold" FontSize="19" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <controls:WeatherRangePackIconControl Value="{Binding Info.ForecastDaily.Weather.Value[0]}"
+                                                      Height="22"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0 0 2 0"/>
+                <TextBlock FontSize="16" VerticalAlignment="Center" FontWeight="Medium">
+                    <Run Text="{Binding Info.ForecastDaily.Temperature.Value[0].From}"/><Run Text="℃">
+                    </Run><Run Text="-">
+                    </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[0].To}"/><Run Text="℃"/>
+                </TextBlock>
+                <!--<materialDesign:PackIcon Width="22" Height="22" 
+                                         Kind="RainChanceOutline"
+                                         VerticalAlignment="Center"
+                                         Margin="0 0 2 0"/>
+                <TextBlock FontSize="16" VerticalAlignment="Center" FontWeight="Medium">
+                    <Run Text="{Binding Info.ForecastDaily.PrecipitationProbability.Value[0]}"/><Run Text="%"/>
+                </TextBlock>-->
+                <Separator Margin="8 2">
+                    <Separator.LayoutTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Separator.LayoutTransform>
+                </Separator>
+                <!-- Tomorrow -->
+                <TextBlock Text="明天" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <controls:WeatherRangePackIconControl Value="{Binding Info.ForecastDaily.Weather.Value[1]}"
+                                                      Height="22"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0 0 2 0"/>
+                <TextBlock FontSize="16" VerticalAlignment="Center">
+                    <Run Text="{Binding Info.ForecastDaily.Temperature.Value[1].From}"/><Run Text="℃">
+                    </Run><Run Text="-">
+                    </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[1].To}"/><Run Text="℃"/>
+                </TextBlock>
+                <!--<materialDesign:PackIcon Width="22" Height="22" 
+                                         Kind="RainChanceOutline"
+                                         VerticalAlignment="Center"
+                                         Margin="0 0 2 0"/>
+                <TextBlock FontSize="16" VerticalAlignment="Center">
+                    <Run Text="{Binding Info.ForecastDaily.PrecipitationProbability.Value[1]}"/><Run Text="%"/>
+                </TextBlock>-->
+                <Separator Margin="8 2">
+                    <Separator.LayoutTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="90"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Separator.LayoutTransform>
+                </Separator>
+                <!-- Tomorrow -->
+                <TextBlock Text="后天" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <controls:WeatherRangePackIconControl Value="{Binding Info.ForecastDaily.Weather.Value[2]}"
+                                                      Height="22"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0 0 2 0"/>
+                <TextBlock FontSize="16" VerticalAlignment="Center" Margin="0 0 6 0">
+                    <Run Text="{Binding Info.ForecastDaily.Temperature.Value[2].From}"/><Run Text="℃">
+                    </Run><Run Text="-">
+                    </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[2].To}"/><Run Text="℃"/>
+                </TextBlock>
+            </StackPanel>
+            
+        </Grid>
+    </Grid>
+</UserControl>

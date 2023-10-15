@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Extensions.Hosting;
@@ -147,7 +148,8 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         {
             var k = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop");
             var path = (string?)k?.GetValue("WallPaper");
-            return path == null? null : new Bitmap(Image.FromFile(path));
+            var b = Screen.PrimaryScreen.Bounds;
+            return path == null? null : new Bitmap(Image.FromFile(path), b.Width, b.Height);
         }
         catch
         {
@@ -188,7 +190,14 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
             {
                 return;
             }
-            WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap);
+
+            double dpiX = 1, dpiY = 1;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var mw = (MainWindow)Application.Current.MainWindow!;
+                mw.GetCurrentDpi(out dpiX, out dpiY);
+            });
+            WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap, (int)(750 * dpiX));
             var w = new Stopwatch();
             w.Start();
             var right = SettingsService.Settings.TargetLightValue - 0.5;
@@ -224,6 +233,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         }
 
         IsWorking = false;
+        GC.Collect();
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

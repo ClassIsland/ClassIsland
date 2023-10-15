@@ -123,6 +123,15 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         set => SetValue(TotalSecondsProperty, value);
     }
 
+    public static readonly DependencyProperty IsTimerEnabledProperty = DependencyProperty.Register(
+        nameof(IsTimerEnabled), typeof(bool), typeof(LessonControl), new PropertyMetadata(true));
+
+    public bool IsTimerEnabled
+    {
+        get { return (bool)GetValue(IsTimerEnabledProperty); }
+        set { SetValue(IsTimerEnabledProperty, value); }
+    }
+
     public DispatcherTimer UpdateTimer
     {
         get;
@@ -138,7 +147,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         get
         {
             // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null || Index >= CurrentTimeLayout.Layouts.Count)
+            if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null || Index >= CurrentTimeLayout.Layouts.Count || Index < 0)
             // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             {
                 return ErrorSubject;
@@ -188,7 +197,11 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     }
 
     private void CurrentClassPlanOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    { 
+    {
+        if (e.PropertyName == nameof(CurrentClassPlan.IsActivated))
+        {
+            return;
+        }
         OnPropertyChanged(nameof(CurrentSubject));
         Update();
     }
@@ -201,7 +214,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         }
         CurrentTimeLayout = CurrentClassPlan.TimeLayout;
 
-        if (Index >= CurrentTimeLayout?.Layouts.Count || CurrentTimeLayout == null)
+        if (Index >= CurrentTimeLayout?.Layouts.Count || CurrentTimeLayout == null || Index < 0)
         {
             return;
         }
@@ -220,6 +233,10 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void UpdateTimerOnTick(object? sender, EventArgs e)
     {
+        if (!IsTimerEnabled)
+        {
+            return;
+        }
         Seconds = (long)(DateTime.Now.TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
     }
 

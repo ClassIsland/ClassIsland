@@ -20,8 +20,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
 using ClassIsland.Converters;
 using ClassIsland.Models;
+using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter.Analytics;
@@ -32,7 +34,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// ProfileSettingsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class ProfileSettingsWindow : Window
+public partial class ProfileSettingsWindow : MyWindow
 {
     public MainViewModel MainViewModel
     {
@@ -57,6 +59,11 @@ public partial class ProfileSettingsWindow : Window
         get;
         set;
     } = false;
+
+    public AttachedSettingsHostService AttachedSettingsHostService { get; } =
+        App.GetService<AttachedSettingsHostService>();
+
+    public ProfileService ProfileService { get; } = App.GetService<ProfileService>();
 
     public void OpenDrawer(string key)
     {
@@ -84,6 +91,25 @@ public partial class ProfileSettingsWindow : Window
         RefreshProfiles();
 
         base.OnInitialized(e);
+    }
+
+    private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (!e.Handled)
+        {
+            // ListView拦截鼠标滚轮事件
+            e.Handled = true;
+
+            // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.Source = sender;
+            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
+        }
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -132,8 +158,8 @@ public partial class ProfileSettingsWindow : Window
             EndSecond = selected?.EndSecond ?? DateTime.Now
         };
         timeLayout.Layouts.Add(newItem);
+        ReSortTimeLayout(newItem);
         ListViewTimePoints.SelectedValue = newItem;
-        UpdateTimeLayout();
         OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 创建时间点", new Dictionary<string, string>
         {
@@ -280,7 +306,16 @@ public partial class ProfileSettingsWindow : Window
             {
                 {"IsSuccess", "true"}
             });
-            MainViewModel.Profile.ClassPlans.Remove(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
+
+            var kvp = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem);
+            if (kvp.Value.IsOverlay)
+            {
+                ProfileService.ClearTempClassPlan();
+            }
+            else
+            {
+                MainViewModel.Profile.ClassPlans.Remove(kvp.Key);
+            }
         }
         else
         {
@@ -300,10 +335,39 @@ public partial class ProfileSettingsWindow : Window
     private void DrawerHost_OnDrawerClosing(object? sender, DrawerClosingEventArgs e)
     {
         var timeLayoutItemEdit = FindResource("TimePointEditor");
-        if (ViewModel.DrawerContent == timeLayoutItemEdit)
+        if (ViewModel.DrawerContent == timeLayoutItemEdit && ViewModel.SelectedTimePoint != null)
         {
-            UpdateTimeLayout();
+            ReSortTimeLayout(ViewModel.SelectedTimePoint);
         }
+    }
+
+    private void ReSortTimeLayout(TimeLayoutItem item)
+    {
+        var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
+        var l = timeLayout.Layouts;
+        l.Remove(item);
+        var c = l.Count;
+        var p = c;
+        for (var i = 0; i < c; i++)
+        {
+            if (l[i].StartSecond.TimeOfDay <= item.StartSecond.TimeOfDay) 
+                continue;
+            p = i;
+            break;
+        }
+        l.Insert(p, item);
+
+        // 验证
+        for (int i = 0; i < l.Count - 1; i++)
+        {
+            if (l[i].StartSecond.TimeOfDay > l[i + 1].StartSecond.TimeOfDay)
+            {
+                UpdateTimeLayout();
+                break;
+            }
+        }
+
+        ViewModel.SelectedTimePoint = item;
     }
 
     private void DataGridClassPlans_OnUnloadingRow(object? sender, DataGridRowEventArgs e)
@@ -579,5 +643,69 @@ public partial class ProfileSettingsWindow : Window
     {
         OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 编辑时间点");
+    }
+
+    private void ButtonZoomOut_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.TimeLineScale > 1.0)
+        {
+            ViewModel.TimeLineScale -= 0.2;
+        }
+        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
+        TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+    }
+
+    private void ButtonZoomIn_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.TimeLineScale < 5.0)
+        {
+            ViewModel.TimeLineScale += 0.2;
+        }
+        ViewModel.TimeLineScale = Math.Round(ViewModel.TimeLineScale, 1);
+        TimeLineListControl.ScrollIntoView(TimeLineListControl.SelectedItem);
+    }
+
+    private void ButtonCreateTempOverlayClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ProfileService.Profile.OverlayClassPlanId != null &&
+            ProfileService.Profile.ClassPlans.ContainsKey(ProfileService.Profile.OverlayClassPlanId))
+        {
+            ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
+        }
+        var id = ProfileService.CreateTempClassPlan(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
+        if (id != null)
+        {
+            ListViewClassPlans.SelectedItem = new KeyValuePair<string,ClassPlan>(id, ProfileService.Profile.ClassPlans[id]);
+            OpenDrawer("ClassPlansInfoEditor");
+        }
+    }
+
+    private void ClassPlanSource_OnFilter(object sender, FilterEventArgs e)
+    {
+        var cp = (KeyValuePair<string, ClassPlan>)e.Item;
+        e.Accepted = !cp.Value.IsOverlay;
+    }
+
+    private void ButtonClearTempOverlay_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.ClearTempClassPlan();
+    }
+
+    private void ButtonConvertToStdClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.ConvertToStdClassPlan();
+    }
+
+    private void ButtonTimeLayoutEditScrollToContent_OnClick(object sender, RoutedEventArgs e)
+    {
+        var tpr = ViewModel.SelectedTimePoint;
+        if (tpr == null)
+        {
+            return;
+        }
+        ViewModel.SelectedTimePoint = null;
+        ViewModel.SelectedTimePoint = tpr;
+        TimeLineListControl.ScrollIntoView(tpr);
+        ListViewTimePoints.ScrollIntoView(tpr);
     }
 }

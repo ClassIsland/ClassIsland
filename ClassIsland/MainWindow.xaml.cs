@@ -82,22 +82,43 @@ public partial class MainWindow : Window
     private TaskBarIconService TaskBarIconService
     {
         get;
-    } = App.GetService<TaskBarIconService>();
+    }
 
-    private NotificationHostService NotificationHostService
+    private ThemeService ThemeService
     {
-        get; 
+        get;
+    }
 
-    } = App.GetService<NotificationHostService>();
+    public NotificationHostService NotificationHostService
+    {
+        get;
+    }
+
+    public ProfileService ProfileService
+    {
+        get;
+    }
 
     private Stopwatch UserPrefrenceUpdateStopwatch
     {
         get;
     } = new();
 
-    public MainWindow()
+    public ClassChangingWindow? ClassChangingWindow { get; set; }
+
+    public MiniInfoProviderHostService MiniInfoProviderHostService
     {
-        SettingsService = App.GetService<SettingsService>();
+        get;
+    } = App.GetService<MiniInfoProviderHostService>();
+
+    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService)
+    {
+        SettingsService = settingsService;
+        TaskBarIconService = taskBarIconService;
+        NotificationHostService = notificationHostService;
+        ThemeService = themeService;
+        ProfileService = profileService;
+
         SettingsService.PropertyChanged += (sender, args) =>
         {
             LoadSettings();
@@ -135,7 +156,7 @@ public partial class MainWindow : Window
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 4;
+        SettingsWindow.RootTabControl.SelectedIndex = 5;
     }
 
     private int GetSubjectIndex(int index)
@@ -219,6 +240,15 @@ public partial class MainWindow : Window
                 ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
                 ViewModel.CurrentTimeLayoutItem = i;
                 NotificationHostService.IsClassConfirmed = isLessonConfirmed = true;
+                if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
+                {
+                    var i0 = GetSubjectIndex(currentLayout.IndexOf(i));
+                    ViewModel.CurrentSubject = ViewModel.Profile.Subjects[ViewModel.CurrentClassPlan.Classes[i0].SubjectId];
+                }
+                else
+                {
+                    ViewModel.CurrentSubject = null;
+                }
                 break;
             }
         }
@@ -299,12 +329,16 @@ public partial class MainWindow : Window
 
         final:
         // 处理提醒请求队列
-        if (!ViewModel.IsOverlayOpened && ViewModel.Settings.IsNotificationEnabled)
+        if (!ViewModel.IsOverlayOpened)
         {
             ViewModel.IsOverlayOpened = true;
+            if (!ViewModel.Settings.IsNotificationEnabled)
+            {
+                NotificationHostService.RequestQueue.Clear();
+            }
             while (NotificationHostService.RequestQueue.Count > 0)
             {
-                var request = ViewModel.CurrentNotificationRequest = NotificationHostService.RequestQueue.Dequeue();
+                var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();
                 if (request.TargetMaskEndTime != null)
                 {
                     request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
@@ -314,13 +348,14 @@ public partial class MainWindow : Window
                     request.OverlayDuration = request.TargetOverlayEndTime.Value - DateTime.Now - request.MaskDuration;
                 }
                 ViewModel.CurrentMaskElement = request.MaskContent;
+                var cancellationToken = request.CancellationTokenSource.Token;
 
                 if (request.MaskDuration > TimeSpan.Zero &&
                     request.OverlayDuration > TimeSpan.Zero)
                 {
                     BeginStoryboard("OverlayMaskIn");
-                    await Task.Run(() => Thread.Sleep(request.MaskDuration));
-                    if (request.OverlayContent is null)
+                    await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
+                    if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
                     {
                         BeginStoryboard("OverlayMaskOutDirect");
                     }
@@ -329,7 +364,7 @@ public partial class MainWindow : Window
                         ViewModel.CurrentOverlayElement = request.OverlayContent;
                         BeginStoryboard("OverlayMaskOut");
                         ViewModel.OverlayRemainStopwatch.Restart();
-                        await Task.Run(() => Thread.Sleep(request.OverlayDuration));
+                        await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.OverlayDuration), cancellationToken);
                         ViewModel.OverlayRemainStopwatch.Stop();
                     }
 
@@ -370,31 +405,40 @@ public partial class MainWindow : Window
         menu.DataContext = this;
         TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
         TaskBarIconService.MainTaskBarIcon.DataContext = this;
+        ViewModel.OverlayRemainTimePercents = 0.5;
+
+        if (!ViewModel.Settings.IsWelcomeWindowShowed)
+        {
+            var w = new WelcomeWindow()
+            {
+                ViewModel =
+                {
+                    Settings = ViewModel.Settings
+                }
+            };
+            var r = w.ShowDialog();
+            if (r == false)
+            {
+                ViewModel.IsClosing = true;
+                Close();
+            }
+            else
+            {
+                ViewModel.Settings.IsWelcomeWindowShowed = true;
+            }
+        }
         base.OnContentRendered(e);
     }
 
     public void LoadProfile()
     {
-        var path = $"./Profiles/{ViewModel.CurrentProfilePath}";
-        if (!File.Exists(path))
-        {
-            SaveProfile();
-        }
-
-        var json = File.ReadAllText(path);
-        var r = JsonSerializer.Deserialize<Profile>(json);
-        if (r != null)
-        {
-            ViewModel.Profile = r;
-            ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
-        }
+        ProfileService.LoadProfile();
+        ViewModel.Profile = ProfileService.Profile;
     }
 
     public void SaveProfile()
     {
-        var json = JsonSerializer.Serialize<Profile>(ViewModel.Profile);
-        //File.WriteAllText("./Profile.json", json);
-        File.WriteAllText($"./Profiles/{ViewModel.CurrentProfilePath}", json);
+        ProfileService.SaveProfile();
     }
 
     private void LoadSettings()
@@ -426,26 +470,6 @@ public partial class MainWindow : Window
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
         SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
-
-        if (!ViewModel.Settings.IsWelcomeWindowShowed)
-        {
-            var w = new WelcomeWindow()
-            {
-                ViewModel =
-                {
-                    Settings = ViewModel.Settings
-                }
-            };
-            var r = w.ShowDialog();
-            if (r == false)
-            {
-                Close();
-            }
-            else
-            {
-                ViewModel.Settings.IsWelcomeWindowShowed = true;
-            }
-        }
     }
 
     private void OnSystemEventsOnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs args)
@@ -501,61 +525,23 @@ public partial class MainWindow : Window
                 break;
         }
 
-        var paletteHelper = new PaletteHelper();
-        var theme = paletteHelper.GetTheme();
-        var lastPrimary = theme.PrimaryMid.Color;
-        var lastSecondary = theme.SecondaryMid.Color;
-        var lastBaseTheme = theme.GetBaseTheme();
-        switch (ViewModel.Settings.Theme)
-        {
-            case 0:
-                try
-                {
-                    var key = Registry.CurrentUser.OpenSubKey(
-                        "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize");
-                    if (key != null)
-                    {
-                        if ((int?)key.GetValue("AppsUseLightTheme") == 0)
-                        {
-                            theme.SetBaseTheme(new MaterialDesignDarkTheme());
-                        }
-                        else
-                        {
-                            theme.SetBaseTheme(new MaterialDesignLightTheme());
-                        }
-                    }
-                }
-                catch
-                {
-                    theme.SetBaseTheme(new MaterialDesignLightTheme());
-                }
-                break;
-
-            case 1:
-                theme.SetBaseTheme(new MaterialDesignLightTheme());
-                break;
-            case 2:
-                theme.SetBaseTheme(new MaterialDesignDarkTheme());
-                break;
-        }
-
+        var primary = Colors.DodgerBlue;
+        var secondary = Colors.DodgerBlue;
         switch (ViewModel.Settings.ColorSource)
         {
             case 0: //custom
-                theme.SetPrimaryColor(ViewModel.Settings.PrimaryColor);
-                theme.SetSecondaryColor(ViewModel.Settings.SecondaryColor);
+                primary = ViewModel.Settings.PrimaryColor;
+                secondary = ViewModel.Settings.SecondaryColor;
                 break;
             case 1:
-                theme.SetPrimaryColor(ViewModel.Settings.SelectedPlatte);
-                theme.SetSecondaryColor(ViewModel.Settings.SelectedPlatte);
+                primary = secondary = ViewModel.Settings.SelectedPlatte;
                 break;
             case 2:
                 try
                 {
                     NativeWindowHelper.DwmGetColorizationColor(out var color, out _);
                     var c = NativeWindowHelper.GetColor(color);
-                    theme.SetPrimaryColor(c);
-                    theme.SetSecondaryColor(c);
+                    primary = secondary = c;
                 }
                 catch
                 {
@@ -564,25 +550,7 @@ public partial class MainWindow : Window
                 break;
 
         }
-
-        ((Theme)theme).ColorAdjustment = new ColorAdjustment()
-        {
-            DesiredContrastRatio = 4.5F,
-            Contrast = Contrast.Medium,
-            Colors = ColorSelection.All
-        };
-        
-
-        var lastTheme = paletteHelper.GetTheme();
-        
-        if (lastPrimary == theme.PrimaryMid.Color &&
-            lastSecondary == theme.SecondaryMid.Color &&
-            lastBaseTheme == theme.GetBaseTheme())
-        {
-            return;
-        }
-
-        paletteHelper.SetTheme(theme);
+        ThemeService.SetTheme(ViewModel.Settings.Theme, primary, secondary);
     }
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
@@ -618,9 +586,23 @@ public partial class MainWindow : Window
         {
             ViewModel.TemporaryClassPlan = null;
         }
+
+        if (!ViewModel.IsClassPlanEnabled)
+        {
+            ViewModel.CurrentClassPlan = null;
+            return; 
+        }
+        if (ViewModel.Profile.IsOverlayClassPlanEnabled && 
+            ViewModel.Profile.OverlayClassPlanId != null &&
+            ViewModel.Profile.ClassPlans.ContainsKey(ViewModel.Profile.OverlayClassPlanId))
+        {
+            ViewModel.CurrentClassPlan = ViewModel.Profile.ClassPlans[ViewModel.Profile.OverlayClassPlanId];
+            return;
+        }
         var a = (from p in ViewModel.Profile.ClassPlans
-            where CheckClassPlan(p.Value)
-            select p.Value).ToList();
+            where CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled
+            select p.Value)
+            .ToList();
         ViewModel.CurrentClassPlan = ViewModel.TemporaryClassPlan?.Value ?? (a.Count < 1 ? null : a[0]!);
     }
 
@@ -699,11 +681,17 @@ public partial class MainWindow : Window
 
     private void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {
+        ViewModel.IsClosing = true;
         Close();
     }
 
     private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
     {
+        if (!ViewModel.IsClosing)
+        {
+            e.Cancel = true;
+            return;
+        }
         SaveProfile();
         SaveSettings();
     }
@@ -711,7 +699,6 @@ public partial class MainWindow : Window
     private void UpdateWindowPos()
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
-
 
         var scale = ViewModel.Settings.Scale;
         Width = GridRoot.ActualWidth * scale;
@@ -757,7 +744,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void GetCurrentDpi(out double dpiX, out double dpiY)
+    public void GetCurrentDpi(out double dpiX, out double dpiY)
     {
         var source = PresentationSource.FromVisual(this);
 
@@ -813,7 +800,7 @@ public partial class MainWindow : Window
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 6;
+        SettingsWindow.RootTabControl.SelectedIndex = 7;
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
@@ -851,7 +838,7 @@ public partial class MainWindow : Window
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
     {
         OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 4;
+        SettingsWindow.RootTabControl.SelectedIndex = 5;
     }
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -863,5 +850,59 @@ public partial class MainWindow : Window
     private void GridContent_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
         GridWrapper.Width = e.NewSize.Width + 32;
+    }
+
+    private async void MenuItemDebugFitSize_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.OverlayRemainTimePercents = 0.5;
+    }
+
+    private void MenuItemClearAllNotifications_OnClick(object sender, RoutedEventArgs e)
+    {
+        NotificationHostService.CurrentRequest?.CancellationTokenSource.Cancel();
+    }
+
+    private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsWindow.RootTabControl.SelectedIndex = 2;
+        OpenSettingsWindow();
+    }
+
+    private void MenuItemShowMainWindow_OnChecked(object sender, RoutedEventArgs e)
+    {
+        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
+        {
+            BackgroundSource =
+                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png",
+                    UriKind.Absolute)),
+        };
+    }
+
+    private void MenuItemShowMainWindow_OnUnchecked(object sender, RoutedEventArgs e)
+    {
+        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
+        {
+            BackgroundSource =
+                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo_Fade.png",
+                    UriKind.Absolute)),
+        };
+    }
+
+    private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.CurrentClassPlan == null || ClassChangingWindow != null)
+        {
+            return;
+        }
+
+        ViewModel.IsBusy = true;
+        ClassChangingWindow = new ClassChangingWindow()
+        {
+            ClassPlan = ViewModel.CurrentClassPlan
+        };
+        ClassChangingWindow.ShowDialog();
+        ClassChangingWindow.DataContext = null;
+        ClassChangingWindow = null;
+        ViewModel.IsBusy = false;
     }
 }

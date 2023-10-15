@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 
@@ -21,7 +22,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// WelcomeWindow.xaml 的交互逻辑
 /// </summary>
-public partial class WelcomeWindow : Window
+public partial class WelcomeWindow : MyWindow
 {
     public WelcomeViewModel ViewModel
     {

@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Controls;
 using ClassIsland.ViewModels;
 using MdXaml;
 using Microsoft.AppCenter.Analytics;
@@ -23,7 +24,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// HelpsWindow.xaml 的交互逻辑
 /// </summary>
-public partial class HelpsWindow : Window
+public partial class HelpsWindow : MyWindow
 {
     public HelpsViewModel ViewModel
     {
@@ -59,6 +60,8 @@ public partial class HelpsWindow : Window
         //ViewModel.HelpDocuments.Add("测试", "/Assets/Documents/HelloWorld.md");
         ViewModel.HelpDocuments.Add("欢迎", "/Assets/Documents/Welcome.md");
         ViewModel.HelpDocuments.Add("基本", "/Assets/Documents/Basic.md");
+        ViewModel.HelpDocuments.Add("简略信息", "/Assets/Documents/MiniInfo.md");
+        ViewModel.HelpDocuments.Add("提醒", "/Assets/Documents/Notifications.md");
         ViewModel.HelpDocuments.Add("档案设置", "/Assets/Documents/ProfileSettingsPage.md");
         ViewModel.HelpDocuments.Add("课表", "/Assets/Documents/ClassPlan.md");
         ViewModel.HelpDocuments.Add("时间表", "/Assets/Documents/TimeLayout.md");

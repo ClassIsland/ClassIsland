@@ -91,7 +91,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     public async void AppStartup()
     {
         if (Settings.AutoInstallUpdateNextStartup 
-            && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+            && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded
+            && File.Exists(".\\UpdateTemp\\update.zip"))
         {
             await RestartAppToUpdateAsync();
         }

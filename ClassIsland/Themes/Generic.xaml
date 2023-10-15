@@ -4,7 +4,12 @@
     xmlns:local="clr-namespace:ClassIsland"
     xmlns:controls="clr-namespace:ClassIsland.Controls"
     xmlns:models="clr-namespace:ClassIsland.Models"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:converters="clr-namespace:ClassIsland.Converters"
+    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    mc:Ignorable="d" >
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -18,5 +23,205 @@
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="Content" Value="{materialDesign:PackIcon Folder}"/>
         <Setter Property="ToolTip" Value="浏览…"/>
+    </Style>
+
+    <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Rectangle Margin="-2" StrokeThickness="2" 
+                                   Stroke="{DynamicResource MaterialDesignBody}" 
+                                   SnapsToDevicePixels="true"
+                                   RadiusX="2"
+                                   RadiusY="2"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Control.ToolTip" Value="foo"/>
+    </Style>
+
+    <converters:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
+    <Style TargetType="{x:Type controls:TimeLineListControl}" BasedOn="{StaticResource MaterialDesignListBox}">
+        <Style.Resources>
+            <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
+                <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Grid.Resources>
+                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                    </Grid.Resources>
+                    <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                    <materialDesign:ColorZone SnapsToDevicePixels="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <materialDesign:ColorZone.Style>
+                            <Style TargetType="materialDesign:ColorZone">
+                                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding TimeType}" Value="0">
+                                        <Setter Property="Mode" Value="PrimaryLight"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding TimeType}" Value="1">
+                                        <Setter Property="Mode" Value="PrimaryDark"/>
+                                    </DataTrigger>
+                                    <!-- Selected -->
+                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" Value="True">
+                                        <!--<Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
+                                        <Setter Property="BorderThickness" Value="2"/>-->
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:ColorZone.Style>
+                        <materialDesign:ColorZone.ToolTip>
+                            <controls:TimeLineListItemControl TimePoint="{Binding}" IsAlwaysExpanded="True"/>
+                        </materialDesign:ColorZone.ToolTip>
+                        <Grid>
+                            <controls:TimeLineListItemControl TimePoint="{Binding}"/>
+                        </Grid>
+                    </materialDesign:ColorZone>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateSeparator">
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.Resources>
+                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                    </Grid.Resources>
+                    <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                    <Line SnapsToDevicePixels="True" StrokeThickness="6" Stroke="Red"
+                          X1="0" X2="{Binding ActualWidth, RelativeSource={RelativeSource Self}}">
+                        <Line.ToolTip>
+                            <controls:TimeLineListItemControl TimePoint="{Binding}"/>
+                        </Line.ToolTip>
+                    </Line>
+                </Grid>
+            </DataTemplate>
+        </Style.Resources>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <Canvas IsItemsHost="True" 
+                            HorizontalAlignment="Stretch"
+                            Margin="60 0 0 0"
+                            Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
+                    />
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Grid>
+                        <Border x:Name="Bd"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                ClipToBounds="False"
+                                SnapsToDevicePixels="true">
+                            <ScrollViewer Padding="{TemplateBinding Padding}"
+                                          ClipToBounds="False"
+                                          Focusable="false"
+                                          PanningMode="None">
+                                <Grid>
+                                    <controls:TimeLineBackgroundRulerControl Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
+                                    <ItemsPresenter SnapsToDevicePixels="True"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                    <Style.Resources>
+                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                    </Style.Resources>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
+                            <Setter Property="Height" Value="Auto"/>
+                            <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
+                                <Setter.Value>
+                                    <materialDesign:BehaviorCollection>
+                                        <behaviors:TimeLineListItemBehavior>
+                                            <behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                                <ControlTemplate>
+                                                    <controls:TimeLineListItemSeparatorAdornerControl 
+                                                        VerticalAlignment="Stretch"
+                                                        HorizontalAlignment="Stretch"
+                                                        TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                        Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
+                                                </ControlTemplate>
+                                            </behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                        </behaviors:TimeLineListItemBehavior>
+                                    </materialDesign:BehaviorCollection>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"/>
+                    <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
+                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
+                    <!--<Setter Property="Canvas.Top" />-->
+                    <Setter Property="Canvas.Top">
+                        <Setter.Value>
+                            <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeToCanvasPosConverter}">
+                                <Binding Path="StartSecond"/>
+                                <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Height">
+                        <Setter.Value>
+                            <MultiBinding Mode="OneWay" Converter="{StaticResource DateTimeDeltaToCanvasPosConverter}">
+                                <Binding Path="StartSecond" Mode="OneWay"/>
+                                <Binding Path="EndSecond" Mode="OneWay"/>
+                                <Binding Path="Scale" RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}"/>
+
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
+                        <Setter.Value>
+                            <materialDesign:BehaviorCollection>
+                                <behaviors:TimeLineListItemBehavior>
+                                    <behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                        <ControlTemplate>
+                                            <controls:TimeLineListItemExpandingAdornerControl 
+                                                VerticalAlignment="Stretch"
+                                                HorizontalAlignment="Stretch"
+                                                TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
+                                        </ControlTemplate>
+                                    </behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                </behaviors:TimeLineListItemBehavior>
+                            </materialDesign:BehaviorCollection>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemTemplateSelector">
+            <Setter.Value>
+                <controls:TimeLineListControlDataTemplateSelector/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type controls:TimeLineBackgroundRulerControl}"/>
+
+    <Style TargetType="ComboBox" BasedOn="{StaticResource MaterialDesignFloatingHintComboBox}"
+           x:Key="NotificationModeComboBox">
+        
     </Style>
 </ResourceDictionary>

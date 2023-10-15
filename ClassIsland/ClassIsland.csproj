@@ -29,7 +29,9 @@
     <None Remove="Assets\AppLogo%40768w.png" />
     <None Remove="Assets\AppLogo.ico" />
     <None Remove="Assets\AppLogo.png" />
+    <None Remove="Assets\AppLogo_Fade.png" />
     <None Remove="Assets\Contributiors\HelloWRC%4064w.jpg" />
+    <None Remove="Assets\Documents\Appearence.md" />
     <None Remove="Assets\Documents\Basic.md" />
     <None Remove="Assets\Documents\ClassPlan.md" />
     <None Remove="Assets\Documents\HelloWorld.md" />
@@ -49,14 +51,22 @@
     <None Remove="Assets\Documents\image\ClassPlan\1690343176833.png" />
     <None Remove="Assets\Documents\image\ClassPlan\1690343249191.png" />
     <None Remove="Assets\Documents\image\ClassPlan\1690343286378.png" />
+    <None Remove="Assets\Documents\image\MiniInfo\1694924066147.png" />
+    <None Remove="Assets\Documents\image\MiniInfo\1694925086975.png" />
+    <None Remove="Assets\Documents\image\Notifications\1694923928375.png" />
+    <None Remove="Assets\Documents\image\Notifications\1694923983253.png" />
     <None Remove="Assets\Documents\image\ProfileSettingsPage\1690357909840.png" />
     <None Remove="Assets\Documents\image\ProfileSettingsPage\1690358010089.png" />
     <None Remove="Assets\Documents\image\ProfileSettingsPage\1690358214464.png" />
+    <None Remove="Assets\Documents\image\ProfileSettingsPage\Snipaste_2023-09-17_11-55-19.png" />
     <None Remove="Assets\Documents\image\Subject\1690343413399.png" />
     <None Remove="Assets\Documents\image\TimeLayout\1690343735712.png" />
     <None Remove="Assets\Documents\image\TimeLayout\1690343828036.png" />
     <None Remove="Assets\Documents\image\TimeLayout\1690344055964.png" />
     <None Remove="Assets\Documents\image\TimeLayout\1690344105820.png" />
+    <None Remove="Assets\Documents\image\Welcome\1694925761903.png" />
+    <None Remove="Assets\Documents\MiniInfo.md" />
+    <None Remove="Assets\Documents\Notifications.md" />
     <None Remove="Assets\Documents\ProfileSettingsPage.md" />
     <None Remove="Assets\Documents\Subject.md" />
     <None Remove="Assets\Documents\TimeLayout.md" />
@@ -69,6 +79,9 @@
     <None Remove="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
     <None Remove="Assets\LICENSE.txt" />
     <None Remove="Assets\MainMenuOpenDemo.gif" />
+    <None Remove="Assets\XiaomiWeather\xiaomi_weather.db" />
+    <None Remove="Assets\XiaomiWeather\xiaomi_weather_status.json" />
+    <None Remove="Assets\光辉矢愿_遨游.png" />
     <None Remove="Assets\帕姆_震惊.png" />
     <None Remove="Assets\普罗米修斯_查询.png" />
   </ItemGroup>
@@ -91,13 +104,14 @@
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.115" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.8.0" />
     <PackageReference Include="MdXaml" Version="1.21.0" />
     <PackageReference Include="MdXaml.AnimatedGif" Version="1.21.0" />
     <PackageReference Include="MdXaml.Html" Version="1.21.0" />
     <PackageReference Include="Microsoft.AppCenter" Version="5.0.2" />
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.2" />
     <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.2" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.10" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
@@ -110,8 +124,7 @@
   <ItemGroup>
     <Folder Include="Models\TimeRules\" />
     <Folder Include="Services\NotificationProviders\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Enums\" />
+    <Folder Include="Services\MiniInfoProviders\" />
     <Folder Include="Validations\" />
   </ItemGroup>
 
@@ -125,7 +138,9 @@
     <Resource Include="Assets\AppLogo@384w.png" />
     <Resource Include="Assets\AppLogo@48w.png" />
     <Resource Include="Assets\AppLogo@768w.png" />
+    <Resource Include="Assets\AppLogo_Fade.png" />
     <Resource Include="Assets\Contributiors\HelloWRC@64w.jpg" />
+    <Resource Include="Assets\Documents\Appearence.md" />
     <Resource Include="Assets\Documents\Basic.md" />
     <Resource Include="Assets\Documents\image\Basic\1690355954552.png" />
     <Resource Include="Assets\Documents\image\Basic\1690356161339.png" />
@@ -142,14 +157,22 @@
     <Resource Include="Assets\Documents\image\ClassPlan\1690343176833.png" />
     <Resource Include="Assets\Documents\image\ClassPlan\1690343249191.png" />
     <Resource Include="Assets\Documents\image\ClassPlan\1690343286378.png" />
+    <Resource Include="Assets\Documents\image\MiniInfo\1694924066147.png" />
+    <Resource Include="Assets\Documents\image\MiniInfo\1694925086975.png" />
+    <Resource Include="Assets\Documents\image\Notifications\1694923928375.png" />
+    <Resource Include="Assets\Documents\image\Notifications\1694923983253.png" />
     <Resource Include="Assets\Documents\image\ProfileSettingsPage\1690357909840.png" />
     <Resource Include="Assets\Documents\image\ProfileSettingsPage\1690358010089.png" />
     <Resource Include="Assets\Documents\image\ProfileSettingsPage\1690358214464.png" />
+    <Resource Include="Assets\Documents\image\ProfileSettingsPage\Snipaste_2023-09-17_11-55-19.png" />
     <Resource Include="Assets\Documents\image\Subject\1690343413399.png" />
     <Resource Include="Assets\Documents\image\TimeLayout\1690343735712.png" />
     <Resource Include="Assets\Documents\image\TimeLayout\1690343828036.png" />
     <Resource Include="Assets\Documents\image\TimeLayout\1690344055964.png" />
     <Resource Include="Assets\Documents\image\TimeLayout\1690344105820.png" />
+    <Resource Include="Assets\Documents\image\Welcome\1694925761903.png" />
+    <Resource Include="Assets\Documents\MiniInfo.md" />
+    <Resource Include="Assets\Documents\Notifications.md" />
     <Resource Include="Assets\Documents\Subject.md" />
     <Resource Include="Assets\Documents\TimeLayout.md" />
     <Resource Include="Assets\Documents\ClassPlan.md" />
@@ -165,6 +188,9 @@
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
     <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
+    <Resource Include="Assets\XiaomiWeather\xiaomi_weather.db" />
+    <Resource Include="Assets\XiaomiWeather\xiaomi_weather_status.json" />
+    <Resource Include="Assets\光辉矢愿_遨游.png" />
     <Resource Include="Assets\帕姆_震惊.png" />
     <Resource Include="Assets\LICENSE.txt" />
     <Resource Include="Assets\普罗米修斯_查询.png" />

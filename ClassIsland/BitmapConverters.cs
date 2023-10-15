@@ -39,6 +39,11 @@ public class BitmapConveters
                 result.DecodePixelWidth = (int)((double)bitmap.Width / (double)bitmap.Height * (double)h);
                 result.DecodePixelHeight = h.Value;
             }
+            else if (w != null && w <= bitmap.Width)
+            {
+                result.DecodePixelHeight = (int)((double)bitmap.Height / (double)bitmap.Width * (double)w);
+                result.DecodePixelWidth = w.Value;
+            }
             else
             {
                 result.DecodePixelWidth = bitmap.Width;

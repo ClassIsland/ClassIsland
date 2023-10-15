@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using ClassIsland.Enums;
+using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
 using IWshRuntimeLibrary;
 using MaterialDesignColors;
@@ -70,6 +72,13 @@ public class Settings : ObservableRecipient
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = false;
+    private string _mainWindowFont = "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
+    private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
+    private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
+    private WeatherInfo _lastWeatherInfo = new();
+    private string _cityId = "101010100";
+    private string _cityName = "北京";
+    private FontWeight _mainWindowFontWeight = FontWeights.Medium;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -129,6 +138,28 @@ public class Settings : ObservableRecipient
         {
             if (value == _isClassPrepareNotificationEnabled) return;
             _isClassPrepareNotificationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableDictionary<string, object?> MiniInfoProviderSettings
+    {
+        get => _miniInfoProviderSettings;
+        set
+        {
+            if (Equals(value, _miniInfoProviderSettings)) return;
+            _miniInfoProviderSettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? SelectedMiniInfoProvider
+    {
+        get => _selectedMiniInfoProvider;
+        set
+        {
+            if (value == _selectedMiniInfoProvider) return;
+            _selectedMiniInfoProvider = value;
             OnPropertyChanged();
         }
     }
@@ -404,6 +435,28 @@ public class Settings : ObservableRecipient
         }
     }
 
+    public string MainWindowFont
+    {
+        get => _mainWindowFont;
+        set
+        {
+            if (value == _mainWindowFont) return;
+            _mainWindowFont = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public FontWeight MainWindowFontWeight
+    {
+        get => _mainWindowFontWeight;
+        set
+        {
+            if (value.Equals(_mainWindowFontWeight)) return;
+            _mainWindowFontWeight = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Notifications
@@ -629,6 +682,42 @@ public class Settings : ObservableRecipient
 
     #endregion
 
+    #region Weather
+
+    public WeatherInfo LastWeatherInfo
+    {
+        get => _lastWeatherInfo;
+        set
+        {
+            if (Equals(value, _lastWeatherInfo)) return;
+            _lastWeatherInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CityId
+    {
+        get => _cityId;
+        set
+        {
+            if (value == _cityId || value == null) return;
+            _cityId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CityName
+    {
+        get => _cityName;
+        set
+        {
+            if (value == _cityName) return;
+            _cityName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
     public bool IsDebugEnabled
     {
         get => _isDebugEnabled;

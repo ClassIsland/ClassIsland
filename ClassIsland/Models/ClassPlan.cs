@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.DirectoryServices;
@@ -9,7 +10,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class ClassPlan : ObservableRecipient
+public class ClassPlan : AttachableSettingsObject
 {
     private string _timeLayoutId = "";
     private ObservableCollection<ClassInfo> _classes = new();
@@ -17,6 +18,11 @@ public class ClassPlan : ObservableRecipient
     private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
     private TimeRule _timeRule = new();
     private bool _isActivated = false;
+    private bool _isOverlay = false;
+    private string? _overlaySourceId;
+    private ClassPlan? _overlaySource = null;
+    private bool _isEnabled = true;
+    private DateTime _overlaySetupTime = DateTime.Now;
 
     public ClassPlan()
     {
@@ -130,6 +136,71 @@ public class ClassPlan : ObservableRecipient
         {
             if (value == _isActivated) return;
             _isActivated = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsOverlay
+    {
+        get => _isOverlay;
+        set
+        {
+            if (value == _isOverlay) return;
+            _isOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? OverlaySourceId
+    {
+        get => _overlaySourceId;
+        set
+        {
+            if (value == _overlaySourceId) return;
+            _overlaySourceId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public ClassPlan? OverlaySource
+    {
+        get => _overlaySource;
+        set
+        {
+            if (Equals(value, _overlaySource)) return;
+            _overlaySource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime OverlaySetupTime
+    {
+        get => _overlaySetupTime;
+        set
+        {
+            if (value.Equals(_overlaySetupTime)) return;
+            _overlaySetupTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public void SetupOverlay(ClassPlan source)
+    {
+        if (!IsOverlay)
+        {
+            return;
+        }
+        OverlaySource = source;
+    }
+
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set
+        {
+            if (value == _isEnabled) return;
+            _isEnabled = value;
             OnPropertyChanged();
         }
     }

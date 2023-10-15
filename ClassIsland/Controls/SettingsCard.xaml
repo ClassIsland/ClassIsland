@@ -16,7 +16,7 @@
     <materialDesign:Card
         HorizontalAlignment="Stretch"
         VerticalAlignment="Center"
-        Padding="6 6 8 6"
+        Padding="12 10 16 10"
     >
         <controls:SettingsControl 
             Header="{Binding Header, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls:SettingsCard}}}"

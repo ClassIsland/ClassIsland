@@ -10,6 +10,7 @@ public class ClassNotificationSettings : ObservableRecipient
     private bool _isClassOffNotificationEnabled = true;
     private int _inDoorClassPreparingDeltaTime = 60;
     private int _outDoorClassPreparingDeltaTime = 120;
+    private string _classOnPreparingText = "准备上课，请回到座位并保持安静，做好上课准备。";
 
     public bool IsClassOnNotificationEnabled
     {
@@ -62,6 +63,17 @@ public class ClassNotificationSettings : ObservableRecipient
         {
             if (value.Equals(_outDoorClassPreparingDeltaTime)) return;
             _outDoorClassPreparingDeltaTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOnPreparingText
+    {
+        get => _classOnPreparingText;
+        set
+        {
+            if (value == _classOnPreparingText) return;
+            _classOnPreparingText = value;
             OnPropertyChanged();
         }
     }

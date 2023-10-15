@@ -16,10 +16,10 @@
         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{x:Null}"
-        TextElement.FontWeight="Medium"
+        TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight}"
         TextElement.FontSize="14"
         d:DataContext="{d:DesignInstance local:MainWindow}"
-        FontFamily="{StaticResource HarmonyOsSans}"
+        FontFamily="{Binding ViewModel.Settings.MainWindowFont, Mode=OneWay}"
         ResizeMode="NoResize"
         MouseDown="MainWindow_OnPreviewMouseDown"
         ShowInTaskbar="False"
@@ -35,7 +35,8 @@
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
 
-        <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu">
+        <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu" 
+                     IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InvertBooleanConverter}}">
             <MenuItem Click="MenuItemAbout_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay}">
                 <MenuItem.Icon>
                     <Image Source="/Assets/AppLogo.ico"/>
@@ -61,10 +62,14 @@
                 </MenuItem.Style>
             </MenuItem>
             <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…" Click="MenuItemHelps_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-            <Separator/>
+            <Separator />
+            <MenuItem Header="显示主界面" IsCheckable="True" Checked="MenuItemShowMainWindow_OnChecked" Unchecked="MenuItemShowMainWindow_OnUnchecked" IsChecked="{Binding ViewModel.IsMainWindowVisible}" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon NotificationClearAll}" Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon SwapHorizontal}" Header="换课…" Click="MenuItemClassSwap_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
             <Separator Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -79,6 +84,8 @@
                 <Separator/>
                 <MenuItem Header="WelcomeWindow" Click="MenuItemDebugWelcomeWindow_OnClick"/>
                 <MenuItem Header="WelcomeWindow (Full)" Click="MenuItemDebugWelcomeWindow2_OnClick"/>
+                <Separator/>
+                <MenuItem Header="FitSize" Click="MenuItemDebugFitSize_OnClick"/>
             </MenuItem>
         </ContextMenu>
 
@@ -288,6 +295,7 @@
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <converters:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
         <!--#endregion 1-->
     </Window.Resources>
     <Window.Style>
@@ -362,7 +370,7 @@
                         </MultiDataTrigger>
                     </Style.Triggers>
 
-                    <Setter Property="Visibility" Value="Visible" />
+                    <Setter Property="Visibility" Value="{Binding ViewModel.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Style>
             </Grid.Style>
             <Grid.Effect>
@@ -407,20 +415,25 @@
                         Margin="16 0">
                 </Canvas>
                 <Grid Height="40"
+                      x:Name="GridContentRoot"
                       Margin="16 0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
 
-                    <!-- 日历 -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal"
-                            Margin="6 0 12 0"
-                            VerticalAlignment="Center"
-                            Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                        <TextBlock FontSize="16"
-                                Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
-                    </StackPanel>
+
+                    <ContentPresenter Grid.Column="0" 
+                                      Margin="6 0 12 0"
+                                      VerticalAlignment="Center"
+                                      Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        <ContentPresenter.Content>
+                            <MultiBinding Converter="{StaticResource MiniInfoGuidToMiniInfoProviderElementConverter}">
+                                <Binding Path="ViewModel.Settings.SelectedMiniInfoProvider"/>
+                                <Binding Path="MiniInfoProviderHostService.Providers"/>
+                            </MultiBinding>
+                        </ContentPresenter.Content>
+                    </ContentPresenter>
 
                     <!-- 没有课程提示 -->
                     <TextBlock Grid.Column="1"
@@ -480,6 +493,16 @@
                                                     </MultiDataTrigger.Conditions>
                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                 </MultiDataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding TimeType}" Value="0" />
+                                                        <Condition Binding="{Binding IsHideDefault}" Value="True" />
+                                                        <Condition
+                                                            Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                                            Value="False" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </MultiDataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </controls:LessonControl.Style>
@@ -502,6 +525,7 @@
                                  BorderBrush="Transparent"
                                  Opacity="0.16"/>
                     <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}" />
+                    
                 </Grid>
 
                 <!-- Mask -->

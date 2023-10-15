@@ -2,7 +2,7 @@
 
 namespace ClassIsland.Models;
 
-public class Subject : ObservableRecipient
+public class Subject : AttachableSettingsObject
 {
     private string _name = "";
     private string _initial = "";

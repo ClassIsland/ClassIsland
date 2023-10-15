@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class TimeLayout : ObservableRecipient
+public class TimeLayout : AttachableSettingsObject
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
     private string _name = "";
@@ -24,13 +24,13 @@ public class TimeLayout : ObservableRecipient
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         //Debug.WriteLine(e.PropertyName);
-        switch (e.PropertyName)
-        {
-            case nameof(Layouts):
-                Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
-                break;
+        //switch (e.PropertyName)
+        //{
+        //    case nameof(Layouts):
+        //        Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
+        //        break;
 
-        }
+        //}
     }
 
     public string Name
