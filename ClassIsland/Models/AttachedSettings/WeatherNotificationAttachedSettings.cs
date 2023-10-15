@@ -8,7 +8,7 @@ public class WeatherNotificationAttachedSettings : ObservableRecipient, IAttache
 {
     private NotificationModes _alertShowMode = NotificationModes.Default;
     private NotificationModes _forecastShowMode = NotificationModes.Default;
-    private bool _isAttachSettingsEnabled;
+    private bool _isAttachSettingsEnabled = true;
 
     public NotificationModes AlertShowMode
     {

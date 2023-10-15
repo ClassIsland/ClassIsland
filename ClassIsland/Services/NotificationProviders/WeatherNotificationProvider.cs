@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Enums;
 using ClassIsland.Interfaces;
 using ClassIsland.Models;
+using ClassIsland.Models.AttachedSettings;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 
@@ -31,6 +35,10 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
     private NotificationHostService NotificationHostService { get; }
 
+    private AttachedSettingsHostService AttachedSettingsHostService { get; }
+
+    private List<string> ShownAlerts { get; } = new();
+
     public WeatherNotificationProvider(NotificationHostService notificationHostService,
         AttachedSettingsHostService attachedSettingsHostService,
         WeatherService weatherService,
@@ -39,6 +47,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         NotificationHostService = notificationHostService;
         WeatherService = weatherService;
         SettingsService = settingsService;
+        AttachedSettingsHostService = attachedSettingsHostService;
         NotificationHostService.RegisterNotificationProvider(this);
         attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
         //attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
@@ -47,6 +56,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
                        <WeatherNotificationProviderSettings>(ProviderGuid)
                    ?? new WeatherNotificationProviderSettings();
         NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
+        SettingsElement = new WeatherNotificationProviderSettingsControl(Settings);
 
         NotificationHostService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
         NotificationHostService.OnClass += NotificationHostServiceOnOnClass;
@@ -54,18 +64,48 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
     private void NotificationHostServiceOnOnClass(object? sender, EventArgs e)
     {
+        ShowAlertsNotification();
+        ShowForecastNotification();
+    }
+
+    private void ShowForecastNotification()
+    {
+        var s = (IWeatherNotificationSettingsBase?)AttachedSettingsHostService
+            .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
+                timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;
+        if (!Settings.IsForecastEnabled || s.ForecastShowMode == NotificationModes.Disabled ||
+            (s.ForecastShowMode == NotificationModes.Default &&
+             Settings.ForecastShowMode == NotificationModes.Disabled))
+        {
+            return;
+        }
         NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
         {
             MaskContent = new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
             OverlayContent = new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
-            OverlayDuration = TimeSpan.FromSeconds(15),
-            MaskDuration = TimeSpan.FromSeconds(5)
+            OverlayDuration = TimeSpan.FromSeconds(15)
         });
     }
 
     private void NotificationHostServiceOnOnBreakingTime(object? sender, EventArgs e)
     {
-        foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts)
+        ShowAlertsNotification();
+        ShowForecastNotification();
+    }
+
+    private void ShowAlertsNotification()
+    {
+        var s = (IWeatherNotificationSettingsBase?)AttachedSettingsHostService
+            .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
+                timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;
+        if (!Settings.IsAlertEnabled || s.AlertShowMode == NotificationModes.Disabled ||
+            (s.AlertShowMode == NotificationModes.Default &&
+             Settings.AlertShowMode == NotificationModes.Disabled))
+        {
+            return;
+        }
+
+        foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail)))
         {
             NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
             {
@@ -74,6 +114,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
                 OverlayDuration = TimeSpan.FromSeconds(40),
                 MaskDuration = TimeSpan.FromSeconds(5)
             });
+            ShownAlerts.Add(i.Detail);
         }
     }
 

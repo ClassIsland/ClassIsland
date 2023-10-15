@@ -29,7 +29,7 @@ public partial class WeatherNotificationAttachedSettingsControl : UserControl, I
 
     public IAttachedSettingsHelper AttachedSettingsControlHelper { get; set; } =
         new AttachedSettingsControlHelper<WeatherNotificationAttachedSettings>(
-            new Guid("1988B5B2-4649-4623-B77D-F59E33A41E83"), new WeatherNotificationAttachedSettings());
+            new Guid("7625DE96-38AA-4B71-B478-3F156DD9458D"), new WeatherNotificationAttachedSettings());
 
     public WeatherNotificationAttachedSettings Settings =>
         ((AttachedSettingsControlHelper<WeatherNotificationAttachedSettings>)AttachedSettingsControlHelper)

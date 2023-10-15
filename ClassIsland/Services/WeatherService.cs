@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -79,8 +80,10 @@ public class WeatherService : IHostedService
         try
         {
             using var http = new HttpClient();
+            var uri = $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
+            Debug.WriteLine(uri);
             var r = await http.GetAsync(
-                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn");
+                uri);
             var str = await r.Content.ReadAsStringAsync();
             Settings.LastWeatherInfo = JsonSerializer.Deserialize<WeatherInfo>(str)!;
         }
