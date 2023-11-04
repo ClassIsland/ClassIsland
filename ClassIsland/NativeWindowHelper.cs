@@ -97,18 +97,12 @@ public static class NativeWindowHelper
         RECT rect = new RECT();
         var win = GetForegroundWindow();
         GetWindowRect(new HandleRef(null, win), ref rect);
-        GetWindowThreadProcessId(win, out var pid);
-        try
+        var sb = new StringBuilder(255);
+        GetClassName(win, sb, 255);
+        //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
+        if (sb.ToString() == "WorkerW" || sb.ToString() == "Progman")
         {
-            //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-            if (Process.GetProcessById(pid).ProcessName == "explorer")
-            {
-                return false;
-            }
-        }
-        catch
-        {
-            // ignored
+            return false;
         }
         return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.Bounds);
     }
@@ -122,9 +116,10 @@ public static class NativeWindowHelper
         RECT rect = new RECT();
         var win = GetForegroundWindow();
         GetWindowRect(new HandleRef(null, win), ref rect);
-        GetWindowThreadProcessId(win, out var pid);
+        var sb = new StringBuilder(255);
+        GetClassName(win, sb, 255);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (Process.GetProcessById(pid).ProcessName == "explorer")
+        if (sb.ToString() == "WorkerW" || sb.ToString() == "Progman")
         {
             return false;
         }
