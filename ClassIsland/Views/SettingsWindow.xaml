@@ -1712,6 +1712,13 @@ The quick brown fox jumps over a lazy dog.
                                         <weather:RangedValue From="0" To="0"/>
                                     </controls:WeatherRangePackIconControl.Value>
                                 </controls:WeatherRangePackIconControl>
+                                <MenuItem Header="selected" x:Name="DebugWizardOptionControlSelected" IsCheckable="True"/>
+                                <controls:WizardOptionControl OptionHeader="测试选项" OptionContent="{StaticResource TestStringLong}" IsSelected="{Binding IsChecked, ElementName=DebugWizardOptionControlSelected}"/>
+
+                                <controls:WizardOptionsListBox>
+                                    <models:WizardOption Header="111" Content="222"/>
+                                    <models:WizardOption Header="111" Content="222"/>
+                                </controls:WizardOptionsListBox>
                                 <Separator Margin="0 6"/>
 
                                 <MenuItem Icon="{materialDesign:PackIcon AnimationPlayOutline}" Header="测试天气滚动字幕"

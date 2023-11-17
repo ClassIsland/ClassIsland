@@ -224,4 +224,32 @@
            x:Key="NotificationModeComboBox">
         
     </Style>
+
+    <Style TargetType="{x:Type controls:WizardOptionsListBox}"
+           BasedOn="{StaticResource MaterialDesignListBox}">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                    <Setter Property="Padding" Value="1"/>
+                    <Setter Property="Margin" Value="0 2"/>
+                </Style>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="CanContentScroll" Value="True"/>
+        <Setter Property="ItemTemplate">
+            <Setter.Value>
+                <DataTemplate DataType="{x:Type models:WizardOption}">
+                    <controls:WizardOptionControl OptionHeader="{Binding Header}"
+                                                  OptionContent="{Binding Content}"
+                                                  InvokedCommand="{Binding InvokeCommand}"
+                                                  InvokeCommandParameter="{Binding InvokeCommandParameter}"
+                                                  IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"/>
+                </DataTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

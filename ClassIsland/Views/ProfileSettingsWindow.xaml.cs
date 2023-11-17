@@ -715,6 +715,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonImportFromFile_OnClick(object sender, RoutedEventArgs e)
     {
         var eiw = App.GetService<ExcelImportWindow>();
+        eiw.Show();
     }   
 
     private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
@@ -728,7 +729,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
         var eiw = App.GetService<ExcelImportWindow>();
         eiw.ExcelSourcePath = filename;
-        eiw.ShowDialog();
+        eiw.Show();
     }
 
     private void ProfileSettingsWindow_OnDragEnter(object sender, DragEventArgs e)

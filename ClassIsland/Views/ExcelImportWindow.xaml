@@ -9,6 +9,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ci="clr-namespace:ClassIsland"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:ExcelImportWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{StaticResource HarmonyOsSans}"
@@ -26,8 +27,8 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
-            <ColumnDefinition Width="2"/>
-            <ColumnDefinition Width="500"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="500" MaxWidth="800"/>
         </Grid.ColumnDefinitions>
         <!-- Header -->
         <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16" Mode="PrimaryMid"
@@ -47,13 +48,58 @@
 
         <reoGrid:ReoGridControl Grid.Row="1" Grid.Column="0" x:Name="Grid"/>
         <GridSplitter Grid.Row="1" Grid.Column="1"
+                      MaxWidth="500"
                       Width="10" HorizontalAlignment="Stretch"/>
 
         <!-- Wizard content -->
-        <materialDesign:Transitioner Grid.Column="1" Grid.Row="1">
-            <materialDesign:TransitionerSlide>
+        <ScrollViewer Grid.Column="2" Grid.Row="1" >
+            <materialDesign:Transitioner Margin="8"
+                                         SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay}">
+                <materialDesign:Transitioner.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="TextWrapping" Value="Wrap"/>
+                        <Setter Property="Margin" Value="0 0 0 4"/>
+                    </Style>
+                </materialDesign:Transitioner.Resources>
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="从表格导入课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock Text="欢迎使用从表格导入向导。本向导会引导您从Excel格式的表格中导入课表和时间表。"></TextBlock>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
+                                <controls:IconText Kind="ArrowRight" Text="开始"/>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
 
-            </materialDesign:TransitionerSlide>
-        </materialDesign:Transitioner>
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="您希望本向导如何引导您？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text="本向导提供详细和简洁两种语言风格，分别适用于对本软件收悉的用户和刚开始使用本软件的新手。"/>
+                        </TextBlock>
+                        <TextBlock Text="选择一种适合您的语言风格，然后点击下一步继续。"/>
+
+                        <ListBox>
+                            
+                        </ListBox>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+
+            </materialDesign:Transitioner>
+        </ScrollViewer>
+
+        <!-- Debug slider -->
+        <Slider Grid.Column="2" Grid.Row="1" AutoToolTipPlacement="TopLeft"
+                ToolTip="debug purpose only."
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Right"
+                Width="150"
+                Minimum="0"
+                Maximum="10"
+                Value="{Binding ViewModel.SlideIndex}"></Slider>
     </Grid>
 </controls:MyWindow>
