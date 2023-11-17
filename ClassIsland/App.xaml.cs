@@ -165,6 +165,8 @@ public partial class App : Application
                 // 简略信息提供方
                 services.AddHostedService<DateMiniInfoProvider>();
                 services.AddHostedService<WeatherMiniInfoProvider>();
+                // Transients
+                services.AddTransient<ExcelImportWindow>();
             }).Build();
         try
         {

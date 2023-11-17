@@ -28,6 +28,9 @@ using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter.Analytics;
 using Application = System.Windows.Application;
+using DataFormats = System.Windows.DataFormats;
+using DragDropEffects = System.Windows.DragDropEffects;
+using DragEventArgs = System.Windows.DragEventArgs;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
@@ -707,5 +710,29 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.SelectedTimePoint = tpr;
         TimeLineListControl.ScrollIntoView(tpr);
         ListViewTimePoints.ScrollIntoView(tpr);
+    }
+
+    private void ButtonImportFromFile_OnClick(object sender, RoutedEventArgs e)
+    {
+        var eiw = App.GetService<ExcelImportWindow>();
+    }   
+
+    private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetData(DataFormats.FileDrop) is not Array data)
+            return;
+        var filename = data.GetValue(0)?.ToString();
+        if (filename == null)
+            return;
+        Debug.WriteLine(filename);
+
+        var eiw = App.GetService<ExcelImportWindow>();
+        eiw.ExcelSourcePath = filename;
+        eiw.ShowDialog();
+    }
+
+    private void ProfileSettingsWindow_OnDragEnter(object sender, DragEventArgs e)
+    {
+        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Link : DragDropEffects.None;
     }
 }

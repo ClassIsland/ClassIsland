@@ -27,7 +27,10 @@
                    d:DataContext="{d:DesignInstance local:ProfileSettingsWindow}"
                    Icon="/Assets/AppLogo.ico"
                    Closing="ProfileSettingsWindow_OnClosing"
-                   MinWidth="750">
+                   MinWidth="750"
+                   AllowDrop="True"
+                   DragEnter="ProfileSettingsWindow_OnDragEnter"
+                   Drop="ProfileSettingsWindow_OnDrop">
     <Window.Resources>
         <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <models:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
@@ -598,6 +601,9 @@
                                             </Style>
                                         </Button.Style>
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                    </Button>
+                                    <Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。">
+                                        <controls:IconText Kind="Add" Text="从表格导入…"/>
                                     </Button>
                                 </ToolBar>
 

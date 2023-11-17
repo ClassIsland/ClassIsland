@@ -1,0 +1,59 @@
+﻿<controls:MyWindow x:Class="ClassIsland.Views.ExcelImportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:reoGrid="clr-namespace:unvell.ReoGrid;assembly=unvell.ReoGrid"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:ci="clr-namespace:ClassIsland"
+        mc:Ignorable="d"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"   
+        Title="从表格导入课表" 
+        WindowState="Maximized"
+        Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition Width="500"/>
+        </Grid.ColumnDefinitions>
+        <!-- Header -->
+        <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16" Mode="PrimaryMid"
+                                          materialDesign:ElevationAssist.Elevation="Dp4"
+                                          Margin="0 0 0 4">
+            <Grid Margin="4 0 4 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="1" Text="从表格导入课表" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   HorizontalAlignment="Left"
+                                   Margin="0 0 0 0"
+                                   VerticalAlignment="Center"/>
+            </Grid>
+        </materialDesign:ColorZone>
+
+        <reoGrid:ReoGridControl Grid.Row="1" Grid.Column="0" x:Name="Grid"/>
+        <GridSplitter Grid.Row="1" Grid.Column="1"
+                      Width="10" HorizontalAlignment="Stretch"/>
+
+        <!-- Wizard content -->
+        <materialDesign:Transitioner Grid.Column="1" Grid.Row="1">
+            <materialDesign:TransitionerSlide>
+
+            </materialDesign:TransitionerSlide>
+        </materialDesign:Transitioner>
+    </Grid>
+</controls:MyWindow>
