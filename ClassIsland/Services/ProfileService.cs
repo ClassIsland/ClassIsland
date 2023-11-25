@@ -8,6 +8,8 @@ namespace ClassIsland.Services;
 
 public class ProfileService
 {
+    public string CurrentProfilePath { get; set; } = @".\Profiles\Default.json";
+    
     public Profile Profile { get; set; } = new Profile();
 
     private SettingsService SettingsService { get; }
@@ -15,16 +17,21 @@ public class ProfileService
     public ProfileService(SettingsService settingsService)
     {
         SettingsService = settingsService;
+        if (!Directory.Exists("./Profiles"))
+        {
+            Directory.CreateDirectory("./Profiles");
+        }
         LoadProfile();
         CleanExpiredTempClassPlan();
     }
 
     public void LoadProfile()
     {
-        var path = $"./Profiles/{SettingsService.Settings.SelectedProfile}";
+        var filename = SettingsService.Settings.SelectedProfile;
+        var path = $"./Profiles/{filename}";
         if (!File.Exists(path))
         {
-            SaveProfile();
+            SaveProfile(filename);
         }
 
         var json = File.ReadAllText(path);
@@ -32,15 +39,20 @@ public class ProfileService
         if (r != null)
         {
             Profile = r;
-            Profile.PropertyChanged += (sender, args) => SaveProfile();
+            Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
         }
     }
 
     public void SaveProfile()
     {
+        SaveProfile(CurrentProfilePath);
+    }
+
+    public void SaveProfile(string filename)
+    {
         var json = JsonSerializer.Serialize<Profile>(Profile);
         //File.WriteAllText("./Profile.json", json);
-        File.WriteAllText($"./Profiles/{SettingsService.Settings.SelectedProfile}", json);
+        File.WriteAllText($"./Profiles/{filename}", json);
     }
 
     private static T DuplicateJson<T>(T o)
