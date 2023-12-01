@@ -101,6 +101,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Downloader" Version="3.0.6" />
+    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.115" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />

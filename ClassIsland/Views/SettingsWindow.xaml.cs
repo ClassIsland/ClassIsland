@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,7 +15,6 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
@@ -29,6 +29,10 @@ using MdXaml;
 using Microsoft.Toolkit.Uwp.Notifications;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Application = System.Windows.Application;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
+using FontFamily = System.Windows.Media.FontFamily;
+using Image = System.Windows.Controls.Image;
 using ListBox = System.Windows.Controls.ListBox;
 using MessageBox = System.Windows.MessageBox;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
@@ -308,7 +312,16 @@ public partial class SettingsWindow : MyWindow
 
     private void MenuItemDebugScreenShot_OnClick(object sender, RoutedEventArgs e)
     {
-        var screenShot = WallpaperPickingService.GetScreenShot("Progman");
+        var dialog = new OpenFileDialog()
+        {
+            Title = "打开测试取色的文件。"
+        };
+        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+        {
+            return;
+        }
+        
+        var screenShot = new Bitmap(System.Drawing.Image.FromFile(dialog.FileName));
         ViewModel.TestImage = BitmapConveters.ConvertToBitmapImage(screenShot);
         screenShot.Save("./desktop.png");
         var w = new Stopwatch();
