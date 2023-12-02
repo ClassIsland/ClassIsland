@@ -253,15 +253,31 @@
     </Style>
 
     <converters:RangePositionToStringConverter x:Key="RangePositionToStringConverter" />
-    <Style TargetType="{x:Type controls:ExcelSelectionTextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+    <Style TargetType="{x:Type controls:ExcelSelectionTextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
         <Style.Triggers>
-            <DataTrigger Binding="{Binding IsSelecting, RelativeSource={RelativeSource Self}}" Value="True">
+            <DataTrigger Binding="{Binding IsCurrentSelecting, RelativeSource={RelativeSource Self}}" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                <Setter Property="materialDesign:HintAssist.HelperText" Value="请在左侧表格中选择区域。"/>
+
             </DataTrigger>
         </Style.Triggers>
+        <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
+            <Setter.Value>
+                <materialDesign:BehaviorCollection>
+                    <behaviors:ExcelSelectingTextBoxBehavior>
+                        <behaviors:ExcelSelectingTextBoxBehavior.AdornerTemplate>
+                            <ControlTemplate>
+                                <controls:ExcelSelectionTextBoxStrongHighlight VerticalAlignment="Stretch"
+                                                                               HorizontalAlignment="Stretch"/>
+                            </ControlTemplate>
+                        </behaviors:ExcelSelectingTextBoxBehavior.AdornerTemplate>
+                    </behaviors:ExcelSelectingTextBoxBehavior>
+                </materialDesign:BehaviorCollection>
+            </Setter.Value>
+        </Setter>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="IsReadOnly" Value="True"/>
-        <Setter Property="FontFamily" Value="Consolas"/>
         <Setter Property="Text" Value="{Binding Value, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource RangePositionToStringConverter}}"/>
     </Style>
 </ResourceDictionary>

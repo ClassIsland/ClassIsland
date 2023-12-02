@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
@@ -56,6 +57,7 @@ public partial class ExcelImportWindow : MyWindow
     }
     private void EnterSelectingMode()
     {
+        BeginStoryboard((Storyboard)FindResource("EditingLoop"));
         ViewModel.IsSelectingMode = true;
         ViewModel.NormalSelectionRangePosition = Grid.CurrentWorksheet.SelectionRange;
         var s = typeof(ExcelImportViewModel).GetProperty(ViewModel.CurrentUpdatingPropertyName)?.GetValue(ViewModel);
@@ -73,6 +75,8 @@ public partial class ExcelImportWindow : MyWindow
         Grid.CurrentWorksheet.SelectionRange = ViewModel.NormalSelectionRangePosition;
         if (ViewModel.CurrentSelectingElement != null) ViewModel.CurrentSelectingElement.IsSelecting = false;
         ViewModel.CurrentSelectingElement = null;
+        ((Storyboard)FindResource("EditingLoop")).Stop();
+        ((Storyboard)FindResource("EditingLoop")).Remove();
     }
 
 

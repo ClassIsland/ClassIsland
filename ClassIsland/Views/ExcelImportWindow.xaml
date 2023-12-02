@@ -24,6 +24,27 @@
         AllowDrop="True"
         DragEnter="ProfileSettingsWindow_OnDragEnter"
         Drop="ProfileSettingsWindow_OnDrop">
+    <controls:MyWindow.Resources>
+        <Storyboard x:Key="EditingLoop" RepeatBehavior="Forever">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="border" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuadraticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="0.25">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuadraticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="0.1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuadraticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </controls:MyWindow.Resources>
     <controls:MyWindow.CommandBindings>
         <CommandBinding Command="{x:Static local:ExcelImportWindow.SelectionValueUpdateCommand}"
                         Executed="SelectionValueUpdateCommand_OnExecuted"/>
@@ -102,6 +123,9 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
+                <Border x:Name="border" Background="{DynamicResource PrimaryHueMidBrush}" Margin="-20 -16"
+                        Opacity="0"
+                        Grid.ColumnSpan="3"/>
                 <TextBlock Grid.Column="1" Text="在下方表格中选择区域" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                            HorizontalAlignment="Left"
                            Margin="0 0 0 0"
@@ -113,6 +137,7 @@
                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                HorizontalAlignment="Left"
                                FontFamily="Consolas"
+                               ToolTip="当前选区"
                                Margin="0 0 8 0"
                                VerticalAlignment="Center"/>
                     <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
@@ -181,7 +206,7 @@
                                    FontSize="14"/>
                         <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 6 0 0"
                                 HorizontalAlignment="Center">
-                            <controls:IconText Kind="FolderOutline" Text="浏览文件…"/>  
+                            <controls:IconText Kind="FolderOutline" Text="浏览文件…"/>
                         </Button>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
@@ -267,12 +292,14 @@
                         <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TestSelectingRangePosition, Mode=TwoWay}"
                                                         IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
                                                         EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
-                                                        SelectionPropertyName="TestSelectingRangePosition"/>
+                                                        SelectionPropertyName="TestSelectingRangePosition"
+                                                        materialDesign:HintAssist.Hint="测试1"/>
                         <TextBlock Text="{Binding ViewModel.TestSelectingRangePosition}"/>
                         <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TestSelectingRangePosition2, Mode=TwoWay}"
                                                         IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
                                                         EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
-                                                        SelectionPropertyName="TestSelectingRangePosition2"/>
+                                                        SelectionPropertyName="TestSelectingRangePosition2"
+                                                        materialDesign:HintAssist.Hint="测试2"/>
                         <TextBlock Text="{Binding ViewModel.TestSelectingRangePosition2}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>

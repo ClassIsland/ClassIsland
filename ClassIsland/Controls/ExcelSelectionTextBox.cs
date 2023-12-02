@@ -84,6 +84,15 @@ namespace ClassIsland.Controls
             set { SetValue(SelectionPropertyNameProperty, value); }
         }
 
+        public static readonly DependencyProperty IsCurrentSelectingProperty = DependencyProperty.Register(
+            nameof(IsCurrentSelecting), typeof(bool), typeof(ExcelSelectionTextBox), new PropertyMetadata(default(bool)));
+
+        public bool IsCurrentSelecting
+        {
+            get { return (bool)GetValue(IsCurrentSelectingProperty); }
+            set { SetValue(IsCurrentSelectingProperty, value); }
+        }
+
         static ExcelSelectionTextBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ExcelSelectionTextBox), new FrameworkPropertyMetadata(typeof(ExcelSelectionTextBox)));
@@ -94,6 +103,20 @@ namespace ClassIsland.Controls
             
         }
 
+        public event EventHandler? OnEnterSelecting;
+
+        public event EventHandler? OnExitSelecting;
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            if (e.Property == IsSelectingProperty && (bool)e.NewValue == false)
+            {
+                IsCurrentSelecting = false;
+                OnExitSelecting?.Invoke(this, EventArgs.Empty);
+            }
+            base.OnPropertyChanged(e);
+        }
+
         protected override void OnGotFocus(RoutedEventArgs e)
         {
             base.OnGotFocus(e);
@@ -102,7 +125,9 @@ namespace ClassIsland.Controls
             {
                 return;
             }
-            IsSelecting = true;
+            //IsSelecting = true;
+            IsCurrentSelecting = true;
+            OnEnterSelecting?.Invoke(this, EventArgs.Empty);
             EnterSelectingModeCommand?.Execute(SelectionPropertyName);
         }
     }
