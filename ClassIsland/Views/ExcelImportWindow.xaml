@@ -8,6 +8,7 @@
         xmlns:reoGrid="clr-namespace:unvell.ReoGrid;assembly=unvell.ReoGrid"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ci="clr-namespace:ClassIsland"
+        xmlns:models="clr-namespace:ClassIsland.Models"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:ExcelImportWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -19,21 +20,60 @@
         TextOptions.TextRenderingMode="Auto"   
         Title="从表格导入课表" 
         WindowState="Maximized"
-        Height="450" Width="800">
+        Height="450" Width="800"
+        AllowDrop="True"
+        DragEnter="ProfileSettingsWindow_OnDragEnter"
+        Drop="ProfileSettingsWindow_OnDrop">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="500" MaxWidth="800"/>
+            <ColumnDefinition>
+                <ColumnDefinition.Style>
+                    <Style TargetType="ColumnDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.IsFileSelected}" Value="False">
+                                <Setter Property="Width" Value="0"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Width" Value="*"/>
+                    </Style>
+                </ColumnDefinition.Style>
+            </ColumnDefinition>
+            <ColumnDefinition>
+                <ColumnDefinition.Style>
+                    <Style TargetType="ColumnDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.IsFileSelected}" Value="False">
+                                <Setter Property="Width" Value="0"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Width" Value="5"/>
+                    </Style>
+                </ColumnDefinition.Style>
+            </ColumnDefinition>
+            <ColumnDefinition MinWidth="350">
+                <ColumnDefinition.Style>
+                    <Style TargetType="ColumnDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.IsFileSelected}" Value="False">
+                                <Setter Property="Width" Value="*"/>
+                                <Setter Property="MaxWidth" Value="Infinity"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Width" Value="500"/>
+                        <Setter Property="MaxWidth" Value="800"/>
+                    </Style>
+                </ColumnDefinition.Style>
+            </ColumnDefinition>
         </Grid.ColumnDefinitions>
         <!-- Header -->
         <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16" Mode="PrimaryMid"
                                           materialDesign:ElevationAssist.Elevation="Dp4"
-                                          Margin="0 0 0 4">
+                                          Margin="0 0 0 4"
+                                          Visibility="{Binding ViewModel.IsSelectingMode, Converter={StaticResource InverseBoolToVisConverter}}">
             <Grid Margin="4 0 4 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -45,15 +85,57 @@
                                    VerticalAlignment="Center"/>
             </Grid>
         </materialDesign:ColorZone>
+        <!-- 选区模式 -->
+        <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16"
+                                  Margin="0 0 0 4"
+                                  materialDesign:ElevationAssist.Elevation="Dp4"
+                                  Visibility="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid Margin="4 0 4 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="1" Text="选择区域" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                           HorizontalAlignment="Left"
+                           Margin="0 0 0 0"
+                           VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="2" 
+                            Margin="0 -16"
+                            Orientation="Horizontal">
+                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                            ToolTip="确定"
+                            Content="{materialDesign:PackIcon Check}"/>
+                </StackPanel>
+            </Grid>
+        </materialDesign:ColorZone>
 
-        <reoGrid:ReoGridControl Grid.Row="1" Grid.Column="0" x:Name="Grid"/>
+        <reoGrid:ReoGridControl Grid.Row="1" Grid.Column="0" x:Name="Grid"
+                                Readonly="True">
+            <reoGrid:ReoGridControl.Style>
+                <Style TargetType="reoGrid:ReoGridControl">
+                    <Style.Resources>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}"/>
+                    </Style.Resources>
+                </Style>
+            </reoGrid:ReoGridControl.Style>
+            <reoGrid:ReoGridControl.CellsContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="test"/>
+                    <MenuItem Header="test"/>
+                    <MenuItem Header="test"/>
+                    <MenuItem Header="test"/>
+                </ContextMenu>
+            </reoGrid:ReoGridControl.CellsContextMenu>
+        </reoGrid:ReoGridControl>
         <GridSplitter Grid.Row="1" Grid.Column="1"
                       MaxWidth="500"
                       Width="10" HorizontalAlignment="Stretch"/>
 
         <!-- Wizard content -->
-        <ScrollViewer Grid.Column="2" Grid.Row="1" >
+        <ScrollViewer Grid.Column="2" Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <materialDesign:Transitioner Margin="8"
+                                         ClipToBounds="False"
                                          SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay}">
                 <materialDesign:Transitioner.Resources>
                     <Style TargetType="TextBlock">
@@ -61,6 +143,45 @@
                         <Setter Property="Margin" Value="0 0 0 4"/>
                     </Style>
                 </materialDesign:Transitioner.Resources>
+                <!-- 选择文件 -->
+                <materialDesign:TransitionerSlide ForwardWipe="{x:Null}" BackwardWipe="{x:Null}">
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Width="75" Height="75"
+                                                 Kind="FileTableOutline"
+                                                 HorizontalAlignment="Center" Margin="0 0 0 16"/>
+                        <TextBlock Text="从表格导入课表" HorizontalAlignment="Center"
+                                   FontSize="20" FontWeight="Bold"/>
+                        <TextBlock Text="要开始导入，请将表格文件拖入到本窗口" HorizontalAlignment="Center"
+                                   Margin="0 6 0 0"
+                                   FontSize="14"/>
+                        <TextBlock Text="或者" HorizontalAlignment="Center"
+                                   Margin="0 2 0 0"
+                                   FontSize="14"/>
+                        <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 6 0 0"
+                                HorizontalAlignment="Center">
+                            <controls:IconText Kind="FolderOutline" Text="浏览文件…"/>  
+                        </Button>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- Loading -->
+                <materialDesign:TransitionerSlide ForwardWipe="{x:Null}" BackwardWipe="{x:Null}">
+                    <StackPanel VerticalAlignment="Center"
+                                HorizontalAlignment="Center">
+                        <Image Source="/Assets/纳西妲_沉思中.png" Width="85" Height="85"
+                               ToolTip="纳西妲_沉思中"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               HorizontalAlignment="Center" Margin="0 0 0 16"/>
+
+                        <TextBlock Text="正在加载你的表格……" HorizontalAlignment="Center"
+                                   FontSize="20"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="坐和放宽，滚回功率，加载马上就好！" HorizontalAlignment="Center"
+                                   FontSize="13"
+                                   TextDecorations="Strikethrough"/>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- Welcome -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="从表格导入课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
@@ -73,22 +194,102 @@
                         </StackPanel>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-
+                <!-- 询问界面形式 -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="您希望本向导如何引导您？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <TextBlock >
-                            <Run Text="本向导提供详细和简洁两种语言风格，分别适用于对本软件收悉的用户和刚开始使用本软件的新手。"/>
+                            <Run Text="本向导提供详细和简洁两种语言风格。"/>
                         </TextBlock>
                         <TextBlock Text="选择一种适合您的语言风格，然后点击下一步继续。"/>
 
-                        <ListBox>
-                            
-                        </ListBox>
+                        <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.DescriptionMode}">
+                            <models:WizardOption Header="详细" Content="对每个选项和流程做出详细解释，适用于刚接触本软件的新手。"/>
+                            <models:WizardOption Header="简洁" Content="简化流程和语言说明，提供简洁的体验，适用于熟悉本软件的用户。"/>
+                        </controls:WizardOptionsListBox>
+                        <Button HorizontalAlignment="Left" Margin="0 8 0 0"
+                                Style="{StaticResource MaterialDesignPaperButton}">
+                            <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+                        </Button>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
+                <!-- 从哪里导入时间表？-->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="您希望从哪里导入时间表？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text="在创建课表之前，您至少需要一个时间表。时间表包含了一天的时间安排，告诉本软件什么时候上课和课间休息，并以此创建课表。"/>
+                        </TextBlock>
+                        <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。"/>
 
+                        <controls:WizardOptionsListBox>
+                            <models:WizardOption Header="我的时间表在这个文件中" Content="将从本文件导入时间表。"/>
+                            <models:WizardOption Header="我的时间表另一个文件中" Content="将打开另一个表格，并从该表格导入时间表。"/>
+                            <models:WizardOption Header="我想手动创建时间表" Content="手动创建时间表。"/>
+                        </controls:WizardOptionsListBox>
+                        <Button HorizontalAlignment="Left" Margin="0 8 0 0"
+                                Style="{StaticResource MaterialDesignPaperButton}">
+                            <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+                        </Button>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 选择时间安排区域 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="选择时间安排区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+                        
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 时间表导入结果 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="时间表导入结果" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 选择课程区域 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="选择课程区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 选择行列对应关系 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="选择行列对应关系" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 如何导入时间对应关系？ -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="如何导入时间对应关系？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
             </materialDesign:Transitioner>
         </ScrollViewer>
 
@@ -100,6 +301,11 @@
                 Width="150"
                 Minimum="0"
                 Maximum="10"
-                Value="{Binding ViewModel.SlideIndex}"></Slider>
+                Value="{Binding ViewModel.SlideIndex}"/>
+        <CheckBox Grid.Column="0" Grid.Row="1"
+                  Content="IsSelectingMode"
+                  VerticalAlignment="Bottom"
+                  HorizontalAlignment="Center"
+                  IsChecked="{Binding ViewModel.IsSelectingMode}"/>
     </Grid>
 </controls:MyWindow>

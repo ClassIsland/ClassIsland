@@ -1536,7 +1536,8 @@ The quick brown fox jumps over a lazy dog.
                                         </Grid.ColumnDefinitions>
                                         <!-- icon -->
                                         <materialDesign:Ripple Grid.Column="0" VerticalAlignment="Top"
-                                                               MouseDown="AppIcon_OnMouseDown">
+                                                               MouseDown="AppIcon_OnMouseDown"
+                                                               ToolTip="ClassIsland">
                                             <Image Source="/Assets/AppLogo.ico" Width="40"
                                                    Height="40" VerticalAlignment="Top" />
                                         </materialDesign:Ripple>
@@ -1715,7 +1716,7 @@ The quick brown fox jumps over a lazy dog.
                                 <MenuItem Header="selected" x:Name="DebugWizardOptionControlSelected" IsCheckable="True"/>
                                 <controls:WizardOptionControl OptionHeader="测试选项" OptionContent="{StaticResource TestStringLong}" IsSelected="{Binding IsChecked, ElementName=DebugWizardOptionControlSelected}"/>
 
-                                <controls:WizardOptionsListBox>
+                                <controls:WizardOptionsListBox PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                                     <models:WizardOption Header="111" Content="222"/>
                                     <models:WizardOption Header="111" Content="222"/>
                                 </controls:WizardOptionsListBox>
@@ -1736,6 +1737,195 @@ The quick brown fox jumps over a lazy dog.
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
+                    <TabItem Header="笔刷" Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <ScrollViewer>
+                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Padding" Value="6"/>
+                                    </Style>
+                                </StackPanel.Resources>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource SecondaryHueLightBrush}"
+                                        ToolTip="SecondaryHueLightBrush">
+                                    <TextBlock Text="SecondaryHueLightBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource SecondaryHueLightForegroundBrush}"
+                                        ToolTip="SecondaryHueLightForegroundBrush">
+                                    <TextBlock Text="SecondaryHueLightForegroundBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource SecondaryHueMidBrush}"
+                                        ToolTip="SecondaryHueMidBrush">
+                                    <TextBlock Text="SecondaryHueMidBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource SecondaryHueMidForegroundBrush}"
+                                        ToolTip="SecondaryHueMidForegroundBrush">
+                                    <TextBlock Text="SecondaryHueMidForegroundBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource SecondaryHueDarkBrush}"
+                                        ToolTip="SecondaryHueDarkBrush">
+                                    <TextBlock Text="SecondaryHueDarkBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource SecondaryHueDarkForegroundBrush}"
+                                        ToolTip="SecondaryHueDarkForegroundBrush">
+                                    <TextBlock Text="SecondaryHueDarkForegroundBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource PrimaryHueLightBrush}"
+                                        ToolTip="PrimaryHueLightBrush">
+                                    <TextBlock Text="PrimaryHueLightBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource PrimaryHueLightForegroundBrush}"
+                                        ToolTip="PrimaryHueLightForegroundBrush">
+                                    <TextBlock Text="PrimaryHueLightForegroundBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource PrimaryHueMidBrush}" ToolTip="PrimaryHueMidBrush">
+                                    <TextBlock Text="PrimaryHueMidBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource PrimaryHueMidForegroundBrush}"
+                                        ToolTip="PrimaryHueMidForegroundBrush">
+                                    <TextBlock Text="PrimaryHueMidForegroundBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource PrimaryHueDarkBrush}"
+                                        ToolTip="PrimaryHueDarkBrush">
+                                    <TextBlock Text="PrimaryHueDarkBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                                        ToolTip="PrimaryHueDarkForegroundBrush">
+                                    <TextBlock Text="PrimaryHueDarkForegroundBrush" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignBackground}"
+                                        ToolTip="MaterialDesignBackground">
+                                    <TextBlock Text="MaterialDesignBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignPaper}"
+                                        ToolTip="MaterialDesignPaper">
+                                    <TextBlock Text="MaterialDesignPaper" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignCardBackground}"
+                                        ToolTip="MaterialDesignCardBackground">
+                                    <TextBlock Text="MaterialDesignCardBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                        ToolTip="MaterialDesignToolBarBackground">
+                                    <TextBlock Text="MaterialDesignToolBarBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignBody}" ToolTip="MaterialDesignBody">
+                                    <TextBlock Text="MaterialDesignBody" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignBodyLight}"
+                                        ToolTip="MaterialDesignBodyLight">
+                                    <TextBlock Text="MaterialDesignBodyLight" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignColumnHeader}"
+                                        ToolTip="MaterialDesignColumnHeader">
+                                    <TextBlock Text="MaterialDesignColumnHeader" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignCheckBoxOff}"
+                                        ToolTip="MaterialDesignCheckBoxOff">
+                                    <TextBlock Text="MaterialDesignCheckBoxOff" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignCheckBoxDisabled}"
+                                        ToolTip="MaterialDesignCheckBoxDisabled">
+                                    <TextBlock Text="MaterialDesignCheckBoxDisabled" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignTextBoxBorder}"
+                                        ToolTip="MaterialDesignTextBoxBorder">
+                                    <TextBlock Text="MaterialDesignTextBoxBorder" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignDivider}"
+                                        ToolTip="MaterialDesignDivider">
+                                    <TextBlock Text="MaterialDesignDivider" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignSelection}"
+                                        ToolTip="MaterialDesignSelection">
+                                    <TextBlock Text="MaterialDesignSelection" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignFlatButtonClick}"
+                                        ToolTip="MaterialDesignFlatButtonClick">
+                                    <TextBlock Text="MaterialDesignFlatButtonClick" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignFlatButtonRipple}"
+                                        ToolTip="MaterialDesignFlatButtonRipple">
+                                    <TextBlock Text="MaterialDesignFlatButtonRipple" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignToolTipBackground}"
+                                        ToolTip="MaterialDesignToolTipBackground">
+                                    <TextBlock Text="MaterialDesignToolTipBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignChipBackground}"
+                                        ToolTip="MaterialDesignChipBackground">
+                                    <TextBlock Text="MaterialDesignChipBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignSnackbarBackground}"
+                                        ToolTip="MaterialDesignSnackbarBackground">
+                                    <TextBlock Text="MaterialDesignSnackbarBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignSnackbarMouseOver}"
+                                        ToolTip="MaterialDesignSnackbarMouseOver">
+                                    <TextBlock Text="MaterialDesignSnackbarMouseOver" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignSnackbarRipple}"
+                                        ToolTip="MaterialDesignSnackbarRipple">
+                                    <TextBlock Text="MaterialDesignSnackbarRipple" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignTextFieldBoxBackground}"
+                                        ToolTip="MaterialDesignTextFieldBoxBackground">
+                                    <TextBlock Text="MaterialDesignTextFieldBoxBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignTextFieldBoxHoverBackground}"
+                                        ToolTip="MaterialDesignTextFieldBoxHoverBackground">
+                                    <TextBlock Text="MaterialDesignTextFieldBoxHoverBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignTextFieldBoxDisabledBackground}"
+                                        ToolTip="MaterialDesignTextFieldBoxDisabledBackground">
+                                    <TextBlock Text="MaterialDesignTextFieldBoxDisabledBackground" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignTextAreaBorder}"
+                                        ToolTip="MaterialDesignTextAreaBorder">
+                                    <TextBlock Text="MaterialDesignTextAreaBorder" />
+                                </Border>
+                                <Border HorizontalAlignment="Stretch"
+                                        Background="{DynamicResource MaterialDesignTextAreaInactiveBorder}"
+                                        ToolTip="MaterialDesignTextAreaInactiveBorder">
+                                    <TextBlock Text="MaterialDesignTextAreaInactiveBorder" />
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+</TabItem>
                 </TabControl>
                 <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16" Mode="PrimaryMid"
                                           materialDesign:ElevationAssist.Elevation="Dp4"

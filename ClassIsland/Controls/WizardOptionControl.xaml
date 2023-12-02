@@ -40,15 +40,15 @@
                     <DataTrigger
                         Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType={x:Type local:WizardOptionControl}, Mode=FindAncestor}}"
                         Value="True">
-                        <Setter Property="BorderThickness" Value="2"/>
-                        <Setter Property="Padding" Value="11 11 11 7"/>
+                        <Setter Property="BorderThickness" Value="2.5"/>
+                        <Setter Property="Padding" Value="10.5 10.5 10.5 6.5"/>
                         <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
                     </DataTrigger>
                     <DataTrigger
                         Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type local:WizardOptionControl}, Mode=FindAncestor}}"
                         Value="True">
-                        <Setter Property="BorderThickness" Value="2"/>
-                        <Setter Property="Padding" Value="11 11 11 7"/>
+                        <Setter Property="BorderThickness" Value="2.5"/>
+                        <Setter Property="Padding" Value="10.5 10.5 10.5 6.5"/>
                     </DataTrigger>
                 </Style.Triggers>
                 <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignDivider}"/>

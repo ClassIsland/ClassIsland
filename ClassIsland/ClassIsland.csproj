@@ -84,6 +84,7 @@
     <None Remove="Assets\光辉矢愿_遨游.png" />
     <None Remove="Assets\帕姆_震惊.png" />
     <None Remove="Assets\普罗米修斯_查询.png" />
+    <None Remove="Assets\纳西妲_沉思中.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -119,6 +120,7 @@
     <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
     <PackageReference Include="unvell.ReoGridWPF.dll" Version="2.2.0" />
   </ItemGroup>
 
@@ -134,68 +136,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\AppLogo.ico" />
-    <Resource Include="Assets\AppLogo.png" />
-    <Resource Include="Assets\AppLogo@384w.png" />
-    <Resource Include="Assets\AppLogo@48w.png" />
-    <Resource Include="Assets\AppLogo@768w.png" />
-    <Resource Include="Assets\AppLogo_Fade.png" />
-    <Resource Include="Assets\Contributiors\HelloWRC@64w.jpg" />
-    <Resource Include="Assets\Documents\Appearence.md" />
-    <Resource Include="Assets\Documents\Basic.md" />
-    <Resource Include="Assets\Documents\image\Basic\1690355954552.png" />
-    <Resource Include="Assets\Documents\image\Basic\1690356161339.png" />
-    <Resource Include="Assets\Documents\image\Basic\1690357490894.png" />
-    <Resource Include="Assets\Documents\image\Basic\1690357510377.png" />
-    <Resource Include="Assets\Documents\image\Basic\1690357548114.png" />
-    <Resource Include="Assets\Documents\image\Basic\1690357561703.png" />
-    <Resource Include="Assets\Documents\image\Basic\1690357856590.gif" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690342618455.png" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690342708477.png" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690342949494.png" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690343130854.png" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690343165316.png" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690343176833.png" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690343249191.png" />
-    <Resource Include="Assets\Documents\image\ClassPlan\1690343286378.png" />
-    <Resource Include="Assets\Documents\image\MiniInfo\1694924066147.png" />
-    <Resource Include="Assets\Documents\image\MiniInfo\1694925086975.png" />
-    <Resource Include="Assets\Documents\image\Notifications\1694923928375.png" />
-    <Resource Include="Assets\Documents\image\Notifications\1694923983253.png" />
-    <Resource Include="Assets\Documents\image\ProfileSettingsPage\1690357909840.png" />
-    <Resource Include="Assets\Documents\image\ProfileSettingsPage\1690358010089.png" />
-    <Resource Include="Assets\Documents\image\ProfileSettingsPage\1690358214464.png" />
-    <Resource Include="Assets\Documents\image\ProfileSettingsPage\Snipaste_2023-09-17_11-55-19.png" />
-    <Resource Include="Assets\Documents\image\Subject\1690343413399.png" />
-    <Resource Include="Assets\Documents\image\TimeLayout\1690343735712.png" />
-    <Resource Include="Assets\Documents\image\TimeLayout\1690343828036.png" />
-    <Resource Include="Assets\Documents\image\TimeLayout\1690344055964.png" />
-    <Resource Include="Assets\Documents\image\TimeLayout\1690344105820.png" />
-    <Resource Include="Assets\Documents\image\Welcome\1694925761903.png" />
-    <Resource Include="Assets\Documents\MiniInfo.md" />
-    <Resource Include="Assets\Documents\Notifications.md" />
-    <Resource Include="Assets\Documents\Subject.md" />
-    <Resource Include="Assets\Documents\TimeLayout.md" />
-    <Resource Include="Assets\Documents\ClassPlan.md" />
-    <Resource Include="Assets\Documents\ProfileSettingsPage.md" />
-    <Resource Include="Assets\Documents\Welcome.md" />
-    <Resource Include="Assets\Documents\HelloWorld.md" />
-    <Resource Include="Assets\Documents\Images\img1.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Black.ttf" />
-    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Bold.ttf" />
-    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Light.ttf" />
-    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Medium.ttf" />
-    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Regular.ttf" />
-    <Resource Include="Assets\Fonts\HarmonyOS_Sans_SC_Thin.ttf" />
-    <Resource Include="Assets\XiaomiWeather\xiaomi_weather.db" />
-    <Resource Include="Assets\XiaomiWeather\xiaomi_weather_status.json" />
-    <Resource Include="Assets\光辉矢愿_遨游.png" />
-    <Resource Include="Assets\帕姆_震惊.png" />
-    <Resource Include="Assets\LICENSE.txt" />
-    <Resource Include="Assets\普罗米修斯_查询.png" />
-    <Resource Include="Assets\MainMenuOpenDemo.gif" />
+	  <Resource Include="Assets\**" />
   </ItemGroup>
 
 </Project>

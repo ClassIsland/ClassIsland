@@ -239,7 +239,6 @@
         <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-        <Setter Property="CanContentScroll" Value="True"/>
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type models:WizardOption}">
