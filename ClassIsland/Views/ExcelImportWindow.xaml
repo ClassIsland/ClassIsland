@@ -24,6 +24,12 @@
         AllowDrop="True"
         DragEnter="ProfileSettingsWindow_OnDragEnter"
         Drop="ProfileSettingsWindow_OnDrop">
+    <controls:MyWindow.CommandBindings>
+        <CommandBinding Command="{x:Static local:ExcelImportWindow.SelectionValueUpdateCommand}"
+                        Executed="SelectionValueUpdateCommand_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
+                        Executed="EnterSelectingModeCommand_OnExecuted"/>
+    </controls:MyWindow.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -96,26 +102,41 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" Text="选择区域" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                <TextBlock Grid.Column="1" Text="在下方表格中选择区域" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                            HorizontalAlignment="Left"
                            Margin="0 0 0 0"
                            VerticalAlignment="Center"/>
                 <StackPanel Grid.Column="2" 
                             Margin="0 -16"
                             Orientation="Horizontal">
+                    <TextBlock Grid.Column="1" Text="{Binding ViewModel.SelectedRangePosition, Converter={StaticResource RangePositionToStringConverter}}" 
+                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                               HorizontalAlignment="Left"
+                               FontFamily="Consolas"
+                               Margin="0 0 8 0"
+                               VerticalAlignment="Center"/>
                     <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
                             ToolTip="确定"
-                            Content="{materialDesign:PackIcon Check}"/>
+                            Content="{materialDesign:PackIcon Check}"
+                            Click="ButtonExitSelectingMode_OnClick"/>
                 </StackPanel>
             </Grid>
         </materialDesign:ColorZone>
 
         <reoGrid:ReoGridControl Grid.Row="1" Grid.Column="0" x:Name="Grid"
-                                Readonly="True">
+                                Readonly="False"
+                                SheetTabNewButtonVisible="False"
+                                SheetTabVisible="True"
+                                CurrentWorksheetChanged="Grid_OnCurrentWorksheetChanged"
+                                BeforeActionPerform="Grid_OnBeforeActionPerform">
             <reoGrid:ReoGridControl.Style>
                 <Style TargetType="reoGrid:ReoGridControl">
                     <Style.Resources>
                         <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}"/>
+                        <Style TargetType="ScrollBar" />
+                        <Style TargetType="TextBlock" >
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Style>
                     </Style.Resources>
                 </Style>
             </reoGrid:ReoGridControl.Style>
@@ -243,7 +264,16 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
-                        
+                        <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TestSelectingRangePosition, Mode=TwoWay}"
+                                                        IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
+                                                        EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
+                                                        SelectionPropertyName="TestSelectingRangePosition"/>
+                        <TextBlock Text="{Binding ViewModel.TestSelectingRangePosition}"/>
+                        <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TestSelectingRangePosition2, Mode=TwoWay}"
+                                                        IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
+                                                        EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
+                                                        SelectionPropertyName="TestSelectingRangePosition2"/>
+                        <TextBlock Text="{Binding ViewModel.TestSelectingRangePosition2}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 时间表导入结果 -->

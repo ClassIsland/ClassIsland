@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -18,8 +19,10 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using unvell.ReoGrid;
+using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
 using unvell.ReoGrid.IO;
+using unvell.ReoGrid.IO.OpenXML.Schema;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
@@ -35,12 +38,61 @@ public partial class ExcelImportWindow : MyWindow
 
     public string ExcelSourcePath { get; set; } = "";
 
+    public static ICommand SelectionValueUpdateCommand { get; } = new RoutedUICommand();
+    public static ICommand EnterSelectingModeCommand { get; } = new RoutedUICommand();
+
     public ExcelImportWindow(ThemeService themeService)
     {
         InitializeComponent();
         DataContext = this;
         ThemeService = themeService;
         ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+    }
+
+    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        
+    }
+    private void EnterSelectingMode()
+    {
+        ViewModel.IsSelectingMode = true;
+        ViewModel.NormalSelectionRangePosition = Grid.CurrentWorksheet.SelectionRange;
+        var s = typeof(ExcelImportViewModel).GetProperty(ViewModel.CurrentUpdatingPropertyName)?.GetValue(ViewModel);
+        Grid.CurrentWorksheet.SelectionRange = (RangePosition)(s ?? RangePosition.Empty);
+        Grid.CurrentWorksheet.SelectionRangeChanged += CurrentWorksheetOnSelectionRangeChanged;
+        if (ViewModel.CurrentSelectingElement != null) ViewModel.CurrentSelectingElement.IsSelecting = true;
+        Grid.ControlStyle.SelectionBorderWidth = 5;
+    }
+
+    private void ExitSelectingMode()
+    {
+        ViewModel.IsSelectingMode = false;
+        Grid.CurrentWorksheet.SelectionRangeChanged -= CurrentWorksheetOnSelectionRangeChanged;
+        Grid.ControlStyle.SelectionBorderWidth = 3;
+        Grid.CurrentWorksheet.SelectionRange = ViewModel.NormalSelectionRangePosition;
+        if (ViewModel.CurrentSelectingElement != null) ViewModel.CurrentSelectingElement.IsSelecting = false;
+        ViewModel.CurrentSelectingElement = null;
+    }
+
+
+    private void CurrentWorksheetOnSelectionRangeChanged(object? sender, RangeEventArgs e)
+    {
+        if (!ViewModel.IsSelectingMode)
+        {
+            return;
+        }
+        ViewModel.SelectedRangePosition = e.Range;
+        var vmt = typeof(ExcelImportViewModel);
+        var p = vmt.GetProperty(ViewModel.CurrentUpdatingPropertyName);
+        if (p == null)
+        {
+            return; 
+        }
+
+        p.SetValue(ViewModel, e.Range);
+        ViewModel.CurrentSelectingElement?.Focus();
+        Debug.WriteLine(e.Range);
     }
 
     ~ExcelImportWindow()
@@ -96,7 +148,6 @@ public partial class ExcelImportWindow : MyWindow
         rgcs[ControlAppearanceColors.GridBackground] = Color.FromArgb(255,255,255,255);
         rgcs[ControlAppearanceColors.GridText] = Color.FromArgb(255,0,0,0);
         rgcs[ControlAppearanceColors.GridLine] = Color.FromArgb(255,208,215,229);
-        rgcs.SelectionBorderWidth = 3;
         Grid.ControlStyle = rgcs;
     }
 
@@ -145,5 +196,33 @@ public partial class ExcelImportWindow : MyWindow
     {
         e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) && !ViewModel.IsFileSelected 
             ? DragDropEffects.Link : DragDropEffects.None;
+    }
+
+    private void Grid_OnCurrentWorksheetChanged(object? sender, EventArgs e)
+    {
+        
+    }
+
+    private void Grid_OnBeforeActionPerform(object? sender, WorkbookActionEventArgs e)
+    {
+        Debug.WriteLine(e.Action.GetName());
+        
+    }
+
+    private void SelectionValueUpdateCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        
+    }
+
+    private void EnterSelectingModeCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        ViewModel.CurrentUpdatingPropertyName = (string)e.Parameter;
+        //ViewModel.CurrentSelectingElement = (ExcelSelectionTextBox)sender;
+        EnterSelectingMode();
+    }
+
+    private void ButtonExitSelectingMode_OnClick(object sender, RoutedEventArgs e)
+    {
+        ExitSelectingMode();
     }
 }

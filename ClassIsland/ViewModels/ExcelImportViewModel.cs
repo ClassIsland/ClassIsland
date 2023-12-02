@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Windows;
+using ClassIsland.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
+using unvell.ReoGrid;
 
 namespace ClassIsland.ViewModels;
 
@@ -9,6 +12,12 @@ public class ExcelImportViewModel : ObservableRecipient
     private bool _isLoadingExcelFile = false;
     private bool _isFileSelected = false;
     private bool _isSelectingMode = false;
+    private RangePosition _selectedRangePosition = RangePosition.Empty;
+    private string _currentUpdatingPropertyName = "";
+    private RangePosition _testSelectingRangePosition = RangePosition.Empty;
+    private RangePosition _normalSelectionRangePosition = RangePosition.Empty;
+    private ExcelSelectionTextBox? _currentSelectingElement = null;
+    private RangePosition _testSelectingRangePosition2 = RangePosition.Empty;
 
     public int SlideIndex
     {
@@ -61,6 +70,72 @@ public class ExcelImportViewModel : ObservableRecipient
         {
             if (value == _isSelectingMode) return;
             _isSelectingMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RangePosition SelectedRangePosition
+    {
+        get => _selectedRangePosition;
+        set
+        {
+            if (value.Equals(_selectedRangePosition)) return;
+            _selectedRangePosition = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CurrentUpdatingPropertyName
+    {
+        get => _currentUpdatingPropertyName;
+        set
+        {
+            if (value == _currentUpdatingPropertyName) return;
+            _currentUpdatingPropertyName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RangePosition TestSelectingRangePosition
+    {
+        get => _testSelectingRangePosition;
+        set
+        {
+            if (value.Equals(_testSelectingRangePosition)) return;
+            _testSelectingRangePosition = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RangePosition TestSelectingRangePosition2
+    {
+        get => _testSelectingRangePosition2;
+        set
+        {
+            if (value.Equals(_testSelectingRangePosition2)) return;
+            _testSelectingRangePosition2 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RangePosition NormalSelectionRangePosition
+    {
+        get => _normalSelectionRangePosition;
+        set
+        {
+            if (value.Equals(_normalSelectionRangePosition)) return;
+            _normalSelectionRangePosition = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ExcelSelectionTextBox? CurrentSelectingElement
+    {
+        get => _currentSelectingElement;
+        set
+        {
+            if (Equals(value, _currentSelectingElement)) return;
+            _currentSelectingElement = value;
             OnPropertyChanged();
         }
     }

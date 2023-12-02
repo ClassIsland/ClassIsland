@@ -251,4 +251,17 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <converters:RangePositionToStringConverter x:Key="RangePositionToStringConverter" />
+    <Style TargetType="{x:Type controls:ExcelSelectionTextBox}" BasedOn="{StaticResource MaterialDesignTextBox}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsSelecting, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+            </DataTrigger>
+        </Style.Triggers>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="FontFamily" Value="Consolas"/>
+        <Setter Property="Text" Value="{Binding Value, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource RangePositionToStringConverter}}"/>
+    </Style>
 </ResourceDictionary>
