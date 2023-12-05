@@ -42,6 +42,10 @@ public partial class ExcelImportWindow : MyWindow
     public static ICommand SelectionValueUpdateCommand { get; } = new RoutedUICommand();
     public static ICommand EnterSelectingModeCommand { get; } = new RoutedUICommand();
 
+    public static ICommand NavigateCommand { get; } = new RoutedUICommand();
+
+    public static ICommand NavigateBackCommand { get; } = new RoutedUICommand();
+
     public ExcelImportWindow(ThemeService themeService)
     {
         InitializeComponent();
@@ -228,5 +232,33 @@ public partial class ExcelImportWindow : MyWindow
     private void ButtonExitSelectingMode_OnClick(object sender, RoutedEventArgs e)
     {
         ExitSelectingMode();
+    }
+
+    private void NavigateCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (e.Parameter is not string p)
+        {
+            return;
+        }
+
+        ViewModel.SlideIndex = p switch
+        {
+            "TimeLayoutSource" => 4,
+            "ImportTimeLayoutFromThisFile" => 5,
+            "CreateTimeLayoutManually" => 6,
+            _ => ViewModel.SlideIndex
+        };
+    }
+
+    private void NavigateBackCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        ViewModel.SlideIndex = ViewModel.SlideIndex switch
+        {
+            3 => 2,
+            4 => 3,
+            5 => 4,
+            6 => 4,
+            _ => ViewModel.SlideIndex
+        };
     }
 }

@@ -46,6 +46,24 @@ namespace ClassIsland.Controls;
 /// </summary>
 public class WizardOptionsListBox : ListBox
 {
+    public static readonly DependencyProperty InvokeCommandProperty = DependencyProperty.Register(
+        nameof(InvokeCommand), typeof(ICommand), typeof(WizardOptionsListBox), new PropertyMetadata(default(ICommand)));
+
+    public ICommand InvokeCommand
+    {
+        get { return (ICommand)GetValue(InvokeCommandProperty); }
+        set { SetValue(InvokeCommandProperty, value); }
+    }
+
+    public static readonly DependencyProperty InvokeCommandParameterProperty = DependencyProperty.Register(
+        nameof(InvokeCommandParameter), typeof(object), typeof(WizardOptionsListBox), new PropertyMetadata(default(object)));
+
+    public object InvokeCommandParameter
+    {
+        get { return GetValue(InvokeCommandParameterProperty); }
+        set { SetValue(InvokeCommandParameterProperty, value); }
+    }
+
     static WizardOptionsListBox()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(WizardOptionsListBox), new FrameworkPropertyMetadata(typeof(WizardOptionsListBox)));

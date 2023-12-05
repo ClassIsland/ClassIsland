@@ -25,6 +25,12 @@
         DragEnter="ProfileSettingsWindow_OnDragEnter"
         Drop="ProfileSettingsWindow_OnDrop">
     <controls:MyWindow.Resources>
+        <Style TargetType="controls:WizardOptionControl">
+            <Setter Property="InvokedCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
+        </Style>
+        <Style TargetType="controls:WizardOptionsListBox">
+            <Setter Property="InvokeCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
+        </Style>
         <Storyboard x:Key="EditingLoop" RepeatBehavior="Forever">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="border" Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.1">
@@ -50,6 +56,10 @@
                         Executed="SelectionValueUpdateCommand_OnExecuted"/>
         <CommandBinding Command="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
                         Executed="EnterSelectingModeCommand_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
+                        Executed="NavigateCommand_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}"
+                        Executed="NavigateBackCommand_OnExecuted"/>
     </controls:MyWindow.CommandBindings>
     <Grid>
         <Grid.RowDefinitions>
@@ -189,7 +199,7 @@
                         <Setter Property="Margin" Value="0 0 0 4"/>
                     </Style>
                 </materialDesign:Transitioner.Resources>
-                <!-- 选择文件 -->
+                <!-- 0 选择文件 -->
                 <materialDesign:TransitionerSlide ForwardWipe="{x:Null}" BackwardWipe="{x:Null}">
                     <StackPanel VerticalAlignment="Center"
                                 HorizontalAlignment="Center">
@@ -210,7 +220,7 @@
                         </Button>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- Loading -->
+                <!-- 1 Loading -->
                 <materialDesign:TransitionerSlide ForwardWipe="{x:Null}" BackwardWipe="{x:Null}">
                     <StackPanel VerticalAlignment="Center"
                                 HorizontalAlignment="Center">
@@ -227,7 +237,7 @@
                                    TextDecorations="Strikethrough"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- Welcome -->
+                <!-- 2 Welcome -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="从表格导入课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
@@ -240,7 +250,7 @@
                         </StackPanel>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- 询问界面形式 -->
+                <!-- 3 询问界面形式 -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="您希望本向导如何引导您？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
@@ -251,16 +261,19 @@
                         <TextBlock Text="选择一种适合您的语言风格，然后点击下一步继续。"/>
 
                         <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.DescriptionMode}">
-                            <models:WizardOption Header="详细" Content="对每个选项和流程做出详细解释，适用于刚接触本软件的新手。"/>
-                            <models:WizardOption Header="简洁" Content="简化流程和语言说明，提供简洁的体验，适用于熟悉本软件的用户。"/>
+                            <models:WizardOption Header="详细" Content="对每个选项和流程做出详细解释，适用于刚接触本软件的新手。"
+                                                 InvokeCommandParameter="TimeLayoutSource"/>
+                            <models:WizardOption Header="简洁" Content="简化流程和语言说明，提供简洁的体验，适用于熟悉本软件的用户。"
+                                                 InvokeCommandParameter="TimeLayoutSource"/>
                         </controls:WizardOptionsListBox>
                         <Button HorizontalAlignment="Left" Margin="0 8 0 0"
-                                Style="{StaticResource MaterialDesignPaperButton}">
+                                Style="{StaticResource MaterialDesignPaperButton}"
+                                Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
                             <controls:IconText Kind="ArrowLeft" Text="上一步"/>
                         </Button>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- 从哪里导入时间表？-->
+                <!-- 4 从哪里导入时间表？-->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="您希望从哪里导入时间表？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
@@ -271,39 +284,79 @@
                         <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。"/>
 
                         <controls:WizardOptionsListBox>
-                            <models:WizardOption Header="我的时间表在这个文件中" Content="将从本文件导入时间表。"/>
-                            <models:WizardOption Header="我的时间表另一个文件中" Content="将打开另一个表格，并从该表格导入时间表。"/>
-                            <models:WizardOption Header="我想手动创建时间表" Content="手动创建时间表。"/>
+                            <models:WizardOption Header="我的时间表在这个文件中" Content="将从本文件导入时间表。"
+                                                 InvokeCommandParameter="ImportTimeLayoutFromThisFile"/>
+                            <models:WizardOption Header="我的时间表另一个文件中" Content="将打开另一个表格，并从该表格导入时间表。"
+                                                 InvokeCommandParameter="ImportTimeLayoutFromOtherFile"/>
+                            <models:WizardOption Header="我想手动创建时间表" Content="手动创建时间表。"
+                                                 InvokeCommandParameter="CreateTimeLayoutManually"/>
                         </controls:WizardOptionsListBox>
                         <Button HorizontalAlignment="Left" Margin="0 8 0 0"
-                                Style="{StaticResource MaterialDesignPaperButton}">
+                                Style="{StaticResource MaterialDesignPaperButton}"
+                                Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
                             <controls:IconText Kind="ArrowLeft" Text="上一步"/>
                         </Button>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- 选择时间安排区域 -->
+                <!-- 5 选择时间安排区域 -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="选择时间安排区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <TextBlock >
-                            <Run Text=""/>
+                            
+                            <Run Text="点击下方文本框以从表格中选择包含时间点安排信息的区域。"/>
                         </TextBlock>
-                        <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TestSelectingRangePosition, Mode=TwoWay}"
+                        <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TimePointSourcePosition, Mode=TwoWay}"
                                                         IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
                                                         EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
-                                                        SelectionPropertyName="TestSelectingRangePosition"
-                                                        materialDesign:HintAssist.Hint="测试1"/>
-                        <TextBlock Text="{Binding ViewModel.TestSelectingRangePosition}"/>
-                        <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TestSelectingRangePosition2, Mode=TwoWay}"
-                                                        IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
-                                                        EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
-                                                        SelectionPropertyName="TestSelectingRangePosition2"
-                                                        materialDesign:HintAssist.Hint="测试2"/>
-                        <TextBlock Text="{Binding ViewModel.TestSelectingRangePosition2}"/>
+                                                        SelectionPropertyName="TimePointSourcePosition"
+                                                        materialDesign:HintAssist.Hint="选择时间安排区域"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                                    Margin="0 20 0 0"
+                                    IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
+                            <Button HorizontalAlignment="Left"
+                                    Style="{StaticResource MaterialDesignPaperButton}"
+                                    Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
+                                <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+                            </Button>
+                            <Button Margin="4 0 0 0"
+                                    Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
+                                    CommandParameter="TimePointImportResult">
+                                <controls:IconText Kind="ArrowRight" Text="下一步"/>
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- 时间表导入结果 -->
+                <!-- 6 手动创建时间表 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="手动创建时间表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text="已打开档案编辑窗口，请手动创建时间表。创建完毕请点击【下一步】按钮。"/>
+                        </TextBlock>
+                        <Button HorizontalAlignment="Left"
+                                Margin="0 8 0 0"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                            <controls:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
+                        </Button>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
+                                    Margin="0 20 0 0">
+                            <Button HorizontalAlignment="Left"
+                                    Style="{StaticResource MaterialDesignPaperButton}"
+                                    Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
+                                <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+                            </Button>
+                            <Button Margin="4 0 0 0"
+                                    Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
+                                    CommandParameter="TimePointImportResult">
+                                <controls:IconText Kind="ArrowRight" Text="下一步"/>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 7 时间表导入结果 -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="时间表导入结果" Style="{StaticResource MaterialDesignHeadline5TextBlock}"

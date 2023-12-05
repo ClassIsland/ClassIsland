@@ -227,7 +227,6 @@
 
     <Style TargetType="{x:Type controls:WizardOptionsListBox}"
            BasedOn="{StaticResource MaterialDesignListBox}">
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
@@ -244,9 +243,22 @@
                 <DataTemplate DataType="{x:Type models:WizardOption}">
                     <controls:WizardOptionControl OptionHeader="{Binding Header}"
                                                   OptionContent="{Binding Content}"
-                                                  InvokedCommand="{Binding InvokeCommand}"
-                                                  InvokeCommandParameter="{Binding InvokeCommandParameter}"
-                                                  IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"/>
+                                                  IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}">
+                        <controls:WizardOptionControl.Style>
+                            <Style TargetType="controls:WizardOptionControl">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding InvokeCommand}" Value="{x:Null}">
+                                        <Setter Property="InvokedCommand" Value="{Binding InvokeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:WizardOptionsListBox}}"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding InvokeCommandParameter}" Value="{x:Null}">
+                                        <Setter Property="InvokeCommandParameter" Value="{Binding InvokeCommandParameter, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:WizardOptionsListBox}}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="InvokedCommand" Value="{Binding InvokeCommand}"/>
+                                <Setter Property="InvokeCommandParameter" Value="{Binding InvokeCommandParameter}"/>
+                            </Style>
+                        </controls:WizardOptionControl.Style>
+                    </controls:WizardOptionControl>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -259,8 +271,14 @@
                 <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
                 <Setter Property="materialDesign:HintAssist.HelperText" Value="请在左侧表格中选择区域。"/>
-
             </DataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding IsCurrentSelecting, RelativeSource={RelativeSource Self}}" Value="False"/>
+                    <Condition Binding="{Binding IsSelecting, RelativeSource={RelativeSource Self}}" Value="True"/>
+                </MultiDataTrigger.Conditions>
+                <Setter Property="IsEnabled" Value="False"/>
+            </MultiDataTrigger>
         </Style.Triggers>
         <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
             <Setter.Value>
