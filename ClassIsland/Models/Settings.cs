@@ -79,6 +79,13 @@ public class Settings : ObservableRecipient
     private string _cityId = "101010100";
     private string _cityName = "北京";
     private FontWeight _mainWindowFontWeight = FontWeights.Medium;
+    private int _taskBarIconClickBehavior = 0;
+    private bool _showExtraInfoOnTimePoint = true;
+    private int _extraInfoType = 0;
+    private bool _isCountdownEnabled = true;
+    private int _countdownSeconds = 60;
+    private int _defaultOnClassTimePointMinutes = 40;
+    private int _defaultBreakingTimePointMinutes = 10;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -279,6 +286,93 @@ public class Settings : ObservableRecipient
         {
             if (value == _isReportingEnabled) return;
             _isReportingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// TaskBarIcon点击行为
+    /// </summary>
+    /// <value>
+    /// <list type="bullet">
+    ///     <item>0 - 打开主菜单</item>
+    ///     <item>1 - 打开档案编辑窗口</item>
+    ///     <item>2 - 显示/隐藏主界面</item>
+    /// </list>
+    /// </value>
+    public int TaskBarIconClickBehavior
+    {
+        get => _taskBarIconClickBehavior;
+        set
+        {
+            if (value == _taskBarIconClickBehavior) return;
+            _taskBarIconClickBehavior = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowExtraInfoOnTimePoint
+    {
+        get => _showExtraInfoOnTimePoint;
+        set
+        {
+            if (value == _showExtraInfoOnTimePoint) return;
+            _showExtraInfoOnTimePoint = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ExtraInfoType
+    {
+        get => _extraInfoType;
+        set
+        {
+            if (value == _extraInfoType) return;
+            _extraInfoType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCountdownEnabled
+    {
+        get => _isCountdownEnabled;
+        set
+        {
+            if (value == _isCountdownEnabled) return;
+            _isCountdownEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int CountdownSeconds
+    {
+        get => _countdownSeconds;
+        set
+        {
+            if (value == _countdownSeconds) return;
+            _countdownSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int DefaultOnClassTimePointMinutes
+    {
+        get => _defaultOnClassTimePointMinutes;
+        set
+        {
+            if (value == _defaultOnClassTimePointMinutes) return;
+            _defaultOnClassTimePointMinutes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int DefaultBreakingTimePointMinutes
+    {
+        get => _defaultBreakingTimePointMinutes;
+        set
+        {
+            if (value == _defaultBreakingTimePointMinutes) return;
+            _defaultBreakingTimePointMinutes = value;
             OnPropertyChanged();
         }
     }

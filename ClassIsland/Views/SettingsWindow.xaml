@@ -227,7 +227,9 @@
                            Margin="0 0 0 4"/>
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
                            Margin="0 0 0 16"/>
-
+                <CheckBox Content="从表格导入课表（未完工）"/>
+                <CheckBox Content="沉浸式标题栏在Windows10上工作"/>
+                <CheckBox Content="编辑使用中的时间表（强烈不推荐）"/>
             </StackPanel>
         </ScrollViewer>
 
@@ -320,6 +322,7 @@
                     <TabItem  Header="基本">
                         <ScrollViewer >
                             <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <controls:IconText Kind="LightningBoltOutline" Text="行为" Margin="0 0 0 8"/>
                                 <!-- 开机自启 -->
                                 <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
                                                        Description="在系统启动时自动运行本应用。"
@@ -358,14 +361,33 @@
                                         </StackPanel>
                                     </Expander>
                                 </materialDesign:Card>
-                                <!-- 显示快速信息 -->
-                                <controls:SettingsCard IconGlyph="CardSearchOutline"
-                                                       Header="显示快速信息" Description="在界面上显示快速信息。"
-                                                       IsOn="{Binding Settings.ShowDate, Mode=TwoWay}" />
+                                <!-- 点击托盘图标行为 -->
+                                <controls:SettingsCard IconGlyph="CursorDefaultClickOutline"
+                                                       Header="点击托盘图标行为" Description="鼠标左键点击本应用托盘图标时应用进行的操作。无论此设置设置为什么选项，右键点击/触屏长按托盘图标仍会打开主菜单。"
+                                                       IsOn="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}" >
+                                    <controls:SettingsCard.Switcher>
+                                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                  SelectedIndex="{Binding Settings.TaskBarIconClickBehavior}"
+                                                  HorizontalContentAlignment="Left">
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="Menu" Text="打开主菜单" />
+                                            </ComboBoxItem>
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="FileDocumentEdit" Text="打开档案编辑窗口" />
+                                            </ComboBoxItem>
+                                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                                <controls:IconText Kind="Visibility" Text="显示/隐藏主界面" />
+                                            </ComboBoxItem>
+                                        </ComboBox>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <Separator Margin="0 16 0 8"/>
+                                <controls:IconText Kind="WindowRestore" Text="显示" Margin="0 0 0 8"/>
                                 <!-- 简略信息 -->
-                                <materialDesign:Card Margin="0 0 0 6" 
-                                                     Visibility="{Binding Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Expander Background="Transparent" IsExpanded="True" TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                <materialDesign:Card Margin="0 0 0 6" >
+                                    <Expander Background="Transparent" 
+                                              IsExpanded="{Binding Settings.ShowDate, Mode=OneWay}"
+                                              TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                                         <Expander.Header>
                                             <controls:SettingsControl IconGlyph="CardTextOutline"
                                                                       Foreground="{DynamicResource MaterialDesignBody}"
@@ -373,39 +395,143 @@
                                                                       Description="在主界面显示特定的快速信息，以助于快速获取信息。"
                                                                       Margin="-12 0" >
                                                 <controls:SettingsControl.Switcher>
-                                                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                              ItemsSource="{Binding MiniInfoProviderHostService.Providers}"
-                                                              SelectedValuePath="Key"
-                                                              SelectedValue="{Binding Settings.SelectedMiniInfoProvider}"
-                                                              SelectedItem="{Binding ViewModel.SelectedMiniInfoProvider, Mode=OneWayToSource}"
-                                                              Width="100">
-                                                        <ComboBox.ItemTemplate>
-                                                            <DataTemplate>
-                                                                <TextBlock Text="{Binding Value.Name}"
-                                                                           ToolTip="{Binding Value.Description}"/>
-                                                            </DataTemplate>
-                                                        </ComboBox.ItemTemplate>
-                                                    </ComboBox>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                                  ItemsSource="{Binding MiniInfoProviderHostService.Providers}"
+                                                                  SelectedValuePath="Key"
+                                                                  IsEnabled="{Binding Settings.ShowDate, Mode=OneWay}"
+                                                                  SelectedValue="{Binding Settings.SelectedMiniInfoProvider}"
+                                                                  SelectedItem="{Binding ViewModel.SelectedMiniInfoProvider, Mode=OneWayToSource}"
+                                                                  Width="100">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Value.Name}"
+                                                                               ToolTip="{Binding Value.Description}" />
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                        <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                                                      Margin="4 0 0 0"
+                                                                      IsChecked="{Binding Settings.ShowDate, Mode=TwoWay}"></ToggleButton>
+                                                    </StackPanel>
                                                 </controls:SettingsControl.Switcher>
                                             </controls:SettingsControl>
                                         </Expander.Header>
-                                        <StackPanel Margin="36 0 64 12" d:DataContext="{d:DesignInstance interfaces:IMiniInfoProvider}">
-                                            <StackPanel.DataContext>
-                                                <MultiBinding Converter="{StaticResource MiniInfoGuidToMiniInfoProviderMultiConverter}">
-                                                    <Binding Path="Settings.SelectedMiniInfoProvider" 
-                                                             RelativeSource="{RelativeSource FindAncestor, AncestorType=local:SettingsWindow}"/>
-                                                    <Binding Path="MiniInfoProviderHostService.Providers" 
-                                                             RelativeSource="{RelativeSource FindAncestor, AncestorType=local:SettingsWindow}"/>
-                                                </MultiBinding>
-                                            </StackPanel.DataContext>
-                                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
-                                            <Grid Margin="0 8 0 0">
-                                                <!-- Content -->
-                                                <ContentPresenter Content="{Binding SettingsElement}"/>
-                                            </Grid>
-                                        </StackPanel>
+                                        <StackPanel IsEnabled="{Binding Settings.ShowDate, Mode=OneWay}">
+                                            <StackPanel Margin="36 0 48 12"
+                                                        d:DataContext="{d:DesignInstance interfaces:IMiniInfoProvider}">
+                                                <StackPanel.DataContext>
+                                                    <MultiBinding
+                                                        Converter="{StaticResource MiniInfoGuidToMiniInfoProviderMultiConverter}">
+                                                        <Binding Path="Settings.SelectedMiniInfoProvider"
+                                                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=local:SettingsWindow}" />
+                                                        <Binding Path="MiniInfoProviderHostService.Providers"
+                                                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=local:SettingsWindow}" />
+                                                    </MultiBinding>
+                                                </StackPanel.DataContext>
+                                                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
+                                                <Grid Margin="0 8 0 0">
+                                                    <!-- Content -->
+                                                    <ContentPresenter Content="{Binding SettingsElement}" />
+                                                </Grid>
+                                            </StackPanel></StackPanel>
                                     </Expander>
                                 </materialDesign:Card>
+                                <!-- 显示时间点附加信息 -->
+                                <materialDesign:Card Margin="0 0 0 6" >
+                                    <Expander Background="Transparent" IsExpanded="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=OneWay}" TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                        <Expander.Header>
+                                            <controls:SettingsControl IconGlyph="TableSearch"
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Header="显示时间点附加信息" 
+                                                                      Description="在当前的时间点上显示当前时间点的附加信息。"
+                                                                      IsOn="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}"
+                                                                      Margin="-12 0" />
+                                        </Expander.Header>
+                                        <Grid Margin="36 0 48 12" IsEnabled="{Binding Settings.ShowExtraInfoOnTimePoint, Mode=OneWay}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Text="要显示的附加信息" VerticalAlignment="Center"/>
+                                            <ComboBox Grid.Row="0" Grid.Column="1" 
+                                                      VerticalAlignment="Center"
+                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                      SelectedIndex="{Binding Settings.ExtraInfoType}"
+                                                      HorizontalContentAlignment="Left">
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <TextBlock Text="时间点持续时间"/>
+                                                </ComboBoxItem>
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <TextBlock Text="已过时间/持续时间"/>
+                                                </ComboBoxItem>
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <TextBlock Text="剩余时间/持续时间"/>
+                                                </ComboBoxItem>
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <TextBlock Text="已过时间百分比"/>
+                                                </ComboBoxItem>
+                                            </ComboBox>
+                                        </Grid>
+                                    </Expander>
+                                </materialDesign:Card>
+                                <!-- 时间点结束倒计时 -->
+                                <materialDesign:Card Margin="0 0 0 6" >
+                                    <Expander Background="Transparent" IsExpanded="{Binding Settings.IsCountdownEnabled, Mode=OneWay}" TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                        <Expander.Header>
+                                            <controls:SettingsControl IconGlyph="ClockEnd"
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Header="时间点结束倒计时" 
+                                                                      Description="在当前时间点将要结束时显示倒计时。"
+                                                                      IsOn="{Binding Settings.IsCountdownEnabled, Mode=TwoWay}"
+                                                                      Margin="-12 0" />
+                                        </Expander.Header>
+                                        <Grid Margin="36 0 48 12" IsEnabled="{Binding Settings.IsCountdownEnabled, Mode=OneWay}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Column="0" Text="时间点结束倒计时时长" VerticalAlignment="Center"/>
+                                            <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
+                                                                      Grid.Column="1"
+                                                                      VerticalAlignment="Center"
+                                                                      materialDesign:TextFieldAssist.SuffixText="秒"
+                                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      Style="{StaticResource MaterialDesignTextBoxBase}"
+                                                                      Text="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                        </Grid>
+                                    </Expander>
+                                </materialDesign:Card>
+                                <Separator Margin="0 16 0 8"/>
+                                <controls:IconText Kind="EditOutline" Text="档案编辑" Margin="0 0 0 8"/>
+                                <!-- 默认上课时间点时长 -->
+                                <controls:SettingsCard IconGlyph="FileClockOutline" Header="默认上课时间点时长"
+                                                       Description="在创建上课类型的时间点时默认时长。">
+                                    <controls:SettingsCard.Switcher>
+                                        <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
+                                                                  materialDesign:TextFieldAssist.SuffixText="分钟"
+                                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                                  Style="{StaticResource MaterialDesignTextBox}"
+                                                                  Text="{Binding Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
+                                <!-- 默认课间时间点时长 -->
+                                <controls:SettingsCard IconGlyph="ClockOutline" Header="默认课间时间点时长"
+                                                       Description="在创建课间休息类型的时间点时默认时长">
+                                    <controls:SettingsCard.Switcher>
+                                        <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
+                                                                  materialDesign:TextFieldAssist.SuffixText="分钟"
+                                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                                  Style="{StaticResource MaterialDesignTextBox}"
+                                                                  Text="{Binding Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                    </controls:SettingsCard.Switcher>
+                                </controls:SettingsCard>
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
