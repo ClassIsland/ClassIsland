@@ -19,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Models;
+using ClassIsland.Services;
 
 namespace ClassIsland.Controls;
 
@@ -43,6 +44,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         Initial = ":(",
         Name = ":( 出错了"
     };
+
+    public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
     public static readonly DependencyProperty CurrentTimeLayoutItemProperty = DependencyProperty.Register(
         nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControl), new PropertyMetadata(default(TimeLayoutItem)));
@@ -121,6 +124,15 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     {
         get => (long)GetValue(TotalSecondsProperty);
         set => SetValue(TotalSecondsProperty, value);
+    }
+
+    public static readonly DependencyProperty LeftSecondsProperty = DependencyProperty.Register(
+        nameof(LeftSeconds), typeof(long), typeof(LessonControl), new PropertyMetadata(default(long)));
+
+    public long LeftSeconds
+    {
+        get { return (long)GetValue(LeftSecondsProperty); }
+        set { SetValue(LeftSecondsProperty, value); }
     }
 
     public static readonly DependencyProperty IsTimerEnabledProperty = DependencyProperty.Register(
@@ -221,7 +233,13 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         CurrentTimeLayoutItem = CurrentTimeLayout.Layouts[Index];
 
         TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
+        UpdateSeconds();
+    }
+
+    private void UpdateSeconds()
+    {
         Seconds = (long)(DateTime.Now.TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
+        LeftSeconds = TotalSeconds - Seconds;
     }
 
     public LessonControl()
@@ -237,7 +255,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         {
             return;
         }
-        Seconds = (long)(DateTime.Now.TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
+        UpdateSeconds();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

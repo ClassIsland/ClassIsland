@@ -5,9 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              mc:Ignorable="d" 
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
              d:DesignHeight="450" d:DesignWidth="800"
              >
+    <UserControl.Resources>
+        <converters:SecondsLongToMinutesStringConverter x:Key="SecondsLongToMinutesStringConverter" />
+        <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
+    </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControl}}}">
         <StackPanel Orientation="Horizontal">
             <StackPanel.Style>
@@ -38,11 +44,59 @@
                 </TextBlock.Style>
             </TextBlock>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TextBlock Margin="6 0 0 0" FontSize="13" VerticalAlignment="Bottom">
-                    <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
-                    </Run><Run Text="-">
-                    </Run><Run Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
-                </TextBlock>
+                <TabControl VerticalAlignment="Bottom" Margin="6 0 0 0">
+                    <TabControl.Style>
+                        <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsTimerEnabled}" Value="False">
+                                    <Setter Property="SelectedIndex" Value="0"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="SelectedIndex" Value="{Binding SettingsService.Settings.ExtraInfoType}"/>
+                        </Style>
+                    </TabControl.Style>
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </Style>
+                    </TabControl.Resources>
+                    <TabItem>
+                        <TextBlock FontSize="13" VerticalAlignment="Bottom">
+                            <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                            </Run><Run Text="-">
+                            </Run><Run Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
+                        </TextBlock>
+                    </TabItem>
+                    <TabItem>
+                        <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                            <Run Text="{Binding Seconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                            </Run><Run Text="/">
+                            </Run><Run Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                            </Run><Run Text="min">
+                            </Run>
+                        </TextBlock>
+                    </TabItem>
+                    <TabItem>
+                        <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                            <Run Text="-">
+                            </Run><Run Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                            </Run><Run Text="/">
+                            </Run><Run Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                            </Run><Run Text="min">
+                            </Run>
+                        </TextBlock>
+                    </TabItem>
+                    <TabItem>
+                        <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                            <Run>
+                                <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}" Mode="OneWay">
+                                    <Binding Path="Seconds" Mode="OneWay"/>
+                                    <Binding Path="TotalSeconds" Mode="OneWay"/>
+                                </MultiBinding>
+                            </Run>
+                        </TextBlock>
+                    </TabItem>
+                </TabControl>
 
             </StackPanel>
         </StackPanel>
