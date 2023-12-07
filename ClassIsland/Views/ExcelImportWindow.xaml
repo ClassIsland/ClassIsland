@@ -31,6 +31,18 @@
         <Style TargetType="controls:WizardOptionsListBox">
             <Setter Property="InvokeCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
         </Style>
+        <!--<Style TargetType="materialDesign:TransitionerSlide">
+            <Setter Property="BackwardWipe">
+                <Setter.Value>
+                    <materialDesign:SlideWipe Direction="Right"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ForwardWipe">
+                <Setter.Value>
+                    <materialDesign:SlideWipe Direction="Left"/>
+                </Setter.Value>
+            </Setter>
+        </Style>-->
         <Storyboard x:Key="EditingLoop" RepeatBehavior="Forever">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="border" Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.1">
@@ -283,7 +295,7 @@
                         </TextBlock>
                         <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。"/>
 
-                        <controls:WizardOptionsListBox>
+                        <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
                             <models:WizardOption Header="我的时间表在这个文件中" Content="将从本文件导入时间表。"
                                                  InvokeCommandParameter="ImportTimeLayoutFromThisFile"/>
                             <models:WizardOption Header="我的时间表另一个文件中" Content="将打开另一个表格，并从该表格导入时间表。"
@@ -312,20 +324,18 @@
                                                         EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
                                                         SelectionPropertyName="TimePointSourcePosition"
                                                         materialDesign:HintAssist.Hint="选择时间安排区域"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
-                                    Margin="0 20 0 0"
-                                    IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
-                            <Button HorizontalAlignment="Left"
-                                    Style="{StaticResource MaterialDesignPaperButton}"
-                                    Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步"/>
-                            </Button>
-                            <Button Margin="4 0 0 0"
-                                    Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
-                                    CommandParameter="TimePointImportResult">
-                                <controls:IconText Kind="ArrowRight" Text="下一步"/>
-                            </Button>
-                        </StackPanel>
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="TimePointImportResult"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
+                            <controls:NavigationButtonsControl.Style>
+                                <Style TargetType="controls:NavigationButtonsControl" >
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel.TimePointSourcePosition}" Value="{x:Static reoGrid:RangePosition.Empty}">
+                                            <Setter Property="IsNavigateNextButtonEnabled" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:NavigationButtonsControl.Style>
+                        </controls:NavigationButtonsControl>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 6 手动创建时间表 -->
@@ -341,19 +351,7 @@
                                 Style="{StaticResource MaterialDesignFlatButton}">
                             <controls:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
                         </Button>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
-                                    Margin="0 20 0 0">
-                            <Button HorizontalAlignment="Left"
-                                    Style="{StaticResource MaterialDesignPaperButton}"
-                                    Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步"/>
-                            </Button>
-                            <Button Margin="4 0 0 0"
-                                    Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
-                                    CommandParameter="TimePointImportResult">
-                                <controls:IconText Kind="ArrowRight" Text="下一步"/>
-                            </Button>
-                        </StackPanel>
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectSubjectsPosition"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 7 时间表导入结果 -->
@@ -364,21 +362,27 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
-
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectSubjectsPosition"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- 选择课程区域 -->
+                <!-- 8 选择课程区域 -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="选择课程区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <TextBlock >
-                            <Run Text=""/>
+                            <Run Text="点击下方文本框以从表格中选择包含课程的区域。"/>
                         </TextBlock>
-
+                        <controls:ExcelSelectionTextBox Value="{Binding ViewModel.SubjectSourcePosition, Mode=TwoWay}"
+                                                        IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
+                                                        EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
+                                                        SelectionPropertyName="SubjectSourcePosition"
+                                                        materialDesign:HintAssist.Hint="选择课程区域"/>
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectRowColumnRelationship"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- 选择行列对应关系 -->
+                <!-- 9 选择行列对应关系 -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="选择行列对应关系" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
@@ -386,10 +390,10 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
-
+                        
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
-                <!-- 如何导入时间对应关系？ -->
+                <!-- 10 如何导入时间对应关系？ -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
                         <TextBlock Text="如何导入时间对应关系？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"

@@ -65,7 +65,8 @@ public partial class ExcelImportWindow : MyWindow
         ViewModel.IsSelectingMode = true;
         ViewModel.NormalSelectionRangePosition = Grid.CurrentWorksheet.SelectionRange;
         var s = typeof(ExcelImportViewModel).GetProperty(ViewModel.CurrentUpdatingPropertyName)?.GetValue(ViewModel);
-        Grid.CurrentWorksheet.SelectionRange = (RangePosition)(s ?? RangePosition.Empty);
+        ViewModel.SelectedRangePosition = Grid.CurrentWorksheet.SelectionRange 
+                = (RangePosition)(s ?? RangePosition.Empty);
         Grid.CurrentWorksheet.SelectionRangeChanged += CurrentWorksheetOnSelectionRangeChanged;
         if (ViewModel.CurrentSelectingElement != null) ViewModel.CurrentSelectingElement.IsSelecting = true;
         Grid.ControlStyle.SelectionBorderWidth = 5;
@@ -246,6 +247,8 @@ public partial class ExcelImportWindow : MyWindow
             "TimeLayoutSource" => 4,
             "ImportTimeLayoutFromThisFile" => 5,
             "CreateTimeLayoutManually" => 6,
+            "TimePointImportResult" => 7,
+            "SelectSubjectsPosition" => 8,
             _ => ViewModel.SlideIndex
         };
     }
@@ -258,6 +261,9 @@ public partial class ExcelImportWindow : MyWindow
             4 => 3,
             5 => 4,
             6 => 4,
+            7 => 5,
+            8 when ViewModel.TimeLayoutImportSource == 0 => 7,
+            8 when ViewModel.TimeLayoutImportSource == 2 => 6,
             _ => ViewModel.SlideIndex
         };
     }

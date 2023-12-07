@@ -19,6 +19,8 @@ public class ExcelImportViewModel : ObservableRecipient
     private ExcelSelectionTextBox? _currentSelectingElement = null;
     private RangePosition _testSelectingRangePosition2 = RangePosition.Empty;
     private RangePosition _timePointSourcePosition = RangePosition.Empty;
+    private int _timeLayoutImportSource = -1;
+    private RangePosition _subjectSourcePosition = RangePosition.Empty;
 
     public int SlideIndex
     {
@@ -148,6 +150,28 @@ public class ExcelImportViewModel : ObservableRecipient
         {
             if (value.Equals(_timePointSourcePosition)) return;
             _timePointSourcePosition = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int TimeLayoutImportSource
+    {
+        get => _timeLayoutImportSource;
+        set
+        {
+            if (value == _timeLayoutImportSource) return;
+            _timeLayoutImportSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RangePosition SubjectSourcePosition
+    {
+        get => _subjectSourcePosition;
+        set
+        {
+            if (value.Equals(_subjectSourcePosition)) return;
+            _subjectSourcePosition = value;
             OnPropertyChanged();
         }
     }
