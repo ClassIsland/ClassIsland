@@ -68,6 +68,7 @@ public static class NativeWindowHelper
     public const int GWL_STYLE = -16;
     public const int WS_SYSMENU = 0x80000;
     public const int WS_EX_TOOLWINDOW = 0x00000080;
+    public const int WS_EX_LAYERED = 0x00080000;
 
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(HandleRef hWnd, [In, Out] ref RECT rect);
@@ -245,5 +246,11 @@ public static class NativeWindowHelper
 
 
         return windows;
+    }
+
+    public struct StyleStruct
+    {
+        public int styleOld;
+        public int styleNew;
     }
 }

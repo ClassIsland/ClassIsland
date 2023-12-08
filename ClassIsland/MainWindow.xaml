@@ -14,8 +14,8 @@
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{x:Null}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight}"
         TextElement.FontSize="14"
         d:DataContext="{d:DesignInstance local:MainWindow}"
@@ -27,10 +27,11 @@
         d:Width="600"
         Closing="MainWindow_OnClosing"
         SizeChanged="MainWindow_OnSizeChanged"
-        AllowsTransparency="True"
         Activated="MainWindow_OnActivated"
         StateChanged="MainWindow_OnStateChanged"
-        Icon="/Assets/AppLogo.ico">
+        Icon="/Assets/AppLogo.ico"
+        Loaded="MainWindow_OnLoaded"
+        SizeToContent="Height">
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
@@ -310,24 +311,28 @@
                         <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
                     </DataTrigger.ExitActions>
                 </DataTrigger>
+                <!-- Debug -->
+                <DataTrigger Binding="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Mode=OneWay}" Value="True">
+                    <Setter Property="Background" Value="#2FAA0000"/>
+                </DataTrigger>
             </Style.Triggers>
             <!-- 默认状态 -->
             <Setter Property="Topmost" Value="False"/>
+            <Setter Property="Background" Value="{x:Null}"/>
         </Style>
     </Window.Style>
-    <Canvas>
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="0"/>
+    </WindowChrome.WindowChrome>
+    <Grid>
         <!-- ROOT -->
-        <Grid ContextMenu="{StaticResource AppContextMenu}"
-              ClipToBounds="True"
-              Canvas.Left="0"
-              Canvas.Top="0"
+        <Grid ClipToBounds="True"
               IsHitTestVisible="{Binding ViewModel.Settings.IsMouseClickingEnabled, Mode=OneWay}"
               VerticalAlignment="Top"
-              HorizontalAlignment="Center"
-              SizeChanged="GridRoot_OnSizeChanged"
+              HorizontalAlignment="Stretch"
               x:Name="GridRoot"
               RenderTransformOrigin="0,0">
-            <Grid.RenderTransform>
+            <Grid.LayoutTransform>
                 <TransformGroup>
                     <ScaleTransform ScaleX="{Binding ViewModel.Settings.Scale, Mode=OneWay}"
                                     ScaleY="{Binding ViewModel.Settings.Scale, Mode=OneWay}" />
@@ -335,7 +340,7 @@
                     <RotateTransform />
                     <TranslateTransform />
                 </TransformGroup>
-            </Grid.RenderTransform>
+            </Grid.LayoutTransform>
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Style.Triggers>
@@ -380,27 +385,34 @@
                                   Color="Black"/>
             </Grid.Effect>
             <Grid x:Name="GridWrapper" ClipToBounds="True"
-                  HorizontalAlignment="Center">
+                  Height="40">
                 <Grid.Style>
+                    <!-- 贴靠Style -->
                     <Style TargetType="Grid">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="0">
                                 <Setter Property="Margin" Value="0 0 8 8"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="1">
                                 <Setter Property="Margin" Value="8 0 8 8"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="2">
                                 <Setter Property="Margin" Value="8 0 0 8"/>
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="3">
                                 <Setter Property="Margin" Value="0 8 8 0"/>
+                                <Setter Property="HorizontalAlignment" Value="Left"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="4">
                                 <Setter Property="Margin" Value="8 8 8 0"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="5">
                                 <Setter Property="Margin" Value="8 8 0 0"/>
+                                <Setter Property="HorizontalAlignment" Value="Right"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -409,11 +421,6 @@
                 <Border HorizontalAlignment="Stretch"
                         Background="{DynamicResource MaterialDesignPaper}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}" />
-
-                <Canvas HorizontalAlignment="Left" 
-                        Height="40"
-                        Margin="16 0">
-                </Canvas>
                 <Grid Height="40"
                       x:Name="GridContentRoot"
                       Margin="16 0">
@@ -558,9 +565,13 @@
         </Grid>
 
         <!-- Scale debug -->
-        <!--<TextBlock Foreground="Cyan">
+        <TextBlock Foreground="Cyan" Visibility="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Run Text="GridRoot:"/>
             <Run Text="{Binding ActualWidth, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
             <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
-        </TextBlock>-->
-    </Canvas>
+            <Run Text="GridWrapper:"/>
+            <Run Text="{Binding ActualWidth, ElementName=GridWrapper, Mode=OneWay, StringFormat={}{0:f1}}"/>
+            <Run Text="{Binding ActualHeight, ElementName=GridWrapper, Mode=OneWay, StringFormat={}{0:f1}}"/>
+        </TextBlock>
+    </Grid>
 </Window>

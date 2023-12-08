@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -34,6 +35,7 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
+using unvell.Common.Win32Lib;
 using Path = System.IO.Path;
 using Window = System.Windows.Window;
 
@@ -178,11 +180,13 @@ public partial class MainWindow : Window
     {
         NativeWindowHelper.GetCursorPos(out var ptr);
         GetCurrentDpi(out var dpiX, out var dpiY);
+        var scale = ViewModel.Settings.Scale;
         //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
-        var cx = Left * dpiX;
-        var cy = Top * dpiY;
-        var cw = Width * dpiX;
-        var ch = Height * dpiY;
+        var root = GridWrapper.PointToScreen(new Point(0, 0));
+        var cx = root.X;
+        var cy = root.Y;
+        var cw = GridWrapper.ActualWidth * dpiX * scale;
+        var ch = GridWrapper.ActualHeight * dpiY * scale;
         var cr = cx + cw;
         var cb = cy + ch;
 
@@ -701,8 +705,6 @@ public partial class MainWindow : Window
         GetCurrentDpi(out var dpiX, out var dpiY);
 
         var scale = ViewModel.Settings.Scale;
-        Width = GridRoot.ActualWidth * scale;
-        Height = GridRoot.ActualHeight * scale;
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
 
@@ -714,31 +716,34 @@ public partial class MainWindow : Window
         var c = (double)(screen.WorkingArea.Left + screen.WorkingArea.Right) / 2;
         var ox = ViewModel.Settings.WindowDockingOffsetX;
         var oy = ViewModel.Settings.WindowDockingOffsetY;
+        Width = screen.WorkingArea.Width / dpiX;
+        //Height = GridRoot.ActualHeight * scale;
+        Left = (screen.WorkingArea.Left + ox) / dpiX;
 
         switch (ViewModel.Settings.WindowDockingLocation)
         {
             case 0: //左上
-                Left = (screen.WorkingArea.Left + ox) / dpiX;
+                //Left = (screen.WorkingArea.Left + ox) / dpiX;
                 Top = (screen.WorkingArea.Top + oy) / dpiY;
                 break;
             case 1: // 中上
-                Left = (c - aw / 2 + ox) / dpiX;
+                //Left = (c - aw / 2 + ox) / dpiX;
                 Top = (screen.WorkingArea.Top + oy) / dpiY;
                 break;
             case 2: // 右上
-                Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
+                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
                 Top = (screen.WorkingArea.Top + oy) / dpiY;
                 break;
             case 3: // 左下
-                Left = (screen.WorkingArea.Left + ox) / dpiX;
+                //Left = (screen.WorkingArea.Left + ox) / dpiX;
                 Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
                 break;
             case 4: // 中下
-                Left = (c - aw / 2 + ox) / dpiX;
+                //Left = (c - aw / 2 + ox) / dpiX;
                 Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
                 break;
             case 5: // 右下
-                Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
+                //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
                 Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
                 break;
         }
@@ -760,7 +765,7 @@ public partial class MainWindow : Window
 
     private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
-        UpdateWindowPos();
+        //UpdateWindowPos();
     }
 
     private void MainWindow_OnActivated(object? sender, EventArgs e)
@@ -904,5 +909,25 @@ public partial class MainWindow : Window
         ClassChangingWindow.DataContext = null;
         ClassChangingWindow = null;
         ViewModel.IsBusy = false;
+    }
+
+    private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        ((HwndSource)PresentationSource.FromVisual(this)).AddHook((IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) =>
+        {
+            //想要让窗口透明穿透鼠标和触摸等，需要同时设置 WS_EX_LAYERED 和 WS_EX_TRANSPARENT 样式，
+            //确保窗口始终有 WS_EX_LAYERED 这个样式，并在开启穿透时设置 WS_EX_TRANSPARENT 样式
+            //但是WPF窗口在未设置 AllowsTransparency = true 时，会自动去掉 WS_EX_LAYERED 样式（在 HwndTarget 类中)，
+            //如果设置了 AllowsTransparency = true 将使用WPF内置的低性能的透明实现，
+            //所以这里通过 Hook 的方式，在不使用WPF内置的透明实现的情况下，强行保证这个样式存在。
+            if (msg == (int)0x007C && (long)wParam == (long)NativeWindowHelper.GWL_EXSTYLE)
+            {
+                var styleStruct = (NativeWindowHelper.StyleStruct)Marshal.PtrToStructure(lParam, typeof(NativeWindowHelper.StyleStruct));
+                styleStruct.styleNew |= (int)NativeWindowHelper.WS_EX_LAYERED;
+                Marshal.StructureToPtr(styleStruct, lParam, false);
+                handled = true;
+            }
+            return IntPtr.Zero;
+        });
     }
 }
