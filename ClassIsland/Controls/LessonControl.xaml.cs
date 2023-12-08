@@ -144,6 +144,15 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         set { SetValue(IsTimerEnabledProperty, value); }
     }
 
+    public static readonly DependencyProperty MasterTabIndexProperty = DependencyProperty.Register(
+        nameof(MasterTabIndex), typeof(int), typeof(LessonControl), new PropertyMetadata(default(int)));
+
+    public int MasterTabIndex
+    {
+        get { return (int)GetValue(MasterTabIndexProperty); }
+        set { SetValue(MasterTabIndexProperty, value); }
+    }
+
     public DispatcherTimer UpdateTimer
     {
         get;
@@ -240,6 +249,9 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     {
         Seconds = (long)(DateTime.Now.TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
         LeftSeconds = TotalSeconds - Seconds;
+
+        MasterTabIndex = LeftSeconds <= SettingsService.Settings.CountdownSeconds &&
+            SettingsService.Settings.IsCountdownEnabled ? 1 : 0;
     }
 
     public LessonControl()

@@ -44,57 +44,103 @@
                 </TextBlock.Style>
             </TextBlock>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Stretch" Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <TabControl VerticalAlignment="Bottom" Margin="6 0 0 0">
-                    <TabControl.Style>
-                        <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsTimerEnabled}" Value="False">
-                                    <Setter Property="SelectedIndex" Value="0"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                            <Setter Property="SelectedIndex" Value="{Binding SettingsService.Settings.ExtraInfoType}"/>
-                        </Style>
-                    </TabControl.Style>
+                <TabControl SelectedIndex="{Binding MasterTabIndex}" Margin="6 0 0 0"
+                            Visibility="{Binding SettingsService.Settings.ShowExtraInfoOnTimePoint, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TabControl.Resources>
                         <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Visibility" Value="Collapsed" />
                         </Style>
                     </TabControl.Resources>
                     <TabItem>
-                        <TextBlock FontSize="13" VerticalAlignment="Bottom">
-                            <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
-                            </Run><Run Text="-">
-                            </Run><Run Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
-                        </TextBlock>
+                        <TabControl VerticalAlignment="Bottom">
+                            <TabControl.Style>
+                                <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsTimerEnabled}" Value="False">
+                                            <Setter Property="SelectedIndex" Value="0" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="SelectedIndex"
+                                            Value="{Binding SettingsService.Settings.ExtraInfoType}" />
+                                </Style>
+                            </TabControl.Style>
+                            <TabItem>
+                                <TextBlock FontSize="13" VerticalAlignment="Bottom">
+                                    <Run
+                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                                    </Run>
+                                    <Run Text="-">
+                                    </Run>
+                                    <Run
+                                        Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}" />
+                                </TextBlock>
+                            </TabItem>
+                            <TabItem>
+                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                    <Run
+                                        Text="{Binding Seconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run>
+                                    <Run Text="/">
+                                    </Run>
+                                    <Run
+                                        Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run>
+                                    <Run Text="min">
+                                    </Run>
+                                </TextBlock>
+                            </TabItem>
+                            <TabItem>
+                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                    <Run Text="-">
+                                    </Run>
+                                    <Run
+                                        Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run>
+                                    <Run Text="/">
+                                    </Run>
+                                    <Run
+                                        Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run>
+                                    <Run Text="min">
+                                    </Run>
+                                </TextBlock>
+                            </TabItem>
+                            <TabItem>
+                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                    <Run>
+                                        <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}"
+                                                      Mode="OneWay">
+                                            <Binding Path="Seconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                        </MultiBinding>
+                                    </Run>
+                                </TextBlock>
+                            </TabItem>
+                        </TabControl>
                     </TabItem>
                     <TabItem>
-                        <TextBlock FontSize="14" VerticalAlignment="Bottom">
-                            <Run Text="{Binding Seconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                            </Run><Run Text="/">
-                            </Run><Run Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                            </Run><Run Text="min">
-                            </Run>
-                        </TextBlock>
-                    </TabItem>
-                    <TabItem>
-                        <TextBlock FontSize="14" VerticalAlignment="Bottom">
-                            <Run Text="-">
-                            </Run><Run Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                            </Run><Run Text="/">
-                            </Run><Run Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                            </Run><Run Text="min">
-                            </Run>
-                        </TextBlock>
-                    </TabItem>
-                    <TabItem>
-                        <TextBlock FontSize="14" VerticalAlignment="Bottom">
-                            <Run>
-                                <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}" Mode="OneWay">
-                                    <Binding Path="Seconds" Mode="OneWay"/>
-                                    <Binding Path="TotalSeconds" Mode="OneWay"/>
-                                </MultiBinding>
-                            </Run>
-                        </TextBlock>
+                        <Grid VerticalAlignment="Bottom">
+                            <Border Height="20"
+                                    Background="{DynamicResource PrimaryHueMidBrush}"
+                                    ClipToBounds="True"
+                                    BorderThickness="1"
+                                    Padding="8 0"
+                                    Opacity="0.3"
+                                    CornerRadius="12.5">
+                            </Border>
+                            <Border Height="20"
+                                    ClipToBounds="True"
+                                    BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                                    BorderThickness="1"
+                                    Padding="8 0"
+                                    CornerRadius="12.5">
+                                <Grid>
+                                    <TextBlock FontSize="14" VerticalAlignment="Center">
+                                        <Run Text="-"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+                        </Grid>
                     </TabItem>
                 </TabControl>
 
