@@ -930,4 +930,38 @@ public partial class MainWindow : Window
             return IntPtr.Zero;
         });
     }
+
+    private void GridWrapper_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (double.IsNaN(e.NewSize.Width))
+            return;
+        if ( double.IsNaN(BackgroundBorder.Width))
+        {
+            BackgroundBorder.Width = e.NewSize.Width;
+            return;
+        }
+
+        var t = e.NewSize.Width > BackgroundBorder.Width ? 1 : 150;
+        var da = new DoubleAnimation()
+        {
+            From = BackgroundBorder.Width,
+            To = e.NewSize.Width,
+            Duration = new Duration(TimeSpan.FromMilliseconds(t)),
+            EasingFunction = new CircleEase()
+            {
+                EasingMode = EasingMode.EaseOut
+            }
+        };
+        var storyboard = new Storyboard()
+        {
+        };
+        Storyboard.SetTarget(da, BackgroundBorder);
+        Storyboard.SetTargetProperty(da, new PropertyPath(Border.WidthProperty));
+        storyboard.Children.Add(da);
+        storyboard.Begin();
+        storyboard.Completed += (o, args) =>
+        {
+            storyboard.Remove();
+        };
+    }
 }

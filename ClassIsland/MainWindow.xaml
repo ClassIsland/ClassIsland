@@ -35,6 +35,34 @@
     <Window.Resources>
         <converters:IndexConverter x:Key="IndexConverter" />
         <models:ClassPlan x:Key="FallbackClassPlan"/>
+        <Style TargetType="FrameworkElement" x:Key="DockingStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="0">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="1">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="2">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="3">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="4">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="5">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
 
         <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu" 
                      IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InvertBooleanConverter}}">
@@ -384,171 +412,185 @@
                                   x:Name="RootDropShadowEffect"
                                   Color="Black"/>
             </Grid.Effect>
-            <Grid x:Name="GridWrapper" ClipToBounds="True"
-                  Height="40">
+
+            <Grid HorizontalAlignment="Stretch">
                 <Grid.Style>
                     <!-- 贴靠Style -->
                     <Style TargetType="Grid">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="0">
-                                <Setter Property="Margin" Value="0 0 8 8"/>
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="0">
+                                <Setter Property="Margin" Value="0 0 8 8" />
+                                <Setter Property="HorizontalAlignment" Value="Left" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="1">
-                                <Setter Property="Margin" Value="8 0 8 8"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="1">
+                                <Setter Property="Margin" Value="8 0 8 8" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="2">
-                                <Setter Property="Margin" Value="8 0 0 8"/>
-                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="2">
+                                <Setter Property="Margin" Value="8 0 0 8" />
+                                <Setter Property="HorizontalAlignment" Value="Right" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="3">
-                                <Setter Property="Margin" Value="0 8 8 0"/>
-                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="3">
+                                <Setter Property="Margin" Value="0 8 8 0" />
+                                <Setter Property="HorizontalAlignment" Value="Left" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="4">
-                                <Setter Property="Margin" Value="8 8 8 0"/>
-                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="4">
+                                <Setter Property="Margin" Value="8 8 8 0" />
+                                <Setter Property="HorizontalAlignment" Value="Center" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}" Value="5">
-                                <Setter Property="Margin" Value="8 8 0 0"/>
-                                <Setter Property="HorizontalAlignment" Value="Right"/>
+                            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="5">
+                                <Setter Property="Margin" Value="8 8 0 0" />
+                                <Setter Property="HorizontalAlignment" Value="Right" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </Grid.Style>
+
                 <!-- Background -->
-                <Border HorizontalAlignment="Stretch"
+                <Border x:Name="BackgroundBorder"
                         Background="{DynamicResource MaterialDesignPaper}"
-                        Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}" />
-                <Grid Height="40"
-                      x:Name="GridContentRoot"
-                      Margin="16 0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                        Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}"
+                        Style="{StaticResource DockingStyle}"
+                        Height="40"/>
+                <Grid x:Name="GridWrapper" ClipToBounds="True"
+                      Height="40" Style="{StaticResource DockingStyle}"
+                      SizeChanged="GridWrapper_OnSizeChanged">
+                    <Grid Height="40"
+                          x:Name="GridContentRoot"
+                          Margin="16 0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        
 
+                        <ContentPresenter Grid.Column="0"
+                                          Margin="6 0 12 0"
+                                          VerticalAlignment="Center"
+                                          Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                            <ContentPresenter.Content>
+                                <MultiBinding
+                                    Converter="{StaticResource MiniInfoGuidToMiniInfoProviderElementConverter}">
+                                    <Binding Path="ViewModel.Settings.SelectedMiniInfoProvider" />
+                                    <Binding Path="MiniInfoProviderHostService.Providers" />
+                                </MultiBinding>
+                            </ContentPresenter.Content>
+                        </ContentPresenter>
 
-                    <ContentPresenter Grid.Column="0" 
-                                      Margin="6 0 12 0"
-                                      VerticalAlignment="Center"
-                                      Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                        <ContentPresenter.Content>
-                            <MultiBinding Converter="{StaticResource MiniInfoGuidToMiniInfoProviderElementConverter}">
-                                <Binding Path="ViewModel.Settings.SelectedMiniInfoProvider"/>
-                                <Binding Path="MiniInfoProviderHostService.Providers"/>
-                            </MultiBinding>
-                        </ContentPresenter.Content>
-                    </ContentPresenter>
+                        <!-- 没有课程提示 -->
+                        <TextBlock Grid.Column="1"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Text="今天没有课程。" FontSize="16"
+                                   Margin="128 0">
+                            <TextBlock.Style>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
 
-                    <!-- 没有课程提示 -->
-                    <TextBlock Grid.Column="1"
-                            HorizontalAlignment="Center" VerticalAlignment="Center"
-                            Text="今天没有课程。" FontSize="16"
-                            Margin="128 0">
-                        <TextBlock.Style>
-                            <Style TargetType="{x:Type TextBlock}">
-                                <Setter Property="Visibility" Value="Collapsed" />
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ViewModel.CurrentClassPlan}" Value="{x:Null}">
-                                        <Setter Property="Visibility" Value="Visible" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBlock.Style>
-                    </TextBlock>
-
-                    <!-- 课表 -->
-                    <ListBox Grid.Column="1"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left"
-                            ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
-                            SelectionChanged="Selector_OnSelectionChanged"
-                            IsHitTestVisible="False"
-                            Margin="0 0 0 0"
-                            x:Name="MainListBox"
-                            IsTabStop="False">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                        <ListBox.ItemContainerStyle>
-                            <Style BasedOn="{StaticResource MaterialDesignListBoxItem}" TargetType="{x:Type ListBoxItem}">
-                                <Setter Property="Padding" Value="0" />
-                                <Setter Property="IsTabStop" Value="False" />
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <controls:LessonControl
+                        <!-- 课表 -->
+                        <ListBox Grid.Column="1"
+                                 VerticalAlignment="Center"
+                                 HorizontalAlignment="Left"
+                                 ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
+                                 SelectionChanged="Selector_OnSelectionChanged"
+                                 IsHitTestVisible="False"
+                                 Margin="0 0 0 0"
+                                 x:Name="MainListBox"
+                                 IsTabStop="False">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBox.ItemContainerStyle>
+                                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
+                                       TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Padding" Value="0" />
+                                    <Setter Property="IsTabStop" Value="False" />
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <controls:LessonControl
                                         Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
                                         Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
                                         CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
                                         IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
-                                    <controls:LessonControl.Style>
-                                        <Style TargetType="{x:Type controls:LessonControl}">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                            <Style.Triggers>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding TimeType}" Value="1" />
-                                                        <Condition
+                                        <controls:LessonControl.Style>
+                                            <Style TargetType="{x:Type controls:LessonControl}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding TimeType}" Value="1" />
+                                                            <Condition
                                                                 Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
                                                                 Value="False" />
-                                                    </MultiDataTrigger.Conditions>
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </MultiDataTrigger>
-                                                <MultiDataTrigger>
-                                                    <MultiDataTrigger.Conditions>
-                                                        <Condition Binding="{Binding TimeType}" Value="0" />
-                                                        <Condition Binding="{Binding IsHideDefault}" Value="True" />
-                                                        <Condition
-                                                            Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                                            Value="False" />
-                                                    </MultiDataTrigger.Conditions>
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </MultiDataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </controls:LessonControl.Style>
-                                </controls:LessonControl>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </MultiDataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding TimeType}" Value="0" />
+                                                            <Condition Binding="{Binding IsHideDefault}" Value="True" />
+                                                            <Condition
+                                                                Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                                                Value="False" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </MultiDataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </controls:LessonControl.Style>
+                                    </controls:LessonControl>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
 
-                <!-- Overlay View -->
-                <Grid x:Name="GridOverlay"
-                    Background="{DynamicResource MaterialDesignPaper}"
-                    Opacity="0">
-                    <ProgressBar VerticalAlignment="Stretch"
-                                 Maximum="1"
-                                 Height="{Binding Height, ElementName=GridWrapper}"
-                                 Value="{Binding ViewModel.OverlayRemainTimePercents, Mode=OneWay}"
-                                 Foreground="{DynamicResource MaterialDesignBody}"
-                                 Background="Transparent"
-                                 BorderBrush="Transparent"
-                                 Opacity="0.16"/>
-                    <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}" />
-                    
-                </Grid>
+                    <!-- Overlay View -->
+                    <Grid x:Name="GridOverlay"
+                          Background="{DynamicResource MaterialDesignPaper}"
+                          Opacity="0">
+                        <ProgressBar VerticalAlignment="Stretch"
+                                     Maximum="1"
+                                     Height="{Binding Height, ElementName=GridWrapper}"
+                                     Value="{Binding ViewModel.OverlayRemainTimePercents, Mode=OneWay}"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Background="Transparent"
+                                     BorderBrush="Transparent"
+                                     Opacity="0.16" />
+                        <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}" />
 
-                <!-- Mask -->
-                <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" VerticalAlignment="Stretch"
-                    RenderTransformOrigin="0.5,0.5">
-                    <materialDesign:ColorZone.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform />
-                            <SkewTransform />
-                            <RotateTransform />
-                            <TranslateTransform Y="-50" />
-                        </TransformGroup>
-                    </materialDesign:ColorZone.RenderTransform>
-                    <ContentPresenter x:Name="OverlayMaskContent" Content="{Binding ViewModel.CurrentMaskElement}" />
-                </materialDesign:ColorZone>
-            </Grid>
+                    </Grid>
+
+                    <!-- Mask -->
+                    <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" VerticalAlignment="Stretch"
+                                              RenderTransformOrigin="0.5,0.5">
+                        <materialDesign:ColorZone.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform />
+                                <SkewTransform />
+                                <RotateTransform />
+                                <TranslateTransform Y="-50" />
+                            </TransformGroup>
+                        </materialDesign:ColorZone.RenderTransform>
+                        <ContentPresenter x:Name="OverlayMaskContent" Content="{Binding ViewModel.CurrentMaskElement}" />
+                    </materialDesign:ColorZone>
+                </Grid></Grid>
 
             <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
             <!--<tb:TaskbarIcon ContextMenu="{StaticResource AppConteGriddu}"
