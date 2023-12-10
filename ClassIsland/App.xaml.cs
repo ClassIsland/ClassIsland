@@ -61,6 +61,11 @@ public partial class App : Application
 
     public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
+    public static string AppCodeName => "Elysia";
+
+    public static string AppVersionLong =>
+        $"{AppVersion} {(ThisAssembly.Git.Tag == "" ? "develop" : ThisAssembly.Git.Tag)}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
+
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         e.Handled = true;

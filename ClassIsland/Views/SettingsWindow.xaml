@@ -1673,6 +1673,9 @@ The quick brown fox jumps over a lazy dog.
                                                     <Run Text="ClassIsland" FontSize="24" FontWeight="Bold" />
                                                     <LineBreak />
                                                     <Run Text="{x:Static ci:App.AppVersion}" />
+                                                    <Run Text="(Codename "/><Run Text="{x:Static ci:App.AppCodeName}"/><Run Text=")"/>
+                                                    <LineBreak />
+                                                    <Run Text="{x:Static ci:App.AppVersionLong}" FontFamily="Consolas"/>
                                                     <LineBreak />
                                                     <Run Text="Copyright (c) 2023 HelloWRC" />
                                             </TextBlock>
