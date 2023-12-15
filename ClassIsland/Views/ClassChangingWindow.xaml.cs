@@ -52,7 +52,7 @@ public partial class ClassChangingWindow : MyWindow
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (ViewModel.IsAutoNextStep)
+        if (ViewModel.IsAutoNextStep || e.OriginalSource.GetType() == typeof(TabControl))
             return;
         ViewModel.IsAutoNextStep = true;
         ViewModel.SlideIndex = 1;

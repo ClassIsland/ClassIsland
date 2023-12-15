@@ -251,7 +251,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         LeftSeconds = TotalSeconds - Seconds;
 
         MasterTabIndex = LeftSeconds <= SettingsService.Settings.CountdownSeconds &&
-            SettingsService.Settings.IsCountdownEnabled ? 1 : 0;
+            SettingsService.Settings.IsCountdownEnabled &&
+            IsTimerEnabled ? 1 : 0;
     }
 
     public LessonControl()

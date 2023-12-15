@@ -102,7 +102,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Downloader" Version="3.0.6" />
-    <PackageReference Include="GitInfo" Version="3.3.3">
+    <PackageReference Include="GitInfo" Version="2.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

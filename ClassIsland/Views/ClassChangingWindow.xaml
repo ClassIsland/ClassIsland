@@ -8,6 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:models="clr-namespace:ClassIsland.Models"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         mc:Ignorable="d"
         Title="换课" 
         Height="250" Width="600"
@@ -122,7 +123,7 @@
             </Grid.RowDefinitions>
 
             <!-- Content -->
-            <materialDesign:Transitioner Grid.Row="1" SelectedIndex="{Binding ViewModel.SlideIndex}">
+            <materialDesign:Transitioner Grid.Row="1" SelectedIndex="{Binding ViewModel.SlideIndex, diag:PresentationTraceSources.TraceLevel=High}">
                 <materialDesign:TransitionerSlide>
                     <materialDesign:TransitionerSlide.ForwardWipe>
                         <materialDesign:SlideOutWipe />
