@@ -93,7 +93,7 @@ public partial class ProfileSettingsWindow : MyWindow
         MainViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
         RefreshProfiles();
 
-        base.OnInitialized(e);
+        base.OnContentRendered(e);
     }
 
     private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)

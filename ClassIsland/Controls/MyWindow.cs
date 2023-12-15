@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Interop;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -23,7 +25,7 @@ public class MyWindow : Window
         {
             // ignored
         }
-        this.Loaded += OnLoaded;
+        Loaded += OnLoaded;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -36,23 +38,49 @@ public class MyWindow : Window
         UpdateImmersiveDarkMode(e.RealThemeMode);
     }
 
+    protected override void OnContentRendered(EventArgs e)
+    {
+        base.OnContentRendered(e);
+        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 0);
+        Debug.WriteLine("rendered.");
+    }
+
     private void UpdateImmersiveDarkMode(int mode)
     {
         var trueVal = 0x01;
         var falseVal = 0x00;
+        var hWnd = new WindowInteropHelper(this).Handle;
+        var build = Environment.OSVersion.Version.Build;
+        if (build < 17763)
+        {
+            return;
+        }
+        //Debug.WriteLine(build);
+        var id = build > 18362 ? 
+            DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE : 
+            DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD; // 在18362及以前，DWMWA_USE_IMMERSIVE_DARK_MODE=0x19
+
         if (mode == 0)
         {
-            DwmSetWindowAttribute(new WindowInteropHelper(this).Handle,
-                DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE,
+            DwmSetWindowAttribute(hWnd,
+                id,
                 ref falseVal,
                 Marshal.SizeOf(typeof(int)));
         }
         else
         {
-            DwmSetWindowAttribute(new WindowInteropHelper(this).Handle,
-                DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE,
+            DwmSetWindowAttribute(hWnd,
+                id,
                 ref trueVal,
                 Marshal.SizeOf(typeof(int)));
+        }
+
+        // 在Windows10系统上强制刷新标题栏
+        if (build < 22000)
+        {
+            var WM_NCACTIVATE = 0x0086;
+            SendMessage(hWnd, WM_NCACTIVATE, !IsActive ? 1:0, 0);
+            SendMessage(hWnd, WM_NCACTIVATE, IsActive ? 1:0, 0);
         }
     }
 }

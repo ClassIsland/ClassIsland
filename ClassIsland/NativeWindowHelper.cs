@@ -199,6 +199,7 @@ public static class NativeWindowHelper
     public enum DwmWindowAttribute : uint
     {
         DWMWA_USE_IMMERSIVE_DARK_MODE = 20,
+        DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19,
         DWMWA_MICA_EFFECT = 1029
     }
 
@@ -253,4 +254,16 @@ public static class NativeWindowHelper
         public int styleOld;
         public int styleNew;
     }
+
+    [DllImport("User32.dll")]
+    public static extern bool RedrawWindow(
+        IntPtr hWnd,
+        ref RECT lprcUpdate,
+        IntPtr hrgnUpdate,
+        uint flags
+    );
+
+    [DllImport("User32.dll")]
+
+    public static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
 }
