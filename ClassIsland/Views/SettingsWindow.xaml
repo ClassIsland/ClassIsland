@@ -31,7 +31,8 @@
                    xmlns:mdWpf="clr-namespace:MaterialDesignThemes.Wpf;assembly=MaterialDesignThemes.Wpf"
                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-                   xmlns:weather="clr-namespace:ClassIsland.Models.Weather">
+                   xmlns:weather="clr-namespace:ClassIsland.Models.Weather"
+                   xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -649,38 +650,48 @@
                                     <Separator Margin="0 16 0 8"/>
                                     <controls:IconText Kind="Wallpaper" Text="壁纸主题色" Margin="0 0 0 8"/>
                                     <Grid>
-                                        <Image Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}" Stretch="UniformToFill"/>
-                                        <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.85"/>
-                                            <!-- 刷新 -->
-                                            <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonUpdateWallpaper_OnClick"
-                                                    HorizontalAlignment="Left" Margin="8 0">
-                                                <controls:IconText Kind="Refresh" Text="刷新"/>
-                                            </Button>
-                                            <!-- 颜色选择 -->
-                                            <ListBox ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
-                                                     SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
-                                                     HorizontalAlignment="Right">
-                                                <ListBox.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel IsItemsHost="True"/>
-                                                    </ItemsPanelTemplate>
-                                                </ListBox.ItemsPanel>
-                                                <ListBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <materialDesign:ColorZone Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
-                                                                                  Width="32" Height="32"
-                                                                                  Mode="Custom">
-                                                            <materialDesign:PackIcon Kind="Check" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                                                                                     Width="14" Height="14"
-                                                                                     Background="White"
-                                                                                     Foreground="Black"
-                                                                                     Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                        </materialDesign:ColorZone>
-                                                    </DataTemplate>
-                                                </ListBox.ItemTemplate>
-                                            </ListBox>
-                                        </Grid>
+                                        <Grid x:Name="GridWallpaperContent">
+                                            <Image
+                                                Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}"
+                                                Stretch="UniformToFill" x:Name="ImageWallpaper" />
+                                            <Grid VerticalAlignment="Bottom"
+                                                  IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                                <Border Background="{DynamicResource MaterialDesignPaper}"
+                                                        Opacity="0.85" />
+                                                <!-- 刷新 -->
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Click="ButtonUpdateWallpaper_OnClick"
+                                                        HorizontalAlignment="Left" Margin="8 0">
+                                                    <controls:IconText Kind="Refresh" Text="刷新" />
+                                                </Button>
+                                                <!-- 颜色选择 -->
+                                                <ListBox
+                                                    ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
+                                                    SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
+                                                    HorizontalAlignment="Right">
+                                                    <ListBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <WrapPanel IsItemsHost="True" />
+                                                        </ItemsPanelTemplate>
+                                                    </ListBox.ItemsPanel>
+                                                    <ListBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <materialDesign:ColorZone
+                                                                Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                                                                Width="32" Height="32"
+                                                                Mode="Custom">
+                                                                <materialDesign:PackIcon Kind="Check"
+                                                                    VerticalAlignment="Bottom"
+                                                                    HorizontalAlignment="Right"
+                                                                    Width="14" Height="14"
+                                                                    Background="White"
+                                                                    Foreground="Black"
+                                                                    Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                            </materialDesign:ColorZone>
+                                                        </DataTemplate>
+                                                    </ListBox.ItemTemplate>
+                                                </ListBox>
+                                            </Grid></Grid>
                                         <!-- Loading -->
                                         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                               Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">

@@ -106,6 +106,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.115" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />

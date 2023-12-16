@@ -442,7 +442,7 @@ public partial class MainWindow : Window
 
     public void SaveProfile()
     {
-        ProfileService.SaveProfile();
+        ProfileService.SaveProfile(ViewModel.CurrentProfilePath);
     }
 
     private void LoadSettings()
@@ -461,10 +461,6 @@ public partial class MainWindow : Window
 
     protected override void OnInitialized(EventArgs e)
     {
-        if (!Directory.Exists("./Profiles"))
-        {
-            Directory.CreateDirectory("./Profiles");
-        }
         base.OnInitialized(e);
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();

@@ -266,11 +266,11 @@ public class MainViewModel : ObservableRecipient
 
     public string CurrentProfilePath
     {
-        get => _currentProfilePath;
+        get => App.GetService<ProfileService>().CurrentProfilePath;
         set
         {
             if (value == _currentProfilePath) return;
-            _currentProfilePath = value;
+            App.GetService<ProfileService>().CurrentProfilePath = value;
             OnPropertyChanged();
         }
     }
