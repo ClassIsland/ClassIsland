@@ -475,6 +475,9 @@
                                                 <ComboBoxItem HorizontalContentAlignment="Left">
                                                     <TextBlock Text="已过时间百分比"/>
                                                 </ComboBoxItem>
+                                                <ComboBoxItem HorizontalContentAlignment="Left">
+                                                    <TextBlock Text="剩余时间"/>
+                                                </ComboBoxItem>
                                             </ComboBox>
                                         </Grid>
                                     </Expander>

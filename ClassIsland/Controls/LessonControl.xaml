@@ -81,7 +81,7 @@
                                     </Run><Run Text="/">
                                     </Run><Run
                                               Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                                    </Run><Run Text="min">
+                                    </Run><Run Text="min" FontSize="13">
                                     </Run>
                                 </TextBlock>
                             </TabItem>
@@ -93,7 +93,7 @@
                                     </Run><Run Text="/">
                                     </Run><Run
                                               Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                                    </Run><Run Text="min">
+                                    </Run><Run Text="min" FontSize="13">
                                     </Run>
                                 </TextBlock>
                             </TabItem>
@@ -105,6 +105,15 @@
                                             <Binding Path="Seconds" Mode="OneWay" />
                                             <Binding Path="TotalSeconds" Mode="OneWay" />
                                         </MultiBinding>
+                                    </Run>
+                                </TextBlock>
+                            </TabItem>
+                            <TabItem>
+                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                    <Run Text="-">
+                                    </Run><Run
+                                              Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run><Run Text="min" FontSize="13">
                                     </Run>
                                 </TextBlock>
                             </TabItem>
@@ -127,8 +136,8 @@
                                     Padding="8 0"
                                     CornerRadius="12.5">
                                 <Grid>
-                                    <TextBlock FontSize="14" VerticalAlignment="Center">
-                                        <Run Text="-"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
+                                    <TextBlock FontSize="15" VerticalAlignment="Center">
+                                        <Run Text="-" FontSize="12"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
                                     </TextBlock>
                                 </Grid>
                             </Border>
