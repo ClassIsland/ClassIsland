@@ -1,6 +1,6 @@
 # ClassIsland
 
-ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表等信息显示工具，信息一目了然。
+ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表的信息显示工具，信息一目了然。
 
 ## 功能
 - 显示当日的课表
