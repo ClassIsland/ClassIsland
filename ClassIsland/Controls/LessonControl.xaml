@@ -68,40 +68,32 @@
                                 <TextBlock FontSize="13" VerticalAlignment="Bottom">
                                     <Run
                                         Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
-                                    </Run>
-                                    <Run Text="-">
-                                    </Run>
-                                    <Run
-                                        Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}" />
+                                    </Run><Run Text="-">
+
+                                    </Run><Run
+                                              Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}" />
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
                                 <TextBlock FontSize="14" VerticalAlignment="Bottom">
                                     <Run
                                         Text="{Binding Seconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                                    </Run>
-                                    <Run Text="/">
-                                    </Run>
-                                    <Run
-                                        Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                                    </Run>
-                                    <Run Text="min">
+                                    </Run><Run Text="/">
+                                    </Run><Run
+                                              Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run><Run Text="min">
                                     </Run>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
                                 <TextBlock FontSize="14" VerticalAlignment="Bottom">
                                     <Run Text="-">
-                                    </Run>
-                                    <Run
-                                        Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                                    </Run>
-                                    <Run Text="/">
-                                    </Run>
-                                    <Run
-                                        Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
-                                    </Run>
-                                    <Run Text="min">
+                                    </Run><Run
+                                              Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run><Run Text="/">
+                                    </Run><Run
+                                              Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
+                                    </Run><Run Text="min">
                                     </Run>
                                 </TextBlock>
                             </TabItem>

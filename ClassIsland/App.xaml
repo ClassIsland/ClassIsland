@@ -116,7 +116,8 @@
                 <Setter Property="PanningMode" Value="Both"/>
             </Style>
             <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
-            
+            <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

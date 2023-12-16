@@ -766,7 +766,7 @@
                                 <controls:SettingsCard IconGlyph="FormatLineWeight" Header="自定义字重"
                                                        Description="自定义主界面显示的字体的字重，需要对应字体支持。">
                                     <controls:SettingsCard.Switcher>
-                                        <ComboBox SelectedItem="{Binding Settings.MainWindowFontWeight}"
+                                        <ComboBox SelectedItem="{Binding Settings.MainWindowFontWeight, Converter={StaticResource IntToFontWeightConverter}}"
                                                   Foreground="{DynamicResource MaterialDesignBody}">
                                             <ComboBox.ItemTemplate>
                                                 <DataTemplate>
@@ -795,7 +795,7 @@
                                 </controls:SettingsCard>
                                 <!-- 字体预览 -->
                                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                         FontWeight="{Binding Settings.MainWindowFontWeight}"
+                                         FontWeight="{Binding Settings.MainWindowFontWeight, Converter={StaticResource IntToFontWeightConverter}}"
                                          materialDesign:HintAssist.Hint="字体预览"
                                          FontSize="17"
                                          Padding="8"

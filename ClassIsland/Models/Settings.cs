@@ -31,7 +31,7 @@ public class Settings : ObservableRecipient
     private int _windowDockingOffsetX = 0;
     private int _windowDockingOffsetY = 0;
     private int _windowDockingMonitorIndex = 0;
-    private int _windowLayer = 0;
+    private int _windowLayer = 1;
     private bool _isMouseClickingEnabled = false;
     private bool _hideOnFullscreen = true;
     private bool _isClassOffNotificationEnabled = true;
@@ -78,7 +78,7 @@ public class Settings : ObservableRecipient
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "101010100";
     private string _cityName = "北京";
-    private FontWeight _mainWindowFontWeight = FontWeights.Medium;
+    private int _mainWindowFontWeight = FontWeights.Medium.ToOpenTypeWeight();
     private int _taskBarIconClickBehavior = 0;
     private bool _showExtraInfoOnTimePoint = true;
     private int _extraInfoType = 0;
@@ -540,7 +540,7 @@ public class Settings : ObservableRecipient
         }
     }
 
-    public FontWeight MainWindowFontWeight
+    public int MainWindowFontWeight
     {
         get => _mainWindowFontWeight;
         set
