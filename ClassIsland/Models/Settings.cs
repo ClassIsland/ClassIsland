@@ -86,6 +86,7 @@ public class Settings : ObservableRecipient
     private int _countdownSeconds = 60;
     private int _defaultOnClassTimePointMinutes = 40;
     private int _defaultBreakingTimePointMinutes = 10;
+    private double _debugAnimationScale = 1.0;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -841,6 +842,17 @@ public class Settings : ObservableRecipient
         {
             if (value == _isMainWindowDebugEnabled) return;
             _isMainWindowDebugEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double DebugAnimationScale
+    {
+        get => _debugAnimationScale;
+        set
+        {
+            if (value.Equals(_debugAnimationScale)) return;
+            _debugAnimationScale = value;
             OnPropertyChanged();
         }
     }

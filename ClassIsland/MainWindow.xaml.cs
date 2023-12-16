@@ -113,6 +113,15 @@ public partial class MainWindow : Window
         get;
     } = App.GetService<MiniInfoProviderHostService>();
 
+    public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
+        nameof(BackgroundWidth), typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
+
+    public double BackgroundWidth
+    {
+        get { return (double)GetValue(BackgroundWidthProperty); }
+        set { SetValue(BackgroundWidthProperty, value); }
+    }
+
     public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService)
     {
         SettingsService = settingsService;
@@ -931,28 +940,35 @@ public partial class MainWindow : Window
     {
         if (double.IsNaN(e.NewSize.Width))
             return;
-        if ( double.IsNaN(BackgroundBorder.Width))
+        if ( double.IsNaN(BackgroundWidth))
         {
-            BackgroundBorder.Width = e.NewSize.Width;
+            BackgroundWidth = e.NewSize.Width;
             return;
         }
 
-        var t = e.NewSize.Width > BackgroundBorder.Width ? 1 : 150;
-        var da = new DoubleAnimation()
+        var m = e.NewSize.Width > BackgroundWidth;
+        var s = ViewModel.Settings.DebugAnimationScale;
+        var t = m ? 500 * s : 600 * s;
+        var da = new DoubleAnimation()  
         {
-            From = BackgroundBorder.Width,
+            From = BackgroundWidth,
             To = e.NewSize.Width,
             Duration = new Duration(TimeSpan.FromMilliseconds(t)),
-            EasingFunction = new CircleEase()
+            EasingFunction = m ? new BackEase()
             {
-                EasingMode = EasingMode.EaseOut
+                EasingMode = EasingMode.EaseOut,
+                Amplitude = 0.75
+            } : new BackEase()
+            {
+                EasingMode = EasingMode.EaseOut,
+                Amplitude = 0.5
             }
         };
         var storyboard = new Storyboard()
         {
         };
-        Storyboard.SetTarget(da, BackgroundBorder);
-        Storyboard.SetTargetProperty(da, new PropertyPath(Border.WidthProperty));
+        Storyboard.SetTarget(da, this);
+        Storyboard.SetTargetProperty(da, new PropertyPath(BackgroundWidthProperty));
         storyboard.Children.Add(da);
         storyboard.Begin();
         storyboard.Completed += (o, args) =>

@@ -8,6 +8,7 @@
         Title="ClassIsland" 
         Height="40" 
         Width="800"
+        SnapsToDevicePixels="True"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
@@ -230,7 +231,23 @@
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="OverlayMaskOut">
@@ -252,6 +269,14 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="OverlayOut">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
@@ -268,6 +293,14 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
                     <EasingDoubleKeyFrame.EasingFunction>
                         <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
@@ -302,6 +335,22 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
         </Storyboard>
         <Storyboard x:Key="WindowMouseIn">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
@@ -325,6 +374,7 @@
         </Storyboard>
         <converters:IntToStringConverter x:Key="IntToStringConverter" />
         <converters:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
+        <converters:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
         <!--#endregion 1-->
     </Window.Resources>
     <Window.Style>
@@ -359,6 +409,7 @@
               VerticalAlignment="Top"
               HorizontalAlignment="Stretch"
               x:Name="GridRoot"
+              SnapsToDevicePixels="False"
               RenderTransformOrigin="0,0">
             <Grid.LayoutTransform>
                 <TransformGroup>
@@ -454,13 +505,50 @@
 
                 <!-- Background -->
                 <Border x:Name="BackgroundBorder"
+                        Width="{Binding BackgroundWidth, Mode=OneWay}"
                         Background="{DynamicResource MaterialDesignPaper}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}"
                         Style="{StaticResource DockingStyle}"
+                        SnapsToDevicePixels="True"
                         Height="40"/>
+                <Border x:Name="BackgroundBorderOverlay"
+                        Width="{Binding BackgroundWidth, Mode=OneWay}"
+                        Background="{DynamicResource MaterialDesignPaper}"
+                        Opacity="0"
+                        Style="{StaticResource DockingStyle}"
+                        SnapsToDevicePixels="True"
+                        Height="40"/>
+                <Grid Style="{StaticResource DockingStyle}"
+                      Width="{Binding BackgroundWidth, Mode=OneWay}"
+                      Height="40"
+                      SnapsToDevicePixels="True"
+                      ClipToBounds="True">
+                    <materialDesign:ColorZone x:Name="BackgroundBorderOverlayMask" Mode="PrimaryMid" 
+                                              VerticalAlignment="Stretch"
+                                              RenderTransformOrigin="0.5,0.5">
+                        <materialDesign:ColorZone.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform />
+                                <SkewTransform />
+                                <RotateTransform />
+                                <TranslateTransform Y="-50" />
+                            </TransformGroup>
+                        </materialDesign:ColorZone.RenderTransform>
+                    </materialDesign:ColorZone>
+                </Grid>
+
                 <Grid x:Name="GridWrapper" ClipToBounds="True"
                       Height="40" Style="{StaticResource DockingStyle}"
-                      SizeChanged="GridWrapper_OnSizeChanged">
+                      SizeChanged="GridWrapper_OnSizeChanged"
+                      SnapsToDevicePixels="True">
+                    <Grid.Clip>
+                        <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                            <Binding Path="BackgroundWidth" Mode="OneWay"/>
+                            <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}"/>
+                            <Binding Path="ActualHeight" Mode="OneWay" RelativeSource="{RelativeSource Self}"/>
+                            <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"/>
+                        </MultiBinding>
+                    </Grid.Clip>
                     <Grid Height="40"
                           x:Name="GridContentRoot"
                           Margin="16 0">
@@ -468,7 +556,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        
+
 
                         <ContentPresenter Grid.Column="0"
                                           Margin="6 0 12 0"
@@ -563,6 +651,7 @@
 
                     <!-- Overlay View -->
                     <Grid x:Name="GridOverlay"
+                          SnapsToDevicePixels="True"
                           Background="{DynamicResource MaterialDesignPaper}"
                           Opacity="0">
                         <ProgressBar VerticalAlignment="Stretch"
@@ -578,8 +667,10 @@
                     </Grid>
 
                     <!-- Mask -->
-                    <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" VerticalAlignment="Stretch"
-                                              RenderTransformOrigin="0.5,0.5">
+                    <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              RenderTransformOrigin="0.5,0.5"
+                                              SnapsToDevicePixels="True">
                         <materialDesign:ColorZone.RenderTransform>
                             <TransformGroup>
                                 <ScaleTransform />
@@ -590,7 +681,8 @@
                         </materialDesign:ColorZone.RenderTransform>
                         <ContentPresenter x:Name="OverlayMaskContent" Content="{Binding ViewModel.CurrentMaskElement}" />
                     </materialDesign:ColorZone>
-                </Grid></Grid>
+                </Grid>
+            </Grid>
 
             <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->
             <!--<tb:TaskbarIcon ContextMenu="{StaticResource AppConteGriddu}"

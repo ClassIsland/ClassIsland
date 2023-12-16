@@ -1826,6 +1826,15 @@ The quick brown fox jumps over a lazy dog.
                                 <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发上课" Click="MenuItemDebugTriggerOnClass_OnClick"/>
 
                                 <Separator/>
+                                <!-- 动画缩放 -->
+                                <controls:SettingsControl IconGlyph="BugOutline" Header="(Debug)动画缩放"
+                                                       Description="主界面动画播放倍速">
+                                    <controls:SettingsControl.Switcher>
+                                        <TextBox Text="{Binding Settings.DebugAnimationScale, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+                                                 MinWidth="150"/>
+                                    </controls:SettingsControl.Switcher>
+                                </controls:SettingsControl>
+                                <Separator/>
                                 <MenuItem Icon="{materialDesign:PackIcon MonitorScreenshot}" Header="测试桌面截图" Click="MenuItemDebugScreenShot_OnClick"/>
                                 <Image Stretch="UniformToFill" Source="{Binding ViewModel.TestImage, Mode=OneWay}"/>
                                 <ItemsControl ItemsSource="{Binding ViewModel.DebugImageAccentColors, Mode=TwoWay}">
