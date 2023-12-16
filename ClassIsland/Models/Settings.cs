@@ -71,7 +71,7 @@ public class Settings : ObservableRecipient
     private bool _isNotificationEnabled = true;
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
-    private bool _isFallbackModeEnabled = false;
+    private bool _isFallbackModeEnabled = true;
     private string _mainWindowFont = "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";

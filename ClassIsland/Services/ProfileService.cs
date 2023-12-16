@@ -41,6 +41,8 @@ public class ProfileService
             Profile = r;
             Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
         }
+
+        CurrentProfilePath = filename;
     }
 
     public void SaveProfile()

@@ -1318,7 +1318,7 @@
                                 Click="ButtonProfileManage_OnClick"
                                 IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
                                 <TextBlock>
-                                    <Run Text="{Binding MainViewModel.CurrentProfilePath}"/>
+                                    <Run Text="{Binding ProfileService.CurrentProfilePath}"/>
                                 </TextBlock>
                             </materialDesign:Chip>
                             <materialDesign:Chip

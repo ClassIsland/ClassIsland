@@ -123,7 +123,7 @@
             </Grid.RowDefinitions>
 
             <!-- Content -->
-            <materialDesign:Transitioner Grid.Row="1" SelectedIndex="{Binding ViewModel.SlideIndex, diag:PresentationTraceSources.TraceLevel=High}">
+            <materialDesign:Transitioner Grid.Row="1" SelectedIndex="{Binding ViewModel.SlideIndex}">
                 <materialDesign:TransitionerSlide>
                     <materialDesign:TransitionerSlide.ForwardWipe>
                         <materialDesign:SlideOutWipe />
