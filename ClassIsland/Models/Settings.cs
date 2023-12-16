@@ -9,9 +9,9 @@ using System.Windows.Media.Converters;
 using ClassIsland.Enums;
 using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
-using IWshRuntimeLibrary;
 using MaterialDesignColors;
 using Newtonsoft.Json;
+using WindowsShortcutFactory;
 using File = System.IO.File;
 
 namespace ClassIsland.Models;
@@ -259,12 +259,12 @@ public class Settings : ObservableRecipient
             {
                 if (value)
                 {
-                    var shell = new WshShell();
-                    var shortcut = (IWshShortcut)shell.CreateShortcut(path);//创建快捷方式对象
-                    shortcut.TargetPath = Environment.ProcessPath;
-                    shortcut.WorkingDirectory = Environment.CurrentDirectory;
-                    shortcut.WindowStyle = 1;
-                    shortcut.Save();
+                    using var shortcut = new WindowsShortcut
+                    {
+                        Path = Environment.ProcessPath,
+                        WorkingDirectory = Environment.CurrentDirectory
+                    };
+                    shortcut.Save(path);
                 }
                 else
                 {

@@ -92,10 +92,10 @@ public partial class App : Application
 
     private async void App_OnStartup(object sender, StartupEventArgs e)
     {
-        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
-            Resources[SystemParameters.FocusVisualStyleKey]);
-        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ButtonBase.FocusVisualStyleProperty,
-            Resources[SystemParameters.FocusVisualStyleKey]);
+        //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
+        //    Resources[SystemParameters.FocusVisualStyleKey]);
+        //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ButtonBase.FocusVisualStyleProperty,
+        //    Resources[SystemParameters.FocusVisualStyleKey]);
 
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
