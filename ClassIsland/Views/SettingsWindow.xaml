@@ -1722,16 +1722,18 @@ The quick brown fox jumps over a lazy dog.
                                             </TextBlock>
                                             <WrapPanel>
                                                 <Button HorizontalAlignment="Left" Margin="6"
-                                                            Style="{StaticResource MaterialDesignFlatButton}">
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Click="ButtonGithub_OnClick">
                                                     <controls:IconText Kind="MicrosoftGithub" Text="GitHub"/>
                                                 </Button>
                                                 <Button HorizontalAlignment="Left" Margin="6"
-                                                            Style="{StaticResource MaterialDesignFlatButton}">
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Click="ButtonFeedback_OnClick">
                                                     <controls:IconText Kind="BugOutline" Text="问题反馈"/>
                                                 </Button>
                                                 <Button HorizontalAlignment="Left" Margin="6"
-                                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                                     <controls:IconText Kind="License" Text="开源许可"/>
                                                     <Button.CommandParameter>
                                                         <StaticResource ResourceKey="OpenSourceLicense" />
@@ -1771,6 +1773,13 @@ The quick brown fox jumps over a lazy dog.
                                             </Button>
                                         </Paragraph>
                                         <List LineHeight="6">
+                                            <ListItem>
+                                                <Paragraph>
+                                                    本项目受到
+                                                    <Hyperlink Click="Hyperlink2_OnClick">DuguSand/class_form</Hyperlink>
+                                                    的启发而开发。
+                                                </Paragraph>
+                                            </ListItem>
                                             <ListItem>
                                                 <Paragraph>
                                                     界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。

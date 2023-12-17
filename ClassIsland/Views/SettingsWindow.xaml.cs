@@ -456,4 +456,31 @@ public partial class SettingsWindow : MyWindow
         w.Owner = this;
         w.ShowDialog();
     }
+
+    private void ButtonGithub_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = "https://github.com/HelloWRC/ClassIsland",
+            UseShellExecute = true
+        });
+    }
+
+    private void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = "https://github.com/HelloWRC/ClassIsland/issues",
+            UseShellExecute = true
+        });
+    }
+
+    private void Hyperlink2_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = "https://github.com/DuguSand/class_form",
+            UseShellExecute = true
+        });
+    }
 }

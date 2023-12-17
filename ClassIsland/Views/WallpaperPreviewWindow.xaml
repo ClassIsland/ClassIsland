@@ -23,24 +23,28 @@
                RenderOptions.BitmapScalingMode="HighQuality"
                StretchDirection="Both"/>
         <Grid HorizontalAlignment="Stretch"
-              VerticalAlignment="Bottom"
-              IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
+              VerticalAlignment="Bottom">
             <Border Background="{DynamicResource MaterialDesignPaper}"
-                    Opacity="0.75"/>
+                    Opacity="0.8"/>
             <Button Style="{StaticResource MaterialDesignFlatButton}"
                     Click="ButtonRefresh_OnClick"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Left"
+                    IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}"
                     Margin="8">
                 <controls:IconText Kind="Refresh" Text="刷新" />
             </Button>
+            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Right"
+                    IsCancel="True"
+                    Margin="8">
+                <controls:IconText Kind="Close" Text="关闭" />
+            </Button>
         </Grid>
-        <Grid Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Border Background="{DynamicResource MaterialDesignPaper}"
-                    Opacity="0.8"/>
-            <controls:StarRailLoadingControl VerticalAlignment="Center"
-                                             HorizontalAlignment="Center"/>
-        </Grid>
+        <ProgressBar VerticalAlignment="Bottom"
+                     Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                     IsIndeterminate="True"/>
 
         <!-- Loading -->
         <Border Grid.Row="0"
