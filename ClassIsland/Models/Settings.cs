@@ -78,7 +78,7 @@ public class Settings : ObservableRecipient
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "101010100";
     private string _cityName = "北京";
-    private int _mainWindowFontWeight = FontWeights.Medium.ToOpenTypeWeight();
+    private int _mainWindowFontWeight2 = FontWeights.Medium.ToOpenTypeWeight();
     private int _taskBarIconClickBehavior = 0;
     private bool _showExtraInfoOnTimePoint = true;
     private int _extraInfoType = 0;
@@ -542,13 +542,13 @@ public class Settings : ObservableRecipient
         }
     }
 
-    public int MainWindowFontWeight
+    public int MainWindowFontWeight2
     {
-        get => _mainWindowFontWeight;
+        get => _mainWindowFontWeight2;
         set
         {
-            if (value.Equals(_mainWindowFontWeight)) return;
-            _mainWindowFontWeight = value;
+            if (value.Equals(_mainWindowFontWeight2)) return;
+            _mainWindowFontWeight2 = value;
             OnPropertyChanged();
         }
     }

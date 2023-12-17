@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -45,7 +46,7 @@ public class SettingsService : IHostedService, INotifyPropertyChanged
                 Settings.PropertyChanged += (sender, args) => SaveSettings();
             }
         }
-        catch
+        catch(Exception ex)
         {
             // ignored
         }
