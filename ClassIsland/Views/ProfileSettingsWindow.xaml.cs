@@ -720,6 +720,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
     {
+        if (!MainViewModel.Settings.ExpIsExcelImportEnabled)
+            return;
         if (e.Data.GetData(DataFormats.FileDrop) is not Array data)
             return;
         var filename = data.GetValue(0)?.ToString();
@@ -734,6 +736,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ProfileSettingsWindow_OnDragEnter(object sender, DragEventArgs e)
     {
+        if (!MainViewModel.Settings.ExpIsExcelImportEnabled)
+            return;
         e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Link : DragDropEffects.None;
     }
 }

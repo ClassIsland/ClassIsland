@@ -87,6 +87,7 @@ public class Settings : ObservableRecipient
     private int _defaultOnClassTimePointMinutes = 40;
     private int _defaultBreakingTimePointMinutes = 10;
     private double _debugAnimationScale = 1.0;
+    private bool _expIsExcelImportEnabled = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -808,6 +809,21 @@ public class Settings : ObservableRecipient
         {
             if (value == _cityName) return;
             _cityName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Exp
+
+    public bool ExpIsExcelImportEnabled
+    {
+        get => _expIsExcelImportEnabled;
+        set
+        {
+            if (value == _expIsExcelImportEnabled) return;
+            _expIsExcelImportEnabled = value;
             OnPropertyChanged();
         }
     }

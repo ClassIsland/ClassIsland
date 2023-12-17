@@ -190,6 +190,12 @@
                 <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
                                           License="MIT License"
                                           Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/" />
+                <models:ContributionLabel Title="FluentWpf"
+                                          License="MIT License"
+                                          Website="https://github.com/sourcechord/FluentWPF" />
+                <models:ContributionLabel Title="ReoGrid"
+                                          License="MIT license"
+                                          Website="https://github.com/unvell/ReoGrid"/>
                 <models:ContributionLabel Title="gong-mdWpf-dragdrop"
                                           License="BSD 3-Clause"
                                           Website="https://github.com/punker76/gong-mdWpf-dragdrop" />
@@ -205,16 +211,13 @@
                 <models:ContributionLabel Title="Downloader"
                                           License="MIT License"
                                           Website="https://github.com/bezzad/Downloader" />
-                <models:ContributionLabel Title="mdWpf-notifyicon"
-                                          License="The Code Project Open License (CPOL) 1.02"
-                                          Website="https://github.com/hardcodet/mdWpf-notifyicon" />
                 <models:ContributionLabel Title="HarmonyOS Sans" License="-"
                                           Website="https://developer.harmonyos.com/cn/design/resource" />
                 <models:ContributionLabel Title="MVVM Toolkit"
                                           Website="https://github.com/CommunityToolkit/dotnet"
                                           License="MIT License" />
                 <models:ContributionLabel Title="WPF" License="MIT License"
-                                          Website="https://github.com/dotnet/mdWpf" />
+                                          Website="https://github.com/dotnet/Wpf" />
                 <models:ContributionLabel Title=".NET" License="MIT License"
                                           Website="https://github.com/microsoft/dotnet" />
             </ListView>
@@ -228,7 +231,7 @@
                            Margin="0 0 0 4"/>
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
                            Margin="0 0 0 16"/>
-                <CheckBox Content="从表格导入课表（未完工）"/>
+                <CheckBox Content="从表格导入课表（未完工）" IsChecked="{Binding Settings.ExpIsExcelImportEnabled}"/>
                 <CheckBox Content="沉浸式标题栏在Windows10上工作"/>
                 <CheckBox Content="编辑使用中的时间表（强烈不推荐）"/>
             </StackPanel>
