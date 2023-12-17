@@ -655,79 +655,103 @@
                                     </StackPanel.Style>
                                     <Separator Margin="0 16 0 8"/>
                                     <controls:IconText Kind="Wallpaper" Text="壁纸主题色" Margin="0 0 0 8"/>
-                                    <Grid>
-                                        <Grid x:Name="GridWallpaperContent">
-                                            <Image
-                                                Source="{Binding WallpaperPickingService.WallpaperImage, Mode=TwoWay}"
-                                                Stretch="UniformToFill" x:Name="ImageWallpaper" />
-                                            <Grid VerticalAlignment="Bottom"
-                                                  IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                                <Border Background="{DynamicResource MaterialDesignPaper}"
-                                                        Opacity="0.85" />
-                                                <!-- 刷新 -->
-                                                <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                        Click="ButtonUpdateWallpaper_OnClick"
-                                                        HorizontalAlignment="Left" Margin="8 0">
-                                                    <controls:IconText Kind="Refresh" Text="刷新" />
-                                                </Button>
-                                                <!-- 颜色选择 -->
-                                                <ListBox
-                                                    ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
-                                                    SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
-                                                    HorizontalAlignment="Right">
-                                                    <ListBox.ItemsPanel>
-                                                        <ItemsPanelTemplate>
-                                                            <WrapPanel IsItemsHost="True" />
-                                                        </ItemsPanelTemplate>
-                                                    </ListBox.ItemsPanel>
-                                                    <ListBox.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <materialDesign:ColorZone
-                                                                Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
-                                                                Width="32" Height="32"
-                                                                Mode="Custom">
-                                                                <materialDesign:PackIcon Kind="Check"
-                                                                    VerticalAlignment="Bottom"
-                                                                    HorizontalAlignment="Right"
-                                                                    Width="14" Height="14"
-                                                                    Background="White"
-                                                                    Foreground="Black"
-                                                                    Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                                            </materialDesign:ColorZone>
-                                                        </DataTemplate>
-                                                    </ListBox.ItemTemplate>
-                                                </ListBox>
-                                            </Grid></Grid>
-                                        <!-- Loading -->
-                                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                              Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                                                    Background="{DynamicResource MaterialDesignPaper}"
-                                                    Opacity="0.8"/>
-                                            <controls:StarRailLoadingControl/>
+                                    <!-- 壁纸主题色 -->
+                                    <materialDesign:Card>
+                                        <Grid>
+                                            <StackPanel Margin="12">
+                                                <controls:IconText Kind="PaletteOutline" Text="选择主题色" />
+                                                <Grid VerticalAlignment="Bottom"
+                                                      IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                               Grid.Column="1">
+                                                        <!-- 刷新 -->
+                                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                Click="ButtonUpdateWallpaper_OnClick"
+                                                                VerticalAlignment="Center"
+                                                                Margin="2 0">
+                                                            <controls:IconText Kind="Refresh" Text="刷新" />
+                                                        </Button>
+                                                        <!-- 预览提取结果 -->
+                                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                Click="ButtonPreviewWallpaper_OnClick"
+                                                                VerticalAlignment="Center"
+                                                                Margin="2 0">
+                                                            <controls:IconText Kind="EyeOutline" Text="预览提取结果" />
+                                                        </Button>
+                                                    </WrapPanel>
+                                                    <!-- 颜色选择 -->
+                                                    <ListBox Grid.Column="0"
+                                                             ItemsSource="{Binding Settings.WallpaperColorPlatte, Mode=OneWay}"
+                                                             SelectedIndex="{Binding Settings.SelectedPlatteIndex}"
+                                                             PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                             HorizontalAlignment="Left">
+                                                        <ListBox.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel IsItemsHost="True" />
+                                                            </ItemsPanelTemplate>
+                                                        </ListBox.ItemsPanel>
+                                                        <ListBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <materialDesign:ColorZone
+                                                                    Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                                                                    Width="32" Height="32"
+                                                                    Mode="Custom">
+                                                                    <materialDesign:PackIcon Kind="Check"
+                                                                        VerticalAlignment="Bottom"
+                                                                        HorizontalAlignment="Right"
+                                                                        Width="14" Height="14"
+                                                                        Background="White"
+                                                                        Foreground="Black"
+                                                                        Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                                </materialDesign:ColorZone>
+                                                            </DataTemplate>
+                                                        </ListBox.ItemTemplate>
+                                                    </ListBox>
+                                                </Grid>
+                                            </StackPanel>
+                                            <ProgressBar Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                         IsIndeterminate="True"
+                                                         VerticalAlignment="Top"/>
                                         </Grid>
-                                    </Grid>
+                                    </materialDesign:Card>
                                     <!-- 启用自动提取主题色 -->
-                                    <controls:SettingsCard IconGlyph="RefreshAuto" Header="启用自动提取主题色" Margin="0 12 0 6"
-                                                           Description="若启用，将会在每分钟刷新一次壁纸主题色，适用于会随时间大幅变化主题色的动态壁纸。"
-                                                           IsOn="{Binding Settings.IsWallpaperAutoUpdateEnabled, Mode=TwoWay}"/>
-                                    <!-- 自动提取主题色间隔 -->
-                                    <controls:SettingsCard IconGlyph="ClockOutline" Header="自动提取主题色间隔"
-                                                           Description="自动从壁纸提取主题色时间隔的时间，建议以动态壁纸更新速度按需设置，不宜低于10秒。">
-                                        <controls:SettingsCard.Switcher>
-                                            <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="150"
-                                                                      materialDesign:TextFieldAssist.SuffixText="秒"
+                                    <materialDesign:Card Margin="0 6 0 6" >
+                                        <Expander Background="Transparent" IsExpanded="{Binding Settings.IsWallpaperAutoUpdateEnabled, Mode=OneWay}" TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                            <Expander.Header>
+                                                <controls:SettingsControl IconGlyph="RefreshAuto"
                                                                       Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Style="{StaticResource MaterialDesignTextBox}"
-                                                                      Text="{Binding Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
+                                                                      Header="启用自动提取主题色" 
+                                                                      Description="若启用，将会在每分钟刷新一次壁纸主题色，适用于会随时间大幅变化主题色的动态壁纸。"
+                                                                      IsOn="{Binding Settings.IsWallpaperAutoUpdateEnabled, Mode=TwoWay}"
+                                                                      Margin="-12 0" />
+                                            </Expander.Header>
+                                            <Grid Margin="36 0 48 12" IsEnabled="{Binding Settings.IsWallpaperAutoUpdateEnabled, Mode=OneWay}">
+                                                <!-- 自动提取主题色间隔 -->
+                                                <controls:SettingsControl IconGlyph="ClockOutline" Header="自动提取主题色间隔"
+                                                                       Description="自动从壁纸提取主题色时间隔的时间，建议以动态壁纸更新速度按需设置，不宜低于10秒。">
+                                                    <controls:SettingsControl.Switcher>
+                                                        <controls:NumbericTextBox MaxValue="36000" MinValue="0" Width="150"
+                                                            materialDesign:TextFieldAssist.SuffixText="秒"
+                                                            Foreground="{DynamicResource MaterialDesignBody}"
+                                                            Style="{StaticResource MaterialDesignTextBox}"
+                                                            Text="{Binding Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                                                    </controls:SettingsControl.Switcher>
+                                                </controls:SettingsControl>
+                                            </Grid>
+                                        </Expander>
+                                    </materialDesign:Card>
+                                    
                                     <!-- 兼容模式 -->
                                     <controls:SettingsCard IconGlyph="CogOutline" Header="启用兼容模式"
                                                            Description="若启用，将从注册表提取壁纸，而非桌面句柄，不兼容动态壁纸。可能可以解决一些壁纸提取中的玄学问题。"
                                                            IsOn="{Binding Settings.IsFallbackModeEnabled, Mode=TwoWay}"/>
                                     <!-- 壁纸层窗口类名 -->
                                     <controls:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
+                                                           Visibility="{Binding Settings.IsFallbackModeEnabled, Mode=OneWay, Converter={StaticResource InverseBoolToVisConverter}}"
                                                            Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
                                         <controls:SettingsCard.Switcher>
                                             <DockPanel Width="150">

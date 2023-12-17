@@ -449,4 +449,11 @@ public partial class SettingsWindow : MyWindow
     {
         App.GetService<NotificationHostService>().OnOnClass(this, EventArgs.Empty);
     }
+
+    private void ButtonPreviewWallpaper_OnClick(object sender, RoutedEventArgs e)
+    {
+        var w = App.GetService<WallpaperPreviewWindow>();
+        w.Owner = this;
+        w.ShowDialog();
+    }
 }

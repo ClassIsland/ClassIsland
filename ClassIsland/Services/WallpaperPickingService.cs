@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -149,7 +150,22 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
             var k = Registry.CurrentUser.OpenSubKey("Control Panel\\Desktop");
             var path = (string?)k?.GetValue("WallPaper");
             var b = Screen.PrimaryScreen.Bounds;
-            return path == null? null : new Bitmap(Image.FromFile(path), b.Width, b.Height);
+            if (path == null)
+                return null;
+            else
+            {
+                var image = Image.FromFile(path);
+                var m = 1.0;
+                if (image.Width > image.Height)
+                {
+                    m = 1.0 * b.Height / image.Height;
+                }
+                else
+                {
+                    m = 1.0 * b.Width / image.Width;
+                }
+                return new Bitmap(image, (int)(image.Width * m), (int)(image.Height * m));
+            }
         }
         catch
         {
@@ -197,7 +213,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                 var mw = (MainWindow)Application.Current.MainWindow!;
                 mw.GetCurrentDpi(out dpiX, out dpiY);
             });
-            WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap, (int)(750 * dpiX));
+            WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap, bitmap.Width);
             var w = new Stopwatch();
             w.Start();
             var right = SettingsService.Settings.TargetLightValue - 0.5;

@@ -172,6 +172,7 @@ public partial class App : Application
                 services.AddHostedService<WeatherMiniInfoProvider>();
                 // Transients
                 services.AddTransient<ExcelImportWindow>();
+                services.AddTransient<WallpaperPreviewWindow>();
             }).Build();
         try
         {
