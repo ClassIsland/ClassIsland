@@ -14,6 +14,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services;
 
+/// <summary>
+/// 提醒主机服务。
+/// </summary>
 public class NotificationHostService : IHostedService, INotifyPropertyChanged
 {
     private SettingsService SettingsService { get; }
@@ -112,6 +115,15 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         return CurrentRequest;
     }
 
+    /// <summary>
+    /// 注册提醒服务。
+    /// </summary>
+    /// <param name="provider">要注册的服务实例。</param>
+    /// <example>
+    /// <code>
+    /// NotificationHostService.RegisterNotificationProvider(this);
+    /// </code>
+    /// </example>
     public void RegisterNotificationProvider(INotificationProvider provider)
     {
         if (!Settings.NotificationProvidersPriority.Contains(provider.ProviderGuid.ToString()))
@@ -146,6 +158,12 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         return new Task(()=>{});
     }
 
+    /// <summary>
+    /// 获取提醒服务实例。
+    /// </summary>
+    /// <typeparam name="T">提醒服务类型</typeparam>
+    /// <param name="id">提醒服务id</param>
+    /// <returns>对应提醒服务实例。若不存在，则返回null。</returns>
     public T? GetNotificationProviderSettings<T>(Guid id)
     {
         var o = Settings.NotificationProvidersSettings[id.ToString()];

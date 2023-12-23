@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Converters;
+using System.Windows.Media.Converters;  
 using ClassIsland.Enums;
+using ClassIsland.Interfaces;
 using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignColors;
@@ -16,7 +17,7 @@ using File = System.IO.File;
 
 namespace ClassIsland.Models;
 
-public class Settings : ObservableRecipient
+public class Settings : ObservableRecipient, ILessonControlSettings
 {
     private int _theme = 0;
     private Color _primaryColor = Colors.DeepSkyBlue;
