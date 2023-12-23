@@ -16,6 +16,7 @@
                    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
                    xmlns:classIsland="clr-namespace:ClassIsland"
                    xmlns:viewModels="clr-namespace:ClassIsland.ViewModels"
+                   xmlns:windows="clr-namespace:Walterlv.Windows"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -570,6 +571,7 @@
         <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
 
     </Window.Resources>
+    <Grid>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
         <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
                                    DrawerClosing="DrawerHost_OnDrawerClosing"
@@ -1444,4 +1446,6 @@
             </Grid>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
+        <windows:AsyncBox LoadingViewType="controls:LoadingMask"/>
+    </Grid>
 </controls:MyWindow>

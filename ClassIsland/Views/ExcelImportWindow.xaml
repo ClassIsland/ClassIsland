@@ -9,6 +9,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ci="clr-namespace:ClassIsland"
         xmlns:models="clr-namespace:ClassIsland.Models"
+        xmlns:windows="clr-namespace:Walterlv.Windows"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:ExcelImportWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -421,5 +422,10 @@
                   VerticalAlignment="Bottom"
                   HorizontalAlignment="Center"
                   IsChecked="{Binding ViewModel.IsSelectingMode}"/>
+        <windows:AsyncBox Grid.Column="0"
+                          Grid.Row="0"
+                          Grid.ColumnSpan="3"
+                          Grid.RowSpan="2"
+                          LoadingViewType="controls:LoadingMask"/>
     </Grid>
 </controls:MyWindow>

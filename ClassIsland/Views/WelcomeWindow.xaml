@@ -7,6 +7,7 @@
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
                    xmlns:gif="clr-namespace:WpfAnimatedGif;assembly=WpfAnimatedGif"
+                   xmlns:ww="clr-namespace:Walterlv.Windows"
                    mc:Ignorable="d"
                    Height="600" Width="480"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -47,208 +48,223 @@
             </StackPanel>
         </StackPanel>
     </Window.Resources>
-    <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId, Mode=OneWay}">
-        <Grid Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
+    <ww:AsyncBox LoadingViewType="controls:LoadingMask">
+        <Grid>
+            <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId, Mode=OneWay}">
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Margin="0 0 0 16">
-                <Image Source="/Assets/AppLogo.png" HorizontalAlignment="Center"
-                       Width="72" Height="72" Stretch="Uniform">
-                </Image>
+                    <StackPanel Grid.Row="0" Margin="0 0 0 16">
+                        <Image Source="/Assets/AppLogo.png" HorizontalAlignment="Center"
+                                       Width="72" Height="72" Stretch="Uniform">
+                        </Image>
 
-                <TextBlock Text="ClassIsland" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"
-                           Margin="0 4 0 0">
-                </TextBlock>
-            </StackPanel>
+                        <TextBlock Text="ClassIsland" FontSize="24" FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           Margin="0 4 0 0">
+                        </TextBlock>
+                    </StackPanel>
 
-            <materialDesign:Transitioner Grid.Row="1"
-                                         AutoApplyTransitionOrigins="True"
-                                         SelectedIndex="{Binding ViewModel.SlideIndex, Mode=OneWay}">
-                <!-- 欢迎 -->
-                <materialDesign:TransitionerSlide>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <materialDesign:Transitioner Grid.Row="1"
+                                                         AutoApplyTransitionOrigins="True"
+                                                         SelectedIndex="{Binding ViewModel.SlideIndex, Mode=OneWay}">
+                        <!-- 欢迎 -->
+                        <materialDesign:TransitionerSlide>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0">
-                            <TextBlock Text="欢迎使用ClassIsland" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                       FontWeight="Light"
-                                       Text="本向导将引导您完成ClassIsland的设置。点击【下一步】以开始设置。" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
-                                <controls:IconText Kind="ArrowRight" Text="下一步" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </materialDesign:TransitionerSlide>
+                                <StackPanel Grid.Row="0">
+                                    <TextBlock Text="欢迎使用ClassIsland"
+                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                       FontWeight="Light"
+                                                       Text="本向导将引导您完成ClassIsland的设置。点击【下一步】以开始设置。" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
+                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:TransitionerSlide>
 
-                <!-- 协议同意 -->
-                <materialDesign:TransitionerSlide>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                        <!-- 协议同意 -->
+                        <materialDesign:TransitionerSlide>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0" Margin="0 0 0 6">
-                            <TextBlock Text="同意许可协议" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                        </StackPanel>
-                        <TextBox Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 Margin="0 0 0 6"
-                                 IsReadOnly="True"
-                                 FontSize="11"
-                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                 Padding="6"
-                                 Text="{Binding ViewModel.License, Mode=OneWay}" />
-                        <CheckBox Grid.Row="2" Content="我已阅读并同意以上协议。" Margin="0 0 0 6"
-                                  IsChecked="{Binding ViewModel.IsLicenseAgreed}" />
-                        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                    Margin="0 0 6 0">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步" />
-                            </Button>
-                            <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}"
-                                    IsEnabled="{Binding ViewModel.IsLicenseAgreed, Mode=OneWay}">
-                                <controls:IconText Kind="ArrowRight" Text="下一步" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </materialDesign:TransitionerSlide>
+                                <StackPanel Grid.Row="0" Margin="0 0 0 6">
+                                    <TextBlock Text="同意许可协议"
+                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                </StackPanel>
+                                <TextBox Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                 Margin="0 0 0 6"
+                                                 IsReadOnly="True"
+                                                 FontSize="11"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                                 Padding="6"
+                                                 Text="{Binding ViewModel.License, Mode=OneWay}" />
+                                <CheckBox Grid.Row="2" Content="我已阅读并同意以上协议。" Margin="0 0 0 6"
+                                                  IsChecked="{Binding ViewModel.IsLicenseAgreed}" />
+                                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                                    Margin="0 0 6 0">
+                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                    </Button>
+                                    <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}"
+                                                    IsEnabled="{Binding ViewModel.IsLicenseAgreed, Mode=OneWay}">
+                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:TransitionerSlide>
 
-                <!-- 匿名信息收集 -->
-                <materialDesign:TransitionerSlide>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                        <!-- 匿名信息收集 -->
+                        <materialDesign:TransitionerSlide>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0">
-                            <TextBlock Text="匿名信息收集" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                       FontWeight="Light"
-                                       Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
-                            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                       FontWeight="Light">
-                                <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
-                                </Run><Hyperlink Click="HyperlinkMsAppCenter_OnClick">
-                                    此处
-                                </Hyperlink>。
-                            </TextBlock>
-                        </StackPanel>
-                        <controls:SettingsCard Grid.Row="1" Margin="0 6"
-                                               IconGlyph="ReportLine"
-                                               Header="启用匿名使用情况分析"
-                                               IsOn="{Binding ViewModel.Settings.IsReportingEnabled, Mode=TwoWay}"
-                                               Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                    Margin="0 0 6 0">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步" />
-                            </Button>
-                            <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
-                                <controls:IconText Kind="ArrowRight" Text="下一步" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </materialDesign:TransitionerSlide>
+                                <StackPanel Grid.Row="0">
+                                    <TextBlock Text="匿名信息收集"
+                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                       FontWeight="Light"
+                                                       Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                       FontWeight="Light">
+                                                <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
+                                                </Run>
+                                                <Hyperlink Click="HyperlinkMsAppCenter_OnClick">
+                                                    此处
+                                                </Hyperlink>
+                                                。
+                                    </TextBlock>
+                                </StackPanel>
+                                <controls:SettingsCard Grid.Row="1" Margin="0 6"
+                                                               IconGlyph="ReportLine"
+                                                               Header="启用匿名使用情况分析"
+                                                               IsOn="{Binding ViewModel.Settings.IsReportingEnabled, Mode=TwoWay}"
+                                                               Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                                    Margin="0 0 6 0">
+                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                    </Button>
+                                    <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
+                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:TransitionerSlide>
 
-                <!-- 基本设置 -->
-                <materialDesign:TransitionerSlide>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                        <!-- 基本设置 -->
+                        <materialDesign:TransitionerSlide>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <StackPanel Grid.Row="0">
-                            <TextBlock Text="基本设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                       FontWeight="Light"
-                                       Text="您后续也可以在应用设置中再次调整这些选项。" />
+                                <StackPanel Grid.Row="0">
+                                    <TextBlock Text="基本设置"
+                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                    <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                       FontWeight="Light"
+                                                       Text="您后续也可以在应用设置中再次调整这些选项。" />
 
-                            <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
-                                                   Margin="0 6 0 0"
-                                                   Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
-                                <controls:SettingsCard.Switcher>
-                                    <DatePicker SelectedDate="{Binding ViewModel.Settings.SingleWeekStartTime}"
-                                                Width="120"
-                                                Foreground="{DynamicResource MaterialDesignBody}" />
-                                </controls:SettingsCard.Switcher>
-                            </controls:SettingsCard>
-                            <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
-                                                   Margin="0 6 0 0"
-                                                   Description="在系统启动时自动运行本应用。"
-                                                   IsOn="{Binding ViewModel.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
-                        </StackPanel>
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                    Margin="0 0 6 0">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步" />
-                            </Button>
-                            <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
-                                <controls:IconText Kind="ArrowRight" Text="下一步" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </materialDesign:TransitionerSlide>
+                                    <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
+                                                                   Margin="0 6 0 0"
+                                                                   Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
+                                        <controls:SettingsCard.Switcher>
+                                            <DatePicker
+                                                        SelectedDate="{Binding ViewModel.Settings.SingleWeekStartTime}"
+                                                        Width="120"
+                                                        Foreground="{DynamicResource MaterialDesignBody}" />
+                                        </controls:SettingsCard.Switcher>
+                                    </controls:SettingsCard>
+                                    <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
+                                                                   Margin="0 6 0 0"
+                                                                   Description="在系统启动时自动运行本应用。"
+                                                                   IsOn="{Binding ViewModel.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
+                                </StackPanel>
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                                    Margin="0 0 6 0">
+                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                    </Button>
+                                    <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
+                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:TransitionerSlide>
 
-                <!-- 完成 -->
-                <materialDesign:TransitionerSlide>
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                        <!-- 完成 -->
+                        <materialDesign:TransitionerSlide>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                            <StackPanel>
-                                <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                                <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                           FontWeight="Light"
-                                           Text="应用的基本设置已经完成，感谢您使用本应用。要访问应用的主菜单，请右键应用托盘图标。您可以点击下方按钮查看应用帮助，熟悉本应用。" />
-                                <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left" 
-                                        Click="ButtonViewHelp_OnClick"
-                                        Margin="0 6 0 0">
-                                    <controls:IconText Kind="HelpCircleOutline" Text="查看帮助文档"/>
-                                </Button>
-                                <Image Source="/Assets/MainMenuOpenDemo.gif" HorizontalAlignment="Center"
-                                       Height="180"
-                                       Stretch="Uniform"
-                                       Margin="0 8 0 0"
-                                       gif:ImageBehavior.AnimatedSource="/Assets/MainMenuOpenDemo.gif"
-                                       gif:ImageBehavior.RepeatBehavior="Forever"
-                                       gif:ImageBehavior.AnimationSpeedRatio="2"/>
-                            </StackPanel>
-                        </ScrollViewer>
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                    Margin="0 0 6 0">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步" />
-                            </Button>
-                            <Button Click="ButtonClose_OnClick">
-                                <controls:IconText Kind="Check" Text="完成" />
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </materialDesign:TransitionerSlide>
-            </materialDesign:Transitioner>
+                                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel>
+                                        <TextBlock Text="完成"
+                                                           Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                           FontWeight="Light"
+                                                           Text="应用的基本设置已经完成，感谢您使用本应用。要访问应用的主菜单，请右键应用托盘图标。您可以点击下方按钮查看应用帮助，熟悉本应用。" />
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                        HorizontalAlignment="Left"
+                                                        Click="ButtonViewHelp_OnClick"
+                                                        Margin="0 6 0 0">
+                                            <controls:IconText Kind="HelpCircleOutline" Text="查看帮助文档" />
+                                        </Button>
+                                        <Image Source="/Assets/MainMenuOpenDemo.gif"
+                                                       HorizontalAlignment="Center"
+                                                       Height="180"
+                                                       Stretch="Uniform"
+                                                       Margin="0 8 0 0"
+                                                       gif:ImageBehavior.AnimatedSource="/Assets/MainMenuOpenDemo.gif"
+                                                       gif:ImageBehavior.RepeatBehavior="Forever"
+                                                       gif:ImageBehavior.AnimationSpeedRatio="2" />
+                                    </StackPanel>
+                                </ScrollViewer>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                                    Margin="0 0 6 0">
+                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                    </Button>
+                                    <Button Click="ButtonClose_OnClick">
+                                        <controls:IconText Kind="Check" Text="完成" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:TransitionerSlide>
+                    </materialDesign:Transitioner>
+                </Grid>
+            </materialDesign:DialogHost>
         </Grid>
-    </materialDesign:DialogHost>
+    </ww:AsyncBox>
 </controls:MyWindow>

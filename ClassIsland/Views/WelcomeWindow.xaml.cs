@@ -41,8 +41,8 @@ public partial class WelcomeWindow : MyWindow
 
     protected override void OnContentRendered(EventArgs e)
     {
-        //DialogResult = false;
         base.OnContentRendered(e);
+        ViewModel.MasterTabIndex = 1;
     }
 
     private void ButtonClose_OnClick(object sender, RoutedEventArgs e)

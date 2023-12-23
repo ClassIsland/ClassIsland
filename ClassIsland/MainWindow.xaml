@@ -16,6 +16,7 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        xmlns:ww="clr-namespace:Walterlv.Windows"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         TextElement.FontSize="14"
@@ -556,8 +557,6 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-
-
                         <ContentPresenter Grid.Column="0"
                                           Margin="6 0 12 0"
                                           VerticalAlignment="Center"
@@ -707,5 +706,6 @@
             <Run Text="{Binding ActualWidth, ElementName=GridWrapper, Mode=OneWay, StringFormat={}{0:f1}}"/>
             <Run Text="{Binding ActualHeight, ElementName=GridWrapper, Mode=OneWay, StringFormat={}{0:f1}}"/>
         </TextBlock>
+
     </Grid>
 </Window>

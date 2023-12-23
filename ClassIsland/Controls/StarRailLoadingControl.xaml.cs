@@ -22,6 +22,8 @@ namespace ClassIsland.Controls;
 /// </summary>
 public partial class StarRailLoadingControl : UserControl
 {
+    private bool _isPlayed = false;
+
     private void BeginStoryBoard(string key)
     {
         var sb = (Storyboard)FindResource(key);
@@ -47,10 +49,15 @@ public partial class StarRailLoadingControl : UserControl
             {
                 loop.Remove();
                 //loop.Seek(TimeSpan.Zero);
-                BeginStoryBoard("OnLoaded");
-                await Task.Run(() => Thread.Sleep(100));
-                BeginStoryBoard("Loop");
-                //Debug.WriteLine("LOADED.");
+                
+                if (!_isPlayed || loop.GetCurrentState(this) != ClockState.Active)
+                {
+                    BeginStoryBoard("OnLoaded");
+                    await Task.Run(() => Thread.Sleep(100));
+                    BeginStoryBoard("Loop");
+                    _isPlayed = true;
+                    //Debug.WriteLine("LOADED.");
+                }
 
             }
             else

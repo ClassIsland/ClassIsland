@@ -11,11 +11,23 @@ public class WelcomeViewModel : ObservableRecipient
     private Settings _settings = new();
     private string _license = "";
     private bool _isExitConfirmed = false;
+    private int _masterTabIndex = 0;
 
     public Guid DialogId
     {
         get;
     } = Guid.NewGuid();
+
+    public int MasterTabIndex
+    {
+        get => _masterTabIndex;
+        set
+        {
+            if (value == _masterTabIndex) return;
+            _masterTabIndex = value;
+            OnPropertyChanged();
+        }
+    }
 
     public int SlideIndex
     {

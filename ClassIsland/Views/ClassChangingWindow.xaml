@@ -9,6 +9,7 @@
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        xmlns:windows="clr-namespace:Walterlv.Windows"
         mc:Ignorable="d"
         Title="换课" 
         Height="250" Width="600"

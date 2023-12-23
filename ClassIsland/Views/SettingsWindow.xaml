@@ -32,7 +32,8 @@
                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                    xmlns:weather="clr-namespace:ClassIsland.Models.Weather"
-                   xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF">
+                   xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
+                   xmlns:windows="clr-namespace:Walterlv.Windows">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -305,6 +306,8 @@
         <converters:DoubleToPercentStringConverter x:Key="DoubleToPercentStringConverter" />
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
     </Window.Resources>
+
+    <Grid>
 
     <materialDesign:DialogHost Identifier="SettingsWindow">
         <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
@@ -2152,4 +2155,6 @@ The quick brown fox jumps over a lazy dog.
             </Grid>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
+        <windows:AsyncBox LoadingViewType="controls:LoadingMask"/>
+    </Grid>
 </controls:MyWindow>
