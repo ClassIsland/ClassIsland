@@ -483,4 +483,9 @@ public partial class SettingsWindow : MyWindow
             UseShellExecute = true
         });
     }
+
+    private void MenuItemDebugSplashWindow_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<SplashWindow>().Show();
+    }
 }

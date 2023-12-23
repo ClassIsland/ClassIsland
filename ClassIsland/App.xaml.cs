@@ -204,6 +204,7 @@ public partial class App : Application
                 //services.AddHostedService<BootService>();
                 // Views
                 services.AddSingleton<MainWindow>();
+                services.AddSingleton<SplashWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
@@ -215,6 +216,21 @@ public partial class App : Application
                 services.AddTransient<ExcelImportWindow>();
                 services.AddTransient<WallpaperPreviewWindow>();
             }).Build();
+        if (GetService<SettingsService>().Settings.IsSplashEnabled)
+        {
+            GetService<SplashWindow>().Show();
+            await Task.Run(() =>
+            {
+                var b = false;
+                while (!b)
+                {
+                    Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, () =>
+                    {
+                        b = GetService<SplashWindow>().IsRendered;
+                    });
+                }
+            });
+        }
         try
         {
             GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate(false);
@@ -235,10 +251,12 @@ public partial class App : Application
         attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
+
         GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = Host.StartAsync();
 
+        MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
     }
 

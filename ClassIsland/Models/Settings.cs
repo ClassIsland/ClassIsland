@@ -90,6 +90,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private double _debugAnimationScale = 1.0;
     private bool _expIsExcelImportEnabled = false;
     private int _timeLayoutEditorIndex = 1;
+    private bool _isSplashEnabled = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -377,6 +378,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _defaultBreakingTimePointMinutes) return;
             _defaultBreakingTimePointMinutes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSplashEnabled
+    {
+        get => _isSplashEnabled;
+        set
+        {
+            if (value == _isSplashEnabled) return;
+            _isSplashEnabled = value;
             OnPropertyChanged();
         }
     }

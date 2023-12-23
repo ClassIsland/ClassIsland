@@ -389,6 +389,10 @@
                                         </ComboBox>
                                     </controls:SettingsCard.Switcher>
                                 </controls:SettingsCard>
+                                <!-- 显示启动加载界面 -->
+                                <controls:SettingsCard IconGlyph="RocketLaunchOutline" Header="显示启动加载界面"
+                                                       Description="启动时显示加载界面。"
+                                                       IsOn="{Binding Settings.IsSplashEnabled, Mode=TwoWay}" />
                                 <Separator Margin="0 16 0 8"/>
                                 <controls:IconText Kind="WindowRestore" Text="显示" Margin="0 0 0 8"/>
                                 <!-- 简略信息 -->
@@ -1905,6 +1909,8 @@ The quick brown fox jumps over a lazy dog.
                                         <weather:RangedValue From="0" To="0"/>
                                     </controls:WeatherRangePackIconControl.Value>
                                 </controls:WeatherRangePackIconControl>
+                                <controls:SplashControl/>
+                                <MenuItem Icon="{materialDesign:PackIcon LightningBoltOutline}" Header="测试SplashWindow" Click="MenuItemDebugSplashWindow_OnClick"/>
                                 <MenuItem Header="selected" x:Name="DebugWizardOptionControlSelected" IsCheckable="True"/>
                                 <controls:WizardOptionControl OptionHeader="测试选项" OptionContent="{StaticResource TestStringLong}" IsSelected="{Binding IsChecked, ElementName=DebugWizardOptionControlSelected}"/>
 

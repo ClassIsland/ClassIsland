@@ -35,6 +35,8 @@ public class AsyncBox : FrameworkElement
 
     private Type _loadingViewType;
 
+    public event EventHandler? LoadingViewLoaded;
+
     public AsyncBox()
     {
         _hostVisual = new HostVisual();
@@ -154,6 +156,7 @@ public class AsyncBox : FrameworkElement
                 _loadingView.Arrange(new Rect(RenderSize));
             }
         });
+        LoadingViewLoaded?.Invoke(this, EventArgs.Empty);
     }
 
     protected override int VisualChildrenCount => _loadingView != null ? 2 : 0;
