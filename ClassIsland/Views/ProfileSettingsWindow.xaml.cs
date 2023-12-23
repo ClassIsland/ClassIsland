@@ -39,6 +39,9 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class ProfileSettingsWindow : MyWindow
 {
+    public static RoutedUICommand OpenTimeLayoutItemEditorCommand = new RoutedUICommand();
+
+    public static RoutedUICommand RemoveSelectedTimeLayoutItemCommand = new RoutedUICommand();
     public MainViewModel MainViewModel
     {
         get;
@@ -89,6 +92,7 @@ public partial class ProfileSettingsWindow : MyWindow
         d.SourceDictionary = MainViewModel.Profile.Subjects;
         var d2 = (ClassPlanDictionaryValueAccessConverter)FindResource("ClassPlanDictionaryValueAccessConverter");
         d2.SourceDictionary = MainViewModel.Profile.TimeLayouts;
+        TabTimeLayoutEditors.SelectedIndex = App.GetService<SettingsService>().Settings.TimeLayoutEditorIndex;
 
         MainViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
         RefreshProfiles();
@@ -154,11 +158,46 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var selected = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
+        var baseSec = selected?.EndSecond ?? DateTime.Now;
+        var settings = App.GetService<SettingsService>().Settings;
+        var lastTime = TimeSpan.FromMinutes(timeType switch
+        {
+            0 => settings.DefaultOnClassTimePointMinutes,
+            1 => settings.DefaultBreakingTimePointMinutes,
+            2 => 0,
+            _ => 0
+        });
+        if (selected != null && timeType != 2)
+        {
+            var index = timeLayout.Layouts.IndexOf(selected);
+            if (index < timeLayout.Layouts.Count - 1)
+            {
+                var nexts = (from i 
+                        in timeLayout.Layouts.Skip(index + 1) 
+                        where i.TimeType != 2 
+                        select i)
+                    .ToList();
+                if (nexts.Count > 0)
+                {
+                    var next = nexts[0];
+                    if (next.StartSecond.TimeOfDay <= baseSec.TimeOfDay)
+                    {
+                        ViewModel.MessageQueue.Enqueue("没有合适的位置来插入新的时间点。");
+                        return;
+                    }
+                    if (next.StartSecond.TimeOfDay <= baseSec.TimeOfDay + lastTime)
+                    {
+                        ViewModel.MessageQueue.Enqueue("没有足够的空间完全插入该时间点，已缩短时间点长度。");
+                        lastTime = next.StartSecond.TimeOfDay - baseSec.TimeOfDay;
+                    }
+                }
+            }
+        }
         var newItem = new TimeLayoutItem()
         {
             TimeType = timeType,
-            StartSecond = selected?.EndSecond ?? DateTime.Now,
-            EndSecond = selected?.EndSecond ?? DateTime.Now
+            StartSecond = baseSec,
+            EndSecond = baseSec + lastTime,
         };
         timeLayout.Layouts.Add(newItem);
         ReSortTimeLayout(newItem);
@@ -186,13 +225,13 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonEditTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.DrawerContent = FindResource("TimePointEditor");
+        OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 编辑时间点");
     }
 
     private void ButtonEditTimeLayoutInfo_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.DrawerContent = FindResource("TimeLayoutInfoEditor");
+        OpenDrawer("TimeLayoutInfoEditor");
         Analytics.TrackEvent("档案设置 · 编辑时间表信息");
     }
 
@@ -445,6 +484,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ProfileSettingsWindow_OnClosing(object? sender, CancelEventArgs e)
     {
         e.Cancel = true;
+        App.GetService<SettingsService>().Settings.TimeLayoutEditorIndex = TabTimeLayoutEditors.SelectedIndex;
         if (!ViewModel.IsClassPlansEditing)
         {
             Hide();
@@ -701,11 +741,17 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonTimeLayoutEditScrollToContent_OnClick(object sender, RoutedEventArgs e)
     {
-        var tpr = ViewModel.SelectedTimePoint;
+        TimeLayoutEditScrollToContent();
+    }
+
+    private void TimeLayoutEditScrollToContent()
+    {
+        var tpr = ViewModel.SelectedTimePoint ?? ((KeyValuePair<string, TimeLayout>?)ListViewTimeLayouts.SelectedItem)?.Value.Layouts[0];
         if (tpr == null)
         {
             return;
         }
+
         ViewModel.SelectedTimePoint = null;
         ViewModel.SelectedTimePoint = tpr;
         TimeLineListControl.ScrollIntoView(tpr);
@@ -739,5 +785,15 @@ public partial class ProfileSettingsWindow : MyWindow
         if (!MainViewModel.Settings.ExpIsExcelImportEnabled)
             return;
         e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Link : DragDropEffects.None;
+    }
+
+    private void ListViewTimeLayouts_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        //TimeLayoutEditScrollToContent();
+    }
+
+    private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        TimeLayoutEditScrollToContent();
     }
 }

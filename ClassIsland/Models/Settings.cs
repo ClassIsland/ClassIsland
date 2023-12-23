@@ -89,6 +89,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private int _defaultBreakingTimePointMinutes = 10;
     private double _debugAnimationScale = 1.0;
     private bool _expIsExcelImportEnabled = false;
+    private int _timeLayoutEditorIndex = 1;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -870,6 +871,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value.Equals(_debugAnimationScale)) return;
             _debugAnimationScale = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int TimeLayoutEditorIndex
+    {
+        get => _timeLayoutEditorIndex;
+        set
+        {
+            if (value == _timeLayoutEditorIndex) return;
+            _timeLayoutEditorIndex = value;
             OnPropertyChanged();
         }
     }

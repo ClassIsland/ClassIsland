@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Models;
 
 namespace ClassIsland.Controls;
 
@@ -60,5 +63,20 @@ public class TimeLineListControl : ListBox
     static TimeLineListControl()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLineListControl), new FrameworkPropertyMetadata(typeof(TimeLineListControl)));
+    }
+
+    public TimeLineListControl()
+    {
+    }
+    
+
+    protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+    {
+        var timeLayoutItems = (ObservableCollection<TimeLayoutItem>?)newValue;
+        if (timeLayoutItems == null || timeLayoutItems.Count <= 0)
+            return;
+        ScrollIntoView(timeLayoutItems[0]);
+        SelectedIndex = 0;
+        base.OnItemsSourceChanged(oldValue, newValue);
     }
 }

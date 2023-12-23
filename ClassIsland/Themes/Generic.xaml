@@ -8,9 +8,11 @@
     xmlns:converters="clr-namespace:ClassIsland.Converters"
     xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="clr-namespace:ClassIsland.Views"
     mc:Ignorable="d" >
     <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
@@ -152,11 +154,37 @@
                                         <behaviors:TimeLineListItemBehavior>
                                             <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                                 <ControlTemplate>
-                                                    <controls:TimeLineListItemSeparatorAdornerControl 
-                                                        VerticalAlignment="Stretch"
-                                                        HorizontalAlignment="Stretch"
-                                                        TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
-                                                        Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
+                                                    <Grid Margin="-20">
+                                                        <controls:TimeLineListItemSeparatorAdornerControl
+                                                            Margin="20"
+                                                            VerticalAlignment="Stretch"
+                                                            HorizontalAlignment="Stretch"
+                                                            TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                            Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
+                                                        <Border Background="{DynamicResource MaterialDesignPaper}"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Center"
+                                                                Margin="0 0 28 0"
+                                                                Padding="2"
+                                                                CornerRadius="4">
+                                                            <Border.Effect>
+                                                                <DropShadowEffect Direction="0" ShadowDepth="0"
+                                                                    Opacity="0.4" BlurRadius="8">
+                                                                </DropShadowEffect>
+                                                            </Border.Effect>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <Button Content="{materialDesign:PackIcon Edit}"
+                                                                        Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
+                                                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                        ToolTip="编辑时间点…" Margin="0 0 4 0" />
+                                                                <Button Content="{materialDesign:PackIcon Delete}"
+                                                                        Foreground="IndianRed"
+                                                                        Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                                                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                        ToolTip="删除时间点" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </Grid>
                                                 </ControlTemplate>
                                             </behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         </behaviors:TimeLineListItemBehavior>
@@ -165,6 +193,15 @@
                             </Setter>
                         </DataTrigger>
                     </Style.Triggers>
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
+                                <MenuItem Icon="{materialDesign:PackIcon EditOutline}" Header="编辑时间点…" Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"/>
+                                <Separator/>
+                                <MenuItem Icon="{materialDesign:PackIcon DeleteOutline}" Header="删除时间点" Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"/>
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
                     <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Canvas}}"/>
                     <Setter Property="FocusVisualStyle" Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"/>
                     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -196,12 +233,36 @@
                                 <behaviors:TimeLineListItemBehavior>
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         <ControlTemplate>
-                                            <controls:TimeLineListItemExpandingAdornerControl 
-                                                VerticalAlignment="Stretch"
-                                                HorizontalAlignment="Stretch"
-                                                TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
-                                                TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
-                                                Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
+                                            <Grid Margin="-20">
+                                                <controls:TimeLineListItemExpandingAdornerControl
+                                                    Margin="20"
+                                                    VerticalAlignment="Stretch"
+                                                    HorizontalAlignment="Stretch"
+                                                    TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                    TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                    Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
+                                                <Border Background="{DynamicResource MaterialDesignPaper}"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center"
+                                                        Margin="0 0 28 0"
+                                                        Padding="2"
+                                                        CornerRadius="4">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect Direction="0" ShadowDepth="0" Opacity="0.4" BlurRadius="8"></DropShadowEffect>
+                                                    </Border.Effect>
+                                                    <StackPanel Orientation="Horizontal" >
+                                                        <Button Content="{materialDesign:PackIcon Edit}"
+                                                                Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
+                                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                ToolTip="编辑时间点…" Margin="0 0 4 0"/>
+                                                        <Button Content="{materialDesign:PackIcon Delete}"
+                                                                Foreground="IndianRed"
+                                                                Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                ToolTip="删除时间点" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
                                         </ControlTemplate>
                                     </behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                 </behaviors:TimeLineListItemBehavior>
