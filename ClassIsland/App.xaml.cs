@@ -14,6 +14,7 @@ using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using ClassIsland.Controls;
+using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.MiniInfoProviders;
@@ -96,6 +97,46 @@ public partial class App : Application
         //    Resources[SystemParameters.FocusVisualStyleKey]);
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ButtonBase.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
+        //var overwriteList = new List<string>()
+        //{
+        //    "MaterialDesignRaisedButton",
+        //    "MaterialDesignFlatButton",
+        //    "MaterialDesignFloatingActionMiniButton",
+        //    "MaterialDesignPaperButton",
+        //    "MaterialDesignCheckBox",
+        //    "MaterialDesignUserForegroundCheckBox",
+        //    "MaterialDesignComboBoxItemStyle",
+        //    "MaterialDesignDataGridComboBoxItemStyle",
+        //    "MaterialDesignDataGridComboBox",
+        //    "MaterialDesignCardsListBoxItem",
+        //    "MaterialDesignRadioButton",
+        //    "MaterialDesignUserForegroundRadioButton",
+        //    "MaterialDesignTabRadioButton",
+        //    "MaterialDesignScrollBarButton",
+        //    "MaterialDesignSnackbarActionButton",
+        //    "MaterialDesignFilledUniformTabControl",
+        //    "MaterialDesignSwitchToggleButton",
+        //    "MaterialDesignSwitchAccentToggleButton"
+        //};
+        //var v = Resources[SystemParameters.FocusVisualStyleKey];
+        //foreach (var k in overwriteList)
+        //{
+        //    var style = (Style?)TryFindResource(k);
+        //    if (style == null) continue;
+        //    Setter? targetSetter = null;
+        //    foreach (var setter in style.Setters)
+        //    {
+        //        if (setter is not Setter ss) continue;
+        //        if (ss.Property != FrameworkElement.FocusVisualStyleProperty) continue;
+        //        targetSetter = ss;
+        //        break;
+        //    }
+
+        //    if (targetSetter != null)
+        //    {
+        //        typeof(Setter).GetField("_value", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(targetSetter, v);
+        //    }
+        //}
 
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
@@ -189,6 +230,11 @@ public partial class App : Application
             GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
         }
         GetService<UpdateService>().AppStartup();
+        var attachedSettingsHostService = GetService<AttachedSettingsHostService>();
+        attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
+        attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
+        attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
+        attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = Host.StartAsync();

@@ -18,7 +18,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using ClassIsland.Interfaces;
 using ClassIsland.Models;
+using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Services;
 
 namespace ClassIsland.Controls;
@@ -86,7 +88,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     public static readonly DependencyProperty CurrentClassPlanProperty = DependencyProperty.Register(
         nameof(CurrentClassPlan), typeof(ClassPlan), typeof(LessonControl), new PropertyMetadata(default(ClassPlan)));
 
-    public ClassPlan CurrentClassPlan
+    public ClassPlan? CurrentClassPlan
     {
         get => (ClassPlan)GetValue(CurrentClassPlanProperty);
         set => SetValue(CurrentClassPlanProperty, value);
@@ -147,6 +149,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     public static readonly DependencyProperty MasterTabIndexProperty = DependencyProperty.Register(
         nameof(MasterTabIndex), typeof(int), typeof(LessonControl), new PropertyMetadata(default(int)));
 
+    private ILessonControlSettings _settingsSource = App.GetService<SettingsService>().Settings;
+
     public int MasterTabIndex
     {
         get { return (int)GetValue(MasterTabIndexProperty); }
@@ -160,6 +164,17 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     {
         Interval = TimeSpan.FromMilliseconds(100)
     };
+
+    public ILessonControlSettings SettingsSource
+    {
+        get => _settingsSource;
+        set
+        {
+            if (Equals(value, _settingsSource)) return;
+            _settingsSource = value;
+            OnPropertyChanged();
+        }
+    }
 
     /* ---------------------------------------------------------------- */
 
@@ -231,18 +246,28 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     {
         if (CurrentClassPlan is null)
         {
-            return;
+            goto final;
         }
         CurrentTimeLayout = CurrentClassPlan.TimeLayout;
 
         if (Index >= CurrentTimeLayout?.Layouts.Count || CurrentTimeLayout == null || Index < 0)
         {
-            return;
+            goto final;
         }
         CurrentTimeLayoutItem = CurrentTimeLayout.Layouts[Index];
 
         TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
         UpdateSeconds();
+
+        final:
+        SettingsSource =
+            (ILessonControlSettings?)AttachedSettingsHostService.GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
+                new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
+                CurrentSubject,
+                CurrentTimeLayoutItem,
+                CurrentClassPlan,
+                CurrentTimeLayout) ??
+            SettingsService.Settings;
     }
 
     private void UpdateSeconds()
@@ -250,8 +275,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         Seconds = (long)(DateTime.Now.TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
         LeftSeconds = TotalSeconds - Seconds;
 
-        MasterTabIndex = LeftSeconds <= SettingsService.Settings.CountdownSeconds &&
-            SettingsService.Settings.IsCountdownEnabled &&
+        MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
+                         SettingsSource.IsCountdownEnabled &&
             IsTimerEnabled ? 1 : 0;
     }
 

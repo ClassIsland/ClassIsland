@@ -357,7 +357,8 @@
                                                     <Setter Property="Margin" Value="0 3" />
                                                 </Style>
                                             </StackPanel.Resources>
-                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}"/>
+                                            <CheckBox Content="上课时" IsChecked="{Binding Settings.HideOnClass}"
+                                                      Style="{StaticResource MaterialDesignCheckBox}"/>
                                             <CheckBox Content="前台是最大化窗口时"
                                                       IsChecked="{Binding Settings.HideOnMaxWindow}" />
                                             <CheckBox Content="前台是全屏窗口时"
