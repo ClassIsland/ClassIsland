@@ -419,7 +419,10 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
         TaskBarIconService.MainTaskBarIcon.DataContext = this;
         ViewModel.OverlayRemainTimePercents = 0.5;
-        App.GetService<SplashWindow>().Close();
+        if (ViewModel.Settings.IsSplashEnabled)
+        {
+            App.GetService<SplashWindow>().Close();
+        }
 
         if (!ViewModel.Settings.IsWelcomeWindowShowed)
         {

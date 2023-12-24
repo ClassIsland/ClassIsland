@@ -65,6 +65,12 @@ public class AsyncBox : FrameworkElement
         }
     }
 
+    public async Task ShutdownUiDispatcherAsync()
+    {
+        var dispatcher = await GetAsyncDispatcherAsync();
+        dispatcher.InvokeShutdown();
+    }
+
     public Type LoadingViewType
     {
         get

@@ -91,6 +91,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private bool _expIsExcelImportEnabled = false;
     private int _timeLayoutEditorIndex = 1;
     private bool _isSplashEnabled = true;
+    private string _splashCustomText = "";
+    private string _splashCustomLogoSource = "";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -389,6 +391,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _isSplashEnabled) return;
             _isSplashEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SplashCustomText
+    {
+        get => _splashCustomText;
+        set
+        {
+            if (value == _splashCustomText) return;
+            _splashCustomText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SplashCustomLogoSource
+    {
+        get => _splashCustomLogoSource;
+        set
+        {
+            if (value == _splashCustomLogoSource) return;
+            _splashCustomLogoSource = value;
             OnPropertyChanged();
         }
     }

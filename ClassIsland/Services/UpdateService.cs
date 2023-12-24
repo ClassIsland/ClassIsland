@@ -52,10 +52,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         get;
     }
 
-    public UpdateService(SettingsService settingsService, TaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime)
+    private SplashService SplashService { get; }
+
+    public UpdateService(SettingsService settingsService, TaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime,
+        SplashService splashService)
     {
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
+        SplashService = splashService;
     }
 
     public bool IsCanceled
@@ -94,6 +98,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded
             && File.Exists(".\\UpdateTemp\\update.zip"))
         {
+            SplashService.SplashStatus = "正在准备更新…";
             await RestartAppToUpdateAsync();
         }
 
@@ -101,12 +106,19 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             return;
         }
+        
+        _ = AppStartupBackground();
+    }
+
+    private async Task AppStartupBackground()
+    {
         await CheckUpdateAsync();
 
         if (Settings.UpdateMode < 2)
         {
             return;
         }
+
         if (Settings.LastUpdateStatus == UpdateStatus.UpdateAvailable)
         {
             await DownloadUpdateAsync();
@@ -117,6 +129,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             return;
         }
+
         if (Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
         {
             Settings.AutoInstallUpdateNextStartup = true;

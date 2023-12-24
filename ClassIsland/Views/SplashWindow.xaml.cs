@@ -12,6 +12,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Services;
 
 namespace ClassIsland.Views;
 
@@ -20,8 +21,11 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class SplashWindow : Window
 {
-    public SplashWindow()
+    public SplashService SplashService { get; }
+
+    public SplashWindow(SplashService splashService)
     {
+        SplashService = splashService;
         InitializeComponent();
     }
 
@@ -40,5 +44,10 @@ public partial class SplashWindow : Window
     private void AsyncBox_OnLoadingViewLoaded(object? sender, EventArgs e)
     {
         IsRendered = true;
+    }
+
+    private void SplashWindow_OnClosed(object? sender, EventArgs e)
+    {
+        
     }
 }

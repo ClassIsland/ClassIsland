@@ -142,7 +142,7 @@
                             <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
                                                                        Margin="0 0 0 8"
                                                                        TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
-                            
+
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -328,7 +328,8 @@
                             <ListBoxItem Content="双周" />
                         </ListBox>
 
-                    </StackPanel></StackPanel>
+                    </StackPanel>
+                </StackPanel>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
                 <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
@@ -564,14 +565,13 @@
 
         <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                x:Key="NavigationListBox">
-            
+
         </Style>
 
-        
+
         <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
 
     </Window.Resources>
-    <Grid>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
         <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
                                    DrawerClosing="DrawerHost_OnDrawerClosing"
@@ -1446,6 +1446,4 @@
             </Grid>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
-        <windows:AsyncBox LoadingViewType="controls:LoadingMask"/>
-    </Grid>
 </controls:MyWindow>

@@ -17,4 +17,4 @@ using System.Windows;
 [assembly: AssemblyTitle("ClassIsland")]
 [assembly: AssemblyProduct("ClassIsland")]
 [assembly: SupportedOSPlatform("Windows")]
-[assembly: AssemblyInformationalVersion($"{(ThisAssembly.Git.Tag == "" ? "develop" : ThisAssembly.Git.Tag)}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})")]
+[assembly: AssemblyInformationalVersion($"1.2.1.1-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})")]

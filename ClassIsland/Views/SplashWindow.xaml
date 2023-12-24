@@ -21,7 +21,10 @@
         TextElement.FontSize="14"
         TextOptions.TextFormattingMode="Ideal" 
         TextOptions.TextRenderingMode="Auto"   
+        ShowActivated="False"
+        Closed="SplashWindow_OnClosed"
         Height="100" Width="400">
     <windows:AsyncBox LoadingViewType="controls:SplashControl"
-                      LoadingViewLoaded="AsyncBox_OnLoadingViewLoaded"/>
+                      LoadingViewLoaded="AsyncBox_OnLoadingViewLoaded"
+                      x:Name="AsyncBox"/>
 </Window>

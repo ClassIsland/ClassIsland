@@ -7,16 +7,55 @@
              xmlns:classIsland="clr-namespace:ClassIsland"
              mc:Ignorable="d" 
              Height="100"
-             Width="400"
-             d:DesignHeight="300" d:DesignWidth="800">
+             Width="400">
     <UserControl.Resources>
         <SolidColorBrush x:Key="MyBackground" Color="#fafafa"/>
         <SolidColorBrush x:Key="MyForeground" Color="#4e4e4e"/>
+        <Storyboard x:Key="Intro">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="AppLogo" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="75"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="75"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="AppLogo" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Status" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="75"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="75"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Status" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </UserControl.Resources>
     <Border Background="{StaticResource MyBackground}" 
             TextElement.Foreground="{StaticResource MyForeground}"
             Padding="16"
-            Opacity="0.6">
+            Opacity="0.8"
+            d:Opacity="1"
+            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SplashControl}}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition />
@@ -24,20 +63,58 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <!-- Logo -->
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Image Source="/Assets/AppLogo.png"
-                       RenderOptions.BitmapScalingMode="HighQuality"
-                       Width="32"
+            <StackPanel x:Name="AppLogo" Grid.Row="0" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5">
+                <StackPanel.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform X="0"/>
+                    </TransformGroup>
+                </StackPanel.RenderTransform>
+                <Image RenderOptions.BitmapScalingMode="HighQuality"
+                       Stretch="Uniform"
                        Height="32" 
                        VerticalAlignment="Center"
-                       Margin="0 0 8 0"/>
+                       Margin="0 0 8 0">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SettingsService.Settings.SplashCustomLogoSource}" Value="">
+                                    <Setter Property="Source" Value="/Assets/AppLogo.png"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="Source" Value="{Binding SettingsService.Settings.SplashCustomLogoSource}"/>
+
+                        </Style>
+                    </Image.Style>
+                </Image>
                 <TextBlock Text="ClassIsland" 
                            VerticalAlignment="Center"
                            FontSize="20"
-                           FontWeight="Medium"/>
+                           FontWeight="Medium">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SettingsService.Settings.SplashCustomLogoSource}" Value="">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </StackPanel>
             <!-- Status -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <StackPanel x:Name="Status" Grid.Row="2" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5">
+                <StackPanel.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform X="17"/>
+                    </TransformGroup>
+                </StackPanel.RenderTransform>
                 <ProgressBar Width="20"
                              Height="20" 
                              Value="-1"
@@ -45,17 +122,20 @@
                              VerticalAlignment="Center"
                              Margin="0 0 4 0"
                              Style="{StaticResource MaterialDesignCircularProgressBar}"/>
-                <TextBlock Text="正在启动……" 
+                <TextBlock Text="{Binding SplashService.SplashStatus, Mode=OneWay}" 
                            VerticalAlignment="Center"
                            FontSize="16"
                            FontWeight="Regular"/>
             </StackPanel>
-            <TextBlock Grid.Row="2" Text="{x:Static classIsland:App.AppVersionLong}"
+            <TextBlock Grid.Row="2"
                        VerticalAlignment="Bottom"
                        HorizontalAlignment="Left"
                        FontSize="9"
                        Opacity="0.5"
-                       Margin="-16 0 0 -16"/>
+                       Margin="-16 0 0 -16">
+                <Run Text="ClassIsland"/>
+                <Run Text="{x:Static classIsland:App.AppVersionLong}"/>
+            </TextBlock>
         </Grid>
     </Border>
 </UserControl>

@@ -65,7 +65,7 @@ public partial class App : Application
     public static string AppCodeName => "Elysia";
 
     public static string AppVersionLong =>
-        $"{AppVersion} {(ThisAssembly.Git.Tag == "" ? "develop" : ThisAssembly.Git.Tag)}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
+        $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
@@ -201,6 +201,7 @@ public partial class App : Application
                 services.AddSingleton<FileFolderService>();
                 services.AddSingleton<AttachedSettingsHostService>();
                 services.AddSingleton<ProfileService>();
+                services.AddSingleton<SplashService>();
                 //services.AddHostedService<BootService>();
                 // Views
                 services.AddSingleton<MainWindow>();

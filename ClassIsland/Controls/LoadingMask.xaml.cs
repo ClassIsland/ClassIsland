@@ -32,15 +32,25 @@ public partial class LoadingMask : UserControl
     {
         while (IsWorking)
         {
-            Thread.Sleep(50);
-            if (await CheckDispatcherHangAsync(Application.Current.Dispatcher))
+            await Task.Delay(1000);
+            var application = (App?)Application.Current;
+            if (application == null)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    Visibility = Visibility.Visible;
-                });
+                break;
+            }
+
+            var v = Visibility;
+            var v2 = Visibility.Collapsed;
+            if (await CheckDispatcherHangAsync(application.Dispatcher))
+            {
+                v2 = Visibility.Visible;
             }
             else
+            {
+                v2 = Visibility.Collapsed;
+            }
+
+            if (v != v2)
             {
                 Dispatcher.Invoke(() =>
                 {

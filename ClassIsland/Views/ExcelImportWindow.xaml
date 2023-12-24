@@ -422,10 +422,5 @@
                   VerticalAlignment="Bottom"
                   HorizontalAlignment="Center"
                   IsChecked="{Binding ViewModel.IsSelectingMode}"/>
-        <windows:AsyncBox Grid.Column="0"
-                          Grid.Row="0"
-                          Grid.ColumnSpan="3"
-                          Grid.RowSpan="2"
-                          LoadingViewType="controls:LoadingMask"/>
     </Grid>
 </controls:MyWindow>
