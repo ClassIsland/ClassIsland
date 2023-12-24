@@ -952,7 +952,7 @@ public partial class MainWindow : Window
 
         var m = e.NewSize.Width > BackgroundWidth;
         var s = ViewModel.Settings.DebugAnimationScale;
-        var t = m ? 500 * s : 600 * s;
+        var t = m ? 600 * s : 800 * s;
         var da = new DoubleAnimation()  
         {
             From = BackgroundWidth,
@@ -961,11 +961,11 @@ public partial class MainWindow : Window
             EasingFunction = m ? new BackEase()
             {
                 EasingMode = EasingMode.EaseOut,
-                Amplitude = 0.75
+                Amplitude = 0.4
             } : new BackEase()
             {
                 EasingMode = EasingMode.EaseOut,
-                Amplitude = 0.5
+                Amplitude = 0.2
             }
         };
         var storyboard = new Storyboard()
