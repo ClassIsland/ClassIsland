@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using ClassIsland.Models;
+using MaterialDesignColors;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Win32;
@@ -18,6 +19,8 @@ public class ThemeService : IHostedService
     public async Task StopAsync(CancellationToken cancellationToken)
     {
     }
+
+    public ITheme? CurrentTheme { get; private set; }
 
     public event EventHandler<ThemeUpdatedEventArgs>? ThemeUpdated;
 
@@ -73,7 +76,7 @@ public class ThemeService : IHostedService
         theme.SetPrimaryColor(primary);
         theme.SetSecondaryColor(secondary);
         var lastTheme = paletteHelper.GetTheme();
-        
+
         if (lastPrimary == theme.PrimaryMid.Color &&
             lastSecondary == theme.SecondaryMid.Color &&
             lastBaseTheme == theme.GetBaseTheme())
@@ -81,8 +84,9 @@ public class ThemeService : IHostedService
             return;
         }
 
-        
+
         paletteHelper.SetTheme(theme);
+        CurrentTheme = theme;
         ThemeUpdated?.Invoke(this, new ThemeUpdatedEventArgs
         {
             ThemeMode = themeMode,
