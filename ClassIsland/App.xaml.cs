@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Diagnostics;
 using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
@@ -26,6 +27,7 @@ using Microsoft.AppCenter.Crashes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using UpdateStatus = ClassIsland.Enums.UpdateStatus;
 
 namespace ClassIsland;
@@ -36,6 +38,7 @@ public partial class App : Application
 {
     private CrashWindow? CrashWindow;
     private Mutex? Mutex;
+    private ILogger<App>? Logger { get; set; }
     public static IHost Host;
 
     public static T GetService<T>()
@@ -75,6 +78,7 @@ public partial class App : Application
             CrashWindow = null;
             GC.Collect();
         }
+        Logger?.LogCritical(e.Exception, "发生严重错误。");
 
         CrashWindow = new CrashWindow()
         {
@@ -138,6 +142,11 @@ public partial class App : Application
         //    }
         //}
 
+        //ConsoleService.InitializeConsole();
+        ConsoleService.InitializeConsole();
+        Console.WriteLine($"ClassIsland {AppVersionLong}");
+
+        BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
         var command = new RootCommand
@@ -203,6 +212,7 @@ public partial class App : Application
                 services.AddSingleton<ProfileService>();
                 services.AddSingleton<SplashService>();
                 services.AddSingleton<HangService>();
+                services.AddSingleton<ConsoleService>();
                 //services.AddHostedService<BootService>();
                 // Views
                 services.AddSingleton<MainWindow>();
@@ -217,7 +227,15 @@ public partial class App : Application
                 // Transients
                 services.AddTransient<ExcelImportWindow>();
                 services.AddTransient<WallpaperPreviewWindow>();
+                // Logging
+                services.AddLogging(builder =>
+                {
+                    builder.AddConsole();
+                });
             }).Build();
+        ConsoleService.ConsoleVisible = GetService<SettingsService>().Settings.IsDebugConsoleEnabled;
+        Logger = GetService<ILogger<App>>();
+        Logger.LogInformation("初始化应用。");
         if (GetService<SettingsService>().Settings.IsSplashEnabled)
         {
             GetService<SplashWindow>().Show();
@@ -241,8 +259,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            // ignored
-            //MessageBox.Show(ex.ToString());
+            Logger.LogError(ex, "创建任务栏图标失败。");
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
@@ -260,8 +277,21 @@ public partial class App : Application
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = Host.StartAsync();
 
+        Logger.LogInformation("正在初始化MainWindow。");
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
+    }
+
+    private void BindingDiagnosticsOnBindingFailed(object? sender, BindingFailedEventArgs e)
+    {
+        if (e.EventType == TraceEventType.Verbose)
+        {
+            Logger?.LogTrace($"{e.Message}");
+        }
+        else
+        {
+            Logger?.LogWarning($"{e.Message}");
+        }
     }
 
     public static void ReleaseLock()

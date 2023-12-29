@@ -2,7 +2,9 @@
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows.Shapes;
 using ClassIsland.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
@@ -14,8 +16,11 @@ public class ProfileService
 
     private SettingsService SettingsService { get; }
 
-    public ProfileService(SettingsService settingsService)
+    private ILogger<ProfileService> Logger { get; }
+
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger)
     {
+        Logger = logger;
         SettingsService = settingsService;
         if (!Directory.Exists("./Profiles"))
         {
@@ -29,8 +34,10 @@ public class ProfileService
     {
         var filename = SettingsService.Settings.SelectedProfile;
         var path = $"./Profiles/{filename}";
+        Logger.LogInformation("加载档案中：{}", path);
         if (!File.Exists(path))
         {
+            Logger.LogInformation("档案不存在：{}", path);
             SaveProfile(filename);
         }
 
@@ -52,6 +59,7 @@ public class ProfileService
 
     public void SaveProfile(string filename)
     {
+        Logger.LogInformation("写入档案文件：{}", $"./Profiles/{filename}");
         var json = JsonSerializer.Serialize<Profile>(Profile);
         //File.WriteAllText("./Profile.json", json);
         File.WriteAllText($"./Profiles/{filename}", json);
@@ -65,6 +73,7 @@ public class ProfileService
 
     public string? CreateTempClassPlan(string id)
     {
+        Logger.LogInformation("创建临时层：{}", id);
         if (Profile.OverlayClassPlanId != null && Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
         {
             return null;
@@ -90,6 +99,7 @@ public class ProfileService
             return;
         }
 
+        Logger.LogInformation("清空临时层：{}", Profile.OverlayClassPlanId);
         Profile.IsOverlayClassPlanEnabled = false;
         Profile.ClassPlans.Remove(Profile.OverlayClassPlanId);
         Profile.OverlayClassPlanId = null;
@@ -105,6 +115,7 @@ public class ProfileService
         var cp = Profile.ClassPlans[Profile.OverlayClassPlanId];
         if (cp.OverlaySetupTime.Date < DateTime.Now.Date)
         {
+            Logger.LogInformation("清理过期的临时层课表。");
             ClearTempClassPlan();
         }
     }
@@ -132,6 +143,7 @@ public class ProfileService
 
     public void ConvertToStdClassPlan()
     {
+        Logger.LogInformation("将临时层课表转换为普通课表：{}", Profile.OverlayClassPlanId);
         if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
         {
             return;

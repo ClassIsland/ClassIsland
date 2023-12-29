@@ -6,6 +6,7 @@ using ClassIsland.Models;
 using MaterialDesignColors;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 namespace ClassIsland.Services;
@@ -22,7 +23,14 @@ public class ThemeService : IHostedService
 
     public ITheme? CurrentTheme { get; private set; } 
 
+    public ILogger<ThemeService> Logger { get; }
+
     public event EventHandler<ThemeUpdatedEventArgs>? ThemeUpdated;
+
+    public ThemeService(ILogger<ThemeService> logger)
+    {
+        Logger = logger;
+    }
 
     public int CurrentRealThemeMode { get; private set; } = 0;
 
@@ -52,8 +60,9 @@ public class ThemeService : IHostedService
                         }
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Logger.LogError(ex, "无法获取系统明暗主题，使用默认（亮色）主题。");
                     theme.SetBaseTheme(new MaterialDesignLightTheme());
                 }
                 break;
@@ -87,6 +96,7 @@ public class ThemeService : IHostedService
 
         paletteHelper.SetTheme(theme);
         CurrentTheme = theme;
+        Logger.LogInformation("设置主题：{}", theme);
         ThemeUpdated?.Invoke(this, new ThemeUpdatedEventArgs
         {
             ThemeMode = themeMode,

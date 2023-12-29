@@ -34,6 +34,7 @@ using H.NotifyIcon;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using unvell.Common.Win32Lib;
 using Path = System.IO.Path;
@@ -106,6 +107,8 @@ public partial class MainWindow : Window
         get;
     } = new();
 
+    private ILogger<MainWindow> Logger;
+
     public ClassChangingWindow? ClassChangingWindow { get; set; }
 
     public MiniInfoProviderHostService MiniInfoProviderHostService
@@ -122,8 +125,9 @@ public partial class MainWindow : Window
         set { SetValue(BackgroundWidthProperty, value); }
     }
 
-    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService)
+    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService, ILogger<MainWindow> logger)
     {
+        Logger = logger;
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
@@ -324,11 +328,13 @@ public partial class MainWindow : Window
             // 向提醒提供方传递事件
             // 下课事件
             case TimeState.Breaking when ViewModel.CurrentOverlayEventStatus != TimeState.Breaking:
+                Logger.LogInformation("发出下课事件。");
                 NotificationHostService.OnOnBreakingTime(this, EventArgs.Empty);
                 ViewModel.CurrentOverlayEventStatus = TimeState.Breaking;
                 break;
             // 上课事件
             case TimeState.OnClass when ViewModel.CurrentOverlayEventStatus != TimeState.OnClass:
+                Logger.LogInformation("发出上课事件。");
                 NotificationHostService.OnOnClass(this, EventArgs.Empty);
                 ViewModel.CurrentOverlayEventStatus = TimeState.OnClass;
                 break;
@@ -352,6 +358,7 @@ public partial class MainWindow : Window
             while (NotificationHostService.RequestQueue.Count > 0)
             {
                 var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();
+                Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
                 if (request.TargetMaskEndTime != null)
                 {
                     request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
@@ -556,9 +563,9 @@ public partial class MainWindow : Window
                     var c = NativeWindowHelper.GetColor(color);
                     primary = secondary = c;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignored
+                    Logger.LogError(ex, "获取系统主题色失败。");
                 }
                 break;
 

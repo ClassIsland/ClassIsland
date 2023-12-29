@@ -14,6 +14,7 @@ using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
@@ -29,13 +30,16 @@ public class WeatherService : IHostedService
 
     public List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; } = new();
 
+    private ILogger<WeatherService> Logger { get; }
+
     private DispatcherTimer UpdateTimer { get; } = new()
     {
         Interval = TimeSpan.FromMinutes(5)
     };
 
-    public WeatherService(SettingsService settingsService, FileFolderService fileFolderService, IHostApplicationLifetime hostApplicationLifetime)
+    public WeatherService(SettingsService settingsService, FileFolderService fileFolderService, IHostApplicationLifetime hostApplicationLifetime, ILogger<WeatherService> logger)
     {
+        Logger = logger;
         SettingsService = settingsService;
         hostApplicationLifetime.ApplicationStopping.Register(AppStopping);
         LoadData();
@@ -81,15 +85,15 @@ public class WeatherService : IHostedService
         {
             using var http = new HttpClient();
             var uri = $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
-            Debug.WriteLine(uri);
+            Logger.LogInformation("获取天气信息： {}", uri);
             var r = await http.GetAsync(
                 uri);
             var str = await r.Content.ReadAsStringAsync();
             Settings.LastWeatherInfo = JsonSerializer.Deserialize<WeatherInfo>(str)!;
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            Logger.LogError(ex, "获取天气信息失败。");
         }
     }
 

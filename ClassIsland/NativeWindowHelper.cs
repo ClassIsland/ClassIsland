@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using ClassIsland.Models;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland;
 
@@ -226,9 +227,9 @@ public static class NativeWindowHelper
                         ? DesktopWindow.GetWindowByHWndDetailed(win)
                         : DesktopWindow.GetWindowByHWnd(win));
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // ignored
+                    App.GetService<ILogger>().LogError("无法获取窗口信息：{}", win);
                 }
 
                 // 前往下一个窗口
@@ -266,4 +267,23 @@ public static class NativeWindowHelper
     [DllImport("User32.dll")]
 
     public static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
+
+    [DllImport("kernel32.dll")]
+    public static extern bool AllocConsole();
+
+    [DllImport("kernel32.dll")]
+    public static extern bool FreeConsole();
+
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr GetConsoleWindow();
+
+    [DllImportAttribute("user32.dll", EntryPoint="ShowWindow")]
+    public static extern  bool ShowWindow(nint hWnd, int nCmdShow) ;
+
+    [DllImport("user32.dll")]
+    public static extern bool SetWindowText(nint hWnd, string lpText);
+
+    public const int SW_SHOW = 5;
+
+    public const int SW_HIDE = 0;
 }

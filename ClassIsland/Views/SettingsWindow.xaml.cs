@@ -488,4 +488,14 @@ public partial class SettingsWindow : MyWindow
     {
         App.GetService<SplashWindow>().Show();
     }
+
+    private void MenuItemDebugConsole_OnChecked(object sender, RoutedEventArgs e)
+    {
+        ConsoleService.ConsoleVisible = true;
+    }
+
+    private void MenuItemDebugConsole_OnUnchecked(object sender, RoutedEventArgs e)
+    {
+        ConsoleService.ConsoleVisible = false;
+    }
 }

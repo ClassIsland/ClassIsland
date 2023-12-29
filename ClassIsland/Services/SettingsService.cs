@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
@@ -21,8 +22,11 @@ public class SettingsService : IHostedService, INotifyPropertyChanged
         set => SetField(ref _settings, value);
     }
 
-    public SettingsService(IHostApplicationLifetime appLifetime)
+    private ILogger<SettingsService> Logger { get; }
+
+    public SettingsService(IHostApplicationLifetime appLifetime, ILogger<SettingsService> logger)
     {
+        Logger = logger;
         LoadSettings();
         appLifetime.ApplicationStopping.Register(SaveSettings);
     }
@@ -33,11 +37,13 @@ public class SettingsService : IHostedService, INotifyPropertyChanged
     {
         if (!File.Exists("./Settings.json"))
         {
+            Logger.LogInformation("配置文件不存在，跳过加载。");
             return;
         }
 
         try
         {
+            Logger.LogInformation("加载配置文件。");
             var json = File.ReadAllText("./Settings.json");
             var r = JsonSerializer.Deserialize<Settings>(json);
             if (r != null)
@@ -48,12 +54,14 @@ public class SettingsService : IHostedService, INotifyPropertyChanged
         }
         catch(Exception ex)
         {
+            Logger.LogError(ex, "配置文件加载失败。");
             // ignored
         }
     }
 
     public void SaveSettings()
     {
+        Logger.LogInformation("写入配置文件。");
         File.WriteAllText("./Settings.json", JsonSerializer.Serialize<Settings>(Settings));
     }
 

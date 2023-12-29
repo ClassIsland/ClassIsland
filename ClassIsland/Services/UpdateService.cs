@@ -17,6 +17,7 @@ using ClassIsland.Enums;
 using ClassIsland.Models;
 using Downloader;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
 
@@ -54,12 +55,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private SplashService SplashService { get; }
 
+    private ILogger<UpdateService> Logger { get; }
+
     public UpdateService(SettingsService settingsService, TaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime,
-        SplashService splashService)
+        SplashService splashService, ILogger<UpdateService> logger)
     {
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
         SplashService = splashService;
+        Logger = logger;
     }
 
     public bool IsCanceled
@@ -176,7 +180,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             Directory.Delete("./UpdateTemp", true);
         }
-        catch
+        catch (Exception)
         {
             // ignored
         }
@@ -210,6 +214,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         try
         {
+            Logger.LogInformation("正在检查应用更新。");
 
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
             var versions = await GetUpdateVersionsAsync(CurrentUpdateSourceUrl + "/public_releases");
@@ -244,6 +249,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             Settings.LastUpdateStatus = UpdateStatus.UpToDate;
             NetworkErrorException = ex;
+            Logger.LogError(ex, "检查应用更新失败。");
         }
         finally
         {
@@ -255,6 +261,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         try
         {
+            Logger.LogInformation("下载应用更新包：{}", Settings.LastCheckUpdateInfoCache.DownloadUrl);
             TotalSize = 0;
             DownloadedSize = 0;
             DownloadSpeed = 0;
@@ -284,6 +291,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         catch (Exception ex)
         {
             NetworkErrorException = ex;
+            Logger.LogError(ex, "下载应用更新失败。");
         }
         finally
         {
@@ -299,6 +307,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             return;
         }
 
+        Logger.LogInformation("应用更新下载停止。");
         IsCanceled = true;
         Downloader.Pause();
         Downloader.Dispose();
@@ -312,9 +321,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             Directory.Delete("./UpdateTemp", true);
         }
-        catch
+        catch (Exception ex)
         {
-            // ignored
+            Logger.LogError(ex, "移除下载临时文件失败。");
         }
         await CheckUpdateAsync(isCancel:true);
     }
@@ -324,10 +333,13 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         TotalSize = e.TotalBytesToReceive;
         DownloadedSize = e.ReceivedBytesSize;
         DownloadSpeed = e.BytesPerSecondSpeed;
+        //Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
+
     }
 
     public async Task ExtractUpdateAsync()
     {
+        Logger.LogInformation("正在展开应用更新包。");
         CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
         await Task.Run(() =>
         {
@@ -337,6 +349,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task RestartAppToUpdateAsync()
     {
+        Logger.LogInformation("正在重启至升级模式。");
         TaskBarIconService.MainTaskBarIcon.ShowNotification("正在安装应用更新", "这可能需要10-30秒的时间，请稍后……");
         await ExtractUpdateAsync();
         Process.Start(new ProcessStartInfo()

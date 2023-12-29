@@ -16,7 +16,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Models;
+using ClassIsland.Services;
 using ClassIsland.ViewModels;
+using Microsoft.Extensions.Logging;
 using static ClassIsland.NativeWindowHelper;
 
 namespace ClassIsland.Views;
@@ -74,12 +76,13 @@ public partial class WindowsPicker : MyWindow
             {
                 c.Add(DesktopWindow.GetWindowByHWndDetailed(i.HWnd));
             }
-            catch
+            catch (Exception ex) 
             {
-                // ignored
+                App.GetService<ILogger<WindowsPicker>>().LogError(ex, "获取窗口详细信息失败：{}（{}）", i.HWnd, i.ClassName);
             }
         }
 
+        App.GetService<HangService>().AssumeHang();
         ViewModel.DesktopWindows = c;
     }
 

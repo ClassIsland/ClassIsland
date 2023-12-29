@@ -11,6 +11,7 @@ using ClassIsland.Enums;
 using ClassIsland.Interfaces;
 using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
@@ -20,15 +21,17 @@ namespace ClassIsland.Services;
 public class NotificationHostService : IHostedService, INotifyPropertyChanged
 {
     private SettingsService SettingsService { get; }
+    private ILogger<NotificationHostService> Logger { get; }
     private Settings Settings => SettingsService.Settings;
 
     public Queue<NotificationRequest> RequestQueue { get; } = new();
 
     public ObservableCollection<INotificationProvider> NotificationProviders { get; } = new();
 
-    public NotificationHostService(SettingsService settingsService)
+    public NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
     {
         SettingsService = settingsService;
+        Logger = logger;
     }
 
     #region Events
@@ -126,6 +129,7 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
     /// </example>
     public void RegisterNotificationProvider(INotificationProvider provider)
     {
+        Logger.LogInformation("注册提醒提供方：{}（{}）", provider.ProviderGuid, provider.Name);
         if (!Settings.NotificationProvidersPriority.Contains(provider.ProviderGuid.ToString()))
         {
             Settings.NotificationProvidersPriority.Add(provider.ProviderGuid.ToString());
@@ -166,6 +170,7 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
     /// <returns>对应提醒服务实例。若不存在，则返回null。</returns>
     public T? GetNotificationProviderSettings<T>(Guid id)
     {
+        Logger.LogInformation("获取提醒提供方设置：{}", id);
         var o = Settings.NotificationProvidersSettings[id.ToString()];
         if (o is JsonElement)
         {
@@ -177,6 +182,7 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
 
     public void WriteNotificationProviderSettings<T>(Guid id, T settings)
     {
+        Logger.LogInformation("写入提醒提供方设置：{}", id);
         Settings.NotificationProvidersSettings[id.ToString()] = settings;
     }
 

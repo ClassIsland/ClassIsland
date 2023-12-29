@@ -11,6 +11,7 @@ using ClassIsland.Interfaces;
 using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignColors;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WindowsShortcutFactory;
 using File = System.IO.File;
@@ -93,6 +94,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private bool _isSplashEnabled = true;
     private string _splashCustomText = "";
     private string _splashCustomLogoSource = "";
+    private bool _isDebugConsoleEnabled = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -279,9 +281,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings
                 }
                 OnPropertyChanged();
             }
-            catch
+            catch (Exception ex)
             {
-                // ignored
+                App.GetService<ILogger<Settings>>().LogError(ex, "无法创建开机自启动快捷方式。");
             }
         }
     }
@@ -918,6 +920,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _timeLayoutEditorIndex) return;
             _timeLayoutEditorIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsDebugConsoleEnabled
+    {
+        get => _isDebugConsoleEnabled;
+        set
+        {
+            if (value == _isDebugConsoleEnabled) return;
+            _isDebugConsoleEnabled = value;
             OnPropertyChanged();
         }
     }
