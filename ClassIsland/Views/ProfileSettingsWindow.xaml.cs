@@ -42,6 +42,8 @@ public partial class ProfileSettingsWindow : MyWindow
     public static RoutedUICommand OpenTimeLayoutItemEditorCommand = new RoutedUICommand();
 
     public static RoutedUICommand RemoveSelectedTimeLayoutItemCommand = new RoutedUICommand();
+
+    public HangService HangService { get; } = App.GetService<HangService>();
     public MainViewModel MainViewModel
     {
         get;
@@ -795,5 +797,10 @@ public partial class ProfileSettingsWindow : MyWindow
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         TimeLayoutEditScrollToContent();
+    }
+
+    private void GlobalUpdated(object sender, RoutedEventArgs e)
+    {
+        HangService.AssumeHang();
     }
 }

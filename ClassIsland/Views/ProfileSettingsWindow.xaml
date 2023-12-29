@@ -17,6 +17,7 @@
                    xmlns:classIsland="clr-namespace:ClassIsland"
                    xmlns:viewModels="clr-namespace:ClassIsland.ViewModels"
                    xmlns:windows="clr-namespace:Walterlv.Windows"
+                   xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -31,7 +32,9 @@
                    MinWidth="750"
                    AllowDrop="True"
                    DragEnter="ProfileSettingsWindow_OnDragEnter"
-                   Drop="ProfileSettingsWindow_OnDrop">
+                   Drop="ProfileSettingsWindow_OnDrop"
+                   Button.Click="GlobalUpdated"
+                   ListBox.SelectionChanged="GlobalUpdated">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}" Executed="ButtonEditTimePoint_OnClick"/>
         <CommandBinding Command="{x:Static local:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}" Executed="ButtonRemoveTimePoint_OnClick"/>
@@ -572,6 +575,8 @@
         <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
 
     </Window.Resources>
+    <Grid>
+
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
         <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
                                    DrawerClosing="DrawerHost_OnDrawerClosing"
@@ -1446,4 +1451,6 @@
             </Grid>
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
+        <windows:AsyncBox VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
+    </Grid>
 </controls:MyWindow>

@@ -20,7 +20,7 @@ public class ThemeService : IHostedService
     {
     }
 
-    public ITheme? CurrentTheme { get; private set; }
+    public ITheme? CurrentTheme { get; private set; } 
 
     public event EventHandler<ThemeUpdatedEventArgs>? ThemeUpdated;
 

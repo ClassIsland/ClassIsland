@@ -5,10 +5,23 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <Storyboard RepeatBehavior="Forever" x:Key="Loop">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="xTransform" Storyboard.TargetProperty="X">
+                <SplineDoubleKeyFrame KeyTime="0" Value="0" />
+                <SplineDoubleKeyFrame KeyTime="00:00:.35" Value="20" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </UserControl.Resources>
+    <Grid Visibility="{Binding HangService.IsHang, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}, Converter={StaticResource BooleanToVisibilityConverter}}">
         <mah:MetroProgressBar IsIndeterminate="True" VerticalAlignment="Top"
+                              Height="8"
                               x:Name="MetroProgressBar"/>
+        
     </Grid>
 </UserControl>

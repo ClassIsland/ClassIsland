@@ -202,6 +202,7 @@ public partial class App : Application
                 services.AddSingleton<AttachedSettingsHostService>();
                 services.AddSingleton<ProfileService>();
                 services.AddSingleton<SplashService>();
+                services.AddSingleton<HangService>();
                 //services.AddHostedService<BootService>();
                 // Views
                 services.AddSingleton<MainWindow>();
@@ -232,6 +233,8 @@ public partial class App : Application
                 }
             });
         }
+
+        GetService<HangService>();
         try
         {
             GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate(false);

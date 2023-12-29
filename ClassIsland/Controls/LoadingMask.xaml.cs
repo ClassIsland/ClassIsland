@@ -24,50 +24,12 @@ namespace ClassIsland.Controls;
 /// </summary>
 public partial class LoadingMask : UserControl
 {
-    private Thread CheckingThread { get; }
-
-    private bool IsWorking { get; set; } = true;
-
-    private async void StartProcessing()
-    {
-        while (IsWorking)
-        {
-            await Task.Delay(1000);
-            var application = (App?)Application.Current;
-            if (application == null)
-            {
-                break;
-            }
-
-            var v = Visibility;
-            var v2 = Visibility.Collapsed;
-            if (await CheckDispatcherHangAsync(application.Dispatcher))
-            {
-                v2 = Visibility.Visible;
-            }
-            else
-            {
-                v2 = Visibility.Collapsed;
-            }
-
-            if (v != v2)
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    Visibility = Visibility.Collapsed;
-                });
-            }
-        }
-    }
-
     private ThemeService ThemeService { get; } = App.GetService<ThemeService>();
+    public HangService HangService { get; } = App.GetService<HangService>();
 
     public LoadingMask()
     {
         InitializeComponent();
-        CheckingThread = new Thread(StartProcessing);
-        CheckingThread.Start();
-        ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
         UpdateForeground();
     }
 
@@ -86,20 +48,5 @@ public partial class LoadingMask : UserControl
     private void ThemeServiceOnThemeUpdated(object? sender, ThemeUpdatedEventArgs e)
     {
         UpdateForeground();
-    }
-
-    ~LoadingMask()
-    {
-        IsWorking = false;
-        CheckingThread.Interrupt();
-    }
-
-    private static async Task<bool> CheckDispatcherHangAsync(Dispatcher dispatcher)
-    {
-        var taskCompletionSource = new TaskCompletionSource<bool>();
-        _ = dispatcher.InvokeAsync(() => taskCompletionSource.TrySetResult(true));
-        await Task.WhenAny(taskCompletionSource.Task, Task.Delay(TimeSpan.FromMilliseconds(175)));
-        // 如果任务还没完成，就是界面卡了
-        return taskCompletionSource.Task.IsCompleted is false;
     }
 }

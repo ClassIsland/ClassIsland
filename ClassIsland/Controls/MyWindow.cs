@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Interop;
 using ClassIsland.Models;
@@ -20,6 +21,7 @@ public class MyWindow : Window
         {
             ThemeService = App.GetService<ThemeService>();
             ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
+            App.GetService<HangService>().AssumeHang();
         }
         catch
         {
@@ -31,6 +33,8 @@ public class MyWindow : Window
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 0);
+        var layer = AdornerLayer.GetAdornerLayer(this);
+        Debug.WriteLine(layer);
     }
 
     private void ThemeServiceOnThemeUpdated(object? sender, ThemeUpdatedEventArgs e)
