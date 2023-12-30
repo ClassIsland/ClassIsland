@@ -1,0 +1,317 @@
+﻿<UserControl x:Class="ClassIsland.Controls.Demo.OpenTaskBarMenuDemo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.Demo"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="281.25" d:DesignWidth="500" ClipToBounds="True" Width="500" Height="281.25">
+    <UserControl.Resources>
+        <Storyboard x:Key="Loop" RepeatBehavior="Forever">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ZoneHiddenTaskBarIcons" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.7000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.8000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.9000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridPointer" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="193.067">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.1000000" Value="193.067"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.3000000" Value="179.867">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.9000000" Value="179.867"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.2000000" Value="191.867">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.3000000" Value="191.867"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.5000000" Value="191.867"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.3000000" Value="191.867"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridPointer" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="131.067">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.1000000" Value="131.067"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.3000000" Value="119.067">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.9000000" Value="119.067"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.2000000" Value="132.067">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.3000000" Value="132.067"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.5000000" Value="132.067"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.3000000" Value="132.067"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridPointer" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.6000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.7000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.8000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.1000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.3000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.5000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.6000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.4000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.5000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.1000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.2000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridPointer" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.6000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.7000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.8000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.1000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.3000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.5000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.6000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.4000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.5000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.1000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.2000000" Value="0.8"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ZoneHiddenTaskBarIcons" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="36"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.7000000" Value="36"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.8000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.9000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="36">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IconTaskBarNotifyExpand" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.7000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.8000000" Value="180"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:01.9000000" Value="180"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageAppIcon" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:01.9000000" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ImageAppIcon" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                <EasingDoubleKeyFrame KeyTime="00:00:01.9000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.2000000" Value="12">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ImageAppIcon" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:01.9000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.2000000" Value="14">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseInOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ImageAppIconHidden" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:01.8000000" Value="{x:Static Visibility.Visible}"/>
+                <DiscreteObjectKeyFrame KeyTime="00:00:01.9000000" Value="{x:Static Visibility.Hidden}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IconTaskBarNotifyExpand" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
+                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:02.2000000" Value="-12">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ZoneMainMenu" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:03.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.3000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:04.5000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="2.5"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.8000000" Value="2.5"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:04" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="2.5"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:03.8000000" Value="2.5"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:04" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </UserControl.Resources>
+    <Grid x:Name="grid" RenderTransformOrigin="1,1">
+        <Grid.RenderTransform>
+            <TransformGroup>
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                <SkewTransform/>
+                <RotateTransform/>
+                <TranslateTransform X="0" Y="0"/>
+            </TransformGroup>
+        </Grid.RenderTransform>
+        <Grid x:Name="GridMain" Background="{DynamicResource PrimaryHueLightBrush}" RenderTransformOrigin="1,1">
+
+            <materialDesign:ColorZone Background="#BB000000" Mode="Dark"
+                                      x:Name="ZoneHiddenTaskBarIcons"
+                                      VerticalAlignment="Bottom"
+                                      HorizontalAlignment="Right" Margin="0,0,52,16" RenderTransformOrigin="0.5,0.5">
+                <materialDesign:ColorZone.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform Y="36"/>
+                    </TransformGroup>
+                </materialDesign:ColorZone.RenderTransform>
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="4"/>
+                    <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="4" Grid.Column="1"/>
+                    <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="4" Grid.Column="2"/>
+                    <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="4" Grid.Row="1"/>
+                    <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="4" Grid.Row="1" Grid.Column="1"/>
+                    <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="4" Grid.Row="1" Grid.Column="2"/>
+                    <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="4" Grid.Row="2"/>
+                    <Image x:Name="ImageAppIconHidden" Width="8" Height="8" 
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           Grid.Column="1" Grid.Row="2"
+                           Source="/Assets/AppLogo.png" RenderTransformOrigin="0.5,0.5"/>
+
+                </Grid>
+            </materialDesign:ColorZone>
+
+            <materialDesign:ColorZone VerticalAlignment="Bottom" Height="16" Background="#BB000000" Mode="Dark">
+                <Grid x:Name="GridTaskBar" >
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                Margin="2">
+                        <materialDesign:PackIcon Kind="MicrosoftWindows" Height="12" Width="12" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                        <materialDesign:PackIcon Kind="Magnify" Height="12" Width="12" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="2">
+                        <materialDesign:PackIcon Kind="ChevronUp" Width="10" Height="10" Margin="0 0 2 0" 
+                                                 x:Name="IconTaskBarNotifyExpand"
+                                                 VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+                            <materialDesign:PackIcon.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform/>
+                                    <SkewTransform/>
+                                    <RotateTransform/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </materialDesign:PackIcon.RenderTransform>
+                        </materialDesign:PackIcon>
+                        <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="0 0 4 0"/>
+                        <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="0 0 4 0"/>
+                        <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="0 0 4 0"/>
+                        <Border Background="White" Width="4" Height="4" Opacity="0.75" Margin="0 0 4 0"/>
+                        <Border Background="White" Width="16" Height="6" Opacity="0.75"/>
+                    </StackPanel>
+                </Grid>
+            </materialDesign:ColorZone>
+            <Image x:Name="ImageAppIcon" Width="8" Height="8" 
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        Source="/Assets/AppLogo.png" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,66,18" Visibility="Hidden" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <materialDesign:ColorZone x:Name="ZoneMainMenu" Mode="Standard" Padding="0"
+                                      VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,58,16" Opacity="0">
+                <StackPanel HorizontalAlignment="Left">
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="26" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="16" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Separator/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="26" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="30" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Separator/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="26" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="26" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="30" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="16" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                    <Separator/>
+                    <Border
+                        Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                        Width="16" Height="4" Opacity="0.75" Margin="4 2" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </materialDesign:ColorZone>
+        </Grid>
+        <Grid x:Name="GridPointer" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+            <Grid.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform X="0" Y="0"/>
+                </TransformGroup>
+            </Grid.RenderTransform>
+            <Ellipse Width="16" Height="16" Stroke="{DynamicResource PrimaryHueMidBrush}">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#33000000" Offset="0"/>
+                        <GradientStop Color="#BF000000" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Grid>
+    </Grid>
+</UserControl>

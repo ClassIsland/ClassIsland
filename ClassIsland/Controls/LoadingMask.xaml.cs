@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using MahApps.Metro.Controls;
 
 namespace ClassIsland.Controls;
 
