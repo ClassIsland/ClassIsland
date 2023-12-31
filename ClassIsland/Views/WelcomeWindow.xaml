@@ -10,7 +10,7 @@
                    xmlns:ww="clr-namespace:Walterlv.Windows"
                    xmlns:ci="clr-namespace:ClassIsland"
                    xmlns:converters="clr-namespace:ClassIsland.Converters"
-                   xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                   xmlns:system="clr-namespace:System;assembly=mscorlib"
                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:demo="clr-namespace:ClassIsland.Controls.Demo"
                    mc:Ignorable="d"
@@ -68,8 +68,9 @@
                 </Button>
             </StackPanel>
         </StackPanel>
+        
     </Window.Resources>
-    <ww:AsyncBox LoadingViewType="controls:LoadingMask">
+    <ww:AsyncBox LoadingViewType="controls:WelcomeWindowIntroControl">
         <Grid>
             <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId, Mode=OneWay}">
                 <Grid Margin="16">
@@ -80,11 +81,11 @@
 
                     <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Padding="16" Mode="PrimaryMid"
                                               materialDesign:ElevationAssist.Elevation="Dp4"
-                                          Margin="-16 -16 -16 16">
+                                              Margin="-16 -16 -16 16">
                         <Grid Margin="4 0 4 0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
                             <!--<ToggleButton Grid.Column="0"
                             Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
@@ -93,51 +94,57 @@
                                 Padding="0"
                                 Style="{StaticResource MaterialDesignToolForegroundButton}"
                                 Content="{materialDesign:PackIcon Menu, Size=24}"/>-->
-                            <TextBlock Grid.Column="0" Text="ClassIsland 设置向导" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   HorizontalAlignment="Left"
-                                   Margin="0 0 0 0"
-                                   VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Text="ClassIsland 设置向导"
+                                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                       HorizontalAlignment="Left"
+                                       Margin="0 0 0 0"
+                                       VerticalAlignment="Center" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                                 <ListBox
-                                 Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                                 VerticalContentAlignment="Stretch"
-                                 SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay, PresentationTraceSources.TraceLevel=High}"   
-                                 materialDesign:ListBoxItemAssist.ShowSelection="False"
-                                 Margin="6 -15 0 -15">
+                                    Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                    VerticalContentAlignment="Stretch"
+                                    SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay, PresentationTraceSources.TraceLevel=High}"
+                                    materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                    Margin="6 -15 0 -15">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                            <StackPanel Orientation="Horizontal" IsItemsHost="True" />
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemContainerStyle>
-                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                            <Setter Property="Padding" Value="0"/>
+                                        <Style TargetType="ListBoxItem"
+                                               BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                            <Setter Property="Padding" Value="0" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <DataTemplate.Resources>
-                                                <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButton}">
-                                                    <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                                    <Setter Property="FontSize" Value="18"/>
-                                                    <Setter Property="Opacity" Value="0.75"/>
+                                                <Style TargetType="RadioButton"
+                                                       BasedOn="{StaticResource MaterialDesignTabRadioButton}">
+                                                    <Setter Property="BorderBrush"
+                                                            Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}" />
+                                                    <Setter Property="FontSize" Value="18" />
+                                                    <Setter Property="Opacity" Value="0.75" />
                                                     <Style.Triggers>
                                                         <Trigger Property="IsChecked" Value="True">
-                                                            <Setter Property="Opacity" Value="1.0"/>
-                                                            <Setter Property="FontWeight" Value="Bold"/>
-                                                            <Setter Property="BorderThickness" Value="0 0 0 3"/>
+                                                            <Setter Property="Opacity" Value="1.0" />
+                                                            <Setter Property="FontWeight" Value="Bold" />
+                                                            <Setter Property="BorderThickness" Value="0 0 0 3" />
                                                         </Trigger>
                                                     </Style.Triggers>
                                                     <Style.Resources>
                                                         <Style TargetType="materialDesign:Ripple">
-                                                            <Setter Property="Feedback" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                                            <Setter Property="Feedback"
+                                                                    Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}" />
                                                         </Style>
                                                     </Style.Resources>
                                                 </Style>
-                                                <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                                <converters:StringToRadioButtonSelectionConverter
+                                                    x:Key="StringToRadioButtonSelectionConverter" />
                                             </DataTemplate.Resources>
-                                            <RadioButton Content="{Binding}" 
-                                                 IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                            <RadioButton Content="{Binding}"
+                                                         IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
                                             </RadioButton>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
@@ -152,8 +159,8 @@
                     </materialDesign:ColorZone>
 
                     <materialDesign:Transitioner Grid.Row="1"
-                                                         AutoApplyTransitionOrigins="True"
-                                                         SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay}">
+                                                 AutoApplyTransitionOrigins="True"
+                                                 SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay}">
                         <!-- 欢迎 -->
                         <materialDesign:TransitionerSlide>
                             <Grid>
@@ -162,36 +169,37 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <Image Grid.Column="0" Grid.Row="0" 
+                                <Image Grid.Column="0" Grid.Row="0"
                                        VerticalAlignment="Top"
                                        Margin="8 0 16 0"
                                        Width="48"
                                        Height="48"
-                                       Source="/Assets/AppLogo.png"/>
+                                       Source="/Assets/AppLogo.png" />
 
                                 <StackPanel Grid.Column="1" Grid.Row="0">
                                     <TextBlock Text="欢迎使用ClassIsland"
-                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                               Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                                     <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                                       FontWeight="Light"
-                                                       Text="本向导将引导您完成ClassIsland的设置，只需几步，即可完成ClassIsland的基本设置。点击【下一步】以开始设置。" />
+                                               FontWeight="Light"
+                                               Text="本向导将引导您完成ClassIsland的设置，只需几步，即可完成ClassIsland的基本设置。点击【下一步】以开始设置。" />
                                     <CheckBox Margin="0 12 0 0" IsChecked="{Binding ViewModel.IsLicenseAgreed}">
                                         <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="我已阅读并同意" VerticalAlignment="Center"/>
+                                            <TextBlock Text="我已阅读并同意" VerticalAlignment="Center" />
                                             <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                     Content="《ClassIsland开源许可》"
                                                     Padding="0"
                                                     VerticalAlignment="Center"
                                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
-                                                    CommandParameter="{StaticResource OpenSourceLicense}"/>
-                                            <TextBlock Text="。" VerticalAlignment="Center"/> 
+                                                    CommandParameter="{StaticResource OpenSourceLicense}" />
+                                            <TextBlock Text="。" VerticalAlignment="Center" />
                                         </StackPanel>
                                     </CheckBox>
                                 </StackPanel>
-                                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal"
+                                            HorizontalAlignment="Right">
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}"
                                             IsEnabled="{Binding ViewModel.IsLicenseAgreed, Mode=OneWay}">
                                         <controls:IconText Kind="ArrowRight" Text="下一步" />
@@ -211,25 +219,25 @@
 
                                 <StackPanel Grid.Row="0">
                                     <TextBlock Text="基本设置"
-                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                               Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                                     <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                                       FontWeight="Light"
-                                                       Text="您后续也可以在应用设置中再次调整这些选项。" />
+                                               FontWeight="Light"
+                                               Text="您后续也可以在应用设置中再次调整这些选项。" />
 
                                     <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
-                                                                   Margin="0 6 0 0"
-                                                                   Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
+                                                           Margin="0 6 0 0"
+                                                           Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
                                         <controls:SettingsCard.Switcher>
                                             <DatePicker
-                                                        SelectedDate="{Binding ViewModel.Settings.SingleWeekStartTime}"
-                                                        Width="120"
-                                                        Foreground="{DynamicResource MaterialDesignBody}" />
+                                                SelectedDate="{Binding ViewModel.Settings.SingleWeekStartTime}"
+                                                Width="120"
+                                                Foreground="{DynamicResource MaterialDesignBody}" />
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
                                     <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
-                                                                   Margin="0 6 0 0"
-                                                                   Description="在系统启动时自动运行本应用。"
-                                                                   IsOn="{Binding ViewModel.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
+                                                           Margin="0 6 0 0"
+                                                           Description="在系统启动时自动运行本应用。"
+                                                           IsOn="{Binding ViewModel.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
                                     <controls:SettingsCard Grid.Row="1" Margin="0 6 0 0"
                                                            IconGlyph="ReportLine"
                                                            Header="启用匿名使用情况分析"
@@ -238,8 +246,8 @@
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                                    Margin="0 0 6 0">
+                                            Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                            Margin="0 0 6 0">
                                         <controls:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
@@ -260,37 +268,37 @@
 
                                 <StackPanel Grid.Row="0">
                                     <TextBlock Text="外观"
-                                               Style="{StaticResource MaterialDesignHeadline5TextBlock}" 
-                                               Margin="0 0 0 8"/>
-                                    <controls:IconText Kind="ThemeLightDark" Text="明暗主题"/>
+                                               Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                               Margin="0 0 0 8" />
+                                    <controls:IconText Kind="ThemeLightDark" Text="明暗主题" />
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
 
                                         <RadioButton Grid.Column="0" VerticalContentAlignment="Bottom">
                                             <StackPanel>
-                                                
-                                                <TextBlock Text="跟随系统"/>
+
+                                                <TextBlock Text="跟随系统" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton Grid.Column="1" VerticalContentAlignment="Bottom">
                                             <StackPanel>
 
-                                                <TextBlock Text="明亮"/>
+                                                <TextBlock Text="明亮" />
                                             </StackPanel>
                                         </RadioButton>
                                         <RadioButton Grid.Column="2" VerticalContentAlignment="Bottom">
                                             <StackPanel>
 
-                                                <TextBlock Text="黑暗"/>
+                                                <TextBlock Text="黑暗" />
                                             </StackPanel>
                                         </RadioButton>
                                     </Grid>
-                                    <Separator Margin="0 16 0 8"/>
-                                    <controls:IconText Kind="CogOutline" Text="其它设置" Margin="0 0 0 6"/>
+                                    <Separator Margin="0 16 0 8" />
+                                    <controls:IconText Kind="CogOutline" Text="其它设置" Margin="0 0 0 6" />
                                     <!-- 界面缩放 -->
                                     <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
                                                            Description="主界面的缩放比例。"
@@ -320,11 +328,11 @@
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
                                 </StackPanel>
-                                
+
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                                    Margin="0 0 6 0">
+                                            Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                            Margin="0 0 6 0">
                                         <controls:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
@@ -336,7 +344,64 @@
 
                         <!-- 系统 -->
                         <materialDesign:TransitionerSlide>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
+                                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel>
+                                        <TextBlock Text="系统"
+                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                                   FontWeight="Light"
+                                                   Text="设置ClassIsland的系统集成功能，这些功能可以优化您使用本软件的体验。" />
+                                        <StackPanel Margin="8">
+                                            <StackPanel.Resources>
+                                                <Style TargetType="CheckBox"
+                                                       BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                                    <Setter Property="FocusVisualStyle"
+                                                            Value="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}">
+                                                    </Setter>
+                                                    <Setter Property="Margin" Value="0 0 0 6"></Setter>
+                                                </Style>
+                                            </StackPanel.Resources>
+                                            <CheckBox>
+                                                <controls:SettingsControl HasSwitcher="False"
+                                                                          IconGlyph="AutoStart" Header="开机自启"
+                                                                          Description="在系统启动时自动运行本应用。" />
+                                            </CheckBox>
+                                            <CheckBox>
+                                                <controls:SettingsControl HasSwitcher="False"
+                                                                          IconGlyph="Link" Header="文件关联"
+                                                                          Description="注册*.cip文件格式关联，便于导入档案文件。" />
+                                            </CheckBox>
+                                            <CheckBox>
+                                                <controls:SettingsControl HasSwitcher="False"
+                                                                          IconGlyph="Monitor" Header="创建桌面快捷方式"
+                                                                          Description="在桌面上添加软件快捷方式。" />
+                                            </CheckBox>
+                                            <CheckBox>
+                                                <controls:SettingsControl HasSwitcher="False"
+                                                                          IconGlyph="MicrosoftWindows"
+                                                                          Header="创建开始菜单快捷方式"
+                                                                          Description="在开始菜单上添加软件快捷方式。" />
+                                            </CheckBox>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </ScrollViewer>
+                                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Style="{StaticResource MaterialDesignPaperButton}"
+                                            Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                            Margin="0 0 6 0">
+                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                    </Button>
+                                    <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
+                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
                         </materialDesign:TransitionerSlide>
 
                         <!-- 完成 -->
@@ -350,14 +415,14 @@
                                 <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
                                     <StackPanel>
                                         <TextBlock Text="完成"
-                                                           Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                                         <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
-                                                           FontWeight="Light"
-                                                           Text="应用的基本设置已经完成，感谢您使用本应用。要访问应用的主菜单，请右键应用托盘图标。您可以点击下方按钮查看应用帮助，熟悉本应用。" />
+                                                   FontWeight="Light"
+                                                   Text="应用的基本设置已经完成，感谢您使用本应用。要访问应用的主菜单，请右键应用托盘图标。您可以点击下方按钮查看应用帮助，熟悉本应用。" />
                                         <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                        HorizontalAlignment="Left"
-                                                        Click="ButtonViewHelp_OnClick"
-                                                        Margin="0 6 0 0">
+                                                HorizontalAlignment="Left"
+                                                Click="ButtonViewHelp_OnClick"
+                                                Margin="0 6 0 0">
                                             <controls:IconText Kind="HelpCircleOutline" Text="查看帮助文档" />
                                         </Button>
                                         <mah:FlipView MouseHoverBorderEnabled="False"
@@ -365,18 +430,18 @@
                                                       CircularNavigation="True"
                                                       Width="500">
                                             <mah:FlipViewItem BannerText="点击任务栏托盘图标可以打开应用主菜单。">
-                                                <demo:OpenTaskBarMenuDemo Margin="0 0 0 30"/>
+                                                <demo:OpenTaskBarMenuDemo Margin="0 0 0 30" />
                                             </mah:FlipViewItem>
                                             <mah:FlipViewItem BannerText="。">
-                                                <Border Background="Green"/>
+                                                <Border Background="Green" />
                                             </mah:FlipViewItem>
                                         </mah:FlipView>
                                     </StackPanel>
                                 </ScrollViewer>
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                                    Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                                    Margin="0 0 6 0">
+                                            Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
+                                            Margin="0 0 6 0">
                                         <controls:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Click="ButtonClose_OnClick">

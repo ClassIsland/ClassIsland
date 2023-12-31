@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="281.25" d:DesignWidth="500" ClipToBounds="True" Width="500" Height="281.25">
     <UserControl.Resources>
-        <Storyboard x:Key="Loop" RepeatBehavior="Forever">
+        <Storyboard x:Key="Loop" RepeatBehavior="Forever" SpeedRatio="0.8">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ZoneHiddenTaskBarIcons" Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
                 <EasingDoubleKeyFrame KeyTime="00:00:00.7000000" Value="0"/>

@@ -118,7 +118,15 @@ public class AsyncBox : FrameworkElement
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (DesignerProperties.GetIsInDesignMode(this)) return;
+        if (DesignerProperties.GetIsInDesignMode(this))
+        {
+
+            AddVisualChild(_contentPresenter);
+            AddVisualChild(_hostVisual);
+            ActivateChild();
+
+            return;
+        }
 
         var dispatcher = await GetAsyncDispatcherAsync();
         _loadingView = await dispatcher.InvokeAsync(() =>

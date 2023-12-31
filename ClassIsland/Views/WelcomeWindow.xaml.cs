@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,9 +13,12 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ClassIsland.Controls;
+using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 
@@ -39,7 +43,7 @@ public partial class WelcomeWindow : MyWindow
         ViewModel.License = reader.ReadToEnd();
     }
 
-    protected override void OnContentRendered(EventArgs e)
+    protected override async void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
         ViewModel.MasterTabIndex = 1;
