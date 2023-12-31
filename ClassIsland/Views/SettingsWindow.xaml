@@ -33,7 +33,8 @@
                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                    xmlns:weather="clr-namespace:ClassIsland.Models.Weather"
                    xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
-                   xmlns:windows="clr-namespace:Walterlv.Windows">
+                   xmlns:windows="clr-namespace:Walterlv.Windows"
+                   xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -116,14 +117,25 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <Image Grid.Column="0" VerticalAlignment="Center"
-                                   Margin="0 0 6 0" Source="{Binding AvatarImage}"
-                                   Width="32" Height="32">
-                                <Image.Clip>
+                            <Grid Grid.Column="0" VerticalAlignment="Center"
+                                  Width="32" Height="32"
+                                  Margin="0 0 6 0" >
+                                <Grid.Clip>
                                     <RectangleGeometry RadiusX="16" RadiusY="16"
                                                        Rect="0,0,32,32" />
-                                </Image.Clip>
-                            </Image>
+                                </Grid.Clip>
+                                <Border Background="{DynamicResource MaterialDesignBody}" Opacity="0.1"/>
+                                <mah:ProgressRing IsActive="True"
+                                                  Width="16"
+                                                  Height="16"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center"
+                                                  Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                                <Image Source="{Binding AvatarImage}"
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       Width="32" Height="32">
+                                </Image>
+                            </Grid>
                             <TextBlock Grid.Column="1" TextWrapping="Wrap">
                                 <Run FontSize="15"
                                      Text="{Binding Name, Mode=OneWay}" />
@@ -136,7 +148,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
                 <models:ContributionMember
-                    AvatarImage="/Assets/Contributiors/HelloWRC@64w.jpg"
+                    AvatarImage="https://avatars.githubusercontent.com/u/55006226"
                     Name="HelloWRC" Description="软件作者，写代码巨水（划掉）" />
             </ListView>
         </Grid>
