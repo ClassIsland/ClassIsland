@@ -12,7 +12,7 @@ namespace ClassIsland.Models;
 public class TimeLayout : AttachableSettingsObject
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
-    private string _name = "";
+    private string _name = "新时间表";
     private bool _isActivated = false;
 
     public TimeLayout()

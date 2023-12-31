@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,7 @@ using ClassIsland.Controls;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
+using MaterialDesignThemes.Wpf;
 using unvell.ReoGrid;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
@@ -37,6 +39,8 @@ public partial class ExcelImportWindow : MyWindow
 
     private ThemeService ThemeService { get; }
 
+    private ProfileService ProfileService { get; }
+
     public string ExcelSourcePath { get; set; } = "";
 
     public static ICommand SelectionValueUpdateCommand { get; } = new RoutedUICommand();
@@ -46,11 +50,12 @@ public partial class ExcelImportWindow : MyWindow
 
     public static ICommand NavigateBackCommand { get; } = new RoutedUICommand();
 
-    public ExcelImportWindow(ThemeService themeService)
+    public ExcelImportWindow(ThemeService themeService, ProfileService profileService)
     {
         InitializeComponent();
         DataContext = this;
         ThemeService = themeService;
+        ProfileService = profileService;
         ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
     }
@@ -251,6 +256,11 @@ public partial class ExcelImportWindow : MyWindow
             "SelectSubjectsPosition" => 8,
             _ => ViewModel.SlideIndex
         };
+        if (p == "ImportTimeLayoutFromThisFile" && ViewModel.SelectedTimeLayoutId == "")
+        {
+            ViewModel.SelectedTimeLayoutId = Guid.NewGuid().ToString();
+            ProfileService.Profile.TimeLayouts.Add(ViewModel.SelectedTimeLayoutId, ViewModel.SelectedTimeLayout);
+        }   
     }
 
     private void NavigateBackCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -267,4 +277,132 @@ public partial class ExcelImportWindow : MyWindow
             _ => ViewModel.SlideIndex
         };
     }
+
+    private TimeLayoutItem? ParseTimeLayoutItem(string? text)
+    {
+        var baseTime = DateTime.Now.Date;
+        var baseDateOnly = new DateOnly(baseTime.Year, baseTime.Month, baseTime.Day);
+
+        if (text == null) return null;
+        var matches = Regex.Matches(text, "\\d+"); // 匹配数字
+        if (matches.Count is not (4 or 6))  // 格式不符合
+            return null;
+        int h1 = 0, m1 = 0, s1 = 0, h2 = 0, m2 = 0, s2 = 0;
+        switch (matches.Count)
+        {
+            // HH:MM - HH:MM
+            case 4:
+                h1 = int.Parse(matches[0].Value);
+                m1 = int.Parse(matches[1].Value);
+                h2 = int.Parse(matches[2].Value);
+                m2 = int.Parse(matches[3].Value);
+                break;
+            //HH:MM:SS - HH:MM:SS
+            case 6:
+                h1 = int.Parse(matches[0].Value);
+                m1 = int.Parse(matches[1].Value);
+                s1 = int.Parse(matches[2].Value);
+                h2 = int.Parse(matches[3].Value);
+                m2 = int.Parse(matches[4].Value);
+                s2 = int.Parse(matches[5].Value);
+                break;
+        }
+        // 保存结果
+        var result = new TimeLayoutItem()
+        {
+            StartSecond = new DateTime(baseDateOnly, new TimeOnly(h1, m1, s1)),
+            EndSecond = new DateTime(baseDateOnly, new TimeOnly(h2, m2, s2))
+        };
+        return result;
+    }
+
+    private void LoadTimeLayoutFromCurrentSelection()
+    {
+        var baseTime = DateTime.Now.Date;
+        var baseDateOnly = new DateOnly(baseTime.Year, baseTime.Month, baseTime.Day);
+
+        var selection = ViewModel.TimePointSourcePosition;
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        timeLayout.Layouts.Clear();
+        // 判断是否是垂直模式
+        if (selection.Rows != 1 && selection.Cols != 1)
+        {
+            return;
+        }
+        var isVertical = selection.Cols == 1;
+
+        var start = isVertical? selection.Row : selection.Col;
+        var end = isVertical? selection.EndRow : selection.EndCol;
+
+        // 填充上课时间点
+        for (var i = start; i <= end; i++)
+        {
+            var text = Grid.CurrentWorksheet.GetCellText(isVertical ? i : selection.Row, 
+                isVertical? selection.Col : i);
+            if (text == null) continue;
+            var result = ParseTimeLayoutItem(text);
+            if (result != null)
+            {
+                timeLayout.Layouts.Add(result);
+            }
+        }
+        // 填充课间休息时间点
+        var tempLayouts = (from i in timeLayout.Layouts select i).ToList();
+        var pIndex = 0;
+        for (int i = 0; i < tempLayouts.Count - 1; i++)
+        {
+            pIndex++;
+            var a = tempLayouts[i];
+            var b = tempLayouts[i + 1];
+            if (b.StartSecond.TimeOfDay - a.EndSecond.TimeOfDay <= TimeSpan.Zero)
+                continue;
+
+            timeLayout.Layouts.Insert(pIndex, new TimeLayoutItem()
+            {
+                StartSecond = a.EndSecond,
+                EndSecond = b.StartSecond,
+                TimeType = 1
+            });
+            pIndex++;
+        }
+    }
+
+    private void ButtonRefreshTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        LoadTimeLayoutFromCurrentSelection();
+    }
+
+    #region MenuActions
+
+    private void MenuItemCancelCellMerge_OnClick(object sender, RoutedEventArgs e)
+    {
+        Grid.CurrentWorksheet.UnmergeRange(Grid.CurrentWorksheet.SelectionRange);
+    }
+
+    private void MenuItemCellMerge_OnClick(object sender, RoutedEventArgs e)
+    {
+        Grid.CurrentWorksheet.MergeRange(Grid.CurrentWorksheet.SelectionRange);
+    }
+
+    private void MenuItemCopy_OnClick(object sender, RoutedEventArgs e)
+    {
+        Grid.CurrentWorksheet.Copy();
+    }
+
+    private void MenuItemPaste_OnClick(object sender, RoutedEventArgs e)
+    {
+        Grid.CurrentWorksheet.Paste();
+    }
+
+    private void MenuItemCut_OnClick(object sender, RoutedEventArgs e)
+    {
+        Grid.CurrentWorksheet.Cut();
+    }
+
+    private void MenuItemClearContent_OnClick(object sender, RoutedEventArgs e)
+    {
+        Grid.CurrentWorksheet.ClearRangeContent(Grid.CurrentWorksheet.SelectionRange, CellElementFlag.All);
+    }
+
+    #endregion
 }

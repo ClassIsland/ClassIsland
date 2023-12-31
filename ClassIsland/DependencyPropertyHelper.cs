@@ -18,4 +18,18 @@ public static class DependencyPropertyHelper
         }
         defaultField.SetValue(metadata, value);
     }
+
+    public static Setter? FindSetter(SetterBaseCollection setters, DependencyProperty prop)
+    {
+        foreach (var setter in setters)
+        {
+            if (setter is not Setter ss) continue;
+            if (ss.Property == prop)
+            {
+                return ss;
+            }
+            
+        }
+        return null;
+    }
 }

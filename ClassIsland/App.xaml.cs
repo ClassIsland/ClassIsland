@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Diagnostics;
 using System.Windows.Threading;
@@ -101,46 +102,6 @@ public partial class App : Application
         //    Resources[SystemParameters.FocusVisualStyleKey]);
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ButtonBase.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
-        //var overwriteList = new List<string>()
-        //{
-        //    "MaterialDesignRaisedButton",
-        //    "MaterialDesignFlatButton",
-        //    "MaterialDesignFloatingActionMiniButton",
-        //    "MaterialDesignPaperButton",
-        //    "MaterialDesignCheckBox",
-        //    "MaterialDesignUserForegroundCheckBox",
-        //    "MaterialDesignComboBoxItemStyle",
-        //    "MaterialDesignDataGridComboBoxItemStyle",
-        //    "MaterialDesignDataGridComboBox",
-        //    "MaterialDesignCardsListBoxItem",
-        //    "MaterialDesignRadioButton",
-        //    "MaterialDesignUserForegroundRadioButton",
-        //    "MaterialDesignTabRadioButton",
-        //    "MaterialDesignScrollBarButton",
-        //    "MaterialDesignSnackbarActionButton",
-        //    "MaterialDesignFilledUniformTabControl",
-        //    "MaterialDesignSwitchToggleButton",
-        //    "MaterialDesignSwitchAccentToggleButton"
-        //};
-        //var v = Resources[SystemParameters.FocusVisualStyleKey];
-        //foreach (var k in overwriteList)
-        //{
-        //    var style = (Style?)TryFindResource(k);
-        //    if (style == null) continue;
-        //    Setter? targetSetter = null;
-        //    foreach (var setter in style.Setters)
-        //    {
-        //        if (setter is not Setter ss) continue;
-        //        if (ss.Property != FrameworkElement.FocusVisualStyleProperty) continue;
-        //        targetSetter = ss;
-        //        break;
-        //    }
-
-        //    if (targetSetter != null)
-        //    {
-        //        typeof(Setter).GetField("_value", BindingFlags.NonPublic | BindingFlags.Instance)?.SetValue(targetSetter, v);
-        //    }
-        //}
 
         //ConsoleService.InitializeConsole();
         ConsoleService.InitializeConsole();
@@ -234,6 +195,7 @@ public partial class App : Application
                 });
             }).Build();
         ConsoleService.ConsoleVisible = GetService<SettingsService>().Settings.IsDebugConsoleEnabled;
+        //OverrideFocusVisualStyle();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");
         if (GetService<SettingsService>().Settings.IsSplashEnabled)
@@ -280,6 +242,66 @@ public partial class App : Application
         Logger.LogInformation("正在初始化MainWindow。");
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
+    }
+
+    private void OverrideFocusVisualStyle()
+    {
+        var overwriteList = new List<string>()
+        {
+            "MaterialDesignRaisedButton",
+            "MaterialDesignFlatButton",
+            "MaterialDesignFloatingActionMiniButton",
+            "MaterialDesignPaperButton",
+            "MaterialDesignCheckBox",
+            "MaterialDesignUserForegroundCheckBox",
+            "MaterialDesignComboBoxItemStyle",
+            "MaterialDesignDataGridComboBoxItemStyle",
+            "MaterialDesignDataGridComboBox",
+            "MaterialDesignCardsListBoxItem",
+            "MaterialDesignRadioButton",
+            "MaterialDesignUserForegroundRadioButton",
+            "MaterialDesignTabRadioButton",
+            "MaterialDesignScrollBarButton",
+            "MaterialDesignSnackbarActionButton",
+            "MaterialDesignFilledUniformTabControl",
+            "MaterialDesignSwitchToggleButton",
+            "MaterialDesignSwitchAccentToggleButton"
+        };
+        var v = Resources[SystemParameters.FocusVisualStyleKey];
+        foreach (var k in overwriteList)
+        {
+            var style = (Style?)TryFindResource(k);
+            if (style == null) continue;
+            Setter? targetSetter =
+                DependencyPropertyHelper.FindSetter(style.Setters, FrameworkElement.FocusVisualStyleProperty);
+            Setter? templateSetter = DependencyPropertyHelper.FindSetter(style.Setters, Control.TemplateProperty);
+
+            if (targetSetter != null)
+            {
+                typeof(Setter).GetField("_value", BindingFlags.NonPublic | BindingFlags.Instance)
+                    ?.SetValue(targetSetter, v);
+            }
+
+            if (templateSetter != null)
+            {
+                var template = (ControlTemplate)templateSetter.Value;
+                foreach (var trigger in template.Triggers)
+                {
+                    if (trigger is not Trigger tt)
+                    {
+                        continue;
+                    }
+
+                    var target =
+                        DependencyPropertyHelper.FindSetter(tt.Setters, FrameworkElement.FocusVisualStyleProperty);
+                    if (target != null)
+                    {
+                        typeof(Setter).GetField("_value", BindingFlags.NonPublic | BindingFlags.Instance)
+                            ?.SetValue(target, v);
+                    }
+                }
+            }
+        }
     }
 
     private void BindingDiagnosticsOnBindingFailed(object? sender, BindingFailedEventArgs e)

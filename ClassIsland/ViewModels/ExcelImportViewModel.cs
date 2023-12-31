@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using ClassIsland.Controls;
+using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using unvell.ReoGrid;
 
@@ -21,6 +22,8 @@ public class ExcelImportViewModel : ObservableRecipient
     private RangePosition _timePointSourcePosition = RangePosition.Empty;
     private int _timeLayoutImportSource = -1;
     private RangePosition _subjectSourcePosition = RangePosition.Empty;
+    private TimeLayout _selectedTimeLayout = new TimeLayout();
+    private string _selectedTimeLayoutId = "";
 
     public int SlideIndex
     {
@@ -172,6 +175,28 @@ public class ExcelImportViewModel : ObservableRecipient
         {
             if (value.Equals(_subjectSourcePosition)) return;
             _subjectSourcePosition = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeLayout SelectedTimeLayout
+    {
+        get => _selectedTimeLayout;
+        set
+        {
+            if (Equals(value, _selectedTimeLayout)) return;
+            _selectedTimeLayout = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedTimeLayoutId
+    {
+        get => _selectedTimeLayoutId;
+        set
+        {
+            if (value == _selectedTimeLayoutId) return;
+            _selectedTimeLayoutId = value;
             OnPropertyChanged();
         }
     }

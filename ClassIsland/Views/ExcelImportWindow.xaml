@@ -189,11 +189,14 @@
                 </Style>
             </reoGrid:ReoGridControl.Style>
             <reoGrid:ReoGridControl.CellsContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="test"/>
-                    <MenuItem Header="test"/>
-                    <MenuItem Header="test"/>
-                    <MenuItem Header="test"/>
+                <ContextMenu FontFamily="{DynamicResource HarmonyOsSans}">
+                    <MenuItem Icon="{materialDesign:PackIcon ContentCopy}" Header="复制" Click="MenuItemCopy_OnClick" InputGestureText="Ctrl+C"/>
+                    <MenuItem Icon="{materialDesign:PackIcon ContentPaste}" Header="粘贴" Click="MenuItemPaste_OnClick" InputGestureText="Ctrl+V"/>
+                    <MenuItem Icon="{materialDesign:PackIcon ContentCut}" Header="剪切" Click="MenuItemCut_OnClick" InputGestureText="Ctrl+X"/>
+                    <MenuItem Icon="{materialDesign:PackIcon ClearOutline}" Header="清除内容" Click="MenuItemClearContent_OnClick" InputGestureText="Del"/>
+                    <Separator/>
+                    <MenuItem Icon="{materialDesign:PackIcon TableMergeCells}" Header="合并单元格" Click="MenuItemCellMerge_OnClick"/>
+                    <MenuItem Icon="{materialDesign:PackIcon Cancel}" Header="取消单元格合并" Click="MenuItemCancelCellMerge_OnClick"/>
                 </ContextMenu>
             </reoGrid:ReoGridControl.CellsContextMenu>
         </reoGrid:ReoGridControl>
@@ -363,6 +366,30 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
+                        <TextBox Text="{Binding ViewModel.SelectedTimeLayout.Name}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 materialDesign:HintAssist.Hint="时间表名称"/>
+                        <ListBox ItemsSource="{Binding ViewModel.SelectedTimeLayout.Layouts}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock>
+                                        <Run Text="{Binding StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                        <Run Text="-"/>
+                                        <Run Text="{Binding EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <WrapPanel>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Content="刷新"
+                                    HorizontalAlignment="Left"
+                                    Click="ButtonRefreshTimeLayout_OnClick" />
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Content="编辑"
+                                    HorizontalAlignment="Left"
+                                    Click="ButtonRefreshTimeLayout_OnClick" />
+                        </WrapPanel>
                         <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectSubjectsPosition"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
