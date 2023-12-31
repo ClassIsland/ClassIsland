@@ -1769,7 +1769,7 @@ The quick brown fox jumps over a lazy dog.
                                                     <LineBreak />
                                                     <Run Text="{x:Static ci:App.AppVersionLong}" FontFamily="Consolas"/>
                                                     <LineBreak />
-                                                    <Run Text="Copyright (c) 2023 HelloWRC" />
+                                                    <Run Text="Copyright (c) 2024 HelloWRC" />
                                             </TextBlock>
                                             <WrapPanel>
                                                 <Button HorizontalAlignment="Left" Margin="6"

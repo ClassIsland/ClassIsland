@@ -61,8 +61,9 @@
             <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
 
             <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
-                <Setter Property="LineHeight" Value="25"/>
-                <Setter Property="FontWeight" Value="Light"></Setter>
+                <Setter Property="LineHeight" Value="22"/>
+                <Setter Property="FontWeight" Value="Light"/>
+                <Setter Property="FontSize" Value="14"/>
             </Style>
 
             <Style TargetType="Paragraph" BasedOn="{StaticResource MarkdownParagraphBaseStyle}"/>
