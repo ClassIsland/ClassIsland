@@ -20,6 +20,7 @@ using ClassIsland.Controls;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
+using ICSharpCode.AvalonEdit.Editing;
 using MaterialDesignThemes.Wpf;
 using unvell.ReoGrid;
 using unvell.ReoGrid.Events;
@@ -254,13 +255,22 @@ public partial class ExcelImportWindow : MyWindow
             "CreateTimeLayoutManually" => 6,
             "TimePointImportResult" => 7,
             "SelectSubjectsPosition" => 8,
+            "RowClassesTimeRelationshipImportMethod" => 10,
             _ => ViewModel.SlideIndex
         };
-        if (p == "ImportTimeLayoutFromThisFile" && ViewModel.SelectedTimeLayoutId == "")
+        switch (p)
         {
-            ViewModel.SelectedTimeLayoutId = Guid.NewGuid().ToString();
-            ProfileService.Profile.TimeLayouts.Add(ViewModel.SelectedTimeLayoutId, ViewModel.SelectedTimeLayout);
-        }   
+            case "ImportTimeLayoutFromThisFile" when ViewModel.SelectedTimeLayoutId == "":
+                ViewModel.SelectedTimeLayoutId = Guid.NewGuid().ToString();
+                ProfileService.Profile.TimeLayouts.Add(ViewModel.SelectedTimeLayoutId, ViewModel.SelectedTimeLayout);
+                break;
+            case "TimePointImportResult":
+                LoadTimeLayoutFromCurrentSelection();
+                break;
+            case "RowClassesTimeRelationshipImportMethod":
+                LoadClassPlanSource();
+                break;
+        }
     }
 
     private void NavigateBackCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -330,6 +340,7 @@ public partial class ExcelImportWindow : MyWindow
             return;
         }
         var isVertical = selection.Cols == 1;
+        ViewModel.IsVerticalLayout = isVertical;
 
         var start = isVertical? selection.Row : selection.Col;
         var end = isVertical? selection.EndRow : selection.EndCol;
@@ -364,6 +375,23 @@ public partial class ExcelImportWindow : MyWindow
                 TimeType = 1
             });
             pIndex++;
+        }
+    }
+
+    private void LoadClassPlanSource()
+    {
+        var isVertical = ViewModel.IsVerticalLayout;
+        var selection = ViewModel.SubjectSourcePosition;
+
+        // 填充课表源
+        var start = isVertical ? selection.Col : selection.Row;
+        var end = isVertical ? selection.EndCol : selection.EndRow;
+        ViewModel.ClassPlanSources.Clear();
+        for (var i = start; i <= end; i++)
+        {
+            ViewModel.ClassPlanSources.Add(isVertical
+                ? new RangePosition(selection.Row, i, selection.Rows, 1)
+                : new RangePosition(i, selection.Col, 1, selection.Cols));
         }
     }
 

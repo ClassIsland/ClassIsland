@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using ClassIsland.Controls;
 using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -24,6 +25,8 @@ public class ExcelImportViewModel : ObservableRecipient
     private RangePosition _subjectSourcePosition = RangePosition.Empty;
     private TimeLayout _selectedTimeLayout = new TimeLayout();
     private string _selectedTimeLayoutId = "";
+    private bool _isVerticalLayout = false;
+    private ObservableCollection<RangePosition> _classPlanSources = new();
 
     public int SlideIndex
     {
@@ -197,6 +200,28 @@ public class ExcelImportViewModel : ObservableRecipient
         {
             if (value == _selectedTimeLayoutId) return;
             _selectedTimeLayoutId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsVerticalLayout
+    {
+        get => _isVerticalLayout;
+        set
+        {
+            if (value == _isVerticalLayout) return;
+            _isVerticalLayout = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<RangePosition> ClassPlanSources
+    {
+        get => _classPlanSources;
+        set
+        {
+            if (Equals(value, _classPlanSources)) return;
+            _classPlanSources = value;
             OnPropertyChanged();
         }
     }

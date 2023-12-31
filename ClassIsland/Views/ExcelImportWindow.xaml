@@ -406,7 +406,7 @@
                                                         EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
                                                         SelectionPropertyName="SubjectSourcePosition"
                                                         materialDesign:HintAssist.Hint="选择课程区域"/>
-                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectRowColumnRelationship"
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="RowClassesTimeRelationshipImportMethod"
                                                            IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
@@ -429,6 +429,68 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
+                        <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
+                            <models:WizardOption Header="自动识别" Content=""
+                                                 InvokeCommandParameter="RowClassesTimeRelationshipImportAuto"/>
+                            <models:WizardOption Header="手动指定" Content=""
+                                                 InvokeCommandParameter="RowClassesTimeRelationshipImportMan"/>
+                        </controls:WizardOptionsListBox>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 11 时间对应关系 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="时间对应关系" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 12 选择创建课表的区域 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="选择创建课表的区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+                        <ListBox ItemsSource="{Binding ViewModel.ClassPlanSources}">
+
+                        </ListBox>
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 13 课表导入结果 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="课表导入结果" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 14 已导入的课表 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="已导入的课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
+
+                    </StackPanel>
+                </materialDesign:TransitionerSlide>
+                <!-- 15 完成 -->
+                <materialDesign:TransitionerSlide>
+                    <StackPanel>
+                        <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                   Margin="0 0 0 12"/>
+                        <TextBlock >
+                            <Run Text=""/>
+                        </TextBlock>
 
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
@@ -442,7 +504,7 @@
                 HorizontalAlignment="Right"
                 Width="150"
                 Minimum="0"
-                Maximum="10"
+                Maximum="15"
                 Value="{Binding ViewModel.SlideIndex}"/>
         <CheckBox Grid.Column="0" Grid.Row="1"
                   Content="IsSelectingMode"
