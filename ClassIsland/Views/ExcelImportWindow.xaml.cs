@@ -249,6 +249,19 @@ public partial class ExcelImportWindow : MyWindow
             return;
         }
 
+        if (ViewModel.SlideIndex == 6)
+        {
+            ViewModel.ClassRecognitionTimePoints.Clear();
+            ViewModel.SelectedTimeLayout = ProfileService.Profile.TimeLayouts[ViewModel.SelectedTimeLayoutId];
+            foreach (var i in ViewModel.SelectedTimeLayout.Layouts)
+            {
+                if (i.TimeType == 0)
+                {
+                    ViewModel.ClassRecognitionTimePoints.Add(new Selectable<TimeLayoutItem>(i));
+                }
+            }
+        }
+
         ViewModel.SlideIndex = p switch
         {
             "TimeLayoutSource" => 4,
@@ -267,7 +280,7 @@ public partial class ExcelImportWindow : MyWindow
         };
         switch (p)
         {
-            case "ImportTimeLayoutFromThisFile" when ViewModel.SelectedTimeLayoutId == "":
+            case "ImportTimeLayoutFromThisFile" when ViewModel.SelectedTimeLayoutId == "" && ViewModel.TimeLayoutImportSource != 2:
                 ViewModel.SelectedTimeLayoutId = Guid.NewGuid().ToString();
                 ProfileService.Profile.TimeLayouts.Add(ViewModel.SelectedTimeLayoutId, ViewModel.SelectedTimeLayout);
                 break;
@@ -279,6 +292,9 @@ public partial class ExcelImportWindow : MyWindow
                 break;
             case "PreviewClassPlan":
                 LoadClassPlan();
+                break;
+            case "AllClassPlansView":
+                ViewModel.ImportedClassPlans.Add(ViewModel.CurrentClassPlan);
                 break;
         }
     }
@@ -349,7 +365,11 @@ public partial class ExcelImportWindow : MyWindow
 
         var selection = ViewModel.TimePointSourcePosition;
         var timeLayout = ViewModel.SelectedTimeLayout;
-        timeLayout.Layouts.Clear();
+        var auto = ViewModel.TimeLayoutImportSource != 2;
+        if (auto)
+        {
+            timeLayout.Layouts.Clear();
+        }
         ViewModel.ClassRecognitionRange.Clear();
         ViewModel.ClassRecognitionRangeCache.Clear();
         // 判断是否是垂直模式
@@ -373,10 +393,16 @@ public partial class ExcelImportWindow : MyWindow
             var result = ParseTimeLayoutItem(text);
             if (result == null) 
                 continue;
-            timeLayout.Layouts.Add(result);
+            if (auto)
+            {
+                timeLayout.Layouts.Add(result);
+            }
             ViewModel.ClassRecognitionRangeCache.Add(i);
         }
+
         // 填充课间休息时间点
+        if (!auto)
+            return;
         var tempLayouts = (from i in timeLayout.Layouts select i).ToList();
         var pIndex = 0;
         for (int i = 0; i < tempLayouts.Count - 1; i++)
@@ -399,6 +425,7 @@ public partial class ExcelImportWindow : MyWindow
 
     private void LoadClassPlanSource()
     {
+        ViewModel.SelectedTimeLayout = ProfileService.Profile.TimeLayouts[ViewModel.SelectedTimeLayoutId];
         var isVertical = ViewModel.IsVerticalLayout;
         var selection = ViewModel.SubjectSourcePosition;
 
@@ -416,8 +443,12 @@ public partial class ExcelImportWindow : MyWindow
         // 填充时间识别源
         var startR = isVertical ?  selection.Row : selection.Col;
         var endR = isVertical ? selection.EndRow : selection.EndCol;
+        var auto = ViewModel.TimeLayoutImportSource != 2;
         ViewModel.ClassRecognitionRange.Clear();
-        ViewModel.ClassRecognitionTimePoints.Clear();
+        if (auto)
+        {
+            ViewModel.ClassRecognitionTimePoints.Clear();
+        }
         for (var i = startR; i <= endR; i++)
         {
             var range = isVertical
@@ -437,14 +468,16 @@ public partial class ExcelImportWindow : MyWindow
             if (result == null) 
                 continue;
             // 匹配时间点
-            var selectableTimePoint = new Selectable<TimeLayoutItem>(result);
-            ViewModel.ClassRecognitionTimePoints.Add(selectableTimePoint);
-            var matched = ViewModel.SelectedTimeLayout.Layouts.Where(k => k.TimeType == 0).Any(k =>
-                k.StartSecond.TimeOfDay == result.StartSecond.TimeOfDay &&
-                k.EndSecond.TimeOfDay == result.EndSecond.TimeOfDay);
-            if (matched)
+            if (auto)
             {
-                selectableTimePoint.IsSelected = true;
+                var selectableTimePoint = new Selectable<TimeLayoutItem>(result);
+                ViewModel.ClassRecognitionTimePoints.Add(selectableTimePoint);
+                var matched = ViewModel.SelectedTimeLayout.Layouts.Where(k => k.TimeType == 0).Any(k =>
+                    k.StartSecond.TimeOfDay == result.StartSecond.TimeOfDay);
+                if (matched)
+                {
+                    selectableTimePoint.IsSelected = true;
+                }
             }
         }
     }
@@ -547,5 +580,29 @@ public partial class ExcelImportWindow : MyWindow
         {
             Grid.CurrentWorksheet.SelectionRange = r.Value;
         }
+    }
+
+    private void MenuItemContinueImportClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SlideIndex = 12;
+    }
+
+    private void CompleteImport()
+    {
+        foreach (var i in ViewModel.ImportedClassPlans)
+        {
+            ProfileService.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), i);
+        }
+    }
+
+    private void MenuItemCompleteImport_OnClick(object sender, RoutedEventArgs e)
+    {
+        CompleteImport();
+        ViewModel.SlideIndex = 15;
+    }
+
+    private void ButtonFinished_OnClick(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 }

@@ -361,12 +361,17 @@
                         <TextBlock >
                             <Run Text="已打开档案编辑窗口，请手动创建时间表。创建完毕请点击【下一步】按钮。"/>
                         </TextBlock>
+                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                  materialDesign:HintAssist.Hint="要使用的时间表"
+                                  SelectedValue="{Binding ViewModel.SelectedTimeLayoutId}"
+                                  SelectedValuePath="Key"
+                                  ItemsSource="{Binding ProfileService.Profile.TimeLayouts}"/>
                         <Button HorizontalAlignment="Left"
                                 Margin="0 8 0 0"
                                 Style="{StaticResource MaterialDesignFlatButton}">
                             <controls:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
                         </Button>
-                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectSubjectsPosition"/>
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="ImportTimeLayoutFromThisFile"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 7 时间表导入结果 -->
@@ -549,6 +554,9 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
+                        <TextBox Text="{Binding ViewModel.CurrentClassPlan.Name}"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 materialDesign:HintAssist.Hint="课表名称"/>
                         <DataGrid AutoGenerateColumns="False" 
                                               ItemsSource="{Binding ViewModel.CurrentClassPlan.Classes}" 
                                               CanUserAddRows="False" 
@@ -587,7 +595,19 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
+                        <ListBox ItemsSource="{Binding ViewModel.ImportedClassPlans}"
+                                 Margin="0 0 0 16">
 
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <MenuItem Icon="{materialDesign:PackIcon ArrowRight}" Header="继续导入课表。"
+                                  Click="MenuItemContinueImportClassPlan_OnClick"/>
+                        <MenuItem Icon="{materialDesign:PackIcon Check}" Header="完成导入。"
+                                  Click="MenuItemCompleteImport_OnClick"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 15 完成 -->
@@ -598,7 +618,11 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
-
+                        <WrapPanel HorizontalAlignment="Left">
+                            <Button Click="ButtonFinished_OnClick">
+                                <controls:IconText Kind="Check" Text="完成"/>
+                            </Button>
+                        </WrapPanel>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
             </materialDesign:Transitioner>
