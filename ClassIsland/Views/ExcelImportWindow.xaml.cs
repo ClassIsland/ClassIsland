@@ -17,6 +17,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
+using ClassIsland.Converters;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
@@ -40,7 +41,7 @@ public partial class ExcelImportWindow : MyWindow
 
     private ThemeService ThemeService { get; }
 
-    private ProfileService ProfileService { get; }
+    public ProfileService ProfileService { get; }
 
     public string ExcelSourcePath { get; set; } = "";
 
@@ -256,6 +257,12 @@ public partial class ExcelImportWindow : MyWindow
             "TimePointImportResult" => 7,
             "SelectSubjectsPosition" => 8,
             "RowClassesTimeRelationshipImportMethod" => 10,
+            "RowClassesTimeRelationshipImportAuto" => 11,
+            "RowClassesTimeRelationshipImportMan" => 11,
+            "SelectClassPlanArea" => 12,
+            "PreviewClassPlan" => 13,
+            "AllClassPlansView" => 14,
+            "Finish" => 15,
             _ => ViewModel.SlideIndex
         };
         switch (p)
@@ -269,6 +276,9 @@ public partial class ExcelImportWindow : MyWindow
                 break;
             case "RowClassesTimeRelationshipImportMethod":
                 LoadClassPlanSource();
+                break;
+            case "PreviewClassPlan":
+                LoadClassPlan();
                 break;
         }
     }
@@ -284,6 +294,12 @@ public partial class ExcelImportWindow : MyWindow
             7 => 5,
             8 when ViewModel.TimeLayoutImportSource == 0 => 7,
             8 when ViewModel.TimeLayoutImportSource == 2 => 6,
+            10 => 8,
+            11 => 10,
+            12 => 11,
+            13 => 12,
+            14 => 13,
+            15 => 14,
             _ => ViewModel.SlideIndex
         };
     }
@@ -334,6 +350,8 @@ public partial class ExcelImportWindow : MyWindow
         var selection = ViewModel.TimePointSourcePosition;
         var timeLayout = ViewModel.SelectedTimeLayout;
         timeLayout.Layouts.Clear();
+        ViewModel.ClassRecognitionRange.Clear();
+        ViewModel.ClassRecognitionRangeCache.Clear();
         // 判断是否是垂直模式
         if (selection.Rows != 1 && selection.Cols != 1)
         {
@@ -350,12 +368,13 @@ public partial class ExcelImportWindow : MyWindow
         {
             var text = Grid.CurrentWorksheet.GetCellText(isVertical ? i : selection.Row, 
                 isVertical? selection.Col : i);
-            if (text == null) continue;
+            if (text == null) 
+                continue;
             var result = ParseTimeLayoutItem(text);
-            if (result != null)
-            {
-                timeLayout.Layouts.Add(result);
-            }
+            if (result == null) 
+                continue;
+            timeLayout.Layouts.Add(result);
+            ViewModel.ClassRecognitionRangeCache.Add(i);
         }
         // 填充课间休息时间点
         var tempLayouts = (from i in timeLayout.Layouts select i).ToList();
@@ -392,6 +411,91 @@ public partial class ExcelImportWindow : MyWindow
             ViewModel.ClassPlanSources.Add(isVertical
                 ? new RangePosition(selection.Row, i, selection.Rows, 1)
                 : new RangePosition(i, selection.Col, 1, selection.Cols));
+        }
+
+        // 填充时间识别源
+        var startR = isVertical ?  selection.Row : selection.Col;
+        var endR = isVertical ? selection.EndRow : selection.EndCol;
+        ViewModel.ClassRecognitionRange.Clear();
+        ViewModel.ClassRecognitionTimePoints.Clear();
+        for (var i = startR; i <= endR; i++)
+        {
+            var range = isVertical
+                ? new RangePosition(i, selection.Col, 1, selection.EndCol)
+                : new RangePosition(selection.Row, i, selection.EndRow, 1);
+            var selectableRange = new Selectable<RangePosition>(range);
+            ViewModel.ClassRecognitionRange.Add(selectableRange);
+            if (ViewModel.ClassRecognitionRangeCache.Contains(i))
+            {
+                selectableRange.IsSelected = true;
+            }
+
+            var posRow = isVertical ? i : ViewModel.TimePointSourcePosition.Row;
+            var posCol = isVertical ? ViewModel.TimePointSourcePosition.Col : i;
+            var text = Grid.CurrentWorksheet.GetCellText(posRow, posCol);
+            var result = ParseTimeLayoutItem(text);
+            if (result == null) 
+                continue;
+            // 匹配时间点
+            var selectableTimePoint = new Selectable<TimeLayoutItem>(result);
+            ViewModel.ClassRecognitionTimePoints.Add(selectableTimePoint);
+            var matched = ViewModel.SelectedTimeLayout.Layouts.Where(k => k.TimeType == 0).Any(k =>
+                k.StartSecond.TimeOfDay == result.StartSecond.TimeOfDay &&
+                k.EndSecond.TimeOfDay == result.EndSecond.TimeOfDay);
+            if (matched)
+            {
+                selectableTimePoint.IsSelected = true;
+            }
+        }
+    }
+
+    private void LoadClassPlan()
+    {
+        var source = ViewModel.CurrentClassPlanSource;
+        if (source == RangePosition.Empty)
+            return;
+        var isVertical = ViewModel.IsVerticalLayout;
+        
+        int gi = 0, ti = 0, ci = 0; // index of ViewModel.ClassRecognitionRange, index of ViewModel.ClassRecognitionTimePoints, 当前下标
+        var start = isVertical ? source.Row : source.Col;
+        var end = isVertical ? source.EndRow : source.EndCol;
+        var subjects = ProfileService.Profile.Subjects;
+        var timeLayout = ViewModel.SelectedTimeLayout;
+        var classPlan = ViewModel.CurrentClassPlan;
+
+        // 初始化当前课表
+        classPlan.Classes.Clear();
+        classPlan.TimeLayouts = ProfileService.Profile.TimeLayouts;
+        classPlan.TimeLayoutId = ViewModel.SelectedTimeLayoutId;
+        classPlan.RefreshClassesList();
+        var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
+        d.SourceDictionary = ProfileService.Profile.Subjects;
+        var count = (from j in timeLayout.Layouts where j.TimeType == 0 select j).ToList().Count;
+        //for (var i = 0; i < count; i++)
+        //{
+        //    classPlan.Classes.Add(new ClassInfo());
+        //}
+
+        foreach (var i in ViewModel.ClassRecognitionRange)
+        {
+            if (!i.IsSelected)
+                continue;
+            // 移动下标
+            while (ti < ViewModel.ClassRecognitionTimePoints.Count && 
+                   !ViewModel.ClassRecognitionTimePoints[ti].IsSelected) 
+                ti++;
+            var v = i.Value;
+            var row = isVertical? v.Row : source.Row;
+            var col = isVertical? source.Col : v.Col;
+            var text = Grid.CurrentWorksheet.GetCellText(row, col);
+            // 搜索文本内容
+            foreach (var s in subjects.Where(s => text.Contains(s.Value.Name)))
+            {
+                classPlan.Classes[ti].SubjectId = s.Key;
+                break;
+            }
+
+            ti++;
         }
     }
 
@@ -433,4 +537,15 @@ public partial class ExcelImportWindow : MyWindow
     }
 
     #endregion
+
+    private void SelectorClassPlanSource_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count <= 0)
+            return;
+        var r = (RangePosition?)e.AddedItems[0];
+        if (r != null)
+        {
+            Grid.CurrentWorksheet.SelectionRange = r.Value;
+        }
+    }
 }

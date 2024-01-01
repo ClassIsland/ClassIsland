@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using ClassIsland.Controls;
 using ClassIsland.Models;
@@ -27,6 +28,14 @@ public class ExcelImportViewModel : ObservableRecipient
     private string _selectedTimeLayoutId = "";
     private bool _isVerticalLayout = false;
     private ObservableCollection<RangePosition> _classPlanSources = new();
+    private RangePosition _currentClassPlanSource = new RangePosition();
+    private ObservableCollection<Selectable<RangePosition>> _classRecognitionRange = new();
+    private ObservableCollection<Selectable<TimeLayoutItem>> _classRecognitionTimePoints = new();
+    private ObservableCollection<TimeLayoutItem> _classRecognitionTimePointsAll = new();
+    private ObservableCollection<RangePosition> _classRecognitionRangeAll = new();
+    private List<int> _classRecognitionRangeCache = new();
+    private ClassPlan _currentClassPlan = new();
+    private ObservableCollection<ClassPlan> _importedClassPlans = new();
 
     public int SlideIndex
     {
@@ -222,6 +231,72 @@ public class ExcelImportViewModel : ObservableRecipient
         {
             if (Equals(value, _classPlanSources)) return;
             _classPlanSources = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public RangePosition CurrentClassPlanSource
+    {
+        get => _currentClassPlanSource;
+        set
+        {
+            if (value.Equals(_currentClassPlanSource)) return;
+            _currentClassPlanSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<Selectable<RangePosition>> ClassRecognitionRange
+    {
+        get => _classRecognitionRange;
+        set
+        {
+            if (Equals(value, _classRecognitionRange)) return;
+            _classRecognitionRange = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<Selectable<TimeLayoutItem>> ClassRecognitionTimePoints
+    {
+        get => _classRecognitionTimePoints;
+        set
+        {
+            if (Equals(value, _classRecognitionTimePoints)) return;
+            _classRecognitionTimePoints = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public List<int> ClassRecognitionRangeCache
+    {
+        get => _classRecognitionRangeCache;
+        set
+        {
+            if (Equals(value, _classRecognitionRangeCache)) return;
+            _classRecognitionRangeCache = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ClassPlan CurrentClassPlan
+    {
+        get => _currentClassPlan;
+        set
+        {
+            if (Equals(value, _currentClassPlan)) return;
+            _currentClassPlan = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<ClassPlan> ImportedClassPlans
+    {
+        get => _importedClassPlans;
+        set
+        {
+            if (Equals(value, _importedClassPlans)) return;
+            _importedClassPlans = value;
             OnPropertyChanged();
         }
     }

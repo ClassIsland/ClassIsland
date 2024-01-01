@@ -10,6 +10,7 @@
         xmlns:ci="clr-namespace:ClassIsland"
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:windows="clr-namespace:Walterlv.Windows"
+        xmlns:converters="clr-namespace:ClassIsland.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:ExcelImportWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -26,11 +27,21 @@
         DragEnter="ProfileSettingsWindow_OnDragEnter"
         Drop="ProfileSettingsWindow_OnDrop">
     <controls:MyWindow.Resources>
+        <converters:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
         <Style TargetType="controls:WizardOptionControl">
             <Setter Property="InvokedCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
         </Style>
         <Style TargetType="controls:WizardOptionsListBox">
             <Setter Property="InvokeCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
+        </Style>
+        <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Mode=OneWay, Converter={StaticResource DictionaryValueAccessConverter}}"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <!--<Style TargetType="materialDesign:TransitionerSlide">
             <Setter Property="BackwardWipe">
@@ -435,6 +446,11 @@
                             <models:WizardOption Header="手动指定" Content=""
                                                  InvokeCommandParameter="RowClassesTimeRelationshipImportMan"/>
                         </controls:WizardOptionsListBox>
+                        <Button HorizontalAlignment="Left" Margin="0 8 0 0"
+                                Style="{StaticResource MaterialDesignPaperButton}"
+                                Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
+                            <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+                        </Button>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 11 时间对应关系 -->
@@ -445,7 +461,54 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
-
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ListBox Grid.Column="0" 
+                                     HorizontalContentAlignment="Stretch"
+                                     SelectionMode="Multiple"
+                                     ItemsSource="{Binding ViewModel.ClassRecognitionRange}">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Height="22"
+                                                  IsChecked="{Binding IsSelected}">
+                                            <TextBlock Text="{Binding Value}"/>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <ListBox Grid.Column="1" 
+                                     HorizontalContentAlignment="Stretch"
+                                     SelectionMode="Multiple"
+                                     ItemsSource="{Binding ViewModel.ClassRecognitionTimePoints}">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Height="22"
+                                                  IsChecked="{Binding IsSelected}">
+                                            <TextBlock> 
+                                                <Run Text="{Binding Value.StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                                <Run Text="-"/>
+                                                <Run Text="{Binding Value.EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                            </TextBlock>
+                                        </CheckBox>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectClassPlanArea"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 12 选择创建课表的区域 -->
@@ -456,9 +519,26 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
-                        <ListBox ItemsSource="{Binding ViewModel.ClassPlanSources}">
+                        <ListBox ItemsSource="{Binding ViewModel.ClassPlanSources}"
+                                 SelectedItem="{Binding ViewModel.CurrentClassPlanSource}"
+                                 SelectionChanged="SelectorClassPlanSource_OnSelectionChanged">
 
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="32"/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <materialDesign:PackIcon Kind="Check" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                                 Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding}" VerticalAlignment="Center" Grid.Column="1"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
                         </ListBox>
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="PreviewClassPlan"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 13 课表导入结果 -->
@@ -469,7 +549,34 @@
                         <TextBlock >
                             <Run Text=""/>
                         </TextBlock>
-
+                        <DataGrid AutoGenerateColumns="False" 
+                                              ItemsSource="{Binding ViewModel.CurrentClassPlan.Classes}" 
+                                              CanUserAddRows="False" 
+                                              CanUserSortColumns="False"
+                                              RowHeaderWidth="150"
+                                              ScrollViewer.CanContentScroll="False"
+                                              x:Name="DataGridClassPlans">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="时间" IsReadOnly="True">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock>
+                                                <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                                <Run Text="-"/>
+                                                <Run Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <materialDesign:DataGridComboBoxColumn Header="科目"
+                                                                       ItemsSourceBinding="{Binding ProfileService.Profile.Subjects.Keys, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ExcelImportWindow}}"
+                                                                       SelectedValueBinding="{Binding SubjectId}"
+                                                                       ElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"
+                                                                       EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="AllClassPlansView"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 14 已导入的课表 -->
