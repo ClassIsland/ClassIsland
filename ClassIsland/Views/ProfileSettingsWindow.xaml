@@ -1129,7 +1129,8 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="250" MaxWidth="500" MinWidth="200"/>
                             </Grid.ColumnDefinitions>
                             <!-- 科目选择 -->
                             <Grid Grid.Column="0" Margin="0 0 3 0">
@@ -1157,64 +1158,98 @@
                                 </ToolBar>
 
                                 <!-- 科目 -->
-                                <ListBox Grid.Row="1" Margin="0 12"
-                                         SelectionMode="Single"
-                                         Style="{StaticResource NavigationListBox}"
-                                         ScrollViewer.CanContentScroll="False"
-                                         ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                         x:Name="ListViewSubjects">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition/>
-                                                </Grid.ColumnDefinitions>
-                                                <!-- Icon -->
-                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0" 
-                                                                         Kind="BookmarkBoxMultipleOutline"/>
+                                <TabControl Grid.Row="1" Margin="0 12">
+                                    <TabItem>
+                                        <ListBox SelectionMode="Single"
+                                                 Style="{StaticResource NavigationListBox}"
+                                                 ScrollViewer.CanContentScroll="False"
+                                                 ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 x:Name="ListViewSubjects">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+                                                        <!-- Icon -->
+                                                        <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
+                                                            Margin="0 0 6 0"
+                                                            Kind="BookmarkBoxMultipleOutline" />
 
-                                                <!-- Subject -->
-                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
-                                                           ToolTip="科目名" HorizontalAlignment="Left"/>
+                                                        <!-- Subject -->
+                                                        <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16"
+                                                                   Text="{Binding Value.Name}"
+                                                                   ToolTip="科目名" HorizontalAlignment="Left" />
 
-                                                <!-- Info -->
-                                                <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
-                                                    <controls:IconText Kind="Teacher" Text="{Binding Value.TeacherName}"
-                                                                       IconMargin="3 0 0 0" Margin="0 0 6 0"
-                                                                       ToolTip="科任老师"/>
-                                                    <controls:IconText IconMargin="3 0 0 0" ToolTip="课程类型">
-                                                        <controls:IconText.Style>
-                                                            <Style TargetType="controls:IconText">
-                                                                <Style.Triggers>
-                                                                    <DataTrigger Binding="{Binding Value.IsOutDoor}" Value="True">
-                                                                        <Setter Property="Kind" Value="BasketballHoopOutline"/>
-                                                                        <Setter Property="Text" Value="户外课程"/>
-                                                                    </DataTrigger>
-                                                                </Style.Triggers>
-                                                                <Setter Property="Kind" Value="HumanMaleBoardPoll"/>
-                                                                <Setter Property="Text" Value="室内课程"/>
-                                                            </Style>
-                                                        </controls:IconText.Style>
-                                                    </controls:IconText>
-                                                </WrapPanel>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
+                                                        <!-- Info -->
+                                                        <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
+                                                            <controls:IconText Kind="Teacher"
+                                                                               Text="{Binding Value.TeacherName}"
+                                                                               IconMargin="3 0 0 0" Margin="0 0 6 0"
+                                                                               ToolTip="科任老师" />
+                                                            <controls:IconText IconMargin="3 0 0 0" ToolTip="课程类型">
+                                                                <controls:IconText.Style>
+                                                                    <Style TargetType="controls:IconText">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger
+                                                                                Binding="{Binding Value.IsOutDoor}"
+                                                                                Value="True">
+                                                                                <Setter Property="Kind"
+                                                                                    Value="BasketballHoopOutline" />
+                                                                                <Setter Property="Text" Value="户外课程" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                        <Setter Property="Kind"
+                                                                            Value="HumanMaleBoardPoll" />
+                                                                        <Setter Property="Text" Value="室内课程" />
+                                                                    </Style>
+                                                                </controls:IconText.Style>
+                                                            </controls:IconText>
+                                                        </WrapPanel>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </TabItem>
+                                    <TabItem>
+                                        <DataGrid ItemsSource="{Binding MainViewModel.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  AutoGenerateColumns="False"
+                                                  IsReadOnly="False"
+                                                  SelectedValue="{Binding ViewModel.SelectedSubject}"
+                                                  SelectionUnit="FullRow"
+                                                  GridLinesVisibility="All">
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}"
+                                                                    Header="科目名"/>
+                                                <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
+                                                                    Header="简称"/>
+                                                <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
+                                                                        Header="户外课程？"/>
+                                                <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
+                                                                    Header="科任老师"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </TabItem>
+                                </TabControl>
                             </Grid>
 
-                            <!-- 科目编辑 -->
-                            <Grid Grid.Column="1" Margin="3 0 0 0" 
-                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewSubjects}">
+                            <!-- Gutter -->
+                            <GridSplitter Grid.Column="1"
+                                          MaxWidth="500"
+                                          Width="10" HorizontalAlignment="Stretch"/>
+
+                                <!-- 科目编辑 -->
+                            <Grid Grid.Column="2" Margin="3 0 0 0" 
+                                  DataContext="{Binding ViewModel.SelectedSubject}">
                                 <Grid.Style>
                                     <Style TargetType="Grid">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewSubjects}" Value="{x:Null}">
+                                            <DataTrigger Binding="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" Value="{x:Null}">
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -1272,7 +1307,7 @@
                                                 <DataTemplate>
                                                     <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
                                                             Margin="0 0 0 8"
-                                                            TargetObject="{Binding SelectedItem.Value, ElementName=ListViewSubjects}"/>
+                                                            TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
                                         </ItemsControl>
@@ -1283,12 +1318,12 @@
                                     </StackPanel>
                                 </ScrollViewer>
                             </Grid>
-                            <StackPanel Grid.Column="1" 
+                            <StackPanel Grid.Column="2" 
                                         VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewSubjects}" Value="{x:Null}">
+                                            <DataTrigger Binding="{Binding ViewModel.SelectedSubject }" Value="{x:Null}">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
                                         </Style.Triggers>
