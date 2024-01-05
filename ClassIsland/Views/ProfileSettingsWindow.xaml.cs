@@ -287,7 +287,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
     {
         MainViewModel.Profile.Subjects.Add(Guid.NewGuid().ToString(), new Subject());
-        ListViewSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
+        //ListViewSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
         TextBoxSubjectName.Focus();
         Analytics.TrackEvent("档案设置 · 添加科目");
     }
@@ -301,7 +301,7 @@ public partial class ProfileSettingsWindow : MyWindow
             {
                 {"IsSuccess", "true"},
             });
-            MainViewModel.Profile.Subjects.Remove(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Key);
+            //MainViewModel.Profile.Subjects.Remove(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Key);
         }
         else
         {
@@ -456,7 +456,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        var s = CopyObject(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Value);
+        var s = CopyObject(ViewModel.SelectedSubject);
         if (s == null)
         {
             return;

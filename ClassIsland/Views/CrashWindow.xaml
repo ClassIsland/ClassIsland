@@ -6,19 +6,27 @@
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:views="clr-namespace:ClassIsland.Views"
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
+                   xmlns:converters="clr-namespace:ClassIsland.Converters"
                    d:DataContext="{d:DesignInstance views:CrashWindow}"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    TextElement.FontWeight="Regular"
                    TextElement.FontSize="13"
                    TextOptions.TextFormattingMode="Ideal" 
                    TextOptions.TextRenderingMode="Auto"        
+                   SizeToContent="Height"
+                   WindowStartupLocation="CenterScreen"
                    Background="{DynamicResource MaterialDesignPaper}"
                    FontFamily="{StaticResource HarmonyOsSans}"
                    mc:Ignorable="d"
                    Icon="/Assets/AppLogo.ico"
-                   Title="崩溃啦！" Height="450" Width="800">
+                   Title="崩溃啦！" Width="800"
+                   StateChanged="CrashWindow_OnStateChanged">
+    <controls:MyWindow.Resources>
+        <converters:ExceptionToExceptionHeaderConverter x:Key="ExceptionToExceptionHeaderConverter" />
+    </controls:MyWindow.Resources>
     <Grid Margin="12">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
@@ -26,13 +34,57 @@
         <TextBlock Grid.Row="0" TextWrapping="Wrap">
             <Run Text=":(" Foreground="{DynamicResource PrimaryHueMidBrush}" FontSize="32" FontWeight="Bold"/><LineBreak/>
             <Run Text="出错了……" Foreground="{DynamicResource PrimaryHueMidBrush}" FontSize="20" FontWeight="Bold"/><LineBreak/><LineBreak/>
-            <Run Text="应用发生了无法解决的错误，需要退出。这可能是由一个bug引起的。若要将此错误反馈至开发人员，请保留此错误信息，并一并提交至开发者。"/>
+            <Run Text="应用发生了无法解决的错误，需要退出。这可能是由一个bug引起的。若要将此错误反馈至开发人员，请保留此错误信息（包括详细信息），并一并提交至开发者。"/>
         </TextBlock>
-        <TextBox x:Name="TextBoxCrashInfo" Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0 6" AcceptsReturn="True"
-                 VerticalContentAlignment="Top"
-                 VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}" HorizontalScrollBarVisibility="Auto"
-                 d:Text="123"/>
-        <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
+        <ListBox Grid.Row="1" ItemsSource="{Binding InnerExceptions}" MaxHeight="150"
+                 materialDesign:ListBoxItemAssist.ShowSelection="False">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Column="0" Grid.Row="0"
+                                 Grid.ColumnSpan="2"
+                                 TextWrapping="Wrap"
+                                 Text="{Binding Mode=OneWay, Converter={StaticResource ExceptionToExceptionHeaderConverter}}"
+                                 IsReadOnly="True"
+                                 FontSize="15"
+                                 HorizontalAlignment="Left"
+                                 materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
+                                 BorderThickness="0"/>
+
+                        <controls:IconText Grid.Column="0" Grid.Row="1"
+                                           Text="异常发生的模块："
+                                           VerticalAlignment="Center" Kind="FileCogOutline"/>
+                        <TextBox Grid.Column="1" Grid.Row="1"
+                                 Text="{Binding Source, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap"
+                                 HorizontalAlignment="Left"
+                                 materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
+                                 BorderThickness="0"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Expander Grid.Row="2" Header="详细信息" Expanded="Expander_OnExpanded" Collapsed="Expander_OnCollapsed"
+                  x:Name="DetailExpander"
+                  Margin="0 0 0 8">
+            <TextBox x:Name="TextBoxCrashInfo" Grid.Row="1" AcceptsReturn="True"
+                     VerticalContentAlignment="Top" 
+                     MaxHeight="400"
+                     BorderThickness="0"
+                     materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
+                     VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}" HorizontalScrollBarVisibility="Auto"
+                     d:Text="123"/>
+        </Expander>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0" Click="ButtonIgnore_OnClick">
                 <controls:IconText Kind="Close" Text="忽略" IconMargin="3 0 0 0"/>
             </Button>
@@ -43,7 +95,7 @@
                 <controls:IconText Kind="Restart" Text="重启应用" IconMargin="3 0 0 0"/>
             </Button>
         </StackPanel>
-        <StackPanel Grid.Row="2" HorizontalAlignment="Left" Orientation="Horizontal">
+        <StackPanel Grid.Row="3" HorizontalAlignment="Left" Orientation="Horizontal">
             <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonCopy_OnClick">
                 <controls:IconText Kind="ContentCopy" Text="复制" IconMargin="3 0 0 0"/>
             </Button>

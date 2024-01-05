@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
@@ -81,10 +82,18 @@ public partial class App : Application
         }
         Logger?.LogCritical(e.Exception, "发生严重错误。");
 
+        var exps = new ObservableCollection<Exception>();
+        var ex = e.Exception;
+        while (ex != null)
+        {
+            exps.Add(ex);
+            ex = ex.InnerException;
+        }
         CrashWindow = new CrashWindow()
         {
             CrashInfo = e.Exception.ToString(),
-            Exception = e.Exception
+            Exception = e.Exception,
+            InnerExceptions = exps
         };
 #if DEBUG
         if (e.Exception.GetType() != typeof(ResourceReferenceKeyNotFoundException))

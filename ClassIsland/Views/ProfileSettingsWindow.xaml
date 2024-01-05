@@ -1132,119 +1132,69 @@
                                 <ColumnDefinition Width="5"/>
                                 <ColumnDefinition Width="250" MaxWidth="500" MinWidth="200"/>
                             </Grid.ColumnDefinitions>
-                            <!-- 科目选择 -->
-                            <Grid Grid.Column="0" Margin="0 0 3 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <!-- 科目操作 -->
-                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
-                                        <controls:IconText Kind="Add" Text="添加"/>
-                                    </Button>
-                                    <Button Click="ButtonDuplicateSubject_OnClick" ToolTip="复制选中的科目。">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewSubjects}" Value="-1">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
-                                    </Button>
-                                </ToolBar>
-
+                            <ToolBar Grid.Column="0" Grid.ColumnSpan="3"
+                                     Grid.Row="0" ToolBarTray.IsLocked="True">
+                                <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
+                                    <controls:IconText Kind="Add" Text="添加"/>
+                                </Button>
+                                <Separator/>
+                                <TextBlock>
+                                    <Run Text="已选中"/>
+                                    <Run Text="X"/>
+                                    <Run Text="项。"/>
+                                </TextBlock>
+                                <Button Click="ButtonDuplicateSubject_OnClick" ToolTip="复制选中的科目。">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewSubjects}" Value="-1">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                    <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                </Button>
+                                <Button>
+                                    <controls:IconText Kind="Delete" Text="删除"/>
+                                </Button>
+                            </ToolBar>
+                                <!-- 科目选择 -->
+                            <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
                                 <!-- 科目 -->
-                                <TabControl Grid.Row="1" Margin="0 12">
-                                    <TabItem>
-                                        <ListBox SelectionMode="Single"
-                                                 Style="{StaticResource NavigationListBox}"
-                                                 ScrollViewer.CanContentScroll="False"
-                                                 ItemsSource="{Binding MainViewModel.Profile.Subjects, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 x:Name="ListViewSubjects">
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Grid>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto" />
-                                                            <RowDefinition Height="Auto" />
-                                                        </Grid.RowDefinitions>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition />
-                                                        </Grid.ColumnDefinitions>
-                                                        <!-- Icon -->
-                                                        <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
-                                                            Margin="0 0 6 0"
-                                                            Kind="BookmarkBoxMultipleOutline" />
-
-                                                        <!-- Subject -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16"
-                                                                   Text="{Binding Value.Name}"
-                                                                   ToolTip="科目名" HorizontalAlignment="Left" />
-
-                                                        <!-- Info -->
-                                                        <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
-                                                            <controls:IconText Kind="Teacher"
-                                                                               Text="{Binding Value.TeacherName}"
-                                                                               IconMargin="3 0 0 0" Margin="0 0 6 0"
-                                                                               ToolTip="科任老师" />
-                                                            <controls:IconText IconMargin="3 0 0 0" ToolTip="课程类型">
-                                                                <controls:IconText.Style>
-                                                                    <Style TargetType="controls:IconText">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger
-                                                                                Binding="{Binding Value.IsOutDoor}"
-                                                                                Value="True">
-                                                                                <Setter Property="Kind"
-                                                                                    Value="BasketballHoopOutline" />
-                                                                                <Setter Property="Text" Value="户外课程" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                        <Setter Property="Kind"
-                                                                            Value="HumanMaleBoardPoll" />
-                                                                        <Setter Property="Text" Value="室内课程" />
-                                                                    </Style>
-                                                                </controls:IconText.Style>
-                                                            </controls:IconText>
-                                                        </WrapPanel>
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
-                                    </TabItem>
-                                    <TabItem>
-                                        <DataGrid ItemsSource="{Binding MainViewModel.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  AutoGenerateColumns="False"
-                                                  IsReadOnly="False"
-                                                  SelectedValue="{Binding ViewModel.SelectedSubject}"
-                                                  SelectionUnit="FullRow"
-                                                  GridLinesVisibility="All">
-                                            <DataGrid.Columns>
-                                                <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}"
-                                                                    Header="科目名"/>
-                                                <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
-                                                                    Header="简称"/>
-                                                <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
-                                                                        Header="户外课程？"/>
-                                                <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
-                                                                    Header="科任老师"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
-                                    </TabItem>
-                                </TabControl>
-                            </Grid>
+                                <DataGrid Grid.Row="0"
+                                          ItemsSource="{Binding MainViewModel.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          AutoGenerateColumns="False"
+                                          IsReadOnly="False"
+                                          SelectedValue="{Binding ViewModel.SelectedSubject}"
+                                          SelectionUnit="FullRow"
+                                          GridLinesVisibility="All">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}"
+                                                                Header="科目名"/>
+                                        <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
+                                                                Header="简称"/>
+                                        <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
+                                                                    Header="户外课程？"/>
+                                        <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
+                                                                Header="科任老师"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                                </Grid>
 
                             <!-- Gutter -->
-                            <GridSplitter Grid.Column="1"
+                            <GridSplitter Grid.Row="1"
+                                          Grid.Column="1"
                                           MaxWidth="500"
                                           Width="10" HorizontalAlignment="Stretch"/>
 
                                 <!-- 科目编辑 -->
-                            <Grid Grid.Column="2" Margin="3 0 0 0" 
+                            <Grid Grid.Row="1" Grid.Column="2" Margin="3 0 0 0" 
                                   DataContext="{Binding ViewModel.SelectedSubject}">
                                 <Grid.Style>
                                     <Style TargetType="Grid">
@@ -1261,14 +1211,7 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
 
-                                <!-- 科目编辑操作 -->
-                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonSubject_OnClick" ToolTip="删除该科目。">
-                                        <controls:IconText Kind="Delete" Text="删除科目"/>
-                                    </Button>
-                                </ToolBar>
-
-                                <!-- 科目编辑 -->
+                                    <!-- 科目编辑 -->
                                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                                     <StackPanel Margin="12">
                                         <!-- 科目名 & 简称 -->
@@ -1318,7 +1261,7 @@
                                     </StackPanel>
                                 </ScrollViewer>
                             </Grid>
-                            <StackPanel Grid.Column="2" 
+                            <StackPanel Grid.Row="1" Grid.Column="2" 
                                         VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
