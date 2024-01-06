@@ -20,7 +20,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isOfflineEditor = false;
     private TimeLayoutItem? _selectedTimePoint;
     private double _timeLineScale = 3.0;
-    private Subject _selectedSubject = new Subject();
+    private Subject? _selectedSubject;
 
     public object DrawerContent
     {
@@ -159,7 +159,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
         }
     }
 
-    public Subject SelectedSubject
+    public Subject? SelectedSubject
     {
         get => _selectedSubject;
         set

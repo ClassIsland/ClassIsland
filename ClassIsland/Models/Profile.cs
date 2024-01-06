@@ -48,11 +48,32 @@ public class Profile : ObservableRecipient
         }
     }
 
-    private void UpdateEditingSubjects()
+    private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e=null)
     {
-        EditingSubjects.CollectionChanged -= EditingSubjectsOnCollectionChanged;
-        EditingSubjects = new ObservableCollection<Subject>(from i in Subjects select i.Value);
-        EditingSubjects.CollectionChanged += EditingSubjectsOnCollectionChanged;
+        if (e != null)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        else
+        {
+            EditingSubjects.CollectionChanged -= EditingSubjectsOnCollectionChanged;
+            EditingSubjects = new ObservableCollection<Subject>(from i in Subjects select i.Value);
+            EditingSubjects.CollectionChanged += EditingSubjectsOnCollectionChanged;
+        }
     }
 
     private void EditingSubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -97,7 +118,7 @@ public class Profile : ObservableRecipient
 
     private void SubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        UpdateEditingSubjects();
+        UpdateEditingSubjects(e);
     }
 
     public void NotifyPropertyChanged(string propertyName)

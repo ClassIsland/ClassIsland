@@ -577,949 +577,974 @@
     </Window.Resources>
     <Grid>
 
-    <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
-        <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
-                                   DrawerClosing="DrawerHost_OnDrawerClosing"
-                                   x:Name="MyDrawerHost">
-            <!-- Content -->
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <!-- Main -->
-                <TabControl Grid.Row="1" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged"
-                            x:Name="RootTabControl">
-                    <!-- 课表 -->
-                    <TabItem Header="课表" Visibility="Collapsed">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <!-- 课表选择 -->
-                            <Grid Grid.Column="0" Margin="0 0 3 0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <!-- 课表操作 -->
-                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。"
-                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                        <controls:IconText Kind="Add" Text="添加"/>
-                                    </Button>
-                                    <Button Click="ButtonDuplicateClassPlan_OnClick" ToolTip="复制选中的课表。"
-                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                                                <Setter Property="IsEnabled" Value="{Binding SelectedItem.Value.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}, ElementName=ListViewClassPlans}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewClassPlans}" Value="-1">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
-                                    </Button>
-                                    <Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <controls:IconText Kind="Add" Text="从表格导入…"/>
-                                    </Button>
-                                </ToolBar>
-
-                                <!-- 课表 -->
-                                <ListBox Grid.Row="1" Margin="0 12"
-                                         SelectionChanged="ListViewClassPlans_OnSelectionChanged"
-                                         SelectionMode="Single"
-                                         HorizontalContentAlignment="Stretch"
-                                         Style="{StaticResource NavigationListBox}"
-                                         ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                         x:Name="ListViewClassPlans" ScrollViewer.CanContentScroll="False">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                    <ColumnDefinition/>
-                                                </Grid.ColumnDefinitions>
-                                                <!-- Icon -->
-                                                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0" 
-                                                                         Kind="FileChartOutline"/>
-
-                                                <!-- Name -->
-                                                <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
-                                                           ToolTip="课表名称" HorizontalAlignment="Left"/>
-
-                                                <!-- Info -->
-                                                <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
-                                                    <controls:IconText Kind="ClockOutline" Text="{Binding Value.TimeLayout.Name}" ToolTip="时间表" IconMargin="3"/>
-                                                </WrapPanel>
-
-                                                <!-- Status -->
-                                                <StackPanel Grid.Column="0" Grid.Row="0"
-                                                            Grid.RowSpan="2" Grid.ColumnSpan="2"
-                                                            HorizontalAlignment="Right"
-                                                            VerticalAlignment="Center"
-                                                            Orientation="Horizontal">
-                                                    <materialDesign:PackIcon Kind="LayersOutline"
-                                                                             ToolTip="该课表是临时层课表。"
-                                                                             Visibility="{Binding Value.IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
-                            </Grid>
-
-                            <!-- 课表编辑 -->
-                            <Grid Grid.Column="1" Margin="3 0 0 0" 
-                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}">
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewClassPlans}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </Style>
-                                </Grid.Style>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- 课表编辑操作 -->
-                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <!--<Button Click="ButtonDebugAddNewClass_OnClick">
-                                        <controls:IconText Kind="Add" Text="DebugAddNew"/>
-                                    </Button>-->
-                                    <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
-                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                        <controls:IconText Kind="InfoOutline" Text="课表信息"/>
-                                    </Button>
-                                    <Button Click="ButtonCreateTempOverlayClassPlan_OnClick" ToolTip="创建临时课表层。"
-                                            IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                        <controls:IconText Kind="LayersOutline" Text="创建临时层"/>
-                                    </Button>
-                                    <Separator/>
-                                    <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
-                                        <controls:IconText Kind="Delete" Text="删除课表"/>
-                                    </Button>
-                                </ToolBar>
-
-                                <!-- 课表编辑 -->
-                                <Grid Grid.Row="1">
-                                    <DataGrid AutoGenerateColumns="False" 
-                                              ItemsSource="{Binding Classes}" 
-                                              CanUserAddRows="False" 
-                                              CanUserSortColumns="False"
-                                              RowHeaderWidth="150"
-                                              ScrollViewer.CanContentScroll="False"
-                                              x:Name="DataGridClassPlans"
-                                              UnloadingRow="DataGridClassPlans_OnUnloadingRow"
-                                              BeginningEdit="DataGridClassPlans_OnBeginningEdit"
-                                              CellEditEnding="DataGridClassPlans_OnCellEditEnding">
-                                        <DataGrid.Columns>
-                                            <DataGridTemplateColumn Header="时间" IsReadOnly="True">
-                                                <DataGridTemplateColumn.CellTemplate>
-                                                    <DataTemplate>
-                                                        <TextBlock>
-                                                            <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
-                                                            <Run Text="-"/>
-                                                            <Run Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
-                                                        </TextBlock>
-                                                    </DataTemplate>
-                                                </DataGridTemplateColumn.CellTemplate>
-                                            </DataGridTemplateColumn>
-                                            <materialDesign:DataGridComboBoxColumn Header="科目"
-                                                                                   ItemsSourceBinding="{Binding MainViewModel.Profile.Subjects.Keys, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}, UpdateSourceTrigger=PropertyChanged}"
-                                                                                   SelectedValueBinding="{Binding SubjectId}"
-                                                                                   ElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"
-                                                                                   EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"/>
-                                        </DataGrid.Columns>
-                                    </DataGrid>
-                                </Grid>
-                                <!-- 关闭前警告 -->
-                                <materialDesign:ColorZone Grid.Row="2" Background="Yellow" 
-                                                          HorizontalAlignment="Stretch" 
-                                                          Visibility="{Binding ViewModel.IsClassPlansEditing, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
-                                                          Mode="Light">
-                                    <controls:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6"/>
-                                </materialDesign:ColorZone>
-                            </Grid>
-                            <StackPanel Grid.Column="1" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </Style>
-                                </StackPanel.Style>
-                                <materialDesign:PackIcon Kind="FileChartOutline" Width="72" Height="72"
-                                                         HorizontalAlignment="Center"/>
-                                <TextBlock Text="在左侧选择一个课表，然后在此处进行设置。" TextWrapping="Wrap"
-                                           Margin="0 8 0 0"/>
-                            </StackPanel>
-                        </Grid>
-                    </TabItem>
-
-                    <!-- 时间表 -->
-                    <TabItem Header="时间表" Visibility="Collapsed">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
-                                <ColumnDefinition Width="5"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <!-- 时间表选择 -->
-                            <Grid Grid.Column="0" Margin="0 0 3 0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <!-- 时间表操作 -->
-                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                    <Button Click="ButtonAddTimeLayout_OnClick" ToolTip="新建时间表。"
-                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                        <controls:IconText Kind="Add" Text="添加"/>
-                                    </Button>
-                                    <Button Click="ButtonDuplicateTimeLayout_OnClick" ToolTip="复制选中的时间表。"
-                                            Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimeLayouts}" Value="-1">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
-                                    </Button>
-                                </ToolBar>
-
-                                <!-- 时间表 -->
-                                <ListBox Grid.Row="1" Margin="0 12"
-                                         SelectionMode="Single"
-                                         Style="{StaticResource NavigationListBox}"
-                                         HorizontalContentAlignment="Stretch"
-                                         ScrollViewer.CanContentScroll="False"
-                                         SelectionChanged="ListViewTimeLayouts_OnSelectionChanged"
-                                         ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                         x:Name="ListViewTimeLayouts">
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid HorizontalAlignment="Stretch">
-                                                <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left"/>
-                                                <materialDesign:PackIcon Kind="Lock" HorizontalAlignment="Right"
-                                                                         ToolTip="已锁定活动的时间表。"
-                                                                         Visibility="{Binding Value.IsActivated, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                </ListBox>
-                            </Grid>
-
-                            <GridSplitter HorizontalAlignment="Stretch" Grid.Column="1"/>
-
-                            <!-- 时间节点编辑 -->
-                            <Grid Grid.Column="2" Margin="3 0 0 0" 
-                                  DataContext="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}"
-                                  IsEnabled="{Binding IsActivated, Converter={StaticResource InvertBooleanConverter}}">
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewTimeLayouts}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </Style>
-                                </Grid.Style>
+        <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogHostId, Mode=OneWay}">
+            <materialDesign:DrawerHost RightDrawerContent="{Binding ViewModel.DrawerContent, Mode=OneWay}"
+                                       DrawerClosing="DrawerHost_OnDrawerClosing"
+                                       x:Name="MyDrawerHost">
+                <!-- Content -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <!-- Main -->
+                    <TabControl Grid.Row="1" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged"
+                                x:Name="RootTabControl">
+                        <!-- 课表 -->
+                        <TabItem Header="课表" Visibility="Collapsed">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition Width="250" MinWidth="250" MaxWidth="350"/>
+                                    <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <!-- 时间表编辑操作 -->
-                                <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" 
-                                         IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                    <!--<TextBlock Text="{Binding Layouts}"/>-->
-                                    <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。">
-                                        <controls:IconText Kind="NotePlusOutline" Text="上课"/>
-                                    </Button>
-                                    <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。">
-                                        <controls:IconText Kind="ClockPlusOutline" Text="课间"/>
-                                    </Button>
-                                    <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
-                                        <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
-                                    </Button>
-                                    <Separator/>
-                                    <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimePoints}" Value="-1">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <controls:IconText Kind="Remove" Text="删除"/>
-                                    </Button>
-                                    <Button  Click="ButtonEditTimePoint_OnClick"
-                                             ToolTip="编辑选中的时间点。">
-                                        <Button.Style>
-                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimePoints}" Value="-1">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>
-                                        <controls:IconText Kind="EditOutline" Text="编辑"/>
-                                    </Button>
-                                    <Separator/>
-                                    <Button Click="ButtonEditTimeLayoutInfo_OnClick"
-                                            ToolTip="查看并编辑时间表的基本信息。">
-                                        <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
-                                    </Button>
-                                    <Button Click="ButtonDeleteTimeLayout_OnClick"
-                                            ToolTip="删除该时间表。">
-                                        <controls:IconText Kind="Delete" Text="删除时间表"/>
-                                    </Button>
-                                </ToolBar>
-
-                                <!-- 时间点 -->
-                                <TabControl Grid.Column="0" Grid.Row="1"
-                                            TabStripPlacement="Bottom"
-                                            HorizontalContentAlignment="Left"
-                                            x:Name="TabTimeLayoutEditors">
-                                    <!-- 旧版编辑器 -->
-                                    <TabItem Header="{materialDesign:PackIcon ListBoxOutline}" 
-                                             Visibility="Collapsed"
-                                             ToolTip="列表" Padding="4">
-                                        <ListBox SelectionMode="Single"
-                                                 ScrollViewer.CanContentScroll="False"
-                                                 SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
-                                                 ItemsSource="{Binding Layouts, Mode=OneWay}"
-                                                 x:Name="ListViewTimePoints"
-                                                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
-                                            <ListBox.ItemContainerStyle>
-                                                <Style TargetType="ListBoxItem"
-                                                       BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
-                                                    <EventSetter Event="MouseDoubleClick"
-                                                                 Handler="TimePointDoubleClick_OnHandler" />
+                                <!-- 课表选择 -->
+                                <Grid Grid.Column="0" Margin="0 0 3 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <!-- 课表操作 -->
+                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                        <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。"
+                                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                            <controls:IconText Kind="Add" Text="添加"/>
+                                        </Button>
+                                        <Button Click="ButtonDuplicateClassPlan_OnClick" ToolTip="复制选中的课表。"
+                                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                    <Setter Property="IsEnabled" Value="{Binding SelectedItem.Value.IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}, ElementName=ListViewClassPlans}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewClassPlans}" Value="-1">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
                                                 </Style>
-                                            </ListBox.ItemContainerStyle>
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Grid>
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto" />
-                                                            <RowDefinition Height="Auto" />
-                                                        </Grid.RowDefinitions>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition />
-                                                        </Grid.ColumnDefinitions>
-                                                        <!-- Icon -->
-                                                        <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
-                                                            Margin="0 0 6 0">
-                                                            <materialDesign:PackIcon.Style>
-                                                                <Style TargetType="materialDesign:PackIcon">
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding TimeType}"
-                                                                            Value="0">
-                                                                            <Setter Property="Kind" Value="BookOutline" />
-                                                                            <Setter Property="ToolTip" Value="上课时间" />
-                                                                        </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding TimeType}"
-                                                                            Value="1">
-                                                                            <Setter Property="Kind"
-                                                                                Value="ClockOutline" />
-                                                                            <Setter Property="ToolTip" Value="课间休息" />
-                                                                        </DataTrigger>
-                                                                        <DataTrigger Binding="{Binding TimeType}"
-                                                                            Value="2">
-                                                                            <Setter Property="Kind"
-                                                                                Value="ArrowSplitHorizontal" />
-                                                                            <Setter Property="ToolTip" Value="分割线" />
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </materialDesign:PackIcon.Style>
-                                                        </materialDesign:PackIcon>
+                                            </Button.Style>
+                                            <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                        </Button>
+                                        <Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <controls:IconText Kind="Add" Text="从表格导入…"/>
+                                        </Button>
+                                    </ToolBar>
 
-                                                        <!-- Time -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14"
-                                                                   ToolTip="时间段">
-                                                            <Run
-                                                                Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                                                            <Run Text="-" />
-                                                            <Run
-                                                                Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                                                        </TextBlock>
+                                    <!-- 课表 -->
+                                    <ListBox Grid.Row="1" Margin="0 12"
+                                             SelectionChanged="ListViewClassPlans_OnSelectionChanged"
+                                             SelectionMode="Single"
+                                             HorizontalContentAlignment="Stretch"
+                                             Style="{StaticResource NavigationListBox}"
+                                             ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             x:Name="ListViewClassPlans" ScrollViewer.CanContentScroll="False">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <!-- Icon -->
+                                                    <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0" 
+                                                                             Kind="FileChartOutline"/>
 
-                                                        <!-- Last Time -->
-                                                        <controls:IconText Grid.Column="1" Grid.Row="1"
-                                                                           Kind="ClockAutoOutline"
-                                                                           Text="{Binding Last}"
-                                                                           Margin="0 3 0 0" ToolTip="持续时间" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
-                                    </TabItem>
-                                    <!-- 新编辑器 -->
-                                    <TabItem Header="{materialDesign:PackIcon TimelineOutline}"
-                                             Visibility="Collapsed">
-                                        <controls:TimeLineListControl SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
-                                                                      ItemsSource="{Binding Layouts, Mode=OneWay}"
-                                                                      Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}"
-                                                                      x:Name="TimeLineListControl">
-                                            <!-- 回应我吧，爱莉希雅 -->
-                                        </controls:TimeLineListControl>
-                                    </TabItem>
-                                </TabControl>
+                                                    <!-- Name -->
+                                                    <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
+                                                               ToolTip="课表名称" HorizontalAlignment="Left"/>
 
-                                <!-- 新编辑器大小调整 -->
-                                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal"
-                                            VerticalAlignment="Bottom"
-                                            HorizontalAlignment="Right">
+                                                    <!-- Info -->
+                                                    <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
+                                                        <controls:IconText Kind="ClockOutline" Text="{Binding Value.TimeLayout.Name}" ToolTip="时间表" IconMargin="3"/>
+                                                    </WrapPanel>
+
+                                                    <!-- Status -->
+                                                    <StackPanel Grid.Column="0" Grid.Row="0"
+                                                                Grid.RowSpan="2" Grid.ColumnSpan="2"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Center"
+                                                                Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="LayersOutline"
+                                                                                 ToolTip="该课表是临时层课表。"
+                                                                                 Visibility="{Binding Value.IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+
+                                <!-- 课表编辑 -->
+                                <Grid Grid.Column="1" Margin="3 0 0 0" 
+                                      DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewClassPlans}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- 课表编辑操作 -->
+                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                        <!--<Button Click="ButtonDebugAddNewClass_OnClick">
+                                            <controls:IconText Kind="Add" Text="DebugAddNew"/>
+                                        </Button>-->
+                                        <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
+                                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                            <controls:IconText Kind="InfoOutline" Text="课表信息"/>
+                                        </Button>
+                                        <Button Click="ButtonCreateTempOverlayClassPlan_OnClick" ToolTip="创建临时课表层。"
+                                                IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                            <controls:IconText Kind="LayersOutline" Text="创建临时层"/>
+                                        </Button>
+                                        <Separator/>
+                                        <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
+                                            <controls:IconText Kind="Delete" Text="删除课表"/>
+                                        </Button>
+                                    </ToolBar>
+
+                                    <!-- 课表编辑 -->
+                                    <Grid Grid.Row="1">
+                                        <DataGrid AutoGenerateColumns="False" 
+                                                  ItemsSource="{Binding Classes}" 
+                                                  CanUserAddRows="False" 
+                                                  CanUserSortColumns="False"
+                                                  RowHeaderWidth="150"
+                                                  ScrollViewer.CanContentScroll="False"
+                                                  x:Name="DataGridClassPlans"
+                                                  UnloadingRow="DataGridClassPlans_OnUnloadingRow"
+                                                  BeginningEdit="DataGridClassPlans_OnBeginningEdit"
+                                                  CellEditEnding="DataGridClassPlans_OnCellEditEnding">
+                                            <DataGrid.Columns>
+                                                <DataGridTemplateColumn Header="时间" IsReadOnly="True">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                                                <Run Text="-"/>
+                                                                <Run Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <materialDesign:DataGridComboBoxColumn Header="科目"
+                                                                                       ItemsSourceBinding="{Binding MainViewModel.Profile.Subjects.Keys, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}, UpdateSourceTrigger=PropertyChanged}"
+                                                                                       SelectedValueBinding="{Binding SubjectId}"
+                                                                                       ElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"
+                                                                                       EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Grid>
+                                    <!-- 关闭前警告 -->
+                                    <materialDesign:ColorZone Grid.Row="2" Background="Yellow" 
+                                                              HorizontalAlignment="Stretch" 
+                                                              Visibility="{Binding ViewModel.IsClassPlansEditing, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
+                                                              Mode="Light">
+                                        <controls:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6"/>
+                                    </materialDesign:ColorZone>
+                                </Grid>
+                                <StackPanel Grid.Column="1" 
+                                            VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <StackPanel.Style>
                                         <Style TargetType="StackPanel">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
-                                                             Value="1">
+                                                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}" Value="{x:Null}">
                                                     <Setter Property="Visibility" Value="Visible"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                         </Style>
                                     </StackPanel.Style>
-                                    <Button Content="{materialDesign:PackIcon Target}"
-                                            ToolTip="定位选中项目"
-                                            VerticalAlignment="Center"
-                                            Margin="2 0"
-                                            ToolTipService.Placement="Top"
-                                            Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Click="ButtonTimeLayoutEditScrollToContent_OnClick"/>
-                                    <TextBlock Text="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay, StringFormat={}{0:P0}}" 
-                                               Margin="4 0 4 0"
-                                               ToolTip="缩放比例"
-                                               ToolTipService.Placement="Top"
-                                               VerticalAlignment="Center"/>
-                                    <Button Content="{materialDesign:PackIcon ZoomOut}"
-                                            ToolTip="缩小"
-                                            ToolTipService.Placement="Top"
-                                            VerticalAlignment="Center"
-                                            Margin="2 0"
-                                            Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Click="ButtonZoomOut_OnClick"/>
-                                    <Button Content="{materialDesign:PackIcon ZoomIn}"
-                                            ToolTip="放大"
-                                            ToolTipService.Placement="Top"
-                                            VerticalAlignment="Center"
-                                            Margin="2 0"
-                                            Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Click="ButtonZoomIn_OnClick"/>
+                                    <materialDesign:PackIcon Kind="FileChartOutline" Width="72" Height="72"
+                                                             HorizontalAlignment="Center"/>
+                                    <TextBlock Text="在左侧选择一个课表，然后在此处进行设置。" TextWrapping="Wrap"
+                                               Margin="0 8 0 0"/>
                                 </StackPanel>
+                            </Grid>
+                        </TabItem>
 
-                                <Button Grid.Row="2" 
-                                        Grid.Column="0"
-                                        VerticalAlignment="Bottom"
-                                        HorizontalAlignment="Right"
-                                        Content="{materialDesign:PackIcon Target}"
-                                        ToolTip="定位选中项目"
-                                        Margin="2 0"
-                                        Click="ButtonTimeLayoutEditScrollToContent_OnClick">
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolForegroundButton}">
+                        <!-- 时间表 -->
+                        <TabItem Header="时间表" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <!-- 时间表选择 -->
+                                <Grid Grid.Column="0" Margin="0 0 3 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <!-- 时间表操作 -->
+                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                        <Button Click="ButtonAddTimeLayout_OnClick" ToolTip="新建时间表。"
+                                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                            <controls:IconText Kind="Add" Text="添加"/>
+                                        </Button>
+                                        <Button Click="ButtonDuplicateTimeLayout_OnClick" ToolTip="复制选中的时间表。"
+                                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimeLayouts}" Value="-1">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                        </Button>
+                                    </ToolBar>
+
+                                    <!-- 时间表 -->
+                                    <ListBox Grid.Row="1" Margin="0 12"
+                                             SelectionMode="Single"
+                                             Style="{StaticResource NavigationListBox}"
+                                             HorizontalContentAlignment="Stretch"
+                                             ScrollViewer.CanContentScroll="False"
+                                             SelectionChanged="ListViewTimeLayouts_OnSelectionChanged"
+                                             ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                             x:Name="ListViewTimeLayouts">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid HorizontalAlignment="Stretch">
+                                                    <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left"/>
+                                                    <materialDesign:PackIcon Kind="Lock" HorizontalAlignment="Right"
+                                                                             ToolTip="已锁定活动的时间表。"
+                                                                             Visibility="{Binding Value.IsActivated, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                </Grid>
+
+                                <GridSplitter HorizontalAlignment="Stretch" Grid.Column="1"/>
+
+                                <!-- 时间节点编辑 -->
+                                <Grid Grid.Column="2" Margin="3 0 0 0" 
+                                      DataContext="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}"
+                                      IsEnabled="{Binding IsActivated, Converter={StaticResource InvertBooleanConverter}}">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
-                                                             Value="0">
+                                                <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewTimeLayouts}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="350" MinWidth="250" MaxWidth="350"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- 时间表编辑操作 -->
+                                    <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" 
+                                             IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <!--<TextBlock Text="{Binding Layouts}"/>-->
+                                        <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。">
+                                            <controls:IconText Kind="NotePlusOutline" Text="上课"/>
+                                        </Button>
+                                        <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。">
+                                            <controls:IconText Kind="ClockPlusOutline" Text="课间"/>
+                                        </Button>
+                                        <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
+                                            <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
+                                        </Button>
+                                        <Separator/>
+                                        <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimePoints}" Value="-1">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <controls:IconText Kind="Remove" Text="删除"/>
+                                        </Button>
+                                        <Button  Click="ButtonEditTimePoint_OnClick"
+                                                 ToolTip="编辑选中的时间点。">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewTimePoints}" Value="-1">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                            <controls:IconText Kind="EditOutline" Text="编辑"/>
+                                        </Button>
+                                        <Separator/>
+                                        <Button Click="ButtonEditTimeLayoutInfo_OnClick"
+                                                ToolTip="查看并编辑时间表的基本信息。">
+                                            <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
+                                        </Button>
+                                        <Button Click="ButtonDeleteTimeLayout_OnClick"
+                                                ToolTip="删除该时间表。">
+                                            <controls:IconText Kind="Delete" Text="删除时间表"/>
+                                        </Button>
+                                    </ToolBar>
+
+                                    <!-- 时间点 -->
+                                    <TabControl Grid.Column="0" Grid.Row="1"
+                                                TabStripPlacement="Bottom"
+                                                HorizontalContentAlignment="Left"
+                                                x:Name="TabTimeLayoutEditors">
+                                        <!-- 旧版编辑器 -->
+                                        <TabItem Header="{materialDesign:PackIcon ListBoxOutline}" 
+                                                 Visibility="Collapsed"
+                                                 ToolTip="列表" Padding="4">
+                                            <ListBox SelectionMode="Single"
+                                                     ScrollViewer.CanContentScroll="False"
+                                                     SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
+                                                     ItemsSource="{Binding Layouts, Mode=OneWay}"
+                                                     x:Name="ListViewTimePoints"
+                                                     Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                                                <ListBox.ItemContainerStyle>
+                                                    <Style TargetType="ListBoxItem"
+                                                           BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
+                                                        <EventSetter Event="MouseDoubleClick"
+                                                                     Handler="TimePointDoubleClick_OnHandler" />
+                                                    </Style>
+                                                </ListBox.ItemContainerStyle>
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto" />
+                                                                <RowDefinition Height="Auto" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+                                                            <!-- Icon -->
+                                                            <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
+                                                                Margin="0 0 6 0">
+                                                                <materialDesign:PackIcon.Style>
+                                                                    <Style TargetType="materialDesign:PackIcon">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding TimeType}"
+                                                                                Value="0">
+                                                                                <Setter Property="Kind" Value="BookOutline" />
+                                                                                <Setter Property="ToolTip" Value="上课时间" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding TimeType}"
+                                                                                Value="1">
+                                                                                <Setter Property="Kind"
+                                                                                    Value="ClockOutline" />
+                                                                                <Setter Property="ToolTip" Value="课间休息" />
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding TimeType}"
+                                                                                Value="2">
+                                                                                <Setter Property="Kind"
+                                                                                    Value="ArrowSplitHorizontal" />
+                                                                                <Setter Property="ToolTip" Value="分割线" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </materialDesign:PackIcon.Style>
+                                                            </materialDesign:PackIcon>
+
+                                                            <!-- Time -->
+                                                            <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14"
+                                                                       ToolTip="时间段">
+                                                                <Run
+                                                                    Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
+                                                                <Run Text="-" />
+                                                                <Run
+                                                                    Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
+                                                            </TextBlock>
+
+                                                            <!-- Last Time -->
+                                                            <controls:IconText Grid.Column="1" Grid.Row="1"
+                                                                               Kind="ClockAutoOutline"
+                                                                               Text="{Binding Last}"
+                                                                               Margin="0 3 0 0" ToolTip="持续时间" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                        </TabItem>
+                                        <!-- 新编辑器 -->
+                                        <TabItem Header="{materialDesign:PackIcon TimelineOutline}"
+                                                 Visibility="Collapsed">
+                                            <controls:TimeLineListControl SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
+                                                                          ItemsSource="{Binding Layouts, Mode=OneWay}"
+                                                                          Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}"
+                                                                          x:Name="TimeLineListControl">
+                                                <!-- 回应我吧，爱莉希雅 -->
+                                            </controls:TimeLineListControl>
+                                        </TabItem>
+                                    </TabControl>
+
+                                    <!-- 新编辑器大小调整 -->
+                                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal"
+                                                VerticalAlignment="Bottom"
+                                                HorizontalAlignment="Right">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
+                                                                 Value="1">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <Button Content="{materialDesign:PackIcon Target}"
+                                                ToolTip="定位选中项目"
+                                                VerticalAlignment="Center"
+                                                Margin="2 0"
+                                                ToolTipService.Placement="Top"
+                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Click="ButtonTimeLayoutEditScrollToContent_OnClick"/>
+                                        <TextBlock Text="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay, StringFormat={}{0:P0}}" 
+                                                   Margin="4 0 4 0"
+                                                   ToolTip="缩放比例"
+                                                   ToolTipService.Placement="Top"
+                                                   VerticalAlignment="Center"/>
+                                        <Button Content="{materialDesign:PackIcon ZoomOut}"
+                                                ToolTip="缩小"
+                                                ToolTipService.Placement="Top"
+                                                VerticalAlignment="Center"
+                                                Margin="2 0"
+                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Click="ButtonZoomOut_OnClick"/>
+                                        <Button Content="{materialDesign:PackIcon ZoomIn}"
+                                                ToolTip="放大"
+                                                ToolTipService.Placement="Top"
+                                                VerticalAlignment="Center"
+                                                Margin="2 0"
+                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Click="ButtonZoomIn_OnClick"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Row="2" 
+                                            Grid.Column="0"
+                                            VerticalAlignment="Bottom"
+                                            HorizontalAlignment="Right"
+                                            Content="{materialDesign:PackIcon Target}"
+                                            ToolTip="定位选中项目"
+                                            Margin="2 0"
+                                            Click="ButtonTimeLayoutEditScrollToContent_OnClick">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolForegroundButton}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
+                                                                 Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+
+                                    <ListBox Grid.Row="2"
+                                             Grid.Column="0"
+                                             x:Name="ListBoxTimeLayoutEditorModeSelector"
+                                             Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                             VerticalContentAlignment="Stretch"
+                                             VerticalAlignment="Bottom"
+                                             HorizontalAlignment="Left"
+                                             SelectionChanged="Selector_OnSelectionChanged"
+                                             SelectedIndex="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
+                                             materialDesign:ListBoxItemAssist.ShowSelection="False">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                <Setter Property="Padding" Value="0"/>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type materialDesign:PackIcon}">
+                                                <DataTemplate.Resources>
+                                                    <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButtonTop}">
+                                                        <Setter Property="ToolTipService.Placement" Value="Top"/>
+                                                    </Style>
+                                                    <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                                </DataTemplate.Resources>
+                                                <RadioButton ToolTip="{Binding ToolTip}"
+                                                             IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                                    <materialDesign:PackIcon Kind="{Binding Kind}"/>
+                                                </RadioButton>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                        <materialDesign:PackIcon Kind="ListBoxOutline" ToolTip="列表视图"/>
+                                        <materialDesign:PackIcon Kind="TimelineOutline" ToolTip="时间线视图"/>
+                                    </ListBox>
+
+                                    <GridSplitter Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="2"/>
+                                    
+                                    <!-- 时间点编辑 -->
+                                    <ScrollViewer Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel Margin="16" 
+                                                    DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
+                                            <TextBlock Text="编辑时间点"
+                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                            <!--<TextBlock Text="{Binding}"/>-->
+                                            <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间"
+                                                                       Margin="0 12 0 0"
+                                                                       WithSeconds="True" Is24Hours="True"
+                                                                       Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+                                                                       SelectedTime="{Binding ViewModel.SelectedTimePoint.StartSecond}" />
+                                            <materialDesign:TimePicker materialDesign:HintAssist.Hint="结束时间"
+                                                                       Margin="0 12 0 0"
+                                                                       WithSeconds="True" Is24Hours="True"
+                                                                       SelectedTime="{Binding ViewModel.SelectedTimePoint.EndSecond}">
+                                                <materialDesign:TimePicker.Style>
+                                                    <Style TargetType="materialDesign:TimePicker"
+                                                           BasedOn="{StaticResource MaterialDesignOutlinedTimePicker}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger
+                                                                Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                Value="2">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </Style>
+                                                </materialDesign:TimePicker.Style>
+                                            </materialDesign:TimePicker>
+                                            <TextBlock Text="类型" Margin="0 16 0 0" />
+                                            <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                                     SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                                <ListBoxItem>
+                                                    <controls:IconText Kind="BookOutline" Text="上课" />
+                                                </ListBoxItem>
+                                                <ListBoxItem>
+                                                    <controls:IconText Kind="ClockOutline" Text="课间休息" />
+                                                </ListBoxItem>
+                                                <ListBoxItem>
+                                                    <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
+                                                </ListBoxItem>
+                                            </ListBox>
+                                            <StackPanel>
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger
+                                                                Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                Value="0">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <CheckBox Margin="0 8 0 0" Content="默认隐藏"
+                                                          IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}" />
+                                                <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                            <Separator Margin="0 20 0 8" />
+                                            <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
+                                            <ItemsControl
+                                                ItemsSource="{Binding AttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                                                            Margin="0 0 0 8"
+                                                            TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
+
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+
+                                        </StackPanel></ScrollViewer>
+
+                                        <!-- 禁止编辑叠层 -->
+                                    <Grid Grid.Row="0" Grid.RowSpan="3"
+                                          Grid.Column="0" Grid.ColumnSpan="3"
+                                          Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Image Source="/Assets/帕姆_震惊.png" Width="72" Height="72" Margin="0 0 0 8"
+                                                   ToolTip="帕姆_震惊"/>
+                                            <TextBlock Text="无法编辑处于活动状态的时间表。"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                                <StackPanel Grid.Column="2" 
+                                            VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}" Value="{x:Null}">
                                                     <Setter Property="Visibility" Value="Visible"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                             <Setter Property="Visibility" Value="Collapsed"/>
                                         </Style>
-                                    </Button.Style>
-                                </Button>
-
-                                <ListBox Grid.Row="2"
-                                         Grid.Column="0"
-                                         x:Name="ListBoxTimeLayoutEditorModeSelector"
-                                         Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                                         VerticalContentAlignment="Stretch"
-                                         VerticalAlignment="Bottom"
-                                         HorizontalAlignment="Left"
-                                         SelectionChanged="Selector_OnSelectionChanged"
-                                         SelectedIndex="{Binding SelectedIndex, ElementName=TabTimeLayoutEditors}"
-                                         materialDesign:ListBoxItemAssist.ShowSelection="False">
-                                    <ListBox.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
-                                        </ItemsPanelTemplate>
-                                    </ListBox.ItemsPanel>
-                                    <ListBox.ItemContainerStyle>
-                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                            <Setter Property="Padding" Value="0"/>
-                                        </Style>
-                                    </ListBox.ItemContainerStyle>
-                                    <ListBox.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type materialDesign:PackIcon}">
-                                            <DataTemplate.Resources>
-                                                <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButtonTop}">
-                                                    <Setter Property="ToolTipService.Placement" Value="Top"/>
-                                                </Style>
-                                                <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
-                                            </DataTemplate.Resources>
-                                            <RadioButton ToolTip="{Binding ToolTip}"
-                                                         IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
-                                                <materialDesign:PackIcon Kind="{Binding Kind}"/>
-                                            </RadioButton>
-                                        </DataTemplate>
-                                    </ListBox.ItemTemplate>
-                                    <materialDesign:PackIcon Kind="ListBoxOutline" ToolTip="列表视图"/>
-                                    <materialDesign:PackIcon Kind="TimelineOutline" ToolTip="时间线视图"/>
-                                </ListBox>
-
-                                <GridSplitter Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="2"/>
-                                
-                                <!-- 时间点编辑 -->
-                                <ScrollViewer Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
-                                    <StackPanel Margin="16" 
-                                                DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
-                                        <TextBlock Text="编辑时间点"
-                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                                        <!--<TextBlock Text="{Binding}"/>-->
-                                        <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间"
-                                                                   Margin="0 12 0 0"
-                                                                   WithSeconds="True" Is24Hours="True"
-                                                                   Style="{StaticResource MaterialDesignOutlinedTimePicker}"
-                                                                   SelectedTime="{Binding ViewModel.SelectedTimePoint.StartSecond}" />
-                                        <materialDesign:TimePicker materialDesign:HintAssist.Hint="结束时间"
-                                                                   Margin="0 12 0 0"
-                                                                   WithSeconds="True" Is24Hours="True"
-                                                                   SelectedTime="{Binding ViewModel.SelectedTimePoint.EndSecond}">
-                                            <materialDesign:TimePicker.Style>
-                                                <Style TargetType="materialDesign:TimePicker"
-                                                       BasedOn="{StaticResource MaterialDesignOutlinedTimePicker}">
-                                                    <Style.Triggers>
-                                                        <DataTrigger
-                                                            Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
-                                                            Value="2">
-                                                            <Setter Property="Visibility" Value="Collapsed" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                    <Setter Property="Visibility" Value="Visible" />
-                                                </Style>
-                                            </materialDesign:TimePicker.Style>
-                                        </materialDesign:TimePicker>
-                                        <TextBlock Text="类型" Margin="0 16 0 0" />
-                                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                                 SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
-                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                            <ListBoxItem>
-                                                <controls:IconText Kind="BookOutline" Text="上课" />
-                                            </ListBoxItem>
-                                            <ListBoxItem>
-                                                <controls:IconText Kind="ClockOutline" Text="课间休息" />
-                                            </ListBoxItem>
-                                            <ListBoxItem>
-                                                <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
-                                            </ListBoxItem>
-                                        </ListBox>
-                                        <StackPanel>
-                                            <StackPanel.Style>
-                                                <Style TargetType="StackPanel">
-                                                    <Style.Triggers>
-                                                        <DataTrigger
-                                                            Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
-                                                            Value="0">
-                                                            <Setter Property="Visibility" Value="Visible" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </Style>
-                                            </StackPanel.Style>
-                                            <CheckBox Margin="0 8 0 0" Content="默认隐藏"
-                                                      IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}" />
-                                            <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" />
-                                        </StackPanel>
-                                        <Separator Margin="0 20 0 8" />
-                                        <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
-                                        <ItemsControl
-                                            ItemsSource="{Binding AttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
-                                                        Margin="0 0 0 8"
-                                                        TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
-
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-
-                                    </StackPanel></ScrollViewer>
-
-                                    <!-- 禁止编辑叠层 -->
-                                <Grid Grid.Row="0" Grid.RowSpan="3"
-                                      Grid.Column="0" Grid.ColumnSpan="3"
-                                      Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
-                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <Image Source="/Assets/帕姆_震惊.png" Width="72" Height="72" Margin="0 0 0 8"
-                                               ToolTip="帕姆_震惊"/>
-                                        <TextBlock Text="无法编辑处于活动状态的时间表。"
-                                                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    </StackPanel>
-                                </Grid>
+                                    </StackPanel.Style>
+                                    <materialDesign:PackIcon Kind="Timetable" Width="72" Height="72"
+                                                             HorizontalAlignment="Center"/>
+                                    <TextBlock Text="在左侧选择一个时间表，然后在此处进行设置。" TextWrapping="Wrap"
+                                               Margin="0 8 0 0"/>
+                                </StackPanel>
                             </Grid>
-                            <StackPanel Grid.Column="2" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </Style>
-                                </StackPanel.Style>
-                                <materialDesign:PackIcon Kind="Timetable" Width="72" Height="72"
-                                                         HorizontalAlignment="Center"/>
-                                <TextBlock Text="在左侧选择一个时间表，然后在此处进行设置。" TextWrapping="Wrap"
-                                           Margin="0 8 0 0"/>
-                            </StackPanel>
-                        </Grid>
-                    </TabItem>
+                        </TabItem>
 
-                    <!-- 科目 -->
-                    <TabItem Header="科目" Visibility="Collapsed">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="5"/>
-                                <ColumnDefinition Width="250" MaxWidth="500" MinWidth="200"/>
-                            </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <!-- 科目操作 -->
-                            <ToolBar Grid.Column="0" Grid.ColumnSpan="3"
-                                     Grid.Row="0" ToolBarTray.IsLocked="True">
-                                <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
-                                    <controls:IconText Kind="Add" Text="添加"/>
-                                </Button>
-                                <Separator/>
-                                <TextBlock>
-                                    <Run Text="已选中"/>
-                                    <Run Text="X"/>
-                                    <Run Text="项。"/>
-                                </TextBlock>
-                                <Button Click="ButtonDuplicateSubject_OnClick" ToolTip="复制选中的科目。">
-                                    <Button.Style>
-                                        <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedIndex, ElementName=ListViewSubjects}" Value="-1">
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                    <controls:IconText Kind="ContentCopy" Text="复制"/>
-                                </Button>
-                                <Button>
-                                    <controls:IconText Kind="Delete" Text="删除"/>
-                                </Button>
-                            </ToolBar>
-                                <!-- 科目选择 -->
-                            <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
-                                <!-- 科目 -->
-                                <DataGrid Grid.Row="0"
-                                          ItemsSource="{Binding MainViewModel.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          AutoGenerateColumns="False"
-                                          IsReadOnly="False"
-                                          SelectedValue="{Binding ViewModel.SelectedSubject}"
-                                          SelectionUnit="FullRow"
-                                          GridLinesVisibility="All">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}"
+                        <!-- 科目 -->
+                        <TabItem Header="科目" Visibility="Collapsed">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
+                                </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <!-- 科目操作 -->
+                                <ToolBar Grid.Column="0" Grid.ColumnSpan="3"
+                                         Grid.Row="0" ToolBarTray.IsLocked="True">
+                                    <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
+                                        <controls:IconText Kind="Add" Text="添加"/>
+                                    </Button>
+                                    <Separator/>
+                                    <!--<TextBlock>
+                                        <Run Text="已选中"/>
+                                        <Run Text="X"/>
+                                        <Run Text="项。"/>
+                                    </TextBlock>-->
+                                    <Button Click="ButtonDuplicateSubject_OnClick" ToolTip="复制选中的科目。">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ViewModel.SelectedSubject}" Value="{x:Null}">
+                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                    </Button>
+                                    <Button>
+                                        <controls:IconText Kind="Delete" Text="删除"/>
+                                    </Button>
+                                </ToolBar>
+                                    <!-- 科目选择 -->
+                                <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
+                                    <!-- 科目 -->
+                                    <DataGrid Grid.Row="0"
+                                              ItemsSource="{Binding MainViewModel.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              AutoGenerateColumns="False"
+                                              IsReadOnly="False"
+                                              SelectedValue="{Binding ViewModel.SelectedSubject}"
+                                              SelectionUnit="FullRow"
+                                              GridLinesVisibility="All"
+                                              CanUserSortColumns="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn Header="" IsReadOnly="True"
+                                                                    Width="50">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <materialDesign:PackIcon>
+                                                                <materialDesign:PackIcon.Style>
+                                                                    <Style TargetType="materialDesign:PackIcon">
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsNewItem, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGridRow}, Mode=OneWay}" Value="True">
+                                                                                <Setter Property="Kind" Value="Add"/>
+                                                                            </DataTrigger>
+                                                                            <DataTrigger Binding="{Binding IsOutDoor}" Value="True">
+                                                                                <Setter Property="Kind" Value="BasketballHoopOutline"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                        <Setter Property="Kind" Value="BookOutline"/>
+                                                                    </Style>
+                                                                </materialDesign:PackIcon.Style>
+                                                            </materialDesign:PackIcon>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Binding="{Binding Name, Mode=TwoWay}"
                                                                 Header="科目名"/>
-                                        <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
-                                                                Header="简称"/>
-                                        <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
-                                                                    Header="户外课程？"/>
-                                        <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
-                                                                Header="科任老师"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                                </Grid>
+                                            <DataGridTextColumn Binding="{Binding Initial, Mode=TwoWay}"
+                                                                    Header="简称"/>
+                                            <DataGridCheckBoxColumn Binding="{Binding IsOutDoor, Mode=TwoWay}"
+                                                                        Header="户外课程？"/>
+                                            <DataGridTextColumn Binding="{Binding TeacherName, Mode=TwoWay}"
+                                                                    Header="科任老师"/>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    </Grid>
 
-                            <!-- Gutter -->
-                            <GridSplitter Grid.Row="1"
-                                          Grid.Column="1"
-                                          MaxWidth="500"
-                                          Width="10" HorizontalAlignment="Stretch"/>
-
-                                <!-- 科目编辑 -->
-                            <Grid Grid.Row="1" Grid.Column="2" Margin="3 0 0 0" 
-                                  DataContext="{Binding ViewModel.SelectedSubject}">
-                                <Grid.Style>
-                                    <Style TargetType="Grid">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                    </Style>
-                                </Grid.Style>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
+                                <!-- Gutter -->
+                                <GridSplitter Grid.Row="1"
+                                              Grid.Column="1"
+                                              MaxWidth="500"
+                                              Width="10" HorizontalAlignment="Stretch"/>
 
                                     <!-- 科目编辑 -->
-                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                                    <StackPanel Margin="12">
-                                        <!-- 科目名 & 简称 -->
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <!-- 科目名 -->
-                                            <TextBox Grid.Column="0" 
-                                                     x:Name="TextBoxSubjectName"
-                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                                     materialDesign:HintAssist.Hint="科目名"
-                                                     Text="{Binding Name}"/>
-                                            <!-- 简称 -->
-                                            <TextBox Grid.Column="1" Margin="6 0 0 0"
-                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                                     materialDesign:HintAssist.Hint="简称"
-                                                     Text="{Binding Initial}"/>
-                                        </Grid>
-                                        <!-- 科任老师 -->
-                                        <TextBox Margin="0 6 0 0"
-                                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                                 materialDesign:HintAssist.Hint="科任老师"
-                                                 Text="{Binding TeacherName}"/>
-                                        <!-- 户外课程 -->
-                                        <CheckBox Margin="0 6 0 0"
-                                                  Style="{StaticResource MaterialDesignCheckBox}"
-                                                  IsChecked="{Binding IsOutDoor}"
-                                                  Content="该科目是户外课程"/>
-                                        <!-- 附加属性 -->
-                                        <Separator Margin="0 20 0 8"/>
-                                        <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
-                                        <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.SubjectSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
-                                                            Margin="0 0 0 8"
-                                                            TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                        <!-- Guid -->
-                                        <controls:IconText Kind="Code" HorizontalAlignment="Left"
-                                                           Text="{Binding SelectedItem.Key, ElementName=ListViewSubjects}" 
-                                                           Margin="0 16 0 0" ToolTip="Guid"/>
-                                    </StackPanel>
-                                </ScrollViewer>
-                            </Grid>
-                            <StackPanel Grid.Row="1" Grid.Column="2" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ViewModel.SelectedSubject }" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </Style>
-                                </StackPanel.Style>
-                                <materialDesign:PackIcon Kind="BookMultipleOutline" Width="72" Height="72"
-                                                         HorizontalAlignment="Center"/>
-                                <TextBlock Text="在左侧选择一个科目，然后在此处进行设置。" TextWrapping="Wrap"
-                                           Margin="0 8 0 0"/>
-                            </StackPanel>
+                                <Grid Grid.Row="1" Grid.Column="2" Margin="3 0 0 0" 
+                                      DataContext="{Binding ViewModel.SelectedSubject}">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
 
-                        </Grid> 
-                    </TabItem>
-                    
-                </TabControl>
-                <!-- 档案操作 -->
-                <!--<WrapPanel Grid.Row="0" Margin="4" Orientation="Horizontal">
-                    <WrapPanel.Resources>
-                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                            <Setter Property="Margin" Value="0 0 6 0"/>
-                        </Style>
-                    </WrapPanel.Resources>
-                    <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
-                                       Margin="0 0 6 0"
-                                       ToolTip="当前加载的档案。"/>
-                </WrapPanel>-->
-                <!-- AppBar -->
-                <materialDesign:ColorZone Grid.Row="0" Padding="16" Mode="PrimaryMid"
-                                          materialDesign:ElevationAssist.Elevation="Dp4">
-                    <Grid Margin="4 0 4 0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" 
-                                    Orientation="Horizontal" HorizontalAlignment="Left">
-                            <StackPanel.Resources>
-                                <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
-                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                    <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
-                                    <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
-                                    <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
-                                    <Setter Property="Margin" Value="0 -8 6 -8"/>
-                                </Style>
-                            </StackPanel.Resources>
-                            <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" Margin="0,0,16,0"/>
-                            <materialDesign:Chip
-                                ToolTip="档案"
-                                Icon="{materialDesign:PackIcon FileDocumentOutline}"
-                                Click="ButtonProfileManage_OnClick"
-                                IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                <TextBlock>
-                                    <Run Text="{Binding ProfileService.CurrentProfilePath}"/>
-                                </TextBlock>
-                            </materialDesign:Chip>
-                            <materialDesign:Chip
-                                Visibility="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource InverseBoolToVisConverter}, Mode=OneWay}"
-                                Click="ButtonTemporaryClassPlan_OnClick"
-                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
-                                ToolTip="当前启用的课表">
-                                <materialDesign:Chip.Style>
+                                    <!-- 科目编辑 -->
+                                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                        <StackPanel Margin="12">
+                                            <!-- 科目名 & 简称 -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <!-- 科目名 -->
+                                                <TextBox Grid.Column="0" 
+                                                         x:Name="TextBoxSubjectName"
+                                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                         materialDesign:HintAssist.Hint="科目名"
+                                                         Text="{Binding Name}"/>
+                                                <!-- 简称 -->
+                                                <TextBox Grid.Column="1" Margin="6 0 0 0"
+                                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                         materialDesign:HintAssist.Hint="简称"
+                                                         Text="{Binding Initial}"/>
+                                            </Grid>
+                                            <!-- 科任老师 -->
+                                            <TextBox Margin="0 6 0 0"
+                                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                     materialDesign:HintAssist.Hint="科任老师"
+                                                     Text="{Binding TeacherName}"/>
+                                            <!-- 户外课程 -->
+                                            <CheckBox Margin="0 6 0 0"
+                                                      Style="{StaticResource MaterialDesignCheckBox}"
+                                                      IsChecked="{Binding IsOutDoor}"
+                                                      Content="该科目是户外课程"/>
+                                            <!-- 附加属性 -->
+                                            <Separator Margin="0 20 0 8"/>
+                                            <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
+                                            <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.SubjectSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
+                                                                Margin="0 0 0 8"
+                                                                TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <!-- Guid -->
+                                            <controls:IconText Kind="Code" HorizontalAlignment="Left"
+                                                               Text="{Binding SelectedItem.Key, ElementName=ListViewSubjects}" 
+                                                               Margin="0 16 0 0" ToolTip="Guid"/>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                </Grid>
+                                <StackPanel Grid.Row="1" Grid.Column="2" 
+                                            VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ViewModel.SelectedSubject }" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <materialDesign:PackIcon Kind="BookMultipleOutline" Width="72" Height="72"
+                                                             HorizontalAlignment="Center"/>
+                                    <TextBlock Text="在左侧选择一个科目，然后在此处进行设置。" TextWrapping="Wrap"
+                                               Margin="0 8 0 0"/>
+                                </StackPanel>
+
+                            </Grid> 
+                        </TabItem>
+                        
+                    </TabControl>
+                    <!-- 档案操作 -->
+                    <!--<WrapPanel Grid.Row="0" Margin="4" Orientation="Horizontal">
+                        <WrapPanel.Resources>
+                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Setter Property="Margin" Value="0 0 6 0"/>
+                            </Style>
+                        </WrapPanel.Resources>
+                        <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
+                                           Margin="0 0 6 0"
+                                           ToolTip="当前加载的档案。"/>
+                    </WrapPanel>-->
+                    <!-- AppBar -->
+                    <materialDesign:ColorZone Grid.Row="0" Padding="16" Mode="PrimaryMid"
+                                              materialDesign:ElevationAssist.Elevation="Dp4">
+                        <Grid Margin="4 0 4 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" 
+                                        Orientation="Horizontal" HorizontalAlignment="Left">
+                                <StackPanel.Resources>
                                     <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding MainViewModel.TemporaryClassPlan}" Value="{x:Null}">
-                                                <Setter Property="Icon" Value="{materialDesign:PackIcon FileChartOutline}"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan.IsOverlay}" Value="True">
-                                                <Setter Property="Icon" Value="{materialDesign:PackIcon LayersOutline}"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
-                                                <Setter Property="Icon" Value="{materialDesign:PackIcon FileOutline}"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding MainViewModel.IsClassPlanEnabled}" Value="False">
-                                                <Setter Property="Icon" Value="{materialDesign:PackIcon Cancel}"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
                                         <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
                                         <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
                                         <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
                                         <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
                                         <Setter Property="Margin" Value="0 -8 6 -8"/>
-
-                                        <Setter Property="Icon" Value="{materialDesign:PackIcon FileDocumentMultipleOutline}"/>
                                     </Style>
-                                </materialDesign:Chip.Style>
-                                <TextBlock FontFamily="{StaticResource HarmonyOsSans}">
-                                    <Run>
-                                        <Run.Style>
-                                            <Style TargetType="Run">
-                                                <Setter Property="Text" Value="{Binding MainViewModel.CurrentClassPlan.Name}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
-                                                        <Setter Property="Text" Value="（无课表）"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding MainViewModel.IsClassPlanEnabled}" Value="False">
-                                                        <Setter Property="Text" Value="（未启用）"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Run.Style>
-                                    </Run>
-                                </TextBlock>
-                            </materialDesign:Chip>
-                        </StackPanel>
-                        <ListBox Grid.Column="1"
-                                 Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                                 VerticalContentAlignment="Stretch"
-                                 SelectedIndex="{Binding SelectedIndex, ElementName=RootTabControl}"
-                                 materialDesign:ListBoxItemAssist.ShowSelection="False"
-                                 Margin="6 -15 0 -15">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                    <Setter Property="Padding" Value="0"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DataTemplate.Resources>
-                                        <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButton}">
-                                            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                            <Setter Property="FontSize" Value="18"/>
-                                            <Setter Property="Opacity" Value="0.75"/>
+                                </StackPanel.Resources>
+                                <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" Margin="0,0,16,0"/>
+                                <materialDesign:Chip
+                                    ToolTip="档案"
+                                    Icon="{materialDesign:PackIcon FileDocumentOutline}"
+                                    Click="ButtonProfileManage_OnClick"
+                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
+                                    <TextBlock>
+                                        <Run Text="{Binding ProfileService.CurrentProfilePath}"/>
+                                    </TextBlock>
+                                </materialDesign:Chip>
+                                <materialDesign:Chip
+                                    Visibility="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource InverseBoolToVisConverter}, Mode=OneWay}"
+                                    Click="ButtonTemporaryClassPlan_OnClick"
+                                    Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}"
+                                    ToolTip="当前启用的课表">
+                                    <materialDesign:Chip.Style>
+                                        <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
                                             <Style.Triggers>
-                                                <Trigger Property="IsChecked" Value="True">
-                                                    <Setter Property="Opacity" Value="1.0"/>
-                                                    <Setter Property="FontWeight" Value="Bold"/>
-                                                    <Setter Property="BorderThickness" Value="0 0 0 3"/>
-                                                </Trigger>
+                                                <DataTrigger Binding="{Binding MainViewModel.TemporaryClassPlan}" Value="{x:Null}">
+                                                    <Setter Property="Icon" Value="{materialDesign:PackIcon FileChartOutline}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan.IsOverlay}" Value="True">
+                                                    <Setter Property="Icon" Value="{materialDesign:PackIcon LayersOutline}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                                    <Setter Property="Icon" Value="{materialDesign:PackIcon FileOutline}"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding MainViewModel.IsClassPlanEnabled}" Value="False">
+                                                    <Setter Property="Icon" Value="{materialDesign:PackIcon Cancel}"/>
+                                                </DataTrigger>
                                             </Style.Triggers>
-                                            <Style.Resources>
-                                                <Style TargetType="materialDesign:Ripple">
-                                                    <Setter Property="Feedback" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                                </Style>
-                                            </Style.Resources>
+                                            <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                            <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                            <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
+                                            <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                            <Setter Property="Margin" Value="0 -8 6 -8"/>
+
+                                            <Setter Property="Icon" Value="{materialDesign:PackIcon FileDocumentMultipleOutline}"/>
                                         </Style>
-                                        <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
-                                    </DataTemplate.Resources>
-                                    <RadioButton Content="{Binding}" 
-                                                 IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
-                                    </RadioButton>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                            <system:String>课表</system:String>
-                            <system:String>时间表</system:String>
-                            <system:String>科目</system:String>
-                        </ListBox>
-                    </Grid>
-                </materialDesign:ColorZone>
-                <!-- SnackBar -->
-                <materialDesign:Snackbar Grid.Row="0" Grid.RowSpan="2" MessageQueue="{Binding ViewModel.MessageQueue}"/>
-            </Grid>
-        </materialDesign:DrawerHost>
-    </materialDesign:DialogHost>
+                                    </materialDesign:Chip.Style>
+                                    <TextBlock FontFamily="{StaticResource HarmonyOsSans}">
+                                        <Run>
+                                            <Run.Style>
+                                                <Style TargetType="Run">
+                                                    <Setter Property="Text" Value="{Binding MainViewModel.CurrentClassPlan.Name}"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                                            <Setter Property="Text" Value="（无课表）"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding MainViewModel.IsClassPlanEnabled}" Value="False">
+                                                            <Setter Property="Text" Value="（未启用）"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Run.Style>
+                                        </Run>
+                                    </TextBlock>
+                                </materialDesign:Chip>
+                            </StackPanel>
+                            <ListBox Grid.Column="1"
+                                     Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                     VerticalContentAlignment="Stretch"
+                                     SelectedIndex="{Binding SelectedIndex, ElementName=RootTabControl}"
+                                     materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                     Margin="6 -15 0 -15">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Setter Property="Padding" Value="0"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <DataTemplate.Resources>
+                                            <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButton}">
+                                                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                                <Setter Property="FontSize" Value="18"/>
+                                                <Setter Property="Opacity" Value="0.75"/>
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsChecked" Value="True">
+                                                        <Setter Property="Opacity" Value="1.0"/>
+                                                        <Setter Property="FontWeight" Value="Bold"/>
+                                                        <Setter Property="BorderThickness" Value="0 0 0 3"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                                <Style.Resources>
+                                                    <Style TargetType="materialDesign:Ripple">
+                                                        <Setter Property="Feedback" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                                    </Style>
+                                                </Style.Resources>
+                                            </Style>
+                                            <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                        </DataTemplate.Resources>
+                                        <RadioButton Content="{Binding}" 
+                                                     IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                        </RadioButton>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <system:String>课表</system:String>
+                                <system:String>时间表</system:String>
+                                <system:String>科目</system:String>
+                            </ListBox>
+                        </Grid>
+                    </materialDesign:ColorZone>
+                    <!-- SnackBar -->
+                    <materialDesign:Snackbar Grid.Row="0" Grid.RowSpan="2" MessageQueue="{Binding ViewModel.MessageQueue}"/>
+                </Grid>
+            </materialDesign:DrawerHost>
+        </materialDesign:DialogHost>
         <windows:AsyncBox VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
     </Grid>
 </controls:MyWindow>
