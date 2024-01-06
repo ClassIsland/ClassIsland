@@ -225,7 +225,7 @@ public partial class MainWindow : Window
         ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
 
         // Deactivate
-        foreach (var i in ViewModel.Profile.TimeLayouts)
+        foreach (var i in ViewModel.Profile.TimeLayouts.Where(i => !i.Value.IsActivatedManually))
         {
             i.Value.IsActivated = false;
         }

@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -23,11 +24,18 @@ using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using ICSharpCode.AvalonEdit.Editing;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
 using unvell.ReoGrid;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
 using unvell.ReoGrid.IO;
 using unvell.ReoGrid.IO.OpenXML.Schema;
+using CheckBox = System.Windows.Controls.CheckBox;
+using DataFormats = System.Windows.DataFormats;
+using DragDropEffects = System.Windows.DragDropEffects;
+using DragEventArgs = System.Windows.DragEventArgs;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
@@ -290,6 +298,8 @@ public partial class ExcelImportWindow : MyWindow
                 LoadTimeLayoutFromCurrentSelection();
                 break;
             case "RowClassesTimeRelationshipImportMethod":
+                ViewModel.SelectedTimeLayout.IsActivatedManually = true;
+                ViewModel.SelectedTimeLayout.IsActivated = true;
                 LoadClassPlanSource();
                 break;
             case "PreviewClassPlan":
@@ -598,6 +608,9 @@ public partial class ExcelImportWindow : MyWindow
         {
             ProfileService.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), i);
         }
+
+        ViewModel.SelectedTimeLayout.IsActivated = false;
+        ViewModel.SelectedTimeLayout.IsActivatedManually = false;
     }
 
     private void MenuItemCompleteImport_OnClick(object sender, RoutedEventArgs e)
@@ -638,5 +651,58 @@ public partial class ExcelImportWindow : MyWindow
                 parent.RaiseEvent(eventArg);
             }
         }
+    }
+
+    private void ButtonBrowseExcelFile_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = "选择要导入的表格文件",
+            InitialDirectory = Environment.SpecialFolder.Desktop.ToString(),
+            Filter = "表格文件(*.xlsx)|*.xlsx"
+        };
+        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) 
+        {
+            ExcelSourcePath = dialog.FileName;
+            LoadExcelWorkbook();
+        }
+    }
+
+    private void TextBoxTimeLayoutRange_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        // 验证时间表区域是否合法
+        var range = ViewModel.TimePointSourcePosition;
+        if (range.IsEmpty)
+        {
+            ViewModel.IsTimeLayoutRangeValid = false;
+            return;
+        }
+
+        if (range.Rows == 1 || range.Cols == 1)
+        {
+            ViewModel.IsTimeLayoutRangeValid = true;
+            return;
+        }
+        ViewModel.IsTimeLayoutRangeValid = false;
+    }
+
+    private void ButtonOpenProfileSettingsWindow_OnClick(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void TextBoxClassPlanRange_OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        var range = ViewModel.SubjectSourcePosition;
+        ViewModel.IsSubjectsSourceRangeValid = !range.IsEmpty;
+    }
+
+    private void MenuItemResetTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SelectedTimeLayout.IsActivated = false;
+        ViewModel.SelectedTimeLayout.IsActivatedManually = false;
+        ViewModel.SelectedTimeLayoutId = "";
+        ViewModel.SelectedTimeLayout = new TimeLayout();
+        ViewModel.SlideIndex = 4;
     }
 }

@@ -254,7 +254,8 @@
                                    Margin="0 2 0 0"
                                    FontSize="14"/>
                         <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 6 0 0"
-                                HorizontalAlignment="Center">
+                                HorizontalAlignment="Center"
+                                Click="ButtonBrowseExcelFile_OnClick">
                             <controls:IconText Kind="FolderOutline" Text="浏览文件…"/>
                         </Button>
                     </StackPanel>
@@ -320,7 +321,7 @@
                         <TextBlock >
                             <Run Text="在创建课表之前，您至少需要一个时间表。时间表包含了一天的时间安排，告诉本软件什么时候上课和课间休息，并以此创建课表。"/>
                         </TextBlock>
-                        <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。"/>
+                        <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。该选项在确认后不可修改。"/>
 
                         <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
                             <models:WizardOption Header="我的时间表在这个文件中" Content="将从本文件导入时间表。"
@@ -343,35 +344,34 @@
                         <TextBlock Text="选择时间安排区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <TextBlock >
-                            
-                            <Run Text="点击下方文本框以从表格中选择包含时间点安排信息的区域。"/>
+                            <Run Text="点击下方文本框以从表格中选择包含时间点安排信息的区域。选区只能为单列或单行选区。"/>
+                            <LineBreak/>
+                            <Run Text="Tips：若选区遇到合并的单元格，可以在单元格上右键取消单元格合并。"/>
                         </TextBlock>
+                        
                         <controls:ExcelSelectionTextBox Value="{Binding ViewModel.TimePointSourcePosition, Mode=TwoWay}"
                                                         IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
                                                         EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
                                                         SelectionPropertyName="TimePointSourcePosition"
-                                                        materialDesign:HintAssist.Hint="选择时间安排区域"/>
+                                                        materialDesign:HintAssist.Hint="选择时间安排区域"
+                                                        TextChanged="TextBoxTimeLayoutRange_OnTextChanged"/>
+                        <controls:IconText Kind="Warning" Text="选择区域无效。"
+                                           Visibility="{Binding ViewModel.IsTimeLayoutRangeValid, Converter={StaticResource InverseBoolToVisConverter}}"
+                                           Foreground="IndianRed" Margin="0 16 0 0"/>
                         <controls:NavigationButtonsControl NavigationNextCommandParameter="TimePointImportResult"
-                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
-                            <controls:NavigationButtonsControl.Style>
-                                <Style TargetType="controls:NavigationButtonsControl" >
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ViewModel.TimePointSourcePosition}" Value="{x:Static reoGrid:RangePosition.Empty}">
-                                            <Setter Property="IsNavigateNextButtonEnabled" Value="False"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </controls:NavigationButtonsControl.Style>
+                                                           IsNavigateBackButtonEnabled="False"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"
+                                                           IsNavigateNextButtonEnabled="{Binding ViewModel.IsTimeLayoutRangeValid}">
                         </controls:NavigationButtonsControl>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 6 手动创建时间表 -->
                 <materialDesign:TransitionerSlide>
                     <StackPanel>
-                        <TextBlock Text="手动创建时间表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                        <TextBlock Text="选择时间表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <TextBlock >
-                            <Run Text="已打开档案编辑窗口，请手动创建时间表。创建完毕请点击【下一步】按钮。"/>
+                            <Run Text="请选择您要使用的时间表。要创建时间表，请点击下方按钮打开档案编辑窗口。选择完成后，请点击【下一步】按钮。"/>
                         </TextBlock>
                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                   Margin="0 6 0 0"
@@ -387,10 +387,12 @@
                         </ComboBox>
                         <Button HorizontalAlignment="Left"
                                 Margin="0 8 0 0"
-                                Style="{StaticResource MaterialDesignFlatButton}">
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="ButtonOpenProfileSettingsWindow_OnClick">
                             <controls:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
                         </Button>
-                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectVerticalMode">
+                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectVerticalMode"
+                                                           IsNavigateBackButtonEnabled="False">
                             <controls:NavigationButtonsControl.Style>
                                 <Style TargetType="controls:NavigationButtonsControl">
                                     <Style.Triggers>
@@ -451,8 +453,13 @@
                                                         IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
                                                         EnterSelectingModeCommand="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
                                                         SelectionPropertyName="SubjectSourcePosition"
-                                                        materialDesign:HintAssist.Hint="选择课程区域"/>
+                                                        materialDesign:HintAssist.Hint="选择课程区域"
+                                                        TextChanged="TextBoxClassPlanRange_OnTextChanged"/>
+                        <controls:IconText Kind="Warning" Text="选择区域无效。"
+                                           Margin="0 16 0 0"
+                                           Foreground="IndianRed" Visibility="{Binding ViewModel.IsSubjectsSourceRangeValid, Converter={StaticResource InverseBoolToVisConverter}}"/>
                         <controls:NavigationButtonsControl NavigationNextCommandParameter="RowClassesTimeRelationshipImportMethod"
+                                                           IsNavigateNextButtonEnabled="{Binding ViewModel.IsSubjectsSourceRangeValid}"
                                                            IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
@@ -462,7 +469,7 @@
                         <TextBlock Text="选择行列对应关系" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <TextBlock >
-                            <Run Text="请选择读取课表的方向。"/>
+                            <Run Text="点击下方高亮圆形按钮以选择读取课表的方向。"/>
                         </TextBlock>
                         <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
                             <ToggleButton
@@ -736,7 +743,7 @@
                         <MenuItem Icon="{materialDesign:PackIcon ArrowRight}" Header="继续导入课表。"
                                   Click="MenuItemContinueImportClassPlan_OnClick"/>
                         <MenuItem Icon="{materialDesign:PackIcon UndoVariant}" Header="使用新的时间表继续导入课表。"
-                                  Click="MenuItemContinueImportClassPlan_OnClick"/>
+                                  Click="MenuItemResetTimeLayout_OnClick"/>
                         <MenuItem Icon="{materialDesign:PackIcon Check}" Header="完成导入。"
                                   Click="MenuItemCompleteImport_OnClick"/>
                     </StackPanel>
@@ -747,7 +754,7 @@
                         <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <Image Source="/Assets/光辉矢愿_回眸.png"
-                               Height="55" Width="55"
+                               Height="64" Width="64"
                                RenderOptions.BitmapScalingMode="HighQuality"
                                HorizontalAlignment="Left"/>
                         <TextBlock>

@@ -36,6 +36,8 @@ public class ExcelImportViewModel : ObservableRecipient
     private List<int> _classRecognitionRangeCache = new();
     private ClassPlan _currentClassPlan = new();
     private ObservableCollection<ClassPlan> _importedClassPlans = new();
+    private bool _isTimeLayoutRangeValid = false;
+    private bool _isSubjectsSourceRangeValid = false;
 
     public int SlideIndex
     {
@@ -297,6 +299,28 @@ public class ExcelImportViewModel : ObservableRecipient
         {
             if (Equals(value, _importedClassPlans)) return;
             _importedClassPlans = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTimeLayoutRangeValid
+    {
+        get => _isTimeLayoutRangeValid;
+        set
+        {
+            if (value == _isTimeLayoutRangeValid) return;
+            _isTimeLayoutRangeValid = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSubjectsSourceRangeValid
+    {
+        get => _isSubjectsSourceRangeValid;
+        set
+        {
+            if (value == _isSubjectsSourceRangeValid) return;
+            _isSubjectsSourceRangeValid = value;
             OnPropertyChanged();
         }
     }

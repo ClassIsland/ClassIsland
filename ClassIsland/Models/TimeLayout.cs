@@ -14,6 +14,7 @@ public class TimeLayout : AttachableSettingsObject
     private ObservableCollection<TimeLayoutItem> _layouts = new();
     private string _name = "新时间表";
     private bool _isActivated = false;
+    private bool _isActivatedManually = false;
 
     public TimeLayout()
     {
@@ -63,6 +64,18 @@ public class TimeLayout : AttachableSettingsObject
         {
             if (value == _isActivated) return;
             _isActivated = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsActivatedManually
+    {
+        get => _isActivatedManually;
+        set
+        {
+            if (value == _isActivatedManually) return;
+            _isActivatedManually = value;
             OnPropertyChanged();
         }
     }
