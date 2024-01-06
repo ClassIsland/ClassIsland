@@ -269,13 +269,15 @@ public partial class ExcelImportWindow : MyWindow
             "CreateTimeLayoutManually" => 6,
             "TimePointImportResult" => 7,
             "SelectSubjectsPosition" => 8,
+            "SelectVerticalMode" => 9,
             "RowClassesTimeRelationshipImportMethod" => 10,
             "RowClassesTimeRelationshipImportAuto" => 11,
             "RowClassesTimeRelationshipImportMan" => 11,
             "SelectClassPlanArea" => 12,
             "PreviewClassPlan" => 13,
-            "AllClassPlansView" => 14,
-            "Finish" => 15,
+            "ClassPlanDetails" => 14,
+            "AllClassPlansView" => 15,
+            "Finish" => 16,
             _ => ViewModel.SlideIndex
         };
         switch (p)
@@ -309,13 +311,15 @@ public partial class ExcelImportWindow : MyWindow
             6 => 4,
             7 => 5,
             8 when ViewModel.TimeLayoutImportSource == 0 => 7,
-            8 when ViewModel.TimeLayoutImportSource == 2 => 6,
+            8 when ViewModel.TimeLayoutImportSource == 2 => 9,
+            9 => 6,
             10 => 8,
             11 => 10,
             12 => 11,
             13 => 12,
             14 => 13,
             15 => 14,
+            16 => 15,
             _ => ViewModel.SlideIndex
         };
     }
@@ -484,6 +488,7 @@ public partial class ExcelImportWindow : MyWindow
 
     private void LoadClassPlan()
     {
+        ViewModel.CurrentClassPlan = new ClassPlan();
         var source = ViewModel.CurrentClassPlanSource;
         if (source == RangePosition.Empty)
             return;
@@ -598,11 +603,40 @@ public partial class ExcelImportWindow : MyWindow
     private void MenuItemCompleteImport_OnClick(object sender, RoutedEventArgs e)
     {
         CompleteImport();
-        ViewModel.SlideIndex = 15;
+        ViewModel.SlideIndex = 16;
     }
 
     private void ButtonFinished_OnClick(object sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    private void RangeSelection_OnMouseEnter(object sender, MouseEventArgs e)
+    {
+        var s = sender as CheckBox;
+        Debug.WriteLine(s?.Content);
+        if (s?.Content != null)
+        {
+            Grid.CurrentWorksheet.SelectRange((RangePosition)s.Content);
+        }
+    }
+
+    private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (!e.Handled)
+        {
+            // ListView拦截鼠标滚轮事件
+            e.Handled = true;
+
+            // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.Source = sender;
+            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
+        }
     }
 }

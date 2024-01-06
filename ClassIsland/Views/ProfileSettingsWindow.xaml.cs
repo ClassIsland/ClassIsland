@@ -748,7 +748,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void TimeLayoutEditScrollToContent()
     {
-        var tpr = ViewModel.SelectedTimePoint ?? ((KeyValuePair<string, TimeLayout>?)ListViewTimeLayouts.SelectedItem)?.Value.Layouts[0];
+        var timeLayoutItems = ((KeyValuePair<string, TimeLayout>?)ListViewTimeLayouts.SelectedItem)?.Value.Layouts;
+        var tpr = ViewModel.SelectedTimePoint ?? (timeLayoutItems is { Count: > 0 } ? timeLayoutItems?[0] : null);
         if (tpr == null)
         {
             return;
