@@ -778,7 +778,8 @@
                     <TabItem Header="时间表" Visibility="Collapsed">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
+                                <ColumnDefinition Width="5"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <!-- 时间表选择 -->
@@ -830,8 +831,10 @@
                                 </ListBox>
                             </Grid>
 
+                            <GridSplitter HorizontalAlignment="Stretch" Grid.Column="1"/>
+
                             <!-- 时间节点编辑 -->
-                            <Grid Grid.Column="1" Margin="3 0 0 0" 
+                            <Grid Grid.Column="2" Margin="3 0 0 0" 
                                   DataContext="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}"
                                   IsEnabled="{Binding IsActivated, Converter={StaticResource InvertBooleanConverter}}">
                                 <Grid.Style>
@@ -844,6 +847,11 @@
                                         <Setter Property="Visibility" Value="Visible"/>
                                     </Style>
                                 </Grid.Style>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="250" MinWidth="250" MaxWidth="350"/>
+                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
@@ -851,7 +859,7 @@
                                 </Grid.RowDefinitions>
 
                                 <!-- 时间表编辑操作 -->
-                                <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" 
+                                <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" 
                                          IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
                                     <!--<TextBlock Text="{Binding Layouts}"/>-->
                                     <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。">
@@ -901,7 +909,7 @@
                                 </ToolBar>
 
                                 <!-- 时间点 -->
-                                <TabControl Grid.Row="1"
+                                <TabControl Grid.Column="0" Grid.Row="1"
                                             TabStripPlacement="Bottom"
                                             HorizontalContentAlignment="Left"
                                             x:Name="TabTimeLayoutEditors">
@@ -994,7 +1002,7 @@
                                 </TabControl>
 
                                 <!-- 新编辑器大小调整 -->
-                                <StackPanel Grid.Row="2" Orientation="Horizontal"
+                                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal"
                                             VerticalAlignment="Bottom"
                                             HorizontalAlignment="Right">
                                     <StackPanel.Style>
@@ -1036,7 +1044,8 @@
                                             Click="ButtonZoomIn_OnClick"/>
                                 </StackPanel>
 
-                                <Button Grid.Row="2"
+                                <Button Grid.Row="2" 
+                                        Grid.Column="0"
                                         VerticalAlignment="Bottom"
                                         HorizontalAlignment="Right"
                                         Content="{materialDesign:PackIcon Target}"
@@ -1057,6 +1066,7 @@
                                 </Button>
 
                                 <ListBox Grid.Row="2"
+                                         Grid.Column="0"
                                          x:Name="ListBoxTimeLayoutEditorModeSelector"
                                          Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
                                          VerticalContentAlignment="Stretch"
@@ -1093,8 +1103,89 @@
                                     <materialDesign:PackIcon Kind="TimelineOutline" ToolTip="时间线视图"/>
                                 </ListBox>
 
-                                <!-- 禁止编辑叠层 -->
-                                <Grid Grid.Row="0" Grid.RowSpan="3" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <GridSplitter Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="2"/>
+                                
+                                <!-- 时间点编辑 -->
+                                <ScrollViewer Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel Margin="16" 
+                                                DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
+                                        <TextBlock Text="编辑时间点"
+                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                        <!--<TextBlock Text="{Binding}"/>-->
+                                        <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间"
+                                                                   Margin="0 12 0 0"
+                                                                   WithSeconds="True" Is24Hours="True"
+                                                                   Style="{StaticResource MaterialDesignOutlinedTimePicker}"
+                                                                   SelectedTime="{Binding ViewModel.SelectedTimePoint.StartSecond}" />
+                                        <materialDesign:TimePicker materialDesign:HintAssist.Hint="结束时间"
+                                                                   Margin="0 12 0 0"
+                                                                   WithSeconds="True" Is24Hours="True"
+                                                                   SelectedTime="{Binding ViewModel.SelectedTimePoint.EndSecond}">
+                                            <materialDesign:TimePicker.Style>
+                                                <Style TargetType="materialDesign:TimePicker"
+                                                       BasedOn="{StaticResource MaterialDesignOutlinedTimePicker}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                            Value="2">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </Style>
+                                            </materialDesign:TimePicker.Style>
+                                        </materialDesign:TimePicker>
+                                        <TextBlock Text="类型" Margin="0 16 0 0" />
+                                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                                 SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                            <ListBoxItem>
+                                                <controls:IconText Kind="BookOutline" Text="上课" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <controls:IconText Kind="ClockOutline" Text="课间休息" />
+                                            </ListBoxItem>
+                                            <ListBoxItem>
+                                                <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
+                                            </ListBoxItem>
+                                        </ListBox>
+                                        <StackPanel>
+                                            <StackPanel.Style>
+                                                <Style TargetType="StackPanel">
+                                                    <Style.Triggers>
+                                                        <DataTrigger
+                                                            Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                            Value="0">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </Style>
+                                            </StackPanel.Style>
+                                            <CheckBox Margin="0 8 0 0" Content="默认隐藏"
+                                                      IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}" />
+                                            <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                        <Separator Margin="0 20 0 8" />
+                                        <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
+                                        <ItemsControl
+                                            ItemsSource="{Binding AttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                                                        Margin="0 0 0 8"
+                                                        TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
+
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                    </StackPanel></ScrollViewer>
+
+                                    <!-- 禁止编辑叠层 -->
+                                <Grid Grid.Row="0" Grid.RowSpan="3"
+                                      Grid.Column="0" Grid.ColumnSpan="3"
+                                      Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
                                     <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Image Source="/Assets/帕姆_震惊.png" Width="72" Height="72" Margin="0 0 0 8"
@@ -1104,7 +1195,7 @@
                                     </StackPanel>
                                 </Grid>
                             </Grid>
-                            <StackPanel Grid.Column="1" 
+                            <StackPanel Grid.Column="2" 
                                         VerticalAlignment="Center" HorizontalAlignment="Center">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
