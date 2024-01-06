@@ -536,6 +536,8 @@ public partial class ExcelImportWindow : MyWindow
             var row = isVertical? v.Row : source.Row;
             var col = isVertical? source.Col : v.Col;
             var text = Grid.CurrentWorksheet.GetCellText(row, col);
+            if (ti >= classPlan.Classes.Count)
+                break;
             // 搜索文本内容
             foreach (var s in subjects.Where(s => text.Contains(s.Value.Name)))
             {

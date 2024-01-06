@@ -507,11 +507,11 @@
                             <models:WizardOption Header="手动指定" Content=""
                                                  InvokeCommandParameter="RowClassesTimeRelationshipImportMan"/>
                         </controls:WizardOptionsListBox>
-                        <Button HorizontalAlignment="Left" Margin="0 8 0 0"
+                        <!--<Button HorizontalAlignment="Left" Margin="0 8 0 0"
                                 Style="{StaticResource MaterialDesignPaperButton}"
                                 Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
                             <controls:IconText Kind="ArrowLeft" Text="上一步"/>
-                        </Button>
+                        </Button>-->
                     </StackPanel>
                 </materialDesign:TransitionerSlide>
                 <!-- 11 时间对应关系 -->
@@ -754,6 +754,8 @@
                         <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
                         <Image Source="/Assets/光辉矢愿_回眸.png"
+                               ToolTip="光辉矢愿_回眸"
+                               Focusable="True"
                                Height="64" Width="64"
                                RenderOptions.BitmapScalingMode="HighQuality"
                                HorizontalAlignment="Left"/>
