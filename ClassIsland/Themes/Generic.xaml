@@ -197,6 +197,7 @@
                         <Setter.Value>
                             <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
                                 <MenuItem Icon="{materialDesign:PackIcon EditOutline}" Header="编辑时间点…" Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"/>
+                                <MenuItem Icon="{materialDesign:PackIcon FormatColorFill}" Header="覆盖课程…"/>
                                 <Separator/>
                                 <MenuItem Icon="{materialDesign:PackIcon DeleteOutline}" Header="删除时间点" Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"/>
                             </ContextMenu>

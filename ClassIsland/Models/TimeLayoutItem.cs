@@ -12,6 +12,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     private bool _isOnClass = true;
     private int _timeType = 0;
     private bool _isHideDefault = false;
+    private string _defaultClassId = "";
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
@@ -85,6 +86,17 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         {
             if (value == _isHideDefault) return;
             _isHideDefault = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DefaultClassId
+    {
+        get => _defaultClassId;
+        set
+        {
+            if (value == _defaultClassId) return;
+            _defaultClassId = value;
             OnPropertyChanged();
         }
     }

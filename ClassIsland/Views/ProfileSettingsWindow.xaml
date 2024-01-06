@@ -88,68 +88,7 @@
         <!-- 时间节点编辑 -->
         <ScrollViewer x:Key="TimePointEditor" Width="332" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="16">
-                <TextBlock Text="编辑时间点" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-                <!--<TextBlock Text="{Binding}"/>-->
-                <materialDesign:TimePicker materialDesign:HintAssist.Hint="开始时间" Margin="0 12 0 0"
-                                           WithSeconds="True" Is24Hours="True"
-                                           Style="{StaticResource MaterialDesignOutlinedTimePicker}"
-                                           SelectedTime="{Binding ViewModel.SelectedTimePoint.StartSecond}"/>
-                <materialDesign:TimePicker materialDesign:HintAssist.Hint="结束时间" Margin="0 12 0 0"
-                                           WithSeconds="True" Is24Hours="True"
-                                           SelectedTime="{Binding ViewModel.SelectedTimePoint.EndSecond}" >
-                    <materialDesign:TimePicker.Style>
-                        <Style TargetType="materialDesign:TimePicker" BasedOn="{StaticResource MaterialDesignOutlinedTimePicker}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ViewModel.SelectedTimePoint.TimeType}" Value="2">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                            <Setter Property="Visibility" Value="Visible"/>
-                        </Style>
-                    </materialDesign:TimePicker.Style>
-                </materialDesign:TimePicker>
-                <TextBlock Text="类型" Margin="0 16 0 0"/>
-                <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                         SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
-                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                    <ListBoxItem>
-                        <controls:IconText Kind="BookOutline" Text="上课"/>
-                    </ListBoxItem>
-                    <ListBoxItem>
-                        <controls:IconText Kind="ClockOutline" Text="课间休息"/>
-                    </ListBoxItem>
-                    <ListBoxItem>
-                        <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
-                    </ListBoxItem>
-                </ListBox>
-                <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ViewModel.SelectedTimePoint.TimeType}" Value="0">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </Style>
-                    </StackPanel.Style>
-                    <CheckBox Margin="0 8 0 0" Content="默认隐藏" IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}"/>
-                    <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap"/>
-                </StackPanel>
-                <Separator Margin="0 20 0 8"/>
-                <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
-                <ItemsControl x:Name="ItemsControlTimePointAttachedSettingsControls"
-                              ItemsSource="{Binding AttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
-                                                                       Margin="0 0 0 8"
-                                                                       TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
-
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
+                <TextBlock Text="Obslated."/>
             </StackPanel>
         </ScrollViewer>
 
@@ -1165,6 +1104,26 @@
                                                 <CheckBox Margin="0 8 0 0" Content="默认隐藏"
                                                           IsChecked="{Binding ViewModel.SelectedTimePoint.IsHideDefault}" />
                                                 <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" />
+
+                                                <Separator Margin="0 20 0 8" />
+                                                <controls:IconText Kind="BookOutline" Text="默认课程" Margin="0 0 0 4" />
+                                                <ComboBox materialDesign:HintAssist.Hint="默认课程"
+                                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                          ItemsSource="{Binding ProfileService.Profile.Subjects, UpdateSourceTrigger=PropertyChanged}"
+                                                          SelectedValuePath="Key"
+                                                          SelectedValue="{Binding ViewModel.SelectedTimePoint.DefaultClassId}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Value.Name}" />
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
+                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Click="ButtonOverwriteClasses_OnClick">
+                                                        <controls:IconText Kind="Upload" Text="覆盖现有课程"/>
+                                                    </Button>
+                                                </WrapPanel>
                                             </StackPanel>
                                             <Separator Margin="0 20 0 8" />
                                             <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />

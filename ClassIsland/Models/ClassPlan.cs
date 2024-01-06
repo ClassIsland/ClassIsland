@@ -125,6 +125,10 @@ public class ClassPlan : AttachableSettingsObject
         {
             Classes[i].Index = i;
             Classes[i].CurrentTimeLayout = TimeLayout;
+            if (Classes[i].SubjectId == "" && Classes[i].CurrentTimeLayoutItem.DefaultClassId != "")
+            {
+                Classes[i].SubjectId = Classes[i].CurrentTimeLayoutItem.DefaultClassId;
+            }
         }
     }
 

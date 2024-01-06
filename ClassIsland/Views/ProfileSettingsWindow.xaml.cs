@@ -804,4 +804,14 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         HangService.AssumeHang();
     }
+
+    private void ButtonOverwriteClasses_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedTimePoint == null)
+            return;
+        MainViewModel.Profile.OverwriteAllClassPlanSubject(
+            ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Key,
+            ViewModel.SelectedTimePoint,
+            ViewModel.SelectedTimePoint.DefaultClassId);
+    }
 }
