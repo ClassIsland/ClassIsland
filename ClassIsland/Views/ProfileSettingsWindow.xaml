@@ -467,8 +467,6 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Background="Transparent">
                             <StackPanel.ContextMenu>
                                 <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
-                                    <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑" Click="MenuItemProfileEdit_OnClick"/>
-                                    <Separator/>
                                     <MenuItem Icon="{materialDesign:PackIcon RenameOutline}" Header="重命名" Click="MenuItemRenameProfile_OnClick"/>
                                     <MenuItem Icon="{materialDesign:PackIcon ContentCopy}" Header="复制" Click="MenuItemProfileDuplicate_OnClick"/>
                                     <!--<MenuItem Icon="{materialDesign:PackIcon FileExportOutline}" Header="导出"/>-->
@@ -1137,9 +1135,31 @@
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
 
-                                        </StackPanel></ScrollViewer>
+                                        </StackPanel>
+                                    </ScrollViewer>
+                                    <Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2" 
+                                          Background="{DynamicResource MaterialDesignPaper}">
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ViewModel.SelectedTimePoint ,RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"
+                                                                 Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </Grid.Style>
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16">
+                                            <Image Source="/Assets/藿藿_好痛.png" Width="72" Height="72" Margin="0 0 0 8"
+                                                   ToolTip="霍霍_好痛"/>
+                                            <TextBlock Text="您还没有创建时间点。点击上方工具栏新建时间点按钮以新建时间点。"
+                                                       TextAlignment="Center"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Grid>
 
-                                        <!-- 禁止编辑叠层 -->
+                                    <!-- 禁止编辑叠层 -->
                                     <Grid Grid.Row="0" Grid.RowSpan="3"
                                           Grid.Column="0" Grid.ColumnSpan="3"
                                           Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">

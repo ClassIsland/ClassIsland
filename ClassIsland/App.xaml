@@ -59,6 +59,9 @@
             <!-- #endregion -->
 
             <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
+            <Style TargetType="Image">
+                <Setter Property="RenderOptions.BitmapScalingMode" Value="Linear"/>
+            </Style>
 
             <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
                 <Setter Property="LineHeight" Value="22"/>
