@@ -225,6 +225,7 @@ public partial class App : Application
                     });
                 }
             });
+            await Dispatcher.Yield(DispatcherPriority.SystemIdle);
         }
 
         GetService<HangService>();
