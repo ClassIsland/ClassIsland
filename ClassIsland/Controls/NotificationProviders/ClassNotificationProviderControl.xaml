@@ -30,7 +30,8 @@
             </Grid.ColumnDefinitions>
 
             <!-- 倒计时 -->
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"
+                       Margin="12 0">
                 <Run Text="距上课还剩"/>
                 <Run Text="{Binding ViewModel.OnClassLeftTime, Converter={StaticResource TimeSpanToTotalSecondsConverter}, Mode=OneWay}" FontWeight="Bold"/>
                 <Run Text="秒"/>
@@ -38,7 +39,8 @@
 
             <!-- 科目信息 -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
-                        TextElement.FontSize="16">
+                        TextElement.FontSize="16"
+                        Margin="12 0">
                 <TextBlock VerticalAlignment="Center" Text="下节课是："/>
                 <TextBlock Text="{Binding ViewModel.NextSubject.Name}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center"/>
                 <TextBlock Margin="6 0 0 0" FontSize="14" VerticalAlignment="Bottom">
@@ -77,13 +79,14 @@
             </Grid.ColumnDefinitions>
 
             <!-- 课间时间 -->
-            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16">
+            <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16" Margin="12 0">
                 <Run Text="本节课间休息长"/>
                 <Run Text="{Binding ViewModel.CurrentTimeLayoutItem.Last, ConverterCulture=zh-cn, Mode=OneWay}" FontWeight="Bold"/>
             </TextBlock>
 
             <!-- 科目信息 -->
             <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal"
+                        Margin="12 0"
                         TextElement.FontSize="16">
                 <TextBlock VerticalAlignment="Center" Text="下节课是："/>
                 <TextBlock Text="{Binding ViewModel.NextSubject.Name}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center"/>
@@ -95,7 +98,7 @@
             </StackPanel>
         </Grid>
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="16 0">
         <materialDesign:Transitioner SelectedIndex="{Binding SlideIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}, Mode=OneWay}">
             <materialDesign:TransitionerSlide>
                 <materialDesign:TransitionerSlide.BackwardWipe>
