@@ -128,9 +128,7 @@
                 <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
             </TextBlock>
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
-                <Run Text="确定要删除科目"/>
-                <Run Text="{Binding SelectedItem.Value.Name, ElementName=ListViewSubjects}"/>
-                <Run Text="吗？如果有包含此科目的课程表，那么这些课程表在科目删除后将无法正常工作！"/>
+                <Run Text="确定要删除选中的科目吗？如果有包含此科目的课程表，那么这些课程表在科目删除后将无法正常工作！"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
                 <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
@@ -1210,7 +1208,7 @@
                                         </Button.Style>
                                         <controls:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
-                                    <Button>
+                                    <Button Click="ButtonSubject_OnClick">
                                         <controls:IconText Kind="Delete" Text="删除"/>
                                     </Button>
                                 </ToolBar>
@@ -1218,6 +1216,7 @@
                                 <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
                                     <!-- 科目 -->
                                     <DataGrid Grid.Row="0"
+                                              x:Name="DataGridSubjects"
                                               ItemsSource="{Binding MainViewModel.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               AutoGenerateColumns="False"
                                               IsReadOnly="False"

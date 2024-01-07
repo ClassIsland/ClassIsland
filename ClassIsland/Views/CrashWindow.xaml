@@ -52,7 +52,7 @@
                         </Grid.RowDefinitions>
                         <TextBox Grid.Column="0" Grid.Row="0"
                                  Grid.ColumnSpan="2"
-                                 TextWrapping="Wrap"
+                                 
                                  Text="{Binding Mode=OneWay, Converter={StaticResource ExceptionToExceptionHeaderConverter}}"
                                  IsReadOnly="True"
                                  FontSize="15"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -288,7 +289,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.Profile.Subjects.Add(Guid.NewGuid().ToString(), new Subject());
+        MainViewModel.Profile.EditingSubjects.Add(new Subject());
         //ListViewSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
         TextBoxSubjectName.Focus();
         Analytics.TrackEvent("档案设置 · 添加科目");
@@ -303,7 +304,19 @@ public partial class ProfileSettingsWindow : MyWindow
             {
                 {"IsSuccess", "true"},
             });
-            //MainViewModel.Profile.Subjects.Remove(((KeyValuePair<string, Subject>)ListViewSubjects.SelectedItem).Key);
+            var rm = new List<Subject>();
+            foreach (var i in DataGridSubjects.SelectedItems)
+            {
+                if (i is Subject o)
+                {
+                    rm.Add(o);
+                }
+            }
+            var s = MainViewModel.Profile.EditingSubjects;
+            foreach (var t in rm)
+            {
+                s.Remove(t);
+            }
         }
         else
         {
@@ -459,14 +472,18 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
     {
-        var s = CopyObject(ViewModel.SelectedSubject);
-        if (s == null)
+        foreach (var i in DataGridSubjects.SelectedItems)
         {
-            return;
+            var subject = i as Subject;
+            var o = CopyObject(subject);
+            if (o == null)
+            {
+                continue;
+            }
+
+            MainViewModel.Profile.EditingSubjects.Add(o);
         }
-        
-        MainViewModel.Profile.Subjects.Add(Guid.NewGuid().ToString(), s);
-        ListViewTimeLayouts.SelectedItem = MainViewModel.Profile.Subjects.Last();
+        DataGridSubjects.SelectedItem = MainViewModel.Profile.EditingSubjects.Last();
         Analytics.TrackEvent("档案设置 · 复制科目");
     }
 
