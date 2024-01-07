@@ -821,7 +821,7 @@
                                             </Button.Style>
                                             <controls:IconText Kind="Remove" Text="删除"/>
                                         </Button>
-                                        <Button  Click="ButtonEditTimePoint_OnClick"
+                                        <!--<Button  Click="ButtonEditTimePoint_OnClick"
                                                  ToolTip="编辑选中的时间点。">
                                             <Button.Style>
                                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
@@ -833,7 +833,7 @@
                                                 </Style>
                                             </Button.Style>
                                             <controls:IconText Kind="EditOutline" Text="编辑"/>
-                                        </Button>
+                                        </Button>-->
                                         <Separator/>
                                         <Button Click="ButtonEditTimeLayoutInfo_OnClick"
                                                 ToolTip="查看并编辑时间表的基本信息。">
