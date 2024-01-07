@@ -1289,6 +1289,8 @@
                                     <!-- 科目编辑 -->
                                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                                         <StackPanel Margin="12">
+                                            <TextBlock Text="编辑科目信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                                       Margin="0 0 0 16"/>
                                             <!-- 科目名 & 简称 -->
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
@@ -1329,10 +1331,6 @@
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
-                                            <!-- Guid -->
-                                            <controls:IconText Kind="Code" HorizontalAlignment="Left"
-                                                               Text="{Binding SelectedItem.Key, ElementName=ListViewSubjects}" 
-                                                               Margin="0 16 0 0" ToolTip="Guid"/>
                                         </StackPanel>
                                     </ScrollViewer>
                                 </Grid>

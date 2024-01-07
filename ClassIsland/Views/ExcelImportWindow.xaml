@@ -773,7 +773,7 @@
         </ScrollViewer>
 
         <!-- Debug slider -->
-        <Slider Grid.Column="2" Grid.Row="1" AutoToolTipPlacement="TopLeft"
+        <!--<Slider Grid.Column="2" Grid.Row="1" AutoToolTipPlacement="TopLeft"
                 ToolTip="debug purpose only."
                 VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
@@ -785,7 +785,7 @@
                   Content="IsSelectingMode"
                   VerticalAlignment="Bottom"
                   HorizontalAlignment="Center"
-                  IsChecked="{Binding ViewModel.IsSelectingMode}"/>
+                  IsChecked="{Binding ViewModel.IsSelectingMode}"/>-->
 
         <windows:AsyncBox Grid.Row="0" Grid.Column="0"
                           Grid.RowSpan="2" Grid.ColumnSpan="3"

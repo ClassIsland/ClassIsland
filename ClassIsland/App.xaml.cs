@@ -30,6 +30,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using UpdateStatus = ClassIsland.Enums.UpdateStatus;
 
 namespace ClassIsland;
@@ -201,6 +202,9 @@ public partial class App : Application
                 services.AddLogging(builder =>
                 {
                     builder.AddConsole();
+#if DEBUG
+                    builder.SetMinimumLevel(LogLevel.Trace);
+#endif
                 });
             }).Build();
         ConsoleService.ConsoleVisible = GetService<SettingsService>().Settings.IsDebugConsoleEnabled;

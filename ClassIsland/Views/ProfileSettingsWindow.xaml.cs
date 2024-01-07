@@ -31,7 +31,9 @@ using Application = System.Windows.Application;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
+using ListBox = System.Windows.Controls.ListBox;
 using Path = System.IO.Path;
+using TabControl = System.Windows.Controls.TabControl;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -204,7 +206,7 @@ public partial class ProfileSettingsWindow : MyWindow
         timeLayout.Layouts.Add(newItem);
         ReSortTimeLayout(newItem);
         ListViewTimePoints.SelectedValue = newItem;
-        OpenDrawer("TimePointEditor");
+        //OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 创建时间点", new Dictionary<string, string>
         {
             {"Type", timeType.ToString()}
@@ -241,7 +243,7 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         if (ListViewTimePoints.SelectedValue != null)
         {
-            ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedValue).Value.Layouts.Remove((TimeLayoutItem)ListViewTimePoints.SelectedValue);
+            ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedValue).Value.RemoveTimePoint((TimeLayoutItem)ListViewTimePoints.SelectedValue);
         }
 
         UpdateTimeLayout();
@@ -399,7 +401,7 @@ public partial class ProfileSettingsWindow : MyWindow
             p = i;
             break;
         }
-        l.Insert(p, item);
+        timeLayout.InsertTimePoint(p, item);
 
         // 验证
         for (int i = 0; i < l.Count - 1; i++)
@@ -412,6 +414,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
 
         ViewModel.SelectedTimePoint = item;
+        timeLayout.SortCompleted();
     }
 
     private void DataGridClassPlans_OnUnloadingRow(object? sender, DataGridRowEventArgs e)
@@ -512,6 +515,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void TabControlSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (e.OriginalSource.GetType() != typeof(TabControl))
+            return;
         var c = (KeyValuePair<string, ClassPlan>?)ListViewClassPlans.SelectedValue;
         c?.Value.RefreshClassesList();
     }

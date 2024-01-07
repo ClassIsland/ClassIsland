@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.DirectoryServices;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using ClassIsland.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Models;
 
@@ -23,15 +25,117 @@ public class ClassPlan : AttachableSettingsObject
     private ClassPlan? _overlaySource = null;
     private bool _isEnabled = true;
     private DateTime _overlaySetupTime = DateTime.Now;
+    private int _lastTimeLayoutCount = -1;
+
+    [JsonIgnore]
+    public int LastTimeLayoutCount
+    {
+        get => _lastTimeLayoutCount;
+        set
+        {
+            if (value == _lastTimeLayoutCount) return;
+            _lastTimeLayoutCount = value;
+            OnPropertyChanged();
+        }
+    }
 
     public ClassPlan()
     {
         PropertyChanged += OnPropertyChanged;
+        if (TimeLayouts.ContainsKey(TimeLayoutId))
+        {
+            TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
+            TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+            TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
+        }
+    }
+
+    private void TimeLayoutOnLayoutObjectChanged(object? sender, EventArgs e)
+    {
+        TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+        RefreshClassesList(true);
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        RefreshClassesList();
+
+        if (e.PropertyName == nameof(TimeLayout) || e.PropertyName == nameof(TimeLayoutId))
+        {
+            if (TimeLayouts.ContainsKey(TimeLayoutId))
+            {
+                RefreshClassesList();
+                TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
+                TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
+                TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+            }
+        }
+    }
+
+    private void TimeLayoutOnLayoutItemChanged(object? sender, TimeLayoutUpdateEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                if (e.AddIndexClasses == -1)
+                    break;
+                foreach (var i in e.AddedItems)
+                {
+                    Classes.Insert(e.AddIndexClasses, new ClassInfo());
+                }
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                if (e.RemoveIndexClasses == -1)
+                    break;
+                foreach (var i in e.RemovedItems)
+                {
+                    Classes.RemoveAt(e.RemoveIndexClasses);
+                }
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                break;
+            case NotifyCollectionChangedAction.Move:
+                break;
+            case NotifyCollectionChangedAction.Reset:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void LayoutsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                if (e.NewItems == null)
+                    return;
+                //foreach (var i in e.NewItems)
+                //{
+                //    var index = e.NewStartingIndex;
+                //    Classes.Insert(index, new ClassInfo()
+                //    {
+
+                //    });
+                //}
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                if (e.OldItems == null)
+                    return;
+                //foreach (var i in e.OldItems)
+                //{
+                //    Classes.RemoveAt(e.OldStartingIndex);
+                //}
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                break;
+            case NotifyCollectionChangedAction.Move:
+                break;
+            case NotifyCollectionChangedAction.Reset:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        //RefreshClassesList();
     }
 
     [JsonIgnore]
@@ -94,15 +198,17 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
-    public void RefreshClassesList()
+    public void RefreshClassesList(bool isDiffMode=false)
     {
+        App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
         // 对齐长度
         if (TimeLayoutId == null || !TimeLayouts.ContainsKey(TimeLayoutId))
         {
             return;
         }
         
-        var l = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).Count();
+        var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).ToList();
+        var l = c.Count;
         //Debug.WriteLine(l);
         if (Classes.Count < l)
         {
@@ -119,6 +225,7 @@ public class ClassPlan : AttachableSettingsObject
             {
                 Classes.RemoveAt(Classes.Count - 1);
             }
+
         }
 
         for (var i = 0; i < Classes.Count; i++)
@@ -130,6 +237,17 @@ public class ClassPlan : AttachableSettingsObject
                 Classes[i].SubjectId = Classes[i].CurrentTimeLayoutItem.DefaultClassId;
             }
         }
+
+        LastTimeLayoutCount = TimeLayout.Layouts.Count;
+    }
+
+    public void RemoveTimePointSafe(TimeLayoutItem timePoint)
+    {
+        foreach (var i in from i in Classes where i.CurrentTimeLayoutItem == timePoint select i)
+        {
+            Classes.Remove(i);
+        }
+        RefreshClassesList();
     }
 
     [JsonIgnore]

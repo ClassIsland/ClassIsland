@@ -37,7 +37,8 @@
             <Run Text="应用发生了无法解决的错误，需要退出。这可能是由一个bug引起的。若要将此错误反馈至开发人员，请保留此错误信息（包括详细信息），并一并提交至开发者。"/>
         </TextBlock>
         <ListBox Grid.Row="1" ItemsSource="{Binding InnerExceptions}" MaxHeight="150"
-                 materialDesign:ListBoxItemAssist.ShowSelection="False">
+                 materialDesign:ListBoxItemAssist.ShowSelection="False"
+                 ScrollViewer.CanContentScroll="False">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -78,7 +79,6 @@
                   Margin="0 0 0 8">
             <TextBox x:Name="TextBoxCrashInfo" Grid.Row="1" AcceptsReturn="True"
                      VerticalContentAlignment="Top" 
-                     MaxHeight="400"
                      BorderThickness="0"
                      materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
                      VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}" HorizontalScrollBarVisibility="Auto"

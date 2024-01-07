@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -22,16 +24,60 @@ public class TimeLayout : AttachableSettingsObject
         Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
     }
 
+    public event EventHandler? LayoutObjectChanged;
+
+    public event EventHandler<TimeLayoutUpdateEventArgs>? LayoutItemChanged;
+
+    public void SortCompleted()
+    {
+        LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         //Debug.WriteLine(e.PropertyName);
-        //switch (e.PropertyName)
-        //{
-        //    case nameof(Layouts):
-        //        Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
-        //        break;
+        switch (e.PropertyName)
+        {
+            case nameof(Layouts):
+                //LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
+                break;
 
-        //}
+        }
+    }
+
+    public void InsertTimePoint(int index, TimeLayoutItem item)
+    {
+        Layouts.Insert(index, item);
+        var ci = -1;
+        if (item.TimeType == 0)
+        {
+            ci = (from i in Layouts where i.TimeType == 0 select i).ToList().IndexOf(item);
+        }
+        LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs()
+        {
+            Action = NotifyCollectionChangedAction.Add,
+            AddedItems = { item },
+            AddIndex = index,
+            AddIndexClasses = ci
+        });
+    }
+
+    public void RemoveTimePoint(TimeLayoutItem item)
+    {
+        var index = Layouts.IndexOf(item);
+        var ci = -1;
+        if (item.TimeType == 0)
+        {
+            ci = (from i in Layouts where i.TimeType==0 select i).ToList().IndexOf(item);
+        }
+        Layouts.Remove(item);
+        LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs()
+        {
+            Action = NotifyCollectionChangedAction.Remove,
+            RemovedItems = { item },
+            RemoveIndex = index,
+            RemoveIndexClasses = ci
+        });
     }
 
     public string Name
