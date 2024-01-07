@@ -115,7 +115,6 @@ public partial class App : Application
 
         //ConsoleService.InitializeConsole();
         ConsoleService.InitializeConsole();
-        Console.WriteLine($"ClassIsland {AppVersionLong}");
 
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
