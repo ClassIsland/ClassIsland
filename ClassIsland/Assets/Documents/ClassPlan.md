@@ -15,9 +15,11 @@
 
 ![1690342708477](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1690342708477.png)
 
-您可以设置课表的触发规则。当触发规则全部满足时，该课表会被启用，作为当天的课表，在主界面显示（如图）。
+您还需要设置课表的触发规则。当触发规则全部满足时，该课表会被启用，作为当天的课表，在主界面显示（如图）。
 
 ![1690342949494](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1690342949494.png)
+
+您也可以禁用课表自动启用，这样课表不会自动加载，只能手动启用。
 
 ## 临时课表
 
