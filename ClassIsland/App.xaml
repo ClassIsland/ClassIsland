@@ -60,7 +60,9 @@
 
             <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
             <Style TargetType="Image">
-                <Setter Property="RenderOptions.BitmapScalingMode" Value="Linear"/>
+                <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+                <Setter Property="UseLayoutRounding" Value="True"/>
+                <Setter Property="SnapsToDevicePixels" Value="True"/>
             </Style>
 
             <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">

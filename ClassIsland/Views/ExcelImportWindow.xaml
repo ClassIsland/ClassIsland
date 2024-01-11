@@ -264,7 +264,7 @@
                 <materialDesign:TransitionerSlide ForwardWipe="{x:Null}" BackwardWipe="{x:Null}">
                     <StackPanel VerticalAlignment="Center"
                                 HorizontalAlignment="Center">
-                        <Image Source="/Assets/纳西妲_沉思中.png" Width="85" Height="85"
+                        <Image Source="/Assets/纳西妲_沉思中.png" Width="78"
                                ToolTip="纳西妲_沉思中"
                                RenderOptions.BitmapScalingMode="HighQuality"
                                HorizontalAlignment="Center" Margin="0 0 0 16"/>
@@ -756,7 +756,7 @@
                         <Image Source="/Assets/光辉矢愿_回眸.png"
                                ToolTip="光辉矢愿_回眸"
                                Focusable="True"
-                               Height="64" Width="64"
+                               Width="63"
                                RenderOptions.BitmapScalingMode="HighQuality"
                                HorizontalAlignment="Left"/>
                         <TextBlock>
@@ -773,7 +773,7 @@
         </ScrollViewer>
 
         <!-- Debug slider -->
-        <!--<Slider Grid.Column="2" Grid.Row="1" AutoToolTipPlacement="TopLeft"
+        <Slider Grid.Column="2" Grid.Row="1" AutoToolTipPlacement="TopLeft"
                 ToolTip="debug purpose only."
                 VerticalAlignment="Bottom"
                 HorizontalAlignment="Right"
@@ -785,7 +785,7 @@
                   Content="IsSelectingMode"
                   VerticalAlignment="Bottom"
                   HorizontalAlignment="Center"
-                  IsChecked="{Binding ViewModel.IsSelectingMode}"/>-->
+                  IsChecked="{Binding ViewModel.IsSelectingMode}"/>
 
         <windows:AsyncBox Grid.Row="0" Grid.Column="0"
                           Grid.RowSpan="2" Grid.ColumnSpan="3"

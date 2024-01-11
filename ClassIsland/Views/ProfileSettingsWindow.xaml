@@ -1151,7 +1151,7 @@
                                             </Style>
                                         </Grid.Style>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16">
-                                            <Image Source="/Assets/藿藿_好痛.png" Width="72" Height="72" Margin="0 0 0 8"
+                                            <Image Source="/Assets/藿藿_好痛.png" Width="78" Stretch="UniformToFill" Margin="0 0 0 8"
                                                    ToolTip="霍霍_好痛"/>
                                             <TextBlock Text="您还没有创建时间点。点击上方工具栏新建时间点按钮以新建时间点。"
                                                        TextAlignment="Center"
@@ -1165,7 +1165,7 @@
                                           Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <Image Source="/Assets/帕姆_震惊.png" Width="72" Height="72" Margin="0 0 0 8"
+                                            <Image Source="/Assets/帕姆_震惊.png" Width="78"  Margin="0 0 0 8"
                                                    ToolTip="帕姆_震惊"/>
                                             <TextBlock Text="无法编辑处于活动状态的时间表。"
                                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>
