@@ -18,9 +18,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Controls;
+using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using WindowsShortcutFactory;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -34,6 +39,8 @@ public partial class WelcomeWindow : MyWindow
         set;
     } = new();
 
+    public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
+
     public WelcomeWindow()
     {
         DataContext = this;
@@ -41,6 +48,7 @@ public partial class WelcomeWindow : MyWindow
         var reader = new StreamReader(Application.GetResourceStream(new Uri("/Assets/License.txt", UriKind.Relative))!
             .Stream);
         ViewModel.License = reader.ReadToEnd();
+        ViewModel.Settings = SettingsService.Settings;
     }
 
     protected override async void OnContentRendered(EventArgs e)
@@ -53,6 +61,28 @@ public partial class WelcomeWindow : MyWindow
     {
         ViewModel.IsExitConfirmed = true;
         DialogResult = true;
+        var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
+        var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "ClassIsland.lnk");
+        var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "ClassIsland.lnk");
+        using var shortcut = new WindowsShortcut
+        {
+            Path = Environment.ProcessPath,
+            WorkingDirectory = Environment.CurrentDirectory
+        };
+        try
+        {
+            if (ViewModel.CreateStartupShortcut)
+                shortcut.Save(startupPath);
+            if (ViewModel.CreateStartMenuShortcut)
+                shortcut.Save(startMenuPath);
+            if (ViewModel.CreateDesktopShortcut)
+                shortcut.Save(desktopPath);
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
+        }
+        
         Close();
     }
 
@@ -89,5 +119,13 @@ public partial class WelcomeWindow : MyWindow
             FileName = "https://learn.microsoft.com/zh-cn/appcenter/sdk/data-collected",
             UseShellExecute = true
         });
+    }
+
+    private void ButtonFlipNext_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.FlipNextCount++;
+        ViewModel.FlipIndex = ViewModel.FlipIndex + 1 >= 3 ? 0 : ViewModel.FlipIndex + 1;
+        if (ViewModel.FlipNextCount >= 2)
+            ViewModel.IsFlipEnd = true;
     }
 }

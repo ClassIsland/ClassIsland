@@ -68,11 +68,12 @@
                 </Button>
             </StackPanel>
         </StackPanel>
-        
+        <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+
     </Window.Resources>
     <ww:AsyncBox LoadingViewType="controls:WelcomeWindowIntroControl">
-        <Grid>
-            <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId, Mode=OneWay}">
+        <Grid TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+            <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId, Mode=OneWay}" Foreground="{DynamicResource MaterialDesignBody}">
                 <Grid Margin="16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -101,9 +102,11 @@
                                        VerticalAlignment="Center" />
                             <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                                 <ListBox
+                                    IsHitTestVisible="False"
                                     Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
                                     VerticalContentAlignment="Stretch"
-                                    SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay, PresentationTraceSources.TraceLevel=High}"
+                                    IsTabStop="False"
+                                    SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay}"
                                     materialDesign:ListBoxItemAssist.ShowSelection="False"
                                     Margin="6 -15 0 -15">
                                     <ListBox.ItemsPanel>
@@ -115,6 +118,7 @@
                                         <Style TargetType="ListBoxItem"
                                                BasedOn="{StaticResource MaterialDesignListBoxItem}">
                                             <Setter Property="Padding" Value="0" />
+                                            <Setter Property="IsTabStop" Value="False" />
                                         </Style>
                                     </ListBox.ItemContainerStyle>
                                     <ListBox.ItemTemplate>
@@ -144,6 +148,7 @@
                                                     x:Key="StringToRadioButtonSelectionConverter" />
                                             </DataTemplate.Resources>
                                             <RadioButton Content="{Binding}"
+                                                         IsTabStop="False"
                                                          IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
                                             </RadioButton>
                                         </DataTemplate>
@@ -234,10 +239,6 @@
                                                 Foreground="{DynamicResource MaterialDesignBody}" />
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
-                                    <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
-                                                           Margin="0 6 0 0"
-                                                           Description="在系统启动时自动运行本应用。"
-                                                           IsOn="{Binding ViewModel.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
                                     <controls:SettingsCard Grid.Row="1" Margin="0 6 0 0"
                                                            IconGlyph="ReportLine"
                                                            Header="启用匿名使用情况分析"
@@ -271,29 +272,47 @@
                                                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                                Margin="0 0 0 8" />
                                     <controls:IconText Kind="ThemeLightDark" Text="明暗主题" />
-                                    <Grid>
+                                    <Grid SnapsToDevicePixels="True">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
 
-                                        <RadioButton Grid.Column="0" VerticalContentAlignment="Bottom">
+                                        <RadioButton Grid.Column="0" VerticalContentAlignment="Bottom"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     IsChecked="{Binding ViewModel.Settings.Theme, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}">
                                             <StackPanel>
-
-                                                <TextBlock Text="跟随系统" />
+                                                <Grid SnapsToDevicePixels="True" ClipToBounds="True">
+                                                    <demo:ThemeDemo ThemeMode="Light" SnapsToDevicePixels="True">
+                                                        <demo:ThemeDemo.Clip>
+                                                            <RectangleGeometry Rect="114 0 230 75"/>
+                                                        </demo:ThemeDemo.Clip>
+                                                    </demo:ThemeDemo>  
+                                                    
+                                                    <demo:ThemeDemo ThemeMode="Dark" SnapsToDevicePixels="True">
+                                                        <demo:ThemeDemo.Clip>
+                                                            <RectangleGeometry Rect="0 0 115 75"/>
+                                                        </demo:ThemeDemo.Clip>
+                                                    </demo:ThemeDemo>
+                                                </Grid>
+                                                <TextBlock Text="跟随系统" Foreground="{DynamicResource MaterialDesignBody}"/>
                                             </StackPanel>
                                         </RadioButton>
-                                        <RadioButton Grid.Column="1" VerticalContentAlignment="Bottom">
+                                        <RadioButton Grid.Column="1" VerticalContentAlignment="Bottom"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     IsChecked="{Binding ViewModel.Settings.Theme, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}">
                                             <StackPanel>
-
-                                                <TextBlock Text="明亮" />
+                                                <demo:ThemeDemo ThemeMode="Light"/>
+                                                <TextBlock Text="明亮" Foreground="{DynamicResource MaterialDesignBody}"/>
                                             </StackPanel>
                                         </RadioButton>
-                                        <RadioButton Grid.Column="2" VerticalContentAlignment="Bottom">
+                                        <RadioButton Grid.Column="2" VerticalContentAlignment="Bottom"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     IsChecked="{Binding ViewModel.Settings.Theme, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}">
                                             <StackPanel>
-
-                                                <TextBlock Text="黑暗" />
+                                                <demo:ThemeDemo ThemeMode="Dark"/>
+                                                <TextBlock Text="黑暗" Foreground="{DynamicResource MaterialDesignBody}"/>
                                             </StackPanel>
                                         </RadioButton>
                                     </Grid>
@@ -367,22 +386,22 @@
                                                     <Setter Property="Margin" Value="0 0 0 6"></Setter>
                                                 </Style>
                                             </StackPanel.Resources>
-                                            <CheckBox>
+                                            <CheckBox IsChecked="{Binding ViewModel.CreateStartupShortcut}">
                                                 <controls:SettingsControl HasSwitcher="False"
                                                                           IconGlyph="AutoStart" Header="开机自启"
                                                                           Description="在系统启动时自动运行本应用。" />
                                             </CheckBox>
-                                            <CheckBox>
+                                            <!--<CheckBox>
                                                 <controls:SettingsControl HasSwitcher="False"
                                                                           IconGlyph="Link" Header="文件关联"
                                                                           Description="注册*.cip文件格式关联，便于导入档案文件。" />
-                                            </CheckBox>
-                                            <CheckBox>
+                                            </CheckBox>-->
+                                            <CheckBox IsChecked="{Binding ViewModel.CreateDesktopShortcut}">
                                                 <controls:SettingsControl HasSwitcher="False"
                                                                           IconGlyph="Monitor" Header="创建桌面快捷方式"
                                                                           Description="在桌面上添加软件快捷方式。" />
                                             </CheckBox>
-                                            <CheckBox>
+                                            <CheckBox IsChecked="{Binding ViewModel.CreateStartMenuShortcut}">
                                                 <controls:SettingsControl HasSwitcher="False"
                                                                           IconGlyph="MicrosoftWindows"
                                                                           Header="创建开始菜单快捷方式"
@@ -416,35 +435,46 @@
                                     <StackPanel>
                                         <TextBlock Text="完成"
                                                    Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                                        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                                        <TextBlock Margin="0 6 0 16" TextWrapping="Wrap"
                                                    FontWeight="Light"
-                                                   Text="应用的基本设置已经完成，感谢您使用本应用。要访问应用的主菜单，请右键应用托盘图标。您可以点击下方按钮查看应用帮助，熟悉本应用。" />
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                   Text="应用的基本设置已经完成，感谢您使用本应用。以下是使用本应用的基本操作。" />
+                                        <!--<Button Style="{StaticResource MaterialDesignFlatButton}"
                                                 HorizontalAlignment="Left"
                                                 Click="ButtonViewHelp_OnClick"
                                                 Margin="0 6 0 0">
                                             <controls:IconText Kind="HelpCircleOutline" Text="查看帮助文档" />
-                                        </Button>
+                                        </Button>-->
                                         <mah:FlipView MouseHoverBorderEnabled="False"
+                                                      ShowIndex="True"
+                                                      SelectedIndex="{Binding ViewModel.FlipIndex, Mode=OneWay}"
                                                       BannerForeground="{DynamicResource MaterialDesignBody}"
                                                       CircularNavigation="True"
                                                       Width="500">
                                             <mah:FlipViewItem BannerText="点击任务栏托盘图标可以打开应用主菜单。">
                                                 <demo:OpenTaskBarMenuDemo Margin="0 0 0 30" />
                                             </mah:FlipViewItem>
-                                            <mah:FlipViewItem BannerText="。">
-                                                <Border Background="Green" />
+                                            <mah:FlipViewItem BannerText="要编辑课表和时间点，请在应用主菜单中点击【编辑档案】。">
+                                                <Image Source="/Assets/Demo_OpenProfileSettingsWindow.png" Margin="0 0 0 30"/>
+                                            </mah:FlipViewItem>
+                                            <mah:FlipViewItem BannerText="在主菜单中点击【帮助】以查看更多帮助文档。">
+                                                <Image Source="/Assets/Demo_OpenHelpWindow.png" Margin="0 0 0 30"/>
                                             </mah:FlipViewItem>
                                         </mah:FlipView>
                                     </StackPanel>
                                 </ScrollViewer>
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                            Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
-                                            Margin="0 0 6 0">
+                                            Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}">
                                         <controls:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
-                                    <Button Click="ButtonClose_OnClick">
+                                    <Button Click="ButtonFlipNext_OnClick" 
+                                            Margin="6 0 0 0"
+                                            Visibility="{Binding ViewModel.IsFlipEnd, Converter={StaticResource InverseBoolToVisConverter}}">
+                                        <controls:IconText Kind="ArrowRight" Text="下一页" />
+                                    </Button>
+                                    <Button Click="ButtonClose_OnClick"
+                                            Margin="6 0 0 0"
+                                            Visibility="{Binding ViewModel.IsFlipEnd, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <controls:IconText Kind="Check" Text="完成" />
                                     </Button>
                                 </StackPanel>
