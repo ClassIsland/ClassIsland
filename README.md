@@ -28,6 +28,8 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 - [AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)
 - [GitHub](https://github.com/HelloWRC/ClassIsland/releases)
 
+> GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。
+
 ## 开发
 
 要在本地编译应用，您需要安装以下负载和工具：
@@ -58,7 +60,18 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 ## 截图
 
+### 主界面
+
 ![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/df9aecea-0525-488e-937f-fa770968ef7d)
+
 ![软件截图-上课提醒](https://github.com/HelloWRC/ClassIsland/assets/55006226/f27654a6-3f73-48ca-9ce6-fa864e51f353)
+
+### 档案编辑器
+
 ![软件截图-课表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/9a944227-8866-4128-87a9-edc650f1e3f6)
-![软件截图-课表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/6f1b1c87-28a1-4fb2-a65c-afbd9071612a)
+
+![软件截图-时间表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/fa7a3223-a868-4364-9495-71698e676838)
+
+![软件截图-科目编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/adb99dbe-0bcb-4f2b-9c3c-d8dbe2907aa2)
+
+
