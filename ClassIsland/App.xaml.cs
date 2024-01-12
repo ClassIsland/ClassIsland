@@ -184,6 +184,7 @@ public partial class App : Application
                 services.AddSingleton<HangService>();
                 services.AddSingleton<ConsoleService>();
                 //services.AddHostedService<BootService>();
+                services.AddSingleton<UpdateNodeSpeedTestingService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();

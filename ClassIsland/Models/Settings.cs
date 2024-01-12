@@ -9,6 +9,7 @@ using System.Windows.Media.Converters;
 using ClassIsland.Enums;
 using ClassIsland.Interfaces;
 using ClassIsland.Models.Weather;
+using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignColors;
 using Microsoft.Extensions.Logging;
@@ -95,6 +96,11 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private string _splashCustomText = "";
     private string _splashCustomLogoSource = "";
     private bool _isDebugConsoleEnabled = false;
+    private string _debugGitHubAuthKey = "";
+    private Dictionary<string, SpeedTestResult> _speedTestResults = new();
+    private string _selectedUpgradeMirror = UpdateService.AppCenterSourceKey;
+    private bool _isAutoSelectUpgradeMirror = true;
+    private DateTime _lastSpeedTest = DateTime.MinValue;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -726,6 +732,50 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         }
     }
 
+    public Dictionary<string, SpeedTestResult> SpeedTestResults
+    {
+        get => _speedTestResults;
+        set
+        {
+            if (Equals(value, _speedTestResults)) return;
+            _speedTestResults = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedUpgradeMirror
+    {
+        get => _selectedUpgradeMirror;
+        set
+        {
+            if (value == _selectedUpgradeMirror) return;
+            _selectedUpgradeMirror = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAutoSelectUpgradeMirror
+    {
+        get => _isAutoSelectUpgradeMirror;
+        set
+        {
+            if (value == _isAutoSelectUpgradeMirror) return;
+            _isAutoSelectUpgradeMirror = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastSpeedTest
+    {
+        get => _lastSpeedTest;
+        set
+        {
+            if (value.Equals(_lastSpeedTest)) return;
+            _lastSpeedTest = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Window
@@ -931,6 +981,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _isDebugConsoleEnabled) return;
             _isDebugConsoleEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DebugGitHubAuthKey
+    {
+        get => _debugGitHubAuthKey;
+        set
+        {
+            if (value == _debugGitHubAuthKey) return;
+            _debugGitHubAuthKey = value;
             OnPropertyChanged();
         }
     }

@@ -1695,6 +1695,74 @@ The quick brown fox jumps over a lazy dog.
                                                 </StackPanel>
                                             </materialDesign:Card>
 
+                                            <!-- 镜像源选择 -->
+                                            <materialDesign:Card Margin="0 6 0 0">
+                                                <Expander Background="Transparent" IsExpanded="True">
+                                                    <Expander.Header>
+                                                        <controls:SettingsControl IconGlyph="Web"
+                                                            Foreground="{DynamicResource MaterialDesignBody}"
+                                                            Header="更新镜像源" HasSwitcher="False"
+                                                            Description="从指定的镜像源下载应用更新，一定程度上可以解决在部分网络环境下更新受阻的问题。"
+                                                            Margin="-12 0" />
+                                                    </Expander.Header>
+                                                    <StackPanel Margin="36 0 64 12">
+                                                        <ListBox ItemsSource="{x:Static services:UpdateService.UpdateSources}"
+                                                                 Margin="-36 0 -64 0"
+                                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                                 SelectedValuePath="Key"
+                                                                 SelectedValue="{Binding Settings.SelectedUpgradeMirror}">
+                                                            <ListBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <StackPanel Orientation="Horizontal" Margin="36 0 64 0">
+                                                                        <StackPanel Width="48">
+                                                                            <materialDesign:PackIcon Kind="Check"
+                                                                                HorizontalAlignment="Center"
+                                                                                Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                                                Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                                        </StackPanel>
+                                                                        <TextBlock Text="{Binding Value.Name}"/>
+                                                                        <StackPanel Orientation="Horizontal" Margin="8 0 0 0">
+                                                                            <StackPanel.Style>
+                                                                                <Style TargetType="StackPanel">
+                                                                                    <Style.Triggers>
+                                                                                        <DataTrigger Binding="{Binding Value.SpeedTestResult.IsTested}" Value="False">
+                                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                        </DataTrigger>
+                                                                                        <DataTrigger Binding="{Binding Value.SpeedTestResult.IsTesting}" Value="True">
+                                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                        </DataTrigger>
+                                                                                    </Style.Triggers>
+                                                                                </Style>
+                                                                            </StackPanel.Style>
+                                                                            <TextBlock Visibility="{Binding Value.SpeedTestResult.CanConnect, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                                                <Run Text="{Binding Value.SpeedTestResult.Delay}"/><Run Text="ms"/>
+                                                                            </TextBlock>
+                                                                            <TextBlock Visibility="{Binding Value.SpeedTestResult.CanConnect, Converter={StaticResource InverseBoolToVisConverter}}">
+                                                                                <Run Text="无法连接。" Foreground="IndianRed"/>
+                                                                            </TextBlock>
+                                                                        </StackPanel>
+                                                                        <mah:MetroProgressBar IsIndeterminate="True" Width="100" 
+                                                                            Margin="8 0 0 0"
+                                                                            Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                                            Visibility="{Binding Value.SpeedTestResult.IsTesting, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                                    </StackPanel>
+                                                                </DataTemplate>
+                                                            </ListBox.ItemTemplate>
+                                                        </ListBox>
+                                                        <Button Content="测试速度" Click="MenuItemTestUpdateMirrors_OnClick"
+                                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                                HorizontalAlignment="Left"
+                                                                Margin="0 4 0 0"/>
+                                                        <Separator Margin="0 4"/>
+                                                        <controls:SettingsControl IsCompact="True"
+                                                            IconGlyph="AutoMode"
+                                                            Header="自动选择镜像源"
+                                                            Description="自动选择合适的镜像源下载更新。"
+                                                            IsOn="{Binding Settings.IsAutoSelectUpgradeMirror}"/>
+                                                    </StackPanel>
+                                                </Expander>
+                                                </materialDesign:Card>
+
                                             <!-- 高级设置 -->
                                             <Border Style="{StaticResource UpdateEnabledStyle}">
                                     <Button Content="高级设置" 
@@ -1915,13 +1983,16 @@ The quick brown fox jumps over a lazy dog.
 
                                 <Separator/>
                                 <!-- 动画缩放 -->
-                                <controls:SettingsControl IconGlyph="BugOutline" Header="(Debug)动画缩放"
+                                    <controls:SettingsControl IconGlyph="BugOutline" Header="(Debug)动画缩放"
                                                        Description="主界面动画播放倍速">
-                                    <controls:SettingsControl.Switcher>
-                                        <TextBox Text="{Binding Settings.DebugAnimationScale, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+                                        <controls:SettingsControl.Switcher>
+                                            <TextBox Text="{Binding Settings.DebugAnimationScale, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
                                                  MinWidth="150"/>
-                                    </controls:SettingsControl.Switcher>
-                                </controls:SettingsControl>
+                                        </controls:SettingsControl.Switcher>
+                                    </controls:SettingsControl>
+                                    <PasswordBox materialDesign:PasswordBoxAssist.Password="{Binding Settings.DebugGitHubAuthKey}"
+                                                 materialDesign:HintAssist.Hint="gh更新测试密钥"
+                                                 Style="{StaticResource MaterialDesignFloatingHintRevealPasswordBox}"/>
                                 <Separator/>
                                 <MenuItem Icon="{materialDesign:PackIcon MonitorScreenshot}" Header="测试桌面截图" Click="MenuItemDebugScreenShot_OnClick"/>
                                 <Image Stretch="UniformToFill" Source="{Binding ViewModel.TestImage, Mode=OneWay}"/>

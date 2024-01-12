@@ -498,4 +498,9 @@ public partial class SettingsWindow : MyWindow
     {
         ConsoleService.ConsoleVisible = false;
     }
+
+    private async void MenuItemTestUpdateMirrors_OnClick(object sender, RoutedEventArgs e)
+    {
+        await App.GetService<UpdateNodeSpeedTestingService>().RunSpeedTestAsync();
+    }
 }

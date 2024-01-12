@@ -35,6 +35,44 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
+    public static string AppCenterSourceKey { get; } = "8593a4a2-0848-40ca-a87c-16e46bf5f695";
+    public static string GitHubSourceKey { get; } = "05cb3142-d4ea-4eb0-9dfc-ddc3af6e20b0";
+    public static string GhProxySourceKey { get; } = "454a648f-12a0-485e-ae85-10a738e25679";
+
+    public static Dictionary<string, UpdateSource> UpdateSources = new()
+    {
+        {AppCenterSourceKey, new UpdateSource()
+        {
+            Name = "Microsoft App Center",
+            Kind = UpdateSourceKind.AppCenter,
+            SpeedTestSources =
+            {
+                "install.appcenter.ms",
+                "appcenter-filemanagement-distrib1ede6f06e.azureedge.net"
+            }
+        }},
+        {GitHubSourceKey, new UpdateSource()
+        {
+            Name = "GitHub",
+            Kind = UpdateSourceKind.GitHub,
+            SpeedTestSources =
+            {
+                "api.github.com",
+                "objects.githubusercontent.com"
+            }
+        }},
+        {GhProxySourceKey, new UpdateSource()
+        {
+            Name = "GitHub（ghproxy镜像）",
+            Kind = UpdateSourceKind.GitHub,
+            SpeedTestSources =
+            {
+                "api.github.com",
+                "mirror.ghproxy.com"
+            }
+        }}
+    };
+
     public UpdateWorkingStatus CurrentWorkingStatus
     {
         get => _currentWorkingStatus;
@@ -64,6 +102,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         TaskBarIconService = taskBarIconService;
         SplashService = splashService;
         Logger = logger;
+
+        foreach (var i in UpdateSources)
+        {
+            if (!Settings.SpeedTestResults.ContainsKey(i.Key))
+            {
+                Settings.SpeedTestResults.Add(i.Key, new SpeedTestResult());
+            }
+            i.Value.SpeedTestResult = Settings.SpeedTestResults[i.Key];
+        }
     }
 
     public bool IsCanceled
