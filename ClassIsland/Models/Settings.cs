@@ -14,6 +14,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignColors;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Octokit;
 using WindowsShortcutFactory;
 using File = System.IO.File;
 
@@ -101,6 +102,11 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private string _selectedUpgradeMirror = UpdateService.AppCenterSourceKey;
     private bool _isAutoSelectUpgradeMirror = true;
     private DateTime _lastSpeedTest = DateTime.MinValue;
+    private UpdateSourceKind _lastUpdateSourceKind = UpdateSourceKind.None;
+    private string _updateReleaseInfo = "";
+    private Version _updateVersion = new Version();
+    private Release _lastCheckUpdateInfoCacheGitHub = new Release();
+    private string _updateDownloadUrl = "";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -772,6 +778,61 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value.Equals(_lastSpeedTest)) return;
             _lastSpeedTest = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public UpdateSourceKind LastUpdateSourceKind
+    {
+        get => _lastUpdateSourceKind;
+        set
+        {
+            if (value == _lastUpdateSourceKind) return;
+            _lastUpdateSourceKind = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string UpdateReleaseInfo
+    {
+        get => _updateReleaseInfo;
+        set
+        {
+            if (value == _updateReleaseInfo) return;
+            _updateReleaseInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Release LastCheckUpdateInfoCacheGitHub
+    {
+        get => _lastCheckUpdateInfoCacheGitHub;
+        set
+        {
+            if (Equals(value, _lastCheckUpdateInfoCacheGitHub)) return;
+            _lastCheckUpdateInfoCacheGitHub = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string UpdateDownloadUrl
+    {
+        get => _updateDownloadUrl;
+        set
+        {
+            if (value == _updateDownloadUrl) return;
+            _updateDownloadUrl = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Version UpdateVersion
+    {
+        get => _updateVersion;
+        set
+        {
+            if (Equals(value, _updateVersion)) return;
+            _updateVersion = value;
             OnPropertyChanged();
         }
     }

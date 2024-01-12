@@ -7,6 +7,7 @@ public class UpdateChannel : ObservableRecipient
     private string _name = "";
     private string _description = "";
     private string _rootUrl = "";
+    private string _rootUrlGitHub = "";
 
     public string Name
     {
@@ -37,6 +38,17 @@ public class UpdateChannel : ObservableRecipient
         {
             if (value == _rootUrl) return;
             _rootUrl = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string RootUrlGitHub
+    {
+        get => _rootUrlGitHub;
+        set
+        {
+            if (value == _rootUrlGitHub) return;
+            _rootUrlGitHub = value;
             OnPropertyChanged();
         }
     }

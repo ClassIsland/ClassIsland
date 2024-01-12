@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -18,8 +19,11 @@ using ClassIsland.Models;
 using Downloader;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Octokit;
+using Application = System.Windows.Application;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
+using ProductHeaderValue = Octokit.ProductHeaderValue;
 
 namespace ClassIsland.Services;
 
@@ -32,6 +36,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     public IDownload? Downloader;
     private bool _isCanceled = false;
     private Exception? _networkErrorException;
+    private TimeSpan _downloadEtcSeconds = TimeSpan.Zero;
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
@@ -72,6 +77,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             }
         }}
     };
+
+    public Stopwatch DownloadStatusUpdateStopwatch { get; } = new();
 
     public UpdateWorkingStatus CurrentWorkingStatus
     {
@@ -143,6 +150,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         set => SetField(ref _networkErrorException, value);
     }
 
+    public TimeSpan DownloadEtcSeconds
+    {
+        get => _downloadEtcSeconds;
+        set => SetField(ref _downloadEtcSeconds, value);
+    }
+
     public async void AppStartup()
     {
         if (Settings.AutoInstallUpdateNextStartup 
@@ -193,13 +206,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             Name = "稳定通道",
             Description = "接收应用稳定版的更新，包含较新且稳定的特性和改进。",
-            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public"
+            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public",
+            RootUrlGitHub = "https://api.github.com/repos/HelloWRC/ClassIsland/releases"
         },
         new UpdateChannel
         {
             Name = "测试通道",
             Description = "接收应用最新的测试版更新，包含最新的特性和改进，可能包含较多的缺陷和未完工的功能。",
-            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta"
+            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta",
+            RootUrlGitHub = "https://api.github.com/repos/HelloWRC/ClassIsland/releases"
         },
     };
 
@@ -233,6 +248,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
+    
     public static async Task<List<AppCenterReleaseInfoMin>> GetUpdateVersionsAsync(string queryRoot)
     {
         var http = new HttpClient();
@@ -243,6 +259,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             return o;
         }
         throw new ArgumentException("Releases info array is null!");
+    }
+
+    public static async Task<IReadOnlyList<Release>> GetUpdateVersionsGitHubAsync(string? key=null)
+    {
+        var github = new GitHubClient(new ProductHeaderValue("ClassIsland"));
+        github.Credentials = new Credentials(key);
+        var r = await github.Repository.Release.GetAll("HelloWRC", "ClassIsland");
+        return r;
+        //throw new ArgumentException("Releases info array is null!");
     }
 
     public static async Task<AppCenterReleaseInfo> GetVersionArtifactsAsync(string versionRoot)
@@ -261,26 +286,51 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         try
         {
-            Logger.LogInformation("正在检查应用更新。");
-
+            var kind = UpdateSources[Settings.SelectedUpgradeMirror].Kind;
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
-            var versions = await GetUpdateVersionsAsync(CurrentUpdateSourceUrl + "/public_releases");
-            if (versions.Count <= 0)
+            Version verCode;
+            Logger.LogInformation("正在检查应用更新。{}", kind);
+
+            if (kind == UpdateSourceKind.GitHub)
             {
-                CurrentWorkingStatus = UpdateWorkingStatus.Idle;
-                return;
+                var versionsGh = await GetUpdateVersionsGitHubAsync(Settings.DebugGitHubAuthKey);
+                if (versionsGh.Count <= 0)
+                {
+                    CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+                    return;
+                }
+                var v = (from i in versionsGh orderby i.PublishedAt select i).Reverse().ToList()[0]!;
+                verCode = Version.Parse(v.Name);
+                Settings.UpdateReleaseInfo = v.Body;
+                Settings.LastCheckUpdateInfoCacheGitHub = v;
+                var assetsUrl = v.Assets[0].BrowserDownloadUrl;    
+                Settings.UpdateDownloadUrl = Settings.SelectedUpgradeMirror == GhProxySourceKey ? $"https://mirror.ghproxy.com/{assetsUrl}" : assetsUrl;
+            }
+            else
+            {
+                var versions = await GetUpdateVersionsAsync(CurrentUpdateSourceUrl + "/public_releases");
+                if (versions.Count <= 0)
+                {
+                    CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+                    return;
+                }
+
+                var v = (from i in versions orderby i.UploadTime select i).Reverse().ToList()[0]!;
+                verCode = Version.Parse(v.Version);
+                if (IsNewerVersion(isForce, isCancel, verCode))
+                {
+                    Settings.LastCheckUpdateInfoCache =
+                        await GetVersionArtifactsAsync(CurrentUpdateSourceUrl + $"/releases/{v.Id}");
+                    Settings.UpdateReleaseInfo = Settings.LastCheckUpdateInfoCache.ReleaseNotes;
+                    Settings.UpdateDownloadUrl = Settings.LastCheckUpdateInfoCache.DownloadUrl;
+                }
             }
 
-            var v = (from i in versions orderby i.UploadTime select i).Reverse().ToList()[0]!;
-            var verCode = Version.Parse(v.Version);
-            if ((verCode > Assembly.GetExecutingAssembly().GetName().Version &&
-                 (Settings.LastUpdateStatus != UpdateStatus.UpdateDownloaded || isCancel)) // 正常更新
-                || isForce // 强制更新 
-                ) 
+            Settings.LastUpdateSourceKind = kind;
+            if (IsNewerVersion(isForce, isCancel, verCode)) 
             {
                 Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
-                Settings.LastCheckUpdateInfoCache =
-                    await GetVersionArtifactsAsync(CurrentUpdateSourceUrl + $"/releases/{v.Id}");
+                Settings.UpdateVersion = verCode;
                 TaskBarIconService.MainTaskBarIcon.ShowNotification("发现新版本",
                     $"{Assembly.GetExecutingAssembly().GetName().Version} -> {verCode}\n" +
                     "点击以查看详细信息。");
@@ -304,21 +354,29 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
+    private bool IsNewerVersion(bool isForce, bool isCancel, Version verCode)
+    {
+        return (verCode > Assembly.GetExecutingAssembly().GetName().Version &&
+                (Settings.LastUpdateStatus != UpdateStatus.UpdateDownloaded || isCancel)) // 正常更新
+               || isForce;
+    }
+
     public async Task DownloadUpdateAsync()
     {
         try
         {
-            Logger.LogInformation("下载应用更新包：{}", Settings.LastCheckUpdateInfoCache.DownloadUrl);
+            Logger.LogInformation("下载应用更新包：{}", Settings.UpdateDownloadUrl);
             TotalSize = 0;
             DownloadedSize = 0;
             DownloadSpeed = 0;
+            DownloadStatusUpdateStopwatch.Start();
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
 
             Downloader = DownloadBuilder.New()
                 .WithUrl(Settings.LastCheckUpdateInfoCache.DownloadUrl)
                 .Configure((c) =>
                 {
-                    c.ParallelCount = 32;
+                    c.ParallelCount = 64;
                     c.ParallelDownload = true;
                 })
                 .WithDirectory(@".\UpdateTemp")
@@ -326,12 +384,13 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 .Build();
             Downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
             await Downloader.StartAsync();
+            DownloadStatusUpdateStopwatch.Stop();
+            DownloadStatusUpdateStopwatch.Reset();
             if (IsCanceled)
             {
                 IsCanceled = false;
                 return;
             }
-
             Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
 
         }
@@ -377,10 +436,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
     {
+        if (DownloadStatusUpdateStopwatch.ElapsedMilliseconds < 1000)
+            return;
+        DownloadStatusUpdateStopwatch.Restart();
         TotalSize = e.TotalBytesToReceive;
         DownloadedSize = e.ReceivedBytesSize;
         DownloadSpeed = e.BytesPerSecondSpeed;
-        //Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
+        DownloadEtcSeconds = TimeSpan.FromSeconds((long)((TotalSize - DownloadedSize) / DownloadSpeed));
+        Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
 
     }
 

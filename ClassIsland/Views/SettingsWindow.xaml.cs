@@ -112,7 +112,7 @@ public partial class SettingsWindow : MyWindow
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Settings.LastCheckUpdateInfoCache))
+        if (e.PropertyName == nameof(Settings.UpdateReleaseInfo))
         {
             UpdateCache();
         }
@@ -131,7 +131,7 @@ public partial class SettingsWindow : MyWindow
             //NoteStyle = (Style)FindResource("MarkdownNoteStyle"),
             ImageStyle = (Style)FindResource("MarkdownImageStyle"),
         };
-        var fd = e.Transform(Settings.LastCheckUpdateInfoCache.ReleaseNotes);
+        var fd = e.Transform(Settings.UpdateReleaseInfo);
         fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
         ViewModel.CurrentMarkdownDocument = fd;
     }

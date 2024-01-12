@@ -317,6 +317,7 @@
         <converters:GuidToNotificationProviderConverter x:Key="GuidToNotificationProviderConverter" />
         <converters:DoubleToPercentStringConverter x:Key="DoubleToPercentStringConverter" />
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
+        <converters:SizeLongToStringConverter x:Key="SizeLongToStringConverter" />
     </Window.Resources>
     <Grid>
 
@@ -1344,7 +1345,7 @@ The quick brown fox jumps over a lazy dog.
                                                 </Style>
                                             </TextBlock.Style>
                                             <Run Text="新版本：">
-                                            </Run><Run Text="{Binding Settings.LastCheckUpdateInfoCache.Version, Mode=OneWay}" />
+                                            </Run><Run Text="{Binding Settings.UpdateVersion, Mode=OneWay}" />
                                         </TextBlock>
                                     </StackPanel>
 
@@ -1387,6 +1388,24 @@ The quick brown fox jumps over a lazy dog.
                                                 </Style>
                                             </TextBlock.Style>
 
+                                        </TextBlock>
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus}"
+                                                                     Value="DownloadingUpdates">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </Style>
+                                            </TextBlock.Style>
+                                            <Run Text="{Binding UpdateService.DownloadedSize, Converter={StaticResource SizeLongToStringConverter}}"/>
+                                            <Run Text="/"/>
+                                            <Run Text="{Binding UpdateService.TotalSize, Converter={StaticResource SizeLongToStringConverter}}"/>
+                                            <Run Text="{Binding UpdateService.DownloadSpeed, Converter={StaticResource SizeLongToStringConverter}}"/><Run Text="/s"/>
+                                            <Run Text="ETA"/> <Run Text="{Binding UpdateService.DownloadEtcSeconds}"/>
                                         </TextBlock>
 
                                         <ProgressBar Margin="0 3 0 0">
