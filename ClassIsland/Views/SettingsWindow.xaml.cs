@@ -522,11 +522,18 @@ public partial class SettingsWindow : MyWindow
                 new DialogAction()
                 {
                     PackIconKind = PackIconKind.Check,
+                    Name = "test"
+                },
+                new DialogAction()
+                {
+                    PackIconKind = PackIconKind.Check,
                     Name = "OK",
                     IsPrimary = true
                 }
             }
         };
         dialog.ShowDialog();
+        MessageBox.Show(this, dialog.ExecutedActionIndex.ToString(), "ExecutedActionIndex", MessageBoxButton.OK,
+            MessageBoxImage.Information, MessageBoxResult.OK);
     }
 }

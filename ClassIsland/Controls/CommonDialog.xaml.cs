@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Models;
+using static ClassIsland.NativeWindowHelper;
 
 namespace ClassIsland.Controls;
 
@@ -87,8 +88,11 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
     {
         base.OnContentRendered(e);
         var hWnd = new WindowInteropHelper(this).Handle;
-        NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE,
-            NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) & ~NativeWindowHelper.WS_SYSMENU);
+        //NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE,
+        //    NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) & ~NativeWindowHelper.WS_SYSMENU);
+        SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) | WS_EX_DLGMODALFRAME);
+        SetWindowPos(hWnd, nint.Zero, 0, 0, 0, 0, SWP_NOMOVE |
+                                                    SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -7,6 +7,7 @@ using System.CommandLine.NamingConventionBinder;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -15,6 +16,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Diagnostics;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
@@ -23,6 +25,7 @@ using ClassIsland.Services;
 using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Views;
+using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
@@ -140,7 +143,26 @@ public partial class App : Application
             }
             else
             {
-                MessageBox.Show("应用已经在运行中，请勿重复启动第二个实例。");
+                var dialog = new CommonDialog()
+                {
+                    DialogContent = "ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。",
+                    DialogIcon = new Image()
+                    {
+                        Source = new BitmapImage(new Uri("/Assets/帕姆_不可以.png", UriKind.Relative)),
+                        Width = 60,
+                        Height = 60
+                    },
+                    Actions = new ObservableCollection<DialogAction>()
+                    {
+                        new()
+                        {
+                            PackIconKind = PackIconKind.Check,
+                            Name = "确定",
+                            IsPrimary = true
+                        }
+                    }
+                };
+                dialog.ShowDialog();
                 Environment.Exit(0);
             }
         }

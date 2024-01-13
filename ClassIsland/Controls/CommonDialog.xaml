@@ -51,9 +51,14 @@
                       HorizontalAlignment="Right"
                       Margin="4"
                       ItemsSource="{Binding Actions, Mode=OneWay}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Control>
+                    <Control Margin="4 0 0 0">
                         <Control.Style>
                             <Style TargetType="Control">
                                 <Style.Triggers>

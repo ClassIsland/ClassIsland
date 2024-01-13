@@ -33,6 +33,12 @@ public static class NativeWindowHelper
 
     public const int GWL_EXSTYLE = -20;
 
+    public const int WS_EX_DLGMODALFRAME = 0x0001;
+    
+    public const int SWP_NOZORDER = 0x0004;
+    public const int SWP_FRAMECHANGED = 0x0020;
+    public const uint WM_SETICON = 0x0080;
+
     [DllImport("user32", EntryPoint = "SetWindowLong")]
     public static extern uint SetWindowLong(IntPtr hwnd, int nIndex, long dwNewLong);
 
