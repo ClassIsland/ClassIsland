@@ -7,7 +7,7 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 - [X] 显示当前进行的课程信息
 - [X] 在上课、下课等重要时间点发出提醒
 - [X] 人性化的课表编辑工具
-- [ ] 从表格导入课表
+- [X] 从表格导入课表
 - [X] 换课
 - [X] 临时启用某个课表
 - [X] 界面缩放
@@ -21,7 +21,7 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 首先，请确保您的设备满足以下需求：
 - Windows 7及以上版本的系统，x64架构
-- 已安装[.NET 6.0桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-6.0.25-windows-x64-installer)
+- 已安装[.NET 8.0桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.1-windows-x64-installer)
 - 开启Aero效果（Windows 8及以上的系统可以忽略此项）
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
@@ -33,7 +33,7 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 ## 开发
 
 要在本地编译应用，您需要安装以下负载和工具：
-- [.NET 6.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/6.0)
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
 - [Visual Studio](https://visualstudio.microsoft.com/)
 
   对于Visual Studio，您需要在安装时勾选以下工作负载：
