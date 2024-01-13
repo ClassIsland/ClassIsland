@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -31,6 +32,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
+using CommonDialog = ClassIsland.Controls.CommonDialog;
 using FontFamily = System.Windows.Media.FontFamily;
 using Image = System.Windows.Controls.Image;
 using ListBox = System.Windows.Controls.ListBox;
@@ -502,5 +504,29 @@ public partial class SettingsWindow : MyWindow
     private async void MenuItemTestUpdateMirrors_OnClick(object sender, RoutedEventArgs e)
     {
         await App.GetService<UpdateNodeSpeedTestingService>().RunSpeedTestAsync();
+    }
+
+    private void MenuItemTestCommonDialog_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new CommonDialog()
+        {
+            DialogContent = "Hello world!",
+            DialogIcon = new Image()
+            {
+                Source = new BitmapImage(new Uri("/Assets/光辉矢愿_小喇叭.png", UriKind.Relative)),
+                Width = 63,
+                Height = 63
+            },
+            Actions = new ObservableCollection<DialogAction>()
+            {
+                new DialogAction()
+                {
+                    PackIconKind = PackIconKind.Check,
+                    Name = "OK",
+                    IsPrimary = true
+                }
+            }
+        };
+        dialog.ShowDialog();
     }
 }

@@ -1999,7 +1999,7 @@ The quick brown fox jumps over a lazy dog.
                                 <Separator/>
                                 <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发下课" Click="MenuItemDebugTriggerAfterClass_OnClick"/>
                                 <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发上课" Click="MenuItemDebugTriggerOnClass_OnClick"/>
-
+                                <MenuItem Icon="{materialDesign:PackIcon WindowMaximize}" Header="测试Dialog" Click="MenuItemTestCommonDialog_OnClick"/>
                                 <Separator/>
                                 <!-- 动画缩放 -->
                                     <controls:SettingsControl IconGlyph="BugOutline" Header="(Debug)动画缩放"
