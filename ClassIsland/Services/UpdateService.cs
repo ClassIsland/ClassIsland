@@ -176,6 +176,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private async Task AppStartupBackground()
     {
+        if (Settings.IsAutoSelectUpgradeMirror && DateTime.Now - Settings.LastSpeedTest >= TimeSpan.FromDays(7))
+        {
+            await App.GetService<UpdateNodeSpeedTestingService>().RunSpeedTestAsync();
+
+        }
         await CheckUpdateAsync();
 
         if (Settings.UpdateMode < 2)
@@ -200,6 +205,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
+    public static string AppCenterBetaRootUrl { get; } =
+        "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta";
+
     public static readonly ObservableCollection<UpdateChannel> UpdateChannels = new()
     {
         new UpdateChannel
@@ -213,7 +221,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             Name = "测试通道",
             Description = "接收应用最新的测试版更新，包含最新的特性和改进，可能包含较多的缺陷和未完工的功能。",
-            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta",
+            RootUrl = AppCenterBetaRootUrl,
             RootUrlGitHub = "https://api.github.com/repos/HelloWRC/ClassIsland/releases"
         },
     };
@@ -264,7 +272,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     public static async Task<IReadOnlyList<Release>> GetUpdateVersionsGitHubAsync(string? key=null)
     {
         var github = new GitHubClient(new ProductHeaderValue("ClassIsland"));
-        github.Credentials = new Credentials(key);
+        if (!string.IsNullOrEmpty(key))
+        {
+            github.Credentials = new Credentials(key);
+        }
         var r = await github.Repository.Release.GetAll("HelloWRC", "ClassIsland");
         return r;
         //throw new ArgumentException("Releases info array is null!");
@@ -299,8 +310,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     CurrentWorkingStatus = UpdateWorkingStatus.Idle;
                     return;
                 }
-                var v = (from i in versionsGh orderby i.PublishedAt select i).Reverse().ToList()[0]!;
-                verCode = Version.Parse(v.Name);
+
+                var v = (from i in versionsGh
+                    where CurrentUpdateSourceUrl == AppCenterBetaRootUrl || !i.Prerelease
+                    orderby i.CreatedAt
+                    select i).Reverse().ToList()[0]!;
+                verCode = Version.Parse(v.TagName);
                 Settings.UpdateReleaseInfo = v.Body;
                 Settings.LastCheckUpdateInfoCacheGitHub = v;
                 var assetsUrl = v.Assets[0].BrowserDownloadUrl;    
@@ -365,6 +380,17 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         try
         {
+            if (Directory.Exists("./UpdateTemp"))
+            {
+                Directory.Delete("./UpdateTemp", true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "移除下载临时文件失败。");
+        }
+        try
+        {
             Logger.LogInformation("下载应用更新包：{}", Settings.UpdateDownloadUrl);
             TotalSize = 0;
             DownloadedSize = 0;
@@ -373,11 +399,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
 
             Downloader = DownloadBuilder.New()
-                .WithUrl(Settings.LastCheckUpdateInfoCache.DownloadUrl)
+                .WithUrl(Settings.UpdateDownloadUrl)
                 .Configure((c) =>
                 {
-                    c.ParallelCount = 64;
+                    c.ChunkCount = 64;
                     c.ParallelDownload = true;
+                    c.Timeout = 4096;
                 })
                 .WithDirectory(@".\UpdateTemp")
                 .WithFileName("update.zip")
@@ -391,13 +418,23 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 IsCanceled = false;
                 return;
             }
-            Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
+
+            if (!File.Exists(@".\UpdateTemp\update.zip"))
+            {
+                //await RemoveDownloadedFiles();
+                throw new Exception("更新下载失败。");
+            }
+            else
+            {
+                Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
+            }
 
         }
         catch (Exception ex)
         {
             NetworkErrorException = ex;
             Logger.LogError(ex, "下载应用更新失败。");
+            await RemoveDownloadedFiles();
         }
         finally
         {

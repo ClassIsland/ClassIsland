@@ -79,5 +79,19 @@ public class UpdateNodeSpeedTestingService
             i.Value.SpeedTestResult.IsTesting = false;
         }
         Logger.LogInformation("Ping completed.");
+        SettingsService.Settings.LastSpeedTest = DateTime.Now;
+
+        if (SettingsService.Settings.IsAutoSelectUpgradeMirror)
+        {
+            var re = from i in UpdateService.UpdateSources
+                where i.Value.SpeedTestResult.CanConnect
+                orderby i.Value.SpeedTestResult.Delay
+                select i.Key;
+            foreach (var i in re)
+            {
+                SettingsService.Settings.SelectedUpgradeMirror = i;
+                break;
+            }
+        }
     }
 }

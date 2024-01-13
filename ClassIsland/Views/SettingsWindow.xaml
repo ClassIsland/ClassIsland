@@ -1715,7 +1715,7 @@ The quick brown fox jumps over a lazy dog.
                                             </materialDesign:Card>
 
                                             <!-- 镜像源选择 -->
-                                            <materialDesign:Card Margin="0 6 0 0">
+                                                <materialDesign:Card Margin="0 6 0 0" Style="{StaticResource UpdateEnabledStyle}">
                                                 <Expander Background="Transparent" IsExpanded="True">
                                                     <Expander.Header>
                                                         <controls:SettingsControl IconGlyph="Web"
@@ -1768,7 +1768,7 @@ The quick brown fox jumps over a lazy dog.
                                                                 </DataTemplate>
                                                             </ListBox.ItemTemplate>
                                                         </ListBox>
-                                                        <Button Content="测试速度" Click="MenuItemTestUpdateMirrors_OnClick"
+                                                        <Button Content="测试延迟" Click="MenuItemTestUpdateMirrors_OnClick"
                                                                 Style="{StaticResource MaterialDesignFlatButton}"
                                                                 HorizontalAlignment="Left"
                                                                 Margin="0 4 0 0"/>
@@ -1776,8 +1776,8 @@ The quick brown fox jumps over a lazy dog.
                                                         <controls:SettingsControl IsCompact="True"
                                                             IconGlyph="AutoMode"
                                                             Header="自动选择镜像源"
-                                                            Description="自动选择合适的镜像源下载更新。"
-                                                            IsOn="{Binding Settings.IsAutoSelectUpgradeMirror}"/>
+                                                            Description="自动选择延迟最低的镜像源下载更新。"
+                                                            IsOn="{Binding Settings.IsAutoSelectUpgradeMirror, Mode=TwoWay}"/>
                                                     </StackPanel>
                                                 </Expander>
                                                 </materialDesign:Card>
