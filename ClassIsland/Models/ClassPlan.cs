@@ -200,7 +200,7 @@ public class ClassPlan : AttachableSettingsObject
 
     public void RefreshClassesList(bool isDiffMode=false)
     {
-        App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
+        //App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
         // 对齐长度
         if (TimeLayoutId == null || !TimeLayouts.ContainsKey(TimeLayoutId))
         {

@@ -63,6 +63,12 @@ public partial class App : Application
         
     }
 
+    static App()
+    {
+        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ToolTipService.InitialShowDelayProperty,
+            0);
+    }
+
     public ApplicationCommand ApplicationCommand
     {
         get;
@@ -113,8 +119,7 @@ public partial class App : Application
     {
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
-        //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ButtonBase.FocusVisualStyleProperty,
-        //    Resources[SystemParameters.FocusVisualStyleKey]);
+        
 
         //ConsoleService.InitializeConsole();
         ConsoleService.InitializeConsole();
@@ -143,26 +148,7 @@ public partial class App : Application
             }
             else
             {
-                var dialog = new CommonDialog()
-                {
-                    DialogContent = "ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。",
-                    DialogIcon = new Image()
-                    {
-                        Source = new BitmapImage(new Uri("/Assets/帕姆_不可以.png", UriKind.Relative)),
-                        Width = 60,
-                        Height = 60
-                    },
-                    Actions = new ObservableCollection<DialogAction>()
-                    {
-                        new()
-                        {
-                            PackIconKind = PackIconKind.Check,
-                            Name = "确定",
-                            IsPrimary = true
-                        }
-                    }
-                };
-                dialog.ShowDialog();
+                CommonDialog.ShowError("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。");
                 Environment.Exit(0);
             }
         }

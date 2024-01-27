@@ -79,6 +79,7 @@
     <None Remove="Assets\XiaomiWeather\xiaomi_weather.db" />
     <None Remove="Assets\XiaomiWeather\xiaomi_weather_status.json" />
     <None Remove="Assets\光辉矢愿_遨游.png" />
+    <None Remove="Assets\帕姆_点赞.png" />
     <None Remove="Assets\帕姆_震惊.png" />
     <None Remove="Assets\普罗米修斯_查询.png" />
     <None Remove="Assets\纳西妲_沉思中.png" />

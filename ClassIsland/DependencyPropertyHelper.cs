@@ -10,7 +10,7 @@ public static class DependencyPropertyHelper
     public static void ForceOverwriteDependencyPropertyDefaultValue(DependencyProperty prop, object value)
     {
         var metadata = prop.DefaultMetadata;
-        var mdType = metadata.GetType();
+        var mdType = typeof(PropertyMetadata);
         var defaultField = mdType.GetField("_defaultValue", BindingFlags.NonPublic | BindingFlags.Instance);
         if (defaultField == null)
         {

@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Models;
+using MaterialDesignThemes.Wpf;
 using static ClassIsland.NativeWindowHelper;
 
 namespace ClassIsland.Controls;
@@ -114,5 +115,56 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
     {
         ExecutedActionIndex = Actions.IndexOf((DialogAction)e.Parameter);
         Close();
+    }
+
+
+    public static int ShowError(string message)
+    {
+        var dialog = new CommonDialog()
+        {
+            DialogContent = message,
+            DialogIcon = new Image()
+            {
+                Source = new BitmapImage(new Uri("/Assets/帕姆_不可以.png", UriKind.Relative)),
+                Width = 60,
+                Height = 60
+            },
+            Actions = new ObservableCollection<DialogAction>()
+            {
+                new()
+                {
+                    PackIconKind = PackIconKind.Check,
+                    Name = "确定",
+                    IsPrimary = true
+                }
+            }
+        };
+        dialog.ShowDialog();
+        return dialog.ExecutedActionIndex;
+    }
+
+    public static int ShowInfo(string message)
+    {
+        var dialog = new CommonDialog()
+        {
+            DialogContent = message,
+            DialogIcon = new Image()
+            {
+                Source = new BitmapImage(new Uri("/Assets/帕姆_点赞.png", UriKind.Relative)),
+                Width = 60,
+                Height = 60
+            },
+            Actions = new ObservableCollection<DialogAction>()
+            {
+                new()
+                {
+                    PackIconKind = PackIconKind.Check,
+                    Name = "确定",
+                    IsPrimary = true
+                }
+            }
+        };
+        dialog.ShowDialog();
+        return dialog.ExecutedActionIndex;
     }
 }
