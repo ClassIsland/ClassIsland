@@ -62,7 +62,6 @@ public class RegistryNotifier
     {
         UpdatingTask = new Task(UpdateMain);
         RegOpenKey(root, path, ref _OpenIntPtr);
-
     }
 
     public void Start()
@@ -74,6 +73,11 @@ public class RegistryNotifier
     public void Stop()
     {
         _isWorking = false;
+    }
+
+    ~RegistryNotifier()
+    {
+        RegCloseKey(_OpenIntPtr);
     }
 
 

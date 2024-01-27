@@ -88,23 +88,36 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
         SettingsService.Settings.PropertyChanged += SettingsServiceOnPropertyChanged;
-        UpdateTimer.Start();
+        UpdateUpdateTimerEnableState();
     }
 
     private void SettingsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds))
+        switch (e.PropertyName)
         {
-            UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+            case nameof(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds):
+                UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+                break;
+            case nameof(SettingsService.Settings.IsWallpaperAutoUpdateEnabled):
+                UpdateUpdateTimerEnableState();
+                break;
+        }
+    }
+
+    private void UpdateUpdateTimerEnableState()
+    {
+        if (SettingsService.Settings.IsWallpaperAutoUpdateEnabled)
+        {
+            UpdateTimer.Start();
+        }
+        else
+        {
+            UpdateTimer.Stop();
         }
     }
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
     {
-        if (!SettingsService.Settings.IsWallpaperAutoUpdateEnabled)
-        {
-            return;
-        }
         Logger.LogInformation("自动提取主题色Timer触发。");
         await GetWallpaperAsync();
     }
