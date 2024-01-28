@@ -21,6 +21,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private TimeLayoutItem? _selectedTimePoint;
     private double _timeLineScale = 3.0;
     private Subject? _selectedSubject;
+    private bool _isPanningModeEnabled = false;
 
     public object DrawerContent
     {
@@ -166,6 +167,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _selectedSubject)) return;
             _selectedSubject = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsPanningModeEnabled
+    {
+        get => _isPanningModeEnabled;
+        set
+        {
+            if (value == _isPanningModeEnabled) return;
+            _isPanningModeEnabled = value;
             OnPropertyChanged();
         }
     }

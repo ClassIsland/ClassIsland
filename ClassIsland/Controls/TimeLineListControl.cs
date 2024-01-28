@@ -65,6 +65,24 @@ public class TimeLineListControl : ListBox
         DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLineListControl), new FrameworkPropertyMetadata(typeof(TimeLineListControl)));
     }
 
+    public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register(
+        nameof(IsReadOnly), typeof(bool), typeof(TimeLineListControl), new PropertyMetadata(default(bool)));
+
+    public bool IsReadOnly
+    {
+        get { return (bool)GetValue(IsReadOnlyProperty); }
+        set { SetValue(IsReadOnlyProperty, value); }
+    }
+
+    public static readonly DependencyProperty IsPanningModeEnabledProperty = DependencyProperty.Register(
+        nameof(IsPanningModeEnabled), typeof(bool), typeof(TimeLineListControl), new PropertyMetadata(false));
+
+    public bool IsPanningModeEnabled
+    {
+        get { return (bool)GetValue(IsPanningModeEnabledProperty); }
+        set { SetValue(IsPanningModeEnabledProperty, value); }
+    }
+
     public TimeLineListControl()
     {
     }

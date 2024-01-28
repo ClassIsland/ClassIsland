@@ -104,7 +104,7 @@
                 <Run Text="吗？如果有与此时间表关联的课程表，那么这些课程表在时间表删除后将无法正常工作！"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
@@ -131,7 +131,7 @@
                 <Run Text="确定要删除选中的科目吗？如果有包含此科目的课程表，那么这些课程表在科目删除后将无法正常工作！"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
@@ -160,7 +160,7 @@
                 <Run Text="吗？"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="删除" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="删除" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True
@@ -381,7 +381,7 @@
                      materialDesign:HintAssist.Hint="档案名"
                      materialDesign:TextFieldAssist.SuffixText=".json"/>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="新建" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                <Button Content="新建" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
                         CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}"/>
                 <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
@@ -396,7 +396,7 @@
                      materialDesign:HintAssist.Hint="档案名"
                      materialDesign:TextFieldAssist.SuffixText=".json"/>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="重命名" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                <Button Content="重命名" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
                         CommandParameter="{Binding ViewModel.RenameProfileName, Mode=OneWay}"/>
                 <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
@@ -416,6 +416,7 @@
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
                 <Grid HorizontalAlignment="Right">
                     <Button Content="删除" 
+                            IsDefault="True"
                             Style="{DynamicResource MaterialDesignFlatButton}" 
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                         <Button.CommandParameter>
@@ -833,6 +834,10 @@
                                             <controls:IconText Kind="EditOutline" Text="编辑"/>
                                         </Button>-->
                                         <Separator/>
+                                        <controls:IconText Kind="ResizeVertical" Text="编辑模式"/>
+                                        <ToggleButton IsChecked="{Binding ViewModel.IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
+                                        <controls:IconText Kind="GestureTouch" Text="移动模式"/>
+                                        <Separator/>
                                         <Button Click="ButtonEditTimeLayoutInfo_OnClick"
                                                 ToolTip="查看并编辑时间表的基本信息。">
                                             <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
@@ -930,7 +935,8 @@
                                             <controls:TimeLineListControl SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
                                                                           ItemsSource="{Binding Layouts, Mode=OneWay}"
                                                                           Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}"
-                                                                          x:Name="TimeLineListControl">
+                                                                          x:Name="TimeLineListControl"
+                                                                          IsPanningModeEnabled="{Binding ViewModel.IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}">
                                                 <!-- 回应我吧，爱莉希雅 -->
                                             </controls:TimeLineListControl>
                                         </TabItem>

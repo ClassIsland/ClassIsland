@@ -11,6 +11,9 @@ public class HangService : ObservableRecipient
 {
     private bool _isHang = false;
     private bool _isChecking = false;
+    private const int CHECK_INTERVAL_MS = 500;
+    private const int HANG_MS = 100;
+
 
     public bool IsHang
     {
@@ -36,7 +39,7 @@ public class HangService : ObservableRecipient
 
     private Timer Timer { get; } = new()
     {
-        Interval = 500
+        Interval = CHECK_INTERVAL_MS
     };
 
     public HangService()
@@ -66,7 +69,7 @@ public class HangService : ObservableRecipient
         var taskCompletionSource = new TaskCompletionSource<bool>();
         _ = dispatcher.InvokeAsync(() => taskCompletionSource.TrySetResult(true));
         IsChecking = true;
-        await Task.WhenAny(taskCompletionSource.Task, Task.Delay(TimeSpan.FromMilliseconds(50)));
+        await Task.WhenAny(taskCompletionSource.Task, Task.Delay(TimeSpan.FromMilliseconds(HANG_MS)));
         IsChecking = false;
         // 如果任务还没完成，就是界面卡了
         IsHang = taskCompletionSource.Task.IsCompleted is false;

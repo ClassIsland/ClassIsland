@@ -91,7 +91,7 @@
                 <Run Text="当前已经存在一个临时层课表，如果继续换课，那么该临时层将被覆盖。是否继续？"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="继续" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button Content="继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                     <Button.CommandParameter>
                         <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                             True

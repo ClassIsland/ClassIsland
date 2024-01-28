@@ -69,6 +69,7 @@
                      Padding="8" Text="{Binding ViewModel.License, Mode=OneWay}" IsReadOnly="True"
                      VerticalScrollBarVisibility="Auto" FontFamily="Consolas"/>
             <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定" 
+                    IsDefault="True"
                     HorizontalAlignment="Right" Margin="0 8 0 0"
                     Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
             

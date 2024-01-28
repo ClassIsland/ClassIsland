@@ -94,6 +94,10 @@ public partial class WelcomeWindow : MyWindow
         }
 
         e.Cancel = true;
+        if (DialogHost.IsDialogOpen(ViewModel.DialogId))
+        {
+            return;
+        }
         var r = await DialogHost.Show(FindResource("ExitAppConfirmDialog"), ViewModel.DialogId);
         if ((bool?)r == true)
         {
