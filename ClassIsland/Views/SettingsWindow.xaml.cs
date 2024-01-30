@@ -513,7 +513,7 @@ public partial class SettingsWindow : MyWindow
             DialogContent = "Hello world!",
             DialogIcon = new Image()
             {
-                Source = new BitmapImage(new Uri("/Assets/光辉矢愿_小喇叭.png", UriKind.Relative)),
+                Source = new BitmapImage(new Uri("/Assets/HoYoStickers/光辉矢愿_小喇叭.png", UriKind.Relative)),
                 Width = 63,
                 Height = 63
             },

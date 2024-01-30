@@ -1187,7 +1187,7 @@
                                           Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <Border Background="{DynamicResource MaterialDesignPaper}" Opacity="0.8"/>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <Image Source="/Assets/帕姆_震惊.png" Width="78"  Margin="0 0 0 8"
+                                            <Image Source="/Assets/HoYoStickers/帕姆_震惊.png" Width="78"  Margin="0 0 0 8"
                                                    ToolTip="帕姆_震惊"/>
                                             <TextBlock Text="无法编辑处于活动状态的时间表。"
                                                        VerticalAlignment="Center" HorizontalAlignment="Center"/>

@@ -148,9 +148,15 @@ public partial class App : Application
             }
             else
             {
-                CommonDialog.ShowError("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。");
+                CommonDialog.ShowHint("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。");
                 Environment.Exit(0);
             }
+        }
+
+        if (Path.GetTempPath().Contains(Environment.CurrentDirectory))
+        {
+            CommonDialog.ShowHint("ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
+            Environment.Exit(0);
         }
 
         if (ApplicationCommand.UpdateReplaceTarget != null)

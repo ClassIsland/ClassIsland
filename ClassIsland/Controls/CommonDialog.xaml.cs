@@ -118,53 +118,49 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
     }
 
 
-    public static int ShowError(string message)
+    public static int ShowError(string message) =>
+        ShowDialog(message, new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_不可以.png", UriKind.Relative)),
+            60, 60);
+
+    public static int ShowInfo(string message) =>
+        ShowDialog(message, new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_点赞.png", UriKind.Relative)),
+            60, 60);
+
+    public static int ShowHint(string message) =>
+        ShowDialog(message, new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
+            60, 60);
+
+    public static int ShowDialog(string caption, string message, BitmapImage icon, double iconWidth, double iconHeight, ObservableCollection<DialogAction> dialogActions)
     {
         var dialog = new CommonDialog()
         {
             DialogContent = message,
             DialogIcon = new Image()
             {
-                Source = new BitmapImage(new Uri("/Assets/帕姆_不可以.png", UriKind.Relative)),
-                Width = 60,
-                Height = 60
+                Source = icon,
+                Width = iconWidth,
+                Height = iconHeight
             },
-            Actions = new ObservableCollection<DialogAction>()
-            {
-                new()
-                {
-                    PackIconKind = PackIconKind.Check,
-                    Name = "确定",
-                    IsPrimary = true
-                }
-            }
+            Actions = dialogActions,
+            Title = caption
         };
         dialog.ShowDialog();
         return dialog.ExecutedActionIndex;
     }
 
-    public static int ShowInfo(string message)
-    {
-        var dialog = new CommonDialog()
+    public static int ShowDialog(string caption, string message, BitmapImage icon, double iconWidth,
+        double iconHeight) => ShowDialog(
+        caption, message, icon, iconWidth, iconHeight, new ObservableCollection<DialogAction>()
         {
-            DialogContent = message,
-            DialogIcon = new Image()
+            new()
             {
-                Source = new BitmapImage(new Uri("/Assets/帕姆_点赞.png", UriKind.Relative)),
-                Width = 60,
-                Height = 60
-            },
-            Actions = new ObservableCollection<DialogAction>()
-            {
-                new()
-                {
-                    PackIconKind = PackIconKind.Check,
-                    Name = "确定",
-                    IsPrimary = true
-                }
+                PackIconKind = PackIconKind.Check,
+                Name = "确定",
+                IsPrimary = true
             }
-        };
-        dialog.ShowDialog();
-        return dialog.ExecutedActionIndex;
-    }
+        }
+    );
+
+    public static int ShowDialog(string message, BitmapImage icon, double iconWidth,
+        double iconHeight) => ShowDialog("ClassIsland", message, icon, iconWidth, iconHeight);
 }
