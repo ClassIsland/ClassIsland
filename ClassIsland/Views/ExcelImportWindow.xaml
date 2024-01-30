@@ -265,7 +265,7 @@
                 <materialDesign:TransitionerSlide ForwardWipe="{x:Null}" BackwardWipe="{x:Null}">
                     <StackPanel VerticalAlignment="Center"
                                 HorizontalAlignment="Center">
-                        <Image Source="/Assets/纳西妲_沉思中.png" Width="78"
+                        <Image Source="/Assets/HoYoStickers/纳西妲_沉思中.png" Width="78"
                                ToolTip="纳西妲_沉思中"
                                RenderOptions.BitmapScalingMode="HighQuality"
                                HorizontalAlignment="Center" Margin="0 0 0 16"/>
@@ -839,7 +839,7 @@
                     <StackPanel>
                         <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                    Margin="0 0 0 12"/>
-                        <Image Source="/Assets/光辉矢愿_回眸.png"
+                        <Image Source="/Assets/HoYoStickers/光辉矢愿_回眸.png"
                                ToolTip="光辉矢愿_回眸"
                                Focusable="True"
                                Width="63"

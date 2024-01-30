@@ -1033,7 +1033,7 @@ The quick brown fox jumps over a lazy dog.
                                                 <Setter Property="Visibility" Value="Collapsed"/>
                                             </Style>
                                         </StackPanel.Style>
-                                        <Image Source="/Assets/普罗米修斯_查询.png" Width="72" Height="72"
+                                        <Image Source="/Assets/HoYoStickers/普罗米修斯_查询.png" Width="72" Height="72"
                                                ToolTip="普罗米修斯_查询"/>
                                         <TextBlock Text="在左侧选择一个提醒提供方，然后在此处进行设置。" TextWrapping="Wrap"
                                                    Margin="0 4 0 0"/>
@@ -1621,7 +1621,7 @@ The quick brown fox jumps over a lazy dog.
                                                         <Setter Property="Visibility" Value="Collapsed"/>
                                                     </Style>
                                                 </StackPanel.Style>
-                                                <Image Source="/Assets/光辉矢愿_遨游.png" Width="81" Height="81"
+                                                <Image Source="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81" Height="81"
                                                        ToolTip="光辉矢愿_遨游"/>
                                                 <TextBlock Text="你已是最新，真棒，夸夸你哦♪" TextWrapping="Wrap"
                                                            Margin="0 8 0 0"/>
@@ -1946,7 +1946,7 @@ The quick brown fox jumps over a lazy dog.
                                             </ListItem>
                                             <ListItem>
                                                 <Paragraph>
-                                                    部分图像资源（/Assets/帕姆_震惊.png, /Assets/普罗米修斯_查询.png, /Assets/光辉矢愿_遨游.png, /Assets/光辉矢愿_回眸.png, /Assets/光辉矢愿_瞄准.png, /Assets/光辉矢愿_想我了吗.png, /Assets/光辉矢愿_小喇叭.png）来自米游社和Bilibili装扮表情包，版权归 miHoYo 所有。
+                                                    部分图像资源（/Assets/HoYoStickers/*）来自米游社和Bilibili装扮表情包，版权归 miHoYo 所有。
                                                 </Paragraph>
                                             </ListItem>
                                             <ListItem>

@@ -1173,7 +1173,7 @@
                                             </Style>
                                         </Grid.Style>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16">
-                                            <Image Source="/Assets/藿藿_好痛.png" Width="78" Stretch="UniformToFill" Margin="0 0 0 8"
+                                            <Image Source="/Assets/HoYoStickers/藿藿_好痛.png" Width="78" Stretch="UniformToFill" Margin="0 0 0 8"
                                                    ToolTip="霍霍_好痛"/>
                                             <TextBlock Text="您还没有创建时间点。点击上方工具栏新建时间点按钮以新建时间点。"
                                                        TextAlignment="Center"
@@ -1543,6 +1543,7 @@
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
                                 <materialDesign:Chip
+                                    ToolTip="从表格导入课表和时间表…"
                                     Icon="{materialDesign:PackIcon Import}"
                                     Click="ButtonImportFromFile_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
