@@ -153,7 +153,7 @@ public partial class App : Application
             }
         }
 
-        if (Path.GetTempPath().Contains(Environment.CurrentDirectory))
+        if (Environment.CurrentDirectory.Contains(Path.GetTempPath()))
         {
             CommonDialog.ShowHint("ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
             Environment.Exit(0);

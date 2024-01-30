@@ -22,7 +22,7 @@ namespace ClassIsland.Models;
 
 public class Settings : ObservableRecipient, ILessonControlSettings
 {
-    private int _theme = 0;
+    private int _theme = 2;
     private Color _primaryColor = Colors.DeepSkyBlue;
     private Color _secondaryColor = Colors.Aquamarine;
     private DateTime _singleWeekStartTime = DateTime.Now;

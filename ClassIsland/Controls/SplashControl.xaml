@@ -9,8 +9,8 @@
              Height="100"
              Width="400">
     <UserControl.Resources>
-        <SolidColorBrush x:Key="MyBackground" Color="#fafafa"/>
-        <SolidColorBrush x:Key="MyForeground" Color="#4e4e4e"/>
+        <SolidColorBrush x:Key="MyBackground" Color="#2e2e2e"/>
+        <SolidColorBrush x:Key="MyForeground" Color="#fafafa"/>
         <Storyboard x:Key="Intro">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="AppLogo" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="75"/>

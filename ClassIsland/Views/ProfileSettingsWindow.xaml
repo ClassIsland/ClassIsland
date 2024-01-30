@@ -559,9 +559,9 @@
                                             </Button.Style>
                                             <controls:IconText Kind="ContentCopy" Text="复制"/>
                                         </Button>
-                                        <Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <!--<Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <controls:IconText Kind="Add" Text="从表格导入…"/>
-                                        </Button>
+                                        </Button>-->
                                     </ToolBar>
 
                                     <!-- 课表 -->

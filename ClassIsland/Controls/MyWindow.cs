@@ -32,7 +32,7 @@ public class MyWindow : Window
 
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
-        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 0);
+        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
         var layer = AdornerLayer.GetAdornerLayer(this);
         Debug.WriteLine(layer);
     }
@@ -45,7 +45,7 @@ public class MyWindow : Window
     protected override void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
-        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 0);
+        UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
         Debug.WriteLine("rendered.");
     }
 
