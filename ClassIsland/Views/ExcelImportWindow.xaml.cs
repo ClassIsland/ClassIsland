@@ -435,6 +435,9 @@ public partial class ExcelImportWindow : MyWindow
             });
             pIndex++;
         }
+
+        if (timeLayout.Layouts.Count > 0)
+            TimeLineListControl.ScrollIntoView(timeLayout.Layouts[0]);
     }
 
     private void LoadClassPlanSource()
@@ -706,5 +709,11 @@ public partial class ExcelImportWindow : MyWindow
         ViewModel.SelectedTimeLayoutId = "";
         ViewModel.SelectedTimeLayout = new TimeLayout();
         ViewModel.SlideIndex = 4;
+    }
+
+    private void ExcelImportWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        ViewModel.SelectedTimeLayout.IsActivated = false;
+        ViewModel.SelectedTimeLayout.IsActivatedManually = false;
     }
 }

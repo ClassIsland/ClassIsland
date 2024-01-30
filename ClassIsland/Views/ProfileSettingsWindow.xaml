@@ -1401,17 +1401,17 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
+                            <Grid.Resources>
+                                <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
+                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                    <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                    <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
+                                    <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                    <Setter Property="Margin" Value="0 -8 6 -8"/>
+                                </Style>
+                            </Grid.Resources>
                             <StackPanel Grid.Column="0" 
                                         Orientation="Horizontal" HorizontalAlignment="Left">
-                                <StackPanel.Resources>
-                                    <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
-                                        <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
-                                        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
-                                        <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
-                                        <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
-                                        <Setter Property="Margin" Value="0 -8 6 -8"/>
-                                    </Style>
-                                </StackPanel.Resources>
                                 <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" Margin="0,0,16,0"/>
@@ -1478,6 +1478,9 @@
                                      VerticalContentAlignment="Stretch"
                                      SelectedIndex="{Binding SelectedIndex, ElementName=RootTabControl}"
                                      materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                     ScrollViewer.CanContentScroll="True"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
                                      Margin="6 -15 0 -15">
                                 <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
@@ -1520,6 +1523,18 @@
                                 <system:String>时间表</system:String>
                                 <system:String>科目</system:String>
                             </ListBox>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center">
+                                <materialDesign:Chip
+                                    Icon="{materialDesign:PackIcon Import}"
+                                    Click="ButtonImportFromFile_OnClick"
+                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
+                                    <TextBlock>
+                                        <Run Text="从表格导入…"/>
+                                    </TextBlock>
+                                </materialDesign:Chip>
+                            </StackPanel>
                         </Grid>
                     </materialDesign:ColorZone>
                     <!-- SnackBar -->

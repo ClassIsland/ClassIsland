@@ -25,7 +25,8 @@
         Height="450" Width="800"
         AllowDrop="True"
         DragEnter="ProfileSettingsWindow_OnDragEnter"
-        Drop="ProfileSettingsWindow_OnDrop">
+        Drop="ProfileSettingsWindow_OnDrop"
+        Closing="ExcelImportWindow_OnClosing">
     <controls:MyWindow.Resources>
         <converters:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
         <Style TargetType="controls:WizardOptionControl">
@@ -216,7 +217,7 @@
                       Width="10" HorizontalAlignment="Stretch"/>
 
         <!-- Wizard content -->
-        <ScrollViewer Grid.Column="2" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Column="2" Grid.Row="1" VerticalScrollBarVisibility="Disabled">
             <materialDesign:Transitioner Margin="8"
                                          ClipToBounds="False"
                                          SelectedIndex="{Binding ViewModel.SlideIndex, Mode=TwoWay}">
@@ -315,28 +316,35 @@
                 </materialDesign:TransitionerSlide>
                 <!-- 4 从哪里导入时间表？-->
                 <materialDesign:TransitionerSlide>
-                    <StackPanel>
-                        <TextBlock Text="您希望从哪里导入时间表？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Margin="0 0 0 12"/>
-                        <TextBlock >
-                            <Run Text="在创建课表之前，您至少需要一个时间表。时间表包含了一天的时间安排，告诉本软件什么时候上课和课间休息，并以此创建课表。"/>
-                        </TextBlock>
-                        <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。该选项在确认后不可修改。"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="您希望从哪里导入时间表？" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Margin="0 0 0 12" />
+                            <TextBlock>
+                                <Run Text="在创建课表之前，您至少需要一个时间表。时间表包含了一天的时间安排，告诉本软件什么时候上课和课间休息，并以此创建课表。" />
+                            </TextBlock>
+                            <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。该选项在确认后不可修改。" />
 
-                        <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
+                        </StackPanel>
+                        <controls:WizardOptionsListBox Grid.Row="1" SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
                             <models:WizardOption Header="我的时间表在这个文件中" Content="将从本文件导入时间表。"
-                                                 InvokeCommandParameter="ImportTimeLayoutFromThisFile"/>
+                                                 InvokeCommandParameter="ImportTimeLayoutFromThisFile" />
                             <models:WizardOption Header="我的时间表另一个文件中" Content="将打开另一个表格，并从该表格导入时间表。"
-                                                 InvokeCommandParameter="ImportTimeLayoutFromOtherFile"/>
+                                                 InvokeCommandParameter="ImportTimeLayoutFromOtherFile" />
                             <models:WizardOption Header="我想手动创建时间表" Content="手动创建时间表。"
-                                                 InvokeCommandParameter="CreateTimeLayoutManually"/>
+                                                 InvokeCommandParameter="CreateTimeLayoutManually" />
                         </controls:WizardOptionsListBox>
-                        <Button HorizontalAlignment="Left" Margin="0 8 0 0"
+                        <Button Grid.Row="2" HorizontalAlignment="Left" Margin="0 8 0 0"
                                 Style="{StaticResource MaterialDesignPaperButton}"
                                 Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
-                            <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+                            <controls:IconText Kind="ArrowLeft" Text="上一步" />
                         </Button>
-                    </StackPanel>
+                    </Grid>
                 </materialDesign:TransitionerSlide>
                 <!-- 5 选择时间安排区域 -->
                 <materialDesign:TransitionerSlide>
@@ -408,16 +416,33 @@
                 </materialDesign:TransitionerSlide>
                 <!-- 7 时间表导入结果 -->
                 <materialDesign:TransitionerSlide>
-                    <StackPanel>
-                        <TextBlock Text="时间表导入结果" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Margin="0 0 0 12"/>
-                        <TextBlock >
-                            <Run Text=""/>
-                        </TextBlock>
-                        <TextBox Text="{Binding ViewModel.SelectedTimeLayout.Name}"
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 materialDesign:HintAssist.Hint="时间表名称"/>
-                        <!--<ListBox ItemsSource="{Binding ViewModel.SelectedTimeLayout.Layouts}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="时间表导入结果" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Margin="0 0 0 12" />
+                            <TextBlock TextWrapping="Wrap">
+                                <Run Text="以下是时间表导入结果，请检查导入是否正确。您可以点击【编辑】按钮在档案编辑器中调整导入的时间表。进入下一步后直到导入完成，这个时间表将不能修改。" />
+                            </TextBlock>
+                            <TextBox Text="{Binding ViewModel.SelectedTimeLayout.Name}"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Margin="0 4 0 0"
+                                     materialDesign:HintAssist.Hint="时间表名称" />
+                            <WrapPanel Margin="0 4 0 0">
+                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        Content="刷新"
+                                        HorizontalAlignment="Left"
+                                        Click="ButtonRefreshTimeLayout_OnClick" />
+                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        Content="编辑"
+                                        HorizontalAlignment="Left"
+                                        Click="ButtonRefreshTimeLayout_OnClick" />
+                            </WrapPanel>
+                            <!--<ListBox ItemsSource="{Binding ViewModel.SelectedTimeLayout.Layouts}">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock>
@@ -428,18 +453,18 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>-->
-                        <WrapPanel>
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                    Content="刷新"
-                                    HorizontalAlignment="Left"
-                                    Click="ButtonRefreshTimeLayout_OnClick" />
-                            <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                    Content="编辑"
-                                    HorizontalAlignment="Left"
-                                    Click="ButtonRefreshTimeLayout_OnClick" />
-                        </WrapPanel>
-                        <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectSubjectsPosition"/>
-                    </StackPanel>
+                        </StackPanel>
+                        <controls:TimeLineListControl Grid.Row="1" IsReadOnly="True"
+                                                      x:Name="TimeLineListControl"
+                                                      Scale="3"
+                                                      ItemsSource="{Binding ViewModel.SelectedTimeLayout.Layouts}"
+                                                      IsPanningModeEnabled="True"/>
+                        <controls:NavigationButtonsControl Grid.Row="2" NavigationNextCommandParameter="SelectSubjectsPosition" />
+                        <Button Grid.Row="2" HorizontalAlignment="Right"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Content="跳过课表导入"
+                                VerticalAlignment="Bottom"></Button>
+                    </Grid>
                 </materialDesign:TransitionerSlide>
                 <!-- 8 选择课程区域 -->
                 <materialDesign:TransitionerSlide>
@@ -516,54 +541,66 @@
                 </materialDesign:TransitionerSlide>
                 <!-- 11 时间对应关系 -->
                 <materialDesign:TransitionerSlide>
-                    <StackPanel>
-                        <TextBlock Text="时间对应关系" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Margin="0 0 0 12"/>
-                        <TextBlock >
-                            <Run Text="设置每行对应的时间点。在识别课表时，仅会识别左侧选中的区域。在右侧选择该表格中包含的时间点，选中的时间点在识别时会按照顺序匹配左侧选择的区域。"/>
-                        </TextBlock>
-                        <Grid>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="时间对应关系" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Margin="0 0 0 12" />
+                            <TextBlock>
+                                <Run Text="设置每行对应的时间点。在识别课表时，仅会识别左侧选中的区域。在右侧选择该表格中包含的时间点，选中的时间点在识别时会按照顺序匹配左侧选择的区域。" />
+                            </TextBlock>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <ListBox Grid.Column="0" 
-                                     HorizontalContentAlignment="Stretch"
-                                     SelectionMode="Multiple"
-                                     ItemsSource="{Binding ViewModel.ClassRecognitionRange}">
+                            <ListBox Grid.Column="0"
+                                         HorizontalContentAlignment="Stretch"
+                                         SelectionMode="Multiple"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                         ItemsSource="{Binding ViewModel.ClassRecognitionRange}">
                                 <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                    <Style TargetType="ListBoxItem"
+                                               BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                     </Style>
                                 </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <CheckBox Height="22"
-                                                  MouseEnter="RangeSelection_OnMouseEnter"
-                                                  Content="{Binding Value}"
-                                                  IsChecked="{Binding IsSelected}">
-                                            
+                                                      MouseEnter="RangeSelection_OnMouseEnter"
+                                                      Content="{Binding Value}"
+                                                      IsChecked="{Binding IsSelected}">
+
                                         </CheckBox>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-                            <ListBox Grid.Column="1" 
-                                     HorizontalContentAlignment="Stretch"
-                                     SelectionMode="Multiple"
-                                     ItemsSource="{Binding ViewModel.ClassRecognitionTimePoints}">
+                            <ListBox Grid.Column="1"
+                                         HorizontalContentAlignment="Stretch"
+                                         SelectionMode="Multiple"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                         ItemsSource="{Binding ViewModel.ClassRecognitionTimePoints}">
                                 <ListBox.ItemContainerStyle>
-                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                        <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                                    <Style TargetType="ListBoxItem"
+                                               BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected}" />
                                     </Style>
                                 </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <CheckBox Height="22"
-                                                  IsChecked="{Binding IsSelected}">
-                                            <TextBlock> 
-                                                <Run Text="{Binding Value.StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
-                                                <Run Text="-"/>
-                                                <Run Text="{Binding Value.EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
+                                                      IsChecked="{Binding IsSelected}">
+                                            <TextBlock>
+                                                    <Run
+                                                        Text="{Binding Value.StartSecond, StringFormat={}{0:HH:mm:ss}}" />
+                                                    <Run Text="-" />
+                                                    <Run Text="{Binding Value.EndSecond, StringFormat={}{0:HH:mm:ss}}" />
                                             </TextBlock>
                                         </CheckBox>
                                     </DataTemplate>
@@ -571,18 +608,27 @@
                             </ListBox>
                         </Grid>
                         <controls:NavigationButtonsControl NavigationNextCommandParameter="SelectClassPlanArea"
-                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
-                    </StackPanel>
+                                                           Grid.Row="2"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}" />
+                    </Grid>
                 </materialDesign:TransitionerSlide>
                 <!-- 12 选择创建课表的区域 -->
                 <materialDesign:TransitionerSlide>
-                    <StackPanel>
-                        <TextBlock Text="选择创建课表的区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Margin="0 0 0 12"/>
-                        <TextBlock >
-                            <Run Text="将从选择的区域创建课表。"/>
-                        </TextBlock>
-                        <ListBox ItemsSource="{Binding ViewModel.ClassPlanSources}"
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="选择创建课表的区域" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Margin="0 0 0 12" />
+                            <TextBlock>
+                                <Run Text="将从选择的区域创建课表。" />
+                            </TextBlock>
+                        </StackPanel>
+                        <ListBox Grid.Row="1" 
+                                 ItemsSource="{Binding ViewModel.ClassPlanSources}"
                                  Margin="0 8 0 0"
                                  SelectedItem="{Binding ViewModel.CurrentClassPlanSource}"
                                  SelectionChanged="SelectorClassPlanSource_OnSelectionChanged">
@@ -591,41 +637,64 @@
                                 <DataTemplate>
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="32"/>
-                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="32" />
+                                            <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <materialDesign:PackIcon Kind="Check" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                        <materialDesign:PackIcon Kind="Check" Grid.Column="0"
+                                                                 VerticalAlignment="Center"
+                                                                 HorizontalAlignment="Center"
                                                                  Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                                 Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                        <TextBlock Text="{Binding}" VerticalAlignment="Center" Grid.Column="1"/>
+                                                                 Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                        <TextBlock Text="{Binding}" VerticalAlignment="Center" Grid.Column="1" />
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
                         <controls:NavigationButtonsControl NavigationNextCommandParameter="PreviewClassPlan"
-                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
-                    </StackPanel>
+                                                           Grid.Row="2"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
+                            <controls:NavigationButtonsControl.Style>
+                                <Style TargetType="controls:NavigationButtonsControl">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel.CurrentClassPlanSource}" Value="{x:Static reoGrid:RangePosition.Empty}">
+                                            <Setter Property="IsNavigateNextButtonEnabled"
+                                                    Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:NavigationButtonsControl.Style>
+                        </controls:NavigationButtonsControl>
+                    </Grid>
                 </materialDesign:TransitionerSlide>
                 <!-- 13 课表导入结果 -->
                 <materialDesign:TransitionerSlide>
-                    <StackPanel>
-                        <TextBlock Text="课表导入结果" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Margin="0 0 0 12"/>
-                        <TextBlock >
-                            <Run Text="已识别选中区域上的课程。请检查识别结果是否正确，并修改不正确的课程。"/>
-                        </TextBlock>
-                        <TextBox Text="{Binding ViewModel.CurrentClassPlan.Name}"
-                                 Margin="0 8 0 4"
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 materialDesign:HintAssist.Hint="课表名称"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="课表导入结果" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Margin="0 0 0 12" />
+                            <TextBlock>
+                                <Run Text="已识别选中区域上的课程。请检查识别结果是否正确，并修改不正确的课程。" />
+                            </TextBlock>
+                            <TextBox Text="{Binding ViewModel.CurrentClassPlan.Name}"
+                                     Margin="0 8 0 4"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     materialDesign:HintAssist.Hint="课表名称" />
 
+
+                        </StackPanel>
                         <DataGrid AutoGenerateColumns="False" 
-                                              ItemsSource="{Binding ViewModel.CurrentClassPlan.Classes}" 
-                                              CanUserAddRows="False" 
-                                              CanUserSortColumns="False"
-                                              RowHeaderWidth="150"
-                                              ScrollViewer.CanContentScroll="False"
-                                              x:Name="DataGridClassPlans">
+                                  Grid.Row="1"
+                                  ItemsSource="{Binding ViewModel.CurrentClassPlan.Classes}" 
+                                  CanUserAddRows="False" 
+                                  CanUserSortColumns="False"
+                                  RowHeaderWidth="150"
+                                  ScrollViewer.CanContentScroll="False"
+                                  x:Name="DataGridClassPlans">
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="时间" IsReadOnly="True">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -646,107 +715,124 @@
                             </DataGrid.Columns>
                         </DataGrid>
                         <controls:NavigationButtonsControl NavigationNextCommandParameter="ClassPlanDetails"
-                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}"/>
-                    </StackPanel>
+                                                           Grid.Row="2"
+                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}" />
+                    </Grid>
                 </materialDesign:TransitionerSlide>
                 <!-- 14 课表详细设置 -->
                 <materialDesign:TransitionerSlide>
-                    <StackPanel>
-                        <TextBlock Text="课表设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Margin="0 0 0 12" />
-                        <TextBlock>
-                            <Run Text="调整刚刚导入的课表的触发条件等设置。" />
-                        </TextBlock>
-                        <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 Margin="0 12 0 0"
-                                 Text="{Binding ViewModel.CurrentClassPlan.Name}"
-                                 materialDesign:HintAssist.Hint="名称" />
-                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                  x:Name="ComboBox1"
-                                  Margin="0 12 0 0"
-                                  materialDesign:HintAssist.Hint="时间表"
-                                  IsEnabled="False"
-                                  SelectedValue="{Binding ViewModel.CurrentClassPlan.TimeLayoutId}"
-                                  SelectedValuePath="Key"
-                                  ItemsSource="{Binding ProfileService.Profile.TimeLayouts}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Value.Name}"
-                                               ToolTip="{Binding Key}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
-                        <CheckBox Margin="0 8 0 0" Content="自动启用" IsChecked="{Binding ViewModel.CurrentClassPlan.IsEnabled}" />
-                        <TextBlock Text="当课表设置为自动启用时，将会根据触发规则自动启用该课表。否则只能通过临时课表或临时层手动启用该课表。"
-                                   TextWrapping="Wrap" />
-                        <StackPanel Visibility="{Binding ViewModel.CurrentClassPlan.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="课表设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Margin="0 0 0 12" />
+                            <TextBlock>
+                                <Run Text="调整刚刚导入的课表的触发条件等设置。" />
+                            </TextBlock>
+                            <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Margin="0 12 0 0"
+                                     Text="{Binding ViewModel.CurrentClassPlan.Name}"
+                                     materialDesign:HintAssist.Hint="名称" />
+                            <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                      x:Name="ComboBox1"
+                                      Margin="0 12 0 0"
+                                      materialDesign:HintAssist.Hint="时间表"
+                                      IsEnabled="False"
+                                      SelectedValue="{Binding ViewModel.CurrentClassPlan.TimeLayoutId}"
+                                      SelectedValuePath="Key"
+                                      ItemsSource="{Binding ProfileService.Profile.TimeLayouts}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Value.Name}"
+                                                   ToolTip="{Binding Key}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <CheckBox Margin="0 8 0 0" Content="自动启用"
+                                      IsChecked="{Binding ViewModel.CurrentClassPlan.IsEnabled}" />
+                            <TextBlock Text="当课表设置为自动启用时，将会根据触发规则自动启用该课表。否则只能通过临时课表或临时层手动启用该课表。"
+                                       TextWrapping="Wrap" />
                             <StackPanel
-                                DataContext="{Binding ViewModel.CurrentClassPlan.TimeRule}">
-                                <Separator Margin="0 8 0 8" />
-                                <controls:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
-                                <!--<TextBlock Text="{Binding}"/>-->
-                                <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
+                                Visibility="{Binding ViewModel.CurrentClassPlan.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <StackPanel
+                                    DataContext="{Binding ViewModel.CurrentClassPlan.TimeRule}">
+                                    <Separator Margin="0 8 0 8" />
+                                    <controls:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
+                                    <!--<TextBlock Text="{Binding}"/>-->
+                                    <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
 
-                                <TextBlock Text="当今天是：" Margin="0 8 0 0" />
-                                <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                         SelectedIndex="{Binding WeekDay}"
-                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                    <ListBoxItem Content="周日" />
-                                    <ListBoxItem Content="周一" />
-                                    <ListBoxItem Content="周二" />
-                                    <ListBoxItem Content="周三" />
-                                    <ListBoxItem Content="周四" />
-                                    <ListBoxItem Content="周五" />
-                                    <ListBoxItem Content="周六" />
-                                </ListBox>
+                                    <TextBlock Text="当今天是：" Margin="0 8 0 0" />
+                                    <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                             SelectedIndex="{Binding WeekDay}"
+                                             PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                        <ListBoxItem Content="周日" />
+                                        <ListBoxItem Content="周一" />
+                                        <ListBoxItem Content="周二" />
+                                        <ListBoxItem Content="周三" />
+                                        <ListBoxItem Content="周四" />
+                                        <ListBoxItem Content="周五" />
+                                        <ListBoxItem Content="周六" />
+                                    </ListBox>
 
-                                <TextBlock Text="当本周是：" Margin="0 6 0 0" />
-                                <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                         SelectedIndex="{Binding WeekCountDiv}"
-                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                    <ListBoxItem Content="不限" />
-                                    <ListBoxItem Content="单周" />
-                                    <ListBoxItem Content="双周" />
-                                </ListBox>
+                                    <TextBlock Text="当本周是：" Margin="0 6 0 0" />
+                                    <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                             SelectedIndex="{Binding WeekCountDiv}"
+                                             PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                        <ListBoxItem Content="不限" />
+                                        <ListBoxItem Content="单周" />
+                                        <ListBoxItem Content="双周" />
+                                    </ListBox>
 
+                                </StackPanel>
                             </StackPanel>
+                            <controls:NavigationButtonsControl NavigationNextCommandParameter="AllClassPlansView"
+                                                               IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}" />
                         </StackPanel>
-                        <controls:NavigationButtonsControl NavigationNextCommandParameter="AllClassPlansView"
-                                                           IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}" />
-                    </StackPanel>
+                    </ScrollViewer>
                 </materialDesign:TransitionerSlide>
                 <!-- 15 已导入的课表 -->
                 <materialDesign:TransitionerSlide>
-                    <StackPanel>
-                        <StackPanel.Resources>
-                            <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                                <Style.Resources>
-                                    <Style TargetType="materialDesign:PackIcon">
-                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
-                                    </Style>
-                                </Style.Resources>
-                            </Style>
-                        </StackPanel.Resources>
-                        <TextBlock Text="已导入的课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                                   Margin="0 0 0 12"/>
-                        <TextBlock >
-                            <Run Text="以下是已经导入的课表，您可以继续从左侧的表格导入课表，也可以完成导入。"/>
-                        </TextBlock>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="已导入的课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                       Margin="0 0 0 12" />
+                            <TextBlock>
+                                <Run Text="以下是已经导入的课表，您可以继续从左侧的表格导入课表，也可以完成导入。" />
+                            </TextBlock>
+                            
+                            
+                        </StackPanel>
                         <ListBox ItemsSource="{Binding ViewModel.ImportedClassPlans}"
+                                 Grid.Row="1"
                                  Margin="0 8 0 16">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <controls:IconText Kind="FileChartOutline" Text="{Binding Name}"/>
+                                    <controls:IconText Kind="FileChartOutline" Text="{Binding Name}" />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <MenuItem Icon="{materialDesign:PackIcon ArrowRight}" Header="继续导入课表。"
-                                  Click="MenuItemContinueImportClassPlan_OnClick"/>
-                        <MenuItem Icon="{materialDesign:PackIcon UndoVariant}" Header="使用新的时间表继续导入课表。"
-                                  Click="MenuItemResetTimeLayout_OnClick"/>
-                        <MenuItem Icon="{materialDesign:PackIcon Check}" Header="完成导入。"
-                                  Click="MenuItemCompleteImport_OnClick"/>
-                    </StackPanel>
+                        <StackPanel Grid.Row="2">
+                            <StackPanel.Resources>
+                                <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                    <Style.Resources>
+                                        <Style TargetType="materialDesign:PackIcon">
+                                            <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}" />
+                                        </Style>
+                                    </Style.Resources>
+                                </Style>
+                            </StackPanel.Resources>
+                            <MenuItem Icon="{materialDesign:PackIcon ArrowRight}" Header="继续导入课表。"
+                                      Click="MenuItemContinueImportClassPlan_OnClick" />
+                            <MenuItem Icon="{materialDesign:PackIcon UndoVariant}" Header="使用新的时间表继续导入课表。"
+                                      Click="MenuItemResetTimeLayout_OnClick" />
+                            <MenuItem Icon="{materialDesign:PackIcon Check}" Header="完成导入。"
+                                      Click="MenuItemCompleteImport_OnClick" />
+                        </StackPanel>
+                    </Grid>
                 </materialDesign:TransitionerSlide>
                 <!-- 16 完成 -->
                 <materialDesign:TransitionerSlide>

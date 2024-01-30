@@ -45,6 +45,7 @@
     </Style>
 
     <converters:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
+
     <Style TargetType="{x:Type controls:TimeLineListControl}" BasedOn="{StaticResource MaterialDesignListBox}">
         <Style.Resources>
             <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
@@ -142,8 +143,8 @@
                                 <Grid>
                                     <controls:TimeLineBackgroundRulerControl Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"/>
                                     <ItemsPresenter SnapsToDevicePixels="True"/>
-                                    <TextBlock Text="{Binding IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
-                                               Foreground="Red"/>
+                                    <!--<TextBlock Text="{Binding IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                               Foreground="Red"/>-->
                                 </Grid>
                             </ScrollViewer>
                         </Border>
@@ -167,7 +168,7 @@
                                         <behaviors:TimeLineListItemBehavior>
                                             <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                                 <ControlTemplate>
-                                                    <Grid Margin="-20">
+                                                    <Grid Margin="-20" Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}">
                                                         <controls:TimeLineListItemSeparatorAdornerControl
                                                             Margin="20"
                                                             VerticalAlignment="Stretch"
@@ -247,7 +248,7 @@
                                 <behaviors:TimeLineListItemBehavior>
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         <ControlTemplate>
-                                            <Grid Margin="-20">
+                                            <Grid Margin="-20" Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}">
                                                 <controls:TimeLineListItemExpandingAdornerControl
                                                     Margin="20"
                                                     VerticalAlignment="Stretch"
@@ -312,7 +313,8 @@
         </Setter>
         <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type models:WizardOption}">
