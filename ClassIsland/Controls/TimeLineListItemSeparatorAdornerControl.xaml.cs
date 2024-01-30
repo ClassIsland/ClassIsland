@@ -42,6 +42,15 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
         set { SetValue(ScaleProperty, value); }
     }
 
+    public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register(
+        nameof(IsReadOnly), typeof(bool), typeof(TimeLineListItemSeparatorAdornerControl), new PropertyMetadata(default(bool)));
+
+    public bool IsReadOnly
+    {
+        get { return (bool)GetValue(IsReadOnlyProperty); }
+        set { SetValue(IsReadOnlyProperty, value); }
+    }
+
     public TimeLineListItemSeparatorAdornerControl()
     {
         InitializeComponent();

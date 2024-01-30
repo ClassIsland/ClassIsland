@@ -54,6 +54,15 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
         set { SetValue(ScaleProperty, value); }
     }
 
+    public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register(
+        nameof(IsReadOnly), typeof(bool), typeof(TimeLineListItemExpandingAdornerControl), new PropertyMetadata(default(bool)));
+
+    public bool IsReadOnly
+    {
+        get { return (bool)GetValue(IsReadOnlyProperty); }
+        set { SetValue(IsReadOnlyProperty, value); }
+    }
+
     public TimeLineListItemExpandingAdornerControl()
     {
         InitializeComponent();

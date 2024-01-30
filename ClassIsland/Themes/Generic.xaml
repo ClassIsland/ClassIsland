@@ -168,16 +168,18 @@
                                         <behaviors:TimeLineListItemBehavior>
                                             <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                                 <ControlTemplate>
-                                                    <Grid Margin="-20" Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}">
+                                                    <Grid Margin="-20">
                                                         <controls:TimeLineListItemSeparatorAdornerControl
                                                             Margin="20"
                                                             VerticalAlignment="Stretch"
                                                             HorizontalAlignment="Stretch"
+                                                            IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                             TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                             Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
                                                         <Border Background="{DynamicResource MaterialDesignPaper}"
                                                                 HorizontalAlignment="Right"
                                                                 VerticalAlignment="Center"
+                                                                Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}"
                                                                 Margin="0 0 28 0"
                                                                 Padding="2"
                                                                 CornerRadius="4">
@@ -248,17 +250,19 @@
                                 <behaviors:TimeLineListItemBehavior>
                                     <behaviors:TimeLineListItemBehavior.ThumbTemplate>
                                         <ControlTemplate>
-                                            <Grid Margin="-20" Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}">
+                                            <Grid Margin="-20">
                                                 <controls:TimeLineListItemExpandingAdornerControl
                                                     Margin="20"
                                                     VerticalAlignment="Stretch"
                                                     HorizontalAlignment="Stretch"
+                                                    IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
                                                 <Border Background="{DynamicResource MaterialDesignPaper}"
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center"
+                                                        Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}"
                                                         Margin="0 0 28 0"
                                                         Padding="2"
                                                         CornerRadius="4">
