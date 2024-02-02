@@ -24,6 +24,7 @@ using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using ICSharpCode.AvalonEdit.Editing;
 using MaterialDesignThemes.Wpf;
+using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
 using unvell.ReoGrid;
 using unvell.ReoGrid.Events;
@@ -238,6 +239,25 @@ public partial class ExcelImportWindow : MyWindow
     private void SelectionValueUpdateCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         
+    }
+
+    private void OpenProfileSettingsWindow()
+    {
+        var window = App.GetService<ProfileSettingsWindow>();
+        if (!window.IsOpened)
+        {
+            Analytics.TrackEvent("打开档案设置窗口");
+            window.IsOpened = true;
+            window.Show();
+        }
+        else
+        {
+            if (window.WindowState == WindowState.Minimized)
+            {
+                window.WindowState = WindowState.Normal;
+            }
+            window.Activate();
+        }
     }
 
     private void EnterSelectingModeCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -707,7 +727,9 @@ public partial class ExcelImportWindow : MyWindow
 
     private void ButtonOpenProfileSettingsWindow_OnClick(object sender, RoutedEventArgs e)
     {
-
+        var p = App.GetService<ProfileSettingsWindow>();
+        OpenProfileSettingsWindow();
+        p.OpenTimeLayoutEdit();
     }
 
     private void TextBoxClassPlanRange_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -729,5 +751,11 @@ public partial class ExcelImportWindow : MyWindow
     {
         ViewModel.SelectedTimeLayout.IsActivated = false;
         ViewModel.SelectedTimeLayout.IsActivatedManually = false;
+    }
+
+    private void ButtonOpenProfileSettingsWindowEdit_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenProfileSettingsWindow();
+        App.GetService<ProfileSettingsWindow>().OpenTimeLayoutEdit(ViewModel.SelectedTimeLayoutId);
     }
 }

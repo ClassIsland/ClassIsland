@@ -25,6 +25,7 @@ using ClassIsland.Services;
 using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Views;
+using MahApps.Metro.Controls;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
@@ -33,6 +34,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Walterlv.Windows;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using UpdateStatus = ClassIsland.Enums.UpdateStatus;
 
@@ -216,6 +218,7 @@ public partial class App : Application
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
+                services.AddSingleton<ProfileSettingsWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
@@ -242,12 +245,13 @@ public partial class App : Application
         if (GetService<SettingsService>().Settings.IsSplashEnabled)
         {
             GetService<SplashWindow>().Show();
+            GetService<SplashService>().CurrentProgress = 25;
             await Task.Run(() =>
             {
                 var b = false;
                 while (!b)
                 {
-                    Dispatcher.BeginInvoke(DispatcherPriority.SystemIdle, () =>
+                    Dispatcher.Invoke(DispatcherPriority.SystemIdle, () =>
                     {
                         b = GetService<SplashWindow>().IsRendered;
                     });
@@ -255,6 +259,8 @@ public partial class App : Application
             });
             await Dispatcher.Yield(DispatcherPriority.SystemIdle);
         }
+
+        GetService<SplashService>().CurrentProgress = 50;
 
         GetService<HangService>();
         try
@@ -270,12 +276,18 @@ public partial class App : Application
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
             GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
         }
-        GetService<UpdateService>().AppStartup();
+        var r = await GetService<UpdateService>().AppStartup();
+        if (r)
+        {
+            GetService<SplashService>().EndSplash();
+            return;
+        }
         var attachedSettingsHostService = GetService<AttachedSettingsHostService>();
         attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
+        GetService<SplashService>().CurrentProgress = 75;
 
         GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
@@ -284,6 +296,7 @@ public partial class App : Application
         Logger.LogInformation("正在初始化MainWindow。");
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
+        GetService<SplashService>().CurrentProgress = 90;
     }
 
     private void OverrideFocusVisualStyle()

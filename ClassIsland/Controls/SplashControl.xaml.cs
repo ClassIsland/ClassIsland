@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Services;
+using ClassIsland.Views;
 
 namespace ClassIsland.Controls;
 
@@ -25,9 +26,68 @@ public partial class SplashControl : UserControl
     public SplashService SplashService { get; } = App.GetService<SplashService>();
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
+    public static readonly DependencyProperty CurrentProgressProperty = DependencyProperty.Register(
+        nameof(CurrentProgress), typeof(double), typeof(SplashControl), new PropertyMetadata(0.0));
+
+    private double _lastProgress = 0.0;
+    private double _lastProgressDelta = 0.0;
+
+    public double CurrentProgress
+    {
+        get { return (double)GetValue(CurrentProgressProperty); }
+        set { SetValue(CurrentProgressProperty, value); }
+    }
+
     public SplashControl()
     {
         InitializeComponent();
+        SplashService.ProgressChanged += SplashServiceOnProgressChanged;
+        SplashService.SplashEnded += SplashServiceOnSplashEnded;
+    }
+
+    private void SplashServiceOnSplashEnded(object? sender, EventArgs e)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            UpdateProgress(100, 0.5, ((o, args) =>
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    App.GetService<SplashWindow>().Close();
+                });
+            }));
+        });
+    }
+
+    private void SplashServiceOnProgressChanged(object? sender, double e)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            UpdateProgress(e, Math.Max((e - _lastProgress ) / 5, 0.5));
+        });
+        _lastProgressDelta = e - _lastProgress;
+        _lastProgress = e;
+    }
+
+    private void UpdateProgress(double e, double seconds, EventHandler? callBack = null)
+    {
+        var da = new DoubleAnimation()
+        {
+            From = CurrentProgress,
+            To = e,
+            Duration = new Duration(TimeSpan.FromSeconds(seconds)),
+            EasingFunction = new ExponentialEase()
+        };
+        var storyboard = new Storyboard()
+        {
+        };
+        Storyboard.SetTarget(da, this);
+        Storyboard.SetTargetProperty(da, new PropertyPath(CurrentProgressProperty));
+        storyboard.Children.Add(da);
+        if (callBack != null)
+            storyboard.Completed += callBack;
+        //storyboard.RepeatBehavior = ;
+        storyboard.Begin();
     }
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)

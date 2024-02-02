@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:classIsland="clr-namespace:ClassIsland"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              Height="100"
              Width="400">
@@ -63,6 +64,7 @@
                 <RowDefinition />
                 <RowDefinition Height="8"/>
                 <RowDefinition />
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <!-- Logo -->
             <StackPanel x:Name="AppLogo" Grid.Row="0" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5">
@@ -138,6 +140,15 @@
                 <Run Text="ClassIsland"/>
                 <Run Text="{x:Static classIsland:App.AppVersionLong}"/>
             </TextBlock>
+            <ProgressBar Grid.Row="3"
+                         VerticalAlignment="Bottom"
+                         HorizontalAlignment="Stretch"
+                         Margin="-17"
+                         BorderThickness="0"
+                         Foreground="{StaticResource MyForeground}"
+                         Background="Transparent"
+                         materialDesign:TransitionAssist.DisableTransitions="True"
+                         Value="{Binding CurrentProgress, Mode=OneWay}"/>
         </Grid>
     </Border>
 </UserControl>

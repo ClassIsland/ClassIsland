@@ -91,6 +91,17 @@ public partial class ProfileSettingsWindow : MyWindow
         DrawerHost.OpenDrawerCommand.Execute(null, MyDrawerHost);
     }
 
+    public void OpenTimeLayoutEdit(string? key="")
+    {
+        RootTabControl.SelectedIndex = 1;
+
+        if (key != null)
+        {
+            ListViewTimeLayouts.SelectedItem =
+                new KeyValuePair<string, TimeLayout>(key, ProfileService.Profile.TimeLayouts[key]);
+        }
+    }
+
     protected override void OnContentRendered(EventArgs e)
     {
         var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");

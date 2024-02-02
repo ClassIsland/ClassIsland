@@ -156,22 +156,25 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         set => SetField(ref _downloadEtcSeconds, value);
     }
 
-    public async void AppStartup()
+    public async Task<bool> AppStartup()
     {
         if (Settings.AutoInstallUpdateNextStartup 
             && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded
             && File.Exists(".\\UpdateTemp\\update.zip"))
         {
             SplashService.SplashStatus = "正在准备更新…";
+            App.GetService<SplashService>().CurrentProgress = 90;
             await RestartAppToUpdateAsync();
+            return true;
         }
 
         if (Settings.UpdateMode < 1)
         {
-            return;
+            return false;
         }
         
         _ = AppStartupBackground();
+        return false;
     }
 
     private async Task AppStartupBackground()

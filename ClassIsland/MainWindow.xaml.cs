@@ -143,10 +143,8 @@ public partial class MainWindow : Window
         DataContext = this;
         UpdateTimer.Start();
         ViewModel = new MainViewModel();
-        ProfileSettingsWindow = new ProfileSettingsWindow
-        {
-            MainViewModel = ViewModel
-        };
+        ProfileSettingsWindow = App.GetService<ProfileSettingsWindow>();
+        ProfileSettingsWindow.MainViewModel = ViewModel;
         ProfileSettingsWindow.Closing += (o, args) => SaveProfile();
         SettingsWindow = new SettingsWindow()
         {
@@ -428,7 +426,7 @@ public partial class MainWindow : Window
         ViewModel.OverlayRemainTimePercents = 0.5;
         if (ViewModel.Settings.IsSplashEnabled)
         {
-            App.GetService<SplashWindow>().Close();
+            App.GetService<SplashService>().EndSplash();
         }
 
         if (!ViewModel.Settings.IsWelcomeWindowShowed)

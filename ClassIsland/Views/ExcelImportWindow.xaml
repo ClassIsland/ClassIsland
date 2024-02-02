@@ -451,7 +451,7 @@
                                         Content="编辑"
                                         HorizontalAlignment="Left"
                                         Visibility="{Binding ImportTimeLayoutOnly, Converter={StaticResource InverseBoolToVisConverter}}"
-                                        Click="ButtonRefreshTimeLayout_OnClick" />
+                                        Click="ButtonOpenProfileSettingsWindowEdit_OnClick" />
                             </WrapPanel>
                             <!--<ListBox ItemsSource="{Binding ViewModel.SelectedTimeLayout.Layouts}">
                             <ListBox.ItemTemplate>

@@ -1,10 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
 
 public class SplashService: ObservableRecipient
 {
     private string _splashStatus = "正在启动…";
+    private double _currentProgress = 0.0;
 
     public string SplashStatus
     {
@@ -15,6 +17,26 @@ public class SplashService: ObservableRecipient
             _splashStatus = value;
             OnPropertyChanged();
         }
+    }
+
+    public double CurrentProgress
+    {
+        get => _currentProgress;
+        set
+        {
+            if (value.Equals(_currentProgress)) return;
+            _currentProgress = value;
+            OnPropertyChanged();
+            ProgressChanged?.Invoke(this, value);
+        }
+    }
+
+    public event EventHandler<double>? ProgressChanged;
+
+    public event EventHandler? SplashEnded;
+    public void EndSplash()
+    {
+        SplashEnded?.Invoke(this, EventArgs.Empty);
     }
 
     private SettingsService SettingsService { get; }
