@@ -138,7 +138,8 @@ public partial class App : Application
             ApplicationCommand = c;
         });
         await command.InvokeAsync(e.Args);
-        
+
+        // 检测Mutex
         Mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
         if (!createNew)
         {
@@ -153,9 +154,22 @@ public partial class App : Application
             }
         }
 
+        // 检测临时目录
         if (Environment.CurrentDirectory.Contains(Path.GetTempPath()))
         {
             CommonDialog.ShowHint("ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
+            Environment.Exit(0);
+        }
+
+        // 检测目录是否可以访问
+        try
+        {
+            await File.WriteAllTextAsync("./.test-write", "");
+            File.Delete("./.test-write");
+        }
+        catch (Exception ex)
+        {
+            CommonDialog.ShowError($"ClassIsland无法写入当前目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行。");
             Environment.Exit(0);
         }
 
