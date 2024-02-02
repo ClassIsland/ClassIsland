@@ -60,6 +60,8 @@ public partial class ExcelImportWindow : MyWindow
 
     public static ICommand NavigateBackCommand { get; } = new RoutedUICommand();
 
+    public bool ImportTimeLayoutOnly { get; set; } = false;
+
     public ExcelImportWindow(ThemeService themeService, ProfileService profileService)
     {
         InitializeComponent();
@@ -272,10 +274,13 @@ public partial class ExcelImportWindow : MyWindow
 
         ViewModel.SlideIndex = p switch
         {
+            //"TimeLayoutSource" when ImportTimeLayoutOnly => 5,
             "TimeLayoutSource" => 4,
             "ImportTimeLayoutFromThisFile" => 5,
             "CreateTimeLayoutManually" => 6,
+            "ImportTimeLayoutFromOtherFile" => 6,
             "TimePointImportResult" => 7,
+            "SelectSubjectsPosition" when ImportTimeLayoutOnly => 16,
             "SelectSubjectsPosition" => 8,
             "SelectVerticalMode" => 9,
             "RowClassesTimeRelationshipImportMethod" => 10,
@@ -308,6 +313,15 @@ public partial class ExcelImportWindow : MyWindow
             case "AllClassPlansView":
                 ViewModel.ImportedClassPlans.Add(ViewModel.CurrentClassPlan);
                 break;
+            case "ImportTimeLayoutFromOtherFile":
+                var w = App.GetService<ExcelImportWindow>();
+                w.ImportTimeLayoutOnly = true;
+                w.ShowDialog();
+                if (!string.IsNullOrEmpty(w.ViewModel.SelectedTimeLayoutId))
+                {
+                    ViewModel.SelectedTimeLayoutId = w.ViewModel.SelectedTimeLayoutId;
+                }
+                break;
         }
     }
 
@@ -316,7 +330,7 @@ public partial class ExcelImportWindow : MyWindow
         ViewModel.SlideIndex = ViewModel.SlideIndex switch
         {
             3 => 2,
-            4 => 3,
+            4 => 2,
             5 => 4,
             6 => 4,
             7 => 5,

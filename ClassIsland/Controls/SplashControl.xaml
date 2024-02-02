@@ -52,7 +52,9 @@
     </UserControl.Resources>
     <Border Background="{StaticResource MyBackground}" 
             TextElement.Foreground="{StaticResource MyForeground}"
-            Padding="16"
+            Padding="17"
+            BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+            BorderThickness="1"
             Opacity="0.8"
             d:Opacity="1"
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SplashControl}}">

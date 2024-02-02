@@ -285,7 +285,17 @@
                                    Margin="0 0 0 12"/>
                         <TextBlock Text="欢迎使用从表格导入向导。本向导会引导您从Excel格式的表格中导入课表和时间表。"></TextBlock>
                         <StackPanel Orientation="Horizontal" Margin="0 16 0 0">
-                            <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
+                            <Button Command="{x:Static local:ExcelImportWindow.NavigateCommand}">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                        <Setter Property="CommandParameter" Value="TimeLayoutSource"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ImportTimeLayoutOnly}" Value="True">
+                                                <Setter Property="CommandParameter" Value="ImportTimeLayoutFromThisFile"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
                                 <controls:IconText Kind="ArrowRight" Text="开始"/>
                             </Button>
                         </StackPanel>
@@ -440,6 +450,7 @@
                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                         Content="编辑"
                                         HorizontalAlignment="Left"
+                                        Visibility="{Binding ImportTimeLayoutOnly, Converter={StaticResource InverseBoolToVisConverter}}"
                                         Click="ButtonRefreshTimeLayout_OnClick" />
                             </WrapPanel>
                             <!--<ListBox ItemsSource="{Binding ViewModel.SelectedTimeLayout.Layouts}">
@@ -463,7 +474,8 @@
                         <Button Grid.Row="2" HorizontalAlignment="Right"
                                 Style="{StaticResource MaterialDesignFlatButton}"
                                 Content="跳过课表导入"
-                                VerticalAlignment="Bottom"></Button>
+                                Visibility="{Binding ImportTimeLayoutOnly, Converter={StaticResource InverseBoolToVisConverter}}"
+                                VerticalAlignment="Bottom"/>
                     </Grid>
                 </materialDesign:TransitionerSlide>
                 <!-- 8 选择课程区域 -->
