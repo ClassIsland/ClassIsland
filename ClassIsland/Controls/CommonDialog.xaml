@@ -33,23 +33,24 @@
 
         <!-- Content -->
         <ContentPresenter Grid.Column="0" Grid.Row="0"
-                          VerticalAlignment="Center"
-                          Margin="12"
+                          VerticalAlignment="Top"
+                          Margin="12 24 0 0"
                           Content="{Binding DialogIcon, Mode=OneWay}"
                           MaxWidth="128"
                           MaxHeight="128"/>
         <TextBlock Grid.Column="1" Grid.Row="0"
-                   Margin="0 12 12 12"
+                   Margin="12 12 12 12"
                    TextWrapping="Wrap"
                    Text="{Binding DialogContent, Mode=OneWay}"/>
         <!-- Sep -->
-        <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                   Opacity="0.5"/>
+        <!--<Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                   Opacity="0.5"/>-->
 
         <!-- Buttons -->
         <ItemsControl Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
                       HorizontalAlignment="Right"
-                      Margin="4"
+                      Margin="12"
+                      Focusable="False"
                       ItemsSource="{Binding Actions, Mode=OneWay}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -58,42 +59,16 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Control Margin="4 0 0 0">
-                        <Control.Style>
-                            <Style TargetType="Control">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsPrimary}" Value="True">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate>
-                                                    <Button IsDefault="{Binding IsPrimary}" 
-                                                            Command="{x:Static local:CommonDialog.ActionCommand}"
-                                                            CommandParameter="{Binding}">
-                                                        <local:IconText Kind="{Binding PackIconKind}"
-                                                                        Text="{Binding Name}"/>
-                                                    </Button>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate>
-                                            <Button IsDefault="{Binding IsPrimary}" 
-                                                    Command="{x:Static local:CommonDialog.ActionCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    Style="{StaticResource MaterialDesignPaperButton}">
-                                                <local:IconText Kind="{Binding PackIconKind}"
-                                                                Text="{Binding Name}"/>
-                                            </Button>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Control.Style>
-                    </Control>
-                    
+                    <Button IsDefault="{Binding IsPrimary}" 
+                            Command="{x:Static local:CommonDialog.ActionCommand}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            FocusVisualStyle="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"
+                            Margin="4 0 0 0">
+                        <local:IconText Kind="{Binding PackIconKind}"
+                                        Text="{Binding Name}"/>
+                    </Button>
+
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
