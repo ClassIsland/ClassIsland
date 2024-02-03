@@ -103,9 +103,7 @@ public partial class App : Application
         }
         CrashWindow = new CrashWindow()
         {
-            CrashInfo = e.Exception.ToString(),
-            Exception = e.Exception,
-            InnerExceptions = exps
+            CrashInfo = e.Exception.ToString()
         };
 #if DEBUG
         if (e.Exception.GetType() != typeof(ResourceReferenceKeyNotFoundException))
@@ -124,6 +122,7 @@ public partial class App : Application
         
 
         //ConsoleService.InitializeConsole();
+        System.Windows.Forms.Application.EnableVisualStyles();
         ConsoleService.InitializeConsole();
 
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;

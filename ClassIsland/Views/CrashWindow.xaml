@@ -6,85 +6,54 @@
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:views="clr-namespace:ClassIsland.Views"
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
-                   xmlns:converters="clr-namespace:ClassIsland.Converters"
                    d:DataContext="{d:DesignInstance views:CrashWindow}"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    TextElement.FontWeight="Regular"
                    TextElement.FontSize="13"
                    TextOptions.TextFormattingMode="Ideal" 
                    TextOptions.TextRenderingMode="Auto"        
-                   SizeToContent="Height"
-                   WindowStartupLocation="CenterScreen"
                    Background="{DynamicResource MaterialDesignPaper}"
                    FontFamily="{StaticResource HarmonyOsSans}"
                    mc:Ignorable="d"
+                   WindowStartupLocation="CenterScreen"
                    Icon="/Assets/AppLogo.ico"
-                   Title="崩溃啦！" Width="800"
-                   StateChanged="CrashWindow_OnStateChanged">
-    <controls:MyWindow.Resources>
-        <converters:ExceptionToExceptionHeaderConverter x:Key="ExceptionToExceptionHeaderConverter" />
-    </controls:MyWindow.Resources>
+                   Title="崩溃啦！" Height="450" Width="800">
     <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" TextWrapping="Wrap">
-            <Run Text=":(" Foreground="{DynamicResource PrimaryHueMidBrush}" FontSize="32" FontWeight="Bold"/><LineBreak/>
-            <Run Text="出错了……" Foreground="{DynamicResource PrimaryHueMidBrush}" FontSize="20" FontWeight="Bold"/><LineBreak/><LineBreak/>
-            <Run Text="应用发生了无法解决的错误，需要退出。这可能是由一个bug引起的。若要将此错误反馈至开发人员，请保留此错误信息（包括详细信息），并一并提交至开发者。"/>
-        </TextBlock>
-        <ListBox Grid.Row="1" ItemsSource="{Binding InnerExceptions}" MaxHeight="150"
-                 materialDesign:ListBoxItemAssist.ShowSelection="False"
-                 ScrollViewer.CanContentScroll="False">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <TextBox Grid.Column="0" Grid.Row="0"
-                                 Grid.ColumnSpan="2"
-                                 
-                                 Text="{Binding Mode=OneWay, Converter={StaticResource ExceptionToExceptionHeaderConverter}}"
-                                 IsReadOnly="True"
-                                 FontSize="15"
-                                 HorizontalAlignment="Left"
-                                 materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
-                                 BorderThickness="0"/>
+        <materialDesign:PackIcon Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left"
+                                 Grid.RowSpan="2"
+                                 VerticalAlignment="Top" Margin="0 16 12 0"
+                                 Kind="ErrorOutline"
+                                 Foreground="#EE2222"
+                                 Height="56" Width="56" />
 
-                        <controls:IconText Grid.Column="0" Grid.Row="1"
-                                           Text="异常发生的模块："
-                                           VerticalAlignment="Center" Kind="FileCogOutline"/>
-                        <TextBox Grid.Column="1" Grid.Row="1"
-                                 Text="{Binding Source, Mode=OneWay}"
-                                 IsReadOnly="True"
-                                 TextWrapping="Wrap"
-                                 HorizontalAlignment="Left"
-                                 materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
-                                 BorderThickness="0"/>
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-        <Expander Grid.Row="2" Header="详细信息" Expanded="Expander_OnExpanded" Collapsed="Expander_OnCollapsed"
-                  x:Name="DetailExpander"
-                  Margin="0 0 0 8">
-            <TextBox x:Name="TextBoxCrashInfo" Grid.Row="1" AcceptsReturn="True"
-                     VerticalContentAlignment="Top" 
-                     BorderThickness="0"
-                     materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
-                     VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}" HorizontalScrollBarVisibility="Auto"
-                     d:Text="123"/>
-        </Expander>
-        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
+        <TextBlock Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" FontSize="14">
+            <Run Text="应用发生了无法解决的错误，需要退出。这可能是由一个bug引起的。若要将此错误反馈至开发人员，请保留此错误信息，并一并提交至开发者。"/>
+        </TextBlock>
+        <TextBox Grid.Column="1"
+                 x:Name="TextBoxCrashInfo" Grid.Row="2" 
+                 FontSize="13"
+                 BorderThickness="0"
+                 Padding="0"
+                 FontFamily="SimHei"
+                 materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
+                 Margin="0 6 0 0" AcceptsReturn="True"
+                 VerticalContentAlignment="Top"
+                 VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}" 
+                 HorizontalScrollBarVisibility="Hidden"
+                 d:Text="123"/>
+        <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Margin="-12 8"/>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0" Click="ButtonIgnore_OnClick">
                 <controls:IconText Kind="Close" Text="忽略" IconMargin="3 0 0 0"/>
             </Button>
@@ -95,10 +64,26 @@
                 <controls:IconText Kind="Restart" Text="重启应用" IconMargin="3 0 0 0"/>
             </Button>
         </StackPanel>
-        <StackPanel Grid.Row="3" HorizontalAlignment="Left" Orientation="Horizontal">
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Left" Orientation="Horizontal">
             <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonCopy_OnClick">
                 <controls:IconText Kind="ContentCopy" Text="复制" IconMargin="3 0 0 0"/>
             </Button>
         </StackPanel>
+
+        <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="2"
+                                  Grid.Row="0" 
+                                  Margin="-12 -12 -12 8"
+                                  materialDesign:ElevationAssist.Elevation="Dp4"
+                                  Mode="PrimaryMid"
+                                  Padding="16">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBlock Text="ClassIsland 发生错误" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                               HorizontalAlignment="Left"
+                               VerticalAlignment="Center"
+                               Margin="0 0 16 0"/>
+                </StackPanel>
+            </Grid>
+        </materialDesign:ColorZone>
     </Grid>
 </controls:MyWindow>

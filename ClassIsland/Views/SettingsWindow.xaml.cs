@@ -16,6 +16,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
@@ -533,6 +534,20 @@ public partial class SettingsWindow : MyWindow
             }
         };
         dialog.ShowDialog();
+        TaskDialog.ShowDialog(new WindowInteropHelper(this).Handle, new TaskDialogPage()
+        {
+            Heading = "测试TaskDialog",
+            EnableLinks = true,
+            SizeToContent = false,
+            Icon = TaskDialogIcon.Information,
+            Expander = new TaskDialogExpander(new StackTrace().ToString()),
+            Buttons = new TaskDialogButtonCollection
+            {
+                new TaskDialogButton("复制")
+            },
+            Footnote = "123123123<a href=\"https://cn.bing.com\">test link</a>",
+            Text = "test task dialog."
+        });
         MessageBox.Show(this, dialog.ExecutedActionIndex.ToString(), "ExecutedActionIndex", MessageBoxButton.OK,
             MessageBoxImage.Information, MessageBoxResult.OK);
     }
