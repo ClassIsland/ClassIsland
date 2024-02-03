@@ -245,19 +245,23 @@ public partial class App : Application
         if (GetService<SettingsService>().Settings.IsSplashEnabled)
         {
             GetService<SplashWindow>().Show();
+            //await Dispatcher.InvokeAsync(() =>
+            //{
+            //});
             GetService<SplashService>().CurrentProgress = 25;
-            await Task.Run(() =>
+            //await Task.Run(() =>
+            //{
+            //});
+            var b = false;
+            while (!b)
             {
-                var b = false;
-                while (!b)
+                Dispatcher.Invoke(DispatcherPriority.Background, () =>
                 {
-                    Dispatcher.Invoke(DispatcherPriority.SystemIdle, () =>
-                    {
-                        b = GetService<SplashWindow>().IsRendered;
-                    });
-                }
-            });
-            await Dispatcher.Yield(DispatcherPriority.SystemIdle);
+                    b = GetService<SplashWindow>().IsRendered;
+                });
+                //Console.WriteLine(b);
+                await Dispatcher.Yield(DispatcherPriority.Background);
+            }
         }
 
         GetService<SplashService>().CurrentProgress = 50;

@@ -146,6 +146,7 @@ public class AsyncBox : FrameworkElement
 
         _isChildReadyToLoad = true;
         ActivateChild();
+        LoadingViewLoaded?.Invoke(this, EventArgs.Empty);
     }
 
     private void ActivateChild()
@@ -170,7 +171,6 @@ public class AsyncBox : FrameworkElement
                 _loadingView.Arrange(new Rect(RenderSize));
             }
         });
-        LoadingViewLoaded?.Invoke(this, EventArgs.Empty);
     }
 
     protected override int VisualChildrenCount => _loadingView != null ? 2 : 0;

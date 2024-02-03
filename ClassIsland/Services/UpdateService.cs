@@ -405,9 +405,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 .WithUrl(Settings.UpdateDownloadUrl)
                 .Configure((c) =>
                 {
-                    c.ChunkCount = 64;
+                    c.ChunkCount = 32;
+                    c.ParallelCount = 32;
                     c.ParallelDownload = true;
-                    c.Timeout = 4096;
+                    //c.Timeout = 4096;
                 })
                 .WithDirectory(@".\UpdateTemp")
                 .WithFileName("update.zip")

@@ -95,7 +95,14 @@ public partial class SplashControl : UserControl
         if (e.Property == IsVisibleProperty && (bool)e.NewValue)
         {
             BeginStoryboard((Storyboard)FindResource("Intro"));
+            Console.WriteLine("splash control visible.");
         }
         base.OnPropertyChanged(e);
+    }
+
+    protected override void OnInitialized(EventArgs e)
+    {
+        Console.WriteLine("splash control init.");
+        base.OnInitialized(e);
     }
 }
