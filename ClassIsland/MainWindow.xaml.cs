@@ -712,6 +712,7 @@ public partial class MainWindow : Window
         }
         SaveProfile();
         SaveSettings();
+        UpdateTimer.Stop();
     }
 
     private void UpdateWindowPos()
