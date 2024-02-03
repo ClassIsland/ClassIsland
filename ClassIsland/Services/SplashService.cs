@@ -36,6 +36,8 @@ public class SplashService: ObservableRecipient
     public event EventHandler? SplashEnded;
     public void EndSplash()
     {
+        if (!SettingsService.Settings.IsSplashEnabled)
+            return;
         SplashEnded?.Invoke(this, EventArgs.Empty);
     }
 
