@@ -22,6 +22,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private double _timeLineScale = 3.0;
     private Subject? _selectedSubject;
     private bool _isPanningModeEnabled = false;
+    private bool _isDragEntering = false;
 
     public object DrawerContent
     {
@@ -181,4 +182,16 @@ public class ProfileSettingsViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public bool IsDragEntering
+    {
+        get => _isDragEntering;
+        set
+        {
+            if (value == _isDragEntering) return;
+            _isDragEntering = value;
+            OnPropertyChanged();
+        }
+    }
+
 }

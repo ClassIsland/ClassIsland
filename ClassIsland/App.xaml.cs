@@ -34,6 +34,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml;
 using Walterlv.Windows;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using UpdateStatus = ClassIsland.Enums.UpdateStatus;
@@ -117,9 +118,10 @@ public partial class App : Application
 
     private async void App_OnStartup(object sender, StartupEventArgs e)
     {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
-        
+
 
         //ConsoleService.InitializeConsole();
         System.Windows.Forms.Application.EnableVisualStyles();

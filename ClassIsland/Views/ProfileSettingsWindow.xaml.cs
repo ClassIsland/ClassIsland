@@ -802,15 +802,18 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
     {
-        if (!MainViewModel.Settings.ExpIsExcelImportEnabled)
-            return;
+        ViewModel.IsDragEntering = false;
         if (e.Data.GetData(DataFormats.FileDrop) is not Array data)
             return;
         var filename = data.GetValue(0)?.ToString();
         if (filename == null)
             return;
         Debug.WriteLine(filename);
-
+        if (Path.GetExtension(filename) != ".xlsx")
+        {
+            ViewModel.MessageQueue.Enqueue($"不支持的文件：{filename}");
+            return;
+        }
         var eiw = App.GetService<ExcelImportWindow>();
         eiw.ExcelSourcePath = filename;
         eiw.Show();
@@ -818,9 +821,17 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ProfileSettingsWindow_OnDragEnter(object sender, DragEventArgs e)
     {
-        if (!MainViewModel.Settings.ExpIsExcelImportEnabled)
-            return;
-        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Link : DragDropEffects.None;
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+
+            ViewModel.IsDragEntering = true;
+            e.Effects = DragDropEffects.Link;
+        }
+        else
+        {
+            ViewModel.IsDragEntering = false;
+            e.Effects = DragDropEffects.None;
+        }
     }
 
     private void ListViewTimeLayouts_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -846,5 +857,10 @@ public partial class ProfileSettingsWindow : MyWindow
             ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Key,
             ViewModel.SelectedTimePoint,
             ViewModel.SelectedTimePoint.DefaultClassId);
+    }
+
+    private void ProfileSettingsWindow_OnDragLeave(object sender, DragEventArgs e)
+    {
+        ViewModel.IsDragEntering = false;
     }
 }

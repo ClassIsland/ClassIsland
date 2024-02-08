@@ -32,6 +32,7 @@
                    MinWidth="750"
                    AllowDrop="True"
                    DragEnter="ProfileSettingsWindow_OnDragEnter"
+                   DragLeave="ProfileSettingsWindow_OnDragLeave"
                    Drop="ProfileSettingsWindow_OnDrop"
                    Button.Click="GlobalUpdated"
                    ListBox.SelectionChanged="GlobalUpdated">
@@ -1555,10 +1556,25 @@
                         </Grid>
                     </materialDesign:ColorZone>
                     <!-- SnackBar -->
-                    <materialDesign:Snackbar Grid.Row="0" Grid.RowSpan="2" MessageQueue="{Binding ViewModel.MessageQueue}"/>
                 </Grid>
             </materialDesign:DrawerHost>
         </materialDesign:DialogHost>
+        <Grid Visibility="{Binding ViewModel.IsDragEntering, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="{DynamicResource MaterialDesignBackground}"
+                    Opacity="0.75"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <materialDesign:PackIcon Kind="FileImport"
+                                         HorizontalAlignment="Center"
+                                         Height="64" Width="64"
+                                         Margin="0 0 0 8"/>
+                <TextBlock Text="将表格文件拖入到此处，松手即可开始导入。"
+                           FontSize="14"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- 顶层元素 -->
+        <materialDesign:Snackbar VerticalAlignment="Bottom" MessageQueue="{Binding ViewModel.MessageQueue}"/>
         <windows:AsyncBox VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
     </Grid>
 </controls:MyWindow>

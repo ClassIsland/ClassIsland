@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using ClassIsland.Controls;
@@ -38,6 +39,9 @@ public class ExcelImportViewModel : ObservableRecipient
     private ObservableCollection<ClassPlan> _importedClassPlans = new();
     private bool _isTimeLayoutRangeValid = false;
     private bool _isSubjectsSourceRangeValid = false;
+    private bool _isDragEntering = false;
+    private string _openFileName = "";
+    private Exception _openException = new();
 
     public int SlideIndex
     {
@@ -324,4 +328,40 @@ public class ExcelImportViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public bool IsDragEntering
+    {
+        get => _isDragEntering;
+        set
+        {
+            if (value == _isDragEntering) return;
+            _isDragEntering = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OpenFileName
+    {
+        get => _openFileName;
+        set
+        {
+            if (value == _openFileName) return;
+            _openFileName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Exception OpenException
+    {
+        get => _openException;
+        set
+        {
+            if (Equals(value, _openException)) return;
+            _openException = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Guid DialogId { get; } = Guid.NewGuid();
+
 }

@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Converters;
 using ClassIsland.Models;
@@ -26,6 +27,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Win32;
+using OfficeOpenXml;
 using unvell.ReoGrid;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
@@ -122,6 +124,11 @@ public partial class ExcelImportWindow : MyWindow
         Debug.WriteLine(e.Range);
     }
 
+    private async Task<object?> ShowDialog(string key)
+    {
+        return await DialogHost.Show(FindResource(key), ViewModel.DialogId);
+    }
+
     ~ExcelImportWindow()
     {
         ThemeService.ThemeUpdated -= ThemeServiceOnThemeUpdated;
@@ -185,28 +192,91 @@ public partial class ExcelImportWindow : MyWindow
         {
             LoadExcelWorkbook();
         }
+
+        Grid.SheetTabWidth = 400;
         base.OnContentRendered(e);
     }
 
-    private async void LoadExcelWorkbook()
+    private async Task FixWorkbookAsync(string path)
     {
-        ViewModel.SlideIndex = 1;
+        using var excel = new ExcelPackage(path);
         await Task.Run(() =>
         {
+            //foreach (var i in excel.Workbook.Styles.Fonts)
+            //{
+            //    i.Name = "Microsoft YaHei";
+            //}
+            excel.Workbook.Styles.UpdateXml();
+            foreach (var sheet in excel.Workbook.Worksheets)
+            {
+                foreach (var cell in sheet.Cells)
+                {
+                    if (!cell.IsRichText) continue;
+                    var text = cell.RichText.Text;
+                    Console.WriteLine(cell.RichText.HtmlText);
+                    cell.RichText.Clear();
+                    cell.Value = text;
+                    //cell.RichText.Text = text;
+                }
+            }
         });
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        var stream = File.Open(ExcelSourcePath, FileMode.Open);
 
-        var sw = new Stopwatch();
-        sw.Start();
-        Grid.Load(stream, FileFormat.Excel2007);
-        Debug.WriteLine(sw.Elapsed);
-        ViewModel.IsFileSelected = true;
-        ViewModel.SlideIndex = 2;
+        var filePath = $"./Temp/excel{Guid.NewGuid()}.xlsx";
+        await excel.SaveAsAsync(filePath);
+        ExcelSourcePath = filePath ;
+    }
+
+    private async void LoadExcelWorkbook(bool isFixed=false)
+    {
+        ViewModel.SlideIndex = 1;
+        ViewModel.OpenFileName = ExcelSourcePath;
+        await Dispatcher.Yield();
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        try
+        {
+            var stream = File.Open(ExcelSourcePath, FileMode.Open);
+            var sw = new Stopwatch();
+            sw.Start();
+            App.GetService<HangService>().AssumeHang();
+            try
+            {
+                Grid.Load(stream, FileFormat.Excel2007);
+            }
+            catch (Exception e)
+            {
+                ViewModel.OpenException = e;
+                stream.Close();
+                if (isFixed)
+                {
+                    await ShowDialog("FixExcelFailed");
+                    return;
+                }
+                var r = await ShowDialog("ExcelOpenError") as bool?;
+                if (r != true || isFixed)
+                {
+                    ViewModel.SlideIndex = 0;
+                    return;
+                }
+                await FixWorkbookAsync(ExcelSourcePath);
+                LoadExcelWorkbook(true);
+                return;
+            }
+            Debug.WriteLine(sw.Elapsed);
+            ViewModel.IsFileSelected = true;
+            ViewModel.SlideIndex = 2;
+        }
+        catch (Exception e)
+        {
+            ViewModel.SlideIndex = 0;
+            ViewModel.OpenException = e;
+            await ShowDialog("OpenFileFailed");
+        }
+
     }
 
     private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
     {
+        ViewModel.IsDragEntering = false;
         if (ViewModel.IsFileSelected)
             return;
         if (e.Data.GetData(DataFormats.FileDrop) is not Array data)
@@ -223,6 +293,7 @@ public partial class ExcelImportWindow : MyWindow
     {
         e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) && !ViewModel.IsFileSelected 
             ? DragDropEffects.Link : DragDropEffects.None;
+        ViewModel.IsDragEntering = e.Data.GetDataPresent(DataFormats.FileDrop) && !ViewModel.IsFileSelected;
     }
 
     private void Grid_OnCurrentWorksheetChanged(object? sender, EventArgs e)
@@ -322,7 +393,8 @@ public partial class ExcelImportWindow : MyWindow
             case "TimePointImportResult":
                 LoadTimeLayoutFromCurrentSelection();
                 break;
-            case "RowClassesTimeRelationshipImportMethod":
+            case "RowClassesTimeRelationshipImportAuto":
+            case "RowClassesTimeRelationshipImportMan":
                 ViewModel.SelectedTimeLayout.IsActivatedManually = true;
                 ViewModel.SelectedTimeLayout.IsActivated = true;
                 LoadClassPlanSource();
@@ -757,5 +829,16 @@ public partial class ExcelImportWindow : MyWindow
     {
         OpenProfileSettingsWindow();
         App.GetService<ProfileSettingsWindow>().OpenTimeLayoutEdit(ViewModel.SelectedTimeLayoutId);
+    }
+
+    private void ExcelImportWindow_OnDragLeave(object sender, DragEventArgs e)
+    {
+        ViewModel.IsDragEntering = false;
+    }
+
+    private void ButtonSkipImport_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SlideIndex = 16;
+        CompleteImport();
     }
 }
