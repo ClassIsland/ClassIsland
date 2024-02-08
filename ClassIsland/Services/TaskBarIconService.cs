@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -10,6 +11,26 @@ namespace ClassIsland.Services;
 
 public class TaskBarIconService : IHostedService
 {
+    private SettingsService SettingsService { get; }
+
+    public TaskBarIconService(SettingsService settingsService)
+    {
+        SettingsService = settingsService;
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateMenuAction();
+    }
+
+    private void UpdateMenuAction()
+    {
+        MainTaskBarIcon.MenuActivation = SettingsService.Settings.TaskBarIconClickBehavior == 0 ? 
+            PopupActivationMode.LeftOrRightClick : PopupActivationMode.RightClick;
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        UpdateMenuAction();
+    }
+
     public TaskbarIcon MainTaskBarIcon
     {
         get;

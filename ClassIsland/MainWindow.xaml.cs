@@ -46,6 +46,8 @@ namespace ClassIsland;
 /// </summary>
 public partial class MainWindow : Window
 {
+    public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
+
     public MainViewModel ViewModel
     {
         get;
@@ -421,8 +423,10 @@ public partial class MainWindow : Window
         UpdateTheme();
         var menu = (ContextMenu)FindResource("AppContextMenu");
         menu.DataContext = this;
-        TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
         TaskBarIconService.MainTaskBarIcon.DataContext = this;
+        TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
+        TaskBarIconService.MainTaskBarIcon.LeftClickCommand = TrayIconLeftClickedCommand;
+        TaskBarIconService.MainTaskBarIcon.TrayLeftMouseUp += MainTaskBarIconOnTrayLeftMouseUp;
         ViewModel.OverlayRemainTimePercents = 0.5;
         if (ViewModel.Settings.IsSplashEnabled)
         {
@@ -450,6 +454,19 @@ public partial class MainWindow : Window
             }
         }
         base.OnContentRendered(e);
+    }
+
+    private void MainTaskBarIconOnTrayLeftMouseUp(object sender, RoutedEventArgs e)
+    {
+        switch (ViewModel.Settings.TaskBarIconClickBehavior)
+        {
+            case 1:
+                OpenProfileSettingsWindow();
+                break;
+            case 2:
+                ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
+                break;
+        }
     }
 
     public void LoadProfile()
@@ -985,5 +1002,10 @@ public partial class MainWindow : Window
         {
             storyboard.Remove();
         };
+    }
+
+    private void TrayIconOnClicked_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        
     }
 }
