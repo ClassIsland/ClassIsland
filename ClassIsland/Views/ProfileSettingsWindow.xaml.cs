@@ -582,7 +582,10 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
 
-        var json = JsonSerializer.Serialize(new Profile());
+        var profile = new Profile();
+        var subject = await new StreamReader(Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!.Stream).ReadToEndAsync();
+        profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
+        var json = JsonSerializer.Serialize(profile);
         await File.WriteAllTextAsync(path, json);
         RefreshProfiles();
     }

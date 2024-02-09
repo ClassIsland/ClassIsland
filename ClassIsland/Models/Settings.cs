@@ -37,7 +37,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private int _windowDockingMonitorIndex = 0;
     private int _windowLayer = 1;
     private bool _isMouseClickingEnabled = false;
-    private bool _hideOnFullscreen = true;
+    private bool _hideOnFullscreen = false;
     private bool _isClassOffNotificationEnabled = true;
     private ObservableCollection<string> _excludedFullscreenWindow = new()
     {

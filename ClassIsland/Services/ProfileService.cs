@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Shapes;
 using ClassIsland.Models;
 using Microsoft.Extensions.Logging;
@@ -38,6 +39,8 @@ public class ProfileService
         if (!File.Exists(path))
         {
             Logger.LogInformation("档案不存在：{}", path);
+            var subject = new StreamReader(Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!.Stream).ReadToEnd();
+            Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
             SaveProfile(filename);
         }
 
