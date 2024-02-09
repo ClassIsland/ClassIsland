@@ -47,6 +47,7 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 - [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/)
 - [ReoGrid](https://github.com/unvell/ReoGrid)
 - [EPPlus](https://epplussoftware.com/)
+- [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
 - [FluentWpf](https://github.com/sourcechord/FluentWPF)
 - [gong-mdWpf-dragdrop](https://github.com/punker76/gong-mdWpf-dragdrop)
 - [MdXaml](https://github.com/whistyun/MdXaml)

@@ -210,6 +210,15 @@
                 <models:ContributionLabel Title="ReoGrid"
                                           License="MIT license"
                                           Website="https://github.com/unvell/ReoGrid"/>
+                <models:ContributionLabel Title="EPPlus"
+                                          License="Polyform Noncommercial 1.0.0"
+                                          Website="https://epplussoftware.com/"/>
+                <models:ContributionLabel Title="Walterlv"
+                                          License="&quot;Anti 996&quot; License Version 1.0"
+                                          Website="https://github.com/walterlv/walterlv.demo"/>
+                <models:ContributionLabel Title="MahApps.Metro"
+                                          License="MIT license"
+                                          Website="https://github.com/MahApps/MahApps.Metro"/>
                 <models:ContributionLabel Title="gong-mdWpf-dragdrop"
                                           License="BSD 3-Clause"
                                           Website="https://github.com/punker76/gong-mdWpf-dragdrop" />
