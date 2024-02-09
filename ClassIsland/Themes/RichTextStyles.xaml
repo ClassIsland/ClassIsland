@@ -24,7 +24,7 @@
         
         <Setter Property="Margin" Value="0 0"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="MaxWidth" Value="800"/>
+        <Setter Property="MaxWidth" Value="700"/>
         <Setter Property="gif:ImageBehavior.AutoStart" Value="True"/>
         <Setter Property="gif:ImageBehavior.AnimationSpeedRatio" Value="1"/>
     </Style>

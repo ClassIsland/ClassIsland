@@ -36,9 +36,11 @@
 
 ## 附加信息
 
-应用默认会在当前的时间点旁显示附加信息（如图），您可以在设置中开关附加信息的显示，以及调整显示的信息内容。
+应用默认会在当前的时间点旁显示附加信息（如图）。
 
 ![miniinfo](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/miniinfo.png)
+
+您可以在设置中开关附加信息的显示，以及调整显示的信息内容。
 
 ![1707456825303](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/1707456825303.png)
 
@@ -46,6 +48,10 @@
 
 > 这和即将上课倒计时不是一个东西。要调整即将上课倒计时，请在【提醒】选项卡中调整相关设置。
 
-应用默认会在时间点结束前60秒在显示附加信息的位置显示时间点结束读秒。您可以在设置中调整此功能。
+应用默认会在时间点结束前60秒在显示附加信息的位置显示时间点结束读秒。
+
+![1707463775853](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/1707463775853.png)
+
+您可以在设置中调整此功能。
 
 ![1707456835205](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/1707456835205.png)

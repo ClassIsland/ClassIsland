@@ -40,6 +40,8 @@
 
 新插入的上课类型时间点默认长40分钟，课间休息时间点默认长10分钟。您可以在应用设置中修改这个默认值。
 
+![1707463956987](pack://application:,,,/ClassIsland;component/Assets/Documents/image/TimeLayout/1707463956987.png)
+
 ### 编辑时间点
 
 选中的时间点详细信息会显示在视图右侧，您可以在此处修改选中的时间点的详细信息。
@@ -64,6 +66,6 @@
 
 ### 删除时间表
 
-![1707455170854](pack://application:,,,/ClassIsland;component/Assets/Documents/image/TimeLayout/1707455170854.png)
-
 点击工具栏中【删除时间表】按钮即可删除时间表。删除时间表时，时间表必须没有被任何课表使用，否则将无法删除。
+
+![1707455170854](pack://application:,,,/ClassIsland;component/Assets/Documents/image/TimeLayout/1707455170854.png)
