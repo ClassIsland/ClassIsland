@@ -154,7 +154,7 @@ public partial class MainWindow : Window
             Settings = ViewModel.Settings
         };
         SettingsWindow.Closed += (o, args) => SaveSettings();
-        HelpsWindow = new HelpsWindow();
+        HelpsWindow = App.GetService<HelpsWindow>();
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
     }
@@ -670,7 +670,7 @@ public partial class MainWindow : Window
         OpenSettingsWindow();
     }
 
-    private void OpenSettingsWindow()
+    public void OpenSettingsWindow()
     {
         if (!SettingsWindow.IsOpened)
         {
@@ -816,7 +816,7 @@ public partial class MainWindow : Window
         OpenProfileSettingsWindow();
     }
 
-    private void OpenProfileSettingsWindow()
+    public void OpenProfileSettingsWindow()
     {
         if (!ProfileSettingsWindow.IsOpened)
         {

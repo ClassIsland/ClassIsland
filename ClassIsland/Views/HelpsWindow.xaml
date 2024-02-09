@@ -19,8 +19,10 @@
                    Icon="/Assets/AppLogo.ico"
                    Height="600" Width="1200"
                    MinWidth="1200"
-                   Closing="HelpsWindow_OnClosing"
->
+                   Closing="HelpsWindow_OnClosing">
+    <controls:MyWindow.CommandBindings>
+        <CommandBinding Command="{x:Static local:HelpsWindow.HyperlinkCommand}" Executed="CommandBinding_OnExecuted"/>
+    </controls:MyWindow.CommandBindings>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="256"/>
@@ -56,8 +58,11 @@
                                          HorizontalContentAlignment="Stretch"
                                          x:Name="Viewer"
                                          ScrollViewer.CanContentScroll="True"
-                                         IsToolBarVisible="False">
-
+                                         IsToolBarVisible="False"
+                                         ToolTipService.Placement="MousePoint">
+                <mdxaml:MarkdownScrollViewer.Engine>
+                    <mdxaml:Markdown HyperlinkCommand="{x:Static local:HelpsWindow.HyperlinkCommand}"/>
+                </mdxaml:MarkdownScrollViewer.Engine>
                 <mdxaml:MarkdownScrollViewer.Resources>
                     <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
                         <Setter Property="HorizontalAlignment" Value="Stretch"/>

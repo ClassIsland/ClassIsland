@@ -194,7 +194,7 @@ public partial class App : Application
             //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
-
+        
         Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
@@ -220,6 +220,7 @@ public partial class App : Application
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
                 services.AddSingleton<ProfileSettingsWindow>();
+                services.AddSingleton<HelpsWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

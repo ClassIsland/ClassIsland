@@ -551,4 +551,33 @@ public partial class SettingsWindow : MyWindow
         MessageBox.Show(this, dialog.ExecutedActionIndex.ToString(), "ExecutedActionIndex", MessageBoxButton.OK,
             MessageBoxImage.Information, MessageBoxResult.OK);
     }
+
+    public void OpenUri(Uri uri)
+    {
+        if (uri.Segments.Length <= 2)
+            return;
+        var uriSegment = uri.Segments[2].EndsWith('/') ? uri.Segments[2][..^1] : uri.Segments[2] ;
+        RootTabControl.SelectedIndex = uriSegment switch
+        {
+            "general" => 0,
+            "appearance" => 1,
+            "notification" => 2,
+            "window" => 3,
+            "weather" => 4,
+            "update" => 5,
+            "privacy" => 6,
+            "about" => 7,
+            "debug" => 8,
+            "debug_brushes" => 9,
+            _ => RootTabControl.SelectedIndex
+        };
+        if (uri.Segments.Length <= 3)
+            return;
+        switch (uriSegment)
+        {
+            case "notification":
+                ViewModel.NotificationSettingsSelectedProvider = uri.Segments[3].ToLower();
+                break;
+        }
+    }
 }

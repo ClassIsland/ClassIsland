@@ -12,10 +12,10 @@
 
 您可以点击主菜单中【清除所有提醒】按钮来清除当前显示的提醒（如图）。
 
-![1694923928375](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Notifications/1694923928375.png)
+![1694923928375](pack://application:,,,/ClassIsland;component/Assets/Documents/image/notifications/1694923928375.png)
 
 ## 提醒设置
 
-您可以在【设置】->【提醒】中调整相关提醒的设置。
+您可以在[【设置】->【提醒】](ci://app/settings/notification)中调整相关提醒的设置。
 
-![1694923983253](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Notifications/1694923983253.png)
+![1694923983253](pack://application:,,,/ClassIsland;component/Assets/Documents/image/notifications/1694923983253.png)

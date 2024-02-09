@@ -19,6 +19,7 @@ using ClassIsland.Controls;
 using ClassIsland.ViewModels;
 using MdXaml;
 using Microsoft.AppCenter.Analytics;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views;
 
@@ -27,6 +28,7 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class HelpsWindow : MyWindow
 {
+    public static readonly ICommand HyperlinkCommand = new RoutedCommand();
     public HelpsViewModel ViewModel
     {
         get;
@@ -39,8 +41,11 @@ public partial class HelpsWindow : MyWindow
         set;
     } = false;
 
-    public HelpsWindow()
+    private ILogger<HelpsWindow> Logger { get; }
+
+    public HelpsWindow(ILogger<HelpsWindow> logger)
     {
+        Logger = logger;
         DataContext = this;
         InitializeComponent();
     }
@@ -115,6 +120,7 @@ public partial class HelpsWindow : MyWindow
             return;
         }
         var md = new StreamReader(r).ReadToEnd();
+        
         var e = new Markdown()
         {
             Heading1Style = (Style)FindResource("MarkdownHeadline1Style"),
@@ -126,6 +132,7 @@ public partial class HelpsWindow : MyWindow
             BlockquoteStyle = (Style)FindResource("MarkdownQuoteStyle"),
             ImageStyle = (Style)FindResource("MarkdownImageStyle"),
         };
+        e.HyperlinkCommand = HyperlinkCommand;
         var fd = e.Transform(md);
         fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
         fd.IsOptimalParagraphEnabled = true;
@@ -196,5 +203,52 @@ public partial class HelpsWindow : MyWindow
     {
         ViewModel.CanBack = ViewModel.NavigationIndex > 0;
         ViewModel.CanForward = ViewModel.NavigationIndex + 1 < ViewModel.NavigationHistory.Count;
+    }
+
+    private void CommandBinding_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        var p = e.Parameter;
+        Console.WriteLine( p.ToString() );
+        if (e.Parameter is not string s)
+            return;
+        Uri uri;
+        try
+        {
+            uri = new Uri(s);
+        }
+        catch (Exception ex)
+        {
+            CoreNavigateTo(s);
+            return;
+        }
+
+        if (uri.Scheme != "ci")
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(uri.ToString())
+                {
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "Unable to open external link.");
+            }
+            return;
+        }
+        if (uri.Host != "app" || uri.Segments.Length <= 1)
+            return;
+        var mw = App.GetService<MainWindow>();
+        switch (uri.Segments[1])
+        {
+            case "settings/":
+                mw.OpenSettingsWindow();
+                mw.SettingsWindow.OpenUri(uri);
+                break;
+            case "profile":
+                mw.OpenProfileSettingsWindow();
+                break;
+        }
     }
 }
