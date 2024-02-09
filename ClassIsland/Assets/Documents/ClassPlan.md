@@ -21,7 +21,7 @@
 
 您也可以禁用课表自动启用，这样课表不会自动加载，只能手动启用。
 
-## 临时课表
+## 临时课表与临时层
 
 ![1690343176833](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1690343176833.png)
 
@@ -33,3 +33,27 @@
 ![1690343249191](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1690343249191.png)
 
 ![1690343286378](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1690343286378.png)
+
+此外，您可以为一个课表创建临时层。临时层与临时课表相似，会在第二天删除。但您可以单独编辑临时层的课程安排，并不影响原课表。有临时层启用时，将自动覆盖临时课表。
+
+您可以在临时层的课表信息界面中将其转换为普通课表（如图）。
+
+![1707455109839](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1707455109839.png)
+
+## 换课
+
+打开应用主菜单，点击【换课】按钮即可临时调换课程。以下是换课功能的使用方法。
+
+- 打开主菜单，点击【换课】打开换课界面。
+
+- 选择要调整的课程
+
+![1707454652947](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1707454652947.png)
+
+- 选择要与刚才选择的课程对调的课程，点击高亮按钮可以切换换课模式。点击【确认换课】以完成换课操作。
+
+![1707454940548](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1707454940548.png)
+
+![1707454793087](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ClassPlan/1707454793087.png)
+
+完成换课后，应用会创建一个原课表的临时层，并在临时层上调整课程安排，调整只在当日生效。您也可以勾选【永久换课】复选框，直接将换课安排写入原课表。

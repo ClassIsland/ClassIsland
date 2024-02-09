@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.ViewModels;
 using MdXaml;
@@ -60,12 +61,13 @@ public partial class HelpsWindow : MyWindow
         //ViewModel.HelpDocuments.Add("测试", "/Assets/Documents/HelloWorld.md");
         ViewModel.HelpDocuments.Add("欢迎", "/Assets/Documents/Welcome.md");
         ViewModel.HelpDocuments.Add("基本", "/Assets/Documents/Basic.md");
-        ViewModel.HelpDocuments.Add("简略信息", "/Assets/Documents/MiniInfo.md");
+        //ViewModel.HelpDocuments.Add("简略信息", "/Assets/Documents/MiniInfo.md");
         ViewModel.HelpDocuments.Add("提醒", "/Assets/Documents/Notifications.md");
         ViewModel.HelpDocuments.Add("档案设置", "/Assets/Documents/ProfileSettingsPage.md");
         ViewModel.HelpDocuments.Add("课表", "/Assets/Documents/ClassPlan.md");
         ViewModel.HelpDocuments.Add("时间表", "/Assets/Documents/TimeLayout.md");
         ViewModel.HelpDocuments.Add("科目", "/Assets/Documents/Subject.md");
+        ViewModel.HelpDocuments.Add("进阶功能", "/Assets/Documents/Advanced.md");
 
         ViewModel.SelectedDocumentName = "欢迎";
     }
@@ -85,7 +87,7 @@ public partial class HelpsWindow : MyWindow
         }
     }
 
-    private void CoreNavigateTo(string name)
+    private async void CoreNavigateTo(string name)
     {
         Analytics.TrackEvent("浏览帮助文档",
         new Dictionary<string, string>
@@ -93,8 +95,16 @@ public partial class HelpsWindow : MyWindow
             { "Name", name }
         });
         //ScrollViewerDocument.ScrollToTop();
+        ViewModel.IsLoading = true;
+        ViewModel.Document = new FlowDocument();
+        //var sw = new Stopwatch();
+        //sw.Start();
+        await Dispatcher.Yield();
         ConvertMarkdown(ViewModel.HelpDocuments[name]);
         ViewModel.SelectedDocumentName = name;
+        await Dispatcher.Yield();
+        //Console.WriteLine(sw.Elapsed.ToString());
+        ViewModel.IsLoading = false;
     }
 
     private void ConvertMarkdown(string path)
@@ -118,6 +128,7 @@ public partial class HelpsWindow : MyWindow
         };
         var fd = e.Transform(md);
         fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
+        fd.IsOptimalParagraphEnabled = true;
         //fd.MaxPageWidth = 850;
         ViewModel.Document = fd;
     }

@@ -54,13 +54,16 @@
                                          FontWeight="Normal"
                                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                                          HorizontalContentAlignment="Stretch"
-                                         materialDesign:ScrollViewerAssist.BubbleVerticalScroll="True">
+                                         x:Name="Viewer"
+                                         ScrollViewer.CanContentScroll="True"
+                                         IsToolBarVisible="False">
 
                 <mdxaml:MarkdownScrollViewer.Resources>
                     <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
                         <Setter Property="HorizontalAlignment" Value="Stretch"/>
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
                         <Setter Property="CanContentScroll" Value="True"/>
+                        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
                     </Style>
                 </mdxaml:MarkdownScrollViewer.Resources>
                 <mdxaml:MarkdownScrollViewer.Style>
@@ -72,6 +75,17 @@
                 </mdxaml:MarkdownScrollViewer.Style>
             </mdxaml:MarkdownScrollViewer>
         </materialDesign:ColorZone >
+        <!-- Loading -->
+        <materialDesign:ColorZone Grid.Column="1" Grid.Row="1"
+                                  Mode="Standard"
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  Background="{DynamicResource MaterialDesignPaper}"
+                                  Visibility="{Binding ViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <controls:TeyvatLoadingControl VerticalAlignment="Bottom"
+                                           HorizontalAlignment="Right"
+                                           Margin="0 0 80 40"/>
+        </materialDesign:ColorZone>
         <!--<materialDesign:ColorZone Grid.Column="1" Mode="Light" VerticalAlignment="Stretch">
             <mdxaml:MarkdownScrollViewer Source="/Assets/Documents/HelloWorld.md"
                                          FontFamily="{StaticResource HarmonyOsSans}"/>
@@ -91,7 +105,7 @@
                                   Mode="PrimaryMid"
                                   Padding="16">
             <Grid>
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" IsEnabled="{Binding ViewModel.IsLoading, Converter={StaticResource InvertBooleanConverter}}">
                     <Button ToolTip="后退"
                             VerticalAlignment="Center"
                             Padding="0"
@@ -117,6 +131,7 @@
                                        ToolTip="当前的帮助文档"
                                        Text="{Binding ViewModel.SelectedDocumentName, Mode=OneWay}"/>
                 </StackPanel>
+                
             </Grid>
         </materialDesign:ColorZone>
     </Grid>

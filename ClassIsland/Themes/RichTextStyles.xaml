@@ -2,9 +2,10 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:gif="http://wpfanimatedgif.codeplex.com">
     <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
-        <Setter Property="LineHeight" Value="1.5"/>
+        <Setter Property="LineHeight" Value="24"/>
         <Setter Property="FontWeight" Value="Regular"/>
         <Setter Property="FontSize" Value="16"/>
+        <Setter Property="TextAlignment" Value="Left"/>
         <Setter Property="Margin" Value="0 0 0 16"/>
     </Style>
 

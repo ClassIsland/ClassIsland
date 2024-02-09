@@ -16,6 +16,7 @@ public class HelpsViewModel : ObservableRecipient
     private int _navigationIndex = -1;
     private bool _canForward = false;
     private bool _canBack = false;
+    private bool _isLoading = true;
 
     public FlowDocument Document
     {
@@ -101,6 +102,17 @@ public class HelpsViewModel : ObservableRecipient
         {
             if (value == _canForward) return;
             _canForward = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (value == _isLoading) return;
+            _isLoading = value;
             OnPropertyChanged();
         }
     }

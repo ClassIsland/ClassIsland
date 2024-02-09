@@ -1889,8 +1889,8 @@ The quick brown fox jumps over a lazy dog.
                                                           IsSelectionEnabled="{Binding Settings.IsDebugEnabled, Mode=OneWay}"
                                                           PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
                                                           ContextMenu="{x:Null}">
-                                    <FlowDocument FontFamily="{StaticResource HarmonyOsSans}">
-                                        <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
+                                        <FlowDocument FontFamily="{StaticResource HarmonyOsSans}" IsOptimalParagraphEnabled="True">
+                                            <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
                                             关于本应用
                                         </Paragraph>
                                         <Paragraph>
