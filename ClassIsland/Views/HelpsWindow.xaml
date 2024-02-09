@@ -18,7 +18,7 @@
                    d:DataContext="{d:DesignInstance local:HelpsWindow}"
                    Icon="/Assets/AppLogo.ico"
                    Height="600" Width="1200"
-                   MinWidth="1040"
+                   MinWidth="1200"
                    Closing="HelpsWindow_OnClosing"
 >
     <Grid>
@@ -49,16 +49,28 @@
         <!-- 文档 -->
         <materialDesign:ColorZone Grid.Column="1" Grid.Row="1"
                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <ScrollViewer x:Name="ScrollViewerDocument" materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
-                <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.Document}"
-                                             FontFamily="{StaticResource HarmonyOsSans}"
-                                             FontWeight="Normal"
-                                             ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                             HorizontalContentAlignment="Center"
-                                             PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+            <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.Document}"
+                                         FontFamily="{StaticResource HarmonyOsSans}"
+                                         FontWeight="Normal"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                         HorizontalContentAlignment="Stretch"
+                                         materialDesign:ScrollViewerAssist.BubbleVerticalScroll="True">
 
-                </mdxaml:MarkdownScrollViewer>
-            </ScrollViewer>
+                <mdxaml:MarkdownScrollViewer.Resources>
+                    <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="CanContentScroll" Value="True"/>
+                    </Style>
+                </mdxaml:MarkdownScrollViewer.Resources>
+                <mdxaml:MarkdownScrollViewer.Style>
+                    <Style TargetType="mdxaml:MarkdownScrollViewer">
+                        <Style.Resources>
+                            
+                        </Style.Resources>
+                    </Style>
+                </mdxaml:MarkdownScrollViewer.Style>
+            </mdxaml:MarkdownScrollViewer>
         </materialDesign:ColorZone >
         <!--<materialDesign:ColorZone Grid.Column="1" Mode="Light" VerticalAlignment="Stretch">
             <mdxaml:MarkdownScrollViewer Source="/Assets/Documents/HelloWorld.md"

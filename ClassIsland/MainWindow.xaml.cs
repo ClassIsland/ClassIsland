@@ -71,7 +71,7 @@ public partial class MainWindow : Window
         get;
     } = new(DispatcherPriority.Render)
     {
-        Interval = TimeSpan.FromMilliseconds(25)
+        Interval = TimeSpan.FromMilliseconds(50)
     };
 
     private HelpsWindow HelpsWindow

@@ -92,7 +92,7 @@ public partial class HelpsWindow : MyWindow
         {
             { "Name", name }
         });
-        ScrollViewerDocument.ScrollToTop();
+        //ScrollViewerDocument.ScrollToTop();
         ConvertMarkdown(ViewModel.HelpDocuments[name]);
         ViewModel.SelectedDocumentName = name;
     }
@@ -113,11 +113,12 @@ public partial class HelpsWindow : MyWindow
             Heading4Style = (Style)FindResource("MarkdownHeadline4Style"),
             //CodeBlockStyle = (Style)FindResource("MarkdownCodeBlockStyle"),
             //NoteStyle = (Style)FindResource("MarkdownNoteStyle"),
+            BlockquoteStyle = (Style)FindResource("MarkdownQuoteStyle"),
             ImageStyle = (Style)FindResource("MarkdownImageStyle"),
         };
         var fd = e.Transform(md);
         fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
-        fd.MaxPageWidth = 750;
+        //fd.MaxPageWidth = 850;
         ViewModel.Document = fd;
     }
 

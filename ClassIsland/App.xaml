@@ -24,6 +24,7 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Flyout.xaml" />
                 <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
                 <ResourceDictionary Source="/Themes/Generic.xaml"/>
+                <ResourceDictionary Source="/Themes/RichTextStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <system:String x:Key="TestStringLong">
                 某一日，祂从天坠落。人们抬头仰望，于是看见了星空。星月送来神的女儿，她愿成为人的伴侣。长风化作她的轺车，四海落成她的园圃。鸟雀衔来善的种子，百花编织爱的颂歌。她便是这样降生于世，行于大地，与人类一同长大，与世界一起发芽。而今，终焉之时将至。而今，归去之时已至。就此告别吧，美丽的世界。此后，将有群星闪耀，因为我如今来过。此后，将有百花绽放，因为我从未离去。请将我的箭、我的花、与我的爱，织成新生的种子，带向那枯萎的大地。然后，便让它开出永恒而无瑕的…人性之华吧。我名为爱莉希雅……最初的律者，人之律者。
@@ -63,94 +64,6 @@
                 <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
                 <Setter Property="UseLayoutRounding" Value="True"/>
                 <Setter Property="SnapsToDevicePixels" Value="True"/>
-            </Style>
-
-            <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
-                <Setter Property="LineHeight" Value="22"/>
-                <Setter Property="FontWeight" Value="Regular"/>
-                <Setter Property="FontSize" Value="14"/>
-            </Style>
-
-            <Style TargetType="Paragraph" BasedOn="{StaticResource MarkdownParagraphBaseStyle}"/>
-
-            <Style x:Key="MarkdownImageStyle" TargetType="Image">
-                <Setter Property="Stretch" Value="Uniform"/>
-                <Setter Property="MaxWidth" Value="700"/>
-                <Setter Property="Margin" Value="0 0"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="gif:ImageBehavior.AutoStart" Value="True"/>
-                <Setter Property="gif:ImageBehavior.AnimationSpeedRatio" Value="1"/>
-            </Style>
-
-            <Style x:Key="MarkdownHeadline1Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 10, 0, 10"/>
-                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="32"/>
-                <Setter Property="FontWeight"  Value="Bold" />
-            </Style>
-
-            <Style x:Key="MarkdownHeadline2Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 10, 0, 10"/>
-                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="24"/>
-                <Setter Property="FontWeight"  Value="Medium" />
-            </Style>
-
-            <Style x:Key="MarkdownHeadline3Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 6, 0, 6"/>
-                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="16" />
-                <Setter Property="FontWeight"  Value="Medium" />
-            </Style>
-
-            <Style x:Key="MarkdownHeadline4Style" TargetType="Paragraph">
-                <Setter Property="Margin" Value="0, 6, 0, 4"/>
-                <Setter Property="Foreground"  Value="{DynamicResource MaterialDesignBody}" />
-                <Setter Property="FontSize"    Value="16"/>
-                <Setter Property="FontWeight"  Value="Light" />
-            </Style>
-
-            <Style x:Key="MarkdownCodeBlockStyle" TargetType="Paragraph">
-                <Setter Property="FontFamily"      Value="Courier New"/>
-                <Setter Property="Foreground"      Value="DarkBlue"/>
-                <Setter Property="Background"      Value="#EEEEEE"/>
-                <Setter Property="BorderBrush"     Value="#DEDEDE"/>
-                <Setter Property="BorderThickness" Value="0,5,0,5"/>
-                <Setter Property="Margin"          Value="5,0,5,0"/>
-            </Style>
-
-            <Style x:Key="MarkdownNoteStyle" TargetType="Paragraph">
-                <Setter Property="Margin"      Value="5,0,5,0"/>
-                <Setter Property="Padding"     Value="10, 5"/>
-                <Setter Property="BorderBrush" Value="#DEDEDE"/>
-                <Setter Property="BorderThickness" Value="3,3,3,3"/>
-                <Setter Property="Background"  Value="#FAFAFA"/>
-            </Style>
-
-            <Style TargetType="Table" >
-                <Setter Property="CellSpacing" Value="0"/>
-                <Setter Property="BorderThickness" Value="0.5"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
-            </Style>
-
-            <Style TargetType="TableRowGroup">
-                <Style.Triggers>
-                    <Trigger Property="Tag" Value="TableHeader">
-                        <Setter Property="FontWeight" Value="DemiBold"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="TableCell">
-                <Setter Property="BorderThickness" Value="0.5"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource MaterialDesignBody}"/>
-                <Setter Property="Padding" Value="8"/>
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TableRow}}, Path=Tag}" Value="EvenTableRow">
-                        <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground
-}"/>
-                    </DataTrigger>
-                </Style.Triggers>
             </Style>
 
             <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">

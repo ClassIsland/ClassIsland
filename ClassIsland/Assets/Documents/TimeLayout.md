@@ -18,7 +18,7 @@
 
 ## 时间点编辑
 
-| 你无法编辑已启用的课表使用的活动的时间表。
+> 你无法编辑已启用的课表使用的活动的时间表。
 
 ![1690343828036](pack://application:,,,/ClassIsland;component/Assets/Documents/image/TimeLayout/1690343828036.png)
 

@@ -221,9 +221,24 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
                 CurrentClassPlan.Classes.CollectionChanged += ClassesOnCollectionChanged;
                 //Debug.WriteLine("Add event listener to CurrentClassPlan.PropertyChanged.");
                 break;
+            case nameof(IsSelected):
+                UpdateUpdateTimerStatus();
+                break;
         }
 
         base.OnPropertyChanged(e);
+    }
+
+    private void UpdateUpdateTimerStatus()
+    {
+        if (IsSelected)
+        {
+            UpdateTimer.Start();
+        }
+        else
+        {
+            UpdateTimer.Stop();
+        }
     }
 
     private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -284,7 +299,6 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     {
         InitializeComponent();
         UpdateTimer.Tick += UpdateTimerOnTick;
-        UpdateTimer.Start();
     }
 
     private void UpdateTimerOnTick(object? sender, EventArgs e)
@@ -294,6 +308,12 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
             return;
         }
         UpdateSeconds();
+    }
+
+    protected override void OnInitialized(EventArgs e)
+    {
+        UpdateUpdateTimerStatus();
+        base.OnInitialized(e);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

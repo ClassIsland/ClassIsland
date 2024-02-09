@@ -17,4 +17,3 @@ using System.Windows;
 [assembly: AssemblyTitle("ClassIsland")]
 [assembly: AssemblyProduct("ClassIsland")]
 [assembly: SupportedOSPlatform("Windows")]
-[assembly: AssemblyInformationalVersion($"1.2.2.0-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})")]
