@@ -572,7 +572,8 @@
                                              HorizontalContentAlignment="Stretch"
                                              Style="{StaticResource NavigationListBox}"
                                              ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             x:Name="ListViewClassPlans" ScrollViewer.CanContentScroll="False">
+                                             x:Name="ListViewClassPlans"
+                                             VirtualizingPanel.ScrollUnit="Pixel">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid>
@@ -658,7 +659,8 @@
                                                   CanUserAddRows="False" 
                                                   CanUserSortColumns="False"
                                                   RowHeaderWidth="150"
-                                                  ScrollViewer.CanContentScroll="False"
+                                                  VirtualizingPanel.IsVirtualizing="True"
+                                                  VirtualizingPanel.ScrollUnit="Pixel"
                                                   x:Name="DataGridClassPlans"
                                                   UnloadingRow="DataGridClassPlans_OnUnloadingRow"
                                                   BeginningEdit="DataGridClassPlans_OnBeginningEdit"
@@ -751,10 +753,11 @@
                                              SelectionMode="Single"
                                              Style="{StaticResource NavigationListBox}"
                                              HorizontalContentAlignment="Stretch"
-                                             ScrollViewer.CanContentScroll="False"
                                              SelectionChanged="ListViewTimeLayouts_OnSelectionChanged"
                                              ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                                             x:Name="ListViewTimeLayouts">
+                                             x:Name="ListViewTimeLayouts"
+                                             VirtualizingPanel.IsVirtualizing="True"
+                                             VirtualizingPanel.ScrollUnit="Pixel">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid HorizontalAlignment="Stretch">
@@ -863,7 +866,8 @@
                                                  Visibility="Collapsed"
                                                  ToolTip="列表" Padding="4">
                                             <ListBox SelectionMode="Single"
-                                                     ScrollViewer.CanContentScroll="False"
+                                                     VirtualizingPanel.IsVirtualizing="True"
+                                                     VirtualizingPanel.ScrollUnit="Pixel"
                                                      SelectedItem="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
                                                      ItemsSource="{Binding Layouts, Mode=OneWay}"
                                                      x:Name="ListViewTimePoints"
@@ -1266,7 +1270,9 @@
                                               SelectedValue="{Binding ViewModel.SelectedSubject}"
                                               SelectionUnit="FullRow"
                                               GridLinesVisibility="All"
-                                              CanUserSortColumns="False">
+                                              CanUserSortColumns="False"
+                                              VirtualizingPanel.IsVirtualizing="True"
+                                              VirtualizingPanel.ScrollUnit="Pixel">
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn Header="" IsReadOnly="True"
                                                                     Width="50">
