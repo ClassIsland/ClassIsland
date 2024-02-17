@@ -9,6 +9,10 @@
       "remoteDebugEnabled": true,
       "remoteDebugMachine": "DESKTOP-P5BG208:4026",
       "authenticationMode": "Windows"
+    },
+    "ClassIsland (Quiet)": {
+      "commandName": "Project",
+      "commandLineArgs": "--quiet -psmk"
     }
   }
 }

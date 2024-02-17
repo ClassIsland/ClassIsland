@@ -2017,7 +2017,7 @@ The quick brown fox jumps over a lazy dog.
                                     </Style>
                                 </StackPanel.Resources>
                                 <TextBlock Text="调试" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-                                <TextBlock Margin="0 12">
+                                <TextBlock Margin="0 12" Foreground="IndianRed">
                                     <Run Text="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"></Run>
                                 </TextBlock>
 
@@ -2031,7 +2031,10 @@ The quick brown fox jumps over a lazy dog.
                                 <MenuItem Icon="{materialDesign:PackIcon Bomb}"
                                           Header="CrashTest"
                                           Click="ButtonCrash_OnClick" />
-                                <MenuItem Icon="{materialDesign:PackIcon MessageOutline}"
+                                <MenuItem Icon="{materialDesign:PackIcon Bomb}"
+                                          Header="内存泄露100MB"
+                                          Click="MenuItemMemoryLeakTest_OnClick" />
+                                    <MenuItem Icon="{materialDesign:PackIcon MessageOutline}"
                                           Header="ToastMe!"
                                           Click="ButtonDebugToastText_OnClick"/>
                                 <Separator/>

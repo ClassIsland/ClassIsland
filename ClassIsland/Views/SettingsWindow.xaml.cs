@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,6 +30,7 @@ using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.Win32.SafeHandles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
@@ -90,6 +92,8 @@ public partial class SettingsWindow : MyWindow
     {
         get;
     }
+
+    private List<byte[]> _testMemoryLeakList = new();
 
     public DiagnosticService DiagnosticService { get; }
 
@@ -587,5 +591,10 @@ public partial class SettingsWindow : MyWindow
     private void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.DiagnosticInfo = DiagnosticService.GetDiagnosticInfo();
+    }
+
+    private async void MenuItemMemoryLeakTest_OnClick(object sender, RoutedEventArgs e)
+    {
+        
     }
 }

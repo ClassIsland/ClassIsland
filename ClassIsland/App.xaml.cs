@@ -72,7 +72,7 @@ public partial class App : Application
             0);
     }
 
-    public ApplicationCommand ApplicationCommand
+    public static ApplicationCommand ApplicationCommand
     {
         get;
         set;
@@ -96,8 +96,8 @@ public partial class App : Application
             GC.Collect();
         }
         Logger?.LogCritical(e.Exception, "发生严重错误。");
-        Settings.DiagnosticCrashCount++;
-        Settings.DiagnosticLastCrashTime = DateTime.Now;
+        //Settings.DiagnosticCrashCount++;
+        //Settings.DiagnosticLastCrashTime = DateTime.Now;
         CrashWindow = new CrashWindow()
         {
             CrashInfo = e.Exception.ToString()
@@ -129,9 +129,11 @@ public partial class App : Application
         await AppCenter.SetEnabledAsync(false);
         var command = new RootCommand
         {
-            new Option<string>(new []{"--updateReplaceTarget", "-urt"}, "更新时要替换的文件"),
-            new Option<string>(new []{"--updateDeleteTarget", "-udt"}, "更新完成要删除的文件"),
-            new Option<bool>(new []{"--waitMutex", "-m"}, "重复启动应用时，等待上一个实例退出而非直接退出应用。")
+            new Option<string>(["--updateReplaceTarget", "-urt"], "更新时要替换的文件"),
+            new Option<string>(["--updateDeleteTarget", "-udt"], "更新完成要删除的文件"),
+            new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
+            new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
+            new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束")
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) =>
         {
@@ -145,7 +147,14 @@ public partial class App : Application
         {
             if (ApplicationCommand.WaitMutex)
             {
-                Mutex.WaitOne();
+                try
+                {
+                    Mutex.WaitOne();
+                }
+                catch
+                {
+                    // ignored
+                }
             }
             else
             {
@@ -214,6 +223,8 @@ public partial class App : Application
                 //services.AddHostedService<BootService>();
                 services.AddSingleton<UpdateNodeSpeedTestingService>();
                 services.AddSingleton<DiagnosticService>();
+                services.AddHostedService<MemoryWatchDogService>();
+                //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
@@ -240,11 +251,17 @@ public partial class App : Application
             }).Build();
         Settings = GetService<SettingsService>().Settings;
         Settings.DiagnosticStartupCount++;
+        // 记录MLE
+        if (ApplicationCommand.PrevSessionMemoryKilled)
+        {
+            Settings.DiagnosticMemoryKillCount++;
+            Settings.DiagnosticLastMemoryKillTime = DateTime.Now;
+        }
         ConsoleService.ConsoleVisible = Settings.IsDebugConsoleEnabled;
         //OverrideFocusVisualStyle();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");
-        if (Settings.IsSplashEnabled)
+        if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             GetService<SplashWindow>().Show();
             //await Dispatcher.InvokeAsync(() =>

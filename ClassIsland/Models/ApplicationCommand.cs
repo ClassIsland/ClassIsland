@@ -19,4 +19,9 @@ public class ApplicationCommand
         get;
         set;
     } = false;
+
+    public bool Quiet { get; set; } = false;
+
+    public bool PrevSessionMemoryKilled { get; set; } = false;
+
 }

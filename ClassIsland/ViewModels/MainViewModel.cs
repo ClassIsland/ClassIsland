@@ -41,6 +41,7 @@ public class MainViewModel : ObservableRecipient
     private bool _isClosing = false;
     private bool _isClassPlanEnabled = true;
     private bool _isBusy = false;
+    private DateTime _firstProcessNotifications = DateTime.MinValue;
 
     public Profile Profile
     {
@@ -385,6 +386,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isBusy) return;
             _isBusy = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime FirstProcessNotifications
+    {
+        get => _firstProcessNotifications;
+        set
+        {
+            if (value.Equals(_firstProcessNotifications)) return;
+            _firstProcessNotifications = value;
             OnPropertyChanged();
         }
     }

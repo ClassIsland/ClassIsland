@@ -354,19 +354,6 @@ public partial class MainWindow : Window
         // 处理提醒请求队列
         await ProcessNotification();
 
-        // Update percents
-        //if (ViewModel.IsOverlayOpened && 
-        //    ViewModel.OverlayRemainStopwatch.IsRunning)
-        //{
-        //    var request = ViewModel.CurrentNotificationRequest;
-        //    var totalMs = request.OverlayDuration.TotalMilliseconds;
-        //    var ms = ViewModel.OverlayRemainStopwatch.ElapsedMilliseconds;
-        //    if (totalMs > 0)
-        //    {
-        //        ViewModel.OverlayRemainTimePercents = (totalMs - ms) / totalMs;
-        //    }
-        //}
-
         // Finished update
         ViewModel.Today = DateTime.Now;
         MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
@@ -379,7 +366,13 @@ public partial class MainWindow : Window
             return;
         }
         ViewModel.IsOverlayOpened = true;  // 上锁
-        if (!ViewModel.Settings.IsNotificationEnabled)
+
+        if (ViewModel.FirstProcessNotifications == DateTime.MinValue)
+            ViewModel.FirstProcessNotifications = DateTime.Now;
+        if (!ViewModel.Settings.IsNotificationEnabled ||
+            (DateTime.Now - ViewModel.FirstProcessNotifications <= TimeSpan.FromSeconds(10) &&
+             App.ApplicationCommand.Quiet) // 静默启动
+           )
         {
             NotificationHostService.RequestQueue.Clear();
         }

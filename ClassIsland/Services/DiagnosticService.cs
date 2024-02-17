@@ -24,9 +24,9 @@ public class DiagnosticService(SettingsService settingsService)
                 settings.DiagnosticFirstLaunchTime.ToString(CultureInfo.CurrentCulture)
             },
             { nameof(settings.DiagnosticStartupCount), settings.DiagnosticStartupCount.ToString() },
-            {nameof(settings.DiagnosticCrashCount), settings.DiagnosticCrashCount.ToString()},
-            {nameof(settings.DiagnosticLastCrashTime), settings.DiagnosticLastCrashTime.ToString(CultureInfo.CurrentCulture)},
-            {nameof(settings.DiagnosticCrashFreqDay), settings.DiagnosticCrashFreqDay.ToString("F3")},
+            //{nameof(settings.DiagnosticCrashCount), settings.DiagnosticCrashCount.ToString()},
+            //{nameof(settings.DiagnosticLastCrashTime), settings.DiagnosticLastCrashTime.ToString(CultureInfo.CurrentCulture)},
+            //{nameof(settings.DiagnosticCrashFreqDay), settings.DiagnosticCrashFreqDay.ToString("F3")},
             {nameof(settings.DiagnosticMemoryKillCount), settings.DiagnosticMemoryKillCount.ToString()},
             {nameof(settings.DiagnosticLastMemoryKillTime), settings.DiagnosticLastMemoryKillTime.ToString(CultureInfo.CurrentCulture)},
             {nameof(settings.DiagnosticMemoryKillFreqDay), settings.DiagnosticMemoryKillFreqDay.ToString("F3")}
