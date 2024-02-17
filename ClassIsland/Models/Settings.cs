@@ -107,6 +107,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private Version _updateVersion = new Version();
     private Release _lastCheckUpdateInfoCacheGitHub = new Release();
     private string _updateDownloadUrl = "";
+    private DateTime _firstLaunchTime = DateTime.Now;
+    private long _diagnosticStartupCount = 0;
+    private int _diagnosticCrashCount = 0;
+    private DateTime _diagnosticLastCrashTime = DateTime.MinValue;
+    private int _diagnosticMemoryKillCount = 0;
+    private DateTime _diagnosticLastMemoryKillTime = DateTime.Now;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -968,6 +974,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
 
     #region Exp
 
+    [Obsolete]
     public bool ExpIsExcelImportEnabled
     {
         get => _expIsExcelImportEnabled;
@@ -978,6 +985,90 @@ public class Settings : ObservableRecipient, ILessonControlSettings
             OnPropertyChanged();
         }
     }
+
+    #endregion
+
+    #region Diagnose
+
+    public DateTime DiagnosticFirstLaunchTime
+    {
+        get => _firstLaunchTime;
+        set
+        {
+            if (value.Equals(_firstLaunchTime)) return;
+            _firstLaunchTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public long DiagnosticStartupCount
+    {
+        get => _diagnosticStartupCount;
+        set
+        {
+            if (value == _diagnosticStartupCount) return;
+            _diagnosticStartupCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int DiagnosticCrashCount
+    {
+        get => _diagnosticCrashCount;
+        set
+        {
+            if (value == _diagnosticCrashCount) return;
+            _diagnosticCrashCount = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(DiagnosticCrashFreqDay));
+        }
+    }
+
+    public DateTime DiagnosticLastCrashTime
+    {
+        get => _diagnosticLastCrashTime;
+        set
+        {
+            if (value.Equals(_diagnosticLastCrashTime)) return;
+            _diagnosticLastCrashTime = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(DiagnosticCrashFreqDay));
+        }
+    }
+
+    [JsonIgnore]
+    public double DiagnosticCrashFreqDay => DiagnosticCrashCount == 0
+        ? 0
+        : (DiagnosticLastCrashTime - DiagnosticFirstLaunchTime).TotalSeconds / 86400.0 * 1.0 / DiagnosticCrashCount;
+
+    public int DiagnosticMemoryKillCount
+    {
+        get => _diagnosticMemoryKillCount;
+        set
+        {
+            if (value == _diagnosticMemoryKillCount) return;
+            _diagnosticMemoryKillCount = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(DiagnosticMemoryKillFreqDay));
+        }
+    }
+
+    public DateTime DiagnosticLastMemoryKillTime
+    {
+        get => _diagnosticLastMemoryKillTime;
+        set
+        {
+            if (value.Equals(_diagnosticLastMemoryKillTime)) return;
+            _diagnosticLastMemoryKillTime = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(DiagnosticMemoryKillFreqDay));
+        }
+    }
+
+    [JsonIgnore]
+    public double DiagnosticMemoryKillFreqDay => DiagnosticMemoryKillCount == 0
+        ? 0
+        : (DiagnosticLastMemoryKillTime - DiagnosticFirstLaunchTime).TotalSeconds / 86400.0 * 1.0 / DiagnosticMemoryKillCount;
 
     #endregion
     public bool IsDebugEnabled

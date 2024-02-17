@@ -48,11 +48,11 @@ public partial class App : Application
     private CrashWindow? CrashWindow;
     private Mutex? Mutex;
     private ILogger<App>? Logger { get; set; }
-    public static IHost Host;
+    public static IHost? Host;
 
     public static T GetService<T>()
     {
-        var s = Host.Services.GetService(typeof(T));
+        var s = Host?.Services.GetService(typeof(T));
         if (s != null)
         {
             return (T)s;
@@ -78,6 +78,8 @@ public partial class App : Application
         set;
     } = new();
 
+    public Settings Settings { get; set; } = new();
+
     public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
     public static string AppCodeName => "Elysia";
@@ -94,14 +96,8 @@ public partial class App : Application
             GC.Collect();
         }
         Logger?.LogCritical(e.Exception, "发生严重错误。");
-
-        var exps = new ObservableCollection<Exception>();
-        var ex = e.Exception;
-        while (ex != null)
-        {
-            exps.Add(ex);
-            ex = ex.InnerException;
-        }
+        Settings.DiagnosticCrashCount++;
+        Settings.DiagnosticLastCrashTime = DateTime.Now;
         CrashWindow = new CrashWindow()
         {
             CrashInfo = e.Exception.ToString()
@@ -128,6 +124,7 @@ public partial class App : Application
         ConsoleService.InitializeConsole();
 
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
+        Crashes.SendingErrorReport += CrashesOnSendingErrorReport;
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
         var command = new RootCommand
@@ -216,6 +213,7 @@ public partial class App : Application
                 services.AddSingleton<ConsoleService>();
                 //services.AddHostedService<BootService>();
                 services.AddSingleton<UpdateNodeSpeedTestingService>();
+                services.AddSingleton<DiagnosticService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
@@ -240,11 +238,13 @@ public partial class App : Application
 #endif
                 });
             }).Build();
-        ConsoleService.ConsoleVisible = GetService<SettingsService>().Settings.IsDebugConsoleEnabled;
+        Settings = GetService<SettingsService>().Settings;
+        Settings.DiagnosticStartupCount++;
+        ConsoleService.ConsoleVisible = Settings.IsDebugConsoleEnabled;
         //OverrideFocusVisualStyle();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");
-        if (GetService<SettingsService>().Settings.IsSplashEnabled)
+        if (Settings.IsSplashEnabled)
         {
             GetService<SplashWindow>().Show();
             //await Dispatcher.InvokeAsync(() =>
@@ -303,6 +303,17 @@ public partial class App : Application
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
         GetService<SplashService>().CurrentProgress = 90;
+    }
+
+    private bool CategoryLevelFilter(string? arg1, LogLevel arg2)
+    {
+        
+        return true;
+    }
+
+    private void CrashesOnSendingErrorReport(object sender, SendingErrorReportEventArgs e)
+    {
+
     }
 
     private void OverrideFocusVisualStyle()

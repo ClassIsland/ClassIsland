@@ -91,6 +91,8 @@ public partial class SettingsWindow : MyWindow
         get;
     }
 
+    public DiagnosticService DiagnosticService { get; }
+
     public WeatherService WeatherService { get; } = App.GetService<WeatherService>();
 
     public SettingsWindow()
@@ -99,6 +101,7 @@ public partial class SettingsWindow : MyWindow
         TaskBarIconService = App.GetService<TaskBarIconService>();
         WallpaperPickingService = App.GetService<WallpaperPickingService>();
         MiniInfoProviderHostService = App.GetService<MiniInfoProviderHostService>();
+        DiagnosticService = App.GetService<DiagnosticService>();
         InitializeComponent();
         DataContext = this;
         var settingsService = App.GetService<SettingsService>();
@@ -579,5 +582,10 @@ public partial class SettingsWindow : MyWindow
                 ViewModel.NotificationSettingsSelectedProvider = uri.Segments[3].ToLower();
                 break;
         }
+    }
+
+    private void ButtonDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.DiagnosticInfo = DiagnosticService.GetDiagnosticInfo();
     }
 }

@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
@@ -38,6 +39,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using unvell.Common.Win32Lib;
 using Path = System.IO.Path;
+using ProgressBar = System.Windows.Controls.ProgressBar;
 using Window = System.Windows.Window;
 
 namespace ClassIsland;
@@ -73,6 +75,8 @@ public partial class MainWindow : Window
     {
         Interval = TimeSpan.FromMilliseconds(50)
     };
+
+    private Storyboard NotificationProgressBar { get; set; } = new Storyboard();
 
     private HelpsWindow HelpsWindow
     {
@@ -348,74 +352,100 @@ public partial class MainWindow : Window
 
         final:
         // 处理提醒请求队列
-        if (!ViewModel.IsOverlayOpened)
-        {
-            ViewModel.IsOverlayOpened = true;
-            if (!ViewModel.Settings.IsNotificationEnabled)
-            {
-                NotificationHostService.RequestQueue.Clear();
-            }
-            while (NotificationHostService.RequestQueue.Count > 0)
-            {
-                var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();
-                Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
-                if (request.TargetMaskEndTime != null)
-                {
-                    request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
-                }
-                if (request.TargetOverlayEndTime != null)
-                {
-                    request.OverlayDuration = request.TargetOverlayEndTime.Value - DateTime.Now - request.MaskDuration;
-                }
-                ViewModel.CurrentMaskElement = request.MaskContent;
-                var cancellationToken = request.CancellationTokenSource.Token;
-
-                if (request.MaskDuration > TimeSpan.Zero &&
-                    request.OverlayDuration > TimeSpan.Zero)
-                {
-                    BeginStoryboard("OverlayMaskIn");
-                    await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
-                    if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
-                    {
-                        BeginStoryboard("OverlayMaskOutDirect");
-                    }
-                    else
-                    {
-                        ViewModel.CurrentOverlayElement = request.OverlayContent;
-                        BeginStoryboard("OverlayMaskOut");
-                        ViewModel.OverlayRemainStopwatch.Restart();
-                        await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.OverlayDuration), cancellationToken);
-                        ViewModel.OverlayRemainStopwatch.Stop();
-                    }
-
-                }
-                if (NotificationHostService.RequestQueue.Count < 1)
-                {
-                    BeginStoryboard("OverlayOut");
-                }
-            }
-
-            ViewModel.CurrentOverlayElement = null;
-            ViewModel.CurrentMaskElement = null;
-            ViewModel.IsOverlayOpened = false;
-        }
+        await ProcessNotification();
 
         // Update percents
-        if (ViewModel.IsOverlayOpened && 
-            ViewModel.OverlayRemainStopwatch.IsRunning)
-        {
-            var request = ViewModel.CurrentNotificationRequest;
-            var totalMs = request.OverlayDuration.TotalMilliseconds;
-            var ms = ViewModel.OverlayRemainStopwatch.ElapsedMilliseconds;
-            if (totalMs > 0)
-            {
-                ViewModel.OverlayRemainTimePercents = (totalMs - ms) / totalMs;
-            }
-        }
+        //if (ViewModel.IsOverlayOpened && 
+        //    ViewModel.OverlayRemainStopwatch.IsRunning)
+        //{
+        //    var request = ViewModel.CurrentNotificationRequest;
+        //    var totalMs = request.OverlayDuration.TotalMilliseconds;
+        //    var ms = ViewModel.OverlayRemainStopwatch.ElapsedMilliseconds;
+        //    if (totalMs > 0)
+        //    {
+        //        ViewModel.OverlayRemainTimePercents = (totalMs - ms) / totalMs;
+        //    }
+        //}
 
         // Finished update
         ViewModel.Today = DateTime.Now;
         MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
+    }
+
+    private async Task ProcessNotification()
+    {
+        if (ViewModel.IsOverlayOpened)
+        {
+            return;
+        }
+        ViewModel.IsOverlayOpened = true;  // 上锁
+        if (!ViewModel.Settings.IsNotificationEnabled)
+        {
+            NotificationHostService.RequestQueue.Clear();
+        }
+
+        while (NotificationHostService.RequestQueue.Count > 0)
+        {
+            var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
+            Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
+            if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
+            {
+                request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
+            }
+
+            if (request.TargetOverlayEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
+            {
+                request.OverlayDuration = request.TargetOverlayEndTime.Value - DateTime.Now - request.MaskDuration;
+            }
+
+            ViewModel.CurrentMaskElement = request.MaskContent;  // 加载Mask元素
+            var cancellationToken = request.CancellationTokenSource.Token;
+
+            if (request.MaskDuration > TimeSpan.Zero &&
+                request.OverlayDuration > TimeSpan.Zero)
+            {
+                BeginStoryboard("OverlayMaskIn");
+                await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
+                if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
+                {
+                    BeginStoryboard("OverlayMaskOutDirect");
+                }
+                else
+                {
+                    ViewModel.CurrentOverlayElement = request.OverlayContent;
+                    BeginStoryboard("OverlayMaskOut");
+                    ViewModel.OverlayRemainStopwatch.Restart();
+                    // 倒计时动画
+                    var da = new DoubleAnimation()
+                    {
+                        From = 1.0,
+                        To = 0.0,
+                        Duration = new Duration(request.OverlayDuration),
+
+                    };
+                    var storyboard = new Storyboard()
+                    {
+                    };
+                    Storyboard.SetTarget(da, OverlayTimeProgressBar);
+                    Storyboard.SetTargetProperty(da, new PropertyPath(RangeBase.ValueProperty));
+                    storyboard.Children.Add(da);
+                    storyboard.Begin();
+                    await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.OverlayDuration),
+                        cancellationToken);
+                    ViewModel.OverlayRemainStopwatch.Stop();
+                }
+            }
+
+            if (NotificationHostService.RequestQueue.Count < 1)
+            {
+                BeginStoryboard("OverlayOut");
+            }
+        }
+
+        ViewModel.CurrentOverlayElement = null;
+        ViewModel.CurrentMaskElement = null;
+        ViewModel.IsOverlayOpened = false;
+        
     }
 
     protected override void OnContentRendered(EventArgs e)

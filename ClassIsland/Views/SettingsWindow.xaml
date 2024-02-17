@@ -76,6 +76,25 @@
             </Button>
         </Grid>
 
+        <Grid x:Key="DiagnosticInfoDialog" Margin="16" Height="400" Width="550" MaxHeight="{Binding Height}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="诊断信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <TextBox Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0 12 0 0"
+                     Padding="8" Text="{Binding ViewModel.DiagnosticInfo, Mode=OneWay}" IsReadOnly="True"
+                     VerticalContentAlignment="Top"
+                     VerticalScrollBarVisibility="Auto" FontFamily="Consolas"/>
+            <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定" 
+                    IsDefault="True"
+                    HorizontalAlignment="Right" Margin="0 8 0 0"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+
+            </Button>
+        </Grid>
+
         <!-- Drawers -->
         <ScrollViewer Width="332" x:Key="AdvancedUpdateSettings" 
                       VerticalScrollBarVisibility="Auto"
@@ -160,7 +179,8 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="第三方库" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-            <ListView Grid.Row="1" Margin="0 6 0 0" HorizontalContentAlignment="Stretch">
+            <ListView Grid.Row="1" Margin="0 6 0 0" HorizontalContentAlignment="Stretch"
+                      VirtualizingPanel.ScrollUnit="Pixel">
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:ContributionLabel}">
                         <Grid>
@@ -254,9 +274,6 @@
                            Margin="0 0 0 4"/>
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
                            Margin="0 0 0 16"/>
-                <CheckBox Content="从表格导入课表（未完工）" IsChecked="{Binding Settings.ExpIsExcelImportEnabled}"/>
-                <CheckBox Content="沉浸式标题栏在Windows10上工作"/>
-                <CheckBox Content="编辑使用中的时间表（强烈不推荐）"/>
             </StackPanel>
         </ScrollViewer>
 
@@ -285,7 +302,9 @@
                      SelectedValue="{Binding Settings.CityId}"
                      ItemsSource="{Binding ViewModel.CitySearchResults}"
                      SelectionMode="Single"
-                     SelectionChanged="SelectorCity_OnSelectionChanged">
+                     SelectionChanged="SelectorCity_OnSelectionChanged"
+                     VirtualizingPanel.IsVirtualizing="True"
+                     VirtualizingPanel.ScrollUnit="Pixel">
                 <b:Interaction.Behaviors>
                     <ci:AutoScrollBehavior />
                 </b:Interaction.Behaviors>
@@ -1887,8 +1906,16 @@ The quick brown fox jumps over a lazy dog.
                                                         <StaticResource ResourceKey="OpenSourceLicense" />
                                                     </Button.CommandParameter>
                                                 </Button>
-
-                                            </WrapPanel>
+                                                <Button HorizontalAlignment="Left" Margin="6"
+                                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                                        Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                                        Click="ButtonDiagnosticInfo_OnClick">
+                                                    <controls:IconText Kind="BugOutline" Text="诊断信息"/>
+                                                    <Button.CommandParameter>
+                                                        <StaticResource ResourceKey="DiagnosticInfoDialog" />
+                                                    </Button.CommandParameter>
+                                                </Button>
+                                                </WrapPanel>
                                         </StackPanel>
                                     </Grid>
 
@@ -2297,7 +2324,9 @@ The quick brown fox jumps over a lazy dog.
                             <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
                                                      IsPopupOpen="{Binding ViewModel.IsPopupMenuOpened, Mode=TwoWay}">
                                 <StackPanel>
-                                    <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…" Click="MenuItemExperimentalSettings_OnClick"/>
+                                        <MenuItem Icon="{materialDesign:PackIcon WarningCircleOutline}" Header="查看崩溃报告…"/>
+                                        <Separator/>
+                                        <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…" Click="MenuItemExperimentalSettings_OnClick"/>
                                 </StackPanel>
                             </materialDesign:PopupBox>
                         </StackPanel>

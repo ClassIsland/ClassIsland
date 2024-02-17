@@ -32,6 +32,7 @@ public class SettingsViewModel : ObservableRecipient
     private KeyValuePair<string, IMiniInfoProvider>? _selectedMiniInfoProvider;
     private List<City> _citySearchResults = new();
     private object? _weatherNotificationControlTest;
+    private string _diagnosticInfo = "";
 
     public Screen[] Screens
     {
@@ -213,6 +214,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _weatherNotificationControlTest)) return;
             _weatherNotificationControlTest = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DiagnosticInfo
+    {
+        get => _diagnosticInfo;
+        set
+        {
+            if (value == _diagnosticInfo) return;
+            _diagnosticInfo = value;
             OnPropertyChanged();
         }
     }

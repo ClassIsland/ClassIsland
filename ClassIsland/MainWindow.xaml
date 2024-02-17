@@ -659,8 +659,9 @@
                           Opacity="0">
                         <ProgressBar VerticalAlignment="Stretch"
                                      Maximum="1"
+                                     x:Name="OverlayTimeProgressBar"
+                                     materialDesign:TransitionAssist.DisableTransitions="True"
                                      Height="{Binding Height, ElementName=GridWrapper}"
-                                     Value="{Binding ViewModel.OverlayRemainTimePercents, Mode=OneWay}"
                                      Foreground="{DynamicResource MaterialDesignBody}"
                                      Background="Transparent"
                                      BorderBrush="Transparent"

@@ -292,4 +292,7 @@ public static class NativeWindowHelper
     public const int SW_SHOW = 5;
 
     public const int SW_HIDE = 0;
+
+    [DllImport("dwmapi.dll", PreserveSig = false)]
+    public static extern bool DwmIsCompositionEnabled();
 }
