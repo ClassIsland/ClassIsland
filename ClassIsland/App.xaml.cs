@@ -299,11 +299,15 @@ public partial class App : Application
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
             GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
         }
-        var r = await GetService<UpdateService>().AppStartup();
-        if (r)
+
+        if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
         {
-            GetService<SplashService>().EndSplash();
-            return;
+            var r = await GetService<UpdateService>().AppStartup();
+            if (r)
+            {
+                GetService<SplashService>().EndSplash();
+                return;
+            }
         }
         var attachedSettingsHostService = GetService<AttachedSettingsHostService>();
         attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
