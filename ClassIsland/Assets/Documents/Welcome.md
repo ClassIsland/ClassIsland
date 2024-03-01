@@ -1,16 +1,18 @@
 ﻿# 欢迎
 
+欢迎使用[ClassIsland](ci://app/settings/about)。这里是ClassIsland帮助文档，关于应用的使用方法和常见问题，请参阅本文档。
+
 ![1694925761903](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Welcome/1694925761903.png)
 
 > 背景图片来自Pixiv@辰暮sora，pid: 110847880
-
-欢迎使用[ClassIsland](https://github.com/HelloWRC/ClassIsland)。这里是ClassIsland帮助文档，关于应用的使用方法和常见问题，请参阅本文档。
 
 ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表等信息显示工具，信息一目了然。
 
 要再次打开本文档，请在系统托盘中右键应用图标，并点击【帮助】选项。（如下图）
 
 ![ResourceImage](pack://application:,,,/ClassIsland;component/Assets/Documents/Images/img1.png)
+
+> Tips：点击帮助文档中的[链接](欢迎)可以快速跳转到对应的界面和文章。
 
 ## 开始使用
 
@@ -25,7 +27,7 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 学习完以上的内容，就掌握了本软件的基本功能。此外，本应用的大部分按钮都有工具提示，将鼠标放在按钮上即可查看按钮功能的解释。应用设置页面中大部分的选项中都有对应的解释。这些解释可以帮助您进一步了解本应用。
 
-如果您对本软件的一些进阶功能感兴趣，还可以阅读“进阶功能”部分。
+如果您对本软件的一些进阶功能感兴趣，还可以阅读[“进阶功能”](进阶功能)部分。
 
 ## 问题反馈
 
