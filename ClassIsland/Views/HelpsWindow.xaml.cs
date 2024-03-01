@@ -23,12 +23,17 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views;
 
+using PagesDictionary = Dictionary<string, string>;
+
 /// <summary>
 /// HelpsWindow.xaml 的交互逻辑
 /// </summary>
 public partial class HelpsWindow : MyWindow
 {
     public static readonly ICommand HyperlinkCommand = new RoutedCommand();
+
+    public static readonly string FooterTemplatePath = "/Assets/Documents/Footer.md";
+
     public HelpsViewModel ViewModel
     {
         get;
@@ -95,7 +100,7 @@ public partial class HelpsWindow : MyWindow
     private async void CoreNavigateTo(string name)
     {
         Analytics.TrackEvent("浏览帮助文档",
-        new Dictionary<string, string>
+        new PagesDictionary
         {
             { "Name", name }
         });
@@ -105,21 +110,40 @@ public partial class HelpsWindow : MyWindow
         //var sw = new Stopwatch();
         //sw.Start();
         await Dispatcher.Yield();
-        ConvertMarkdown(ViewModel.HelpDocuments[name]);
+        // 获取相关文档
+        var neighbours = new PagesDictionary();
+        var docs = ViewModel.HelpDocuments;
+        var keys = docs.Keys.ToList();
+        var index = keys.IndexOf(name);
+        if (index > 0)
+        {
+            neighbours.Add($"上一篇：{keys[index - 1]}", keys[index - 1]);
+        }
+
+        if (index < keys.Count - 1)
+        {
+            neighbours.Add($"下一篇：{keys[index + 1]}", keys[index + 1]);
+        }
+        ConvertMarkdown(docs[name], neighbours, new PagesDictionary());
         ViewModel.SelectedDocumentName = name;
         await Dispatcher.Yield();
         //Console.WriteLine(sw.Elapsed.ToString());
         ViewModel.IsLoading = false;
     }
 
-    private void ConvertMarkdown(string path)
+    private void ConvertMarkdown(string path, PagesDictionary neighbourPages, PagesDictionary relatedPages)
     {
         var r = Application.GetResourceStream(new Uri(path, UriKind.RelativeOrAbsolute))?.Stream;
-        if (r == null)
+        var footerStream = Application.GetResourceStream(new Uri(FooterTemplatePath, UriKind.RelativeOrAbsolute))?.Stream;
+        if (r == null || footerStream == null)
         {
             return;
         }
         var md = new StreamReader(r).ReadToEnd();
+        var footer = new StreamReader(footerStream).ReadToEnd();
+
+        var t = md + "\n" + 
+                string.Format(footer, string.Join('\n', from i in neighbourPages select $"- [{i.Key}]({i.Value})"));
         
         var e = new Markdown()
         {
@@ -133,7 +157,7 @@ public partial class HelpsWindow : MyWindow
             ImageStyle = (Style)FindResource("MarkdownImageStyle"),
         };
         e.HyperlinkCommand = HyperlinkCommand;
-        var fd = e.Transform(md);
+        var fd = e.Transform(t);
         fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
         fd.IsOptimalParagraphEnabled = true;
         //fd.MaxPageWidth = 850;

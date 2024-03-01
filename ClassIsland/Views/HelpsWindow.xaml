@@ -70,6 +70,15 @@
                         <Setter Property="CanContentScroll" Value="True"/>
                         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
                     </Style>
+                    <Style TargetType="Hyperlink" >
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="{DynamicResource PrimaryHueLightBrush}"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                        <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                        <Setter Property="ToolTipService.Placement" Value="Mouse"/> 
+                    </Style>
                 </mdxaml:MarkdownScrollViewer.Resources>
                 <mdxaml:MarkdownScrollViewer.Style>
                     <Style TargetType="mdxaml:MarkdownScrollViewer">
