@@ -2321,9 +2321,8 @@ The quick brown fox jumps over a lazy dog.
                                    VerticalAlignment="Center"/>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                             <TextBlock Text="{x:Static ci:App.AppVersion}"
-                                       VerticalAlignment="Center" 
-                                       ToolTip="应用版本"/>
-
+                                   VerticalAlignment="Center" 
+                                   ToolTip="应用版本"/>
                             <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
                                                      IsPopupOpen="{Binding ViewModel.IsPopupMenuOpened, Mode=TwoWay}">
                                 <StackPanel>

@@ -97,7 +97,7 @@ public partial class HelpsWindow : MyWindow
         }
     }
 
-    private async void CoreNavigateTo(string name)
+    public async void CoreNavigateTo(string name)
     {
         Analytics.TrackEvent("浏览帮助文档",
         new PagesDictionary

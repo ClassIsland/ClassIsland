@@ -866,4 +866,10 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         ViewModel.IsDragEntering = false;
     }
+
+    private void ButtonHelp_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<MainWindow>().OpenHelpsWindow();
+        App.GetService<HelpsWindow>().CoreNavigateTo("档案设置");
+    }
 }

@@ -1550,6 +1550,15 @@
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
                                 <materialDesign:Chip
+                                    ToolTip="查看档案编辑帮助。"
+                                    Icon="{materialDesign:PackIcon Help}"
+                                    Click="ButtonHelp_OnClick"
+                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
+                                    <TextBlock>
+                                        <Run Text="帮助"/>
+                                    </TextBlock>
+                                </materialDesign:Chip>
+                                <materialDesign:Chip
                                     ToolTip="从表格导入课表和时间表…"
                                     Icon="{materialDesign:PackIcon Import}"
                                     Click="ButtonImportFromFile_OnClick"
