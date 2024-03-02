@@ -1936,10 +1936,10 @@ The quick brown fox jumps over a lazy dog.
                                                    LineHeight="2">
                                             鸣谢：
                                         </Paragraph>
-                                        <Paragraph>
-                                            <Button HorizontalAlignment="Left" Margin="6"
-                                                Style="{StaticResource MaterialDesignFlatButton}"
-                                                Click="ButtonContributors_OnClick">
+                                            <Paragraph TextBlock.LineHeight="1">
+                                                <Button HorizontalAlignment="Left" Margin="6"
+                                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Click="ButtonContributors_OnClick">
                                                 <controls:IconText Kind="PeopleGroupOutline" Text="贡献人员"/>
                                             </Button>
                                             <Button HorizontalAlignment="Left" Margin="6"
