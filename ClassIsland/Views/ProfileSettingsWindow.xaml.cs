@@ -183,13 +183,19 @@ public partial class ProfileSettingsWindow : MyWindow
             2 => 0,
             _ => 0
         });
-        if (selected != null && timeType != 2)
+        if (selected != null)
         {
             var index = timeLayout.Layouts.IndexOf(selected);
-            if (index < timeLayout.Layouts.Count - 1)
+            if (selected.TimeType == 2)
+            {
+                var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
+                selected = l.Count > 0 ? l.Last() : selected;
+                baseSec = selected.EndSecond;
+            }
+            if (timeType != 2 && index < timeLayout.Layouts.Count - 1)
             {
                 var nexts = (from i 
-                        in timeLayout.Layouts.Skip(index + 1) 
+                            in timeLayout.Layouts.Skip(index + 1) 
                         where i.TimeType != 2 
                         select i)
                     .ToList();
@@ -207,6 +213,11 @@ public partial class ProfileSettingsWindow : MyWindow
                         lastTime = next.StartSecond.TimeOfDay - baseSec.TimeOfDay;
                     }
                 }
+            }
+
+            if (timeType == 2)
+            {
+                baseSec = selected.EndSecond - (selected.EndSecond - selected.StartSecond) / 2;
             }
         }
         var newItem = new TimeLayoutItem()
@@ -253,13 +264,16 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ListViewTimePoints.SelectedValue != null)
-        {
-            ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedValue).Value.RemoveTimePoint((TimeLayoutItem)ListViewTimePoints.SelectedValue);
-        }
-
+        if (ListViewTimePoints.SelectedValue is not TimeLayoutItem timePoint) 
+            return;
+        var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedValue).Value;
+        var i = timeLayout.Layouts.IndexOf(timePoint);
+        timeLayout.RemoveTimePoint(timePoint);
         UpdateTimeLayout();
+        if (i > 0)
+            ViewModel.SelectedTimePoint = timeLayout.Layouts[i - 1];
         Analytics.TrackEvent("档案设置 · 删除时间点");
+
     }
 
     private async void ButtonDeleteTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -870,6 +884,6 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonHelp_OnClick(object sender, RoutedEventArgs e)
     {
         App.GetService<MainWindow>().OpenHelpsWindow();
-        App.GetService<HelpsWindow>().CoreNavigateTo("档案设置");
+        App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "档案设置";
     }
 }

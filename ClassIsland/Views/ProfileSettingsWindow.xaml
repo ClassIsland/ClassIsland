@@ -838,13 +838,13 @@
                                             <controls:IconText Kind="EditOutline" Text="编辑"/>
                                         </Button>-->
                                         <Separator />
-                                        <StackPanel Orientation="Horizontal" Margin="6 0">
+                                        <!--<StackPanel Orientation="Horizontal" Margin="6 0">
                                             <controls:IconText Kind="ResizeVertical" Text="编辑模式" />
                                             <ToggleButton
                                                 IsChecked="{Binding ViewModel.IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
                                             <controls:IconText Kind="GestureTouch" Text="移动模式" />
                                         </StackPanel>
-                                        <Separator/>
+                                        <Separator/>-->
                                         <Button Click="ButtonEditTimeLayoutInfo_OnClick"
                                                 ToolTip="查看并编辑时间表的基本信息。">
                                             <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
@@ -946,7 +946,7 @@
                                                                           Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}"
                                                                           x:Name="TimeLineListControl"
                                                                           IsReadOnly="{Binding IsActivated, Mode=OneWay}"
-                                                                          IsPanningModeEnabled="{Binding ViewModel.IsPanningModeEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}">
+                                                                          IsPanningModeEnabled="True">
                                                 <!-- 回应我吧，爱莉希雅 -->
                                             </controls:TimeLineListControl>
                                         </TabItem>

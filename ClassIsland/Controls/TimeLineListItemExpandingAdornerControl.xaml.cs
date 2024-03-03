@@ -151,4 +151,19 @@ public partial class TimeLineListItemExpandingAdornerControl : UserControl
         e.Handled = true;
         RaiseEvent(e);
     }
+
+    private void Thumb_OnMouseEnter(object sender, MouseEventArgs e)
+    {
+        VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(i => i.IsManipulationEnabled = false);
+    }
+
+    private void Thumb_OnMouseUp(object sender, MouseButtonEventArgs e)
+    {
+        VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(i => i.IsManipulationEnabled = true);
+    }
+
+    private void Thumb_OnMouseLeave(object sender, MouseEventArgs e)
+    {
+        VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(i => i.IsManipulationEnabled = true);
+    }
 }
