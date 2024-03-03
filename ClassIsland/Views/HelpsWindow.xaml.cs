@@ -48,6 +48,8 @@ public partial class HelpsWindow : MyWindow
 
     private ILogger<HelpsWindow> Logger { get; }
 
+    public string InitDocumentName { get; set; } = "欢迎";
+
     public HelpsWindow(ILogger<HelpsWindow> logger)
     {
         Logger = logger;
@@ -78,8 +80,12 @@ public partial class HelpsWindow : MyWindow
         ViewModel.HelpDocuments.Add("时间表", "/Assets/Documents/TimeLayout.md");
         ViewModel.HelpDocuments.Add("科目", "/Assets/Documents/Subject.md");
         ViewModel.HelpDocuments.Add("进阶功能", "/Assets/Documents/Advanced.md");
-
-        ViewModel.SelectedDocumentName = "欢迎";
+        //IsAutoNavigating = true;
+        ViewModel.SelectedDocumentName = InitDocumentName;
+        IsAutoNavigating = true;
+        CoreNavigateTo(InitDocumentName);
+        IsAutoNavigating = false;
+        //IsAutoNavigating = false;
     }
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

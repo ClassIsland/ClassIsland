@@ -39,6 +39,7 @@
                  ItemsSource="{Binding ViewModel.HelpDocuments, Mode=OneWay}"
                  SelectedValue="{Binding ViewModel.SelectedDocumentName}"
                  SelectedValuePath="Key"
+                 IsEnabled="{Binding ViewModel.IsLoading, Converter={StaticResource InvertBooleanConverter}}"
                  Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                  SelectionChanged="Selector_OnSelectionChanged">
             <ListBox.ItemTemplate>

@@ -884,6 +884,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonHelp_OnClick(object sender, RoutedEventArgs e)
     {
         App.GetService<MainWindow>().OpenHelpsWindow();
+        App.GetService<HelpsWindow>().InitDocumentName = "档案设置";
         App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "档案设置";
     }
 }
