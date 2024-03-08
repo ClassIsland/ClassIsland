@@ -1438,6 +1438,12 @@
                                 <TextBlock Text="档案编辑" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" Margin="0,0,16,0"/>
+                                <Button ToolTip="保存当前档案。" 
+                                        Click="ButtonSave_OnClick"
+                                        VerticalAlignment="Center"
+                                        Margin="0 -16 8 -16"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Content="{materialDesign:PackIcon ContentSave, Size=18}"/>
                                 <materialDesign:Chip
                                     ToolTip="档案"
                                     Icon="{materialDesign:PackIcon FileDocumentOutline}"

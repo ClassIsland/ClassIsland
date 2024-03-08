@@ -887,4 +887,10 @@ public partial class ProfileSettingsWindow : MyWindow
         App.GetService<HelpsWindow>().InitDocumentName = "档案设置";
         App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "档案设置";
     }
+
+    private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.SaveProfile();
+        ViewModel.MessageQueue.Enqueue($"已保存到{ProfileService.CurrentProfilePath}。");
+    }
 }
