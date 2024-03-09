@@ -8,4 +8,6 @@ echo "APPVEYOR_REPO_TAG = ${APPVEYOR_REPO_TAG}"
 
 dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded
 
-echo "🎉🎉🎉 Successfully published to $PUBLISH_TARGET"
+echo "Successfully published to $PUBLISH_TARGET"
+
+7z a ./ClassIsland/ClassIsland/ClassIsland.zip ./ClassIsland/ClassIsland/* -r -mx=9
