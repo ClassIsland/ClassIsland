@@ -115,6 +115,9 @@ public partial class MainWindow : Window
 
     private ILogger<MainWindow> Logger;
 
+    private double _latestDpiX = 1.0;
+    private double _latestDpiY = 1.0;
+
     public ClassChangingWindow? ClassChangingWindow { get; set; }
 
     public MiniInfoProviderHostService MiniInfoProviderHostService
@@ -807,15 +810,19 @@ public partial class MainWindow : Window
 
     public void GetCurrentDpi(out double dpiX, out double dpiY)
     {
-        var source = PresentationSource.FromVisual(this);
-
-        dpiX = 1.0;
-        dpiY = 1.0;
-
-        if (source?.CompositionTarget != null)
+        dpiX = _latestDpiX;
+        dpiY = _latestDpiY;
+        try
         {
-            dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
-            dpiY = 1.0 * source.CompositionTarget.TransformToDevice.M22;
+            var source = PresentationSource.FromVisual(this);
+            if (source?.CompositionTarget == null) 
+                return;
+            _latestDpiX = dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
+            _latestDpiY = dpiY = 1.0 * source.CompositionTarget.TransformToDevice.M22;
+        }
+        catch(Exception ex)
+        {
+            Logger.LogError(ex, "无法获取当前dpi");
         }
     }
 
