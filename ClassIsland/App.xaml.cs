@@ -121,8 +121,12 @@ public partial class App : Application
 
         //ConsoleService.InitializeConsole();
         System.Windows.Forms.Application.EnableVisualStyles();
+        DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
 
+#if DEBUG
+        AppCenter.LogLevel = Microsoft.AppCenter.LogLevel.Verbose;
+#endif
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
         Crashes.SendingErrorReport += CrashesOnSendingErrorReport;
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));

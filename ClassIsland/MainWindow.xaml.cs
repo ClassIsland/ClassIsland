@@ -451,6 +451,7 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.LeftClickCommand = TrayIconLeftClickedCommand;
         TaskBarIconService.MainTaskBarIcon.TrayLeftMouseUp += MainTaskBarIconOnTrayLeftMouseUp;
         ViewModel.OverlayRemainTimePercents = 0.5;
+        DiagnosticService.EndStartup();
         if (ViewModel.Settings.IsSplashEnabled)
         {
             App.GetService<SplashService>().EndSplash();
