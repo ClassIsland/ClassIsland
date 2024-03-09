@@ -52,4 +52,10 @@ public class Subject : AttachableSettingsObject
             OnPropertyChanged();
         }
     }
+
+    public static readonly Subject Empty = new()
+    {
+        Initial = "?",
+        Name = "???"
+    };
 }

@@ -300,7 +300,7 @@ public partial class MainWindow : Window
             {
                 var i0 = GetSubjectIndex(currentLayout.IndexOf(nextClassTimeLayoutItems[0]));
                 var index = ViewModel.CurrentClassPlan.Classes[i0].SubjectId;
-                NotificationHostService.NextClassSubject = ViewModel.NextSubject = ViewModel.Profile.Subjects[index];
+                NotificationHostService.NextClassSubject = ViewModel.NextSubject = ViewModel.Profile.Subjects[index] ?? Subject.Empty;
                 NotificationHostService.NextClassTimeLayoutItem = ViewModel.NextTimeLayoutItem = nextClassTimeLayoutItems[0];
             }
 
