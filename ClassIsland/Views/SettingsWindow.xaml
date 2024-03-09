@@ -2326,8 +2326,8 @@ The quick brown fox jumps over a lazy dog.
                             <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
                                                      IsPopupOpen="{Binding ViewModel.IsPopupMenuOpened, Mode=TwoWay}">
                                 <StackPanel>
-                                        <MenuItem Icon="{materialDesign:PackIcon WarningCircleOutline}" Header="查看崩溃报告…"/>
-                                        <Separator/>
+                                        <!--<MenuItem Icon="{materialDesign:PackIcon WarningCircleOutline}" Header="查看崩溃报告…"/>
+                                        <Separator/>-->
                                         <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…" Click="MenuItemExperimentalSettings_OnClick"/>
                                 </StackPanel>
                             </materialDesign:PopupBox>
