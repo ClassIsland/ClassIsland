@@ -16,7 +16,7 @@ echo "Packaging..."
 if ($env:APPVEYOR_REPO_TAG) {
     echo "Uploading to AppCenter..."
     pwsh -ep Bypass -c .\tools\pre-appcenter-upload.ps1
-    pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $appcenter_token ${env:git_latest_tag}
+    pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $env:appcenter_token ${env:git_latest_tag}
 } else {
     echo "Skiped uploading to AppCenter."
 }
