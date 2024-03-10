@@ -1,15 +1,20 @@
 # ClassIsland
 
+![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
+
 ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表的信息显示工具，信息一目了然。
 
 ## 功能
+### 课表显示
 - [X] 显示当日的课表
 - [X] 显示当前进行的课程信息
 - [X] 在上课、下课等重要时间点发出提醒
-- [X] 人性化的课表编辑工具
+### 课表编辑与管理
+- [X] 直观的的课表编辑工具
 - [X] 从表格导入课表
 - [X] 换课
 - [X] 临时启用某个课表
+### 其它功能
 - [X] 界面缩放
 - [X] 天气显示
 - [X] 从壁纸提取软件主题色
@@ -62,20 +67,26 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 ## 截图
 
-> 背景图片来自[Pixiv@凪水](https://www.pixiv.net/artworks/114155308)
+> 背景图片来自[Pixiv@辰暮sora](https://www.pixiv.net/artworks/110847880)
 
 ### 主界面
 
-![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/df9aecea-0525-488e-937f-fa770968ef7d)
+![软件截图-整体效果](https://github.com/HelloWRC/ClassIsland/assets/55006226/784a2f8c-a9e2-4656-b66d-9f8105f0600c)
 
-![软件截图-上课提醒](https://github.com/HelloWRC/ClassIsland/assets/55006226/f27654a6-3f73-48ca-9ce6-fa864e51f353)
+![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/5299c6e5-5668-43ed-af27-9abe027411a0)
+
+<video src="https://github.com/HelloWRC/ClassIsland/assets/55006226/b797138a-84ef-4296-b69b-3989f331f289" loop label="软件截图-上课提醒" autoplay muted></video>
 
 ### 档案编辑器
 
-![软件截图-课表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/9a944227-8866-4128-87a9-edc650f1e3f6)
+![软件截图-课表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/29d91bf2-4c8a-4cbd-a778-a9034e7d7420)
 
-![软件截图-时间表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/fa7a3223-a868-4364-9495-71698e676838)
+![软件截图-时间表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/2b3b5c87-c8bb-46f0-8470-01edf3ca52a2)
 
-![软件截图-科目编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/adb99dbe-0bcb-4f2b-9c3c-d8dbe2907aa2)
+![软件截图-科目编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/a2e64983-dfa0-4565-a45a-31c9f9c298a8)
+
+### 其它界面
+
+![软件截图-应用设置](https://github.com/HelloWRC/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
 
 
