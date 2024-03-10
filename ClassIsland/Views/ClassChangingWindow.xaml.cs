@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;

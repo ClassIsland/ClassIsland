@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using ClassIsland.Enums;
-using ClassIsland.Interfaces;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;

@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
+using ClassIsland.Core;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.MiniInfoProviders;
@@ -37,33 +38,23 @@ using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using Walterlv.Windows;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using UpdateStatus = ClassIsland.Enums.UpdateStatus;
+using UpdateStatus = ClassIsland.Core.Enums.UpdateStatus;
 
 namespace ClassIsland;
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App : Application
+public partial class App : Application, IAppHost
 {
     private CrashWindow? CrashWindow;
     private Mutex? Mutex;
     private ILogger<App>? Logger { get; set; }
-    public static IHost? Host;
+    //public static IHost? Host;
 
-    public static T GetService<T>()
-    {
-        var s = Host?.Services.GetService(typeof(T));
-        if (s != null)
-        {
-            return (T)s;
-        }
-        
-        throw new ArgumentException($"Service {typeof(T)} is null!");
-    }
+    public static T GetService<T>() => IAppHost.GetService<T>();
 
     public App()
     {
-        
     }
 
     static App()
@@ -82,7 +73,7 @@ public partial class App : Application
 
     public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
-    public static string AppCodeName => "Elysia";
+    public static string AppCodeName => "Firefly";
 
     public static string AppVersionLong =>
         $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
@@ -205,7 +196,7 @@ public partial class App : Application
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
         
-        Host = Microsoft.Extensions.Hosting.Host.
+        IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
             ConfigureServices((context, services) =>
@@ -322,7 +313,7 @@ public partial class App : Application
 
         GetService<WeatherService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
-        _ = Host.StartAsync();
+        _ = IAppHost.Host.StartAsync();
 
         Logger.LogInformation("正在初始化MainWindow。");
         MainWindow = GetService<MainWindow>();

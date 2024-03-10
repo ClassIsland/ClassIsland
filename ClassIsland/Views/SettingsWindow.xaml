@@ -12,7 +12,6 @@
                    xmlns:cv="clr-namespace:ClassIsland.Converters"
                    xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
                    xmlns:services="clr-namespace:ClassIsland.Services"
-                   xmlns:interfaces="clr-namespace:ClassIsland.Interfaces"
                    xmlns:dd="urn:gong-wpf-dragdrop"
                    mc:Ignorable="d"
                    d:DataContext="{d:DesignInstance local:SettingsWindow}"
@@ -33,8 +32,9 @@
                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                    xmlns:weather="clr-namespace:ClassIsland.Models.Weather"
                    xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
-                   xmlns:windows="clr-namespace:Walterlv.Windows"
-                   xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
+                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
+                   xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                   xmlns:interfaces="clr-namespace:ClassIsland.Core.Interfaces;assembly=ClassIsland.Core">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using Microsoft.Extensions.Logging;
 

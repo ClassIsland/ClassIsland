@@ -69,4 +69,8 @@
   <ItemGroup>
     <Resource Include="Assets\**" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
+    <ProjectReference Include="..\Walterlv\Walterlv.csproj" />
+  </ItemGroup>
 </Project>

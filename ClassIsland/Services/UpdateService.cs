@@ -14,7 +14,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using ClassIsland.Enums;
+using ClassIsland.Core.Enums;
 using ClassIsland.Models;
 using Downloader;
 using Microsoft.Extensions.Hosting;

@@ -10,6 +10,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="clr-namespace:ClassIsland.Views"
+    xmlns:profile="clr-namespace:ClassIsland.Core.Models.Profile;assembly=ClassIsland.Core"
     mc:Ignorable="d" >
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
@@ -48,7 +49,7 @@
 
     <Style TargetType="{x:Type controls:TimeLineListControl}" BasedOn="{StaticResource MaterialDesignListBox}">
         <Style.Resources>
-            <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
+            <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
                 <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Grid.Resources>
                         <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
@@ -84,7 +85,7 @@
                     </materialDesign:ColorZone>
                 </Grid>
             </DataTemplate>
-            <DataTemplate DataType="{x:Type models:TimeLayoutItem}" x:Key="DataTemplateSeparator">
+            <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateSeparator">
                 <Grid VerticalAlignment="Stretch">
                     <Grid.Resources>
                         <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />

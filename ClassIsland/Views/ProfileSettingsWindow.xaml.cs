@@ -23,6 +23,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Converters;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;

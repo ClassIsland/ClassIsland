@@ -7,7 +7,7 @@
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
                    xmlns:gif="clr-namespace:WpfAnimatedGif;assembly=WpfAnimatedGif"
-                   xmlns:ww="clr-namespace:Walterlv.Windows"
+                   xmlns:ww="clr-namespace:Walterlv.Windows;assembly=Walterlv"
                    xmlns:ci="clr-namespace:ClassIsland"
                    xmlns:converters="clr-namespace:ClassIsland.Converters"
                    xmlns:system="clr-namespace:System;assembly=mscorlib"

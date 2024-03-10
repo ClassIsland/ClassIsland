@@ -3,7 +3,9 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls;
-using ClassIsland.Interfaces;
+using ClassIsland.Core;
+using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
 

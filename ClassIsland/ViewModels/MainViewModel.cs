@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using ClassIsland.Enums;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;

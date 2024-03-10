@@ -22,7 +22,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Enums;
+using ClassIsland.Core.Enums;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;

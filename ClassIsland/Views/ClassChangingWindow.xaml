@@ -10,6 +10,7 @@
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:windows="clr-namespace:Walterlv.Windows"
+        xmlns:profile="clr-namespace:ClassIsland.Core.Models.Profile;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         Title="换课" 
         Height="250" Width="600"
@@ -53,7 +54,7 @@
             <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
-                    <DataTemplate DataType="{x:Type models:TimeLayoutItem}">
+                    <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
                         <controls:LessonControl
                                         Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
                                         Subjects="{Binding ProfileService.Profile.Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassChangingWindow}}"

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using ClassIsland.Interfaces;
+using ClassIsland.Core;
+using ClassIsland.Core.Interfaces;
 using ClassIsland.Services;
 using Newtonsoft.Json.Linq;
 
