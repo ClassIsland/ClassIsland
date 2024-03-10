@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
+using ClassIsland.Core;
 using Pastel;
 using static ClassIsland.NativeWindowHelper;
 using Color = System.Drawing.Color;
@@ -53,7 +54,7 @@ public class ConsoleService
         }
         Console.WriteLine(AsciiLogo.Pastel("#00bfff"));
         Console.WriteLine($"ClassIsland {App.AppVersionLong}");
-        Console.WriteLine("星星划过的时候，要记得许愿哦".Pastel("#e29cd7"));
+        Console.WriteLine("「人们为何选择沉睡？我想…是因为害怕从『梦』中醒来。」".Pastel("#A0D9B4"));
         Console.WriteLine();
     }
 
