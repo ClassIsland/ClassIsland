@@ -16,4 +16,6 @@ public class ManagementManifest
     public ReVersionString PolicySource { get; set; } = new();
 
     public ManagementServerKind ServerKind { get; set; } = ManagementServerKind.Serverless;
+
+    public string OrganizationName { get; set; } = "组织名称";
 }
