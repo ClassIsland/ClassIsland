@@ -13,11 +13,14 @@
                 <Run Text="由贵单位管理"/>
             </TextBlock>
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
-                <Run Text="您的单位/组织"/>
+                <Run Text="您的组织"/>
                 <Run Text="{Binding ManagementService.Manifest.OrganizationName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}, Mode=OneWay}"/>
-                <Run Text="正在提供和管理当前 ClassIsland 实例的课表和设置。要了解更多信息，请联系您所在单位/组织的IT人员。"/>
+                <Run Text="正在管理、设置和维护当前 ClassIsland 实例。根据需要，组织可以设置和限制某些功能。要了解更多信息，请联系您所在组织的IT人员。"/>
             </TextBlock>
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="联系您的组织的IT人员时，请提供以下信息："/>
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
                 <Run Text="ID: "/>
                 <Run Text="{Binding ManagementService.Settings.ClassIdentity, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}}"/>
             </TextBlock>
