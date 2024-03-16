@@ -27,6 +27,7 @@ public class ManagementService
     public static readonly string ManagementManifestPath = Path.Combine(ManagementConfigureFolderPath, "Manifest.json");
     public static readonly string ManagementVersionsPath = Path.Combine(ManagementConfigureFolderPath, "Versions.json");
     public static readonly string ManagementSettingsPath = Path.Combine(ManagementConfigureFolderPath, "Settings.json");
+    public static readonly string ManagementPolicyPath = Path.Combine(ManagementConfigureFolderPath, "Policy.json");
 
     public bool IsManagementEnabled { get; set; }
 
@@ -35,6 +36,8 @@ public class ManagementService
     public ManagementManifest Manifest { get; set; } = new();
 
     public ManagementSettings Settings { get; }
+
+    public ManagementPolicy Policy { get; set; } = new();
 
     public ManagementService()
     {
@@ -51,21 +54,24 @@ public class ManagementService
     {
         // 读取集控清单
         Manifest = LoadConfig<ManagementManifest>(ManagementManifestPath);
+        Policy = LoadConfig<ManagementPolicy>(ManagementPolicyPath);
+        Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
 
-        // TODO: 拉取集控清单
         try
         {
+            // 拉取集控清单
             Manifest = await WebRequestHelper.SaveJson<ManagementManifest>(new Uri(Settings.ManifestUrlTemplate), ManagementManifestPath);
+            // 拉取策略
+            if (Manifest.PolicySource.IsNewerAndNotNull(Versions.PolicyVersion))
+            {
+                Policy = await WebRequestHelper.SaveJson<ManagementPolicy>(new Uri(Manifest.PolicySource.Value!), ManagementPolicyPath);
+            }
         }
         catch (Exception e)
         {
             // ignored
         }
 
-        Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
-
-
-        // TODO: 拉取策略
     }
 
     public void SaveSettings()
