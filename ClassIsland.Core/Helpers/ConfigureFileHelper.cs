@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Collections.Specialized;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace ClassIsland.Core.Helpers;
@@ -7,12 +8,15 @@ public class ConfigureFileHelper
 {
     public static bool IsBackupEnabled { get; set; } = true;
 
-    public static T LoadConfig<T>(string path, bool? backupEnabled)
+    public static T LoadConfig<T>(string path, bool? backupEnabled=null, bool isLoadingBackup=false)
     {
         backupEnabled ??= IsBackupEnabled;
         if (!File.Exists(path))
         {
-            return Activator.CreateInstance<T>();
+            var cfg = Activator.CreateInstance<T>();
+            if (!isLoadingBackup)
+                SaveConfig(path, cfg);
+            return cfg;
         }
 
         try
@@ -28,7 +32,7 @@ public class ConfigureFileHelper
         catch (Exception ex)
         {
             if (backupEnabled.Value)
-                return LoadConfig<T>(path + ".bak", false);
+                return LoadConfig<T>(path + ".bak", false, true);
             throw;
         }
 
@@ -51,7 +55,15 @@ public class ConfigureFileHelper
         rm.ForEach(i => raw.Remove(i));
         foreach (var i in diffNew)
         {
-            raw[i.Key] = i.Value;
+            if (raw.ContainsKey(i.Key))
+                raw[i.Key] = i.Value;
+            else
+                raw.Add(i);
+        }
+
+        if (raw is ObservableDictionary<TKey, TValue>)
+        {
+            
         }
         return raw;
     }

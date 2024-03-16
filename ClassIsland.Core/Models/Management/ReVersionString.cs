@@ -9,5 +9,7 @@ public struct ReVersionString
 
     public string? Value { get; set; }
 
-    public int Version { get; set; } = 0;
+    public int Version { get; set; }
+
+    public bool IsNewerAndNotNull(int version) => !(string.IsNullOrWhiteSpace(Value)) && Version > version;
 }

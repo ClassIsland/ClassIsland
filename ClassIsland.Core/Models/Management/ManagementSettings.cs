@@ -9,6 +9,21 @@ public class ManagementSettings : ObservableRecipient
     private string _managementServer = "";
     private string _manifestUrlTemplate = "";
     private string? _classIdentity = "";
+    private bool _isManagementEnabled = false;
+
+    /// <summary>
+    /// 是否启用集控
+    /// </summary>
+    public bool IsManagementEnabled
+    {
+        get => _isManagementEnabled;
+        set
+        {
+            if (value == _isManagementEnabled) return;
+            _isManagementEnabled = value;
+            OnPropertyChanged();
+        }
+    }
 
     /// <summary>
     /// 管理服务器类型

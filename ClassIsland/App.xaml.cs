@@ -51,6 +51,9 @@ public partial class App : Application, IAppHost
     private ILogger<App>? Logger { get; set; }
     //public static IHost? Host;
 
+    public static readonly string AppDataFolderPath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
+
     public static T GetService<T>() => IAppHost.GetService<T>();
 
     public App()
@@ -122,6 +125,7 @@ public partial class App : Application, IAppHost
         Crashes.SendingErrorReport += CrashesOnSendingErrorReport;
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
+
         var command = new RootCommand
         {
             new Option<string>(["--updateReplaceTarget", "-urt"], "更新时要替换的文件"),
@@ -195,7 +199,8 @@ public partial class App : Application, IAppHost
             //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
-        
+
+        ManagementService.InitManagement();
         IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
@@ -218,6 +223,7 @@ public partial class App : Application, IAppHost
                 //services.AddHostedService<BootService>();
                 services.AddSingleton<UpdateNodeSpeedTestingService>();
                 services.AddSingleton<DiagnosticService>();
+                services.AddSingleton<ManagementService>(ManagementService.Instance);
                 services.AddHostedService<MemoryWatchDogService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views

@@ -499,7 +499,7 @@ public partial class MainWindow : Window
 
     public void LoadProfile()
     {
-        ProfileService.LoadProfile();
+        //ProfileService.LoadProfile();
         ViewModel.Profile = ProfileService.Profile;
     }
 
@@ -528,7 +528,7 @@ public partial class MainWindow : Window
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
         LoadSettings();
-        ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
+        //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();

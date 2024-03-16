@@ -755,7 +755,7 @@
                                              Style="{StaticResource NavigationListBox}"
                                              HorizontalContentAlignment="Stretch"
                                              SelectionChanged="ListViewTimeLayouts_OnSelectionChanged"
-                                             ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                             ItemsSource="{Binding ProfileService.Profile.TimeLayouts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                              x:Name="ListViewTimeLayouts"
                                              VirtualizingPanel.IsVirtualizing="True"
                                              VirtualizingPanel.ScrollUnit="Pixel">

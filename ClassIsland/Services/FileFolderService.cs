@@ -11,7 +11,9 @@ public class FileFolderService : IHostedService
 {
     private static List<string> Folders = new()
     {
-        "./Temp"
+        App.AppDataFolderPath,
+        ManagementService.ManagementConfigureFolderPath,
+        "./Temp",
     };
 
     public FileFolderService()

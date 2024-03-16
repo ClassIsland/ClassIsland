@@ -2315,14 +2315,39 @@ The quick brown fox jumps over a lazy dog.
                                 Padding="0"
                                 Style="{StaticResource MaterialDesignToolForegroundButton}"
                                 Content="{materialDesign:PackIcon Menu, Size=24}"/>-->
-                        <TextBlock Grid.Column="1" Text="应用设置" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   HorizontalAlignment="Left"
-                                   Margin="0 0 0 0"
-                                   VerticalAlignment="Center"/>
+
+                        <StackPanel Orientation="Horizontal" Grid.Column="0">
+                            
+                                <TextBlock Text="应用设置"
+                                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                       HorizontalAlignment="Left"
+                                       Margin="0 0 0 0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                            <TextBlock Text="{x:Static ci:App.AppVersion}"
-                                   VerticalAlignment="Center" 
-                                   ToolTip="应用版本"/>
+                            <StackPanel.Resources>
+                                <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
+                                    <Style.Resources>
+                                        <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+                                    </Style.Resources>
+                                    <Setter Property="Foreground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"/>
+                                    <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                    <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}"/>
+                                    <Setter Property="IconBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}"/>
+                                    <Setter Property="Margin" Value="0 -8 6 -8"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <materialDesign:Chip
+                                ToolTip="查看您的组织如何管理此ClassIsland实例。"
+                                Icon="{materialDesign:PackIcon Work}">
+                                <TextBlock>
+                                    <Run Text="由贵单位管理"/>
+                                </TextBlock>
+                            </materialDesign:Chip>
+                                <TextBlock Text="{x:Static ci:App.AppVersion}"
+                                           Margin="8 0 0 0"
+                                       VerticalAlignment="Center" 
+                                       ToolTip="应用版本"/>
                             <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
                                                      IsPopupOpen="{Binding ViewModel.IsPopupMenuOpened, Mode=TwoWay}">
                                 <StackPanel>
