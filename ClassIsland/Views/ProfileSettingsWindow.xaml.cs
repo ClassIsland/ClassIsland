@@ -48,6 +48,9 @@ public partial class ProfileSettingsWindow : MyWindow
     public static RoutedUICommand RemoveSelectedTimeLayoutItemCommand = new RoutedUICommand();
 
     public HangService HangService { get; } = App.GetService<HangService>();
+
+    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+
     public MainViewModel MainViewModel
     {
         get;

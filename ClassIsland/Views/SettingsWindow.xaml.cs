@@ -93,6 +93,8 @@ public partial class SettingsWindow : MyWindow
         get;
     }
 
+    public ManagementService ManagementService { get; }
+
     private List<byte[]> _testMemoryLeakList = new();
 
     public DiagnosticService DiagnosticService { get; }
@@ -106,6 +108,7 @@ public partial class SettingsWindow : MyWindow
         WallpaperPickingService = App.GetService<WallpaperPickingService>();
         MiniInfoProviderHostService = App.GetService<MiniInfoProviderHostService>();
         DiagnosticService = App.GetService<DiagnosticService>();
+        ManagementService = App.GetService<ManagementService>();
         InitializeComponent();
         DataContext = this;
         var settingsService = App.GetService<SettingsService>();

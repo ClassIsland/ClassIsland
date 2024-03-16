@@ -2338,8 +2338,13 @@ The quick brown fox jumps over a lazy dog.
                                 </Style>
                             </StackPanel.Resources>
                             <materialDesign:Chip
-                                ToolTip="查看您的组织如何管理此ClassIsland实例。"
-                                Icon="{materialDesign:PackIcon Work}">
+                                Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                ToolTip="查看您的单位/组织如何管理此ClassIsland实例。"
+                                Icon="{materialDesign:PackIcon WorkOutline}">
+                                <materialDesign:Chip.CommandParameter>
+                                    <controls:ManagementInfoControl/>
+                                </materialDesign:Chip.CommandParameter>
                                 <TextBlock>
                                     <Run Text="由贵单位管理"/>
                                 </TextBlock>
