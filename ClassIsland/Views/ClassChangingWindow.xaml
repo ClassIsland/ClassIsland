@@ -114,6 +114,8 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+        <converters:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+        <converters:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
     </controls:MyWindow.Resources>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogIdentifier}">
         <Grid>
@@ -312,7 +314,14 @@
                               Content="永久换课"
                               ToolTip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
                               IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
-                              Visibility="{Binding ClassPlan.IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}" />
+                              Visibility="{Binding ClassPlan.IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
+                        <CheckBox.IsEnabled>
+                            <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}" Mode="OneWay">
+                                <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay"/>
+                                <Binding Path="ManagementService.Policy.DisableProfileEditing" Mode="OneWay"/>
+                            </MultiBinding>
+                        </CheckBox.IsEnabled>
+                    </CheckBox>
                     <Button Margin="12 0 0 0" ToolTip="确认并应用换课。"
                             Click="ButtonConfirmClassChanging_OnClick">
                         <controls:IconText Kind="Check" Text="确认换课" />

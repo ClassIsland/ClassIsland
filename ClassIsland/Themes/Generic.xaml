@@ -212,7 +212,7 @@
                     </Style.Triggers>
                     <Setter Property="ContextMenu">
                         <Setter.Value>
-                            <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
+                            <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" IsEnabled="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InvertBooleanConverter}}">
                                 <!--<MenuItem Icon="{materialDesign:PackIcon EditOutline}" Header="编辑时间点…" Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"/>
                                 <MenuItem Icon="{materialDesign:PackIcon FormatColorFill}" Header="覆盖课程…"/>
                                 <Separator/>-->

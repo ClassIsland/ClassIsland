@@ -817,6 +817,12 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonImportFromFile_OnClick(object sender, RoutedEventArgs e)
     {
+        if (ManagementService.Policy.DisableProfileClassPlanEditing ||
+            ManagementService.Policy.DisableProfileTimeLayoutEditing || ManagementService.Policy.DisableProfileEditing)
+        {
+            ViewModel.MessageQueue.Enqueue($"此功能已被您的组织禁用。");
+            return;
+        }
         var eiw = App.GetService<ExcelImportWindow>();
         eiw.Show();
     }   
@@ -830,6 +836,12 @@ public partial class ProfileSettingsWindow : MyWindow
         if (filename == null)
             return;
         Debug.WriteLine(filename);
+        if (ManagementService.Policy.DisableProfileClassPlanEditing ||
+            ManagementService.Policy.DisableProfileTimeLayoutEditing || ManagementService.Policy.DisableProfileEditing)
+        {
+            ViewModel.MessageQueue.Enqueue($"此功能已被您的组织禁用。");
+            return;
+        }
         if (Path.GetExtension(filename) != ".xlsx")
         {
             ViewModel.MessageQueue.Enqueue($"不支持的文件：{filename}");

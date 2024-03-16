@@ -1,21 +1,59 @@
-﻿namespace ClassIsland.Core.Models.Management;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace ClassIsland.Core.Models.Management;
 
 /// <summary>
 /// 限制策略
 /// </summary>
-public class ManagementPolicy
+public class ManagementPolicy : ObservableRecipient
 {
-    public bool DisableProfileClassPlanEditing { get; set; } = false;
+    private bool _disableProfileClassPlanEditing = false;
+    private bool _disableProfileTimeLayoutEditing = false;
+    private bool _disableProfileSubjectsEditing = false;
+    private bool _disableProfileEditing = false;
+    private bool _disableSettingsEditing = false;
+    private bool _disableSplashCustomize = false;
+    private bool _disableDebugMenu = false;
 
-    public bool DisableProfileTimeLayoutEditing { get; set; } = false;
+    public bool DisableProfileClassPlanEditing
+    {
+        get => _disableProfileClassPlanEditing;
+        set => SetProperty(ref _disableProfileClassPlanEditing, value);
+    }
 
-    public bool DisableProfileSubjectsEditing { get; set; } = false;
+    public bool DisableProfileTimeLayoutEditing
+    {
+        get => _disableProfileTimeLayoutEditing;
+        set => SetProperty(ref _disableProfileTimeLayoutEditing, value);
+    }
 
-    public bool DisableProfileEditing { get; set; } = false;
+    public bool DisableProfileSubjectsEditing
+    {
+        get => _disableProfileSubjectsEditing;
+        set => SetProperty(ref _disableProfileSubjectsEditing, value);
+    }
 
-    public bool DisableSettingsEditing { get; set; } = false;
+    public bool DisableProfileEditing
+    {
+        get => _disableProfileEditing;
+        set => SetProperty(ref _disableProfileEditing, value);
+    }
 
-    public bool DisableSplashCustomize { get; set; } = false;
+    public bool DisableSettingsEditing
+    {
+        get => _disableSettingsEditing;
+        set => SetProperty(ref _disableSettingsEditing, value);
+    }
 
-    public bool DisableDebugMenu { get; set; } = false;
+    public bool DisableSplashCustomize
+    {
+        get => _disableSplashCustomize;
+        set => SetProperty(ref _disableSplashCustomize, value);
+    }
+
+    public bool DisableDebugMenu
+    {
+        get => _disableDebugMenu;
+        set => SetProperty(ref _disableDebugMenu, value);
+    }
 }

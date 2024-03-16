@@ -61,10 +61,6 @@ public class ConfigureFileHelper
                 raw.Add(i);
         }
 
-        if (raw is ObservableDictionary<TKey, TValue>)
-        {
-            
-        }
         return raw;
     }
 }

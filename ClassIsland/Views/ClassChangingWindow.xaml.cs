@@ -29,6 +29,8 @@ public partial class ClassChangingWindow : MyWindow
 
     public ProfileService ProfileService { get; } = App.GetService<ProfileService>();
 
+    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+
     public static readonly DependencyProperty ClassPlanProperty = DependencyProperty.Register(
         nameof(ClassPlan), typeof(ClassPlan), typeof(ClassChangingWindow), new PropertyMetadata(default(ClassPlan)));
 

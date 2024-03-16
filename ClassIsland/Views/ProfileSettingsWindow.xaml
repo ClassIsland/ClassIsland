@@ -511,6 +511,7 @@
 
 
         <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+        <converters:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
 
     </Window.Resources>
     <Grid>
@@ -527,6 +528,7 @@
                     </Grid.RowDefinitions>
                     <!-- Main -->
                     <TabControl Grid.Row="1" TabStripPlacement="Left" SelectionChanged="TabControlSelector_OnSelectionChanged"
+                                Visibility="{Binding ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InverseBoolToVisConverter}}"
                                 x:Name="RootTabControl">
                         <!-- 课表 -->
                         <TabItem Header="课表" Visibility="Collapsed">
@@ -542,7 +544,7 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <!-- 课表操作 -->
-                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
                                         <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                             <controls:IconText Kind="Add" Text="添加"/>
@@ -616,83 +618,89 @@
                                 </Grid>
 
                                 <!-- 课表编辑 -->
-                                <Grid Grid.Column="1" Margin="3 0 0 0" 
-                                      DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}">
-                                    <Grid.Style>
-                                        <Style TargetType="Grid">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedItem, ElementName=ListViewClassPlans}" Value="{x:Null}">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </Style>
-                                    </Grid.Style>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
+                                <Grid Grid.Column="1" IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                    <Grid Margin="3 0 0 0"
+                                          DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}">
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Style.Triggers>
+                                                    <DataTrigger
+                                                        Binding="{Binding SelectedItem, ElementName=ListViewClassPlans}"
+                                                        Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
 
-                                    <!-- 课表编辑操作 -->
-                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
-                                        <!--<Button Click="ButtonDebugAddNewClass_OnClick">
+                                        <!-- 课表编辑操作 -->
+                                        <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                            <!--<Button Click="ButtonDebugAddNewClass_OnClick">
                                             <controls:IconText Kind="Add" Text="DebugAddNew"/>
                                         </Button>-->
-                                        <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
-                                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                            <controls:IconText Kind="InfoOutline" Text="课表信息"/>
-                                        </Button>
-                                        <Button Click="ButtonCreateTempOverlayClassPlan_OnClick" ToolTip="创建临时课表层。"
-                                                IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <controls:IconText Kind="LayersOutline" Text="创建临时层"/>
-                                        </Button>
-                                        <Separator/>
-                                        <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
-                                            <controls:IconText Kind="Delete" Text="删除课表"/>
-                                        </Button>
-                                    </ToolBar>
+                                            <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
+                                                    Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                                <controls:IconText Kind="InfoOutline" Text="课表信息" />
+                                            </Button>
+                                            <Button Click="ButtonCreateTempOverlayClassPlan_OnClick" ToolTip="创建临时课表层。"
+                                                    IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                                <controls:IconText Kind="LayersOutline" Text="创建临时层" />
+                                            </Button>
+                                            <Separator />
+                                            <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
+                                                <controls:IconText Kind="Delete" Text="删除课表" />
+                                            </Button>
+                                        </ToolBar>
 
-                                    <!-- 课表编辑 -->
-                                    <Grid Grid.Row="1">
-                                        <DataGrid AutoGenerateColumns="False" 
-                                                  ItemsSource="{Binding Classes}" 
-                                                  CanUserAddRows="False" 
-                                                  CanUserSortColumns="False"
-                                                  RowHeaderWidth="150"
-                                                  VirtualizingPanel.IsVirtualizing="True"
-                                                  VirtualizingPanel.ScrollUnit="Pixel"
-                                                  x:Name="DataGridClassPlans"
-                                                  UnloadingRow="DataGridClassPlans_OnUnloadingRow"
-                                                  BeginningEdit="DataGridClassPlans_OnBeginningEdit"
-                                                  CellEditEnding="DataGridClassPlans_OnCellEditEnding">
-                                            <DataGrid.Columns>
-                                                <DataGridTemplateColumn Header="时间" IsReadOnly="True">
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock>
-                                                                <Run Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}}"/>
-                                                                <Run Text="-"/>
-                                                                <Run Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}}"/>
-                                                            </TextBlock>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
-                                                <materialDesign:DataGridComboBoxColumn Header="科目"
-                                                                                       ItemsSourceBinding="{Binding MainViewModel.Profile.Subjects.Keys, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}, UpdateSourceTrigger=PropertyChanged}"
-                                                                                       SelectedValueBinding="{Binding SubjectId}"
-                                                                                       ElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"
-                                                                                       EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"/>
-                                            </DataGrid.Columns>
-                                        </DataGrid>
+                                        <!-- 课表编辑 -->
+                                        <Grid Grid.Row="1">
+                                            <DataGrid AutoGenerateColumns="False"
+                                                      ItemsSource="{Binding Classes}"
+                                                      CanUserAddRows="False"
+                                                      CanUserSortColumns="False"
+                                                      RowHeaderWidth="150"
+                                                      VirtualizingPanel.IsVirtualizing="True"
+                                                      VirtualizingPanel.ScrollUnit="Pixel"
+                                                      x:Name="DataGridClassPlans"
+                                                      UnloadingRow="DataGridClassPlans_OnUnloadingRow"
+                                                      BeginningEdit="DataGridClassPlans_OnBeginningEdit"
+                                                      CellEditEnding="DataGridClassPlans_OnCellEditEnding">
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn Header="时间" IsReadOnly="True">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock>
+                                                                    <Run
+                                                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}}" />
+                                                                    <Run Text="-" />
+                                                                    <Run
+                                                                        Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}}" />
+                                                                </TextBlock>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <materialDesign:DataGridComboBoxColumn Header="科目"
+                                                        ItemsSourceBinding="{Binding MainViewModel.Profile.Subjects.Keys, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}, UpdateSourceTrigger=PropertyChanged}"
+                                                        SelectedValueBinding="{Binding SubjectId}"
+                                                        ElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}"
+                                                        EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}" />
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
+                                        <!-- 关闭前警告 -->
+                                        <materialDesign:ColorZone Grid.Row="2" Background="Yellow"
+                                                                  HorizontalAlignment="Stretch"
+                                                                  Visibility="{Binding ViewModel.IsClassPlansEditing, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
+                                                                  Mode="Light">
+                                            <controls:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6" />
+                                        </materialDesign:ColorZone>
                                     </Grid>
-                                    <!-- 关闭前警告 -->
-                                    <materialDesign:ColorZone Grid.Row="2" Background="Yellow" 
-                                                              HorizontalAlignment="Stretch" 
-                                                              Visibility="{Binding ViewModel.IsClassPlansEditing, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
-                                                              Mode="Light">
-                                        <controls:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6"/>
-                                    </materialDesign:ColorZone>
                                 </Grid>
                                 <StackPanel Grid.Column="1" 
                                             VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -729,7 +737,7 @@
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <!-- 时间表操作 -->
-                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True">
+                                    <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}">
                                         <Button Click="ButtonAddTimeLayout_OnClick" ToolTip="新建时间表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                             <controls:IconText Kind="Add" Text="添加"/>
@@ -800,7 +808,8 @@
                                     </Grid.RowDefinitions>
 
                                     <!-- 时间表编辑操作 -->
-                                    <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" >
+                                    <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" 
+                                             IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                         <!--<TextBlock Text="{Binding Layouts}"/>-->
                                         <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
                                             <controls:IconText Kind="NotePlusOutline" Text="上课"/>
@@ -946,9 +955,14 @@
                                                                           ItemsSource="{Binding Layouts, Mode=OneWay}"
                                                                           Scale="{Binding ViewModel.TimeLineScale, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=OneWay}"
                                                                           x:Name="TimeLineListControl"
-                                                                          IsReadOnly="{Binding IsActivated, Mode=OneWay}"
                                                                           IsPanningModeEnabled="True">
                                                 <!-- 回应我吧，爱莉希雅 -->
+                                                <controls:TimeLineListControl.IsReadOnly>
+                                                    <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}" Mode="OneWay">
+                                                        <Binding Path="IsActivated" Mode="OneWay"/>
+                                                        <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}" Mode="OneWay"/>
+                                                    </MultiBinding>
+                                                </controls:TimeLineListControl.IsReadOnly>
                                             </controls:TimeLineListControl>
                                         </TabItem>
                                     </TabControl>
@@ -1065,10 +1079,11 @@
                                     </materialDesign:ColorZone>
 
                                     <GridSplitter Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="2"/>
-                                    
+
                                     <!-- 时间点编辑 -->
                                     <ScrollViewer Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
                                         <StackPanel Margin="16" 
+                                                    IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}"
                                                     DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                             <StackPanel IsEnabled="{Binding SelectedItem.Value.IsActivated, ElementName=ListViewTimeLayouts, Converter={StaticResource InvertBooleanConverter}}">
                                                 <TextBlock Text="编辑时间点"
@@ -1111,7 +1126,8 @@
                                                     <ListBoxItem>
                                                         <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
                                                     </ListBoxItem>
-                                                </ListBox></StackPanel>
+                                                </ListBox>
+                                            </StackPanel>
                                             <StackPanel>
                                                 <StackPanel.Style>
                                                     <Style TargetType="StackPanel">
@@ -1228,12 +1244,13 @@
                                     <ColumnDefinition Width="5"/>
                                     <ColumnDefinition Width="450" MaxWidth="500" MinWidth="200"/>
                                 </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <!-- 科目操作 -->
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <!-- 科目操作 -->
                                 <ToolBar Grid.Column="0" Grid.ColumnSpan="3"
+                                         IsEnabled="{Binding ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}}"
                                          Grid.Row="0" ToolBarTray.IsLocked="True">
                                     <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
                                         <controls:IconText Kind="Add" Text="添加"/>
@@ -1260,14 +1277,14 @@
                                         <controls:IconText Kind="Delete" Text="删除"/>
                                     </Button>
                                 </ToolBar>
-                                    <!-- 科目选择 -->
+                                <!-- 科目选择 -->
                                 <Grid Grid.Row="1" Grid.Column="0" Margin="0 0 3 0">
                                     <!-- 科目 -->
                                     <DataGrid Grid.Row="0"
                                               x:Name="DataGridSubjects"
                                               ItemsSource="{Binding MainViewModel.Profile.EditingSubjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               AutoGenerateColumns="False"
-                                              IsReadOnly="False"
+                                              IsReadOnly="{Binding ManagementService.Policy.DisableProfileSubjectsEditing}"
                                               SelectedValue="{Binding ViewModel.SelectedSubject}"
                                               SelectionUnit="FullRow"
                                               GridLinesVisibility="All"
@@ -1309,7 +1326,7 @@
                                                                     Header="科任老师"/>
                                         </DataGrid.Columns>
                                     </DataGrid>
-                                    </Grid>
+                                </Grid>
 
                                 <!-- Gutter -->
                                 <GridSplitter Grid.Row="1"
@@ -1317,7 +1334,7 @@
                                               MaxWidth="500"
                                               Width="10" HorizontalAlignment="Stretch"/>
 
-                                    <!-- 科目编辑 -->
+                                <!-- 科目编辑 -->
                                 <Grid Grid.Row="1" Grid.Column="2" Margin="3 0 0 0" 
                                       DataContext="{Binding ViewModel.SelectedSubject}">
                                     <Grid.Style>
@@ -1337,7 +1354,7 @@
 
                                     <!-- 科目编辑 -->
                                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                                        <StackPanel Margin="12">
+                                        <StackPanel Margin="12" IsEnabled="{Binding ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                             <TextBlock Text="编辑科目信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                                        Margin="0 0 0 16"/>
                                             <!-- 科目名 & 简称 -->
@@ -1401,21 +1418,19 @@
                                                Margin="0 8 0 0"/>
                                 </StackPanel>
 
-                            </Grid> 
+                            </Grid>
                         </TabItem>
-                        
+
                     </TabControl>
-                    <!-- 档案操作 -->
-                    <!--<WrapPanel Grid.Row="0" Margin="4" Orientation="Horizontal">
-                        <WrapPanel.Resources>
-                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                                <Setter Property="Margin" Value="0 0 6 0"/>
-                            </Style>
-                        </WrapPanel.Resources>
-                        <controls:IconText Kind="FileDocumentOutline" Text="{Binding MainViewModel.CurrentProfilePath}"
-                                           Margin="0 0 6 0"
-                                           ToolTip="当前加载的档案。"/>
-                    </WrapPanel>-->
+
+                    <Border Grid.Row="1" Background="{DynamicResource MaterialDesignPaper}" 
+                            Visibility="{Binding ManagementService.Policy.DisableProfileEditing, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
+                            <materialDesign:PackIcon Width="64" Height="64" Kind="Work" HorizontalAlignment="Center"/>
+                            <TextBlock Text="档案编辑功能已被您的组织禁用。" HorizontalAlignment="Center" Margin="0 6 0 0"/>
+                        </StackPanel>
+                    </Border>
+
                     <!-- AppBar -->
                     <materialDesign:ColorZone Grid.Row="0" Padding="16" Mode="PrimaryMid"
                                               materialDesign:ElevationAssist.Elevation="Dp4">
@@ -1524,6 +1539,7 @@
                                      ScrollViewer.CanContentScroll="True"
                                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                     Visibility="{Binding ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InverseBoolToVisConverter}}"
                                      Margin="6 -15 0 -15">
                                 <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
