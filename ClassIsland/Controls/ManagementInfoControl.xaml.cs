@@ -27,4 +27,6 @@ public partial class ManagementInfoControl : UserControl
     }
 
     public string ManagementOrganization => App.GetService<ManagementService>().Manifest.OrganizationName;
+
+    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
 }

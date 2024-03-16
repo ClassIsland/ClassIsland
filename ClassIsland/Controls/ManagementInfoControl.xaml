@@ -13,17 +13,17 @@
                 <Run Text="由贵单位管理"/>
             </TextBlock>
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
-                <Run Text="您的单位/组织“"/>
-                <Run Text="{Binding ManagementOrganization, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}, Mode=OneWay}"/>
-                <Run Text="”正在提供和管理当前 ClassIsland 实例的课表和设置。要了解更多信息，请联系您所在单位/组织的IT人员。"/>
+                <Run Text="您的单位/组织"/>
+                <Run Text="{Binding ManagementService.Manifest.OrganizationName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}, Mode=OneWay}"/>
+                <Run Text="正在提供和管理当前 ClassIsland 实例的课表和设置。要了解更多信息，请联系您所在单位/组织的IT人员。"/>
             </TextBlock>
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
                 <Run Text="ID: "/>
-                <Run Text=""/>
+                <Run Text="{Binding ManagementService.Settings.ClassIdentity, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}}"/>
             </TextBlock>
             <TextBlock  TextWrapping="Wrap">
                 <Run Text="CUID: "/>
-                <Run Text=""/>
+                <Run Text="{Binding ManagementService.Persist.ClientUniqueId, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}}"/>
             </TextBlock>
             <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
                 <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >

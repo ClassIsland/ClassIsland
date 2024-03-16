@@ -24,6 +24,9 @@ public class ManagementService
     public static readonly string ManagementConfigureFolderPath =
         Path.Combine(App.AppDataFolderPath, "Management");
 
+    public static readonly string ManagementPersistConfigPath =
+        Path.Combine(ManagementConfigureFolderPath, "Persist.json");
+
     public static readonly string ManagementManifestPath = Path.Combine(ManagementConfigureFolderPath, "Manifest.json");
     public static readonly string ManagementVersionsPath = Path.Combine(ManagementConfigureFolderPath, "Versions.json");
     public static readonly string ManagementSettingsPath = Path.Combine(ManagementConfigureFolderPath, "Settings.json");
@@ -39,9 +42,11 @@ public class ManagementService
 
     public ManagementPolicy Policy { get; set; } = new();
 
+    public ManagementClientPersistConfig Persist { get;}
+
     public ManagementService()
     {
-        // TODO: 读取集控配置
+        Persist = LoadConfig<ManagementClientPersistConfig>(ManagementPersistConfigPath);
         Settings = LoadConfig<ManagementSettings>(ManagementSettingsPath);
         IsManagementEnabled = Settings.IsManagementEnabled;
         if (!IsManagementEnabled)
