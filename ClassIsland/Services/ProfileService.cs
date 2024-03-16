@@ -83,7 +83,7 @@ public class ProfileService
                 MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
             }
 
-            SaveProfile();
+            SaveProfile("_management-profile.json");
             ManagementService.Versions.ClassPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
             ManagementService.Versions.TimeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
             ManagementService.Versions.SubjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
