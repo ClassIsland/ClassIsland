@@ -313,6 +313,11 @@ public partial class SettingsWindow : MyWindow
         ViewModel.AppIconClickCount++;
         if (ViewModel.AppIconClickCount >= 10)
         {
+            if (ManagementService.Policy.DisableDebugMenu)
+            {
+                CommonDialog.ShowError("此功能已被您的组织禁用。");
+                return;
+            }
             Settings.IsDebugOptionsEnabled = true;
         }
     }

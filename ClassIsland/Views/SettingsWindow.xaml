@@ -49,6 +49,11 @@
                     <Setter Property="Margin" Value="0 0 0 6" />
                 </Style>
             </Style.Resources>
+            <Style.Triggers>
+                <Trigger  Property="Tag" Value="CanPolicyDisable">
+                    <Setter Property="IsEnabled" Value="{Binding ManagementService.Policy.DisableSettingsEditing, Converter={StaticResource InvertBooleanConverter}}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style TargetType="ScrollViewer">
             <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
@@ -366,10 +371,17 @@
                     </Grid.ColumnDefinitions>
                     <!-- 内容 -->
                     <TabControl Grid.Column="2" Grid.Row="1" TabStripPlacement="Left" x:Name="RootTabControl">
+                        <TabControl.Resources>
+                            <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                                <Style.Triggers>
+                                    
+                                </Style.Triggers>
+                            </Style>
+                        </TabControl.Resources>
                         <!-- 基本 -->
                         <TabItem Header="基本">
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
                                     <controls:IconText Kind="LightningBoltOutline" Text="行为" Margin="0 0 0 8" />
                                     <!-- 开机自启 -->
                                     <controls:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
@@ -647,7 +659,7 @@
                         <!-- 外观 -->
                         <TabItem Header="外观">
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
                                     <controls:IconText Kind="CogOutline" Text="基本" Margin="0 0 0 8" />
                                     <!-- 界面缩放 -->
                                     <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
@@ -1113,7 +1125,7 @@ The quick brown fox jumps over a lazy dog.
                         <!-- 窗口 -->
                         <TabItem Header="窗口">
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
                                     <!-- 窗口停靠位置 -->
                                     <controls:IconText Kind="Monitor" Text="窗口停靠位置" />
                                     <Grid Margin="0 12 0 0">
@@ -1260,7 +1272,7 @@ The quick brown fox jumps over a lazy dog.
                         <!-- 天气 -->
                         <TabItem Header="天气">
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
                                     <controls:IconText Kind="WeatherSunny" Text="天气预览" Margin="0 0 0 8" />
                                     <StackPanel Orientation="Horizontal">
                                         <controls:WeatherPackIconControl Width="32" Height="32"
@@ -1337,7 +1349,7 @@ The quick brown fox jumps over a lazy dog.
                                 </materialDesign:Badged>
                             </TabItem.Header>
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" >
                                     <!-- 更新状态 -->
                                     <Grid Margin="0 12 0 0">
                                         <Grid.ColumnDefinitions>
@@ -1791,7 +1803,7 @@ The quick brown fox jumps over a lazy dog.
                                             </Grid>
                                         </TabItem>
                                         <TabItem Header="更新设置">
-                                            <StackPanel>
+                                            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Margin="0" Tag="CanPolicyDisable">
                                                 <!-- 更新模式 -->
                                                 <materialDesign:Card Style="{StaticResource UpdateEnabledStyle}">
                                                     <StackPanel Margin="12">
@@ -1981,7 +1993,7 @@ The quick brown fox jumps over a lazy dog.
                         <!-- 隐私 -->
                         <TabItem Header="隐私">
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
                                     <StackPanel Margin="0 0 0 16">
                                         <TextBlock Text="匿名使用情况分析"
                                                    Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
@@ -2164,7 +2176,8 @@ The quick brown fox jumps over a lazy dog.
                         <TabItem Header="调试"
                                  Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" 
+                                            Visibility="{Binding ManagementService.Policy.DisableDebugMenu, Converter={StaticResource InverseBoolToVisConverter}}">
                                     <StackPanel.Resources>
                                         <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
                                             <Style.Resources>
@@ -2288,7 +2301,8 @@ The quick brown fox jumps over a lazy dog.
                         <TabItem Header="笔刷"
                                  Visibility="{Binding Settings.IsDebugOptionsEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <ScrollViewer>
-                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}"
+                                            Visibility="{Binding ManagementService.Policy.DisableDebugMenu, Converter={StaticResource InverseBoolToVisConverter}}">
                                     <StackPanel.Resources>
                                         <Style TargetType="Border">
                                             <Setter Property="Padding" Value="6" />
