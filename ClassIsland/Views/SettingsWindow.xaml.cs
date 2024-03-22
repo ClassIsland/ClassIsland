@@ -315,7 +315,7 @@ public partial class SettingsWindow : MyWindow
         {
             if (ManagementService.Policy.DisableDebugMenu)
             {
-                CommonDialog.ShowError("此功能已被您的组织禁用。");
+                CommonDialog.ShowError("调试菜单已被您的组织禁用。");
                 return;
             }
             Settings.IsDebugOptionsEnabled = true;

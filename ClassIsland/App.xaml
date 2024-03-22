@@ -71,6 +71,7 @@
             </Style>
             <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
             <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
+            <converters:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
 
         </ResourceDictionary>
     </Application.Resources>

@@ -455,13 +455,19 @@
                                                                           IsOn="{Binding Settings.IsSplashEnabled, Mode=TwoWay}"
                                                                           Margin="-12 0" />
                                             </Expander.Header>
-                                            <Grid Margin="36 0 48 12"
-                                                  IsEnabled="{Binding Settings.IsSplashEnabled, Mode=TwoWay}">
+                                            <Grid Margin="36 0 48 12">
+                                                <Grid.IsEnabled>
+                                                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}">
+                                                        <Binding Path="Settings.IsSplashEnabled"/>
+                                                        <Binding Path="ManagementService.Policy.DisableSplashCustomize" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                    </MultiBinding>
+                                                </Grid.IsEnabled>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="Auto" />
                                                     <RowDefinition Height="Auto" />
                                                 </Grid.RowDefinitions>
@@ -486,6 +492,11 @@
                                                              Text="{Binding Settings.SplashCustomText}"
                                                              VerticalAlignment="Center" />
                                                 </StackPanel>
+
+                                                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                                           Margin="0 6 0 0"
+                                                           Text="自定义启动界面功能已被您的组织禁用。" Foreground="IndianRed" TextWrapping="Wrap"
+                                                           Visibility="{Binding ManagementService.Policy.DisableSplashCustomize, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                             </Grid>
                                         </Expander>
                                     </materialDesign:Card>
