@@ -609,4 +609,9 @@ public partial class SettingsWindow : MyWindow
     private void MenuItemConnetManagemnt_OnClick(object sender, RoutedEventArgs e)
     {
     }
+
+    private void ButtonOpenSpeechSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(@"C:\WINDOWS\system32\rundll32.exe", @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
+    }
 }

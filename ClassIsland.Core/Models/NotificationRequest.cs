@@ -11,6 +11,9 @@ public class NotificationRequest : ObservableRecipient
     private DateTime? _targetOverlayEndTime;
     private DateTime? _targetMaskEndTime;
     private CancellationTokenSource _cancellationTokenSource = new();
+    private string _overlaySpeechContent = "";
+    private string _maskSpeechContent = "";
+    private bool _isSpeechEnabled = true;
 
     public object? OverlayContent
     {
@@ -85,6 +88,39 @@ public class NotificationRequest : ObservableRecipient
         {
             if (Equals(value, _cancellationTokenSource)) return;
             _cancellationTokenSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OverlaySpeechContent
+    {
+        get => _overlaySpeechContent;
+        set
+        {
+            if (value == _overlaySpeechContent) return;
+            _overlaySpeechContent = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string MaskSpeechContent
+    {
+        get => _maskSpeechContent;
+        set
+        {
+            if (value == _maskSpeechContent) return;
+            _maskSpeechContent = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSpeechEnabled
+    {
+        get => _isSpeechEnabled;
+        set
+        {
+            if (value == _isSpeechEnabled) return;
+            _isSpeechEnabled = value;
             OnPropertyChanged();
         }
     }

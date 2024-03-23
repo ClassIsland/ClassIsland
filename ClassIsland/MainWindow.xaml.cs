@@ -6,6 +6,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -114,6 +115,8 @@ public partial class MainWindow : Window
         get;
     } = new();
 
+    public SpeechSynthesizer SpeechSynthesizer { get; }
+
     private ILogger<MainWindow> Logger;
 
     private double _latestDpiX = 1.0;
@@ -135,9 +138,11 @@ public partial class MainWindow : Window
         set { SetValue(BackgroundWidthProperty, value); }
     }
 
-    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService, ILogger<MainWindow> logger)
+    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService, ILogger<MainWindow> logger,
+        SpeechSynthesizer speechSynthesizer)
     {
         Logger = logger;
+        SpeechSynthesizer = speechSynthesizer;
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
@@ -384,6 +389,11 @@ public partial class MainWindow : Window
         while (NotificationHostService.RequestQueue.Count > 0)
         {
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
+            var isSpeechEnabled = ViewModel.Settings.IsSpeechEnabled && request.IsSpeechEnabled;
+            if (isSpeechEnabled)
+            {
+                SpeechSynthesizer.Volume = (int)(ViewModel.Settings.SpeechVolume * 100);
+            }
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
@@ -401,6 +411,10 @@ public partial class MainWindow : Window
             if (request.MaskDuration > TimeSpan.Zero &&
                 request.OverlayDuration > TimeSpan.Zero)
             {
+                if (isSpeechEnabled)
+                {
+                    SpeechSynthesizer.SpeakAsync(request.MaskSpeechContent);
+                }
                 BeginStoryboard("OverlayMaskIn");
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
                 if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
@@ -410,6 +424,10 @@ public partial class MainWindow : Window
                 else
                 {
                     ViewModel.CurrentOverlayElement = request.OverlayContent;
+                    if (isSpeechEnabled)
+                    {
+                        SpeechSynthesizer.SpeakAsync(request.OverlaySpeechContent);
+                    }
                     BeginStoryboard("OverlayMaskOut");
                     ViewModel.OverlayRemainStopwatch.Restart();
                     // 倒计时动画
@@ -431,6 +449,7 @@ public partial class MainWindow : Window
                         cancellationToken);
                     ViewModel.OverlayRemainStopwatch.Stop();
                 }
+                SpeechSynthesizer.SpeakAsyncCancelAll();
             }
 
             if (NotificationHostService.RequestQueue.Count < 1)

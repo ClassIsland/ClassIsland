@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Speech.Synthesis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -225,6 +226,12 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<DiagnosticService>();
                 services.AddSingleton<ManagementService>();
                 services.AddHostedService<MemoryWatchDogService>();
+                services.AddSingleton<SpeechSynthesizer>(provider =>
+                {
+                    var s = new SpeechSynthesizer();
+                    s.SetOutputToDefaultAudioDevice();
+                    return s;
+                });
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views
                 services.AddSingleton<MainWindow>();

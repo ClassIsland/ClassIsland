@@ -111,7 +111,9 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
             NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
             {
                 MaskContent = new WeatherNotificationProviderControl(true, i),
+                MaskSpeechContent = i.Title,
                 OverlayContent = new WeatherNotificationProviderControl(false, i),
+                OverlaySpeechContent = i.Detail,
                 OverlayDuration = TimeSpan.FromSeconds(40),
                 MaskDuration = TimeSpan.FromSeconds(5)
             });

@@ -72,7 +72,9 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
         NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
         {
             MaskContent = new AfterSchoolNotificationProviderControl(msg, "AfterSchoolMask"),
+            MaskSpeechContent = "放学",
             OverlayContent = new AfterSchoolNotificationProviderControl(msg, "AfterSchoolOverlay"),
+            OverlaySpeechContent = msg,
             OverlayDuration = TimeSpan.FromSeconds(30)
         });
     }

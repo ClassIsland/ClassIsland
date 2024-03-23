@@ -1010,66 +1010,129 @@ The quick brown fox jumps over a lazy dog.
                                 </controls:ListDetailView.TitleElement>
                                 <controls:ListDetailView.LeftContent>
                                     <!-- 提醒提供方 -->
-                                    <Grid Grid.Column="0" Margin="0 0 4 0">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition />
-                                        </Grid.RowDefinitions>
-                                        <!-- 提醒开关 -->
-                                        <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
-                                                               Header="启用提醒"
-                                                               IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
-                                                               Description="启用提醒后，将会在对重要事件发出醒目提醒。" />
-                                        <!-- 提醒提供方列表 -->
-                                        <ListBox Grid.Row="1"
-                                                 ItemsSource="{Binding Settings.NotificationProvidersPriority}"
-                                                 Margin="0 12 0 0"
-                                                 SelectionMode="Single"
-                                                 dd:DragDrop.IsDragSource="True"
-                                                 dd:DragDrop.IsDropTarget="True"
-                                                 SelectionChanged="Selector_OnSelected"
-                                                 HorizontalContentAlignment="Stretch"
-                                                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
-                                                 SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
-                                                 ItemContainerStyle="{StaticResource NotificationsListBoxItemStyle}"
-                                                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Grid
-                                                        DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
-                                                        d:DataContext="{d:DesignInstance interfaces:INotificationProvider}"
-                                                        Background="Transparent">
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition />
-                                                            <RowDefinition />
-                                                        </Grid.RowDefinitions>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition />
-                                                        </Grid.ColumnDefinitions>
+                                    <ScrollViewer>
+                                        <StackPanel Margin="0 0 4 0">
+                                            <!-- 提醒开关 -->
+                                            <controls:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
+                                                                   Margin="0 0 0 6"
+                                                                   Header="启用提醒"
+                                                                   IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
+                                                                   Description="启用提醒后，将会在对重要事件发出醒目提醒。" />
+                                            <Expander Header="更多选项">
+                                                <StackPanel Margin="0 0 0 12">
+                                                    <!-- 启用提醒语音 -->
+                                                    <materialDesign:Card>
+                                                        <Expander Background="Transparent"
+                                                                  IsExpanded="{Binding Settings.IsSpeechEnabled, Mode=OneWay}"
+                                                                  TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
+                                                                  Margin="0 0 6 0">
+                                                            <Expander.Header>
+                                                                <controls:SettingsControl IconGlyph="TextToSpeech"
+                                                                    Foreground="{DynamicResource MaterialDesignBody}"
+                                                                    Header="启用提醒语音"
+                                                                    Description="在发出提醒时用语音播报提醒内容。"
+                                                                    IsOn="{Binding Settings.IsSpeechEnabled, Mode=TwoWay}"
+                                                                    Margin="-12 0" />
+                                                            </Expander.Header>
+                                                            <Grid Margin="36 0 48 12"
+                                                                  IsEnabled="{Binding Settings.IsSpeechEnabled}">
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition />
+                                                                    <ColumnDefinition Width="Auto" />
+                                                                </Grid.ColumnDefinitions>
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                </Grid.RowDefinitions>
+                                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="语音音量"
+                                                                           VerticalAlignment="Center" />
+                                                                <StackPanel Grid.Row="0" Grid.Column="1"
+                                                                            Orientation="Horizontal"
+                                                                            HorizontalAlignment="Right"
+                                                                            VerticalAlignment="Center">
+                                                                    <Slider Minimum="0" Maximum="1"
+                                                                            Value="{Binding Settings.SpeechVolume}"
+                                                                            TickFrequency="0.01"
+                                                                            AutoToolTipPlacement="BottomRight"
+                                                                            AutoToolTipPrecision="2"
+                                                                            Width="150" />
+                                                                </StackPanel>
 
-                                                        <!-- 图标 -->
-                                                        <ContentPresenter Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-                                                                          Width="24" Height="24"
-                                                                          VerticalAlignment="Center"
-                                                                          ClipToBounds="True" Margin="6"
-                                                                          Content="{Binding IconElement}" />
-                                                        <!-- 标题 -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="0"
-                                                                   TextWrapping="Wrap"
-                                                                   Text="{Binding Name}"
-                                                                   FontSize="16" FontWeight="Bold" />
-                                                        <!-- 描述 -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="1"
-                                                                   TextWrapping="Wrap"
-                                                                   Text="{Binding Description}"
-                                                                   FontSize="12" />
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
-                                        <!--<TextBlock Grid.Row="1" Text="{Binding ViewModel.NotificationSettingsSelectedProvider}"></TextBlock>-->
-                                    </Grid>
+                                                                <Button Grid.Row="2" Grid.Column="0"
+                                                                        Grid.ColumnSpan="2"
+                                                                        Margin="0 6 0 0"
+                                                                        Click="ButtonOpenSpeechSettings_OnClick"
+                                                                        HorizontalAlignment="Left"
+                                                                        Style="{StaticResource MaterialDesignFlatButton}">
+                                                                    <controls:IconText Kind="ExternalLink"
+                                                                        Text="系统文本转语音设置" />
+                                                                </Button>
+                                                            </Grid>
+                                                        </Expander></materialDesign:Card>
+                                                    <!-- 启用提醒强调特效 -->
+                                                    <!-- TODO: 完成设置项目绑定 -->
+                                                    <controls:SettingsCard IconGlyph="TextToSpeech"
+                                                                           Margin="0 6 0 0"
+                                                                           Foreground="{DynamicResource MaterialDesignBody}"
+                                                                           Header="启用提醒强调特效"
+                                                                           Description="启用后，发出提醒时会播放全屏强调特效。"/>
+                                                </StackPanel>
+                                            </Expander>
+                                            <!-- 提醒提供方列表 -->
+                                            <ListBox Grid.Row="1"
+                                                     ItemsSource="{Binding Settings.NotificationProvidersPriority}"
+                                                     SelectionMode="Single"
+                                                     dd:DragDrop.IsDragSource="True"
+                                                     dd:DragDrop.IsDropTarget="True"
+                                                     SelectionChanged="Selector_OnSelected"
+                                                     HorizontalContentAlignment="Stretch"
+                                                     dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
+                                                     SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
+                                                     ItemContainerStyle="{StaticResource NotificationsListBoxItemStyle}"
+                                                     Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                                                     materialDesign:ScrollViewerAssist.BubbleVerticalScroll="True"
+                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                     IsManipulationEnabled="False">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid
+                                                            DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
+                                                            d:DataContext="{d:DesignInstance interfaces:INotificationProvider}"
+                                                            Background="Transparent">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
+
+                                                            <!-- 图标 -->
+                                                            <ContentPresenter Grid.Column="0" Grid.Row="0"
+                                                                              Grid.RowSpan="2"
+                                                                              Width="24" Height="24"
+                                                                              VerticalAlignment="Center"
+                                                                              ClipToBounds="True" Margin="6"
+                                                                              Content="{Binding IconElement}" />
+                                                            <!-- 标题 -->
+                                                            <TextBlock Grid.Column="1" Grid.Row="0"
+                                                                       TextWrapping="Wrap"
+                                                                       Text="{Binding Name}"
+                                                                       FontSize="16" FontWeight="Bold" />
+                                                            <!-- 描述 -->
+                                                            <TextBlock Grid.Column="1" Grid.Row="1"
+                                                                       TextWrapping="Wrap"
+                                                                       Text="{Binding Description}"
+                                                                       FontSize="12" />
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox>
+                                            <!--<TextBlock Grid.Row="1" Text="{Binding ViewModel.NotificationSettingsSelectedProvider}"></TextBlock>-->
+                                        </StackPanel></ScrollViewer>
                                 </controls:ListDetailView.LeftContent>
                                 <controls:ListDetailView.RightContent>
                                     <!-- 提醒详细信息 -->

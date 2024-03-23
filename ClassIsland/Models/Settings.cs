@@ -114,6 +114,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private DateTime _diagnosticLastCrashTime = DateTime.MinValue;
     private int _diagnosticMemoryKillCount = 0;
     private DateTime _diagnosticLastMemoryKillTime = DateTime.Now;
+    private bool _isSpeechEnabled = false;
+    private double _speechVolume = 1.0;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -656,6 +658,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (Equals(value, _notificationProvidersSettings)) return;
             _notificationProvidersSettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSpeechEnabled
+    {
+        get => _isSpeechEnabled;
+        set
+        {
+            if (value == _isSpeechEnabled) return;
+            _isSpeechEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double SpeechVolume
+    {
+        get => _speechVolume;
+        set
+        {
+            if (value.Equals(_speechVolume)) return;
+            _speechVolume = value;
             OnPropertyChanged();
         }
     }
