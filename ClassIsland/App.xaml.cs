@@ -200,7 +200,7 @@ public partial class App : Application, IAppHost
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
 
-        ManagementService.InitManagement();
+        FileFolderService.CreateFolders();
         IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
@@ -223,7 +223,7 @@ public partial class App : Application, IAppHost
                 //services.AddHostedService<BootService>();
                 services.AddSingleton<UpdateNodeSpeedTestingService>();
                 services.AddSingleton<DiagnosticService>();
-                services.AddSingleton<ManagementService>(ManagementService.Instance);
+                services.AddSingleton<ManagementService>();
                 services.AddHostedService<MemoryWatchDogService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views
@@ -250,6 +250,7 @@ public partial class App : Application, IAppHost
 #endif
                 });
             }).Build();
+        App.GetService<ManagementService>();
         Settings = GetService<SettingsService>().Settings;
         Settings.DiagnosticStartupCount++;
         // 记录MLE

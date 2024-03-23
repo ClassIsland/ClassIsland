@@ -58,7 +58,7 @@ public class ProfileService
 
     private async void MergeManagementProfileAsync()
     {
-        // TODO: 拉取档案
+        Logger.LogInformation("正在拉取集控档案");
         try
         {
             Profile? classPlan = null;

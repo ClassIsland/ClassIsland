@@ -12,6 +12,7 @@ using ClassIsland.Core.Models.Management;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Logging;
 using static ClassIsland.Core.Helpers.ConfigureFileHelper;
 using Application = System.Windows.Application;
 using CommonDialog = ClassIsland.Controls.CommonDialog;
@@ -27,7 +28,6 @@ public class ManagementService
 
     public static void InitManagement()
     {
-        Instance = new ManagementService();
     }
 
     public static ManagementService? Instance { get; private set; }
@@ -57,8 +57,12 @@ public class ManagementService
 
     public ManagementClientPersistConfig Persist { get;}
 
-    public ManagementService()
+    private ILogger<ManagementService> Logger { get; }
+
+    public ManagementService(ILogger<ManagementService> logger)
     {
+        Instance = this;
+        Logger = logger;
         Persist = LoadConfig<ManagementClientPersistConfig>(ManagementPersistConfigPath);
         Settings = LoadConfig<ManagementSettings>(ManagementSettingsPath);
         IsManagementEnabled = Settings.IsManagementEnabled;
@@ -70,6 +74,7 @@ public class ManagementService
 
     private async void SetupManagement()
     {
+        Logger.LogInformation("正在初始化集控");
         // 读取集控清单
         Manifest = LoadConfig<ManagementManifest>(ManagementManifestPath);
         Policy = LoadConfig<ManagementPolicy>(ManagementPolicyPath);
@@ -87,13 +92,14 @@ public class ManagementService
         }
         catch (Exception e)
         {
-            // ignored
+            Logger.LogError(e, "拉取集控清单与策略失败");
         }
 
     }
 
     public void SaveSettings()
     {
+        Logger.LogInformation("保存集控配置");
         SaveConfig(ManagementVersionsPath, Versions);
     }
 
