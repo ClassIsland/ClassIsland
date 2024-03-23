@@ -2569,6 +2569,14 @@ The quick brown fox jumps over a lazy dog.
                                         <Separator/>-->
                                         <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"
                                                   Click="MenuItemExperimentalSettings_OnClick" />
+                                        <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="加入管理…"
+                                                  Click="MenuItemConnetManagemnt_OnClick" 
+                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
+                                                  Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                            <MenuItem.CommandParameter>
+                                                <controls:JoinManagementDialog/>
+                                            </MenuItem.CommandParameter>
+                                        </MenuItem>
                                     </StackPanel>
                                 </materialDesign:PopupBox>
                             </StackPanel>

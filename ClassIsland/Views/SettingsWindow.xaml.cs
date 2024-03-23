@@ -605,4 +605,8 @@ public partial class SettingsWindow : MyWindow
     {
         
     }
+
+    private void MenuItemConnetManagemnt_OnClick(object sender, RoutedEventArgs e)
+    {
+    }
 }

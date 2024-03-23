@@ -72,9 +72,11 @@
         <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
 
     </Window.Resources>
-    <ww:AsyncBox LoadingViewType="controls:WelcomeWindowIntroControl">
+    <ww:AsyncBox LoadingViewType="controls:WelcomeWindowIntroControl" x:Name="AsyncBox">
         <Grid TextElement.Foreground="{DynamicResource MaterialDesignBody}">
-            <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId, Mode=OneWay}" Foreground="{DynamicResource MaterialDesignBody}">
+            <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId, Mode=OneWay}" 
+                                       Loaded="FrameworkElement_OnLoaded"
+                                       Foreground="{DynamicResource MaterialDesignBody}">
                 <Grid Margin="16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -206,6 +208,13 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal"
                                             HorizontalAlignment="Right">
+                                    <Button Click="ButtonJoinManagementOnClick"
+                                            Margin="0 0 6 0"
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            IsEnabled="{Binding ViewModel.IsLicenseAgreed, Mode=OneWay}"
+                                            Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
+                                        <controls:IconText Kind="WorkOutline" Text="加入管理" />
+                                    </Button>
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}"
                                             IsEnabled="{Binding ViewModel.IsLicenseAgreed, Mode=OneWay}">
                                         <controls:IconText Kind="ArrowRight" Text="下一步" />

@@ -50,6 +50,8 @@ public class FileBrowserButton : Button
         }
     }
 
+    public event EventHandler? FileSelected; 
+
 
     static FileBrowserButton()
     {
@@ -65,9 +67,9 @@ public class FileBrowserButton : Button
             Filter = Filter,
             FileName = CurrentPath
         };
-        if (dialog.ShowDialog() == true)
-        {
-            CurrentPath = dialog.FileName;
-        }
+        if (dialog.ShowDialog() != true)
+            return;
+        CurrentPath = dialog.FileName;
+        FileSelected?.Invoke(this, EventArgs.Empty);
     }
 }

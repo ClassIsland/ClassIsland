@@ -41,6 +41,8 @@ public partial class WelcomeWindow : MyWindow
 
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
+    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+
     public WelcomeWindow()
     {
         DataContext = this;
@@ -64,11 +66,9 @@ public partial class WelcomeWindow : MyWindow
         var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
         var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "ClassIsland.lnk");
         var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "ClassIsland.lnk");
-        using var shortcut = new WindowsShortcut
-        {
-            Path = Environment.ProcessPath,
-            WorkingDirectory = Environment.CurrentDirectory
-        };
+        using var shortcut = new WindowsShortcut();
+        shortcut.Path = Environment.ProcessPath;
+        shortcut.WorkingDirectory = Environment.CurrentDirectory;
         try
         {
             if (ViewModel.CreateStartupShortcut)
@@ -131,5 +131,15 @@ public partial class WelcomeWindow : MyWindow
         ViewModel.FlipIndex = ViewModel.FlipIndex + 1 >= 3 ? 0 : ViewModel.FlipIndex + 1;
         if (ViewModel.FlipNextCount >= 2)
             ViewModel.IsFlipEnd = true;
+    }
+
+    private async void ButtonJoinManagementOnClick(object sender, RoutedEventArgs e)
+    {
+        await DialogHost.Show(new JoinManagementDialog(), ViewModel.DialogId);
+    }
+
+    private async void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        
     }
 }
