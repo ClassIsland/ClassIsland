@@ -994,6 +994,7 @@ The quick brown fox jumps over a lazy dog.
                         <TabItem Header="提醒">
                             <controls:ListDetailView Margin="12"
                                                      ShowTitleWhenNotCompressed="True"
+                                                     IsEnabled="{Binding ManagementService.Policy.DisableSettingsEditing, Converter={StaticResource InvertBooleanConverter}}"
                                                      IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
                                 <controls:ListDetailView.TitleElement>
                                     <Grid>
