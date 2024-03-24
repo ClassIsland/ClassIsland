@@ -1072,10 +1072,10 @@ The quick brown fox jumps over a lazy dog.
                                                         </Expander></materialDesign:Card>
                                                     <!-- 启用提醒强调特效 -->
                                                     <!-- TODO: 完成设置项目绑定 -->
-                                                    <controls:SettingsCard IconGlyph="TextToSpeech"
+                                                    <controls:SettingsCard IconGlyph="LayersOutline"
                                                                            Margin="0 6 0 0"
                                                                            Foreground="{DynamicResource MaterialDesignBody}"
-                                                                           Header="启用提醒强调特效"
+                                                                           Header="（施工中）启用提醒强调特效"
                                                                            Description="启用后，发出提醒时会播放全屏强调特效。"/>
                                                 </StackPanel>
                                             </Expander>
@@ -1855,6 +1855,11 @@ The quick brown fox jumps over a lazy dog.
                                                            ToolTip="光辉矢愿_遨游" />
                                                     <TextBlock Text="你已是最新，真棒，夸夸你哦♪" TextWrapping="Wrap"
                                                                Margin="0 8 0 0" />
+                                                    <Button HorizontalAlignment="Center" Margin="0 8 0 0"
+                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Click="ButtonChangelogs_OnClick">
+                                                        <controls:IconText Kind="FileDocumentOutline" Text="查看新增功能"/>
+                                                    </Button>
                                                 </StackPanel>
                                                 <!-- Loading -->
                                                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

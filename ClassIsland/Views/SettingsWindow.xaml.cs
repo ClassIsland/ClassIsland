@@ -614,4 +614,11 @@ public partial class SettingsWindow : MyWindow
     {
         Process.Start(@"C:\WINDOWS\system32\rundll32.exe", @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
     }
+
+    private void ButtonChangelogs_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<MainWindow>().OpenHelpsWindow();
+        App.GetService<HelpsWindow>().InitDocumentName = "新增功能";
+        App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "新增功能";
+    }
 }

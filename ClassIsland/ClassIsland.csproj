@@ -21,6 +21,7 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\documents\ChangeLog.md" />
     <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
   </ItemGroup>
   <ItemGroup>

@@ -306,7 +306,7 @@ public partial class App : Application, IAppHost
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
-            GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
+            GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。");
         }
 
         if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
