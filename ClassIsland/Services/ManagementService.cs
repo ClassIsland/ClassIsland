@@ -65,6 +65,13 @@ public class ManagementService
         Logger = logger;
         Persist = LoadConfig<ManagementClientPersistConfig>(ManagementPersistConfigPath);
         Settings = LoadConfig<ManagementSettings>(ManagementSettingsPath);
+#if DEBUG
+        if (App.ApplicationCommand.DisableManagement)
+        {
+            Logger.LogInformation("集控已被命令行禁用。");
+            return;
+        }
+#endif
         IsManagementEnabled = Settings.IsManagementEnabled;
         if (!IsManagementEnabled)
             return;

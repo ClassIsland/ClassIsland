@@ -133,7 +133,8 @@ public partial class App : Application, IAppHost
             new Option<string>(["--updateDeleteTarget", "-udt"], "更新完成要删除的文件"),
             new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
             new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
-            new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束")
+            new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
+            new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。")
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) =>
         {

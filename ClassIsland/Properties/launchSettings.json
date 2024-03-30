@@ -13,6 +13,10 @@
     "ClassIsland (Quiet)": {
       "commandName": "Project",
       "commandLineArgs": "--quiet -psmk"
+    },
+    "ClassIsland (禁用集控)": {
+      "commandName": "Project",
+      "commandLineArgs": "-dm"
     }
   }
 }

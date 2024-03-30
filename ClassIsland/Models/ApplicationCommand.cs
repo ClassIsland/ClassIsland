@@ -24,4 +24,5 @@ public class ApplicationCommand
 
     public bool PrevSessionMemoryKilled { get; set; } = false;
 
+    public bool DisableManagement { get; set; } = false;
 }
