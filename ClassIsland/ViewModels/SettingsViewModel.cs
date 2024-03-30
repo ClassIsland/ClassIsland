@@ -33,6 +33,7 @@ public class SettingsViewModel : ObservableRecipient
     private List<City> _citySearchResults = new();
     private object? _weatherNotificationControlTest;
     private string _diagnosticInfo = "";
+    private bool _isMoreNotificationSettingsExpanded = false;
 
     public Screen[] Screens
     {
@@ -225,6 +226,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _diagnosticInfo) return;
             _diagnosticInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMoreNotificationSettingsExpanded
+    {
+        get => _isMoreNotificationSettingsExpanded;
+        set
+        {
+            if (value == _isMoreNotificationSettingsExpanded) return;
+            _isMoreNotificationSettingsExpanded = value;
             OnPropertyChanged();
         }
     }
