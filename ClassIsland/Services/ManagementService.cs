@@ -147,9 +147,7 @@ public class ManagementService
         w.IsManagementEnabled = true;
         SaveConfig(ManagementSettingsPath, w);
         CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
-
-        App.ReleaseLock();
-        Application.Current.Shutdown();
-        System.Windows.Forms.Application.Restart();
+        
+        App.Restart();
     }
 }

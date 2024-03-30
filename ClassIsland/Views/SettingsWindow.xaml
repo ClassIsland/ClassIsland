@@ -99,6 +99,31 @@
 
             </Button>
         </Grid>
+        
+        <StackPanel VerticalAlignment="Stretch" Margin="16" MaxWidth="400" x:Key="RestartDialog">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="需要重启"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="部分设置需要重启以应用。"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="稍后" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="立即重启" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
 
         <!-- Drawers -->
         <ScrollViewer Width="332" x:Key="AdvancedUpdateSettings"
@@ -2679,6 +2704,15 @@ The quick brown fox jumps over a lazy dog.
                                         <Setter Property="Margin" Value="0 -8 6 -8" />
                                     </Style>
                                 </StackPanel.Resources>
+                                <materialDesign:Chip
+                                    Visibility="{Binding ViewModel.IsRestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Click="ButtonRestartChip_OnClick"
+                                    ToolTip="部分设置需要重启以应用"
+                                    Icon="{materialDesign:PackIcon Restart}">
+                                    <TextBlock>
+                                        <Run Text="需要重启" />
+                                    </TextBlock>
+                                </materialDesign:Chip>
                                 <materialDesign:Chip
                                     Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"

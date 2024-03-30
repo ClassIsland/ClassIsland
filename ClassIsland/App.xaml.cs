@@ -436,4 +436,14 @@ public partial class App : Application, IAppHost
         var app = (App)Application.Current;
         app.Mutex?.ReleaseMutex();
     }
+
+    public static void Restart()
+    {
+        IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
+        IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
+        IAppHost.Host?.Services.GetService<ProfileService>()?.SaveProfile();
+        ReleaseLock();
+        Current.Shutdown();
+        System.Windows.Forms.Application.Restart();
+    }
 }

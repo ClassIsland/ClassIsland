@@ -126,10 +126,16 @@ public partial class SettingsWindow : MyWindow
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Settings.UpdateReleaseInfo))
+        switch (e.PropertyName)
         {
-            UpdateCache();
+            case nameof(Settings.UpdateReleaseInfo):
+                UpdateCache();
+                break;
+            case nameof(Settings.SpeechSource):
+                RequireRestart();
+                break;
         }
+
         RefreshDescription();
     }
 
@@ -627,5 +633,24 @@ public partial class SettingsWindow : MyWindow
     {
         App.GetService<ISpeechService>().ClearSpeechQueue();
         App.GetService<ISpeechService>().EnqueueSpeechQueue(ViewModel.TestSpeechText);
+    }
+
+    private void RequireRestart()
+    {
+        ViewModel.IsRestartRequired = true;
+        ShowRestartDialog();
+    }
+
+    private async void ShowRestartDialog()
+    {
+        var r = await DialogHost.Show(FindResource("RestartDialog"), "SettingsWindow");
+        if (r as bool? != true)
+            return;
+        App.Restart();
+    }
+
+    private void ButtonRestartChip_OnClick(object sender, RoutedEventArgs e)
+    {
+        ShowRestartDialog();
     }
 }

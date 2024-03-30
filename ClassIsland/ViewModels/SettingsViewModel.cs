@@ -37,6 +37,7 @@ public class SettingsViewModel : ObservableRecipient
     private string _diagnosticInfo = "";
     private bool _isMoreNotificationSettingsExpanded = false;
     private string _testSpeechText = "「人们为何选择沉睡？我想…是因为害怕从『梦』中醒来。」";
+    private bool _isRestartRequired = false;
 
     public Screen[] Screens
     {
@@ -254,6 +255,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _testSpeechText) return;
             _testSpeechText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsRestartRequired
+    {
+        get => _isRestartRequired;
+        set
+        {
+            if (value == _isRestartRequired) return;
+            _isRestartRequired = value;
             OnPropertyChanged();
         }
     }
