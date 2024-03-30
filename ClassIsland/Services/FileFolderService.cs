@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Services.SpeechService;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -16,6 +17,8 @@ public class FileFolderService : IHostedService
         App.AppDataFolderPath,
         ManagementService.ManagementConfigureFolderPath,
         "./Temp",
+        App.AppCacheFolderPath,
+        EdgeTtsService.EdgeTtsCacheFolderPath
     };
 
     public FileFolderService()

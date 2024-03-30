@@ -57,6 +57,8 @@ public partial class App : Application, IAppHost
     public static readonly string AppDataFolderPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
 
+    public static readonly string AppCacheFolderPath = "./Cache";
+
     public static T GetService<T>() => IAppHost.GetService<T>();
 
     public App()
