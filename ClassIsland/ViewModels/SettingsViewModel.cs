@@ -36,7 +36,7 @@ public class SettingsViewModel : ObservableRecipient
     private object? _weatherNotificationControlTest;
     private string _diagnosticInfo = "";
     private bool _isMoreNotificationSettingsExpanded = false;
-    private string _testSpeechText = "「人们为何选择沉睡？我想…是因为害怕从『梦』中醒来。」";
+    private string _testSpeechText = "风带来了故事的种子，时间使之发芽。";
     private bool _isRestartRequired = false;
 
     public Screen[] Screens
