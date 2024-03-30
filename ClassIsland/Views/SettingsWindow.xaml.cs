@@ -23,6 +23,7 @@ using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Services;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;
@@ -620,5 +621,11 @@ public partial class SettingsWindow : MyWindow
         App.GetService<MainWindow>().OpenHelpsWindow();
         App.GetService<HelpsWindow>().InitDocumentName = "新增功能";
         App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "新增功能";
+    }
+
+    private void ButtonTestSpeeching_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<ISpeechService>().ClearSpeechQueue();
+        App.GetService<ISpeechService>().EnqueueSpeechQueue(ViewModel.TestSpeechText);
     }
 }

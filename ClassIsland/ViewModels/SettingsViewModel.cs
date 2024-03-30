@@ -10,6 +10,8 @@ using ClassIsland.Core.Interfaces;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Edge_tts_sharp;
+using Edge_tts_sharp.Model;
 using Color = System.Windows.Media.Color;
 using FontFamily = System.Windows.Media.FontFamily;
 
@@ -34,6 +36,7 @@ public class SettingsViewModel : ObservableRecipient
     private object? _weatherNotificationControlTest;
     private string _diagnosticInfo = "";
     private bool _isMoreNotificationSettingsExpanded = false;
+    private string _testSpeechText = "「人们为何选择沉睡？我想…是因为害怕从『梦』中醒来。」";
 
     public Screen[] Screens
     {
@@ -237,6 +240,20 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _isMoreNotificationSettingsExpanded) return;
             _isMoreNotificationSettingsExpanded = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public List<eVoice> EdgeVoices { get; } = 
+        Edge_tts.GetVoice().FindAll(i => i.Locale.Contains("zh-CN"));
+
+    public string TestSpeechText
+    {
+        get => _testSpeechText;
+        set
+        {
+            if (value == _testSpeechText) return;
+            _testSpeechText = value;
             OnPropertyChanged();
         }
     }

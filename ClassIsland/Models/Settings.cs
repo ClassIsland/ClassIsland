@@ -116,6 +116,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private DateTime _diagnosticLastMemoryKillTime = DateTime.Now;
     private bool _isSpeechEnabled = false;
     private double _speechVolume = 1.0;
+    private int _speechSource = 0;
+    private string _edgeTtsVoiceName = "zh-CN-YunyangNeural";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -680,6 +682,35 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value.Equals(_speechVolume)) return;
             _speechVolume = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 语音合成源
+    /// </summary>
+    /// <value>
+    /// 0 - 系统TTS<br/>
+    /// 1 - EdgeTTS
+    /// </value>
+    public int SpeechSource
+    {
+        get => _speechSource;
+        set
+        {
+            if (value == _speechSource) return;
+            _speechSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string EdgeTtsVoiceName
+    {
+        get => _edgeTtsVoiceName;
+        set
+        {
+            if (value == _edgeTtsVoiceName) return;
+            _edgeTtsVoiceName = value;
             OnPropertyChanged();
         }
     }

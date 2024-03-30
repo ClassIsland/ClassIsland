@@ -29,6 +29,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
@@ -115,7 +116,7 @@ public partial class MainWindow : Window
         get;
     } = new();
 
-    public SpeechSynthesizer SpeechSynthesizer { get; }
+    public ISpeechService SpeechService { get; }
 
     private ILogger<MainWindow> Logger;
 
@@ -138,11 +139,10 @@ public partial class MainWindow : Window
         set { SetValue(BackgroundWidthProperty, value); }
     }
 
-    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService, ILogger<MainWindow> logger,
-        SpeechSynthesizer speechSynthesizer)
+    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService, ILogger<MainWindow> logger, ISpeechService speechService)
     {
         Logger = logger;
-        SpeechSynthesizer = speechSynthesizer;
+        SpeechService = speechService;
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
@@ -390,10 +390,6 @@ public partial class MainWindow : Window
         {
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
             var isSpeechEnabled = ViewModel.Settings.IsSpeechEnabled && request.IsSpeechEnabled;
-            if (isSpeechEnabled)
-            {
-                SpeechSynthesizer.Volume = (int)(ViewModel.Settings.SpeechVolume * 100);
-            }
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
@@ -413,7 +409,7 @@ public partial class MainWindow : Window
             {
                 if (isSpeechEnabled)
                 {
-                    SpeechSynthesizer.SpeakAsync(request.MaskSpeechContent);
+                    SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
                 BeginStoryboard("OverlayMaskIn");
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
@@ -426,7 +422,7 @@ public partial class MainWindow : Window
                     ViewModel.CurrentOverlayElement = request.OverlayContent;
                     if (isSpeechEnabled)
                     {
-                        SpeechSynthesizer.SpeakAsync(request.OverlaySpeechContent);
+                        SpeechService.EnqueueSpeechQueue(request.OverlaySpeechContent);
                     }
                     BeginStoryboard("OverlayMaskOut");
                     ViewModel.OverlayRemainStopwatch.Restart();
@@ -449,7 +445,7 @@ public partial class MainWindow : Window
                         cancellationToken);
                     ViewModel.OverlayRemainStopwatch.Stop();
                 }
-                SpeechSynthesizer.SpeakAsyncCancelAll();
+                SpeechService.ClearSpeechQueue();
             }
 
             if (NotificationHostService.RequestQueue.Count < 1)

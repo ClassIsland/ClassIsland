@@ -1101,12 +1101,55 @@ The quick brown fox jumps over a lazy dog.
                                                                     <RowDefinition Height="Auto" />
                                                                     <RowDefinition Height="Auto" />
                                                                     <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
+                                                                    <RowDefinition Height="Auto" />
                                                                 </Grid.RowDefinitions>
-                                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="语音音量"
-                                                                               VerticalAlignment="Center" />
+                                                                <TextBlock Grid.Row="0" Grid.Column="0" Text="语音引擎"
+                                                                           VerticalAlignment="Center" />
                                                                 <StackPanel Grid.Row="0" Grid.Column="1"
+                                                                            Orientation="Horizontal"
+                                                                            HorizontalAlignment="Right"
+                                                                            VerticalAlignment="Center">
+                                                                    <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                                                             SelectedIndex="{Binding Settings.SpeechSource}">
+                                                                        <ListBoxItem Content="系统TTS" />
+                                                                        <ListBoxItem Content="Edge TTS"/>
+                                                                    </ListBox>
+                                                                </StackPanel>
+
+                                                                <StackPanel Grid.Row="1" Grid.Column="0"
+                                                                      Grid.ColumnSpan="2" Margin="0 6 0 6">
+                                                                    <StackPanel.Style>
+                                                                        <Style TargetType="StackPanel">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding Settings.SpeechSource}" Value="1">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        </Style>
+                                                                    </StackPanel.Style>
+                                                                    <TextBlock TextWrapping="Wrap" Text="注意：EdgeTTS需要联网工作，并且可能存在一定延迟。" />
+                                                                    <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                                              materialDesign:HintAssist.Hint="EdgeTTS说话人"
+                                                                              SelectedValuePath="ShortName"
+                                                                              SelectedValue="{Binding Settings.EdgeTtsVoiceName}"
+                                                                              ItemsSource="{Binding ViewModel.EdgeVoices}">
+                                                                        <ComboBox.ItemTemplate>
+                                                                            <DataTemplate>
+                                                                                <TextBlock Text="{Binding FriendlyName}"/>
+                                                                            </DataTemplate>
+                                                                        </ComboBox.ItemTemplate>
+                                                                    </ComboBox>
+                                                                </StackPanel>
+
+                                                                <TextBlock Grid.Row="2" Grid.Column="0" Text="语音音量"
+                                                                               VerticalAlignment="Center" 
+                                                                               Margin="0 6 0 0"/>
+                                                                <StackPanel Grid.Row="2" Grid.Column="1"
                                                                         Orientation="Horizontal"
                                                                         HorizontalAlignment="Right"
+                                                                        Margin="0 6 0 0"    
                                                                         VerticalAlignment="Center">
                                                                     <Slider Minimum="0" Maximum="1"
                                                                             Value="{Binding Settings.SpeechVolume}"
@@ -1116,15 +1159,29 @@ The quick brown fox jumps over a lazy dog.
                                                                             Width="150" />
                                                                 </StackPanel>
 
-                                                                <Button Grid.Row="2" Grid.Column="0"
-                                                                            Grid.ColumnSpan="2"
-                                                                            Margin="0 6 0 0"
-                                                                            Click="ButtonOpenSpeechSettings_OnClick"
+                                                                <TextBox Grid.Row="3" Grid.Column="0"
+                                                                         Grid.ColumnSpan="2"
+                                                                         Margin="0 6 0 0"
+                                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                                         materialDesign:HintAssist.Hint="测试朗读文本"
+                                                                         Text="{Binding ViewModel.TestSpeechText}"/>
+    
+                                                                <WrapPanel Grid.Row="4" Grid.Column="0"
+                                                                           Grid.ColumnSpan="2"
+                                                                           Margin="0 6 0 0">
+                                                                    <Button Click="ButtonTestSpeeching_OnClick"
                                                                             HorizontalAlignment="Left"
                                                                             Style="{StaticResource MaterialDesignFlatButton}">
-                                                                    <controls:IconText Kind="ExternalLink"
+                                                                        <controls:IconText Kind="Play"
+                                                                            Text="测试语音" />
+                                                                    </Button>
+                                                                    <Button Click="ButtonOpenSpeechSettings_OnClick"
+                                                                            HorizontalAlignment="Left"
+                                                                            Style="{StaticResource MaterialDesignFlatButton}">
+                                                                        <controls:IconText Kind="ExternalLink"
                                                                             Text="系统文本转语音设置" />
-                                                                </Button>
+                                                                    </Button>
+                                                                </WrapPanel>
                                                             </Grid>
                                                         </Expander>
                                                     </materialDesign:Card>

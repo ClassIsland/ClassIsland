@@ -22,10 +22,12 @@ using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Core;
+using ClassIsland.Core.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
+using ClassIsland.Services.SpeechService;
 using ClassIsland.Views;
 using MahApps.Metro.Controls;
 using MaterialDesignThemes.Wpf;
@@ -233,6 +235,16 @@ public partial class App : Application, IAppHost
                     s.SetOutputToDefaultAudioDevice();
                     return s;
                 });
+                services.AddSingleton<ISpeechService>((provider =>
+                {
+                    var s = provider.GetService<SettingsService>();
+                    return s?.Settings.SpeechSource switch
+                    {
+                        0 => new SystemSpeechService(),
+                        1 => new EdgeTtsService(),
+                        _ => new SystemSpeechService()
+                    };
+                }));
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views
                 services.AddSingleton<MainWindow>();
