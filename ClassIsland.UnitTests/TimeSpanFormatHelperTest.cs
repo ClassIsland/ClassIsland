@@ -13,6 +13,8 @@ public class TimeSpanFormatHelperTest
             new(25, 11, 10),
             new(00, 00, 01),
             new(00, 10, 00),
+            new(1, 00, 00),
+            new(0, 59, 59),
         ];
         string[] result =
         [
@@ -20,6 +22,8 @@ public class TimeSpanFormatHelperTest
             "25小时11分钟10秒",
             "1秒",
             "10分钟",
+            "1小时",
+            "59分钟59秒",
         ];
 
         for (var i = 0; i < ts.Length; i++)
