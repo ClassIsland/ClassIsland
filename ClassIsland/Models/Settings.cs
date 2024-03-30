@@ -117,7 +117,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private bool _isSpeechEnabled = false;
     private double _speechVolume = 1.0;
     private int _speechSource = 0;
-    private string _edgeTtsVoiceName = "zh-CN-YunyangNeural";
+    private string _edgeTtsVoiceName = "zh-CN-XiaoxiaoNeural";
 
     public void NotifyPropertyChanged(string propertyName)
     {
