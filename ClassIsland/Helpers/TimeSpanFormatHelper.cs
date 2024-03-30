@@ -11,7 +11,7 @@ public static class TimeSpanFormatHelper
         var m = ts.Minutes;
         var s = ts.Seconds;
 
-        if (h > 1)
+        if (h >= 1)
         {
             r += $"{Math.Floor(ts.TotalHours)}小时";
         }
