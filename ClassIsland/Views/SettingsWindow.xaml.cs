@@ -102,6 +102,8 @@ public partial class SettingsWindow : MyWindow
 
     public WeatherService WeatherService { get; } = App.GetService<WeatherService>();
 
+    public ExactTimeService ExactTimeService { get; } = App.GetService<ExactTimeService>();
+
     public SettingsWindow()
     {
         UpdateService = App.GetService<UpdateService>();
@@ -652,5 +654,13 @@ public partial class SettingsWindow : MyWindow
     private void ButtonRestartChip_OnClick(object sender, RoutedEventArgs e)
     {
         ShowRestartDialog();
+    }
+
+    private async void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)
+    {
+        await Task.Run(() =>
+        {
+            ExactTimeService.Sync();
+        });
     }
 }

@@ -116,6 +116,8 @@ public partial class MainWindow : Window
         get;
     } = new();
 
+    private ExactTimeService ExactTimeService { get; }
+
     public ISpeechService SpeechService { get; }
 
     private ILogger<MainWindow> Logger;
@@ -139,7 +141,14 @@ public partial class MainWindow : Window
         set { SetValue(BackgroundWidthProperty, value); }
     }
 
-    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService, ILogger<MainWindow> logger, ISpeechService speechService)
+    public MainWindow(SettingsService settingsService, 
+        ProfileService profileService,
+        NotificationHostService notificationHostService, 
+        TaskBarIconService taskBarIconService,
+        ThemeService themeService, 
+        ILogger<MainWindow> logger, 
+        ISpeechService speechService,
+        ExactTimeService exactTimeService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -148,6 +157,7 @@ public partial class MainWindow : Window
         NotificationHostService = notificationHostService;
         ThemeService = themeService;
         ProfileService = profileService;
+        ExactTimeService = exactTimeService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -222,6 +232,9 @@ public partial class MainWindow : Window
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
     {
+        if (SettingsService.Settings.IsMainWindowDebugEnabled)
+            ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
+
         UpdateWindowPos();
         UpdateMouseStatus();
         LoadCurrentClassPlan();
@@ -265,7 +278,7 @@ public partial class MainWindow : Window
         var currentLayout = ViewModel.CurrentClassPlan.TimeLayout.Layouts;
         foreach (var i in currentLayout)
         {
-            if (i.StartSecond.TimeOfDay <= DateTime.Now.TimeOfDay && i.EndSecond.TimeOfDay >= DateTime.Now.TimeOfDay)
+            if (i.StartSecond.TimeOfDay <= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay && i.EndSecond.TimeOfDay >= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay)
             {
                 ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
                 ViewModel.CurrentTimeLayoutItem = i;
@@ -316,11 +329,11 @@ public partial class MainWindow : Window
             }
         }
 
-        var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
+        var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         ViewModel.OnClassLeftTime = tClassDelta;
         NotificationHostService.OnClassDeltaTime = tClassDelta;
         NotificationHostService.OnBreakingTimeDeltaTime =
-            ViewModel.NextBreakingLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
+            ViewModel.NextBreakingLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         // 获取状态信息
         if (ViewModel.CurrentSelectedIndex == null)
         {
@@ -364,7 +377,7 @@ public partial class MainWindow : Window
         await ProcessNotification();
 
         // Finished update
-        ViewModel.Today = DateTime.Now;
+        ViewModel.Today = ExactTimeService.GetCurrentLocalDateTime();
         MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
     }
 
@@ -377,9 +390,9 @@ public partial class MainWindow : Window
         ViewModel.IsOverlayOpened = true;  // 上锁
 
         if (ViewModel.FirstProcessNotifications == DateTime.MinValue)
-            ViewModel.FirstProcessNotifications = DateTime.Now;
+            ViewModel.FirstProcessNotifications = ExactTimeService.GetCurrentLocalDateTime();
         if (!ViewModel.Settings.IsNotificationEnabled ||
-            (DateTime.Now - ViewModel.FirstProcessNotifications <= TimeSpan.FromSeconds(10) &&
+            (ExactTimeService.GetCurrentLocalDateTime() - ViewModel.FirstProcessNotifications <= TimeSpan.FromSeconds(10) &&
              App.ApplicationCommand.Quiet) // 静默启动
            )
         {
@@ -393,12 +406,12 @@ public partial class MainWindow : Window
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
-                request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
+                request.MaskDuration = request.TargetMaskEndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
             }
 
             if (request.TargetOverlayEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
-                request.OverlayDuration = request.TargetOverlayEndTime.Value - DateTime.Now - request.MaskDuration;
+                request.OverlayDuration = request.TargetOverlayEndTime.Value - ExactTimeService.GetCurrentLocalDateTime() - request.MaskDuration;
             }
 
             ViewModel.CurrentMaskElement = request.MaskContent;  // 加载Mask元素
@@ -638,12 +651,12 @@ public partial class MainWindow : Window
 
     public bool CheckClassPlan(ClassPlan plan)
     {
-        if (plan.TimeRule.WeekDay != (int)DateTime.Now.DayOfWeek)
+        if (plan.TimeRule.WeekDay != (int)ExactTimeService.GetCurrentLocalDateTime().DayOfWeek)
         {
             return false;
         }
 
-        var dd = DateTime.Now.Date - ViewModel.Settings.SingleWeekStartTime.Date;
+        var dd = ExactTimeService.GetCurrentLocalDateTime().Date - ViewModel.Settings.SingleWeekStartTime.Date;
         var dw = Math.Floor(dd.TotalDays / 7) + 1;
         var w = (int)dw % 2;
         switch (plan.TimeRule.WeekCountDiv)
@@ -660,7 +673,7 @@ public partial class MainWindow : Window
     public void LoadCurrentClassPlan()
     {
         ViewModel.Profile.RefreshTimeLayouts();
-        if (ViewModel.TemporaryClassPlanSetupTime.Date < DateTime.Now.Date)  // 清除过期临时课表
+        if (ViewModel.TemporaryClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
         {
             ViewModel.TemporaryClassPlan = null;
         }

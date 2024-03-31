@@ -35,6 +35,7 @@
     </PackageReference>
     <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
+    <PackageReference Include="GuerrillaNtp" Version="3.1.0" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.115" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="MahApps.Metro" Version="2.4.10" />

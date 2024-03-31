@@ -525,6 +525,44 @@
                                             </Grid>
                                         </Expander>
                                     </materialDesign:Card>
+                                    <!-- 使用精确时间 -->
+                                    <materialDesign:Card Margin="0 0 0 6">
+                                        <Expander Background="Transparent"
+                                                  IsExpanded="{Binding Settings.IsExactTimeEnabled, Mode=OneWay}"
+                                                  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                            <Expander.Header>
+                                                <controls:SettingsControl IconGlyph="TimerSyncOutline"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Header="使用精确时间"
+                                                                          Description="启用后，ClassIsland将自动从指定的服务器上同步精确时间。此设置不影响系统时间。"
+                                                                          IsOn="{Binding Settings.IsExactTimeEnabled, Mode=TwoWay}"
+                                                                          Margin="-12 0" />
+                                            </Expander.Header>
+                                            <StackPanel Margin="36 0 48 12"
+                                                  IsEnabled="{Binding Settings.IsExactTimeEnabled, Mode=OneWay}">
+                                                <ComboBox VerticalAlignment="Stretch"
+                                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                          materialDesign:HintAssist.Hint="时间服务器"
+                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                          Text="{Binding Settings.ExactTimeServer}"
+                                                          HorizontalContentAlignment="Left"
+                                                          IsEditable="True">
+                                                    <ComboBoxItem Content="cn.ntp.org.cn"/>
+                                                    <ComboBoxItem Content="pool.ntp.org"/>
+                                                    <ComboBoxItem Content="ntp.aliyun.com"/>
+                                                    <ComboBoxItem Content="time.windows.com"/>
+                                                </ComboBox>
+                                                <TextBlock Margin="0 6 0 0" Text="{Binding ExactTimeService.SyncStatusMessage}"
+                                                           TextWrapping="Wrap"/>
+                                                <Button Margin="0 6 0 0" 
+                                                        HorizontalAlignment="Left"
+                                                        Click="ButtonSyncTimeNow_OnClick"
+                                                        Style="{StaticResource MaterialDesignFlatButton}">
+                                                    <controls:IconText Kind="Refresh" Text="立即同步"/>
+                                                </Button>
+                                            </StackPanel>
+                                        </Expander>
+                                    </materialDesign:Card>
                                     <Separator Margin="0 16 0 8" />
                                     <controls:IconText Kind="WindowRestore" Text="显示" Margin="0 0 0 8" />
                                     <!-- 简略信息 -->

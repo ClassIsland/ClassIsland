@@ -704,13 +704,22 @@
         </Grid>
 
         <!-- Scale debug -->
-        <TextBlock Foreground="Cyan" Visibility="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <TextBlock Foreground="Cyan" 
+                   Visibility="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Run Text="GridRoot:"/>
             <Run Text="{Binding ActualWidth, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
             <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
             <Run Text="GridWrapper:"/>
             <Run Text="{Binding ActualWidth, ElementName=GridWrapper, Mode=OneWay, StringFormat={}{0:f1}}"/>
             <Run Text="{Binding ActualHeight, ElementName=GridWrapper, Mode=OneWay, StringFormat={}{0:f1}}"/>
+            <LineBreak/>
+            <Run Text="CurrentTime:"/>
+            <Run Text="{Binding ViewModel.DebugCurrentTime, ConverterCulture=zh-CN}"/>
+        </TextBlock>
+        <TextBlock Foreground="Cyan" 
+                   HorizontalAlignment="Right"
+                   Visibility="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Run Text="{x:Static local:App.AppVersionLong}"/>
         </TextBlock>
 
     </Grid>

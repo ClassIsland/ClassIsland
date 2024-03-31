@@ -51,6 +51,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
+    private ExactTimeService ExactTimeService { get; } = App.GetService<ExactTimeService>();
+
     public static readonly DependencyProperty CurrentTimeLayoutItemProperty = DependencyProperty.Register(
         nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControl), new PropertyMetadata(default(TimeLayoutItem)));
 
@@ -289,7 +291,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void UpdateSeconds()
     {
-        Seconds = (long)(DateTime.Now.TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
+        Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
         LeftSeconds = TotalSeconds - Seconds;
 
         MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&

@@ -44,6 +44,7 @@ public class MainViewModel : ObservableRecipient
     private bool _isClassPlanEnabled = true;
     private bool _isBusy = false;
     private DateTime _firstProcessNotifications = DateTime.MinValue;
+    private DateTime _debugCurrentTime = DateTime.Now;
 
     public Profile Profile
     {
@@ -399,6 +400,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_firstProcessNotifications)) return;
             _firstProcessNotifications = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime DebugCurrentTime
+    {
+        get => _debugCurrentTime;
+        set
+        {
+            if (value.Equals(_debugCurrentTime)) return;
+            _debugCurrentTime = value;
             OnPropertyChanged();
         }
     }

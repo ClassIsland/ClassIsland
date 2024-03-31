@@ -118,6 +118,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private double _speechVolume = 1.0;
     private int _speechSource = 0;
     private string _edgeTtsVoiceName = "zh-CN-XiaoxiaoNeural";
+    private string _exactTimeServer = "cn.ntp.org.cn";
+    private bool _isExactTimeEnabled = true;
+    private double _timeOffsetSeconds = 0.0;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -438,6 +441,39 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _splashCustomLogoSource) return;
             _splashCustomLogoSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ExactTimeServer
+    {
+        get => _exactTimeServer;
+        set
+        {
+            if (value == _exactTimeServer) return;
+            _exactTimeServer = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsExactTimeEnabled
+    {
+        get => _isExactTimeEnabled;
+        set
+        {
+            if (value == _isExactTimeEnabled) return;
+            _isExactTimeEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double TimeOffsetSeconds
+    {
+        get => _timeOffsetSeconds;
+        set
+        {
+            if (value.Equals(_timeOffsetSeconds)) return;
+            _timeOffsetSeconds = value;
             OnPropertyChanged();
         }
     }

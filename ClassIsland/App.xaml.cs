@@ -247,6 +247,7 @@ public partial class App : Application, IAppHost
                         _ => new SystemSpeechService()
                     };
                 }));
+                services.AddSingleton<ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views
                 services.AddSingleton<MainWindow>();
@@ -318,6 +319,7 @@ public partial class App : Application, IAppHost
         {
             Logger.LogError(ex, "创建任务栏图标失败。");
         }
+
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
@@ -341,6 +343,7 @@ public partial class App : Application, IAppHost
         GetService<SplashService>().CurrentProgress = 75;
 
         GetService<WeatherService>();
+        GetService<ExactTimeService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
 
