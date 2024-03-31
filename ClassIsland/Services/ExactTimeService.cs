@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using GuerrillaNtp;
@@ -44,7 +45,10 @@ public class ExactTimeService : ObservableRecipient
         Logger = logger;
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
-        UpdateTimer.Tick += (sender, args) => Sync();
+        UpdateTimer.Tick += (sender, args) =>
+        {
+            _ = Task.Run(Sync);
+        };
         try
         {
             NtpClient = new NtpClient(SettingsService.Settings.ExactTimeServer);
