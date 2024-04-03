@@ -538,29 +538,49 @@
                                                                           IsOn="{Binding Settings.IsExactTimeEnabled, Mode=TwoWay}"
                                                                           Margin="-12 0" />
                                             </Expander.Header>
-                                            <StackPanel Margin="36 0 48 12"
+                                            <Grid Margin="36 0 48 12"
                                                   IsEnabled="{Binding Settings.IsExactTimeEnabled, Mode=OneWay}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                    <RowDefinition Height="Auto" />
+                                                </Grid.RowDefinitions>
                                                 <ComboBox VerticalAlignment="Stretch"
                                                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                                           materialDesign:HintAssist.Hint="时间服务器"
                                                           Foreground="{DynamicResource MaterialDesignBody}"
                                                           Text="{Binding Settings.ExactTimeServer}"
                                                           HorizontalContentAlignment="Left"
-                                                          IsEditable="True">
+                                                          IsEditable="True"
+                                                          Margin="0 0 0 6"
+                                                          Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                                                     <ComboBoxItem Content="cn.ntp.org.cn"/>
                                                     <ComboBoxItem Content="pool.ntp.org"/>
                                                     <ComboBoxItem Content="ntp.aliyun.com"/>
                                                     <ComboBoxItem Content="time.windows.com"/>
                                                 </ComboBox>
+                                                <TextBlock Grid.Column="0" Grid.Row="1" Text="时间偏移"
+                                                           VerticalAlignment="Center"/>
+                                                <TextBox Grid.Column="1" Grid.Row="1"
+                                                         VerticalAlignment="Center"
+                                                         MinWidth="150"
+                                                         materialDesign:TextFieldAssist.SuffixText="秒"
+                                                         Text="{Binding Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
                                                 <TextBlock Margin="0 6 0 0" Text="{Binding ExactTimeService.SyncStatusMessage}"
-                                                           TextWrapping="Wrap"/>
+                                                           TextWrapping="Wrap" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"/>
                                                 <Button Margin="0 6 0 0" 
+                                                        Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
                                                         HorizontalAlignment="Left"
                                                         Click="ButtonSyncTimeNow_OnClick"
                                                         Style="{StaticResource MaterialDesignFlatButton}">
                                                     <controls:IconText Kind="Refresh" Text="立即同步"/>
                                                 </Button>
-                                            </StackPanel>
+                                            </Grid>
                                         </Expander>
                                     </materialDesign:Card>
                                     <Separator Margin="0 16 0 8" />
