@@ -159,6 +159,12 @@ public partial class MainWindow : Window
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
 
+        if (DesignerProperties.GetIsInDesignMode(this))
+        {
+            InitializeComponent();
+            return;
+        }
+
         SettingsService.PropertyChanged += (sender, args) =>
         {
             LoadSettings();
@@ -475,6 +481,8 @@ public partial class MainWindow : Window
 
     protected override void OnContentRendered(EventArgs e)
     {
+        if (DesignerProperties.GetIsInDesignMode(this))
+            return;
         UpdateTheme();
         var menu = (ContextMenu)FindResource("AppContextMenu");
         menu.DataContext = this;
@@ -553,6 +561,8 @@ public partial class MainWindow : Window
     protected override void OnInitialized(EventArgs e)
     {
         base.OnInitialized(e);
+        if (DesignerProperties.GetIsInDesignMode(this))
+            return;
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
         LoadSettings();
