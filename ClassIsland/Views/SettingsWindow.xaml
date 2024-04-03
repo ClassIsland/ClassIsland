@@ -2404,6 +2404,9 @@ The quick brown fox jumps over a lazy dog.
                                               Header="关闭调试菜单"
                                               Click="ButtonCloseDebug_OnClick" />
                                     <Separator />
+                                    <MenuItem Icon="{materialDesign:PackIcon LightningBoltOutline}"
+                                              Header="FeatureDebugWindow"
+                                              Click="MenuItemFeatureDebugWindow_OnClick"/>
                                     <MenuItem IsCheckable="True" Header="调试菜单"
                                               IsChecked="{Binding Settings.IsDebugEnabled}" />
                                     <MenuItem IsCheckable="True" Header="调试终端"

@@ -663,4 +663,9 @@ public partial class SettingsWindow : MyWindow
             ExactTimeService.Sync();
         });
     }
+
+    private void MenuItemFeatureDebugWindow_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<FeatureDebugWindow>().Show();
+    }
 }
