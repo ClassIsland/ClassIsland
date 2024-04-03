@@ -29,8 +29,12 @@
                         <TextBox Text="{Binding CenterY, ElementName=RippleEffect, Converter={StaticResource IntToStringConverter}}"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  materialDesign:HintAssist.Hint="Y" MinWidth="100"/>
+                        <TextBox Text="{Binding Opacity, ElementName=RippleEffect, Converter={StaticResource IntToStringConverter}}"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 materialDesign:HintAssist.Hint="Opacity" MinWidth="100"/>
+                        <CheckBox Content="ClipToBounds" IsChecked="{Binding ClipToBounds, ElementName=RippleEffect}"></CheckBox>
                     </WrapPanel>
-                    <notificationEffects:RippleEffect Margin="150"
+                    <notificationEffects:RippleEffect Margin="50"
                                                       x:Name="RippleEffect"
                                                       BorderBrush="Red"
                                                       BorderThickness="1"/>

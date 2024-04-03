@@ -70,8 +70,8 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         {
             From = 0,
             To = Math.Ceiling(r * 2), 
-            Duration = new Duration(TimeSpan.FromSeconds(0.5)),
-            EasingFunction = new ExponentialEase()
+            Duration = new Duration(TimeSpan.FromSeconds(0.75)),
+            EasingFunction = new CubicEase()
         };
         Storyboard.SetTarget(growing, this);
         Storyboard.SetTargetProperty(growing, new PropertyPath(EllipseSizeProperty));
@@ -80,7 +80,7 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         {
             From = 1.0,
             To = 0.0,
-            Duration = new Duration(TimeSpan.FromSeconds(0.6)),
+            Duration = new Duration(TimeSpan.FromSeconds(0.75)),
             EasingFunction = new ExponentialEase()
         };
         Storyboard.SetTarget(opacity, EllipseMain);
