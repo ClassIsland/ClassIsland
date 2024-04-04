@@ -386,6 +386,14 @@ public partial class MainWindow : Window
         MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
     }
 
+    public Point GetCenter()
+    {
+        GetCurrentDpi(out var dpi, out _);
+        var p = GridWrapper.TranslatePoint(new Point(GridWrapper.ActualWidth / 2, GridWrapper.ActualHeight / 2), this);
+        p.Y = Top + ActualHeight / 2;
+        return p;
+    }
+
     private async Task ProcessNotification()
     {
         if (ViewModel.IsOverlayOpened)
@@ -430,7 +438,14 @@ public partial class MainWindow : Window
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
                 BeginStoryboard("OverlayMaskIn");
-                TopmostEffectWindow.PlayEffect(new RippleEffect());
+                if (SettingsService.Settings.IsNotificationEffectEnabled)
+                {
+                    TopmostEffectWindow.PlayEffect(new RippleEffect()
+                    {
+                        CenterX = GetCenter().X,
+                        CenterY = GetCenter().Y
+                    });
+                }
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
                 if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
                 {

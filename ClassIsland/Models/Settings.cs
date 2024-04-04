@@ -121,6 +121,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private string _exactTimeServer = "cn.ntp.org.cn";
     private bool _isExactTimeEnabled = true;
     private double _timeOffsetSeconds = 0.0;
+    private bool _isNotificationEffectEnabled = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -747,6 +748,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _edgeTtsVoiceName) return;
             _edgeTtsVoiceName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationEffectEnabled
+    {
+        get => _isNotificationEffectEnabled;
+        set
+        {
+            if (value == _isNotificationEffectEnabled) return;
+            _isNotificationEffectEnabled = value;
             OnPropertyChanged();
         }
     }

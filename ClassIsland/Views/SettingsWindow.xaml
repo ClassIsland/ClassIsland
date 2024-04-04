@@ -1269,12 +1269,12 @@ The quick brown fox jumps over a lazy dog.
                                                         </Expander>
                                                     </materialDesign:Card>
                                                     <!-- 启用提醒强调特效 -->
-                                                    <!-- TODO: 完成设置项目绑定 -->
                                                     <controls:SettingsCard IconGlyph="LayersOutline"
                                                                                Margin="0 6 0 0"
                                                                                Foreground="{DynamicResource MaterialDesignBody}"
-                                                                               Header="（施工中）启用提醒强调特效"
-                                                                               Description="启用后，发出提醒时会播放全屏强调特效。" />
+                                                                               Header="启用提醒强调特效"
+                                                                               Description="启用后，发出提醒时会播放全屏强调特效。" 
+                                                                               IsOn="{Binding Settings.IsNotificationEffectEnabled}"/>
                                                 </StackPanel>
                                             </ScrollViewer>
                                         </Expander>
