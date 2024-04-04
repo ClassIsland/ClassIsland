@@ -1,0 +1,36 @@
+﻿<Window x:Class="ClassIsland.Views.TopmostEffectWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:TopmostEffectWindow}"
+        Topmost="True"
+        ContentRendered="TopmostEffectWindow_OnContentRendered"
+        Title="顶层效果窗口" Height="0" Width="0"
+        Top="0"
+        Left="0"
+        Loaded="TopmostEffectWindow_OnLoaded"
+        Background="{x:Null}"
+        WindowStyle="None"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize">
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="0"/>
+    </WindowChrome.WindowChrome>
+    <Grid>
+        <ItemsControl HorizontalContentAlignment="Stretch"
+                      VerticalContentAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      HorizontalAlignment="Stretch"
+                      ItemsSource="{Binding ViewModel.EffectControls, Mode=OneWay}">
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+    </Grid>
+</Window>

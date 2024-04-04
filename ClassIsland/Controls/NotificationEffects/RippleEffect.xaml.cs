@@ -87,6 +87,10 @@ public partial class RippleEffect : UserControl, INotificationEffectControl
         Storyboard.SetTargetProperty(opacity, new PropertyPath(OpacityProperty));
         storyboard.Children.Add(opacity);
         
+        storyboard.Completed += (sender, args) => 
+            EffectCompleted?.Invoke(this, EventArgs.Empty);
         storyboard.Begin();
     }
+
+    public event EventHandler? EffectCompleted;
 }

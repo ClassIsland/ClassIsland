@@ -255,6 +255,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<ProfileSettingsWindow>();
                 services.AddSingleton<HelpsWindow>();
                 services.AddTransient<FeatureDebugWindow>();
+                services.AddSingleton<TopmostEffectWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

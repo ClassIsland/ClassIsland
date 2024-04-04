@@ -27,6 +27,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Services;
@@ -111,6 +112,8 @@ public partial class MainWindow : Window
         get;
     }
 
+    public TopmostEffectWindow TopmostEffectWindow { get; }
+
     private Stopwatch UserPrefrenceUpdateStopwatch
     {
         get;
@@ -148,7 +151,8 @@ public partial class MainWindow : Window
         ThemeService themeService, 
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
-        ExactTimeService exactTimeService)
+        ExactTimeService exactTimeService,
+        TopmostEffectWindow topmostEffectWindow)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -158,12 +162,7 @@ public partial class MainWindow : Window
         ThemeService = themeService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
-
-        if (DesignerProperties.GetIsInDesignMode(this))
-        {
-            InitializeComponent();
-            return;
-        }
+        TopmostEffectWindow = topmostEffectWindow;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -431,6 +430,7 @@ public partial class MainWindow : Window
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
                 BeginStoryboard("OverlayMaskIn");
+                TopmostEffectWindow.PlayEffect(new RippleEffect());
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
                 if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
                 {
@@ -845,6 +845,7 @@ public partial class MainWindow : Window
                 Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
                 break;
         }
+        TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY)
