@@ -16,6 +16,7 @@ public class NotificationRequest : ObservableRecipient
     private string _overlaySpeechContent = "";
     private string _maskSpeechContent = "";
     private bool _isSpeechEnabled = true;
+    private string _notificationSoundPath = "";
 
     public object? OverlayContent
     {
@@ -123,6 +124,17 @@ public class NotificationRequest : ObservableRecipient
         {
             if (value == _isSpeechEnabled) return;
             _isSpeechEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string NotificationSoundPath
+    {
+        get => _notificationSoundPath;
+        set
+        {
+            if (value == _notificationSoundPath) return;
+            _notificationSoundPath = value;
             OnPropertyChanged();
         }
     }

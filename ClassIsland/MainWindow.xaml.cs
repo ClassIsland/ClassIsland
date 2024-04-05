@@ -421,6 +421,15 @@ public partial class MainWindow : Window
             using var player = new DirectSoundOut();
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
             var isSpeechEnabled = ViewModel.Settings.IsSpeechEnabled && request.IsSpeechEnabled && request.ProviderSettings.IsSpeechEnabled;
+            var isNotificationSoundEnabled = SettingsService.Settings.IsNotificationSoundEnabled && request.ProviderSettings.IsNotificationSoundEnabled;
+            var notificationSoundPath =
+                (from i in (string[])
+                    [
+                        request.NotificationSoundPath, request.ProviderSettings.NotificationSoundPath,
+                        SettingsService.Settings.NotificationSoundPath
+                    ]
+                    where !string.IsNullOrWhiteSpace(i)
+                    select i).FirstOrDefault() ?? "";
             var isEffectEnabled = ViewModel.Settings.IsNotificationEffectEnabled &&
                                   request.ProviderSettings.IsNotificationEffectEnabled;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
@@ -445,12 +454,13 @@ public partial class MainWindow : Window
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
                 BeginStoryboard("OverlayMaskIn");
-                if (SettingsService.Settings.IsNotificationSoundEnabled && request.ProviderSettings.IsNotificationSoundEnabled)
+                
+                if (isNotificationSoundEnabled)
                 {
-                    IWaveProvider provider = string.IsNullOrWhiteSpace(SettingsService.Settings.NotificationSoundPath)
+                    IWaveProvider provider = string.IsNullOrWhiteSpace(notificationSoundPath)
                         ? new StreamMediaFoundationReader(
                             Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream)
-                        : new AudioFileReader(SettingsService.Settings.NotificationSoundPath);
+                        : new AudioFileReader(notificationSoundPath);
                     player.Init(provider);
                     player.Play();
                 }
