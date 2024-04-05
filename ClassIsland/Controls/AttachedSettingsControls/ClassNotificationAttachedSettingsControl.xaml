@@ -40,7 +40,7 @@
                                       Margin="0 0 0 6"/>
             <!-- 准备上课提醒文字 -->
             <TextBox Text="{Binding Settings.ClassOnPreparingText}"
-                     materialDesign:HintAssist.Hint="准备上课提醒文字"
+                     materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
                      Foreground="{DynamicResource MaterialDesignBody}"
                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                      Margin="0 0 0 6"/>

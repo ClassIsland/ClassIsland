@@ -56,7 +56,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         InitializeComponent();
         Element = FindResource(key);
         Timer.Tick += TimerOnTick;
-        if (key == "ClassPrepareNotifyOverlay")
+        if (key == "ClassPrepareNotifyOverlay" && !string.IsNullOrWhiteSpace(Message))
         {
             Timer.Start();
         }

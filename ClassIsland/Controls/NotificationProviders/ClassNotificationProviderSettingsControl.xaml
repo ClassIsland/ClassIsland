@@ -69,7 +69,7 @@
                             </controls:SettingsControl>
                             <!-- 准备上课提醒文字 -->
                             <TextBox Text="{Binding Settings.ClassOnPreparingText}"
-                                     materialDesign:HintAssist.Hint="准备上课提醒文字"
+                                     materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
                                      Foreground="{DynamicResource MaterialDesignBody}"
                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                      Margin="0 0 0 6" />
@@ -82,7 +82,7 @@
                               IsExpanded="{Binding Settings.IsClassOnNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="ClockEnd"
+                            <controls:SettingsControl IconGlyph="BookOutline"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在上课时发出提醒"
                                                       Description="在上课时发出醒目提醒，提示已经上课。"
@@ -104,7 +104,7 @@
                               IsExpanded="{Binding Settings.IsClassOffNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="ClockEnd"
+                            <controls:SettingsControl IconGlyph="ClockOutline"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在下课时发出提醒"
                                                       Description="在下课时发出醒目提醒，提示已经下课。"
