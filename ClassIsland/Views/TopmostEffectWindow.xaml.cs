@@ -91,12 +91,14 @@ public partial class TopmostEffectWindow : Window
 
     public void UpdateWindowPos(Screen screen, double scale)
     {
-        var bounds = screen.Bounds;
-        var workingArea = screen.WorkingArea;
-        Width = workingArea.Width * scale;
-        Height = workingArea.Height * scale;
-        Top = workingArea.Top * scale;
-        Left = workingArea.Left * scale;
+        //if (!IsShowed)
+        //    return;
+        var fullscreen = App.GetService<MainWindow>().ViewModel.IsForegroundFullscreen;
+        var bounds = fullscreen ? screen.Bounds : screen.WorkingArea;
+        Width = bounds.Width * scale;
+        Height = bounds.Height * scale;
+        Top = bounds.Top * scale;
+        Left = bounds.Left * scale;
     }
 
     private void TopmostEffectWindow_OnLoaded(object sender, RoutedEventArgs e)
