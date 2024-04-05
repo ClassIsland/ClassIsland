@@ -526,6 +526,9 @@
                                             </Grid>
                                         </Expander>
                                     </materialDesign:Card>
+
+                                    <Separator Margin="0 16 0 8" />
+                                    <controls:IconText Kind="ClockOutline" Text="时钟" Margin="0 0 0 8" />
                                     <!-- 使用精确时间 -->
                                     <materialDesign:Card Margin="0 0 0 6">
                                         <Expander Background="Transparent"
@@ -565,13 +568,7 @@
                                                     <ComboBoxItem Content="ntp.aliyun.com"/>
                                                     <ComboBoxItem Content="time.windows.com"/>
                                                 </ComboBox>
-                                                <TextBlock Grid.Column="0" Grid.Row="1" Text="时间偏移"
-                                                           VerticalAlignment="Center"/>
-                                                <TextBox Grid.Column="1" Grid.Row="1"
-                                                         VerticalAlignment="Center"
-                                                         MinWidth="150"
-                                                         materialDesign:TextFieldAssist.SuffixText="秒"
-                                                         Text="{Binding Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
+                                                
                                                 <TextBlock Margin="0 6 0 0" Text="{Binding ExactTimeService.SyncStatusMessage}"
                                                            TextWrapping="Wrap" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"/>
                                                 <Button Margin="0 6 0 0" 
@@ -582,6 +579,47 @@
                                                     <controls:IconText Kind="Refresh" Text="立即同步"/>
                                                 </Button>
                                             </Grid>
+                                        </Expander>
+                                    </materialDesign:Card>
+                                    <!-- 时间偏移 -->
+                                    <materialDesign:Card Margin="0 0 0 6">
+                                        <Expander Background="Transparent"
+                                                  IsExpanded="True"
+                                                  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                            <Expander.Header>
+                                                <controls:SettingsControl IconGlyph="ClockArrow"
+                                                                          Header="时间偏移"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Description="设定ClassIsland与当前时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
+                                                                          IsOn="{Binding Settings.IsExactTimeEnabled, Mode=TwoWay}"
+                                                                          Margin="-12 0">
+                                                    <controls:SettingsControl.Switcher>
+                                                        <TextBox Grid.Column="1" Grid.Row="1"
+                                                                 VerticalAlignment="Center"
+                                                                 MinWidth="150"
+                                                                 Foreground="{DynamicResource MaterialDesignBody}"
+                                                                 materialDesign:TextFieldAssist.SuffixText="秒"
+                                                                 Text="{Binding Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
+                                                    </controls:SettingsControl.Switcher>
+                                                </controls:SettingsControl>
+                                            </Expander.Header>
+                                            <StackPanel Margin="36 0 48 12">
+                                                <!-- 自动时间偏移 -->
+                                                <controls:SettingsControl IconGlyph="ClockAutoOutline" Header="自动时间偏移"
+                                                                       Description="若启用，每天将自动以设定的增量值调整时间偏移量">
+                                                    <controls:SettingsControl.Switcher>
+                                                        <DockPanel Width="150">
+                                                            <ToggleButton DockPanel.Dock="Right"
+                                                                          Margin="8 0 0 0"
+                                                                          IsChecked="{Binding Settings.IsTimeAutoAdjustEnabled}"/>
+                                                            <TextBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                                     IsEnabled="{Binding Settings.IsTimeAutoAdjustEnabled}"
+                                                                     Text="{Binding Settings.TimeAutoAdjustSeconds, Converter={StaticResource IntToStringConverter}}"
+                                                                     materialDesign:TextFieldAssist.SuffixText="秒"/>
+                                                        </DockPanel>
+                                                    </controls:SettingsControl.Switcher>
+                                                </controls:SettingsControl>
+                                            </StackPanel>
                                         </Expander>
                                     </materialDesign:Card>
                                     <Separator Margin="0 16 0 8" />

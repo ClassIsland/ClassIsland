@@ -60,6 +60,15 @@ public class ExactTimeService : ObservableRecipient
         }
         Sync();
         UpdateTimerStatus();
+
+        if (SettingsService.Settings.IsTimeAutoAdjustEnabled)
+        {
+            SettingsService.Settings.TimeOffsetSeconds += SettingsService.Settings.TimeAutoAdjustSeconds *
+                                                          Math.Floor((DateTime.Now - SettingsService.Settings
+                                                              .LastTimeAdjustDateTime).TotalDays);
+            SettingsService.Settings.TimeOffsetSeconds = Math.Round(SettingsService.Settings.TimeOffsetSeconds, 3);
+        }
+        SettingsService.Settings.LastTimeAdjustDateTime = DateTime.Now;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

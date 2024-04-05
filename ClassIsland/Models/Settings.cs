@@ -127,6 +127,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private ObservableDictionary<string, NotificationSettings> _notificationProvidersNotifySettings = new();
     private bool _isNotificationSoundEnabled = false;
     private string _notificationSoundPath = "";
+    private bool _isTimeAutoAdjustEnabled = false;
+    private double _timeAutoAdjustSeconds = 0.0;
+    private DateTime _lastTimeAdjustDateTime = DateTime.Now;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -480,6 +483,39 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value.Equals(_timeOffsetSeconds)) return;
             _timeOffsetSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTimeAutoAdjustEnabled
+    {
+        get => _isTimeAutoAdjustEnabled;
+        set
+        {
+            if (value == _isTimeAutoAdjustEnabled) return;
+            _isTimeAutoAdjustEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double TimeAutoAdjustSeconds
+    {
+        get => _timeAutoAdjustSeconds;
+        set
+        {
+            if (value.Equals(_timeAutoAdjustSeconds)) return;
+            _timeAutoAdjustSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastTimeAdjustDateTime
+    {
+        get => _lastTimeAdjustDateTime;
+        set
+        {
+            if (value.Equals(_lastTimeAdjustDateTime)) return;
+            _lastTimeAdjustDateTime = value;
             OnPropertyChanged();
         }
     }
