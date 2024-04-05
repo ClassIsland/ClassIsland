@@ -132,5 +132,5 @@ public class NotificationRequest : ObservableRecipient
 
     internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
 
-    internal NotificationProviderSettings ProviderSettings { get; set; } = new NotificationProviderSettings();
+    internal NotificationSettings ProviderSettings { get; set; } = new NotificationSettings();
 }

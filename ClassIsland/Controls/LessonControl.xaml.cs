@@ -19,6 +19,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstraction.Models;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;

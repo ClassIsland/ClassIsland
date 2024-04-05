@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ClassIsland.Models;
+namespace ClassIsland.Models.NotificationProviderSettings;
 
 public class AfterSchoolNotificationProviderSettings : ObservableRecipient
 {

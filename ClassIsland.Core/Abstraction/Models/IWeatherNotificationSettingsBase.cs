@@ -1,6 +1,6 @@
 ﻿using ClassIsland.Core.Enums;
 
-namespace ClassIsland.Core.Interfaces;
+namespace ClassIsland.Core.Abstraction.Models;
 
 public interface IWeatherNotificationSettingsBase
 {

@@ -2,7 +2,7 @@
 
 namespace ClassIsland.Core.Models.Notification;
 
-public class NotificationProviderSettings : ObservableRecipient
+public class NotificationSettings : ObservableRecipient
 {
     private bool _isNotificationEnabled = true;
     private bool _isSpeechEnabled = true;

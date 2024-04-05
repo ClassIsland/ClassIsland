@@ -10,6 +10,7 @@ using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
+using ClassIsland.Models.NotificationProviderSettings;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 

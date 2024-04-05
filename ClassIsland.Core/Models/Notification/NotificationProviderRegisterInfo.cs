@@ -13,5 +13,5 @@ public class NotificationProviderRegisterInfo(INotificationProvider providerInst
 
     public INotificationProvider ProviderInstance { get; } = providerInstance;
 
-    public NotificationProviderSettings ProviderSettings { get; set; } = new();
+    public NotificationSettings ProviderSettings { get; set; } = new();
 }

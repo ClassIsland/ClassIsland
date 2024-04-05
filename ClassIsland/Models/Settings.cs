@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstraction.Models;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models.Notification;
@@ -123,7 +124,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private bool _isExactTimeEnabled = true;
     private double _timeOffsetSeconds = 0.0;
     private bool _isNotificationEffectEnabled = true;
-    private ObservableDictionary<string, NotificationProviderSettings> _notificationProvidersNotifySettings = new();
+    private ObservableDictionary<string, NotificationSettings> _notificationProvidersNotifySettings = new();
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -703,7 +704,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         }
     }
 
-    public ObservableDictionary<string, NotificationProviderSettings> NotificationProvidersNotifySettings
+    public ObservableDictionary<string, NotificationSettings> NotificationProvidersNotifySettings
     {
         get => _notificationProvidersNotifySettings;
         set

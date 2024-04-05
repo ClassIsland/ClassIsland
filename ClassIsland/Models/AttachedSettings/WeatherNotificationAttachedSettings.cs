@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Enums;
+﻿using ClassIsland.Core.Abstraction.Models;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 

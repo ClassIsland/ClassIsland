@@ -1,7 +1,6 @@
-﻿using System;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ClassIsland.Models;
+namespace ClassIsland.Models.NotificationProviderSettings;
 
 public class ClassNotificationSettings : ObservableRecipient
 {

@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Core.Interfaces;
+﻿namespace ClassIsland.Core.Abstraction.Models;
 
 public interface ILessonControlSettings
 {
