@@ -1275,7 +1275,7 @@ The quick brown fox jumps over a lazy dog.
                                                                                Foreground="{DynamicResource MaterialDesignBody}"
                                                                                Header="启用提醒强调特效"
                                                                                Description="启用后，发出提醒时会播放全屏强调特效。" 
-                                                                               IsOn="{Binding Settings.IsNotificationEffectEnabled}"/>
+                                                                               IsOn="{Binding Settings.IsNotificationEffectEnabled, Mode=TwoWay}"/>
                                                 </StackPanel>
                                             </ScrollViewer>
                                         </Expander>
@@ -1338,7 +1338,7 @@ The quick brown fox jumps over a lazy dog.
                                                                                Foreground="{DynamicResource MaterialDesignBody}"
                                                                                Header="启用提醒强调特效"
                                                                                Description="启用后，发出提醒时会播放全屏强调特效。" 
-                                                                               IsOn="{Binding ProviderSettings.IsNotificationEffectEnabled}"/>
+                                                                               IsOn="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}"/>
                                                         </StackPanel>
                                                     </ScrollViewer>
                                                 </Expander>
