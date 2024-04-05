@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core.Abstraction.Models;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
@@ -60,24 +61,18 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
 
     private void NotificationHostServiceOnCurrentStateChanged(object? sender, EventArgs e)
     {
-        var settings = GetAttachedSettings();
-        var isEnabled = settings?.IsAttachSettingsEnabled == true ?
-            settings.IsEnabled
-            : Settings.IsEnabled;
-        var msg = settings?.IsAttachSettingsEnabled == true ?
-            settings.NotificationMsg
-            : Settings.NotificationMsg;
-        if (!isEnabled || NotificationHostService.CurrentState != TimeState.None || !NotificationHostService.IsClassPlanLoaded)
+        var settings = (IAfterSchoolNotificationProviderSettingsBase?)GetAttachedSettings() ?? Settings;
+        if (!settings.IsEnabled || NotificationHostService.CurrentState != TimeState.None || !NotificationHostService.IsClassPlanLoaded)
         {
             return;
         }
 
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
-            MaskContent = new AfterSchoolNotificationProviderControl(msg, "AfterSchoolMask"),
+            MaskContent = new AfterSchoolNotificationProviderControl(settings.NotificationMsg, "AfterSchoolMask"),
             MaskSpeechContent = "放学",
-            OverlayContent = new AfterSchoolNotificationProviderControl(msg, "AfterSchoolOverlay"),
-            OverlaySpeechContent = msg,
+            OverlayContent = new AfterSchoolNotificationProviderControl(settings.NotificationMsg, "AfterSchoolOverlay"),
+            OverlaySpeechContent = settings.NotificationMsg,
             OverlayDuration = TimeSpan.FromSeconds(30)
         });
     }

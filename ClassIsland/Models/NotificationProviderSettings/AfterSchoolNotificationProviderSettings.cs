@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClassIsland.Core.Abstraction.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.NotificationProviderSettings;
 
-public class AfterSchoolNotificationProviderSettings : ObservableRecipient
+public class AfterSchoolNotificationProviderSettings : ObservableRecipient, IAfterSchoolNotificationProviderSettingsBase
 {
     private bool _isEnabled = true;
     private string _notificationMsg = "今天的课程已结束，请同学们有序离开。";

@@ -76,16 +76,13 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var message = isAttachedSettingsEnabled
             ? settings!.ClassOnPreparingText
             : Settings.ClassOnPreparingText;
+        var settingsDeltaTime = NotificationHostService.NextClassSubject.IsOutDoor
+            ? settingsOutDoorClassPreparingDeltaTime
+            : settingsInDoorClassPreparingDeltaTime;
         if (settingsIsClassOnPreparingNotificationEnabled &&
             ((tClassDelta > TimeSpan.Zero &&
-              tClassDelta <= TimeSpan.FromSeconds(settingsInDoorClassPreparingDeltaTime) &&
-              !NotificationHostService.NextClassSubject.IsOutDoor) // indoor
-             ||
-             (tClassDelta > TimeSpan.Zero &&
-              tClassDelta <= TimeSpan.FromSeconds(settingsOutDoorClassPreparingDeltaTime) &&
-              NotificationHostService.NextClassSubject.IsOutDoor) // outdoor
-            ) &&
-            !IsClassPreparingNotified)
+              tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) &&
+            !IsClassPreparingNotified)))
         {
             var deltaTime = NotificationHostService.NextClassSubject.IsOutDoor
                 ? settingsOutDoorClassPreparingDeltaTime
