@@ -415,7 +415,9 @@ public partial class MainWindow : Window
         while (NotificationHostService.RequestQueue.Count > 0)
         {
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
-            var isSpeechEnabled = ViewModel.Settings.IsSpeechEnabled && request.IsSpeechEnabled;
+            var isSpeechEnabled = ViewModel.Settings.IsSpeechEnabled && request.IsSpeechEnabled && request.ProviderSettings.IsSpeechEnabled;
+            var isEffectEnabled = ViewModel.Settings.IsNotificationEffectEnabled &&
+                                  request.ProviderSettings.IsNotificationEffectEnabled;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
@@ -438,7 +440,7 @@ public partial class MainWindow : Window
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
                 BeginStoryboard("OverlayMaskIn");
-                if (SettingsService.Settings.IsNotificationEffectEnabled)
+                if (isEffectEnabled)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
                     {

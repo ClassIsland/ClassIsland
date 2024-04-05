@@ -149,12 +149,13 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
     public void ShowNotification(NotificationRequest request)
     {
         var trace = new StackTrace();
+        Logger.LogDebug("准备显示提醒\n{}", trace);
         foreach (var i in trace.GetFrames())
         {
             var type = i.GetMethod()?.DeclaringType;
             if (type?.IsAssignableTo(typeof(INotificationProvider)) != true)
                 continue;
-            var provider = (from p in NotificationProviders where p.GetType() == type select p).FirstOrDefault();
+            var provider = (from p in NotificationProviders where p.ProviderInstance.GetType() == type select p).FirstOrDefault();
             if (provider == null)
                 continue;
             Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
@@ -168,8 +169,9 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
     private void ShowNotification(NotificationRequest request, Guid providerGuid)
     {
         request.NotificationSourceGuid = providerGuid;
-        request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i.ProviderInstance)
+        request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
             .FirstOrDefault();
+        request.ProviderSettings = request.NotificationSource?.ProviderSettings ?? request.ProviderSettings;
         RequestQueue.Enqueue(request);
     }
 

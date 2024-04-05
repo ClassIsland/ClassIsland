@@ -128,7 +128,7 @@ public class NotificationRequest : ObservableRecipient
     }
 
     
-    internal INotificationProvider? NotificationSource { get; set; } = null;
+    internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
 
     internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
 

@@ -1122,7 +1122,7 @@ The quick brown fox jumps over a lazy dog.
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <Grid
-                                                            DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}, PresentationTraceSources.TraceLevel=High}"
+                                                            DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
                                                             d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
                                                             Background="Transparent">
                                                         <Grid.RowDefinitions>
@@ -1301,6 +1301,7 @@ The quick brown fox jumps over a lazy dog.
                                                 DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
                                                 d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
                                                 <ContentPresenter ClipToBounds="True"
+                                                                  Margin="0 48 0 0"
                                                                   Content="{Binding ProviderInstance.SettingsElement}" />
                                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                                     <StackPanel.Style>
