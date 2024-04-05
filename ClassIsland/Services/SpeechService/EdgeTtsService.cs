@@ -13,6 +13,7 @@ using Edge_tts_sharp.Model;
 using Edge_tts_sharp.Utils;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClassIsland.Services.SpeechService;
@@ -132,7 +133,11 @@ public class EdgeTtsService : ISpeechService
             try
             {
                 await using var audio = new AudioFileReader(playInfo.FilePath);
-                player.Init(audio);
+                var volume = new VolumeSampleProvider(audio)
+                {
+                    Volume = (float)SettingsService.Settings.SpeechVolume
+                };
+                player.Init(volume);
                 Logger.LogDebug("开始播放 {}", playInfo.FilePath);
                 player.Play();
                 player.PlaybackStopped += (sender, args) => playInfo.IsPlayingCompleted = true;
