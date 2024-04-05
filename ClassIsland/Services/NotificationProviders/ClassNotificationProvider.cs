@@ -98,13 +98,15 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 {
                     Message = message
                 },
-                TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond)
+                TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond),
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             });
 
             NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskSpeechContent = "上课",
-                MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
+                MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
             });
         }
     }
@@ -127,7 +129,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             MaskSpeechContent = "课间休息",
             OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay"),
             OverlayDuration = TimeSpan.FromSeconds(10),
-            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.Name}。"
+            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.Name}。",
+            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
         });
     }
 
@@ -151,7 +154,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
-            MaskSpeechContent = "上课。"
+            MaskSpeechContent = "上课。",
+            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
         });
     }
 
