@@ -3,9 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using MaterialDesignThemes.Wpf;
@@ -69,7 +71,7 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
             return;
         }
 
-        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new AfterSchoolNotificationProviderControl(msg, "AfterSchoolMask"),
             MaskSpeechContent = "放学",

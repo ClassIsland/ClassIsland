@@ -34,7 +34,8 @@
                    xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
                    xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-                   xmlns:interfaces="clr-namespace:ClassIsland.Core.Interfaces;assembly=ClassIsland.Core">
+                   xmlns:interfaces="clr-namespace:ClassIsland.Core.Interfaces;assembly=ClassIsland.Core"
+                   xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -1083,7 +1084,7 @@ The quick brown fox jumps over a lazy dog.
                                     <Grid>
                                         <Grid
                                             DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                                            d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                            d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
                                             <TextBlock Text="{Binding Name}"
                                                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                                        TextTrimming="CharacterEllipsis"
@@ -1121,8 +1122,8 @@ The quick brown fox jumps over a lazy dog.
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <Grid
-                                                            DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
-                                                            d:DataContext="{d:DesignInstance interfaces:INotificationProvider}"
+                                                            DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}, PresentationTraceSources.TraceLevel=High}"
+                                                            d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
                                                             Background="Transparent">
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition />
@@ -1139,7 +1140,7 @@ The quick brown fox jumps over a lazy dog.
                                                                               Width="24" Height="24"
                                                                               VerticalAlignment="Center"
                                                                               ClipToBounds="True" Margin="6"
-                                                                              Content="{Binding IconElement}" />
+                                                                              Content="{Binding ProviderInstance.IconElement}" />
                                                         <!-- 标题 -->
                                                         <TextBlock Grid.Column="1" Grid.Row="0"
                                                                        TextWrapping="Wrap"
@@ -1298,14 +1299,14 @@ The quick brown fox jumps over a lazy dog.
                                             </Grid.Style>
                                             <Grid
                                                 DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                                                d:DataContext="{d:DesignInstance interfaces:INotificationProvider}">
+                                                d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
                                                 <ContentPresenter ClipToBounds="True"
-                                                                  Content="{Binding SettingsElement}" />
+                                                                  Content="{Binding ProviderInstance.SettingsElement}" />
                                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                                     <StackPanel.Style>
                                                         <Style TargetType="StackPanel">
                                                             <Style.Triggers>
-                                                                <DataTrigger Binding="{Binding SettingsElement}"
+                                                                <DataTrigger Binding="{Binding ProviderInstance.SettingsElement}"
                                                                              Value="{x:Null}">
                                                                     <Setter Property="Visibility" Value="Visible" />
                                                                 </DataTrigger>
@@ -1318,6 +1319,28 @@ The quick brown fox jumps over a lazy dog.
                                                     <TextBlock Text="该提醒提供方没有设置。" TextWrapping="Wrap"
                                                                Margin="0 8 0 0" />
                                                 </StackPanel>
+
+                                                <Expander Header="更多选项（仅针对此提醒生效）"
+                                                  VerticalAlignment="Top"
+                                                  Background="{DynamicResource MaterialDesignPaper}">
+                                                    <ScrollViewer Background="{DynamicResource MaterialDesignPaper}">
+                                                        <StackPanel Margin="0 0 0 8">
+                                                            <!-- 启用提醒语音 -->
+                                                            <controls:SettingsCard IconGlyph="TextToSpeech"
+                                                                Foreground="{DynamicResource MaterialDesignBody}"
+                                                                Header="启用提醒语音"
+                                                                Description="在发出提醒时用语音播报提醒内容。"
+                                                                IsOn="{Binding ProviderSettings.IsSpeechEnabled, Mode=TwoWay}"/>
+                                                            <!-- 启用提醒强调特效 -->
+                                                            <controls:SettingsCard IconGlyph="LayersOutline"
+                                                                               Margin="0 6 0 0"
+                                                                               Foreground="{DynamicResource MaterialDesignBody}"
+                                                                               Header="启用提醒强调特效"
+                                                                               Description="启用后，发出提醒时会播放全屏强调特效。" 
+                                                                               IsOn="{Binding ProviderSettings.IsNotificationEffectEnabled}"/>
+                                                        </StackPanel>
+                                                    </ScrollViewer>
+                                                </Expander>
 
                                             </Grid>
                                         </Grid>

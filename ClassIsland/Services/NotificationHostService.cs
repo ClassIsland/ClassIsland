@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +31,7 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
 
     public Queue<NotificationRequest> RequestQueue { get; } = new();
 
-    public ObservableCollection<INotificationProvider> NotificationProviders { get; } = new();
+    public ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; } = new();
 
     public NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
     {
@@ -137,13 +140,42 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
             Settings.NotificationProvidersPriority.Add(provider.ProviderGuid.ToString());
             Settings.NotificationProvidersEnableStates.Add(provider.ProviderGuid.ToString(), true);
             Settings.NotificationProvidersSettings.Add(provider.ProviderGuid.ToString(), null);
+            Settings.NotificationProvidersNotifySettings.Add(provider.ProviderGuid.ToString(), new());
         }
-        NotificationProviders.Add(provider);
+
+        NotificationProviders.Add(new NotificationProviderRegisterInfo(provider));
+    }
+
+    public void ShowNotification(NotificationRequest request)
+    {
+        var trace = new StackTrace();
+        foreach (var i in trace.GetFrames())
+        {
+            var type = i.GetMethod()?.DeclaringType;
+            if (type?.IsAssignableTo(typeof(INotificationProvider)) != true)
+                continue;
+            var provider = (from p in NotificationProviders where p.GetType() == type select p).FirstOrDefault();
+            if (provider == null)
+                continue;
+            Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
+            ShowNotification(request, provider.ProviderGuid);
+            return;
+        }
+
+        throw new ArgumentException("此方法只能由 INotificationProvider 调用。");
+    }
+
+    private void ShowNotification(NotificationRequest request, Guid providerGuid)
+    {
+        request.NotificationSourceGuid = providerGuid;
+        request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i.ProviderInstance)
+            .FirstOrDefault();
+        RequestQueue.Enqueue(request);
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request)
     {
-        RequestQueue.Enqueue(request);
+        ShowNotification(request);
         await Task.Run(() =>
         {
             while (RequestQueue.Contains(request))

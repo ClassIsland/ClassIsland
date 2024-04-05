@@ -6,6 +6,7 @@ using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;

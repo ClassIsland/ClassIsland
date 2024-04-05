@@ -10,6 +10,7 @@
     <Folder Include="Abstraction\Services\" />
     <Folder Include="AttachedObject\" />
     <Folder Include="Helpers\" />
+    <Folder Include="Attributes\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,6 @@
-﻿namespace ClassIsland.Core.Interfaces;
+﻿using ClassIsland.Core.Models.Notification;
+
+namespace ClassIsland.Core.Interfaces;
 
 public interface INotificationProvider
 {

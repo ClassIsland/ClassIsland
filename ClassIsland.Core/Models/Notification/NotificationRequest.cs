@@ -1,6 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClassIsland.Core.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ClassIsland.Core.Models;
+namespace ClassIsland.Core.Models.Notification;
+
 
 public class NotificationRequest : ObservableRecipient
 {
@@ -124,4 +126,11 @@ public class NotificationRequest : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    
+    internal INotificationProvider? NotificationSource { get; set; } = null;
+
+    internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
+
+    internal NotificationProviderSettings ProviderSettings { get; set; } = new NotificationProviderSettings();
 }

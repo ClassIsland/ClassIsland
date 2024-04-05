@@ -9,6 +9,7 @@ using System.Windows.Media.Converters;
 using ClassIsland.Core;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -122,6 +123,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private bool _isExactTimeEnabled = true;
     private double _timeOffsetSeconds = 0.0;
     private bool _isNotificationEffectEnabled = true;
+    private ObservableDictionary<string, NotificationProviderSettings> _notificationProvidersNotifySettings = new();
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -697,6 +699,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (Equals(value, _notificationProvidersSettings)) return;
             _notificationProvidersSettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableDictionary<string, NotificationProviderSettings> NotificationProvidersNotifySettings
+    {
+        get => _notificationProvidersNotifySettings;
+        set
+        {
+            if (Equals(value, _notificationProvidersNotifySettings)) return;
+            _notificationProvidersNotifySettings = value;
             OnPropertyChanged();
         }
     }

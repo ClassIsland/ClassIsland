@@ -8,6 +8,7 @@ using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using MaterialDesignThemes.Wpf;
