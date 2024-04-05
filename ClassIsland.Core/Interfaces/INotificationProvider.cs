@@ -12,4 +12,5 @@ public interface INotificationProvider
     public object? SettingsElement { get; set; }
     public object? IconElement { get; set; }
 
+    public static readonly Uri DefaultNotificationSoundUri = new Uri("pack://application:,,,/ClassIsland;component/Assets/Media/Notification/1.wav");
 }

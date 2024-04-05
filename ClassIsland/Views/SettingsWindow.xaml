@@ -1166,7 +1166,7 @@ The quick brown fox jumps over a lazy dog.
                                                         <Expander Background="Transparent"
                                                                       IsExpanded="{Binding Settings.IsSpeechEnabled, Mode=OneWay}"
                                                                       TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Margin="0 0 6 0">
+                                                                      Margin="0 0 0 0">
                                                             <Expander.Header>
                                                                 <controls:SettingsControl IconGlyph="TextToSpeech"
                                                                         Foreground="{DynamicResource MaterialDesignBody}"
@@ -1271,11 +1271,47 @@ The quick brown fox jumps over a lazy dog.
                                                     </materialDesign:Card>
                                                     <!-- 启用提醒强调特效 -->
                                                     <controls:SettingsCard IconGlyph="LayersOutline"
-                                                                               Margin="0 6 0 0"
-                                                                               Foreground="{DynamicResource MaterialDesignBody}"
-                                                                               Header="启用提醒强调特效"
-                                                                               Description="启用后，发出提醒时会播放全屏强调特效。" 
-                                                                               IsOn="{Binding Settings.IsNotificationEffectEnabled, Mode=TwoWay}"/>
+                                                                           Margin="0 6 0 0"
+                                                                           Foreground="{DynamicResource MaterialDesignBody}"
+                                                                           Header="启用提醒强调特效"
+                                                                           Description="启用后，发出提醒时会播放全屏强调特效。" 
+                                                                           IsOn="{Binding Settings.IsNotificationEffectEnabled, Mode=TwoWay}"/>
+                                                    <!-- 启用提醒音效 -->
+                                                    <materialDesign:Card Margin="0 6 0 0">
+                                                        <Expander Background="Transparent"
+                                                                      IsExpanded="{Binding Settings.IsNotificationSoundEnabled, Mode=OneWay}"
+                                                                      TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      >
+                                                            <Expander.Header>
+                                                                <controls:SettingsControl IconGlyph="VolumeHigh"
+                                                                        Foreground="{DynamicResource MaterialDesignBody}"
+                                                                        Header="启用提醒音效"
+                                                                        Description="启用后，发出提醒时会播放音效。"
+                                                                        IsOn="{Binding Settings.IsNotificationSoundEnabled, Mode=TwoWay}"
+                                                                        Margin="-12 0" />
+                                                            </Expander.Header>
+                                                            <StackPanel Margin="36 0 48 12"
+                                                                  IsEnabled="{Binding Settings.IsNotificationSoundEnabled}">
+                                                                <!-- 自定义音效 -->
+                                                                <controls:SettingsControl IconGlyph="FileMusicOutline" Header="自定义音效"
+                                                                    Foreground="{DynamicResource MaterialDesignBody}"
+                                                                    Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
+                                                                    <controls:SettingsControl.Switcher>
+                                                                        <StackPanel Orientation="Horizontal"
+                                                                            HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                                            <TextBox MinWidth="150" MaxWidth="150"
+                                                                                materialDesign:HintAssist.Hint="（默认音效）"
+                                                                                Text="{Binding Settings.NotificationSoundPath}"
+                                                                                VerticalAlignment="Center" Margin="0 0 2 0" />
+                                                                            <controls:FileBrowserButton
+                                                                                CurrentPath="{Binding Settings.NotificationSoundPath, Mode=TwoWay}"
+                                                                                VerticalAlignment="Center" />
+                                                                        </StackPanel>
+                                                                    </controls:SettingsControl.Switcher>
+                                                                </controls:SettingsControl>
+                                                            </StackPanel>
+                                                        </Expander>
+                                                    </materialDesign:Card>
                                                 </StackPanel>
                                             </ScrollViewer>
                                         </Expander>
@@ -1339,6 +1375,13 @@ The quick brown fox jumps over a lazy dog.
                                                                                Header="启用提醒强调特效"
                                                                                Description="启用后，发出提醒时会播放全屏强调特效。" 
                                                                                IsOn="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}"/>
+                                                            <!-- 启用提醒音效 -->
+                                                            <controls:SettingsCard IconGlyph="VolumeHigh"
+                                                                Margin="0 6 0 0"
+                                                                Foreground="{DynamicResource MaterialDesignBody}"
+                                                                Header="启用提醒音效"
+                                                                Description="启用后，发出提醒时会播放音效。" 
+                                                                IsOn="{Binding ProviderSettings.IsNotificationSoundEnabled, Mode=TwoWay}"/>
                                                         </StackPanel>
                                                     </ScrollViewer>
                                                 </Expander>

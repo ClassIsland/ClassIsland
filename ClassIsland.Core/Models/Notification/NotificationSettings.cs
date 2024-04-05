@@ -7,6 +7,7 @@ public class NotificationSettings : ObservableRecipient
     private bool _isNotificationEnabled = true;
     private bool _isSpeechEnabled = true;
     private bool _isNotificationEffectEnabled = true;
+    private bool _isNotificationSoundEnabled = true;
 
     public bool IsNotificationEnabled
     {
@@ -37,6 +38,17 @@ public class NotificationSettings : ObservableRecipient
         {
             if (value == _isNotificationEffectEnabled) return;
             _isNotificationEffectEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationSoundEnabled
+    {
+        get => _isNotificationSoundEnabled;
+        set
+        {
+            if (value == _isNotificationSoundEnabled) return;
+            _isNotificationSoundEnabled = value;
             OnPropertyChanged();
         }
     }

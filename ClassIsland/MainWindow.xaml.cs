@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
 using System.Text;
@@ -29,6 +30,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core.Enums;
+using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Services;
 using ClassIsland.Models;
@@ -41,7 +43,9 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
+using NAudio.Wave;
 using unvell.Common.Win32Lib;
+using Application = System.Windows.Application;
 using Path = System.IO.Path;
 using ProgressBar = System.Windows.Controls.ProgressBar;
 using Window = System.Windows.Window;
@@ -414,6 +418,7 @@ public partial class MainWindow : Window
 
         while (NotificationHostService.RequestQueue.Count > 0)
         {
+            using var player = new DirectSoundOut();
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
             var isSpeechEnabled = ViewModel.Settings.IsSpeechEnabled && request.IsSpeechEnabled && request.ProviderSettings.IsSpeechEnabled;
             var isEffectEnabled = ViewModel.Settings.IsNotificationEffectEnabled &&
@@ -440,6 +445,15 @@ public partial class MainWindow : Window
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
                 BeginStoryboard("OverlayMaskIn");
+                if (SettingsService.Settings.IsNotificationSoundEnabled && request.ProviderSettings.IsNotificationSoundEnabled)
+                {
+                    IWaveProvider provider = string.IsNullOrWhiteSpace(SettingsService.Settings.NotificationSoundPath)
+                        ? new StreamMediaFoundationReader(
+                            Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream)
+                        : new AudioFileReader(SettingsService.Settings.NotificationSoundPath);
+                    player.Init(provider);
+                    player.Play();
+                }
                 if (isEffectEnabled)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()

@@ -125,6 +125,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private double _timeOffsetSeconds = 0.0;
     private bool _isNotificationEffectEnabled = true;
     private ObservableDictionary<string, NotificationSettings> _notificationProvidersNotifySettings = new();
+    private bool _isNotificationSoundEnabled = false;
+    private string _notificationSoundPath = "";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -773,6 +775,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _isNotificationEffectEnabled) return;
             _isNotificationEffectEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationSoundEnabled
+    {
+        get => _isNotificationSoundEnabled;
+        set
+        {
+            if (value == _isNotificationSoundEnabled) return;
+            _isNotificationSoundEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string NotificationSoundPath
+    {
+        get => _notificationSoundPath;
+        set
+        {
+            if (value == _notificationSoundPath) return;
+            _notificationSoundPath = value;
             OnPropertyChanged();
         }
     }
