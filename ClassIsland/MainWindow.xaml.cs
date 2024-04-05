@@ -240,7 +240,7 @@ public partial class MainWindow : Window
         if (SettingsService.Settings.IsMainWindowDebugEnabled)
             ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
 
-        UpdateWindowPos();
+        UpdateWindowPos(true);
         UpdateMouseStatus();
         LoadCurrentClassPlan();
         if (ViewModel.Settings.WindowLayer == 0)
@@ -815,7 +815,7 @@ public partial class MainWindow : Window
         UpdateTimer.Stop();
     }
 
-    private void UpdateWindowPos()
+    private void UpdateWindowPos(bool updateEffectWindow=false)
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
@@ -862,7 +862,8 @@ public partial class MainWindow : Window
                 Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
                 break;
         }
-        TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+        if (updateEffectWindow)
+            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY)
