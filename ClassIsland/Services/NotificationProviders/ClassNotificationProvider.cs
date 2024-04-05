@@ -88,7 +88,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 ? settingsOutDoorClassPreparingDeltaTime
                 : settingsInDoorClassPreparingDeltaTime;
             IsClassPreparingNotified = true;
-            NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+            NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(TimeSpan.FromSeconds(deltaTime))}。",
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
@@ -101,7 +101,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond)
             });
 
-            NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+            NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskSpeechContent = "上课",
                 MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
@@ -120,7 +120,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
-        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new ClassNotificationProviderControl("ClassOffNotification"),
             MaskDuration = TimeSpan.FromSeconds(2),
@@ -148,7 +148,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             IsClassPreparingNotified = false;
             return;
         }
-        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
             MaskSpeechContent = "上课。"

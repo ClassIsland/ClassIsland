@@ -83,7 +83,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
-        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
             OverlayContent = new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
@@ -111,7 +111,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
         foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail)))
         {
-            NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+            NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskContent = new WeatherNotificationProviderControl(true, i),
                 MaskSpeechContent = i.Title,
