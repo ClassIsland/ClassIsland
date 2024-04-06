@@ -318,9 +318,16 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
     {
+        //DataGridSubjects.CancelEdit();
+        
+        var isCreating = DataGridSubjects.SelectedIndex == MainViewModel.Profile.Subjects.Count;
+        
+        DataGridSubjects.CancelEdit();
+        DataGridSubjects.IsReadOnly = true;
         MainViewModel.Profile.EditingSubjects.Add(new Subject());
-        //ListViewSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
-        TextBoxSubjectName.Focus();
+        DataGridSubjects.IsReadOnly = false;
+        DataGridSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
+        //TextBoxSubjectName.Focus();
         Analytics.TrackEvent("档案设置 · 添加科目");
     }
 
@@ -333,6 +340,8 @@ public partial class ProfileSettingsWindow : MyWindow
             {
                 {"IsSuccess", "true"},
             });
+            DataGridSubjects.CancelEdit();
+            DataGridSubjects.IsReadOnly = true;
             var rm = new List<Subject>();
             foreach (var i in DataGridSubjects.SelectedItems)
             {
@@ -346,6 +355,7 @@ public partial class ProfileSettingsWindow : MyWindow
             {
                 s.Remove(t);
             }
+            DataGridSubjects.IsReadOnly = false;
         }
         else
         {
@@ -501,6 +511,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
     {
+        DataGridSubjects.CancelEdit();
+        DataGridSubjects.IsReadOnly = true;
         foreach (var i in DataGridSubjects.SelectedItems)
         {
             var subject = i as Subject;
@@ -513,6 +525,7 @@ public partial class ProfileSettingsWindow : MyWindow
             MainViewModel.Profile.EditingSubjects.Add(o);
         }
         DataGridSubjects.SelectedItem = MainViewModel.Profile.EditingSubjects.Last();
+        DataGridSubjects.IsReadOnly = false;
         Analytics.TrackEvent("档案设置 · 复制科目");
     }
 

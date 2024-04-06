@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using ClassIsland.Core.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Profile;
@@ -84,7 +85,7 @@ public class Profile : ObservableRecipient
 
     private void EditingSubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        Debug.WriteLine($"{e.Action} {e.NewItems} {e.OldItems}");
+        Console.WriteLine($"{e.Action} {e.NewItems} {e.OldItems}");
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
@@ -94,7 +95,7 @@ public class Profile : ObservableRecipient
                 }
                 foreach (var i in e.NewItems)
                 {
-                    Subjects.Add(Guid.NewGuid().ToString(), (Subject)i);
+                    Subjects[Guid.NewGuid().ToString()] = (Subject)i;
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
@@ -110,6 +111,8 @@ public class Profile : ObservableRecipient
                         break;
                     }
                 }
+
+                //Subjects = ConfigureFileHelper.CopyObject(Subjects);
                 break;
             case NotifyCollectionChangedAction.Replace:
                 break;
@@ -119,6 +122,11 @@ public class Profile : ObservableRecipient
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
+        }
+
+        foreach (var i in Subjects)
+        {
+            Console.WriteLine($"{i.Key} {i.Value.Name}" );
         }
     }
 
