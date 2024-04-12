@@ -22,7 +22,7 @@ using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Core;
-using ClassIsland.Core.Services;
+using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.MiniInfoProviders;

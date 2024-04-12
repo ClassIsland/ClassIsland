@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Core.Services;
+﻿namespace ClassIsland.Core.Abstraction.Services;
 
 public interface ISpeechService
 {

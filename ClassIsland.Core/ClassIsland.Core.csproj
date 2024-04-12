@@ -7,10 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstraction\Services\" />
     <Folder Include="AttachedObject\" />
     <Folder Include="Helpers\" />
     <Folder Include="Attributes\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
