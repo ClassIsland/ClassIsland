@@ -65,6 +65,11 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 详细的致谢信息请前往【应用设置】->【关于】界面中查看。
 
+## 获取帮助
+
+如需获得帮助，请查看仓库的``` Wiki ```页面，发送``` Issue ```，亦或者在``` Discussion ```区与他人交流。
+您也可以<a target="_blank" href="https://qm.qq.com/q/4NsDQKiAuQ"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="ClassIsland"></a>来与我们进行交流。
+
 ## 截图
 
 > 背景图片来自[Pixiv@辰暮sora](https://www.pixiv.net/artworks/110847880)
