@@ -2,7 +2,7 @@
 
 ![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
 
-ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表的信息显示工具，信息一目了然。
+ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能，
 
 ## 功能
 ### 课表显示
@@ -24,6 +24,10 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 ## 开始使用
 
+[![AppVeyor Build](https://img.shields.io/appveyor/build/HelloWRC/ClassIsland?style=for-the-badge&logo=appveyor)](https://ci.appveyor.com/project/HelloWRC/classisland) 
+[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=for-the-badge&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest) 
+[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=for-the-badge&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/)
+
 首先，请确保您的设备满足以下需求：
 - Windows 7及以上版本的系统，x64架构
 - 已安装[.NET 8.0桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.1-windows-x64-installer)
@@ -31,9 +35,11 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 - [AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)
-- [GitHub](https://github.com/HelloWRC/ClassIsland/releases)
+- [GitHub](https://github.com/HelloWRC/ClassIsland/releases/latest)
 
 > GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。
+
+下载完成后，将软件压缩包解压到一个您喜欢的地方，运行软件即可开始使用。首次启动时，会有一个简短的欢迎向导来引导您完成本软件的基本设置，并展示软件的一些基本操作。您可以观看[入门教程视频](https://www.bilibili.com/video/BV1fA4m1A7uZ/)来快速上手本软件。如果您要进一步了解本软件，您可以阅读本软件内置的帮助文档。
 
 ## 开发
 
@@ -43,6 +49,25 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
   对于Visual Studio，您需要在安装时勾选以下工作负载：
   - .NET 桌面开发
+
+
+## 获取帮助&加入社区
+
+[![查看Issues](https://img.shields.io/github/issues-search/HelloWRC/ClassIsland?query=is%3Aopen&style=for-the-badge&logo=github&label=Opened%20issues&color=%233fb950)]() [![GitHub Discussions](https://img.shields.io/github/discussions/HelloWRC/ClassIsland?style=for-the-badge&logo=Github)
+](https://github.com/HelloWRC/ClassIsland/discussions) [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-%E5%8A%A0%E5%85%A5-%230066cc?style=for-the-badge&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
+
+您可以访问以下页面来获取帮助：
+
+- 应用内置的帮助文档
+- [Wiki（技术性文档）](https://github.com/HelloWRC/ClassIsland/wiki)
+
+您也可以加入以下社群讨论交流：
+
+- [Discussions](https://github.com/HelloWRC/ClassIsland/discussions)
+- [QQ群](https://qm.qq.com/q/4NsDQKiAuQ)
+
+如果您确定您遇到的问题是一个 bug，或者您要提出一项新的功能，请[提交一个Issue](https://github.com/HelloWRC/ClassIsland/issues/new/choose)。
+
 
 ## 致谢
 
@@ -64,11 +89,6 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 - [.NET](https://github.com/microsoft/dotnet)
 
 详细的致谢信息请前往【应用设置】->【关于】界面中查看。
-
-## 获取帮助
-
-如需获得帮助，请查看仓库的``` Wiki ```页面，发送``` Issue ```，亦或者在``` Discussion ```区与他人交流。
-您也可以<a target="_blank" href="https://qm.qq.com/q/4NsDQKiAuQ"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="ClassIsland"></a>来与我们进行交流。
 
 ## 截图
 
