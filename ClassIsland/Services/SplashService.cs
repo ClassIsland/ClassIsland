@@ -1,4 +1,5 @@
 ﻿using System;
+using ClassIsland.Services.Management;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;

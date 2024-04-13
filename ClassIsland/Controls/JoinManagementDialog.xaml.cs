@@ -18,6 +18,7 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Management;
 using ClassIsland.Helpers;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 
 namespace ClassIsland.Controls;

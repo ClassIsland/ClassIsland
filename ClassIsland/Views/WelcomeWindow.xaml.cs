@@ -20,6 +20,7 @@ using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;

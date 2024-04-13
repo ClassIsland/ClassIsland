@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 
 namespace ClassIsland.Controls;
 

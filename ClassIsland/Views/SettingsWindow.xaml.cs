@@ -27,6 +27,7 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using MdXaml;

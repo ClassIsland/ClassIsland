@@ -9,6 +9,7 @@ using ClassIsland.Core.Models.Management;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Services.Management;
 using Microsoft.Extensions.Logging;
 using static ClassIsland.Core.Helpers.ConfigureFileHelper;
 using Path = System.IO.Path;
@@ -23,13 +24,13 @@ public class ProfileService
     } = @".\Profiles\Default.json";
 
     public static readonly string ManagementClassPlanPath =
-        Path.Combine(Services.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
+        Path.Combine(ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
 
     public static readonly string ManagementTimeLayoutPath =
-        Path.Combine(Services.ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
+        Path.Combine(ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
 
     public static readonly string ManagementSubjectsPath =
-        Path.Combine(Services.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
+        Path.Combine(ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
     public Profile Profile {
         get;
@@ -59,6 +60,8 @@ public class ProfileService
     private async void MergeManagementProfileAsync()
     {
         Logger.LogInformation("正在拉取集控档案");
+        if (ManagementService.Connection == null)
+            return;
         try
         {
             Profile? classPlan = null;
@@ -67,19 +70,19 @@ public class ProfileService
             if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
             {
                 var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
-                var cpNew = classPlan = await WebRequestHelper.GetJson<Profile>(new Uri(ManagementService.Manifest.ClassPlanSource.Value!));
+                var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
                 MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
             }
             if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
             {
                 var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
-                var tlNew = timeLayouts = await WebRequestHelper.GetJson<Profile>(new Uri(ManagementService.Manifest.TimeLayoutSource.Value!));
+                var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
                 MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
             }
             if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
             {
                 var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
-                var subjectNew = subjects = await WebRequestHelper.GetJson<Profile>(new Uri(ManagementService.Manifest.SubjectsSource.Value!));
+                var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
                 MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
             }
 

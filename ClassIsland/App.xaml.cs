@@ -25,6 +25,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Services.SpeechService;

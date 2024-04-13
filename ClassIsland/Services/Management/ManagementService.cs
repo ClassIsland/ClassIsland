@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
-using ClassIsland.Controls;
+using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Enums;
-using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Management;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
@@ -17,7 +13,7 @@ using static ClassIsland.Core.Helpers.ConfigureFileHelper;
 using Application = System.Windows.Application;
 using CommonDialog = ClassIsland.Controls.CommonDialog;
 
-namespace ClassIsland.Services;
+namespace ClassIsland.Services.Management;
 
 public class ManagementService
 {
@@ -59,6 +55,8 @@ public class ManagementService
 
     private ILogger<ManagementService> Logger { get; }
 
+    public IManagementServerConnection? Connection { get; }
+
     public ManagementService(ILogger<ManagementService> logger)
     {
         Instance = this;
@@ -76,6 +74,25 @@ public class ManagementService
         if (!IsManagementEnabled)
             return;
 
+        // 连接集控服务器
+        try
+        {
+            switch (Settings.ManagementServerKind)
+            {
+                case ManagementServerKind.Serverless:
+                    Connection = new ServerlessConnection(Persist.ClientUniqueId, Settings.ClassIdentity ?? "", Settings.ManifestUrlTemplate);
+                    break;
+                case ManagementServerKind.ManagementServer:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "连接集控服务器失败。");
+        }
+
         SetupManagement();
     }
 
@@ -87,14 +104,19 @@ public class ManagementService
         Policy = LoadConfig<ManagementPolicy>(ManagementPolicyPath);
         Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
 
+        if (Connection == null)
+        {
+            return;
+        }
+
         try
         {
             // 拉取集控清单
-            Manifest = await WebRequestHelper.SaveJson<ManagementManifest>(new Uri(Settings.ManifestUrlTemplate), ManagementManifestPath);
+            Manifest = await Connection.SaveJsonAsync<ManagementManifest>(Settings.ManifestUrlTemplate, ManagementManifestPath);
             // 拉取策略
             if (Manifest.PolicySource.IsNewerAndNotNull(Versions.PolicyVersion))
             {
-                Policy = await WebRequestHelper.SaveJson<ManagementPolicy>(new Uri(Manifest.PolicySource.Value!), ManagementPolicyPath);
+                Policy = await Connection.SaveJsonAsync<ManagementPolicy>(Manifest.PolicySource.Value!, ManagementPolicyPath);
             }
         }
         catch (Exception e)
