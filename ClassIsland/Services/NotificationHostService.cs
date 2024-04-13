@@ -138,12 +138,24 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         if (!Settings.NotificationProvidersPriority.Contains(provider.ProviderGuid.ToString()))
         {
             Settings.NotificationProvidersPriority.Add(provider.ProviderGuid.ToString());
-            Settings.NotificationProvidersEnableStates.Add(provider.ProviderGuid.ToString(), true);
+        }
+        if (!Settings.NotificationProvidersSettings.ContainsKey(provider.ProviderGuid.ToString()))
+        {
             Settings.NotificationProvidersSettings.Add(provider.ProviderGuid.ToString(), null);
+        }
+        if (!Settings.NotificationProvidersEnableStates.ContainsKey(provider.ProviderGuid.ToString()))
+        {
+            Settings.NotificationProvidersEnableStates.Add(provider.ProviderGuid.ToString(), true);
+        }
+        if (!Settings.NotificationProvidersNotifySettings.ContainsKey(provider.ProviderGuid.ToString()))
+        {
             Settings.NotificationProvidersNotifySettings.Add(provider.ProviderGuid.ToString(), new());
         }
 
-        NotificationProviders.Add(new NotificationProviderRegisterInfo(provider));
+        NotificationProviders.Add(new NotificationProviderRegisterInfo(provider)
+        {
+            ProviderSettings = Settings.NotificationProvidersNotifySettings[provider.ProviderGuid.ToString()]
+        });
     }
 
     public void ShowNotification(NotificationRequest request)
