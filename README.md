@@ -29,7 +29,7 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 [![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=for-the-badge&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/)
 
 首先，请确保您的设备满足以下需求：
-- Windows 7及以上版本的系统，x64架构
+- Windows 10及以上版本的系统，x64架构（警告！使用不符合要求的系统运行可能导致运行效率低下，内存泄漏的问题，谨慎使用！ #91）
 - 已安装[.NET 8.0桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.1-windows-x64-installer)
 - 开启Aero效果（Windows 8及以上的系统可以忽略此项）
 
