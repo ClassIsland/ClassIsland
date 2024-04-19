@@ -266,6 +266,7 @@ public partial class App : Application, IAppHost
                 // 简略信息提供方
                 services.AddHostedService<DateMiniInfoProvider>();
                 services.AddHostedService<WeatherMiniInfoProvider>();
+                services.AddHostedService<CountDownMiniInfoProvider>();
                 // Transients
                 services.AddTransient<ExcelImportWindow>();
                 services.AddTransient<WallpaperPreviewWindow>();
