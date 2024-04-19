@@ -2620,7 +2620,7 @@ The quick brown fox jumps over a lazy dog.
                                              AcceptsReturn="True"
                                              Text="{Binding ViewModel.DebugOutputs}" />
                                     <Separator Margin="0 6" />
-                                    <controls:StarRailLoadingControl Height="150" />
+                                    <controls:StarRailLoadingControl Height="150"/>
                                     <controls:TeyvatLoadingControl />
                                     <controls:WeatherRangePackIconControl>
                                         <controls:WeatherRangePackIconControl.Value>

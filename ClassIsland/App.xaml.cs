@@ -70,6 +70,8 @@ public partial class App : Application, IAppHost
     {
         DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ToolTipService.InitialShowDelayProperty,
             0);
+        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ShadowAssist.CacheModeProperty,
+            null);
     }
 
     public static ApplicationCommand ApplicationCommand
