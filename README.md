@@ -2,7 +2,7 @@
 
 ![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
 
-ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能，
+ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
 ## 功能
 ### 课表显示
@@ -28,18 +28,33 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 [![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=for-the-badge&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest) 
 [![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=for-the-badge&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/)
 
-首先，请确保您的设备满足以下需求：
-- Windows 10及以上版本的系统，x64架构（警告！使用不符合要求的系统运行可能导致运行效率低下，内存泄漏的问题，谨慎使用！ #91）
+首先，请确保您的设备满足以下推荐需求：
+- Windows 10 及以上版本的系统，x64架构
 - 已安装[.NET 8.0桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.1-windows-x64-installer)
 - 开启Aero效果（Windows 8及以上的系统可以忽略此项）
+
+<details>
+<summary>最低设备需求</summary>
+
+ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这些系统上运行 ClassIsland 可能会出现运行不稳定的情况。**
+
+- Windows 7 及以上版本系统，x64架构
+
+要在 Windows 7 中安装并运行 ClassIsland，您还需要额外进行以下准备工作：[在Windows7中安装 ClassIsland](doc/InstallOnLegaceyOS.md)
+
+</details>
+
+**⚠️不建议在 Windows 10 以下的系统运行本应用⚠️** 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**（[#91](https://github.com/HelloWRC/ClassIsland/issues/91)）。
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 - [AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)
 - [GitHub](https://github.com/HelloWRC/ClassIsland/releases/latest)
 
-> GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。
+<!-- > GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。 -->
 
-下载完成后，将软件压缩包解压到一个您喜欢的地方，运行软件即可开始使用。首次启动时，会有一个简短的欢迎向导来引导您完成本软件的基本设置，并展示软件的一些基本操作。您可以观看[入门教程视频](https://www.bilibili.com/video/BV1fA4m1A7uZ/)来快速上手本软件。如果您要进一步了解本软件，您可以阅读本软件内置的帮助文档。
+下载完成后，将软件压缩包解压到一个您喜欢的地方，运行软件即可开始使用。首次启动时，会有一个简短的欢迎向导来引导您完成本软件的基本设置，并展示软件的一些基本操作。
+
+您可以观看[入门教程视频](https://www.bilibili.com/video/BV1fA4m1A7uZ/)来快速上手本软件。如果您要进一步了解本软件，您可以阅读本软件内置的帮助文档。
 
 ## 开发
 
