@@ -565,12 +565,13 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonClearTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.TemporaryClassPlan = null;
+        ProfileService.Profile.TempClassPlanId = null;
     }
 
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
+        //MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
+        ProfileService.Profile.TempClassPlanSetupTime = DateTime.Now;
     }
 
     private void TabControlSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

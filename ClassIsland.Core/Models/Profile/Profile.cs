@@ -17,6 +17,8 @@ public class Profile : ObservableRecipient
     private bool _isOverlayClassPlanEnabled = false;
     private string? _overlayClassPlanId = null;
     private ObservableCollection<Subject> _editingSubjects = new();
+    private string? _tempClassPlanId;
+    private DateTime _tempClassPlanSetupTime = DateTime.Now;
 
     public Profile()
     {
@@ -228,6 +230,28 @@ public class Profile : ObservableRecipient
         {
             if (value == _overlayClassPlanId) return;
             _overlayClassPlanId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? TempClassPlanId
+    {
+        get => _tempClassPlanId;
+        set
+        {
+            if (value == _tempClassPlanId) return;
+            _tempClassPlanId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime TempClassPlanSetupTime
+    {
+        get => _tempClassPlanSetupTime;
+        set
+        {
+            if (value.Equals(_tempClassPlanSetupTime)) return;
+            _tempClassPlanSetupTime = value;
             OnPropertyChanged();
         }
     }

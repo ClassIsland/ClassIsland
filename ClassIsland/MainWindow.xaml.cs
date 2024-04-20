@@ -724,28 +724,38 @@ public partial class MainWindow : Window
     public void LoadCurrentClassPlan()
     {
         ViewModel.Profile.RefreshTimeLayouts();
-        if (ViewModel.TemporaryClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
+        if (ViewModel.Profile.TempClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
         {
-            ViewModel.TemporaryClassPlan = null;
+            ViewModel.Profile.TempClassPlanId = null;
         }
 
+        // 检测是否启用课表加载
         if (!ViewModel.IsClassPlanEnabled)
         {
             ViewModel.CurrentClassPlan = null;
             return; 
         }
+        // 加载临时层
         if (ViewModel.Profile.IsOverlayClassPlanEnabled && 
             ViewModel.Profile.OverlayClassPlanId != null &&
-            ViewModel.Profile.ClassPlans.ContainsKey(ViewModel.Profile.OverlayClassPlanId))
+            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.OverlayClassPlanId, out var overlay))
         {
-            ViewModel.CurrentClassPlan = ViewModel.Profile.ClassPlans[ViewModel.Profile.OverlayClassPlanId];
+            ViewModel.CurrentClassPlan = overlay;
             return;
         }
+        // 加载临时课表
+        if (ViewModel.Profile.TempClassPlanId != null &&
+            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.TempClassPlanId, out var tempClassPlan))
+        {
+            ViewModel.CurrentClassPlan = tempClassPlan;
+            return;
+        }
+        // 加载课表
         var a = (from p in ViewModel.Profile.ClassPlans
             where CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled
             select p.Value)
             .ToList();
-        ViewModel.CurrentClassPlan = ViewModel.TemporaryClassPlan?.Value ?? (a.Count < 1 ? null : a[0]!);
+        ViewModel.CurrentClassPlan = a.FirstOrDefault();
     }
 
     private void ListView_OnMouseDown(object sender, MouseButtonEventArgs e)

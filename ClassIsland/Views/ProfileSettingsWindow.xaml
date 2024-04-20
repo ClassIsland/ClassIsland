@@ -341,7 +341,7 @@
 
                     <Separator Margin="0 16 0 4"/>
                     <controls:IconText Kind="FileChartOutline" Text="临时课表" Margin="0 0 0 8"/>
-                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天的本次运行有效。" TextWrapping="Wrap"/>
+                    <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"/>
                     <Button Style="{StaticResource MaterialDesignFlatButton}" 
                             HorizontalAlignment="Left"
                             ToolTip="清除选择的临时课表，并恢复至正常课表安排。"
@@ -359,7 +359,8 @@
                          Margin="0 12 0 0"
                          SelectionMode="Single"
                          Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                         SelectedValue="{Binding MainViewModel.TemporaryClassPlan, Mode=TwoWay}"
+                         SelectedValue="{Binding ProfileService.Profile.TempClassPlanId, Mode=TwoWay}"
+                         SelectedValuePath="Key"
                          SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch">
@@ -1490,7 +1491,7 @@
                                     <materialDesign:Chip.Style>
                                         <Style TargetType="materialDesign:Chip" BasedOn="{StaticResource MaterialDesignOutlineChip}">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding MainViewModel.TemporaryClassPlan}" Value="{x:Null}">
+                                                <DataTrigger Binding="{Binding ProfileService.Profile.TempClassPlanId}" Value="{x:Null}">
                                                     <Setter Property="Icon" Value="{materialDesign:PackIcon FileChartOutline}"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan.IsOverlay}" Value="True">

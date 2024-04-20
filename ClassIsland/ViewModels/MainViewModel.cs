@@ -29,8 +29,6 @@ public class MainViewModel : ObservableRecipient
     private TimeState _currentOverlayStatus = TimeState.None;
     private TimeLayoutItem _currentTimeLayoutItem = new();
     private bool _isForegroundFullscreen = false;
-    private KeyValuePair<string, ClassPlan>? _temporaryClassPlan = null;
-    private DateTime _temporaryClassPlanSetupTime = DateTime.Now;
     private bool _isForegroundMaxWindow = false;
     private string _currentProfilePath = "Profile.json";
     private double _gridRootLeft = 0;
@@ -244,28 +242,6 @@ public class MainViewModel : ObservableRecipient
             _isForegroundMaxWindow = value;
             OnPropertyChanged();
             Settings.NotifyPropertyChanged(nameof(Settings.HideOnMaxWindow));
-        }
-    }
-
-    public KeyValuePair<string, ClassPlan>? TemporaryClassPlan
-    {
-        get => _temporaryClassPlan;
-        set
-        {
-            if (Equals(value, _temporaryClassPlan)) return;
-            _temporaryClassPlan = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime TemporaryClassPlanSetupTime
-    {
-        get => _temporaryClassPlanSetupTime;
-        set
-        {
-            if (value.Equals(_temporaryClassPlanSetupTime)) return;
-            _temporaryClassPlanSetupTime = value;
-            OnPropertyChanged();
         }
     }
 
