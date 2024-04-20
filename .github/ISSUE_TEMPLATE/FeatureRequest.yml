@@ -2,11 +2,12 @@ name: 功能请求
 description: 提出一项新的功能。
 title: "[功能请求]: 在这里输入你的标题"
 labels: ["enhancement"]
+assignees: HelloWRC
 body:
   - type: markdown
     attributes:
       value: |
-        感谢您贡献您的想法。请在上面的文本框⬆️起一个能够清晰描述您的想法的标题，便于开发者了解您的想法。
+        感谢您贡献您的想法。请在上面的文本框⬆️起一个能够清晰描述您的想法的标题，便于开发者了解您的想法。**不要删掉开头的“[功能请求]: ”。**
 
         > **重要：如果您想要提出多项功能，请为每一个功能开一个单独的issue**
   - type: checkboxes

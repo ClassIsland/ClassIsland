@@ -2,11 +2,12 @@ name: Bug 反馈
 description: 在使用 ClassIsland 的过程中遇到了Bug。
 title: "[Bug]: 在这里输入你的标题"
 labels: ["bug"]
+assignees: HelloWRC
 body:
   - type: markdown
     attributes:
       value: |
-        感谢您进行Bug反馈。反馈时请在上面的文本框⬆️起一个能够清晰描述您的问题的标题，便于开发者解决您的问题。
+        感谢您进行Bug反馈。反馈时请在上面的文本框⬆️起一个能够清晰描述您的问题的标题，便于开发者解决您的问题。**不要删掉开头的“[Bug]: ”。**
         
         如果您不知道如何有效、精准地表述，我们建议您先阅读《提问的智慧》（[链接](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md)）。
   - type: checkboxes
@@ -27,6 +28,8 @@ body:
     attributes: 
       value: |
         ## Bug 信息
+
+        描述您遇到的 Bug。您可以附上截图、录屏、堆栈跟踪、日志等材料，便于开发者追踪问题。
   - type: textarea
     id: reproduce-steps
     attributes:
@@ -34,7 +37,10 @@ body:
       description: |
         我们需要执行哪些操作才能让 bug 出现？
         简洁清晰的重现步骤能够帮助我们更迅速地定位问题所在。
-      placeholder: 在遇到bug时发生了什么……
+      placeholder: |
+        1. 首先……
+        2. 然后……
+        3. ……
     validations:
       required: true
   - type: textarea
@@ -48,6 +54,7 @@ body:
     id: what-happened
     attributes:
       label: 实际结果
+      description: 实际发生的行为。
     validations:
       required: true
   - type: textarea
