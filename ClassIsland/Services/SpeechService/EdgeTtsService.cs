@@ -79,15 +79,17 @@ public class EdgeTtsService : ISpeechService
                 {
                     var completed = false;
                     var voice = Voices.Find(voice => voice.ShortName == SettingsService.Settings.EdgeTtsVoiceName);
+                    var completeHandle = new CancellationTokenSource();
                     Edge_tts.Invoke(text, voice, 0, (Action<List<byte>>)(binary =>
                     {
+                        if (completeHandle.IsCancellationRequested)
+                            return;
                         File.WriteAllBytes(cache, binary.ToArray());
                         completed = true;
+                        completeHandle.Cancel();
                     }));
-                    while (!completed)
-                    {
-                        
-                    }
+                    completeHandle.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(15));
+                    completeHandle.Cancel();
                 },
                 requestingCancellationTokenSource.Token);
         }
