@@ -39,6 +39,27 @@ ClassIsland现在支持从服务器同步当前的精确时间。也可以在此
 ***
 
 
+# 1.3.3.1
+
+> 1.4 - Firefly 测试版，可能包含未完善和不稳定的功能。
+
+本版本主要修复了 `1.3.3.0` 中的一些问题。
+
+## 新增功能
+- 【简略信息】倒计时简略信息功能（[#95](https://github.com/HelloWRC/ClassIsland/pull/95) [#60](https://github.com/HelloWRC/ClassIsland/issues/60)）（by [@Doctor-yoi](https://github.com/Doctor-yoi)）
+- 【课表】临时课表持久化 （[#75](https://github.com/HelloWRC/ClassIsland/issues/75)）
+
+## 优化与Bug修复
+- 【UI】修复主界面不定期停止渲染的问题（[#92](https://github.com/HelloWRC/ClassIsland/issues/92)）
+- 【UI】优化在【帮助】界面下的触屏滚动体验
+- 【提醒】修复无法显示上课前提醒语的问题（[#86](https://github.com/HelloWRC/ClassIsland/issues/86)）
+- 【提醒】修复EdgeTTS在朗读出错后无法继续朗读的问题（[#84](https://github.com/HelloWRC/ClassIsland/issues/84)）
+- 【提醒】修复无法保存提醒设置的问题
+
+
+***
+
+
 # 1.3.3.0
 
 > 1.4 - Firefly 测试版，可能包含未完善和不稳定的功能。
