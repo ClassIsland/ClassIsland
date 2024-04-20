@@ -135,6 +135,7 @@ public partial class HelpsWindow : MyWindow
         ViewModel.SelectedDocumentName = name;
         await Dispatcher.Yield();
         //Console.WriteLine(sw.Elapsed.ToString());
+        RootScrollViewer.ScrollToTop();
         ViewModel.IsLoading = false;
     }
 
