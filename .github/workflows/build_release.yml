@@ -90,19 +90,6 @@ jobs:
           cd .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\
           7z a ClassIsland.zip ./ClassIsland.exe -mx=9
           
-      - name: Upload to AppCenter
-        uses: akiojin/appcenter-distribute-github-action@v1.4.8
-        with:
-          # API token (App API token or User API token)
-          token: ${{secrets.APPCENTER_TOKEN}}
-          # Build number
-          build-number: $env:app_ver
-          # ipa or apk file path
-          path: .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip
-          # Specify app in the <ownerName>/<appName> format
-          app: HelloWRC/ClassIsland
-          group: Collaborators
-          
       - name: Update to release
         uses: ncipollo/release-action@v1.10.0
         with:
