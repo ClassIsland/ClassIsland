@@ -83,6 +83,8 @@ public class ManagementService
                     Connection = new ServerlessConnection(Persist.ClientUniqueId, Settings.ClassIdentity ?? "", Settings.ManifestUrlTemplate);
                     break;
                 case ManagementServerKind.ManagementServer:
+                    Connection = new ManagementServerConnection(Settings.ManagementServer, Persist.ClientUniqueId,
+                        Settings.ClassIdentity ?? "", false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
@@ -112,7 +114,7 @@ public class ManagementService
         try
         {
             // 拉取集控清单
-            Manifest = await Connection.SaveJsonAsync<ManagementManifest>(Settings.ManifestUrlTemplate, ManagementManifestPath);
+            Manifest = await Connection.GetManifest();
             // 拉取策略
             if (Manifest.PolicySource.IsNewerAndNotNull(Versions.PolicyVersion))
             {

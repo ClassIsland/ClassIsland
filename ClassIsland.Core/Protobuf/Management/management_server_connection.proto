@@ -1,0 +1,9 @@
+syntax = "proto3";
+import "Protobuf/Management/client_connect_request.proto";
+import "Protobuf/Management/management_commands.proto";
+package classisland.management;
+option csharp_namespace = "ClassIsland.Core.Protobuf.Management";
+
+service ManagementServerConnection {
+  rpc ListenCommand (ClientConnectRequest) returns (stream ManagementCommandBase);
+}
