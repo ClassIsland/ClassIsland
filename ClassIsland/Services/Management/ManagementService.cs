@@ -114,6 +114,7 @@ public class ManagementService
         {
             // 拉取集控清单
             Manifest = await Connection.GetManifest();
+            SaveConfig(ManagementManifestPath, Manifest);
             // 拉取策略
             if (Manifest.PolicySource.IsNewerAndNotNull(Versions.PolicyVersion))
             {

@@ -9,12 +9,13 @@ namespace ClassIsland.Helpers;
 
 public static class WebRequestHelper
 {
+    private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
     private static HttpClient HttpClient { get; } = new();
 
     public static async Task<T> GetJson<T>(Uri uri)
     {
         var str = await HttpClient.GetStringAsync(uri);
-        var r = JsonSerializer.Deserialize<T>(str);
+        var r = JsonSerializer.Deserialize<T>(str, JsonOptions);
         return r == null ? throw new Exception("Json.Deserialize returned null value.") : r;
     }
 
