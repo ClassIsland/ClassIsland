@@ -4,6 +4,17 @@ import "Protobuf/Management/management_commands.proto";
 package classisland.management;
 option csharp_namespace = "ClassIsland.Core.Protobuf.Management";
 
+message ClientRegisterInfo {
+  string client_uid=1;
+  string id=2;
+}
+
+message ClientRegisterResult{
+  
+}
+
 service ManagementServerConnection {
   rpc ListenCommand (ClientConnectRequest) returns (stream ManagementCommandBase);
+  
+  rpc Register (ClientRegisterInfo) returns (ClientRegisterResult); 
 }

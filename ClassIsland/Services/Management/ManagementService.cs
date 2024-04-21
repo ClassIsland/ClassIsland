@@ -83,8 +83,7 @@ public class ManagementService
                     Connection = new ServerlessConnection(Persist.ClientUniqueId, Settings.ClassIdentity ?? "", Settings.ManifestUrlTemplate);
                     break;
                 case ManagementServerKind.ManagementServer:
-                    Connection = new ManagementServerConnection(Settings.ManagementServer, Persist.ClientUniqueId,
-                        Settings.ClassIdentity ?? "", false);
+                    Connection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
@@ -145,7 +144,8 @@ public class ManagementService
                 mf = await WebRequestHelper.GetJson<ManagementManifest>(new Uri(settings.ManifestUrlTemplate));
                 break;
             case ManagementServerKind.ManagementServer:
-                // TODO: 从集控服务器获取
+                var connection = new ManagementServerConnection(settings, Persist.ClientUniqueId, true);
+                mf = await connection.RegisterAsync();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(settings.ManagementServerKind), "无效的服务器类型。");

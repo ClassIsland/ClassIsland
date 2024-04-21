@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstraction.Services;
@@ -23,27 +24,38 @@ public class ManagementServerConnection : IManagementServerConnection
     
     private string Host { get; }
     
-    private GrpcChannel? Channel { get; }
+    private GrpcChannel Channel { get; }
     
-    private Core.Protobuf.Management.ManagementServerConnection.ManagementServerConnectionClient? GrpcClient { get; }
+    private Core.Protobuf.Management.ManagementServerConnection.ManagementServerConnectionClient GrpcClient { get; }
     
-    public ManagementServerConnection(string host, Guid clientUid, string id, bool lightConnect)
+    public ManagementServerConnection(ManagementSettings settings, Guid clientUid, bool lightConnect)
     {
         ClientGuid = clientUid;
-        Id = id;
-        Host = host;
-        ManifestUrl = $"{host}/api/v1/client/{clientUid}/manifest";
+        Id = settings.ClassIdentity ?? "";
+        Host = settings.ManagementServer;
+        ManifestUrl = $"{Host}/api/v1/client/{clientUid}/manifest";
         
 
+        Channel = GrpcChannel.ForAddress(settings.ManagementServerGrpc);
+        GrpcClient =
+            new Core.Protobuf.Management.ManagementServerConnection.ManagementServerConnectionClient(Channel);
         Logger.LogInformation("初始化管理服务器连接。");
         if (lightConnect) 
             return;
         // 建立Grpc连接
-        Channel = GrpcChannel.ForAddress(host);
-        GrpcClient =
-            new Core.Protobuf.Management.ManagementServerConnection.ManagementServerConnectionClient(Channel);
         // Task.Run(ListenCommands);
 
+    }
+
+    public async Task<ManagementManifest> RegisterAsync()
+    {
+        Logger.LogInformation("正在注册实例");
+        await GrpcClient.RegisterAsync(new ClientRegisterInfo()
+        {
+            ClientUid = ClientGuid.ToString(),
+            Id = Id
+        });
+        return await GetManifest();
     }
 
     private async void ListenCommands()

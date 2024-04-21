@@ -10,6 +10,7 @@ public class ManagementSettings : ObservableRecipient
     private string _manifestUrlTemplate = "";
     private string? _classIdentity = "";
     private bool _isManagementEnabled = false;
+    private string _managementServerGrpc = "";
 
     /// <summary>
     /// 是否启用集控
@@ -49,6 +50,20 @@ public class ManagementSettings : ObservableRecipient
         {
             if (value == _managementServer) return;
             _managementServer = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 集控服务器Grpc地址，此条目仅在ManagementServerKind为ManagementServer时起作用。
+    /// </summary>
+    public string ManagementServerGrpc
+    {
+        get => _managementServerGrpc;
+        set
+        {
+            if (value == _managementServerGrpc) return;
+            _managementServerGrpc = value;
             OnPropertyChanged();
         }
     }
