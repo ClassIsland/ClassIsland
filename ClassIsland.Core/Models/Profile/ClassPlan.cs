@@ -20,6 +20,13 @@ public class ClassPlan : AttachableSettingsObject
     private DateTime _overlaySetupTime = DateTime.Now;
     private int _lastTimeLayoutCount = -1;
 
+    public event EventHandler? ClassesChanged;
+
+    public void NotifyClassesChanged()
+    {
+        ClassesChanged?.Invoke(this, EventArgs.Empty);
+    }
+
     [JsonIgnore]
     public int LastTimeLayoutCount
     {
@@ -41,6 +48,49 @@ public class ClassPlan : AttachableSettingsObject
             TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
             TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
         }
+        Classes.CollectionChanged += ClassesOnCollectionChanged;
+    }
+
+    private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                if (e.NewItems == null)
+                    return;
+                foreach (var i in e.NewItems)
+                {
+                    if (i is ClassInfo c)
+                    {
+                        c.PropertyChanged += ClassInfoOnPropertyChanged;
+                    }
+                }
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                if (e.OldItems == null)
+                    return;
+                foreach (var i in e.OldItems)
+                {
+                    if (i is ClassInfo c)
+                    {
+                        c.PropertyChanged -= ClassInfoOnPropertyChanged;
+                    }
+                }
+                break;
+            case NotifyCollectionChangedAction.Replace:
+                break;
+            case NotifyCollectionChangedAction.Move:
+                break;
+            case NotifyCollectionChangedAction.Reset:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void ClassInfoOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        NotifyClassesChanged();
     }
 
     private void TimeLayoutOnLayoutObjectChanged(object? sender, EventArgs e)
@@ -51,15 +101,30 @@ public class ClassPlan : AttachableSettingsObject
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-
-        if (e.PropertyName == nameof(TimeLayout) || e.PropertyName == nameof(TimeLayoutId))
+        switch (e.PropertyName)
         {
-            if (TimeLayouts.ContainsKey(TimeLayoutId))
+            case nameof(TimeLayout):
+            case nameof(TimeLayoutId):
             {
-                RefreshClassesList();
-                TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
-                TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
-                TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+                if (TimeLayouts.ContainsKey(TimeLayoutId))
+                {
+                    RefreshClassesList();
+                    TimeLayout.LayoutObjectChanged += TimeLayoutOnLayoutObjectChanged;
+                    TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
+                    TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
+                }
+
+                break;
+            }
+            case nameof(Classes):
+            {
+                Classes.CollectionChanged += ClassesOnCollectionChanged;
+                foreach (var i in Classes)
+                {
+                    i.PropertyChanged += ClassInfoOnPropertyChanged;
+                }
+
+                break;
             }
         }
     }
