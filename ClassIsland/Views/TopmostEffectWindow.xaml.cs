@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -127,5 +128,10 @@ public partial class TopmostEffectWindow : Window
         var style = NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE);
         style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
         var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
+    }
+
+    private void TopmostEffectWindow_OnClosing(object? sender, CancelEventArgs e)
+    {
+        e.Cancel = true;
     }
 }
