@@ -126,6 +126,33 @@
             </StackPanel>
         </StackPanel>
 
+        <StackPanel VerticalAlignment="Stretch" Margin="16" MaxWidth="400" x:Key="DebugSetTime">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="(debug)设置时间"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text=""/>
+            </TextBlock>
+            <DatePicker/>
+            <materialDesign:TimePickerTextBox/>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="重置" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
         <!-- Drawers -->
         <ScrollViewer Width="332" x:Key="AdvancedUpdateSettings"
                       VerticalScrollBarVisibility="Auto"
@@ -2578,6 +2605,11 @@ The quick brown fox jumps over a lazy dog.
                                     <MenuItem Icon="{materialDesign:PackIcon MessageOutline}"
                                               Header="ToastMe!"
                                               Click="ButtonDebugToastText_OnClick" />
+                                    <MenuItem Icon="{materialDesign:PackIcon ClockOutline}"
+                                              Header="修改时间（相对）"
+                                              Click="MenuItemDebugSetTime_OnClick"
+                                              Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                              CommandParameter="{StaticResource DebugSetTime}"/>
                                     <Separator />
                                     <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发下课"
                                               Click="MenuItemDebugTriggerAfterClass_OnClick" />

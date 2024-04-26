@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Notification;
@@ -80,9 +81,9 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             ? settingsOutDoorClassPreparingDeltaTime
             : settingsInDoorClassPreparingDeltaTime;
         if (settingsIsClassOnPreparingNotificationEnabled &&
-            ((tClassDelta > TimeSpan.Zero &&
+            tClassDelta > TimeSpan.Zero &&
               tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) &&
-            !IsClassPreparingNotified)))
+            !IsClassPreparingNotified && NotificationHostService.CurrentState == TimeState.Breaking)
         {
             var deltaTime = NotificationHostService.NextClassSubject.IsOutDoor
                 ? settingsOutDoorClassPreparingDeltaTime

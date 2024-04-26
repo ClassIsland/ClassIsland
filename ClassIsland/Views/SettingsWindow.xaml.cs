@@ -669,4 +669,9 @@ public partial class SettingsWindow : MyWindow
     {
         App.GetService<FeatureDebugWindow>().Show();
     }
+
+    private void MenuItemDebugSetTime_OnClick(object sender, RoutedEventArgs e)
+    {
+
+    }
 }
