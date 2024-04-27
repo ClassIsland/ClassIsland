@@ -1,6 +1,7 @@
 # ClassIsland
 
 ![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland?ref=badge_shield)
 
 ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
@@ -130,3 +131,7 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 ![软件截图-应用设置](https://github.com/HelloWRC/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
 
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland?ref=badge_large)
