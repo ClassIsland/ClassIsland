@@ -2600,6 +2600,9 @@ The quick brown fox jumps over a lazy dog.
                                               Header="CrashTest"
                                               Click="ButtonCrash_OnClick" />
                                     <MenuItem Icon="{materialDesign:PackIcon Bomb}"
+                                              Header="AppCenter Crash Test"
+                                              Click="MenuItemDebugAppCenterCrashTest_OnClick" />
+                                    <MenuItem Icon="{materialDesign:PackIcon Bomb}"
                                               Header="内存泄露100MB"
                                               Click="MenuItemMemoryLeakTest_OnClick" />
                                     <MenuItem Icon="{materialDesign:PackIcon MessageOutline}"

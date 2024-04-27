@@ -105,13 +105,13 @@ public partial class App : Application, IAppHost
             CrashInfo = e.Exception.ToString()
         };
 #if DEBUG
-        if (e.Exception.GetType() != typeof(ResourceReferenceKeyNotFoundException))
+        if (e.Exception.GetType() == typeof(ResourceReferenceKeyNotFoundException))
         {
-            CrashWindow.ShowDialog();
+            return;
         }
-#else
-        CrashWindow.ShowDialog();
 #endif
+        Crashes.TrackError(e.Exception);
+        CrashWindow.ShowDialog();
     }
 
     private async void App_OnStartup(object sender, StartupEventArgs e)

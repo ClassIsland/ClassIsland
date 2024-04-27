@@ -31,6 +31,7 @@ using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32.SafeHandles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -673,5 +674,10 @@ public partial class SettingsWindow : MyWindow
     private void MenuItemDebugSetTime_OnClick(object sender, RoutedEventArgs e)
     {
 
+    }
+
+    private void MenuItemDebugAppCenterCrashTest_OnClick(object sender, RoutedEventArgs e)
+    {
+        Crashes.GenerateTestCrash();
     }
 }
