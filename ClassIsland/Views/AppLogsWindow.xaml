@@ -17,7 +17,7 @@
         TextOptions.TextRenderingMode="Auto"        
         Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{StaticResource HarmonyOsSans}"
-        Title="日志" Height="450" Width="800"
+        Title="日志" Height="600" Width="1200"
         d:DataContext="{d:DesignInstance local:AppLogsWindow}"
         Closing="AppLogsWindow_OnClosing">
     <controls:MyWindow.Resources>
