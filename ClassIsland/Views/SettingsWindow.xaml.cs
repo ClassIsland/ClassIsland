@@ -680,4 +680,9 @@ public partial class SettingsWindow : MyWindow
     {
         Crashes.GenerateTestCrash();
     }
+
+    private void MenuItemAppLogs_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<AppLogsWindow>().Show();
+    }
 }

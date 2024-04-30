@@ -2974,6 +2974,10 @@ The quick brown fox jumps over a lazy dog.
                                                 <controls:JoinManagementDialog/>
                                             </MenuItem.CommandParameter>
                                         </MenuItem>
+                                        <Separator/>
+                                        <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}"
+                                                  Header="日志…"
+                                                  Click="MenuItemAppLogs_OnClick"/>
                                     </StackPanel>
                                 </materialDesign:PopupBox>
                             </StackPanel>

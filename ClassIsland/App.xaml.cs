@@ -25,6 +25,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
@@ -233,6 +234,8 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<UpdateNodeSpeedTestingService>();
                 services.AddSingleton<DiagnosticService>();
                 services.AddSingleton<ManagementService>();
+                services.AddSingleton<AppLogService>();
+                services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddHostedService<MemoryWatchDogService>();
                 services.AddSingleton<SpeechSynthesizer>(provider =>
                 {
@@ -259,6 +262,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<HelpsWindow>();
                 services.AddTransient<FeatureDebugWindow>();
                 services.AddSingleton<TopmostEffectWindow>();
+                services.AddSingleton<AppLogsWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

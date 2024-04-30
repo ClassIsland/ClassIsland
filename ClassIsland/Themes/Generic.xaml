@@ -390,4 +390,6 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="controls:AutoScrollListView" BasedOn="{StaticResource MaterialDesignListView}"/>
 </ResourceDictionary>
