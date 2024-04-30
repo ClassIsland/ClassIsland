@@ -18,4 +18,9 @@ public interface IAppHost
 
         throw new ArgumentException($"Service {typeof(T)} is null!");
     }
+
+    public static T? TryGetService<T>()
+    {
+        return (T?)Host?.Services.GetService(typeof(T));
+    }
 }

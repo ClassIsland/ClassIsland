@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using ClassIsland.Core.Enums;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
 using Downloader;
 using Microsoft.Extensions.Hosting;
@@ -262,14 +263,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     
     public static async Task<List<AppCenterReleaseInfoMin>> GetUpdateVersionsAsync(string queryRoot)
     {
-        var http = new HttpClient();
-        var json = await http.GetStringAsync(queryRoot);
-        var o = JsonSerializer.Deserialize<List<AppCenterReleaseInfoMin>>(json);
-        if (o != null)
-        {
-            return o;
-        }
-        throw new ArgumentException("Releases info array is null!");
+        return await WebRequestHelper.GetJson<List<AppCenterReleaseInfoMin>>(new Uri(queryRoot));
     }
 
     public static async Task<IReadOnlyList<Release>> GetUpdateVersionsGitHubAsync(string? key=null)
@@ -286,14 +280,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public static async Task<AppCenterReleaseInfo> GetVersionArtifactsAsync(string versionRoot)
     {
-        var http = new HttpClient();
-        var json = await http.GetStringAsync(versionRoot);
-        var o = JsonSerializer.Deserialize<AppCenterReleaseInfo>(json);
-        if (o != null)
-        {
-            return o;
-        }
-        throw new ArgumentException("Release package info array is null!");
+        return await WebRequestHelper.GetJson<AppCenterReleaseInfo>(new Uri(versionRoot));
     }
 
     public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)

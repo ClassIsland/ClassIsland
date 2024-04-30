@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using Microsoft.Data.Sqlite;
@@ -86,10 +87,7 @@ public class WeatherService : IHostedService
             using var http = new HttpClient();
             var uri = $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
-            var r = await http.GetAsync(
-                uri);
-            var str = await r.Content.ReadAsStringAsync();
-            Settings.LastWeatherInfo = JsonSerializer.Deserialize<WeatherInfo>(str)!;
+            Settings.LastWeatherInfo = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
         }
         catch (Exception ex)
         {
