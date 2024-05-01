@@ -11,6 +11,7 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
     private bool _isNotificationSoundEnabled = false;
     private string _notificationSoundPath = "";
     private bool _isSettingsEnabled = false;
+    private bool _isNotificationTopmostEnabled = false;
 
     public bool IsNotificationEnabled
     {
@@ -67,6 +68,17 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    public bool IsNotificationTopmostEnabled
+    {
+        get => _isNotificationTopmostEnabled;
+        set
+        {
+            if (value == _isNotificationTopmostEnabled) return;
+            _isNotificationTopmostEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsSettingsEnabled
     {
         get => _isSettingsEnabled;
@@ -77,4 +89,6 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
             OnPropertyChanged();
         }
     }
+
+    
 }

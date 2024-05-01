@@ -16,7 +16,6 @@
         xmlns:hc="https://handyorg.github.io/handycontrol"
         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-        xmlns:ww="clr-namespace:Walterlv.Windows"
         xmlns:profile="clr-namespace:ClassIsland.Core.Models.Profile;assembly=ClassIsland.Core"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
@@ -430,12 +429,22 @@
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Style.Triggers>
-
+                        <!-- 显示提醒时置顶窗口 -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
+                                           Value="True" />
+                                <Condition Binding="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
+                                           Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="{Binding ViewModel.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </MultiDataTrigger>
                         <!-- 窗口上课隐藏 -->
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}" Value="True" />
                                 <Condition Binding="{Binding ViewModel.CurrentStatus, Mode=OneWay}" Value="OnClass" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
@@ -446,6 +455,7 @@
                                            Value="True" />
                                 <Condition Binding="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
                                            Value="True" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
@@ -456,9 +466,11 @@
                                            Value="True" />
                                 <Condition Binding="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
                                            Value="True" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
+                        
                     </Style.Triggers>
 
                     <Setter Property="Visibility" Value="{Binding ViewModel.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />

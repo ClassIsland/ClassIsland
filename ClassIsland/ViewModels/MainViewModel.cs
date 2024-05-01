@@ -44,6 +44,7 @@ public class MainViewModel : ObservableRecipient
     private bool _isBusy = false;
     private DateTime _firstProcessNotifications = DateTime.MinValue;
     private DateTime _debugCurrentTime = DateTime.Now;
+    private bool _isNotificationWindowExplicitShowed = false;
 
     public Profile Profile
     {
@@ -388,6 +389,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_debugCurrentTime)) return;
             _debugCurrentTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationWindowExplicitShowed
+    {
+        get => _isNotificationWindowExplicitShowed;
+        set
+        {
+            if (value == _isNotificationWindowExplicitShowed) return;
+            _isNotificationWindowExplicitShowed = value;
             OnPropertyChanged();
         }
     }

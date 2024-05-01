@@ -130,6 +130,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isTimeAutoAdjustEnabled = false;
     private double _timeAutoAdjustSeconds = 0.0;
     private DateTime _lastTimeAdjustDateTime = DateTime.Now;
+    private bool _isNotificationTopmostEnabled = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -833,6 +834,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _notificationSoundPath) return;
             _notificationSoundPath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationTopmostEnabled
+    {
+        get => _isNotificationTopmostEnabled;
+        set
+        {
+            if (value == _isNotificationTopmostEnabled) return;
+            _isNotificationTopmostEnabled = value;
             OnPropertyChanged();
         }
     }

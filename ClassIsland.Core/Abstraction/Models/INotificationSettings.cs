@@ -31,4 +31,10 @@ public interface INotificationSettings
         get;
         set;
     }
+
+    public bool IsNotificationTopmostEnabled
+    {
+        get;
+        set;
+    }
 }

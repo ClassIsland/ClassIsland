@@ -428,7 +428,7 @@ public partial class MainWindow : Window
                 settings = i;
                 break;
             }
-            var isSpeechEnabled = settings.IsSpeechEnabled && request.IsSpeechEnabled;
+            var isSpeechEnabled = settings.IsSpeechEnabled && request.IsSpeechEnabled && ViewModel.Settings.IsSpeechEnabled;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
@@ -442,6 +442,7 @@ public partial class MainWindow : Window
 
             ViewModel.CurrentMaskElement = request.MaskContent;  // 加载Mask元素
             var cancellationToken = request.CancellationTokenSource.Token;
+            ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled;
 
             if (request.MaskDuration > TimeSpan.Zero &&
                 request.OverlayDuration > TimeSpan.Zero)
@@ -451,8 +452,8 @@ public partial class MainWindow : Window
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
                 BeginStoryboard("OverlayMaskIn");
-                
-                if (settings.IsNotificationSoundEnabled)
+                // 播放提醒音效
+                if (settings.IsNotificationSoundEnabled && ViewModel.Settings.IsNotificationSoundEnabled)
                 {
                     try
                     {
@@ -468,7 +469,9 @@ public partial class MainWindow : Window
                         Logger.LogError(e, "无法播放提醒音效：{}", settings.NotificationSoundPath);
                     }
                 }
-                if (settings.IsNotificationEffectEnabled)
+                // 播放提醒特效
+                if (settings.IsNotificationEffectEnabled && ViewModel.Settings.IsNotificationEffectEnabled &&
+                    GridRoot.IsVisible && ViewModel.IsMainWindowVisible)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
                     {
@@ -521,7 +524,8 @@ public partial class MainWindow : Window
         ViewModel.CurrentOverlayElement = null;
         ViewModel.CurrentMaskElement = null;
         ViewModel.IsOverlayOpened = false;
-        
+        ViewModel.IsNotificationWindowExplicitShowed = false;
+        UpdateTheme();
     }
 
     protected override void OnContentRendered(EventArgs e)
@@ -664,7 +668,7 @@ public partial class MainWindow : Window
         switch (ViewModel.Settings.WindowLayer)
         {
             case 0: // bottom
-                Topmost = false;
+                Topmost = ViewModel.IsNotificationWindowExplicitShowed;
                 break;
             case 1:
                 Topmost = true;
