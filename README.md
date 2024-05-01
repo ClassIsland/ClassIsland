@@ -155,7 +155,7 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HelloWRC"><img src="https://avatars.githubusercontent.com/u/55006226?v=4?s=100" width="100px;" alt="HelloWRC"/><br /><sub><b>HelloWRC</b></sub></a><br /><a href="https://github.com/HelloWRC/ClassIsland/commits?author=HelloWRC" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/HelloWRC"><img src="https://avatars.githubusercontent.com/u/55006226?v=4?s=100" width="100px;" alt="HelloWRC"/><br /><sub><b>HelloWRC</b></sub></a><br /><a href="https://github.com/HelloWRC/ClassIsland/commits?author=HelloWRC" title="Code">💻</a> <a href="https://github.com/HelloWRC/ClassIsland/commits?author=HelloWRC" title="Documentation">📖</a> <a href="#ideas-HelloWRC" title="Ideas, Planning, & Feedback">🤔</a> <a href="#maintenance-HelloWRC" title="Maintenance">🚧</a> <a href="#design-HelloWRC" title="Design">🎨</a></td>
     </tr>
   </tbody>
 </table>
