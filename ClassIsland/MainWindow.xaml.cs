@@ -547,6 +547,11 @@ public partial class MainWindow : Window
             App.GetService<SplashService>().EndSplash();
         }
 
+        if (!ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet)
+        {
+            AutoSetNotificationEffectRenderingScale();
+        }
+
         if (!ViewModel.Settings.IsWelcomeWindowShowed)
         {
             var w = new WelcomeWindow()
@@ -568,6 +573,25 @@ public partial class MainWindow : Window
             }
         }
         base.OnContentRendered(e);
+    }
+
+    private void AutoSetNotificationEffectRenderingScale()
+    {
+        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length
+            ? Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex]
+            : Screen.PrimaryScreen;
+        if (screen == null)
+            return;
+        if (screen.Bounds.Height >= 1400)
+        {
+            ViewModel.Settings.NotificationEffectRenderingScale = 0.75;
+        }
+        if (screen.Bounds.Height >= 2000)
+        {
+            ViewModel.Settings.NotificationEffectRenderingScale = 0.5;
+        }
+
+        ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet = true;
     }
 
     private void MainTaskBarIconOnTrayLeftMouseUp(object sender, RoutedEventArgs e)
