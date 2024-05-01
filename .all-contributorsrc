@@ -13,7 +13,11 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/55006226?v=4",
       "profile": "https://github.com/HelloWRC",
       "contributions": [
-        "code"
+        "code",
+        "design",
+        "doc",
+        "ideas",
+        "maintenance"
       ]
     },
     {
@@ -22,7 +26,37 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/106463935?v=4",
       "profile": "https://github.com/Doctor-yoi",
       "contributions": [
-        "code"
+        "code",
+        "question"
+      ]
+    },
+    {
+      "login": "jiangyin14",
+      "name": "姜胤",
+      "avatar_url": "https://avatars.githubusercontent.com/u/106649516?v=4",
+      "profile": "https://www.jiangyin14.top/",
+      "contributions": [
+        "doc",
+        "ideas",
+        "bug"
+      ]
+    },
+    {
+      "login": "fossabot",
+      "name": "fossabot",
+      "avatar_url": "https://avatars.githubusercontent.com/u/29791463?v=4",
+      "profile": "https://fossa.com/",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "all-contributors",
+      "name": "All Contributors",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46410174?v=4",
+      "profile": "https://allcontributors.org/",
+      "contributions": [
+        "doc"
       ]
     }
   ],
