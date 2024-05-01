@@ -183,13 +183,27 @@
         <Grid Margin="16" x:Key="ContributorsDrawer" Width="300">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <TextBlock Grid.Row="0" Text="贡献人员" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-            <ListView Grid.Row="1" Margin="0 6 0 0"
+            <TextBlock Grid.Row="1" Margin="0 6 0 0" Text="感谢以下同学为本项目做出的贡献！"/>
+            <Button Grid.Row="2" HorizontalAlignment="Left" 
+                    Click="ButtonRefreshContributors_OnClick"
+                    Margin="0 2 0 0"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding ViewModel.IsRefreshingContributors}"
+                    IsEnabled="{Binding ViewModel.IsRefreshingContributors, Converter={StaticResource InvertBooleanConverter}}">
+                <controls:IconText Kind="Refresh" Text="刷新"/>
+            </Button>
+            <ListView Grid.Row="3" Margin="0 2 0 0"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ItemsSource="{Binding Settings.ContributorsCache.Contributors}"
                       materialDesign:ListBoxItemAssist.ShowSelection="False">
                 <ListView.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:ContributionMember}">
+                    <DataTemplate>
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -204,13 +218,7 @@
                                                        Rect="0,0,32,32" />
                                 </Grid.Clip>
                                 <Border Background="{DynamicResource MaterialDesignBody}" Opacity="0.1" />
-                                <mah:ProgressRing IsActive="True"
-                                                  Width="16"
-                                                  Height="16"
-                                                  VerticalAlignment="Center"
-                                                  HorizontalAlignment="Center"
-                                                  Foreground="{DynamicResource PrimaryHueMidBrush}" />
-                                <Image Source="{Binding AvatarImage}"
+                                <Image Source="{Binding AvatarUri}"
                                        RenderOptions.BitmapScalingMode="HighQuality"
                                        Width="32" Height="32">
                                 </Image>
@@ -221,14 +229,11 @@
                                 <LineBreak />
                                 <Run FontSize="11"
                                      FontWeight="Light"
-                                     Text="{Binding Description, Mode=OneWay}" />
+                                     Text="{Binding ContributionText, Mode=OneWay}" />
                             </TextBlock>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                <models:ContributionMember
-                    AvatarImage="https://avatars.githubusercontent.com/u/55006226"
-                    Name="HelloWRC" Description="软件作者，写代码巨水（划掉）" />
             </ListView>
         </Grid>
 

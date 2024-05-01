@@ -11,6 +11,7 @@ using ClassIsland.Core.Abstraction.Models;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Models.AllContributors;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -133,6 +134,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isNotificationTopmostEnabled = false;
     private double _notificationEffectRenderingScale = 1.0;
     private bool _isNotificationEffectRenderingScaleAutoSet = false;
+    private AllContributorsRc _contributorsCache = new();
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1358,6 +1360,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _debugGitHubAuthKey) return;
             _debugGitHubAuthKey = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public AllContributorsRc ContributorsCache
+    {
+        get => _contributorsCache;
+        set
+        {
+            if (Equals(value, _contributorsCache)) return;
+            _contributorsCache = value;
             OnPropertyChanged();
         }
     }

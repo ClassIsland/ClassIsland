@@ -24,7 +24,9 @@ using ClassIsland.Controls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Enums;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Models.AllContributors;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
@@ -309,9 +311,10 @@ public partial class SettingsWindow : MyWindow
         await UpdateService.CheckUpdateAsync(isForce:true);
     }
 
-    private void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("ContributorsDrawer");
+        await RefreshContributors();
     }
 
     private void ButtonThirdPartyLibs_OnClick(object sender, RoutedEventArgs e)
@@ -683,6 +686,20 @@ public partial class SettingsWindow : MyWindow
 
     private void MenuItemAppLogs_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<AppLogsWindow>().Show();
+        App.GetService<AppLogsWindow>().Open();
+    }
+
+    private async void ButtonRefreshContributors_OnClick(object sender, RoutedEventArgs e)
+    {
+        await RefreshContributors();
+    }
+
+    private async Task RefreshContributors()
+    {
+        ViewModel.IsRefreshingContributors = true;
+        Settings.ContributorsCache =
+            await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
+                "https://raw.githubusercontent.com/HelloWRC/ClassIsland/master/.all-contributorsrc"));
+        ViewModel.IsRefreshingContributors = false;
     }
 }

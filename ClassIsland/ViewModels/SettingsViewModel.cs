@@ -38,6 +38,7 @@ public class SettingsViewModel : ObservableRecipient
     private bool _isMoreNotificationSettingsExpanded = false;
     private string _testSpeechText = "风带来了故事的种子，时间使之发芽。";
     private bool _isRestartRequired = false;
+    private bool _isRefreshingContributors = false;
 
     public Screen[] Screens
     {
@@ -266,6 +267,17 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _isRestartRequired) return;
             _isRestartRequired = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsRefreshingContributors
+    {
+        get => _isRefreshingContributors;
+        set
+        {
+            if (value == _isRefreshingContributors) return;
+            _isRefreshingContributors = value;
             OnPropertyChanged();
         }
     }
