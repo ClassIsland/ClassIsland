@@ -21,6 +21,10 @@
         <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="0"/>
     </WindowChrome.WindowChrome>
     <Grid>
+        <Grid.CacheMode>
+            <BitmapCache SnapsToDevicePixels="True"
+                         RenderAtScale="{Binding SettingsService.Settings.NotificationEffectRenderingScale, Mode=OneWay}"/>
+        </Grid.CacheMode>
         <ItemsControl HorizontalContentAlignment="Stretch"
                       VerticalContentAlignment="Stretch"
                       VerticalAlignment="Stretch"

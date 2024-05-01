@@ -1333,6 +1333,39 @@ The quick brown fox jumps over a lazy dog.
                                                             </Expander>
                                                         </materialDesign:Card>
                                                         <!-- 启用提醒强调特效 -->
+                                                        <materialDesign:Card Margin="0 6 0 0">
+                                                            <Expander Background="Transparent"
+                                                                      IsExpanded="{Binding Settings.IsNotificationEffectEnabled, Mode=OneWay}"
+                                                                      TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      >
+                                                                <Expander.Header>
+                                                                    <controls:SettingsControl IconGlyph="LayersOutline"
+                                                                        Foreground="{DynamicResource MaterialDesignBody}"
+                                                                        Header="启用提醒强调特效"
+                                                                        Description="启用后，发出提醒时会播放全屏强调特效。"
+                                                                        IsOn="{Binding Settings.IsNotificationEffectEnabled, Mode=TwoWay}"
+                                                                        Margin="-12 0" />
+                                                                </Expander.Header>
+                                                                <StackPanel Margin="36 0 48 12"
+                                                                            IsEnabled="{Binding Settings.IsNotificationEffectEnabled}">
+                                                                    <!-- 提醒特效渲染精度 -->
+                                                                    <controls:SettingsControl
+                                                                        IconGlyph="LayersOutline" Header="提醒特效渲染精度"
+                                                                        Foreground="{DynamicResource MaterialDesignBody}"
+                                                                        Description="提醒特效渲染时的精度，使用较低的精度性能可以获得较好的性能。">
+                                                                        <controls:SettingsControl.Switcher>
+                                                                            <Slider Minimum="0.1" Maximum="1.5"
+                                                                                TickFrequency="0.05"
+                                                                                Width="150"
+                                                                                Value="{Binding Settings.NotificationEffectRenderingScale}"
+                                                                                AutoToolTipPlacement="BottomRight"
+                                                                                AutoToolTipPrecision="2"
+                                                                                IsSnapToTickEnabled="True"/>
+                                                                        </controls:SettingsControl.Switcher>
+                                                                    </controls:SettingsControl>
+                                                                </StackPanel>
+                                                            </Expander>
+                                                        </materialDesign:Card>
                                                         <controls:SettingsCard IconGlyph="LayersOutline"
                                                                            Margin="0 6 0 0"
                                                                            Foreground="{DynamicResource MaterialDesignBody}"
@@ -1379,7 +1412,7 @@ The quick brown fox jumps over a lazy dog.
                                                             </Expander>
                                                         </materialDesign:Card>
                                                         <!-- 置顶提醒 -->
-                                                        <controls:SettingsCard IconGlyph="LayersOutline"
+                                                        <controls:SettingsCard IconGlyph="LayersPlus"
                                                                                Margin="0 6 0 0"
                                                                                Foreground="{DynamicResource MaterialDesignBody}"
                                                                                Header="置顶提醒"

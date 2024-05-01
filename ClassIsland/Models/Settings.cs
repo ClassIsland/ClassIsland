@@ -131,6 +131,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _timeAutoAdjustSeconds = 0.0;
     private DateTime _lastTimeAdjustDateTime = DateTime.Now;
     private bool _isNotificationTopmostEnabled = false;
+    private double _notificationEffectRenderingScale = 1.0;
+    private bool _isNotificationEffectRenderingScaleAutoSet = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -845,6 +847,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isNotificationTopmostEnabled) return;
             _isNotificationTopmostEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double NotificationEffectRenderingScale
+    {
+        get => _notificationEffectRenderingScale;
+        set
+        {
+            if (value.Equals(_notificationEffectRenderingScale)) return;
+            _notificationEffectRenderingScale = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationEffectRenderingScaleAutoSet
+    {
+        get => _isNotificationEffectRenderingScaleAutoSet;
+        set
+        {
+            if (value == _isNotificationEffectRenderingScaleAutoSet) return;
+            _isNotificationEffectRenderingScaleAutoSet = value;
             OnPropertyChanged();
         }
     }

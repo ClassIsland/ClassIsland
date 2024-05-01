@@ -34,11 +34,35 @@
                                  materialDesign:HintAssist.Hint="Opacity" MinWidth="100"/>
                         <CheckBox Content="ClipToBounds" IsChecked="{Binding ClipToBounds, ElementName=RippleEffect}"></CheckBox>
                     </WrapPanel>
+
+                    <TextBlock Text="test2">
+                        <TextBlock.CacheMode>
+                            <BitmapCache RenderAtScale="1"/>
+                        </TextBlock.CacheMode>
+                    </TextBlock>
                     <notificationEffects:RippleEffect Margin="50"
                                                       x:Name="RippleEffect"
                                                       BorderBrush="Red"
-                                                      BorderThickness="1"/>
+                                                      BorderThickness="1"
+                    >
+                    </notificationEffects:RippleEffect>
                 </DockPanel>
+            </TabItem>
+            <TabItem Header="BitmapCache">
+                <StackPanel>
+                    <StackPanel>
+                        <StackPanel.CacheMode>
+                            <BitmapCache RenderAtScale="{Binding Value, ElementName=SliderBitmapCacheScale, Mode=OneWay}"/>
+                        </StackPanel.CacheMode>
+                        <Image Source="/Assets/AppLogo.png" Width="100" Height="100" />
+                        <TextBlock Text="Hello world!" />
+                    </StackPanel>
+                    <Slider x:Name="SliderBitmapCacheScale" 
+                            Minimum="0.1" Maximum="2.0" 
+                            AutoToolTipPlacement="BottomRight"
+                            IsSnapToTickEnabled="True"
+                            TickFrequency="0.1"></Slider>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>

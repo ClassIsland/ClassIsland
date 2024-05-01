@@ -19,6 +19,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Core.Interfaces.Controls;
+using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.Logging;
 
@@ -35,9 +36,12 @@ public partial class TopmostEffectWindow : Window
 
     private ILogger<TopmostEffectWindow> Logger { get; }
 
-    public TopmostEffectWindow(ILogger<TopmostEffectWindow> logger)
+    public SettingsService SettingsService { get; }
+
+    public TopmostEffectWindow(ILogger<TopmostEffectWindow> logger, SettingsService settingsService)
     {
         Logger = logger;
+        SettingsService = settingsService;
         InitializeComponent();
         DataContext = this;
         ViewModel.EffectControls.CollectionChanged += EffectControlsOnCollectionChanged;
