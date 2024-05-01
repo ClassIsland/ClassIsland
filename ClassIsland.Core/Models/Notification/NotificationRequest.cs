@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Interfaces;
+﻿using ClassIsland.Core.Abstraction.Models;
+using ClassIsland.Core.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Notification;
@@ -16,7 +17,7 @@ public class NotificationRequest : ObservableRecipient
     private string _overlaySpeechContent = "";
     private string _maskSpeechContent = "";
     private bool _isSpeechEnabled = true;
-    private string _notificationSoundPath = "";
+    private NotificationSettings _requestNotificationSettings = new();
 
     public object? OverlayContent
     {
@@ -128,13 +129,13 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
-    public string NotificationSoundPath
+    public NotificationSettings RequestNotificationSettings
     {
-        get => _notificationSoundPath;
+        get => _requestNotificationSettings;
         set
         {
-            if (value == _notificationSoundPath) return;
-            _notificationSoundPath = value;
+            if (Equals(value, _requestNotificationSettings)) return;
+            _requestNotificationSettings = value;
             OnPropertyChanged();
         }
     }

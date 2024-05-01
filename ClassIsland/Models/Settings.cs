@@ -23,7 +23,7 @@ using File = System.IO.File;
 
 namespace ClassIsland.Models;
 
-public class Settings : ObservableRecipient, ILessonControlSettings
+public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings
 {
     private int _theme = 2;
     private Color _primaryColor = Colors.DeepSkyBlue;

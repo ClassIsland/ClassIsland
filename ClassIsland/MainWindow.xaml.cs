@@ -29,9 +29,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Controls.NotificationEffects;
+using ClassIsland.Core.Abstraction.Models;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -420,18 +422,13 @@ public partial class MainWindow : Window
         {
             using var player = new DirectSoundOut();
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
-            var isSpeechEnabled = ViewModel.Settings.IsSpeechEnabled && request.IsSpeechEnabled && request.ProviderSettings.IsSpeechEnabled;
-            var isNotificationSoundEnabled = SettingsService.Settings.IsNotificationSoundEnabled && request.ProviderSettings.IsNotificationSoundEnabled;
-            var notificationSoundPath =
-                (from i in (string[])
-                    [
-                        request.NotificationSoundPath, request.ProviderSettings.NotificationSoundPath,
-                        SettingsService.Settings.NotificationSoundPath
-                    ]
-                    where !string.IsNullOrWhiteSpace(i)
-                    select i).FirstOrDefault() ?? "";
-            var isEffectEnabled = ViewModel.Settings.IsNotificationEffectEnabled &&
-                                  request.ProviderSettings.IsNotificationEffectEnabled;
+            var settings = ViewModel.Settings as INotificationSettings;
+            foreach (var i in new List<NotificationSettings>([request.ProviderSettings, request.RequestNotificationSettings]).Where(i => i.IsSettingsEnabled))
+            {
+                settings = i;
+                break;
+            }
+            var isSpeechEnabled = settings.IsSpeechEnabled && request.IsSpeechEnabled;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
@@ -455,16 +452,23 @@ public partial class MainWindow : Window
                 }
                 BeginStoryboard("OverlayMaskIn");
                 
-                if (isNotificationSoundEnabled)
+                if (settings.IsNotificationSoundEnabled)
                 {
-                    IWaveProvider provider = string.IsNullOrWhiteSpace(notificationSoundPath)
-                        ? new StreamMediaFoundationReader(
-                            Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream)
-                        : new AudioFileReader(notificationSoundPath);
-                    player.Init(provider);
-                    player.Play();
+                    try
+                    {
+                        IWaveProvider provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                            ? new StreamMediaFoundationReader(
+                                Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream)
+                            : new AudioFileReader(settings.NotificationSoundPath);
+                        player.Init(provider);
+                        player.Play();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e, "无法播放提醒音效：{}", settings.NotificationSoundPath);
+                    }
                 }
-                if (isEffectEnabled)
+                if (settings.IsNotificationEffectEnabled)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
                     {

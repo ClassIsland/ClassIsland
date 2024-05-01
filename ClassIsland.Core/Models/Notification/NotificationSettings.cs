@@ -1,14 +1,16 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using ClassIsland.Core.Abstraction.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Notification;
 
-public class NotificationSettings : ObservableRecipient
+public class NotificationSettings : ObservableRecipient, INotificationSettings
 {
     private bool _isNotificationEnabled = true;
-    private bool _isSpeechEnabled = true;
+    private bool _isSpeechEnabled = false;
     private bool _isNotificationEffectEnabled = true;
-    private bool _isNotificationSoundEnabled = true;
+    private bool _isNotificationSoundEnabled = false;
     private string _notificationSoundPath = "";
+    private bool _isSettingsEnabled = false;
 
     public bool IsNotificationEnabled
     {
@@ -61,6 +63,17 @@ public class NotificationSettings : ObservableRecipient
         {
             if (value == _notificationSoundPath) return;
             _notificationSoundPath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSettingsEnabled
+    {
+        get => _isSettingsEnabled;
+        set
+        {
+            if (value == _isSettingsEnabled) return;
+            _isSettingsEnabled = value;
             OnPropertyChanged();
         }
     }
