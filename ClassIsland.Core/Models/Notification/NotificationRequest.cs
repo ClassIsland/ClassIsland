@@ -18,6 +18,7 @@ public class NotificationRequest : ObservableRecipient
     private string _maskSpeechContent = "";
     private bool _isSpeechEnabled = true;
     private NotificationSettings _requestNotificationSettings = new();
+    private CancellationTokenSource _completedTokenSource = new();
 
     public object? OverlayContent
     {
@@ -140,10 +141,25 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    public CancellationTokenSource CompletedTokenSource
+    {
+        get => _completedTokenSource;
+        set
+        {
+            if (Equals(value, _completedTokenSource)) return;
+            _completedTokenSource = value;
+            OnPropertyChanged();
+        }
+    }
+
 
     internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
 
     internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
 
     internal NotificationSettings ProviderSettings { get; set; } = new NotificationSettings();
+
+    internal bool IsPriorityOverride { get; set; } = false;
+
+    internal int PriorityOverride { get; set; } = -1;
 }

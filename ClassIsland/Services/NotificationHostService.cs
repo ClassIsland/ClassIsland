@@ -23,21 +23,16 @@ namespace ClassIsland.Services;
 /// <summary>
 /// 提醒主机服务。
 /// </summary>
-public class NotificationHostService : IHostedService, INotifyPropertyChanged
+public class NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
+    : IHostedService, INotifyPropertyChanged
 {
-    private SettingsService SettingsService { get; }
-    private ILogger<NotificationHostService> Logger { get; }
+    private SettingsService SettingsService { get; } = settingsService;
+    private ILogger<NotificationHostService> Logger { get; } = logger;
     private Settings Settings => SettingsService.Settings;
 
-    public Queue<NotificationRequest> RequestQueue { get; } = new();
+    public PriorityQueue<NotificationRequest, int> RequestQueue { get; } = new();
 
     public ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; } = new();
-
-    public NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
-    {
-        SettingsService = settingsService;
-        Logger = logger;
-    }
 
     #region Events
 
@@ -118,7 +113,11 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         CurrentRequest = RequestQueue.Dequeue();
         CurrentRequest.CancellationTokenSource.Token.Register(() =>
         {
-            RequestQueue.Clear();
+            while (RequestQueue.Count > 0)
+            {
+                var r = RequestQueue.Dequeue();
+                r.CompletedTokenSource.Cancel();
+            }
         });
         return CurrentRequest;
     }
@@ -184,7 +183,7 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
             .FirstOrDefault();
         request.ProviderSettings = request.NotificationSource?.ProviderSettings ?? request.ProviderSettings;
-        RequestQueue.Enqueue(request);
+        RequestQueue.Enqueue(request, request.IsPriorityOverride ? request.PriorityOverride : Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()));
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request)
@@ -192,10 +191,7 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         ShowNotification(request);
         await Task.Run(() =>
         {
-            while (RequestQueue.Contains(request))
-            {
-
-            }
+            request.CompletedTokenSource.Token.WaitHandle.WaitOne();
         });
 
     }

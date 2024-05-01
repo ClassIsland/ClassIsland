@@ -1169,7 +1169,7 @@ The quick brown fox jumps over a lazy dog.
                                                                    Margin="0 0 0 6"
                                                                    Header="启用提醒"
                                                                    IsOn="{Binding Settings.IsNotificationEnabled, Mode=TwoWay}"
-                                                                   Description="启用提醒后，将会在对重要事件发出醒目提醒。" />
+                                                                   Description="启用提醒后，将会在对重要事件发出醒目提醒。拖动提醒提供方以调整对应类型提醒的优先级。" />
                                         <!-- 提醒提供方列表 -->
                                         <TabControl Grid.Row="1">
                                             <TabItem Header="提醒提供方">

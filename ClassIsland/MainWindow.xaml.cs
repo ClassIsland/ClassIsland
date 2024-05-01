@@ -519,6 +519,7 @@ public partial class MainWindow : Window
             {
                 BeginStoryboard("OverlayOut");
             }
+            await request.CompletedTokenSource.CancelAsync();
         }
 
         ViewModel.CurrentOverlayElement = null;
