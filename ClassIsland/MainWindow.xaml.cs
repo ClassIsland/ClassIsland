@@ -428,7 +428,7 @@ public partial class MainWindow : Window
                 settings = i;
                 break;
             }
-            var isSpeechEnabled = settings.IsSpeechEnabled && request.IsSpeechEnabled && ViewModel.Settings.IsSpeechEnabled;
+            var isSpeechEnabled = settings.IsSpeechEnabled && request.IsSpeechEnabled && ViewModel.Settings.AllowNotificationSpeech;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
@@ -442,7 +442,7 @@ public partial class MainWindow : Window
 
             ViewModel.CurrentMaskElement = request.MaskContent;  // 加载Mask元素
             var cancellationToken = request.CancellationTokenSource.Token;
-            ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled;
+            ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled && ViewModel.Settings.AllowNotificationTopmost;
 
             if (request.MaskDuration > TimeSpan.Zero &&
                 request.OverlayDuration > TimeSpan.Zero)
@@ -453,7 +453,7 @@ public partial class MainWindow : Window
                 }
                 BeginStoryboard("OverlayMaskIn");
                 // 播放提醒音效
-                if (settings.IsNotificationSoundEnabled && ViewModel.Settings.IsNotificationSoundEnabled)
+                if (settings.IsNotificationSoundEnabled && ViewModel.Settings.AllowNotificationSound)
                 {
                     try
                     {
@@ -470,7 +470,7 @@ public partial class MainWindow : Window
                     }
                 }
                 // 播放提醒特效
-                if (settings.IsNotificationEffectEnabled && ViewModel.Settings.IsNotificationEffectEnabled &&
+                if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationSound &&
                     GridRoot.IsVisible && ViewModel.IsMainWindowVisible)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()

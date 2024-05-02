@@ -1232,19 +1232,19 @@ The quick brown fox jumps over a lazy dog.
                                                         <!-- 启用提醒语音 -->
                                                         <materialDesign:Card>
                                                             <Expander Background="Transparent"
-                                                                      IsExpanded="{Binding Settings.IsSpeechEnabled, Mode=OneWay}"
+                                                                      IsExpanded="{Binding Settings.AllowNotificationSpeech, Mode=OneWay}"
                                                                       TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
                                                                       Margin="0 0 0 0">
                                                                 <Expander.Header>
                                                                     <controls:SettingsControl IconGlyph="TextToSpeech"
                                                                         Foreground="{DynamicResource MaterialDesignBody}"
-                                                                        Header="启用提醒语音"
+                                                                        Header="允许启用提醒语音"
                                                                         Description="在发出提醒时用语音播报提醒内容。"
-                                                                        IsOn="{Binding Settings.IsSpeechEnabled, Mode=TwoWay}"
+                                                                        IsOn="{Binding Settings.AllowNotificationSpeech, Mode=TwoWay}"
                                                                         Margin="-12 0" />
                                                                 </Expander.Header>
                                                                 <Grid Margin="36 0 48 12"
-                                                                      IsEnabled="{Binding Settings.IsSpeechEnabled}">
+                                                                      IsEnabled="{Binding Settings.AllowNotificationSpeech}">
                                                                     <Grid.ColumnDefinitions>
                                                                         <ColumnDefinition />
                                                                         <ColumnDefinition Width="Auto" />
@@ -1255,10 +1255,14 @@ The quick brown fox jumps over a lazy dog.
                                                                         <RowDefinition Height="Auto" />
                                                                         <RowDefinition Height="Auto" />
                                                                         <RowDefinition Height="Auto" />
+                                                                        <RowDefinition Height="Auto" />
                                                                     </Grid.RowDefinitions>
-                                                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="语音引擎"
+                                                                    <CheckBox Content="默认启用" IsChecked="{Binding Settings.IsSpeechEnabled}"
+                                                                              Margin="0 0 0 6"/>
+
+                                                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="语音引擎"
                                                                            VerticalAlignment="Center" />
-                                                                    <StackPanel Grid.Row="0" Grid.Column="1"
+                                                                    <StackPanel Grid.Row="1" Grid.Column="1"
                                                                             Orientation="Horizontal"
                                                                             HorizontalAlignment="Right"
                                                                             VerticalAlignment="Center">
@@ -1269,7 +1273,7 @@ The quick brown fox jumps over a lazy dog.
                                                                         </ListBox>
                                                                     </StackPanel>
 
-                                                                    <StackPanel Grid.Row="1" Grid.Column="0"
+                                                                    <StackPanel Grid.Row="2" Grid.Column="0"
                                                                       Grid.ColumnSpan="2" Margin="0 6 0 6">
                                                                         <StackPanel.Style>
                                                                             <Style TargetType="StackPanel">
@@ -1295,10 +1299,10 @@ The quick brown fox jumps over a lazy dog.
                                                                         </ComboBox>
                                                                     </StackPanel>
 
-                                                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="语音音量"
+                                                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="语音音量"
                                                                                VerticalAlignment="Center" 
                                                                                Margin="0 6 0 0"/>
-                                                                    <StackPanel Grid.Row="2" Grid.Column="1"
+                                                                    <StackPanel Grid.Row="3" Grid.Column="1"
                                                                         Orientation="Horizontal"
                                                                         HorizontalAlignment="Right"
                                                                         Margin="0 6 0 0"    
@@ -1311,14 +1315,14 @@ The quick brown fox jumps over a lazy dog.
                                                                             Width="150" />
                                                                     </StackPanel>
 
-                                                                    <TextBox Grid.Row="3" Grid.Column="0"
+                                                                    <TextBox Grid.Row="4" Grid.Column="0"
                                                                          Grid.ColumnSpan="2"
                                                                          Margin="0 6 0 0"
                                                                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                                                          materialDesign:HintAssist.Hint="测试朗读文本"
                                                                          Text="{Binding ViewModel.TestSpeechText}"/>
 
-                                                                    <WrapPanel Grid.Row="4" Grid.Column="0"
+                                                                    <WrapPanel Grid.Row="5" Grid.Column="0"
                                                                            Grid.ColumnSpan="2"
                                                                            Margin="0 6 0 0">
                                                                         <Button Click="ButtonTestSpeeching_OnClick"
@@ -1340,19 +1344,22 @@ The quick brown fox jumps over a lazy dog.
                                                         <!-- 启用提醒强调特效 -->
                                                         <materialDesign:Card Margin="0 6 0 0">
                                                             <Expander Background="Transparent"
-                                                                      IsExpanded="{Binding Settings.IsNotificationEffectEnabled, Mode=OneWay}"
+                                                                      IsExpanded="{Binding Settings.AllowNotificationEffect, Mode=OneWay}"
                                                                       TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
                                                                       >
                                                                 <Expander.Header>
                                                                     <controls:SettingsControl IconGlyph="LayersOutline"
                                                                         Foreground="{DynamicResource MaterialDesignBody}"
-                                                                        Header="启用提醒强调特效"
+                                                                        Header="允许启用提醒强调特效"
                                                                         Description="启用后，发出提醒时会播放全屏强调特效。"
-                                                                        IsOn="{Binding Settings.IsNotificationEffectEnabled, Mode=TwoWay}"
+                                                                        IsOn="{Binding Settings.AllowNotificationEffect, Mode=TwoWay}"
                                                                         Margin="-12 0" />
                                                                 </Expander.Header>
                                                                 <StackPanel Margin="36 0 48 12"
-                                                                            IsEnabled="{Binding Settings.IsNotificationEffectEnabled}">
+                                                                            IsEnabled="{Binding Settings.AllowNotificationEffect}">
+                                                                    <!-- 默认启用 -->
+                                                                    <CheckBox Content="默认启用" IsChecked="{Binding Settings.IsNotificationEffectEnabled}"
+                                                                              Margin="0 0 0 6"/>
                                                                     <!-- 提醒特效渲染精度 -->
                                                                     <controls:SettingsControl
                                                                         IconGlyph="LayersOutline" Header="提醒特效渲染精度"
@@ -1371,28 +1378,25 @@ The quick brown fox jumps over a lazy dog.
                                                                 </StackPanel>
                                                             </Expander>
                                                         </materialDesign:Card>
-                                                        <controls:SettingsCard IconGlyph="LayersOutline"
-                                                                           Margin="0 6 0 0"
-                                                                           Foreground="{DynamicResource MaterialDesignBody}"
-                                                                           Header="启用提醒强调特效"
-                                                                           Description="启用后，发出提醒时会播放全屏强调特效。" 
-                                                                           IsOn="{Binding Settings.IsNotificationEffectEnabled, Mode=TwoWay}"/>
                                                         <!-- 启用提醒音效 -->
                                                         <materialDesign:Card Margin="0 6 0 0">
                                                             <Expander Background="Transparent"
-                                                                      IsExpanded="{Binding Settings.IsNotificationSoundEnabled, Mode=OneWay}"
+                                                                      IsExpanded="{Binding Settings.AllowNotificationSound, Mode=OneWay}"
                                                                       TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
                                                                       >
                                                                 <Expander.Header>
                                                                     <controls:SettingsControl IconGlyph="VolumeHigh"
                                                                         Foreground="{DynamicResource MaterialDesignBody}"
-                                                                        Header="启用提醒音效"
+                                                                        Header="允许启用提醒音效"
                                                                         Description="启用后，发出提醒时会播放音效。"
-                                                                        IsOn="{Binding Settings.IsNotificationSoundEnabled, Mode=TwoWay}"
+                                                                        IsOn="{Binding Settings.AllowNotificationSound, Mode=TwoWay}"
                                                                         Margin="-12 0" />
                                                                 </Expander.Header>
                                                                 <StackPanel Margin="36 0 48 12"
-                                                                            IsEnabled="{Binding Settings.IsNotificationSoundEnabled}">
+                                                                            IsEnabled="{Binding Settings.AllowNotificationSound}">
+                                                                    <!-- 默认启用 -->
+                                                                    <CheckBox Content="默认启用" IsChecked="{Binding Settings.IsNotificationSoundEnabled}"
+                                                                              Margin="0 0 0 6"/>
                                                                     <!-- 自定义音效 -->
                                                                     <controls:SettingsControl
                                                                         IconGlyph="FileMusicOutline" Header="自定义音效"
@@ -1417,12 +1421,27 @@ The quick brown fox jumps over a lazy dog.
                                                             </Expander>
                                                         </materialDesign:Card>
                                                         <!-- 置顶提醒 -->
-                                                        <controls:SettingsCard IconGlyph="LayersPlus"
-                                                                               Margin="0 6 0 0"
-                                                                               Foreground="{DynamicResource MaterialDesignBody}"
-                                                                               Header="置顶提醒"
-                                                                               Description="在发出提醒时置顶提醒" 
-                                                                               IsOn="{Binding Settings.IsNotificationTopmostEnabled, Mode=TwoWay}"/>
+                                                        <materialDesign:Card Margin="0 6 0 0">
+                                                            <Expander Background="Transparent"
+                                                                      IsExpanded="{Binding Settings.AllowNotificationTopmost, Mode=OneWay}"
+                                                                      TextBlock.Foreground="{DynamicResource MaterialDesignBody}"
+                                                                      >
+                                                                <Expander.Header>
+                                                                    <controls:SettingsControl IconGlyph="LayersPlus"
+                                                                        Margin="-12 0"
+                                                                        Foreground="{DynamicResource MaterialDesignBody}"
+                                                                        Header="允许置顶提醒"
+                                                                        Description="在发出提醒时置顶提醒" 
+                                                                        IsOn="{Binding Settings.AllowNotificationTopmost, Mode=TwoWay}"/>
+                                                                </Expander.Header>
+                                                                <StackPanel Margin="36 0 48 12"
+                                                                            IsEnabled="{Binding Settings.AllowNotificationTopmost}">
+                                                                    <!-- 默认启用 -->
+                                                                    <CheckBox Content="默认启用" IsChecked="{Binding Settings.IsNotificationTopmostEnabled}"
+                                                                              Margin="0 0 0 6"/>
+                                                                </StackPanel>
+                                                            </Expander>
+                                                        </materialDesign:Card>
                                                     </StackPanel>
                                                 </ScrollViewer>
                                             </TabItem>

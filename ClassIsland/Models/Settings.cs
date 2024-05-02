@@ -117,7 +117,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _diagnosticLastCrashTime = DateTime.MinValue;
     private int _diagnosticMemoryKillCount = 0;
     private DateTime _diagnosticLastMemoryKillTime = DateTime.Now;
-    private bool _isSpeechEnabled = false;
+    private bool _isSpeechEnabled = true;
     private double _speechVolume = 1.0;
     private int _speechSource = 0;
     private string _edgeTtsVoiceName = "zh-CN-XiaoxiaoNeural";
@@ -126,15 +126,19 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _timeOffsetSeconds = 0.0;
     private bool _isNotificationEffectEnabled = true;
     private ObservableDictionary<string, NotificationSettings> _notificationProvidersNotifySettings = new();
-    private bool _isNotificationSoundEnabled = false;
+    private bool _isNotificationSoundEnabled = true;
     private string _notificationSoundPath = "";
     private bool _isTimeAutoAdjustEnabled = false;
     private double _timeAutoAdjustSeconds = 0.0;
     private DateTime _lastTimeAdjustDateTime = DateTime.Now;
-    private bool _isNotificationTopmostEnabled = false;
+    private bool _isNotificationTopmostEnabled = true;
     private double _notificationEffectRenderingScale = 1.0;
     private bool _isNotificationEffectRenderingScaleAutoSet = false;
     private AllContributorsRc _contributorsCache = new();
+    private bool _allowNotificationSpeech = false;
+    private bool _allowNotificationEffect = true;
+    private bool _allowNotificationSound = false;
+    private bool _allowNotificationTopmost = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -871,6 +875,50 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isNotificationEffectRenderingScaleAutoSet) return;
             _isNotificationEffectRenderingScaleAutoSet = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationSpeech
+    {
+        get => _allowNotificationSpeech;
+        set
+        {
+            if (value == _allowNotificationSpeech) return;
+            _allowNotificationSpeech = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationEffect
+    {
+        get => _allowNotificationEffect;
+        set
+        {
+            if (value == _allowNotificationEffect) return;
+            _allowNotificationEffect = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationSound
+    {
+        get => _allowNotificationSound;
+        set
+        {
+            if (value == _allowNotificationSound) return;
+            _allowNotificationSound = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationTopmost
+    {
+        get => _allowNotificationTopmost;
+        set
+        {
+            if (value == _allowNotificationTopmost) return;
+            _allowNotificationTopmost = value;
             OnPropertyChanged();
         }
     }
