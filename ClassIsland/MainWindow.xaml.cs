@@ -225,6 +225,10 @@ public partial class MainWindow : Window
 
     private void UpdateMouseStatus()
     {
+        if (PresentationSource.FromVisual(this) == null)
+        {
+            return;
+        }
         NativeWindowHelper.GetCursorPos(out var ptr);
         GetCurrentDpi(out var dpiX, out var dpiY);
         var scale = ViewModel.Settings.Scale;
