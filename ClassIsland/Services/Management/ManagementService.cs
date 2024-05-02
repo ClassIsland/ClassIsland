@@ -7,6 +7,7 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Management;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ControlzEx.Standard;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using static ClassIsland.Core.Helpers.ConfigureFileHelper;
@@ -174,6 +175,36 @@ public class ManagementService
         SaveConfig(ManagementSettingsPath, w);
         CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
         
+        App.Restart();
+    }
+
+    public async Task ExitManagementAsync()
+    {
+        if (!IsManagementEnabled)
+            throw new Exception("无法在没有加入集控的情况下退出集控。");
+        if (!Policy.AllowExitManagement)
+            throw new Exception("您的组织不允许您退出集控。");
+
+        var r = CommonDialog.ShowDialog("ClassIsland", $"确定要退出组织 {Manifest.OrganizationName} 的管理吗？", new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
+            60, 60, [
+                new DialogAction()
+                {
+                    PackIconKind = PackIconKind.Cancel,
+                    Name = "取消"
+                },
+                new DialogAction()
+                {
+                    PackIconKind = PackIconKind.ExitRun,
+                    Name = "退出",
+                    IsPrimary = true
+                }
+            ]);
+        if (r != 1) return;
+        Settings.IsManagementEnabled = false;
+        SaveConfig(ManagementSettingsPath, Settings);
+
+        CommonDialog.ShowInfo($"已退出组织 {Manifest.OrganizationName} 的管理。应用将重启以应用更改。");
+
         App.Restart();
     }
 }

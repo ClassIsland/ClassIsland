@@ -3061,6 +3061,10 @@ The quick brown fox jumps over a lazy dog.
                                                 <controls:JoinManagementDialog/>
                                             </MenuItem.CommandParameter>
                                         </MenuItem>
+                                        <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="退出管理…"
+                                                  Click="MenuItemExitManagement_OnClick" 
+                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        </MenuItem>
                                         <Separator/>
                                         <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}"
                                                   Header="日志…"

@@ -34,6 +34,7 @@ using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32.SafeHandles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -701,5 +702,18 @@ public partial class SettingsWindow : MyWindow
             await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
                 "https://raw.githubusercontent.com/HelloWRC/ClassIsland/master/.all-contributorsrc"));
         ViewModel.IsRefreshingContributors = false;
+    }
+
+    private async void MenuItemExitManagement_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ManagementService.ExitManagementAsync();
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<SettingsWindow>>().LogError(ex, "无法退出管理。");
+            CommonDialog.ShowError($"无法退出管理：{ex.Message}");
+        }
     }
 }
