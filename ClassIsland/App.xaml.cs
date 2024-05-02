@@ -284,6 +284,7 @@ public partial class App : Application, IAppHost
                 });
             }).Build();
         await GetService<ManagementService>().SetupManagement();
+        await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
         Settings.DiagnosticStartupCount++;
         // 记录MLE
