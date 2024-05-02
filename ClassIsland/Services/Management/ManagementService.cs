@@ -93,12 +93,13 @@ public class ManagementService
         {
             Logger.LogError(ex, "连接集控服务器失败。");
         }
-
-        SetupManagement();
     }
 
-    private async void SetupManagement()
+    public async Task SetupManagement()
     {
+        if (!IsManagementEnabled)
+            return;
+        
         Logger.LogInformation("正在初始化集控");
         // 读取集控清单
         Manifest = LoadConfig<ManagementManifest>(ManagementManifestPath);

@@ -52,12 +52,11 @@ public class ProfileService
         {
             Directory.CreateDirectory("./Profiles");
         }
-        LoadProfile();
         CleanExpiredTempClassPlan();
     }
 
 
-    private async void MergeManagementProfileAsync()
+    private async Task MergeManagementProfileAsync()
     {
         Logger.LogInformation("正在拉取集控档案");
         if (ManagementService.Connection == null)
@@ -102,9 +101,10 @@ public class ProfileService
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
         Profile.ClassPlans = CopyObject(Profile.ClassPlans);
         Profile.RefreshTimeLayouts();
+        Logger.LogTrace("成功拉取集控档案！");
     }
 
-    public void LoadProfile()
+    public async Task LoadProfileAsync()
     {
         var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
         var path = $"./Profiles/{filename}";
@@ -120,17 +120,18 @@ public class ProfileService
             SaveProfile(filename);
         }
 
-        var json = File.ReadAllText(path);
+        var json = await File.ReadAllTextAsync(path);
         var r = JsonSerializer.Deserialize<Profile>(json);
         if (r != null)
         {
             Profile = r;
             if (ManagementService.IsManagementEnabled)
-                MergeManagementProfileAsync();
+                await MergeManagementProfileAsync();
             Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
         }
 
         CurrentProfilePath = filename;
+        Logger.LogTrace("成功加载档案！");
     }
 
     public void SaveProfile()

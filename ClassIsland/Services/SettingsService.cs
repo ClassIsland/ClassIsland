@@ -6,13 +6,15 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Services.Management;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class SettingsService : IHostedService, INotifyPropertyChanged
+public class SettingsService(ILogger<SettingsService> logger, ManagementService managementService) : INotifyPropertyChanged
 {
     private Settings _settings = new();
 
@@ -22,34 +24,52 @@ public class SettingsService : IHostedService, INotifyPropertyChanged
         set => SetField(ref _settings, value);
     }
 
-    private ILogger<SettingsService> Logger { get; }
+    private ILogger<SettingsService> Logger { get; } = logger;
 
-    public SettingsService(IHostApplicationLifetime appLifetime, ILogger<SettingsService> logger)
-    {
-        Logger = logger;
-        LoadSettings();
-        appLifetime.ApplicationStopping.Register(SaveSettings);
-    }
+    private ManagementService ManagementService { get; } = managementService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public void LoadSettings()
+    private async Task LoadManagementSettingsAsync()
     {
-        if (!File.Exists("./Settings.json"))
+        if (!ManagementService.Manifest.DefaultSettingsSource.IsNewerAndNotNull(ManagementService.Versions.DefaultSettingsVersion) ||
+            ManagementService.Connection == null)
         {
-            Logger.LogInformation("配置文件不存在，跳过加载。");
             return;
         }
+        
+        Logger.LogInformation("拉取集控默认设置");
+        var url = ManagementService.Manifest.DefaultSettingsSource.Value!;
+        var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
+        Settings = settings;
+        Settings.PropertyChanged += (sender, args) => SaveSettings();
+        Logger.LogTrace("拉取集控默认设置成功！");
+    }
 
+    public async Task LoadSettingsAsync()
+    {
         try
         {
-            Logger.LogInformation("加载配置文件。");
-            var json = File.ReadAllText("./Settings.json");
-            var r = JsonSerializer.Deserialize<Settings>(json);
-            if (r != null)
+            if (!File.Exists("./Settings.json"))
             {
-                Settings = r;
-                Settings.PropertyChanged += (sender, args) => SaveSettings();
+                Logger.LogInformation("配置文件不存在，跳过加载。");
+            }
+            else
+            {
+                Logger.LogInformation("加载配置文件。");
+                var json = await File.ReadAllTextAsync("./Settings.json");
+                var r = JsonSerializer.Deserialize<Settings>(json);
+                if (r != null)
+                {
+                    Settings = r;
+                    Settings.PropertyChanged += (sender, args) => SaveSettings();
+                }
+            }
+
+            // 当还没有初始化应用且启用集控时，从集控拉取设置。
+            if (ManagementService.IsManagementEnabled && !Settings.IsWelcomeWindowShowed)
+            {
+                await LoadManagementSettingsAsync();
             }
         }
         catch(Exception ex)
@@ -76,15 +96,5 @@ public class SettingsService : IHostedService, INotifyPropertyChanged
         field = value;
         OnPropertyChanged(propertyName);
         return true;
-    }
-
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-        LoadSettings();
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-        SaveSettings();
     }
 }

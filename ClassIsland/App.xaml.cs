@@ -283,7 +283,8 @@ public partial class App : Application, IAppHost
 #endif
                 });
             }).Build();
-        App.GetService<ManagementService>();
+        await GetService<ManagementService>().SetupManagement();
+        await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
         Settings.DiagnosticStartupCount++;
         // 记录MLE
@@ -299,13 +300,7 @@ public partial class App : Application, IAppHost
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             GetService<SplashWindow>().Show();
-            //await Dispatcher.InvokeAsync(() =>
-            //{
-            //});
             GetService<SplashService>().CurrentProgress = 25;
-            //await Task.Run(() =>
-            //{
-            //});
             var b = false;
             while (!b)
             {
@@ -317,7 +312,6 @@ public partial class App : Application, IAppHost
                 await Dispatcher.Yield(DispatcherPriority.Background);
             }
         }
-
         GetService<SplashService>().CurrentProgress = 50;
 
         GetService<HangService>();
@@ -352,11 +346,12 @@ public partial class App : Application, IAppHost
         attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         GetService<SplashService>().CurrentProgress = 75;
 
+        await GetService<ProfileService>().LoadProfileAsync();
         GetService<WeatherService>();
         GetService<ExactTimeService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
-
+        
         Logger.LogInformation("正在初始化MainWindow。");
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
