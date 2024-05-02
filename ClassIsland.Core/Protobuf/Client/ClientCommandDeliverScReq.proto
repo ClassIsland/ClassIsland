@@ -1,0 +1,7 @@
+syntax = "proto3";
+package ClassIsland.Core.Protobuf.Client;
+option csharp_namespace = "ClassIsland.Core.Protobuf.Client";
+
+message ClientCommandDeliverScReq {
+  string ClientUid = 1;
+}

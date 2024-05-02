@@ -1,8 +1,0 @@
-syntax = "proto3";
-package classisland.management;
-option csharp_namespace = "ClassIsland.Core.Protobuf.Management";
-
-message ClientConnectRequest {
-  string client_uid=1;
-  string client_id=2;
-}

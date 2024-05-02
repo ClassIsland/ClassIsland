@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Core.Protobuf.Server;
+option csharp_namespace = "ClassIsland.Core.Protobuf.Server";
+
+import "Protobuf/Enum/CommandTypes.proto";
+
+message ClientCommandDeliverScRsp {
+    Enum.CommandTypes Type = 1;
+    bytes Payload = 2;
+}

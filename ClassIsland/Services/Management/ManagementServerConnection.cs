@@ -6,10 +6,10 @@ using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Models.Management;
 using ClassIsland.Core.Protobuf.Client;
 using ClassIsland.Core.Protobuf.Enum;
-using ClassIsland.Core.Protobuf.Management;
 using ClassIsland.Core.Protobuf.Service;
 using ClassIsland.Helpers;
 using Grpc.Core;
+using Grpc.Core.Utils;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 
@@ -36,14 +36,13 @@ public class ManagementServerConnection : IManagementServerConnection
         Host = settings.ManagementServer;
         ManifestUrl = $"{Host}/api/v1/client/{clientUid}/manifest";
         
-
         Channel = GrpcChannel.ForAddress(settings.ManagementServerGrpc);
         
         Logger.LogInformation("初始化管理服务器连接。");
         if (lightConnect) 
             return;
-        // 建立Grpc连接
-        // Task.Run(ListenCommands);
+        // 接受命令
+        Task.Run(ListenCommands);
 
     }
 
@@ -62,9 +61,19 @@ public class ManagementServerConnection : IManagementServerConnection
         return await GetManifest();
     }
 
-    private async void ListenCommands()
+    private async Task ListenCommands()
     {
-        
+        var client = new ClientCommandDeliver.ClientCommandDeliverClient(Channel);
+        var stream = client.ListenCommand(new ClientCommandDeliverScReq()
+        {
+            ClientUid = ClientGuid.ToString()
+        });
+        var header = await stream.ResponseHeadersAsync;
+        await stream.ResponseStream.ForEachAsync(async r =>
+        {
+            Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
+        });
+        Logger.LogInformation("指令流终止。");
     }
     
     public async Task<ManagementManifest> GetManifest()
