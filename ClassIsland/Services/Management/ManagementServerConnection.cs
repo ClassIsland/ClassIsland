@@ -4,7 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Models.Management;
+using ClassIsland.Core.Protobuf.Client;
+using ClassIsland.Core.Protobuf.Enum;
 using ClassIsland.Core.Protobuf.Management;
+using ClassIsland.Core.Protobuf.Service;
 using ClassIsland.Helpers;
 using Grpc.Core;
 using Grpc.Net.Client;
@@ -26,8 +29,6 @@ public class ManagementServerConnection : IManagementServerConnection
     
     private GrpcChannel Channel { get; }
     
-    private Core.Protobuf.Management.ManagementServerConnection.ManagementServerConnectionClient GrpcClient { get; }
-    
     public ManagementServerConnection(ManagementSettings settings, Guid clientUid, bool lightConnect)
     {
         ClientGuid = clientUid;
@@ -37,8 +38,7 @@ public class ManagementServerConnection : IManagementServerConnection
         
 
         Channel = GrpcChannel.ForAddress(settings.ManagementServerGrpc);
-        GrpcClient =
-            new Core.Protobuf.Management.ManagementServerConnection.ManagementServerConnectionClient(Channel);
+        
         Logger.LogInformation("初始化管理服务器连接。");
         if (lightConnect) 
             return;
@@ -50,30 +50,21 @@ public class ManagementServerConnection : IManagementServerConnection
     public async Task<ManagementManifest> RegisterAsync()
     {
         Logger.LogInformation("正在注册实例");
-        await GrpcClient.RegisterAsync(new ClientRegisterInfo()
+        var client = new ClientRegister.ClientRegisterClient(Channel);
+        var r = await client.RegisterAsync(new ClientRegisterCsReq()
         {
             ClientUid = ClientGuid.ToString(),
-            Id = Id
+            ClientId = Id
         });
+        Logger.LogTrace("ClientRegisterClient.RegisterAsync: {} {}", r.Retcode, r.Message);
+        if (r.Retcode != Retcode.Registered && r.Retcode != Retcode.Success)
+            throw new Exception($"无法注册实例：{r.Message}");
         return await GetManifest();
     }
 
     private async void ListenCommands()
     {
-        var r = GrpcClient?.ListenCommand(new ClientConnectRequest()
-        {
-            ClientId = Id,
-            ClientUid = ClientGuid.ToString()
-        });
-        if (r == null)
-        { 
-            return;
-        }
-
-        await foreach (var message in r!.ResponseStream.ReadAllAsync())
-        {
-            
-        }
+        
     }
     
     public async Task<ManagementManifest> GetManifest()
