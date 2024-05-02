@@ -25,13 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Protobuf\Management\client_connect_request.proto" />
-    <Protobuf Include="Protobuf\Management\client_connect_request.proto" />
-    <None Remove="Protobuf\Management\management_command_base.proto" />
-    <None Remove="Protobuf\Management\management_server_connection.proto" />
-    <Protobuf Include="Protobuf\Management\management_server_connection.proto" />
-    <None Remove="Protobuf\Management\management_commands.proto" />
-    <Protobuf Include="Protobuf\Management\management_commands.proto" />
+    <Protobuf Include="Protobuf\Service\*.proto"/>
+    <Protobuf Include="Protobuf\Server\*.proto"/>
+    <Protobuf Include="Protobuf\Client\*.proto"/>
+    <Protobuf Include="Protobuf\Enum\*.proto"/>
+    <Protobuf Include="Protobuf\Management\*.proto"/>
   </ItemGroup>
 
 </Project>
