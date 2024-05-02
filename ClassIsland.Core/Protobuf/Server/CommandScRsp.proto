@@ -1,0 +1,19 @@
+syntax = "proto3";
+package ClassIsland.Core.Protobuf.Server;
+option csharp_namespace = "ClassIsland.Core.Protobuf.Server";
+
+import "Protobuf/Enum/Retcode.proto";
+import "Protobuf/Enum/CommandType.proto";
+
+message CommandScRsp {
+    Enum.Retcode Retcode = 1;
+    int64 CommandCount = 2;
+    repeated CommandPayload Payload = 3;
+    
+    message CommandPayload {
+        Enum.CommandType CommandType = 1;
+        bytes Payload = 2;
+    }
+}
+
+

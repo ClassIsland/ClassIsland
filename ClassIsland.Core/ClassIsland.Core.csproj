@@ -28,6 +28,7 @@
     <Protobuf Include="Protobuf\Service\*.proto"/>
     <Protobuf Include="Protobuf\Server\*.proto"/>
     <Protobuf Include="Protobuf\Client\*.proto"/>
+    <Protobuf Include="Protobuf\Command\*.proto"/>
     <Protobuf Include="Protobuf\Enum\*.proto"/>
     <Protobuf Include="Protobuf\Management\*.proto"/>
   </ItemGroup>
