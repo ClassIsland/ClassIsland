@@ -1,58 +1,137 @@
 ﻿using System;
+using System.Drawing.Printing;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
+using ClassIsland.Core.Models.Management;
+using ClassIsland.Core.Models.Profile;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Services.Management;
 using Microsoft.Extensions.Logging;
+using static ClassIsland.Core.Helpers.ConfigureFileHelper;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Services;
 
 public class ProfileService
 {
-    public string CurrentProfilePath { get; set; } = @".\Profiles\Default.json";
-    
-    public Profile Profile { get; set; } = new Profile();
+    public string CurrentProfilePath { 
+        get; 
+        set;
+    } = @".\Profiles\Default.json";
+
+    public static readonly string ManagementClassPlanPath =
+        Path.Combine(ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
+
+    public static readonly string ManagementTimeLayoutPath =
+        Path.Combine(ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
+
+    public static readonly string ManagementSubjectsPath =
+        Path.Combine(ManagementService.ManagementConfigureFolderPath, "Subjects.json");
+
+    public Profile Profile {
+        get;
+        set;
+    } = new Profile();
 
     private SettingsService SettingsService { get; }
 
     private ILogger<ProfileService> Logger { get; }
 
-    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger)
+    private ManagementService ManagementService { get; }
+
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, ManagementService managementService)
     {
         Logger = logger;
+        ManagementService = managementService;
         SettingsService = settingsService;
         if (!Directory.Exists("./Profiles"))
         {
             Directory.CreateDirectory("./Profiles");
         }
-        LoadProfile();
         CleanExpiredTempClassPlan();
     }
 
-    public void LoadProfile()
+
+    private async Task MergeManagementProfileAsync()
     {
-        var filename = SettingsService.Settings.SelectedProfile;
+        Logger.LogInformation("正在拉取集控档案");
+        if (ManagementService.Connection == null)
+            return;
+        try
+        {
+            Profile? classPlan = null;
+            Profile? timeLayouts = null;
+            Profile? subjects = null;
+            if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
+            {
+                var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
+                var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
+                MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
+            }
+            if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
+            {
+                var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
+                var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
+                MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
+            }
+            if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
+            {
+                var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
+                var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
+                MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
+            }
+
+            SaveProfile("_management-profile.json");
+            ManagementService.Versions.ClassPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
+            ManagementService.Versions.TimeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
+            ManagementService.Versions.SubjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
+            ManagementService.SaveSettings();
+        }
+        catch (Exception exp)
+        {
+            Logger.LogError(exp, "拉取档案失败。");
+        }
+
+        //Profile = ConfigureFileHelper.CopyObject(Profile);
+        Profile.Subjects = CopyObject(Profile.Subjects);
+        Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
+        Profile.ClassPlans = CopyObject(Profile.ClassPlans);
+        Profile.RefreshTimeLayouts();
+        Logger.LogTrace("成功拉取集控档案！");
+    }
+
+    public async Task LoadProfileAsync()
+    {
+        var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
         var path = $"./Profiles/{filename}";
         Logger.LogInformation("加载档案中：{}", path);
         if (!File.Exists(path))
         {
             Logger.LogInformation("档案不存在：{}", path);
-            var subject = new StreamReader(Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!.Stream).ReadToEnd();
-            Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
+            if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
+            {
+                var subject = new StreamReader(Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!.Stream).ReadToEnd();
+                Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
+            }
             SaveProfile(filename);
         }
 
-        var json = File.ReadAllText(path);
+        var json = await File.ReadAllTextAsync(path);
         var r = JsonSerializer.Deserialize<Profile>(json);
         if (r != null)
         {
             Profile = r;
+            if (ManagementService.IsManagementEnabled)
+                await MergeManagementProfileAsync();
             Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
         }
 
         CurrentProfilePath = filename;
+        Logger.LogTrace("成功加载档案！");
     }
 
     public void SaveProfile()

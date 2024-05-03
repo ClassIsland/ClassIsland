@@ -22,13 +22,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Enums;
+using ClassIsland.Core.Abstraction.Services;
+using ClassIsland.Core.Enums;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Models.AllContributors;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
+using Microsoft.AppCenter.Crashes;
+using Microsoft.Extensions.Logging;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32.SafeHandles;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -93,11 +99,15 @@ public partial class SettingsWindow : MyWindow
         get;
     }
 
+    public ManagementService ManagementService { get; }
+
     private List<byte[]> _testMemoryLeakList = new();
 
     public DiagnosticService DiagnosticService { get; }
 
     public WeatherService WeatherService { get; } = App.GetService<WeatherService>();
+
+    public ExactTimeService ExactTimeService { get; } = App.GetService<ExactTimeService>();
 
     public SettingsWindow()
     {
@@ -106,6 +116,7 @@ public partial class SettingsWindow : MyWindow
         WallpaperPickingService = App.GetService<WallpaperPickingService>();
         MiniInfoProviderHostService = App.GetService<MiniInfoProviderHostService>();
         DiagnosticService = App.GetService<DiagnosticService>();
+        ManagementService = App.GetService<ManagementService>();
         InitializeComponent();
         DataContext = this;
         var settingsService = App.GetService<SettingsService>();
@@ -122,10 +133,16 @@ public partial class SettingsWindow : MyWindow
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(Settings.UpdateReleaseInfo))
+        switch (e.PropertyName)
         {
-            UpdateCache();
+            case nameof(Settings.UpdateReleaseInfo):
+                UpdateCache();
+                break;
+            case nameof(Settings.SpeechSource):
+                RequireRestart();
+                break;
         }
+
         RefreshDescription();
     }
 
@@ -295,9 +312,10 @@ public partial class SettingsWindow : MyWindow
         await UpdateService.CheckUpdateAsync(isForce:true);
     }
 
-    private void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("ContributorsDrawer");
+        await RefreshContributors();
     }
 
     private void ButtonThirdPartyLibs_OnClick(object sender, RoutedEventArgs e)
@@ -310,6 +328,11 @@ public partial class SettingsWindow : MyWindow
         ViewModel.AppIconClickCount++;
         if (ViewModel.AppIconClickCount >= 10)
         {
+            if (ManagementService.Policy.DisableDebugMenu)
+            {
+                CommonDialog.ShowError("调试菜单已被您的组织禁用。");
+                return;
+            }
             Settings.IsDebugOptionsEnabled = true;
         }
     }
@@ -596,5 +619,137 @@ public partial class SettingsWindow : MyWindow
     private async void MenuItemMemoryLeakTest_OnClick(object sender, RoutedEventArgs e)
     {
         
+    }
+
+    private void MenuItemConnetManagemnt_OnClick(object sender, RoutedEventArgs e)
+    {
+    }
+
+    private void ButtonOpenSpeechSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(@"C:\WINDOWS\system32\rundll32.exe", @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
+    }
+
+    private void ButtonChangelogs_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<MainWindow>().OpenHelpsWindow();
+        App.GetService<HelpsWindow>().InitDocumentName = "新增功能";
+        App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "新增功能";
+    }
+
+    private void ButtonTestSpeeching_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<ISpeechService>().ClearSpeechQueue();
+        App.GetService<ISpeechService>().EnqueueSpeechQueue(ViewModel.TestSpeechText);
+    }
+
+    private void RequireRestart()
+    {
+        ViewModel.IsRestartRequired = true;
+        ShowRestartDialog();
+    }
+
+    private async void ShowRestartDialog()
+    {
+        var r = await DialogHost.Show(FindResource("RestartDialog"), "SettingsWindow");
+        if (r as bool? != true)
+            return;
+        App.Restart();
+    }
+
+    private void ButtonRestartChip_OnClick(object sender, RoutedEventArgs e)
+    {
+        ShowRestartDialog();
+    }
+
+    private async void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)
+    {
+        await Task.Run(() =>
+        {
+            ExactTimeService.Sync();
+        });
+    }
+
+    private void MenuItemFeatureDebugWindow_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<FeatureDebugWindow>().Show();
+    }
+
+    private void MenuItemDebugSetTime_OnClick(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void MenuItemDebugAppCenterCrashTest_OnClick(object sender, RoutedEventArgs e)
+    {
+        Crashes.GenerateTestCrash();
+    }
+
+    private void MenuItemAppLogs_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<AppLogsWindow>().Open();
+    }
+
+    private async void ButtonRefreshContributors_OnClick(object sender, RoutedEventArgs e)
+    {
+        await RefreshContributors();
+    }
+
+    private async Task RefreshContributors()
+    {
+        ViewModel.IsRefreshingContributors = true;
+        Settings.ContributorsCache =
+            await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
+                "https://raw.githubusercontent.com/HelloWRC/ClassIsland/master/.all-contributorsrc"));
+        ViewModel.IsRefreshingContributors = false;
+    }
+
+    private async void MenuItemExitManagement_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ManagementService.ExitManagementAsync();
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<SettingsWindow>>().LogError(ex, "无法退出管理。");
+            CommonDialog.ShowError($"无法退出管理：{ex.Message}");
+        }
+    }
+
+    private async void MenuItemExportDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var r = CommonDialog.ShowDialog("ClassIsland", $"您正在导出应用的诊断数据。导出的诊断数据将包含应用当前运行的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。", new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
+                60, 60, [
+                    new DialogAction()
+                    {
+                        PackIconKind = PackIconKind.Cancel,
+                        Name = "取消"
+                    },
+                    new DialogAction()
+                    {
+                        PackIconKind = PackIconKind.Check,
+                        Name = "继续",
+                        IsPrimary = true
+                    }
+                ]);
+            if (r != 1)
+                return;
+            var dialog = new SaveFileDialog()
+            {
+                Title = "导出诊断数据",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Filter = "压缩文件(*.zip)|*.zip"
+            };
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            await DiagnosticService.ExportDiagnosticData(dialog.FileName);
+        }
+        catch (Exception exception)
+        {
+            CommonDialog.ShowError($"导出失败：{exception.Message}");
+        }
     }
 }

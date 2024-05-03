@@ -20,6 +20,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Converters;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;

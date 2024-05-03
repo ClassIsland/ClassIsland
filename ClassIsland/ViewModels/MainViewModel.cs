@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using ClassIsland.Enums;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -26,8 +29,6 @@ public class MainViewModel : ObservableRecipient
     private TimeState _currentOverlayStatus = TimeState.None;
     private TimeLayoutItem _currentTimeLayoutItem = new();
     private bool _isForegroundFullscreen = false;
-    private KeyValuePair<string, ClassPlan>? _temporaryClassPlan = null;
-    private DateTime _temporaryClassPlanSetupTime = DateTime.Now;
     private bool _isForegroundMaxWindow = false;
     private string _currentProfilePath = "Profile.json";
     private double _gridRootLeft = 0;
@@ -42,6 +43,8 @@ public class MainViewModel : ObservableRecipient
     private bool _isClassPlanEnabled = true;
     private bool _isBusy = false;
     private DateTime _firstProcessNotifications = DateTime.MinValue;
+    private DateTime _debugCurrentTime = DateTime.Now;
+    private bool _isNotificationWindowExplicitShowed = false;
 
     public Profile Profile
     {
@@ -243,28 +246,6 @@ public class MainViewModel : ObservableRecipient
         }
     }
 
-    public KeyValuePair<string, ClassPlan>? TemporaryClassPlan
-    {
-        get => _temporaryClassPlan;
-        set
-        {
-            if (Equals(value, _temporaryClassPlan)) return;
-            _temporaryClassPlan = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime TemporaryClassPlanSetupTime
-    {
-        get => _temporaryClassPlanSetupTime;
-        set
-        {
-            if (value.Equals(_temporaryClassPlanSetupTime)) return;
-            _temporaryClassPlanSetupTime = value;
-            OnPropertyChanged();
-        }
-    }
-
     public string CurrentProfilePath
     {
         get => App.GetService<ProfileService>().CurrentProfilePath;
@@ -397,6 +378,28 @@ public class MainViewModel : ObservableRecipient
         {
             if (value.Equals(_firstProcessNotifications)) return;
             _firstProcessNotifications = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime DebugCurrentTime
+    {
+        get => _debugCurrentTime;
+        set
+        {
+            if (value.Equals(_debugCurrentTime)) return;
+            _debugCurrentTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationWindowExplicitShowed
+    {
+        get => _isNotificationWindowExplicitShowed;
+        set
+        {
+            if (value == _isNotificationWindowExplicitShowed) return;
+            _isNotificationWindowExplicitShowed = value;
             OnPropertyChanged();
         }
     }

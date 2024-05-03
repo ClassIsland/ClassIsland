@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="ClassIsland.Controls.ManagementInfoControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <StackPanel VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="由贵单位管理"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="您的组织"/>
+                <Run Text="{Binding ManagementService.Manifest.OrganizationName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}, Mode=OneWay}"/>
+                <Run Text="正在管理、设置和维护当前 ClassIsland 实例。根据需要，组织可以设置和限制某些功能。要了解更多信息，请联系您所在组织的IT人员。"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="联系您的组织的IT人员时，请提供以下信息："/>
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap">
+                <Run Text="ID: "/>
+                <Run Text="{Binding ManagementService.Settings.ClassIdentity, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}}"/>
+            </TextBlock>
+            <TextBlock  TextWrapping="Wrap">
+                <Run Text="CUID: "/>
+                <Run Text="{Binding ManagementService.Persist.ClientUniqueId, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementInfoControl}}"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

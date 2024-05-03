@@ -64,6 +64,8 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
+        if (string.IsNullOrWhiteSpace(Message))
+            return;
         SlideIndex = SlideIndex == 1 ? 0 : 1;
     }
 

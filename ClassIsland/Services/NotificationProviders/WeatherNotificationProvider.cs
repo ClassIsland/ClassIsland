@@ -5,10 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Enums;
-using ClassIsland.Interfaces;
+using ClassIsland.Core.Abstraction.Models;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
+using ClassIsland.Models.NotificationProviderSettings;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 
@@ -79,7 +83,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
-        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
             OverlayContent = new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
@@ -107,10 +111,12 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
         foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail)))
         {
-            NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+            NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskContent = new WeatherNotificationProviderControl(true, i),
+                MaskSpeechContent = i.Title,
                 OverlayContent = new WeatherNotificationProviderControl(false, i),
+                OverlaySpeechContent = i.Detail,
                 OverlayDuration = TimeSpan.FromSeconds(40),
                 MaskDuration = TimeSpan.FromSeconds(5)
             });

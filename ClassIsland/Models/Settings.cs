@@ -5,9 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Converters;  
-using ClassIsland.Enums;
-using ClassIsland.Interfaces;
+using System.Windows.Media.Converters;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstraction.Models;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models.Notification;
+using ClassIsland.Models.AllContributors;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -20,7 +24,7 @@ using File = System.IO.File;
 
 namespace ClassIsland.Models;
 
-public class Settings : ObservableRecipient, ILessonControlSettings
+public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings
 {
     private int _theme = 2;
     private Color _primaryColor = Colors.DeepSkyBlue;
@@ -113,6 +117,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings
     private DateTime _diagnosticLastCrashTime = DateTime.MinValue;
     private int _diagnosticMemoryKillCount = 0;
     private DateTime _diagnosticLastMemoryKillTime = DateTime.Now;
+    private bool _isSpeechEnabled = true;
+    private double _speechVolume = 1.0;
+    private int _speechSource = 0;
+    private string _edgeTtsVoiceName = "zh-CN-XiaoxiaoNeural";
+    private string _exactTimeServer = "cn.ntp.org.cn";
+    private bool _isExactTimeEnabled = true;
+    private double _timeOffsetSeconds = 0.0;
+    private bool _isNotificationEffectEnabled = true;
+    private ObservableDictionary<string, NotificationSettings> _notificationProvidersNotifySettings = new();
+    private bool _isNotificationSoundEnabled = true;
+    private string _notificationSoundPath = "";
+    private bool _isTimeAutoAdjustEnabled = false;
+    private double _timeAutoAdjustSeconds = 0.0;
+    private DateTime _lastTimeAdjustDateTime = DateTime.Now;
+    private bool _isNotificationTopmostEnabled = true;
+    private double _notificationEffectRenderingScale = 1.0;
+    private bool _isNotificationEffectRenderingScaleAutoSet = false;
+    private AllContributorsRc _contributorsCache = new();
+    private bool _allowNotificationSpeech = false;
+    private bool _allowNotificationEffect = true;
+    private bool _allowNotificationSound = false;
+    private bool _allowNotificationTopmost = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -437,6 +463,72 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         }
     }
 
+    public string ExactTimeServer
+    {
+        get => _exactTimeServer;
+        set
+        {
+            if (value == _exactTimeServer) return;
+            _exactTimeServer = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsExactTimeEnabled
+    {
+        get => _isExactTimeEnabled;
+        set
+        {
+            if (value == _isExactTimeEnabled) return;
+            _isExactTimeEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double TimeOffsetSeconds
+    {
+        get => _timeOffsetSeconds;
+        set
+        {
+            if (value.Equals(_timeOffsetSeconds)) return;
+            _timeOffsetSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTimeAutoAdjustEnabled
+    {
+        get => _isTimeAutoAdjustEnabled;
+        set
+        {
+            if (value == _isTimeAutoAdjustEnabled) return;
+            _isTimeAutoAdjustEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double TimeAutoAdjustSeconds
+    {
+        get => _timeAutoAdjustSeconds;
+        set
+        {
+            if (value.Equals(_timeAutoAdjustSeconds)) return;
+            _timeAutoAdjustSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastTimeAdjustDateTime
+    {
+        get => _lastTimeAdjustDateTime;
+        set
+        {
+            if (value.Equals(_lastTimeAdjustDateTime)) return;
+            _lastTimeAdjustDateTime = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
@@ -655,6 +747,178 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (Equals(value, _notificationProvidersSettings)) return;
             _notificationProvidersSettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableDictionary<string, NotificationSettings> NotificationProvidersNotifySettings
+    {
+        get => _notificationProvidersNotifySettings;
+        set
+        {
+            if (Equals(value, _notificationProvidersNotifySettings)) return;
+            _notificationProvidersNotifySettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSpeechEnabled
+    {
+        get => _isSpeechEnabled;
+        set
+        {
+            if (value == _isSpeechEnabled) return;
+            _isSpeechEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double SpeechVolume
+    {
+        get => _speechVolume;
+        set
+        {
+            if (value.Equals(_speechVolume)) return;
+            _speechVolume = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 语音合成源
+    /// </summary>
+    /// <value>
+    /// 0 - 系统TTS<br/>
+    /// 1 - EdgeTTS
+    /// </value>
+    public int SpeechSource
+    {
+        get => _speechSource;
+        set
+        {
+            if (value == _speechSource) return;
+            _speechSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string EdgeTtsVoiceName
+    {
+        get => _edgeTtsVoiceName;
+        set
+        {
+            if (value == _edgeTtsVoiceName) return;
+            _edgeTtsVoiceName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationEffectEnabled
+    {
+        get => _isNotificationEffectEnabled;
+        set
+        {
+            if (value == _isNotificationEffectEnabled) return;
+            _isNotificationEffectEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationSoundEnabled
+    {
+        get => _isNotificationSoundEnabled;
+        set
+        {
+            if (value == _isNotificationSoundEnabled) return;
+            _isNotificationSoundEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string NotificationSoundPath
+    {
+        get => _notificationSoundPath;
+        set
+        {
+            if (value == _notificationSoundPath) return;
+            _notificationSoundPath = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationTopmostEnabled
+    {
+        get => _isNotificationTopmostEnabled;
+        set
+        {
+            if (value == _isNotificationTopmostEnabled) return;
+            _isNotificationTopmostEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double NotificationEffectRenderingScale
+    {
+        get => _notificationEffectRenderingScale;
+        set
+        {
+            if (value.Equals(_notificationEffectRenderingScale)) return;
+            _notificationEffectRenderingScale = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNotificationEffectRenderingScaleAutoSet
+    {
+        get => _isNotificationEffectRenderingScaleAutoSet;
+        set
+        {
+            if (value == _isNotificationEffectRenderingScaleAutoSet) return;
+            _isNotificationEffectRenderingScaleAutoSet = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationSpeech
+    {
+        get => _allowNotificationSpeech;
+        set
+        {
+            if (value == _allowNotificationSpeech) return;
+            _allowNotificationSpeech = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationEffect
+    {
+        get => _allowNotificationEffect;
+        set
+        {
+            if (value == _allowNotificationEffect) return;
+            _allowNotificationEffect = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationSound
+    {
+        get => _allowNotificationSound;
+        set
+        {
+            if (value == _allowNotificationSound) return;
+            _allowNotificationSound = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AllowNotificationTopmost
+    {
+        get => _allowNotificationTopmost;
+        set
+        {
+            if (value == _allowNotificationTopmost) return;
+            _allowNotificationTopmost = value;
             OnPropertyChanged();
         }
     }
@@ -1144,6 +1408,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _debugGitHubAuthKey) return;
             _debugGitHubAuthKey = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public AllContributorsRc ContributorsCache
+    {
+        get => _contributorsCache;
+        set
+        {
+            if (Equals(value, _contributorsCache)) return;
+            _contributorsCache = value;
             OnPropertyChanged();
         }
     }

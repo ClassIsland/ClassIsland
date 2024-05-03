@@ -1,0 +1,49 @@
+<UserControl x:Class="ClassIsland.Controls.NotificationProviders.ManagementNotificationProviderControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             Loaded="ManagementNotificationProviderControl_OnLoaded">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementNotificationProviderControl}}">
+        <StackPanel Orientation="Horizontal" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="{Binding IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+            <TextBlock Text="{Binding Payload.MessageMask}" FontSize="18" Margin="8 0" FontWeight="Bold"/>
+            <materialDesign:PackIcon Kind="Announcement" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+        </StackPanel>
+        <Grid Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1" ClipToBounds="True">
+                <Canvas VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Margin="0 0 16 0"
+                        x:Name="RootCanvas"
+                        ClipToBounds="True">
+                    <Canvas.OpacityMask>
+                        <SolidColorBrush Color="White"/>
+                    </Canvas.OpacityMask>
+                    <TextBlock x:Name="Description" HorizontalAlignment="Right" RenderTransformOrigin="1,0.5"
+                               Text="{Binding Payload.MessageContent}"
+                               FontSize="17"
+                               Canvas.Right="0"
+                               VerticalAlignment="Center"
+                               Canvas.Top="9">
+                        <TextBlock.RenderTransform>
+                            <TranslateTransform x:Name="AnimatedTranslateTransform" />
+                        </TextBlock.RenderTransform>
+                    </TextBlock>
+                </Canvas>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

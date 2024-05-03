@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ClassIsland.Views"
         xmlns:views="clr-namespace:ClassIsland.Views"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
-        xmlns:windows="clr-namespace:Walterlv.Windows"
+        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
         mc:Ignorable="d"
         Title="ClassIsland 正在启动……" 
         WindowStartupLocation="CenterScreen"

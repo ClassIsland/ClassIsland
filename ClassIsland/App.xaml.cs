@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Speech.Synthesis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,10 +21,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.Logging;
+using ClassIsland.Services.Management;
 using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
+using ClassIsland.Services.SpeechService;
 using ClassIsland.Views;
 using MahApps.Metro.Controls;
 using MaterialDesignThemes.Wpf;
@@ -37,39 +43,36 @@ using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using Walterlv.Windows;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using UpdateStatus = ClassIsland.Enums.UpdateStatus;
+using UpdateStatus = ClassIsland.Core.Enums.UpdateStatus;
 
 namespace ClassIsland;
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App : Application
+public partial class App : Application, IAppHost
 {
     private CrashWindow? CrashWindow;
     private Mutex? Mutex;
     private ILogger<App>? Logger { get; set; }
-    public static IHost? Host;
+    //public static IHost? Host;
 
-    public static T GetService<T>()
-    {
-        var s = Host?.Services.GetService(typeof(T));
-        if (s != null)
-        {
-            return (T)s;
-        }
-        
-        throw new ArgumentException($"Service {typeof(T)} is null!");
-    }
+    public static readonly string AppDataFolderPath =
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
+
+    public static readonly string AppCacheFolderPath = "./Cache";
+
+    public static T GetService<T>() => IAppHost.GetService<T>();
 
     public App()
     {
-        
     }
 
     static App()
     {
         DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ToolTipService.InitialShowDelayProperty,
             0);
+        DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ShadowAssist.CacheModeProperty,
+            null);
     }
 
     public static ApplicationCommand ApplicationCommand
@@ -82,10 +85,10 @@ public partial class App : Application
 
     public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
-    public static string AppCodeName => "Elysia";
+    public static string AppCodeName => "Firefly";
 
     public static string AppVersionLong =>
-        $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
+        $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
@@ -103,13 +106,13 @@ public partial class App : Application
             CrashInfo = e.Exception.ToString()
         };
 #if DEBUG
-        if (e.Exception.GetType() != typeof(ResourceReferenceKeyNotFoundException))
+        if (e.Exception.GetType() == typeof(ResourceReferenceKeyNotFoundException))
         {
-            CrashWindow.ShowDialog();
+            return;
         }
-#else
-        CrashWindow.ShowDialog();
 #endif
+        Crashes.TrackError(e.Exception);
+        CrashWindow.ShowDialog();
     }
 
     private async void App_OnStartup(object sender, StartupEventArgs e)
@@ -131,13 +134,15 @@ public partial class App : Application
         Crashes.SendingErrorReport += CrashesOnSendingErrorReport;
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
+
         var command = new RootCommand
         {
             new Option<string>(["--updateReplaceTarget", "-urt"], "更新时要替换的文件"),
             new Option<string>(["--updateDeleteTarget", "-udt"], "更新完成要删除的文件"),
             new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
             new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
-            new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束")
+            new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
+            new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。")
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) =>
         {
@@ -204,8 +209,9 @@ public partial class App : Application
             //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
-        
-        Host = Microsoft.Extensions.Hosting.Host.
+
+        FileFolderService.CreateFolders();
+        IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
             ConfigureServices((context, services) =>
@@ -227,17 +233,41 @@ public partial class App : Application
                 //services.AddHostedService<BootService>();
                 services.AddSingleton<UpdateNodeSpeedTestingService>();
                 services.AddSingleton<DiagnosticService>();
+                services.AddSingleton<ManagementService>();
+                services.AddSingleton<AppLogService>();
+                services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddHostedService<MemoryWatchDogService>();
+                services.AddSingleton<SpeechSynthesizer>(provider =>
+                {
+                    var s = new SpeechSynthesizer();
+                    s.SetOutputToDefaultAudioDevice();
+                    return s;
+                });
+                services.AddSingleton<ISpeechService>((provider =>
+                {
+                    var s = provider.GetService<SettingsService>();
+                    return s?.Settings.SpeechSource switch
+                    {
+                        0 => new SystemSpeechService(),
+                        1 => new EdgeTtsService(),
+                        _ => new SystemSpeechService()
+                    };
+                }));
+                services.AddSingleton<ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
                 services.AddSingleton<ProfileSettingsWindow>();
                 services.AddSingleton<HelpsWindow>();
+                services.AddTransient<FeatureDebugWindow>();
+                services.AddSingleton<TopmostEffectWindow>();
+                services.AddSingleton<AppLogsWindow>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
                 services.AddHostedService<WeatherNotificationProvider>();
+                services.AddHostedService<ManagementNotificationProvider>();
                 // 简略信息提供方
                 services.AddHostedService<DateMiniInfoProvider>();
                 services.AddHostedService<WeatherMiniInfoProvider>();
@@ -254,6 +284,8 @@ public partial class App : Application
 #endif
                 });
             }).Build();
+        await GetService<ManagementService>().SetupManagement();
+        await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
         Settings.DiagnosticStartupCount++;
         // 记录MLE
@@ -269,13 +301,7 @@ public partial class App : Application
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             GetService<SplashWindow>().Show();
-            //await Dispatcher.InvokeAsync(() =>
-            //{
-            //});
             GetService<SplashService>().CurrentProgress = 25;
-            //await Task.Run(() =>
-            //{
-            //});
             var b = false;
             while (!b)
             {
@@ -287,7 +313,6 @@ public partial class App : Application
                 await Dispatcher.Yield(DispatcherPriority.Background);
             }
         }
-
         GetService<SplashService>().CurrentProgress = 50;
 
         GetService<HangService>();
@@ -299,10 +324,11 @@ public partial class App : Application
         {
             Logger.LogError(ex, "创建任务栏图标失败。");
         }
+
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
-            GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}");
+            GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。");
         }
 
         if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
@@ -321,10 +347,12 @@ public partial class App : Application
         attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         GetService<SplashService>().CurrentProgress = 75;
 
+        await GetService<ProfileService>().LoadProfileAsync();
         GetService<WeatherService>();
+        GetService<ExactTimeService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
-        _ = Host.StartAsync();
-
+        _ = IAppHost.Host.StartAsync();
+        
         Logger.LogInformation("正在初始化MainWindow。");
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
@@ -418,5 +446,27 @@ public partial class App : Application
     {
         var app = (App)Application.Current;
         app.Mutex?.ReleaseMutex();
+    }
+
+    public static void Restart(bool quiet=false)
+    {
+        IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
+        IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
+        IAppHost.Host?.Services.GetService<ProfileService>()?.SaveProfile();
+        ReleaseLock();
+        Current.Shutdown();
+        var path = Environment.ProcessPath;
+        var args = new List<string> { "-m" };
+        if (quiet)
+            args.Add("-q");
+        if (path == null) 
+            return;
+        var replaced = path.Replace(".dll", ".exe");
+        var startInfo = new ProcessStartInfo(replaced);
+        foreach (var i in args)
+        {
+            startInfo.ArgumentList.Add(i);
+        }
+        Process.Start(startInfo);
     }
 }

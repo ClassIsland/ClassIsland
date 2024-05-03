@@ -5,7 +5,9 @@ using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Runtime.InteropServices;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -26,7 +28,13 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using ClassIsland.Enums;
+using ClassIsland.Controls.NotificationEffects;
+using ClassIsland.Core.Abstraction.Models;
+using ClassIsland.Core.Abstraction.Services;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
@@ -37,7 +45,9 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
+using NAudio.Wave;
 using unvell.Common.Win32Lib;
+using Application = System.Windows.Application;
 using Path = System.IO.Path;
 using ProgressBar = System.Windows.Controls.ProgressBar;
 using Window = System.Windows.Window;
@@ -108,10 +118,16 @@ public partial class MainWindow : Window
         get;
     }
 
+    public TopmostEffectWindow TopmostEffectWindow { get; }
+
     private Stopwatch UserPrefrenceUpdateStopwatch
     {
         get;
     } = new();
+
+    private ExactTimeService ExactTimeService { get; }
+
+    public ISpeechService SpeechService { get; }
 
     private ILogger<MainWindow> Logger;
 
@@ -134,14 +150,25 @@ public partial class MainWindow : Window
         set { SetValue(BackgroundWidthProperty, value); }
     }
 
-    public MainWindow(SettingsService settingsService, ProfileService profileService, NotificationHostService notificationHostService, TaskBarIconService taskBarIconService, ThemeService themeService, ILogger<MainWindow> logger)
+    public MainWindow(SettingsService settingsService, 
+        ProfileService profileService,
+        NotificationHostService notificationHostService, 
+        TaskBarIconService taskBarIconService,
+        ThemeService themeService, 
+        ILogger<MainWindow> logger, 
+        ISpeechService speechService,
+        ExactTimeService exactTimeService,
+        TopmostEffectWindow topmostEffectWindow)
     {
         Logger = logger;
+        SpeechService = speechService;
         SettingsService = settingsService;
         TaskBarIconService = taskBarIconService;
         NotificationHostService = notificationHostService;
         ThemeService = themeService;
         ProfileService = profileService;
+        ExactTimeService = exactTimeService;
+        TopmostEffectWindow = topmostEffectWindow;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -198,6 +225,10 @@ public partial class MainWindow : Window
 
     private void UpdateMouseStatus()
     {
+        if (PresentationSource.FromVisual(this) == null)
+        {
+            return;
+        }
         NativeWindowHelper.GetCursorPos(out var ptr);
         GetCurrentDpi(out var dpiX, out var dpiY);
         var scale = ViewModel.Settings.Scale;
@@ -216,7 +247,10 @@ public partial class MainWindow : Window
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
     {
-        UpdateWindowPos();
+        if (SettingsService.Settings.IsMainWindowDebugEnabled)
+            ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
+
+        UpdateWindowPos(true);
         UpdateMouseStatus();
         LoadCurrentClassPlan();
         if (ViewModel.Settings.WindowLayer == 0)
@@ -259,7 +293,7 @@ public partial class MainWindow : Window
         var currentLayout = ViewModel.CurrentClassPlan.TimeLayout.Layouts;
         foreach (var i in currentLayout)
         {
-            if (i.StartSecond.TimeOfDay <= DateTime.Now.TimeOfDay && i.EndSecond.TimeOfDay >= DateTime.Now.TimeOfDay)
+            if (i.StartSecond.TimeOfDay <= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay && i.EndSecond.TimeOfDay >= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay)
             {
                 ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
                 ViewModel.CurrentTimeLayoutItem = i;
@@ -310,11 +344,11 @@ public partial class MainWindow : Window
             }
         }
 
-        var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
+        var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         ViewModel.OnClassLeftTime = tClassDelta;
         NotificationHostService.OnClassDeltaTime = tClassDelta;
         NotificationHostService.OnBreakingTimeDeltaTime =
-            ViewModel.NextBreakingLayoutItem.StartSecond.TimeOfDay - DateTime.Now.TimeOfDay;
+            ViewModel.NextBreakingLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         // 获取状态信息
         if (ViewModel.CurrentSelectedIndex == null)
         {
@@ -358,8 +392,16 @@ public partial class MainWindow : Window
         await ProcessNotification();
 
         // Finished update
-        ViewModel.Today = DateTime.Now;
+        ViewModel.Today = ExactTimeService.GetCurrentLocalDateTime();
         MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
+    }
+
+    public Point GetCenter()
+    {
+        GetCurrentDpi(out var dpi, out _);
+        var p = GridWrapper.TranslatePoint(new Point(GridWrapper.ActualWidth / 2, GridWrapper.ActualHeight / 2), this);
+        p.Y = Top + ActualHeight / 2;
+        return p;
     }
 
     private async Task ProcessNotification()
@@ -371,9 +413,9 @@ public partial class MainWindow : Window
         ViewModel.IsOverlayOpened = true;  // 上锁
 
         if (ViewModel.FirstProcessNotifications == DateTime.MinValue)
-            ViewModel.FirstProcessNotifications = DateTime.Now;
+            ViewModel.FirstProcessNotifications = ExactTimeService.GetCurrentLocalDateTime();
         if (!ViewModel.Settings.IsNotificationEnabled ||
-            (DateTime.Now - ViewModel.FirstProcessNotifications <= TimeSpan.FromSeconds(10) &&
+            (ExactTimeService.GetCurrentLocalDateTime() - ViewModel.FirstProcessNotifications <= TimeSpan.FromSeconds(10) &&
              App.ApplicationCommand.Quiet) // 静默启动
            )
         {
@@ -382,25 +424,65 @@ public partial class MainWindow : Window
 
         while (NotificationHostService.RequestQueue.Count > 0)
         {
+            using var player = new DirectSoundOut();
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
+            var settings = ViewModel.Settings as INotificationSettings;
+            foreach (var i in new List<NotificationSettings>([request.ProviderSettings, request.RequestNotificationSettings]).Where(i => i.IsSettingsEnabled))
+            {
+                settings = i;
+                break;
+            }
+            var isSpeechEnabled = settings.IsSpeechEnabled && request.IsSpeechEnabled && ViewModel.Settings.AllowNotificationSpeech;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
             if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
-                request.MaskDuration = request.TargetMaskEndTime.Value - DateTime.Now;
+                request.MaskDuration = request.TargetMaskEndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
             }
 
             if (request.TargetOverlayEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
             {
-                request.OverlayDuration = request.TargetOverlayEndTime.Value - DateTime.Now - request.MaskDuration;
+                request.OverlayDuration = request.TargetOverlayEndTime.Value - ExactTimeService.GetCurrentLocalDateTime() - request.MaskDuration;
             }
 
             ViewModel.CurrentMaskElement = request.MaskContent;  // 加载Mask元素
             var cancellationToken = request.CancellationTokenSource.Token;
+            ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled && ViewModel.Settings.AllowNotificationTopmost;
 
             if (request.MaskDuration > TimeSpan.Zero &&
                 request.OverlayDuration > TimeSpan.Zero)
             {
+                if (isSpeechEnabled)
+                {
+                    SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
+                }
                 BeginStoryboard("OverlayMaskIn");
+                // 播放提醒音效
+                if (settings.IsNotificationSoundEnabled && ViewModel.Settings.AllowNotificationSound)
+                {
+                    try
+                    {
+                        IWaveProvider provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                            ? new StreamMediaFoundationReader(
+                                Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream)
+                            : new AudioFileReader(settings.NotificationSoundPath);
+                        player.Init(provider);
+                        player.Play();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError(e, "无法播放提醒音效：{}", settings.NotificationSoundPath);
+                    }
+                }
+                // 播放提醒特效
+                if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationEffect &&
+                    GridRoot.IsVisible && ViewModel.IsMainWindowVisible)
+                {
+                    TopmostEffectWindow.PlayEffect(new RippleEffect()
+                    {
+                        CenterX = GetCenter().X,
+                        CenterY = GetCenter().Y
+                    });
+                }
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
                 if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
                 {
@@ -409,6 +491,10 @@ public partial class MainWindow : Window
                 else
                 {
                     ViewModel.CurrentOverlayElement = request.OverlayContent;
+                    if (isSpeechEnabled)
+                    {
+                        SpeechService.EnqueueSpeechQueue(request.OverlaySpeechContent);
+                    }
                     BeginStoryboard("OverlayMaskOut");
                     ViewModel.OverlayRemainStopwatch.Restart();
                     // 倒计时动画
@@ -430,22 +516,27 @@ public partial class MainWindow : Window
                         cancellationToken);
                     ViewModel.OverlayRemainStopwatch.Stop();
                 }
+                SpeechService.ClearSpeechQueue();
             }
 
             if (NotificationHostService.RequestQueue.Count < 1)
             {
                 BeginStoryboard("OverlayOut");
             }
+            await request.CompletedTokenSource.CancelAsync();
         }
 
         ViewModel.CurrentOverlayElement = null;
         ViewModel.CurrentMaskElement = null;
         ViewModel.IsOverlayOpened = false;
-        
+        ViewModel.IsNotificationWindowExplicitShowed = false;
+        UpdateTheme();
     }
 
     protected override void OnContentRendered(EventArgs e)
     {
+        if (DesignerProperties.GetIsInDesignMode(this))
+            return;
         UpdateTheme();
         var menu = (ContextMenu)FindResource("AppContextMenu");
         menu.DataContext = this;
@@ -458,6 +549,11 @@ public partial class MainWindow : Window
         if (ViewModel.Settings.IsSplashEnabled)
         {
             App.GetService<SplashService>().EndSplash();
+        }
+
+        if (!ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet)
+        {
+            AutoSetNotificationEffectRenderingScale();
         }
 
         if (!ViewModel.Settings.IsWelcomeWindowShowed)
@@ -483,6 +579,25 @@ public partial class MainWindow : Window
         base.OnContentRendered(e);
     }
 
+    private void AutoSetNotificationEffectRenderingScale()
+    {
+        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length
+            ? Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex]
+            : Screen.PrimaryScreen;
+        if (screen == null)
+            return;
+        if (screen.Bounds.Height >= 1400)
+        {
+            ViewModel.Settings.NotificationEffectRenderingScale = 0.75;
+        }
+        if (screen.Bounds.Height >= 2000)
+        {
+            ViewModel.Settings.NotificationEffectRenderingScale = 0.5;
+        }
+
+        ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet = true;
+    }
+
     private void MainTaskBarIconOnTrayLeftMouseUp(object sender, RoutedEventArgs e)
     {
         switch (ViewModel.Settings.TaskBarIconClickBehavior)
@@ -498,7 +613,7 @@ public partial class MainWindow : Window
 
     public void LoadProfile()
     {
-        ProfileService.LoadProfile();
+        //ProfileService.LoadProfile();
         ViewModel.Profile = ProfileService.Profile;
     }
 
@@ -524,10 +639,12 @@ public partial class MainWindow : Window
     protected override void OnInitialized(EventArgs e)
     {
         base.OnInitialized(e);
+        if (DesignerProperties.GetIsInDesignMode(this))
+            return;
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
         LoadSettings();
-        ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
+        //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
@@ -580,7 +697,7 @@ public partial class MainWindow : Window
         switch (ViewModel.Settings.WindowLayer)
         {
             case 0: // bottom
-                Topmost = false;
+                Topmost = ViewModel.IsNotificationWindowExplicitShowed;
                 break;
             case 1:
                 Topmost = true;
@@ -622,12 +739,12 @@ public partial class MainWindow : Window
 
     public bool CheckClassPlan(ClassPlan plan)
     {
-        if (plan.TimeRule.WeekDay != (int)DateTime.Now.DayOfWeek)
+        if (plan.TimeRule.WeekDay != (int)ExactTimeService.GetCurrentLocalDateTime().DayOfWeek)
         {
             return false;
         }
 
-        var dd = DateTime.Now.Date - ViewModel.Settings.SingleWeekStartTime.Date;
+        var dd = ExactTimeService.GetCurrentLocalDateTime().Date - ViewModel.Settings.SingleWeekStartTime.Date;
         var dw = Math.Floor(dd.TotalDays / 7) + 1;
         var w = (int)dw % 2;
         switch (plan.TimeRule.WeekCountDiv)
@@ -644,28 +761,38 @@ public partial class MainWindow : Window
     public void LoadCurrentClassPlan()
     {
         ViewModel.Profile.RefreshTimeLayouts();
-        if (ViewModel.TemporaryClassPlanSetupTime.Date < DateTime.Now.Date)  // 清除过期临时课表
+        if (ViewModel.Profile.TempClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
         {
-            ViewModel.TemporaryClassPlan = null;
+            ViewModel.Profile.TempClassPlanId = null;
         }
 
+        // 检测是否启用课表加载
         if (!ViewModel.IsClassPlanEnabled)
         {
             ViewModel.CurrentClassPlan = null;
             return; 
         }
+        // 加载临时层
         if (ViewModel.Profile.IsOverlayClassPlanEnabled && 
             ViewModel.Profile.OverlayClassPlanId != null &&
-            ViewModel.Profile.ClassPlans.ContainsKey(ViewModel.Profile.OverlayClassPlanId))
+            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.OverlayClassPlanId, out var overlay))
         {
-            ViewModel.CurrentClassPlan = ViewModel.Profile.ClassPlans[ViewModel.Profile.OverlayClassPlanId];
+            ViewModel.CurrentClassPlan = overlay;
             return;
         }
+        // 加载临时课表
+        if (ViewModel.Profile.TempClassPlanId != null &&
+            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.TempClassPlanId, out var tempClassPlan))
+        {
+            ViewModel.CurrentClassPlan = tempClassPlan;
+            return;
+        }
+        // 加载课表
         var a = (from p in ViewModel.Profile.ClassPlans
             where CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled
             select p.Value)
             .ToList();
-        ViewModel.CurrentClassPlan = ViewModel.TemporaryClassPlan?.Value ?? (a.Count < 1 ? null : a[0]!);
+        ViewModel.CurrentClassPlan = a.FirstOrDefault();
     }
 
     private void ListView_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -759,7 +886,7 @@ public partial class MainWindow : Window
         UpdateTimer.Stop();
     }
 
-    private void UpdateWindowPos()
+    private void UpdateWindowPos(bool updateEffectWindow=false)
     {
         GetCurrentDpi(out var dpiX, out var dpiY);
 
@@ -806,6 +933,8 @@ public partial class MainWindow : Window
                 Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
                 break;
         }
+        if (updateEffectWindow)
+            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY)

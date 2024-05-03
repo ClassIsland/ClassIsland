@@ -20,7 +20,7 @@ public class GuidToNotificationProviderConverter : IValueConverter
             where i.ProviderGuid.ToString() == id
             select i)
             .ToList();
-        return l[0];
+        return l.FirstOrDefault();
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

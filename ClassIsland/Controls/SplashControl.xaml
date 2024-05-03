@@ -136,7 +136,7 @@
                        HorizontalAlignment="Left"
                        FontSize="9"
                        Opacity="0.5"
-                       Margin="-16 0 0 -16">
+                       Margin="-16 0 0 -14">
                 <Run Text="ClassIsland"/>
                 <Run Text="{x:Static classIsland:App.AppVersionLong}"/>
             </TextBlock>

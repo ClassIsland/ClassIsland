@@ -23,8 +23,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Controls;
 using ClassIsland.Converters;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter.Analytics;
@@ -47,6 +49,9 @@ public partial class ProfileSettingsWindow : MyWindow
     public static RoutedUICommand RemoveSelectedTimeLayoutItemCommand = new RoutedUICommand();
 
     public HangService HangService { get; } = App.GetService<HangService>();
+
+    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+
     public MainViewModel MainViewModel
     {
         get;
@@ -314,9 +319,16 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
     {
+        //DataGridSubjects.CancelEdit();
+        
+        var isCreating = DataGridSubjects.SelectedIndex == MainViewModel.Profile.Subjects.Count;
+        
+        DataGridSubjects.CancelEdit();
+        DataGridSubjects.IsReadOnly = true;
         MainViewModel.Profile.EditingSubjects.Add(new Subject());
-        //ListViewSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
-        TextBoxSubjectName.Focus();
+        DataGridSubjects.IsReadOnly = false;
+        DataGridSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
+        //TextBoxSubjectName.Focus();
         Analytics.TrackEvent("档案设置 · 添加科目");
     }
 
@@ -329,6 +341,8 @@ public partial class ProfileSettingsWindow : MyWindow
             {
                 {"IsSuccess", "true"},
             });
+            DataGridSubjects.CancelEdit();
+            DataGridSubjects.IsReadOnly = true;
             var rm = new List<Subject>();
             foreach (var i in DataGridSubjects.SelectedItems)
             {
@@ -342,6 +356,7 @@ public partial class ProfileSettingsWindow : MyWindow
             {
                 s.Remove(t);
             }
+            DataGridSubjects.IsReadOnly = false;
         }
         else
         {
@@ -497,6 +512,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
     {
+        DataGridSubjects.CancelEdit();
+        DataGridSubjects.IsReadOnly = true;
         foreach (var i in DataGridSubjects.SelectedItems)
         {
             var subject = i as Subject;
@@ -509,6 +526,7 @@ public partial class ProfileSettingsWindow : MyWindow
             MainViewModel.Profile.EditingSubjects.Add(o);
         }
         DataGridSubjects.SelectedItem = MainViewModel.Profile.EditingSubjects.Last();
+        DataGridSubjects.IsReadOnly = false;
         Analytics.TrackEvent("档案设置 · 复制科目");
     }
 
@@ -547,12 +565,13 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonClearTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        MainViewModel.TemporaryClassPlan = null;
+        ProfileService.Profile.TempClassPlanId = null;
     }
 
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
+        //MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
+        ProfileService.Profile.TempClassPlanSetupTime = DateTime.Now;
     }
 
     private void TabControlSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -813,6 +832,12 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonImportFromFile_OnClick(object sender, RoutedEventArgs e)
     {
+        if (ManagementService.Policy.DisableProfileClassPlanEditing ||
+            ManagementService.Policy.DisableProfileTimeLayoutEditing || ManagementService.Policy.DisableProfileEditing)
+        {
+            ViewModel.MessageQueue.Enqueue($"此功能已被您的组织禁用。");
+            return;
+        }
         var eiw = App.GetService<ExcelImportWindow>();
         eiw.Show();
     }   
@@ -826,6 +851,12 @@ public partial class ProfileSettingsWindow : MyWindow
         if (filename == null)
             return;
         Debug.WriteLine(filename);
+        if (ManagementService.Policy.DisableProfileClassPlanEditing ||
+            ManagementService.Policy.DisableProfileTimeLayoutEditing || ManagementService.Policy.DisableProfileEditing)
+        {
+            ViewModel.MessageQueue.Enqueue($"此功能已被您的组织禁用。");
+            return;
+        }
         if (Path.GetExtension(filename) != ".xlsx")
         {
             ViewModel.MessageQueue.Enqueue($"不支持的文件：{filename}");

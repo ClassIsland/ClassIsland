@@ -9,7 +9,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ci="clr-namespace:ClassIsland"
         xmlns:models="clr-namespace:ClassIsland.Models"
-        xmlns:windows="clr-namespace:Walterlv.Windows"
+        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"

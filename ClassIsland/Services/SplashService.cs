@@ -1,4 +1,5 @@
 ﻿using System;
+using ClassIsland.Services.Management;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
@@ -45,9 +46,14 @@ public class SplashService: ObservableRecipient
 
     private static string DefaultText { get; } = "正在启动…";
 
-    public SplashService(SettingsService settingsService)
+    public SplashService(SettingsService settingsService, ManagementService managementService)
     {
         SettingsService = settingsService;
+        if (managementService.Policy.DisableSplashCustomize)
+        {
+            SettingsService.Settings.SplashCustomLogoSource = "";
+            SettingsService.Settings.SplashCustomText = "";
+        }
         ResetSplashText();
     }
 

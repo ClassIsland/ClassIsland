@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ClassIsland.Controls.MiniInfoProvider;
-using ClassIsland.Interfaces;
+using ClassIsland.Core.Interfaces;
 using ClassIsland.Models;
 
 using Microsoft.Extensions.Hosting;

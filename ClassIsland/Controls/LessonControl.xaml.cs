@@ -18,7 +18,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using ClassIsland.Interfaces;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstraction.Models;
+using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Services;
@@ -48,6 +51,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     };
 
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
+
+    private ExactTimeService ExactTimeService { get; } = App.GetService<ExactTimeService>();
 
     public static readonly DependencyProperty CurrentTimeLayoutItemProperty = DependencyProperty.Register(
         nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControl), new PropertyMetadata(default(TimeLayoutItem)));
@@ -150,6 +155,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         nameof(MasterTabIndex), typeof(int), typeof(LessonControl), new PropertyMetadata(default(int)));
 
     private ILessonControlSettings _settingsSource = App.GetService<SettingsService>().Settings;
+    private Subject _currentSubject;
 
     public int MasterTabIndex
     {
@@ -180,35 +186,45 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     public Subject CurrentSubject
     {
-        get
+        get => _currentSubject;
+        set
         {
-            // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null || Index >= CurrentTimeLayout.Layouts.Count || Index < 0)
-            // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            {
-                return ErrorSubject;
-            }
+            if (Equals(value, _currentSubject)) return;
+            _currentSubject = value;
+            OnPropertyChanged();
+        }
+    }
 
-            try
+    private void UpdateCurrentSubject()
+    {
+        // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null || Index >= CurrentTimeLayout.Layouts.Count || Index < 0)
+            // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        {
+            CurrentSubject = ErrorSubject;
+            return;
+        }
+
+        //Console.WriteLine($"updated {Index}");
+        try
+        {
+            CurrentSubject = CurrentTimeLayout.Layouts[Index].TimeType switch
             {
-                return CurrentTimeLayout.Layouts[Index].TimeType switch
-                {
-                    0 => Subjects[CurrentClassPlan.Classes[GetSubjectIndex(Index)].SubjectId],
-                    1 => BreakingSubject,
-                    _ => ErrorSubject
-                };
-            }
-            catch
-            {
-                return ErrorSubject;
-            }
+                0 => Subjects[CurrentClassPlan.Classes[GetSubjectIndex(Index)].SubjectId],
+                1 => BreakingSubject,
+                _ => ErrorSubject
+            };
+        }
+        catch
+        {
+            CurrentSubject = ErrorSubject;
         }
     }
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
     {
         Update();
-        OnPropertyChanged(nameof(CurrentSubject));
+        UpdateCurrentSubject();
 
         switch (e.Property.Name)
         {
@@ -219,6 +235,11 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
                 }
                 CurrentClassPlan.PropertyChanged += CurrentClassPlanOnPropertyChanged;
                 CurrentClassPlan.Classes.CollectionChanged += ClassesOnCollectionChanged;
+                CurrentClassPlan.ClassesChanged += (sender, args) =>
+                {
+                    UpdateCurrentSubject();
+                    Update();
+                };
                 //Debug.WriteLine("Add event listener to CurrentClassPlan.PropertyChanged.");
                 break;
             case nameof(IsSelected):
@@ -243,7 +264,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        OnPropertyChanged(nameof(CurrentSubject));
+        UpdateCurrentSubject();
         Update();
     }
 
@@ -253,7 +274,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         {
             return;
         }
-        OnPropertyChanged(nameof(CurrentSubject));
+
+        UpdateCurrentSubject();
         Update();
     }
 
@@ -287,7 +309,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void UpdateSeconds()
     {
-        Seconds = (long)(DateTime.Now.TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
+        Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
         LeftSeconds = TotalSeconds - Seconds;
 
         MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&

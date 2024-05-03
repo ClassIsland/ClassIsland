@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="AttachedObject\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Attributes\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
+    <PackageReference Include="Grpc" Version="2.46.6" />
+    <PackageReference Include="Grpc.Tools" Version="2.62.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="Protobuf\Service\*.proto"/>
+    <Protobuf Include="Protobuf\Server\*.proto"/>
+    <Protobuf Include="Protobuf\Client\*.proto"/>
+    <Protobuf Include="Protobuf\Command\*.proto"/>
+    <Protobuf Include="Protobuf\Enum\*.proto"/>
+    <Protobuf Include="Protobuf\Management\*.proto"/>
+  </ItemGroup>
+
+</Project>

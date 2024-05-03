@@ -21,47 +21,105 @@
                         <Setter Property="Margin" Value="0 3" />
                     </Style>
                 </StackPanel.Resources>
-                <CheckBox Content="课前准备时"
-                          IsChecked="{Binding Settings.IsClassOnPreparingNotificationEnabled}" />
-                <CheckBox Content="上课时"
-                          IsChecked="{Binding Settings.IsClassOnNotificationEnabled}" />
-                <CheckBox Content="下课时"
-                          IsChecked="{Binding Settings.IsClassOffNotificationEnabled}" />
-                <Separator Margin="0 8" />
-                <!-- 室内课程课前提醒时间 -->
-                <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室内课程课前提醒时间"
-                                          Description="在室内课程的上课前指定时间进行上课提醒。"
-                                          IsCompact="True"
-                                          Margin="0 0 0 6">
-                    <controls:SettingsControl.Switcher>
-                        <controls:NumbericTextBox MaxValue="3600" MinValue="0"
-                                                  Text="{Binding Settings.InDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
-                                                  Width="120"
-                                                  Foreground="{DynamicResource MaterialDesignBody}"
-                                                  Style="{StaticResource MaterialDesignTextBoxBase}"
-                                                  materialDesign:TextFieldAssist.SuffixText="秒" />
-                    </controls:SettingsControl.Switcher>
-                </controls:SettingsControl>
-                <!-- 室外课程课前提醒时间 -->
-                <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室外课程课前提醒时间"
-                                          Description="在室外课程的上课前指定时间进行上课提醒。"
-                                          IsCompact="True"
-                                          Margin="0 0 0 6">
-                    <controls:SettingsControl.Switcher>
-                        <controls:NumbericTextBox MaxValue="3600" MinValue="0"
-                                                  Text="{Binding Settings.OutDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
-                                                  Width="120"
-                                                  Foreground="{DynamicResource MaterialDesignBody}"
-                                                  Style="{StaticResource MaterialDesignTextBoxBase}"
-                                                  materialDesign:TextFieldAssist.SuffixText="秒" />
-                    </controls:SettingsControl.Switcher>
-                </controls:SettingsControl>
-                <!-- 准备上课提醒文字 -->
-                <TextBox Text="{Binding Settings.ClassOnPreparingText}"
-                         materialDesign:HintAssist.Hint="准备上课提醒文字"
-                         Foreground="{DynamicResource MaterialDesignBody}"
-                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         Margin="0 0 0 6" />
+                <!-- 在课前准备时发出提醒 -->
+                <materialDesign:Card Margin="0 0 0 6">
+                    <Expander Background="Transparent"
+                              IsExpanded="{Binding Settings.IsClassOnPreparingNotificationEnabled, Mode=OneWay}"
+                              TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                        <Expander.Header>
+                            <controls:SettingsControl IconGlyph="ClockEnd"
+                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                      Header="在课前准备时发出提醒"
+                                                      Description="在上课前一段时间发出醒目提醒，提示做好上课准备。"
+                                                      IsOn="{Binding Settings.IsClassOnPreparingNotificationEnabled, Mode=TwoWay}"
+                                                      Margin="-12 0" />
+                        </Expander.Header>
+                        <StackPanel Margin="36 0 48 12"
+                              IsEnabled="{Binding Settings.IsClassOnPreparingNotificationEnabled, Mode=OneWay}">
+                            <!-- 启用语音 -->
+                            <CheckBox Content="启用语音" Margin="0 0 0 6"
+                                      IsChecked="{Binding Settings.IsSpeechEnabledOnClassPreparing}"/>
+                            <!-- 室内课程课前提醒时间 -->
+                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室内课程课前提醒时间"
+                                                      Description="在室内课程的上课前指定时间进行上课提醒。"
+                                                      IsCompact="True"
+                                                      Margin="0 0 0 6">
+                                <controls:SettingsControl.Switcher>
+                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                                              Text="{Binding Settings.InDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
+                                                              Width="120"
+                                                              Foreground="{DynamicResource MaterialDesignBody}"
+                                                              Style="{StaticResource MaterialDesignTextBoxBase}"
+                                                              materialDesign:TextFieldAssist.SuffixText="秒" />
+                                </controls:SettingsControl.Switcher>
+                            </controls:SettingsControl>
+                            <!-- 室外课程课前提醒时间 -->
+                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室外课程课前提醒时间"
+                                                      Description="在室外课程的上课前指定时间进行上课提醒。"
+                                                      IsCompact="True"
+                                                      Margin="0 0 0 6">
+                                <controls:SettingsControl.Switcher>
+                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                                              Text="{Binding Settings.OutDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
+                                                              Width="120"
+                                                              Foreground="{DynamicResource MaterialDesignBody}"
+                                                              Style="{StaticResource MaterialDesignTextBoxBase}"
+                                                              materialDesign:TextFieldAssist.SuffixText="秒" />
+                                </controls:SettingsControl.Switcher>
+                            </controls:SettingsControl>
+                            <!-- 准备上课提醒文字 -->
+                            <TextBox Text="{Binding Settings.ClassOnPreparingText}"
+                                     materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0 0 0 6" />
+                        </StackPanel>
+                    </Expander>
+                </materialDesign:Card>
+                <!-- 在上课时发出提醒 -->
+                <materialDesign:Card Margin="0 0 0 6">
+                    <Expander Background="Transparent"
+                              IsExpanded="{Binding Settings.IsClassOnNotificationEnabled, Mode=OneWay}"
+                              TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                        <Expander.Header>
+                            <controls:SettingsControl IconGlyph="BookOutline"
+                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                      Header="在上课时发出提醒"
+                                                      Description="在上课时发出醒目提醒，提示已经上课。"
+                                                      IsOn="{Binding Settings.IsClassOnNotificationEnabled, Mode=TwoWay}"
+                                                      Margin="-12 0" />
+                        </Expander.Header>
+                        <StackPanel Margin="36 0 48 12"
+                              IsEnabled="{Binding Settings.IsClassOnNotificationEnabled, Mode=OneWay}">
+                            <!-- 启用语音 -->
+                            <CheckBox Content="启用语音" Margin="0 0 0 6"
+                                      IsChecked="{Binding Settings.IsSpeechEnabledOnClassOn}"/>
+                            
+                        </StackPanel>
+                    </Expander>
+                </materialDesign:Card>
+                <!-- 在下课时发出提醒 -->
+                <materialDesign:Card Margin="0 0 0 6">
+                    <Expander Background="Transparent"
+                              IsExpanded="{Binding Settings.IsClassOffNotificationEnabled, Mode=OneWay}"
+                              TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                        <Expander.Header>
+                            <controls:SettingsControl IconGlyph="ClockOutline"
+                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                      Header="在下课时发出提醒"
+                                                      Description="在下课时发出醒目提醒，提示已经下课。"
+                                                      IsOn="{Binding Settings.IsClassOffNotificationEnabled, Mode=TwoWay}"
+                                                      Margin="-12 0" />
+                        </Expander.Header>
+                        <StackPanel Margin="36 0 48 12"
+                                    IsEnabled="{Binding Settings.IsClassOffNotificationEnabled, Mode=OneWay}">
+                            <!-- 启用语音 -->
+                            <CheckBox Content="启用语音" Margin="0 0 0 6"
+                                      IsChecked="{Binding Settings.IsSpeechEnabledOnClassOff}"/>
+
+                        </StackPanel>
+                    </Expander>
+                </materialDesign:Card>
             </StackPanel>
         </ScrollViewer>
     </Grid>

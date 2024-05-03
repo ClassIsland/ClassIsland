@@ -69,8 +69,19 @@
             <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
                 <Setter Property="PanningMode" Value="Both"/>
             </Style>
+
+            <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
+                <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+            </Style>
+
+            <Style TargetType="ListView" BasedOn="{StaticResource MaterialDesignListView}">
+                <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+            </Style>
+
             <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
             <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
+            <converters:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
+            <converters:IntToStringConverter x:Key="IntToStringConverter" />
 
         </ResourceDictionary>
     </Application.Resources>

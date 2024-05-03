@@ -6,10 +6,12 @@ using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ClassIsland.Interfaces;
+using ClassIsland.Core.Interfaces;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Edge_tts_sharp;
+using Edge_tts_sharp.Model;
 using Color = System.Windows.Media.Color;
 using FontFamily = System.Windows.Media.FontFamily;
 
@@ -33,6 +35,10 @@ public class SettingsViewModel : ObservableRecipient
     private List<City> _citySearchResults = new();
     private object? _weatherNotificationControlTest;
     private string _diagnosticInfo = "";
+    private bool _isMoreNotificationSettingsExpanded = false;
+    private string _testSpeechText = "风带来了故事的种子，时间使之发芽。";
+    private bool _isRestartRequired = false;
+    private bool _isRefreshingContributors = false;
 
     public Screen[] Screens
     {
@@ -225,6 +231,53 @@ public class SettingsViewModel : ObservableRecipient
         {
             if (value == _diagnosticInfo) return;
             _diagnosticInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMoreNotificationSettingsExpanded
+    {
+        get => _isMoreNotificationSettingsExpanded;
+        set
+        {
+            if (value == _isMoreNotificationSettingsExpanded) return;
+            _isMoreNotificationSettingsExpanded = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public List<eVoice> EdgeVoices { get; } = 
+        Edge_tts.GetVoice().FindAll(i => i.Locale.Contains("zh-CN"));
+
+    public string TestSpeechText
+    {
+        get => _testSpeechText;
+        set
+        {
+            if (value == _testSpeechText) return;
+            _testSpeechText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsRestartRequired
+    {
+        get => _isRestartRequired;
+        set
+        {
+            if (value == _isRestartRequired) return;
+            _isRestartRequired = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsRefreshingContributors
+    {
+        get => _isRefreshingContributors;
+        set
+        {
+            if (value == _isRefreshingContributors) return;
+            _isRefreshingContributors = value;
             OnPropertyChanged();
         }
     }

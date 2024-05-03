@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using ClassIsland.Enums;
-using ClassIsland.Interfaces;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,21 +23,16 @@ namespace ClassIsland.Services;
 /// <summary>
 /// 提醒主机服务。
 /// </summary>
-public class NotificationHostService : IHostedService, INotifyPropertyChanged
+public class NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
+    : IHostedService, INotifyPropertyChanged
 {
-    private SettingsService SettingsService { get; }
-    private ILogger<NotificationHostService> Logger { get; }
+    private SettingsService SettingsService { get; } = settingsService;
+    private ILogger<NotificationHostService> Logger { get; } = logger;
     private Settings Settings => SettingsService.Settings;
 
-    public Queue<NotificationRequest> RequestQueue { get; } = new();
+    public PriorityQueue<NotificationRequest, int> RequestQueue { get; } = new();
 
-    public ObservableCollection<INotificationProvider> NotificationProviders { get; } = new();
-
-    public NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
-    {
-        SettingsService = settingsService;
-        Logger = logger;
-    }
+    public ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; } = new();
 
     #region Events
 
@@ -113,7 +113,11 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         CurrentRequest = RequestQueue.Dequeue();
         CurrentRequest.CancellationTokenSource.Token.Register(() =>
         {
-            RequestQueue.Clear();
+            while (RequestQueue.Count > 0)
+            {
+                var r = RequestQueue.Dequeue();
+                r.CompletedTokenSource.Cancel();
+            }
         });
         return CurrentRequest;
     }
@@ -133,21 +137,61 @@ public class NotificationHostService : IHostedService, INotifyPropertyChanged
         if (!Settings.NotificationProvidersPriority.Contains(provider.ProviderGuid.ToString()))
         {
             Settings.NotificationProvidersPriority.Add(provider.ProviderGuid.ToString());
-            Settings.NotificationProvidersEnableStates.Add(provider.ProviderGuid.ToString(), true);
+        }
+        if (!Settings.NotificationProvidersSettings.ContainsKey(provider.ProviderGuid.ToString()))
+        {
             Settings.NotificationProvidersSettings.Add(provider.ProviderGuid.ToString(), null);
         }
-        NotificationProviders.Add(provider);
+        if (!Settings.NotificationProvidersEnableStates.ContainsKey(provider.ProviderGuid.ToString()))
+        {
+            Settings.NotificationProvidersEnableStates.Add(provider.ProviderGuid.ToString(), true);
+        }
+        if (!Settings.NotificationProvidersNotifySettings.ContainsKey(provider.ProviderGuid.ToString()))
+        {
+            Settings.NotificationProvidersNotifySettings.Add(provider.ProviderGuid.ToString(), new());
+        }
+
+        NotificationProviders.Add(new NotificationProviderRegisterInfo(provider)
+        {
+            ProviderSettings = Settings.NotificationProvidersNotifySettings[provider.ProviderGuid.ToString()]
+        });
+    }
+
+    public void ShowNotification(NotificationRequest request)
+    {
+        var trace = new StackTrace();
+        Logger.LogDebug("准备显示提醒\n{}", trace);
+        foreach (var i in trace.GetFrames())
+        {
+            var type = i.GetMethod()?.DeclaringType;
+            if (type?.IsAssignableTo(typeof(INotificationProvider)) != true)
+                continue;
+            var provider = (from p in NotificationProviders where p.ProviderInstance.GetType() == type select p).FirstOrDefault();
+            if (provider == null)
+                continue;
+            Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
+            ShowNotification(request, provider.ProviderGuid);
+            return;
+        }
+
+        throw new ArgumentException("此方法只能由 INotificationProvider 调用。");
+    }
+
+    private void ShowNotification(NotificationRequest request, Guid providerGuid)
+    {
+        request.NotificationSourceGuid = providerGuid;
+        request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
+            .FirstOrDefault();
+        request.ProviderSettings = request.NotificationSource?.ProviderSettings ?? request.ProviderSettings;
+        RequestQueue.Enqueue(request, request.IsPriorityOverride ? request.PriorityOverride : Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()));
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request)
     {
-        RequestQueue.Enqueue(request);
+        ShowNotification(request);
         await Task.Run(() =>
         {
-            while (RequestQueue.Contains(request))
-            {
-
-            }
+            request.CompletedTokenSource.Token.WaitHandle.WaitOne();
         });
 
     }

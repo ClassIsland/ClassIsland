@@ -1,5 +1,4 @@
-﻿using ClassIsland.Interfaces;
-using ClassIsland.Models.AttachedSettings;
+﻿using ClassIsland.Models.AttachedSettings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Core.Interfaces;
 
 namespace ClassIsland.Controls.AttachedSettingsControls;
 

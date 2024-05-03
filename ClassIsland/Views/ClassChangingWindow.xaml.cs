@@ -12,8 +12,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 using MaterialDesignThemes.Wpf;
 
@@ -27,6 +29,8 @@ public partial class ClassChangingWindow : MyWindow
     public ClassChangingViewModel ViewModel { get; } = new();
 
     public ProfileService ProfileService { get; } = App.GetService<ProfileService>();
+
+    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
 
     public static readonly DependencyProperty ClassPlanProperty = DependencyProperty.Register(
         nameof(ClassPlan), typeof(ClassPlan), typeof(ClassChangingWindow), new PropertyMetadata(default(ClassPlan)));

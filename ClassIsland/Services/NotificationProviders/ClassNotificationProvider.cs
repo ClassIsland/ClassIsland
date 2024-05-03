@@ -4,10 +4,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Enums;
-using ClassIsland.Interfaces;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Models;
+using ClassIsland.Core.Models.Notification;
+using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
+using ClassIsland.Models.NotificationProviderSettings;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 
@@ -33,6 +37,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     } = new();
 
     private bool IsClassPreparingNotified { get; set; } = false;
+
+    private bool IsClassOnNotified { get; set; } = false;
 
     private NotificationHostService NotificationHostService { get; }
 
@@ -73,33 +79,44 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var message = isAttachedSettingsEnabled
             ? settings!.ClassOnPreparingText
             : Settings.ClassOnPreparingText;
+        var settingsDeltaTime = NotificationHostService.NextClassSubject.IsOutDoor
+            ? settingsOutDoorClassPreparingDeltaTime
+            : settingsInDoorClassPreparingDeltaTime;
         if (settingsIsClassOnPreparingNotificationEnabled &&
-            ((tClassDelta > TimeSpan.Zero &&
-              tClassDelta <= TimeSpan.FromSeconds(settingsInDoorClassPreparingDeltaTime) &&
-              !NotificationHostService.NextClassSubject.IsOutDoor) // indoor
-             ||
-             (tClassDelta > TimeSpan.Zero &&
-              tClassDelta <= TimeSpan.FromSeconds(settingsOutDoorClassPreparingDeltaTime) &&
-              NotificationHostService.NextClassSubject.IsOutDoor) // outdoor
-            ) &&
-            !IsClassPreparingNotified)
+            tClassDelta > TimeSpan.Zero &&
+              tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) &&
+            !IsClassPreparingNotified && NotificationHostService.CurrentState == TimeState.Breaking)
         {
+            var deltaTime = NotificationHostService.NextClassSubject.IsOutDoor
+                ? settingsOutDoorClassPreparingDeltaTime
+                : settingsInDoorClassPreparingDeltaTime;
             IsClassPreparingNotified = true;
-            NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+            IsClassOnNotified = true;
+            NotificationHostService.ShowNotification(new NotificationRequest()
             {
+                MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(TimeSpan.FromSeconds(deltaTime))}。",
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
                 MaskDuration = TimeSpan.FromSeconds(5),
+                OverlaySpeechContent = $"{message} 下节课是：{NotificationHostService.NextClassSubject.Name}。",
                 OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
                 {
                     Message = message
                 },
-                TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond)
+                TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond),
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             });
 
-            NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+            var onClassRequest = new NotificationRequest()
             {
-                MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
-            });
+                MaskSpeechContent = "上课",
+                MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
+            };
+            onClassRequest.CompletedTokenSource.Token.Register((o, token) =>
+            {
+                IsClassOnNotified = false;
+            }, false);
+            NotificationHostService.ShowNotification(onClassRequest);
         }
     }
 
@@ -114,12 +131,15 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
-        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new ClassNotificationProviderControl("ClassOffNotification"),
             MaskDuration = TimeSpan.FromSeconds(2),
+            MaskSpeechContent = "课间休息",
             OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay"),
-            OverlayDuration = TimeSpan.FromSeconds(10)
+            OverlayDuration = TimeSpan.FromSeconds(10),
+            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.Name}。",
+            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
         });
     }
 
@@ -134,15 +154,20 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
+        if (IsClassOnNotified)
+        {
+            return;
+        }
 
         if (IsClassPreparingNotified)
         {
             IsClassPreparingNotified = false;
-            return;
         }
-        NotificationHostService.RequestQueue.Enqueue(new NotificationRequest()
+        NotificationHostService.ShowNotification(new NotificationRequest()
         {
-            MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
+            MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
+            MaskSpeechContent = "上课。",
+            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
         });
     }
 

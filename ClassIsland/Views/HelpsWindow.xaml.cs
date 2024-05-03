@@ -80,6 +80,7 @@ public partial class HelpsWindow : MyWindow
         ViewModel.HelpDocuments.Add("时间表", "/Assets/Documents/TimeLayout.md");
         ViewModel.HelpDocuments.Add("科目", "/Assets/Documents/Subject.md");
         ViewModel.HelpDocuments.Add("进阶功能", "/Assets/Documents/Advanced.md");
+        ViewModel.HelpDocuments.Add("新增功能", "/Assets/Documents/ChangeLog.md");
         //IsAutoNavigating = true;
         ViewModel.SelectedDocumentName = InitDocumentName;
         IsAutoNavigating = true;
@@ -134,6 +135,7 @@ public partial class HelpsWindow : MyWindow
         ViewModel.SelectedDocumentName = name;
         await Dispatcher.Yield();
         //Console.WriteLine(sw.Elapsed.ToString());
+        RootScrollViewer.ScrollToTop();
         ViewModel.IsLoading = false;
     }
 
