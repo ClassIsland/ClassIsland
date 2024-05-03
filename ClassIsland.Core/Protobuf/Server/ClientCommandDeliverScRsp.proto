@@ -3,8 +3,10 @@ package ClassIsland.Core.Protobuf.Server;
 option csharp_namespace = "ClassIsland.Core.Protobuf.Server";
 
 import "Protobuf/Enum/CommandTypes.proto";
+import "Protobuf/Enum/Retcode.proto";
 
 message ClientCommandDeliverScRsp {
-    Enum.CommandTypes Type = 1;
-    bytes Payload = 2;
+    Enum.Retcode RetCode = 1;
+    Enum.CommandTypes Type = 2;
+    bytes Payload = 3;
 }

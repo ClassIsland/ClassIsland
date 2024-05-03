@@ -2,16 +2,19 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Models.Management;
 using ClassIsland.Core.Protobuf.Client;
 using ClassIsland.Core.Protobuf.Enum;
+using ClassIsland.Core.Protobuf.Server;
 using ClassIsland.Core.Protobuf.Service;
 using ClassIsland.Helpers;
 using Grpc.Core;
 using Grpc.Core.Utils;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
+using Timer = System.Timers.Timer;
 
 namespace ClassIsland.Services.Management;
 
@@ -28,13 +31,28 @@ public class ManagementServerConnection : IManagementServerConnection
     private string Host { get; }
     
     private GrpcChannel Channel { get; }
+
+    private DispatcherTimer CommandConnectionAliveTimer { get; } = new()
+    {
+        Interval = TimeSpan.FromSeconds(15)
+    };
+    
+    private AsyncDuplexStreamingCall<ClientCommandDeliverScReq, ClientCommandDeliverScRsp>? CommandListeningCall { get;
+        set;
+    }
+
+    private CancellationTokenSource CommandListeningCallCancellationTokenSource { get; set; } = new();
+    
+    private ManagementSettings ManagementSettings { get; }
     
     public ManagementServerConnection(ManagementSettings settings, Guid clientUid, bool lightConnect)
     {
         ClientGuid = clientUid;
         Id = settings.ClassIdentity ?? "";
         Host = settings.ManagementServer;
+        ManagementSettings = settings;
         ManifestUrl = $"{Host}/api/v1/client/{clientUid}/manifest";
+        CommandConnectionAliveTimer.Tick += CommandConnectionAliveTimerOnTick;
         
         Channel = GrpcChannel.ForAddress(settings.ManagementServerGrpc);
         
@@ -45,6 +63,7 @@ public class ManagementServerConnection : IManagementServerConnection
         Task.Run(ListenCommands);
 
     }
+
 
     public async Task<ManagementManifest> RegisterAsync()
     {
@@ -61,19 +80,73 @@ public class ManagementServerConnection : IManagementServerConnection
         return await GetManifest();
     }
 
+    private async void CommandConnectionAliveTimerOnTick(object? sender, EventArgs e)
+    {
+        try
+        {
+            if (CommandListeningCall == null)
+            {
+                throw new Exception("CommandListeningCall is null!");
+            }
+            if (CommandListeningCallCancellationTokenSource.IsCancellationRequested)
+                return;
+            Logger.LogTrace("向命令流发送心跳包。");
+            await CommandListeningCall.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "命令流与集控服务器断开。");
+            await CommandListeningCallCancellationTokenSource.CancelAsync();
+            CommandConnectionAliveTimer.Stop();
+            CommandListeningCall = null;
+            Logger.LogInformation("尝试重新连接命令流");
+            _ = Task.Run(ListenCommands);
+        }
+    }
+    
     private async Task ListenCommands()
     {
-        var client = new ClientCommandDeliver.ClientCommandDeliverClient(Channel);
-        var stream = client.ListenCommand(new ClientCommandDeliverScReq()
+        if (CommandListeningCall != null)
         {
-            ClientUid = ClientGuid.ToString()
-        });
-        var header = await stream.ResponseHeadersAsync;
-        await stream.ResponseStream.ForEachAsync(async r =>
+            Logger.LogWarning("已连接到命令流，无需重复连接");
+            return;
+        }
+        try
         {
-            Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
-        });
-        Logger.LogInformation("指令流终止。");
+            Logger.LogInformation("正在连接到命令流");
+            var client = new ClientCommandDeliver.ClientCommandDeliverClient(GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc));
+            var call = client.ListenCommand(new Metadata()
+            {
+                { "cuid", ClientGuid.ToString() }
+            });
+            CommandListeningCallCancellationTokenSource = new CancellationTokenSource();
+            CommandListeningCall = call;
+            await call.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
+            CommandConnectionAliveTimer.Start();
+            while (!CommandListeningCallCancellationTokenSource.IsCancellationRequested)
+            {
+                await call.ResponseStream.MoveNext(CommandListeningCallCancellationTokenSource.Token);
+                var r = call.ResponseStream.Current;
+                if (r == null)
+                    continue;
+                Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
+            }
+        }
+        catch (Exception ex)
+        {
+            if (ex is OperationCanceledException)
+                return;
+            Logger.LogError(ex, "无法连接到集控服务器命令流，将在60秒后重试。");
+            CommandConnectionAliveTimer.Stop();
+            CommandListeningCall = null;
+            var timer = new Timer()
+            {
+                Interval = 30000,
+                AutoReset = false
+            };
+            timer.Elapsed += (sender, args) => Task.Run(ListenCommands);
+            timer.Start();
+        }
     }
     
     public async Task<ManagementManifest> GetManifest()

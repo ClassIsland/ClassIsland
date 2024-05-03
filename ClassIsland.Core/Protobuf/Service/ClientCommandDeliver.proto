@@ -6,5 +6,5 @@ import "Protobuf/Server/ClientCommandDeliverScRsp.proto";
 import "Protobuf/Client/ClientCommandDeliverScReq.proto";
 
 service ClientCommandDeliver {
-  rpc ListenCommand (Client.ClientCommandDeliverScReq) returns (stream Server.ClientCommandDeliverScRsp);
+  rpc ListenCommand (stream Client.ClientCommandDeliverScReq) returns (stream Server.ClientCommandDeliverScRsp);
 }

@@ -3,7 +3,7 @@ package ClassIsland.Core.Protobuf.Enum;
 option csharp_namespace = "ClassIsland.Core.Protobuf.Enum";
 
 enum CommandTypes {
-  Default=0;
+  DefaultCommand=0;
   ServerConnected=1;
   PingTest=2;
   RestartApp=3;
