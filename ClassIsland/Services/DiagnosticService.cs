@@ -2,16 +2,30 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using ClassIsland.Services.Logging;
+using ClassIsland.Services.Management;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class DiagnosticService(SettingsService settingsService)
+public class DiagnosticService(SettingsService settingsService, FileFolderService fileFolderService, 
+    ILogger<DiagnosticService> logger,
+    AppLogService appLogService)
 {
     private static Stopwatch _startupStopwatch = new();
+
+    private FileFolderService FileFolderService { get; } = fileFolderService;
+
+    private AppLogService AppLogService { get; } = appLogService;
+
+    private ILogger<DiagnosticService> Logger { get; } = logger;
 
     public static string STARTUP_EVENT_NAME = "AppStartup";
 
@@ -63,5 +77,43 @@ public class DiagnosticService(SettingsService settingsService)
         {
             {"Duration", text}
         });
+    }
+
+    public async Task ExportDiagnosticData(string path)
+    {
+        try
+        {
+            var temp = Directory.CreateTempSubdirectory("ClassIslandDiagnosticExport").FullName;
+            var logs = string.Join('\n', AppLogService.Logs);
+            await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
+            await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
+            File.Copy("./Settings.json", Path.Combine(temp, "Settings.json"));
+            var profile = App.GetService<ProfileService>().CurrentProfilePath;
+            Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
+            Directory.CreateDirectory(Path.Combine(temp, "Management/"));
+            foreach (var file in Directory.GetFiles(ManagementService.ManagementConfigureFolderPath))
+            {
+                File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
+            }
+            File.Copy(Path.Combine("./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
+
+            File.Delete(path);
+            await Task.Run(() =>
+            {
+                ZipFile.CreateFromDirectory(temp, path);
+            });
+            Directory.Delete(temp, true);
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Path.GetDirectoryName(path) ?? "",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "无法导出诊断数据。");
+            throw;
+        }
+        
     }
 }

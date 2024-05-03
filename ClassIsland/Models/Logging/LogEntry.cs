@@ -69,6 +69,6 @@ public class LogEntry : ObservableRecipient
 
     public override string ToString()
     {
-        return $"[{Time}] {CategoryName}:\n{Message}";
+        return $"[{Time}] [{LogLevel}] {CategoryName}:\n{Message}";
     }
 }

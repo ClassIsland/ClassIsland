@@ -3069,6 +3069,9 @@ The quick brown fox jumps over a lazy dog.
                                         <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}"
                                                   Header="日志…"
                                                   Click="MenuItemAppLogs_OnClick"/>
+                                        <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
+                                                  Header="导出诊断数据"
+                                                  Click="MenuItemExportDiagnosticInfo_OnClick"/>
                                     </StackPanel>
                                 </materialDesign:PopupBox>
                             </StackPanel>
