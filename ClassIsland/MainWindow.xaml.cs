@@ -474,7 +474,7 @@ public partial class MainWindow : Window
                     }
                 }
                 // 播放提醒特效
-                if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationSound &&
+                if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationEffect &&
                     GridRoot.IsVisible && ViewModel.IsMainWindowVisible)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
