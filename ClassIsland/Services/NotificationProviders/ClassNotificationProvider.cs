@@ -38,6 +38,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
     private bool IsClassPreparingNotified { get; set; } = false;
 
+    private bool IsClassOnNotified { get; set; } = false;
+
     private NotificationHostService NotificationHostService { get; }
 
     public ClassNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
@@ -89,6 +91,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 ? settingsOutDoorClassPreparingDeltaTime
                 : settingsInDoorClassPreparingDeltaTime;
             IsClassPreparingNotified = true;
+            IsClassOnNotified = true;
             NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(TimeSpan.FromSeconds(deltaTime))}。",
@@ -103,12 +106,17 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             });
 
-            NotificationHostService.ShowNotification(new NotificationRequest()
+            var onClassRequest = new NotificationRequest()
             {
                 MaskSpeechContent = "上课",
                 MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
-            });
+            };
+            onClassRequest.CompletedTokenSource.Token.Register((o, token) =>
+            {
+                IsClassOnNotified = false;
+            }, false);
+            NotificationHostService.ShowNotification(onClassRequest);
         }
     }
 
@@ -146,11 +154,14 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
+        if (IsClassOnNotified)
+        {
+            return;
+        }
 
         if (IsClassPreparingNotified)
         {
             IsClassPreparingNotified = false;
-            return;
         }
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
