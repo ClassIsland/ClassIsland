@@ -54,7 +54,7 @@ public class ConsoleService
         }
         Console.WriteLine(AsciiLogo.Pastel("#00bfff"));
         Console.WriteLine($"ClassIsland {App.AppVersionLong}");
-        Console.WriteLine("「人们为何选择沉睡？我想…是因为害怕从『梦』中醒来。」".Pastel("#A0D9B4"));
+        Console.WriteLine("「火萤这种生物很神奇吧？它们或许会扑向火烛，或许会突然老化。但在那之前的每一个夜晚，它们的光芒会比星星更耀眼。」".Pastel("#A0D9B4"));
         Console.WriteLine();
     }
 
