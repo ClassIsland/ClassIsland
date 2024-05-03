@@ -267,6 +267,7 @@ public partial class App : Application, IAppHost
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
                 services.AddHostedService<WeatherNotificationProvider>();
+                services.AddHostedService<ManagementNotificationProvider>();
                 // 简略信息提供方
                 services.AddHostedService<DateMiniInfoProvider>();
                 services.AddHostedService<WeatherMiniInfoProvider>();

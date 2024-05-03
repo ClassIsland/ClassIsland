@@ -51,5 +51,5 @@ public class ServerlessConnection : IManagementServerConnection
         return await WebRequestHelper.SaveJson<T>(decorateUrl, path);
     }
 
-    public event EventHandler? CommandReceived;
+    public event EventHandler<ClientCommandEventArgs>? CommandReceived;
 }

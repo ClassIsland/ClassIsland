@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Models.Management;
@@ -13,6 +14,7 @@ using ClassIsland.Helpers;
 using Grpc.Core;
 using Grpc.Core.Utils;
 using Grpc.Net.Client;
+using MahApps.Metro.Controls;
 using Microsoft.Extensions.Logging;
 using Timer = System.Timers.Timer;
 
@@ -136,8 +138,28 @@ public class ManagementServerConnection : IManagementServerConnection
                 {
                     continue;
                 }
+
+                if (r.RetCode != Retcode.Success)
+                {
+                    Logger.LogWarning("接受指令时未返回成功代码：{}", r.RetCode);
+                    continue;
+                }
                 Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
-                // TODO: 发放命令事件
+                try
+                {
+                    Application.Current.Invoke(() =>
+                    {
+                        CommandReceived?.Invoke(this, new ClientCommandEventArgs()
+                        {
+                            Type = r.Type,
+                            Payload = r.Payload
+                        });
+                    });
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e, "在处理事件时出现异常");
+                }
             }
         }
         catch (Exception ex)
@@ -185,6 +207,6 @@ public class ManagementServerConnection : IManagementServerConnection
         return await WebRequestHelper.SaveJson<T>(decorateUrl, path);
     }
 
-    public event EventHandler? CommandReceived;
+    public event EventHandler<ClientCommandEventArgs>? CommandReceived;
 
 }

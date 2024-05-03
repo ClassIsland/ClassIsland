@@ -66,7 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\TimeRules\" />
-    <Folder Include="Services\NotificationProviders\" />
     <Folder Include="Validations\" />
   </ItemGroup>
   <ItemGroup>

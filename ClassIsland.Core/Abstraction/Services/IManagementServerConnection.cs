@@ -10,5 +10,5 @@ public interface IManagementServerConnection
 
     public Task<T> SaveJsonAsync<T>(string url, string path);
 
-    public event EventHandler? CommandReceived;
+    public event EventHandler<ClientCommandEventArgs>? CommandReceived;
 }
