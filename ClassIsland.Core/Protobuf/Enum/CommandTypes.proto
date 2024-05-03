@@ -4,8 +4,13 @@ option csharp_namespace = "ClassIsland.Core.Protobuf.Enum";
 
 enum CommandTypes {
   DefaultCommand=0;
+  // Misc
   ServerConnected=1;
-  PingTest=2;
-  RestartApp=3;
-  SendNotification=4;
+  // Heartbeat
+  Ping=2;
+  Pong=3;
+  // Commands
+  RestartApp=4;
+  SendNotification=5;
+  DataUpdated=6;
 }

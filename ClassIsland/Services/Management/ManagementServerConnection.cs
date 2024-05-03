@@ -34,7 +34,7 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private DispatcherTimer CommandConnectionAliveTimer { get; } = new()
     {
-        Interval = TimeSpan.FromSeconds(15)
+        Interval = TimeSpan.FromSeconds(10)
     };
     
     private AsyncDuplexStreamingCall<ClientCommandDeliverScReq, ClientCommandDeliverScRsp>? CommandListeningCall { get;
@@ -90,8 +90,11 @@ public class ManagementServerConnection : IManagementServerConnection
             }
             if (CommandListeningCallCancellationTokenSource.IsCancellationRequested)
                 return;
-            Logger.LogTrace("向命令流发送心跳包。");
-            await CommandListeningCall.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
+            // Logger.LogTrace("向命令流发送心跳包。");
+            await CommandListeningCall.RequestStream.WriteAsync(new ClientCommandDeliverScReq()
+            {
+                Type = CommandTypes.Ping
+            });
         }
         catch (Exception exception)
         {
@@ -121,7 +124,7 @@ public class ManagementServerConnection : IManagementServerConnection
             });
             CommandListeningCallCancellationTokenSource = new CancellationTokenSource();
             CommandListeningCall = call;
-            await call.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
+            // await call.RequestStream.WriteAsync(new ClientCommandDeliverScReq());
             CommandConnectionAliveTimer.Start();
             while (!CommandListeningCallCancellationTokenSource.IsCancellationRequested)
             {
@@ -129,14 +132,19 @@ public class ManagementServerConnection : IManagementServerConnection
                 var r = call.ResponseStream.Current;
                 if (r == null)
                     continue;
+                if (r.Type == CommandTypes.Pong)
+                {
+                    continue;
+                }
                 Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
+                // TODO: 发放命令事件
             }
         }
         catch (Exception ex)
         {
             if (ex is OperationCanceledException)
                 return;
-            Logger.LogError(ex, "无法连接到集控服务器命令流，将在60秒后重试。");
+            Logger.LogError(ex, "无法连接到集控服务器命令流，将在30秒后重试。");
             CommandConnectionAliveTimer.Stop();
             CommandListeningCall = null;
             var timer = new Timer()

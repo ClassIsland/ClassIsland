@@ -1,7 +1,0 @@
-syntax = "proto3";
-package ClassIsland.Core.Protobuf.Server.Commands;
-option csharp_namespace = "ClassIsland.Core.Protobuf.Server.Commands";
-
-message BlankPayload {
-  
-}
