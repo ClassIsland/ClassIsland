@@ -448,13 +448,25 @@ public partial class App : Application, IAppHost
         app.Mutex?.ReleaseMutex();
     }
 
-    public static void Restart()
+    public static void Restart(bool quiet=false)
     {
         IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
         IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
         IAppHost.Host?.Services.GetService<ProfileService>()?.SaveProfile();
         ReleaseLock();
         Current.Shutdown();
-        System.Windows.Forms.Application.Restart();
+        var path = Environment.ProcessPath;
+        var args = new List<string> { "-m" };
+        if (quiet)
+            args.Add("-q");
+        if (path == null) 
+            return;
+        var replaced = path.Replace(".dll", ".exe");
+        var startInfo = new ProcessStartInfo(replaced);
+        foreach (var i in args)
+        {
+            startInfo.ArgumentList.Add(i);
+        }
+        Process.Start(startInfo);
     }
 }

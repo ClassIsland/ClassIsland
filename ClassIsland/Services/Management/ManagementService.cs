@@ -5,6 +5,7 @@ using System.Windows.Media.Imaging;
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Management;
+using ClassIsland.Core.Protobuf.Enum;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ControlzEx.Standard;
@@ -89,10 +90,19 @@ public class ManagementService
                 default:
                     throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
             }
+            Connection.CommandReceived += ConnectionOnCommandReceived;
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "连接集控服务器失败。");
+        }
+    }
+
+    private void ConnectionOnCommandReceived(object? sender, ClientCommandEventArgs e)
+    {
+        if (e.Type == CommandTypes.RestartApp)
+        {
+            App.Restart(true);
         }
     }
 
