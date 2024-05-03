@@ -16,6 +16,7 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 - [X] 显示当日的课表
 - [X] 显示当前进行的课程信息
 - [X] 在上课、下课等重要时间点发出提醒
+- [ ] 在发出提醒时使用语音、强调特效和音效增强提醒 _(即将发布)_
 ### 课表编辑与管理
 - [X] 直观的的课表编辑工具
 - [X] 从表格导入课表
@@ -23,9 +24,11 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 - [X] 临时启用某个课表
 ### 其它功能
 - [X] 界面缩放
+- [ ] 自动同步软件时间，支持手动调整和自动累加时间偏移 _(即将发布)_
 - [X] 天气显示
 - [X] 从壁纸提取软件主题色
 - [X] 丝滑的过渡动画
+- [ ] 集控管理 _(即将发布)_
 - [X] 明亮、黑暗主题
 - [ ] ……
 
@@ -68,6 +71,7 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 
 <details>
 <summary>最低设备需求</summary>
+
 ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这些系统上运行 ClassIsland 可能会出现运行不稳定的情况。**
 
 - Windows 7 及以上版本系统，x64架构
@@ -75,7 +79,6 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 要在 Windows 7 中安装并运行 ClassIsland，您还需要额外进行以下准备工作：[在Windows7中安装 ClassIsland](doc/InstallOnLegaceyOS.md)
 
 </details>
-<br/>
 
 **⚠️不建议在 Windows 10 以下的系统运行本应用⚠️** 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**（[#91](https://github.com/HelloWRC/ClassIsland/issues/91)）。
 
@@ -90,9 +93,7 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 | GitHub | [**GitHub下载**](https://github.com/HelloWRC/ClassIsland/releases/latest) | [GitHub下载](https://github.com/HelloWRC/ClassIsland/releases) |
 | AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
-> 应用默认启用了自动更新，在新版本发布时会自动更新应用。
->
-> 如果您下载了测试版，请注意在【应用设置】->【更新】->【更新设置】中手动将通道调整为测试通道，以接受测试版更新。
+> 如果您下载了测试版，请注意在【应用设置】->【更新】->【更新设置】中手动将通道调整为测试通道，以接收测试版更新。
 
 <!-- > GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。 -->
 
@@ -110,8 +111,7 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 
 本应用目前的开发状态：
 
-- 正在[`dev`](https://github.com/HelloWRC/ClassIsland/tree/dev)分支上开发版本 [1.4 - Firefly](https://github.com/HelloWRC/ClassIsland/milestone/5) 的新功能。
-- 正在[`master`](https://github.com/HelloWRC/ClassIsland/tree/master)分支上维护版本 1.3 - Firefly 的现有功能。
+- 正在[`master`](https://github.com/HelloWRC/ClassIsland/tree/master)分支上维护版本 [1.4 - Firefly](https://github.com/HelloWRC/ClassIsland/milestone/5)。
 
 要在本地编译应用，您需要安装以下负载和工具：
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
