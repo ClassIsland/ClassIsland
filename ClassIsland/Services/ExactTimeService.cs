@@ -5,6 +5,7 @@ using System.Windows.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using GuerrillaNtp;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 
 namespace ClassIsland.Services;
 
@@ -60,6 +61,7 @@ public class ExactTimeService : ObservableRecipient
         }
         Sync();
         UpdateTimerStatus();
+        SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
 
         if (SettingsService.Settings.IsTimeAutoAdjustEnabled)
         {
@@ -69,6 +71,12 @@ public class ExactTimeService : ObservableRecipient
             SettingsService.Settings.TimeOffsetSeconds = Math.Round(SettingsService.Settings.TimeOffsetSeconds, 3);
         }
         SettingsService.Settings.LastTimeAdjustDateTime = DateTime.Now;
+    }
+
+    private void SystemEventsOnTimeChanged(object? sender, EventArgs e)
+    {
+        Logger.LogInformation("系统时间修改，正在重新同步时间");
+        Task.Run(Sync);
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
