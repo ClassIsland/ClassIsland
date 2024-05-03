@@ -1,0 +1,12 @@
+syntax = "proto3";
+package ClassIsland.Core.Protobuf.Enum;
+option csharp_namespace = "ClassIsland.Core.Protobuf.Enum";
+
+enum CommandType {
+    // heartbeat
+    Ping = 0;
+    Pong = 1;
+    // command
+    Notification = 2;
+    UpdateSettings = 3;
+}
