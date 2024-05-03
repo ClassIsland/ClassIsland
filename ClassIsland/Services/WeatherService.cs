@@ -33,6 +33,8 @@ public class WeatherService : IHostedService
 
     private ILogger<WeatherService> Logger { get; }
 
+    public bool IsDatabaseLoaded { get; set; } = false;
+
     private DispatcherTimer UpdateTimer { get; } = new()
     {
         Interval = TimeSpan.FromMinutes(5)
@@ -56,6 +58,8 @@ public class WeatherService : IHostedService
 
     private async void AppStopping()
     {
+        if (!IsDatabaseLoaded)
+            return;
         await CitiesDatabaseConnection.CloseAsync();
     }
 
@@ -68,6 +72,7 @@ public class WeatherService : IHostedService
             var r = await s.Stream.ReadAsync(bytes);
             await File.WriteAllBytesAsync(CitiesDatabasePath, bytes);
             await CitiesDatabaseConnection.OpenAsync();
+            IsDatabaseLoaded = true;
         }
 
 
@@ -106,6 +111,8 @@ public class WeatherService : IHostedService
 
     public List<City> GetCitiesByName(string name)
     {
+        if (!IsDatabaseLoaded)
+            return [];
         var cmd = CitiesDatabaseConnection.CreateCommand();
         cmd.CommandText = @"
             SELECT
