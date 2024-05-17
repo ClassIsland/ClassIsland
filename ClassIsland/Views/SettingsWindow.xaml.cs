@@ -759,4 +759,13 @@ public partial class SettingsWindow : MyWindow
             CommonDialog.ShowError($"导出失败：{exception.Message}");
         }
     }
+
+    private void CollectionViewSourceNotificationProviders_OnFilter(object sender, FilterEventArgs e)
+    {
+        var i = e.Item as string;
+        if (i == null)
+            return;
+        var host = App.GetService<NotificationHostService>();
+        e.Accepted = host.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == i) != null;
+    }
 }

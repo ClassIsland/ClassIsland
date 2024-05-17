@@ -410,6 +410,9 @@
         <converters:DoubleToPercentStringConverter x:Key="DoubleToPercentStringConverter" />
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
         <converters:SizeLongToStringConverter x:Key="SizeLongToStringConverter" />
+        <CollectionViewSource Source="{Binding Settings.NotificationProvidersPriority}"
+                              x:Key="CollectionViewSourceNotificationProviders"
+                              Filter="CollectionViewSourceNotificationProviders_OnFilter"/>
     </Window.Resources>
     <Grid>
 
@@ -1178,7 +1181,7 @@ The quick brown fox jumps over a lazy dog.
                                         <!-- 提醒提供方列表 -->
                                         <TabControl Grid.Row="1">
                                             <TabItem Header="提醒提供方">
-                                                <ListBox ItemsSource="{Binding Settings.NotificationProvidersPriority}"
+                                                <ListBox ItemsSource="{Binding Source={StaticResource CollectionViewSourceNotificationProviders}}"
                                                          SelectionMode="Single"
                                                          dd:DragDrop.IsDragSource="True"
                                                          dd:DragDrop.IsDropTarget="True"
