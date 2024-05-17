@@ -886,8 +886,7 @@
                                                 <ListBox.ItemContainerStyle>
                                                     <Style TargetType="ListBoxItem"
                                                            BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
-                                                        <EventSetter Event="MouseDoubleClick"
-                                                                     Handler="TimePointDoubleClick_OnHandler" />
+                                                        
                                                     </Style>
                                                 </ListBox.ItemContainerStyle>
                                                 <ListBox.ItemTemplate>
