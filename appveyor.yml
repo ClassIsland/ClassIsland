@@ -1,0 +1,16 @@
+version: 1.0.{build}
+image: Visual Studio 2022
+configuration: Release
+platform: x64
+environment:
+  appcenter_token:
+    secure: 2CPAZ5+bQnvsQLK3ArwP7/Mt8dqLQdk3+5iXqMlZc+ZJ+ymhZ8J+VH1wE/j0hsMo
+build_script:
+  - pwsh: pwsh -ep Bypass -c ./tools/publish.ps1
+artifacts:
+  - path: ./ClassIsland/ClassIsland/ClassIsland.zip
+deploy:
+  - provider: Environment
+    name: gh_releases
+    on:
+      APPVEYOR_REPO_TAG: true
