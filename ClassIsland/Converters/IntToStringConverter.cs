@@ -16,17 +16,26 @@ public class IntToStringConverter : IValueConverter
     {
         if (targetType == typeof(int))
         {
-            return int.Parse((string)value);
+            if (int.TryParse((string)value, out var re))
+            {
+                return re;
+            }
         }
 
         if (targetType == typeof(double))
         {
-            return double.Parse((string)value);
+            if (double.TryParse((string)value, out var re))
+            {
+                return re;
+            }
         }
 
         if (targetType == typeof(float))
         {
-            return float.Parse((string)value);
+            if (float.TryParse((string)value, out var re))
+            {
+                return re;
+            }
         }
 
         return 0;
