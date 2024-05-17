@@ -52,7 +52,6 @@ public class ProfileService
         {
             Directory.CreateDirectory("./Profiles");
         }
-        CleanExpiredTempClassPlan();
     }
 
 
@@ -132,6 +131,7 @@ public class ProfileService
 
         CurrentProfilePath = filename;
         Logger.LogTrace("成功加载档案！");
+        CleanExpiredTempClassPlan();
     }
 
     public void SaveProfile()
