@@ -74,6 +74,8 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
     private void ShowForecastNotification()
     {
+        if (!WeatherService.IsWeatherRefreshed)
+            return;
         var s = (IWeatherNotificationSettingsBase?)AttachedSettingsHostService
             .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
                 timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;
@@ -99,6 +101,8 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
     private void ShowAlertsNotification()
     {
+        if (!WeatherService.IsWeatherRefreshed)
+            return;
         var s = (IWeatherNotificationSettingsBase?)AttachedSettingsHostService
             .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
                 timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;

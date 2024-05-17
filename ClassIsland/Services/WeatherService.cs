@@ -40,6 +40,8 @@ public class WeatherService : IHostedService
         Interval = TimeSpan.FromMinutes(5)
     };
 
+    public bool IsWeatherRefreshed { get; set; } = false;
+
     public WeatherService(SettingsService settingsService, FileFolderService fileFolderService, IHostApplicationLifetime hostApplicationLifetime, ILogger<WeatherService> logger)
     {
         Logger = logger;
@@ -93,6 +95,7 @@ public class WeatherService : IHostedService
             var uri = $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
             Settings.LastWeatherInfo = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
+            IsWeatherRefreshed = true;
         }
         catch (Exception ex)
         {
