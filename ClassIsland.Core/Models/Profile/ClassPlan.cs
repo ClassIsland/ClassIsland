@@ -134,7 +134,7 @@ public class ClassPlan : AttachableSettingsObject
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                if (e.AddIndexClasses == -1)
+                if (e.AddIndexClasses < 0 || e.AddIndexClasses > Classes.Count)
                     break;
                 foreach (var i in e.AddedItems)
                 {
@@ -142,7 +142,7 @@ public class ClassPlan : AttachableSettingsObject
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
-                if (e.RemoveIndexClasses == -1)
+                if (e.RemoveIndexClasses < 0 || e.RemoveIndexClasses >= Classes.Count)
                     break;
                 foreach (var i in e.RemovedItems)
                 {
