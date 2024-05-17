@@ -153,7 +153,7 @@ public class ProfileService
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public string? CreateTempClassPlan(string id)
+    public string? CreateTempClassPlan(string id, string? timeLayoutId=null)
     {
         Logger.LogInformation("创建临时层：{}", id);
         if (Profile.OverlayClassPlanId != null && Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
@@ -161,9 +161,11 @@ public class ProfileService
             return null;
         }
         var cp = Profile.ClassPlans[id];
+        timeLayoutId = timeLayoutId ?? cp.TimeLayoutId;
         var newCp = DuplicateJson(cp);
 
         newCp.IsOverlay = true;
+        newCp.TimeLayoutId = timeLayoutId;
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
         newCp.OverlaySetupTime = DateTime.Now;

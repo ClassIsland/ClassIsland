@@ -786,12 +786,15 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
         }
-        var id = ProfileService.CreateTempClassPlan(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key);
+        var id = ProfileService.CreateTempClassPlan(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key,
+            ViewModel.TempOverlayClassPlanTimeLayoutId);
         if (id != null)
         {
             ListViewClassPlans.SelectedItem = new KeyValuePair<string,ClassPlan>(id, ProfileService.Profile.ClassPlans[id]);
             OpenDrawer("ClassPlansInfoEditor");
         }
+
+        PopupCreateTempOverlayClassPlan.IsOpen = false;
     }
 
     private void ClassPlanSource_OnFilter(object sender, FilterEventArgs e)
@@ -923,5 +926,18 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         ProfileService.SaveProfile();
         ViewModel.MessageQueue.Enqueue($"已保存到{ProfileService.CurrentProfilePath}。");
+    }
+
+    private void ButtonBeginCreateTempOverlayClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ProfileService.Profile.OverlayClassPlanId != null &&
+            ProfileService.Profile.ClassPlans.ContainsKey(ProfileService.Profile.OverlayClassPlanId))
+        {
+            ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
+            return;
+        }
+        ViewModel.TempOverlayClassPlanTimeLayoutId =
+            ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeLayoutId;
+        PopupCreateTempOverlayClassPlan.IsOpen = true;
     }
 }
