@@ -698,9 +698,16 @@ public partial class SettingsWindow : MyWindow
     private async Task RefreshContributors()
     {
         ViewModel.IsRefreshingContributors = true;
-        Settings.ContributorsCache =
-            await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
-                "https://raw.githubusercontent.com/HelloWRC/ClassIsland/master/.all-contributorsrc"));
+        try
+        {
+            Settings.ContributorsCache =
+                await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
+                    "https://mirror.ghproxy.com/?q=https%3A%2F%2Fraw.githubusercontent.com%2FHelloWRC%2FClassIsland%2Fmaster%2F.all-contributorsrc"));
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<SettingsWindow>>().LogError(ex, "无法获取贡献者名单。");
+        }
         ViewModel.IsRefreshingContributors = false;
     }
 
