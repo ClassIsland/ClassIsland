@@ -447,6 +447,10 @@ public partial class MainWindow : Window
             ViewModel.CurrentMaskElement = request.MaskContent;  // 加载Mask元素
             var cancellationToken = request.CancellationTokenSource.Token;
             ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled && ViewModel.Settings.AllowNotificationTopmost;
+            if (ViewModel.IsNotificationWindowExplicitShowed && ViewModel.Settings.WindowLayer == 0)  // 如果处于置底状态，还需要激活窗口来强制显示窗口。
+            {
+                Activate();
+            }
 
             if (request.MaskDuration > TimeSpan.Zero &&
                 request.OverlayDuration > TimeSpan.Zero)
@@ -530,6 +534,7 @@ public partial class MainWindow : Window
         ViewModel.CurrentMaskElement = null;
         ViewModel.IsOverlayOpened = false;
         ViewModel.IsNotificationWindowExplicitShowed = false;
+        SetBottom();
         UpdateTheme();
     }
 
@@ -664,11 +669,16 @@ public partial class MainWindow : Window
 
     private void SetBottom()
     {
+        var hWnd = new WindowInteropHelper(this).Handle;
         if (ViewModel.Settings.WindowLayer != 0)
         {
             return;
         }
-        var hWnd = new WindowInteropHelper(this).Handle;
+        if (ViewModel.IsNotificationWindowExplicitShowed)
+        {
+            NativeWindowHelper.SetWindowPos(hWnd, new IntPtr(0), 0, 0, 0, 0, NativeWindowHelper.SWP_NOSIZE | NativeWindowHelper.SWP_NOMOVE | NativeWindowHelper.SWP_NOACTIVATE);
+            return;
+        }
         NativeWindowHelper.SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0, NativeWindowHelper.SWP_NOSIZE | NativeWindowHelper.SWP_NOMOVE | NativeWindowHelper.SWP_NOACTIVATE);
     }
 
