@@ -1,8 +1,6 @@
 # 新增功能
 
-1.3.1.0 ~ 1.3.4.0 (1.4-Firefly Beta 1~4) 的新增功能
-
-> **您当前正在使用的是 1.4-Firefly 的测试版本，可能包含未完善和不稳定的功能。**
+1.4-Firefly 的新增功能
 
 ## 朗读提醒内容
 
@@ -26,9 +24,7 @@ ClassIsland现在支持从服务器同步当前的精确时间。也可以在此
 
 您可以将ClassIsland实例加入到集控中，以统一分发课表、时间表等信息，并控制各实例的行为。
 
-[了解更多…](https://github.com/HelloWRC/ClassIsland/wiki/%E9%9B%86%E6%8E%A7)
-
-[#43](https://github.com/HelloWRC/ClassIsland/issues/43)
+[了解更多…](https://classisland-docs.readthedocs.io/zh-cn/latest/management/)
 
 ![1711241863976](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1711241863976.png)
 

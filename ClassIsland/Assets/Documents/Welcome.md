@@ -16,7 +16,9 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 ## 开始使用
 
-您可以通过阅读本帮助文档来快速上手本应用。建议您按照以下顺序学习软件的基本功能：
+您可以通过观看[本软件的入门教程视频](https://www.bilibili.com/video/BV1fA4m1A7uZ/)来快速了解本应用的使用方法。
+
+您也可以通过阅读本帮助文档来快速上手本应用。建议您按照以下顺序学习软件的基本功能：
 
 - [基本](基本)
 - [档案设置](档案设置)
@@ -29,6 +31,15 @@ ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基�
 
 如果您对本软件的一些进阶功能感兴趣，还可以阅读[“进阶功能”](进阶功能)部分。
 
+要查看应用本体外的功能帮助（如集控等），请前往[ClassIsland 技术文档](https://classisland-docs.readthedocs.io/)。
+
+## 社区
+
+如果本帮助文档和[ClassIsland 技术文档](https://classisland-docs.readthedocs.io/)都没有解决您的问题，您可以选择：
+
+- 在[Discussions（讨论区）](https://github.com/HelloWRC/ClassIsland/discussions)提出您的问题
+- [加入QQ群](https://qm.qq.com/q/4NsDQKiAuQ)和开发者直接交流
+
 ## 问题反馈
 
-如果您在使用的过程中遇到了Bug，或者对本项目有任何的建议，可以在[这里](https://github.com/HelloWRC/ClassIsland/issues)提交Issue。
+如果您在使用的过程中遇到了Bug，或者对本项目有任何的建议，可以在[Issues](https://github.com/HelloWRC/ClassIsland/issues)提交Issue。
