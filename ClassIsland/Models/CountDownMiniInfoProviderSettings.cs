@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Media;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -13,6 +14,8 @@ public class CountDownMiniInfoProviderSettings : ObservableRecipient
 {
     private string _countDownName = "";
     private DateTime _overTime = DateTime.Now;
+    private Color _fontColor = Color.FromRgb(255,0,0);
+    private int _fontSize = 16;
 
     public string countDownName
     {
@@ -34,6 +37,30 @@ public class CountDownMiniInfoProviderSettings : ObservableRecipient
             if (value == null) return;
             if (value.Equals(_overTime)) return;
             _overTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Color fontColor
+    {
+        get => _fontColor;
+        set
+        {
+            if (value == null) return;
+            if (value.Equals(_fontColor)) return;
+            _fontColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int fontSize
+    {
+        get => _fontSize;
+        set
+        {
+            if (value == null) return;
+            if (value.Equals(_fontSize)) return;
+            _fontSize = value;
             OnPropertyChanged();
         }
     }

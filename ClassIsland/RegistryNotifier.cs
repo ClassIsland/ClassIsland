@@ -26,7 +26,7 @@ public class RegistryNotifier
     private static int REG_NOTIFY_CHANGE_LAST_SET = 0x4;
     private static int REG_NOTIFY_CHANGE_SECURITY = 0x8;
     /// <summary>
-    /// 打开的注册表句饼
+    /// 打开的注册表句柄
     /// </summary>
     private IntPtr _OpenIntPtr = IntPtr.Zero;
 
