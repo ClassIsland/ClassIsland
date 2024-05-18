@@ -111,5 +111,5 @@ jobs:
       - name: Update to release
         uses: ncipollo/release-action@v1.10.0
         with:
-          artifacts: .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip,.\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.MD5CheckSum
+          artifacts: ".\\ClassIsland\\bin\\Release\\net6.0-windows\\publish\\win-x64\\ClassIsland.zip,.\\ClassIsland\\bin\\Release\\net6.0-windows\\publish\\win-x64\\ClassIsland.MD5CheckSum"
           draft: true
