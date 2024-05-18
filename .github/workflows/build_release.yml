@@ -89,6 +89,11 @@ jobs:
         run: |
           cd .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\
           7z a ClassIsland.zip ./ClassIsland.exe -mx=9
+
+      - name: Create Checksum File
+        run: |
+          cd .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\
+          certutil -hashfile ./ClassIsland.zip MD5 | findstr /v "[^0-9a-z]" >> ./ClassIsland.MD5CheckSum
           
       - name: Upload to AppCenter
         uses: akiojin/appcenter-distribute-github-action@v1.4.8
@@ -106,5 +111,5 @@ jobs:
       - name: Update to release
         uses: ncipollo/release-action@v1.10.0
         with:
-          artifacts: .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip
+          artifacts: .\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.zip,.\ClassIsland\bin\Release\net6.0-windows\publish\win-x64\ClassIsland.MD5CheckSum
           draft: true
