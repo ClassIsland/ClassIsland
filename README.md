@@ -94,8 +94,6 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 | GitHub | [**GitHub下载**](https://github.com/HelloWRC/ClassIsland/releases/latest) | [GitHub下载](https://github.com/HelloWRC/ClassIsland/releases) |
 | AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
-> 如果您下载了测试版，请注意在【应用设置】->【更新】->【更新设置】中手动将通道调整为测试通道，以接收测试版更新。
-
 <!-- > GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。 -->
 
 ### 3. 解压软件
@@ -130,7 +128,7 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 您可以访问以下页面来获取帮助：
 
 - 应用内置的帮助文档
-- [Wiki（技术性文档）](https://github.com/HelloWRC/ClassIsland/wiki)
+- [技术性文档](https://classisland-docs.readthedocs.io/)
 
 您也可以加入以下社群讨论交流：
 
@@ -138,6 +136,11 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 - [QQ群](https://qm.qq.com/q/4NsDQKiAuQ)
 
 如果您确定您遇到的问题是一个 bug，或者您要提出一项新的功能，请[提交一个Issue](https://github.com/HelloWRC/ClassIsland/issues/new/choose)。
+
+## 相关项目
+
+- [HelloWRC/ClassIsland.ManagementServer](https://github.com/HelloWRC/ClassIsland.ManagementServer) - ClassIsland 集控服务端仓库
+- [HelloWRC/classisland-docs](https://github.com/HelloWRC/classisland-docs) - ClassIsland 文档仓库
 
 
 ## 致谢
@@ -178,6 +181,8 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 - [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/)
 - [ReoGrid](https://github.com/unvell/ReoGrid)
 - [EPPlus](https://epplussoftware.com/)
+- [NAudio](https://github.com/naudio/NAudio)
+- [Grpc.Tools](https://github.com/grpc/grpc)
 - [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
 - [FluentWpf](https://github.com/sourcechord/FluentWPF)
 - [gong-mdWpf-dragdrop](https://github.com/punker76/gong-mdWpf-dragdrop)
