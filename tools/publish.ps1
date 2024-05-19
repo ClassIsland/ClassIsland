@@ -11,7 +11,16 @@ dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=Fol
 echo "Successfully published to $PUBLISH_TARGET"
 
 echo "Packaging..."
-7z a ./ClassIsland/ClassIsland/ClassIsland.zip ./ClassIsland/ClassIsland/* -r -mx=9
+if ($(Test-Path ./out) -eq $false) {
+    mkdir out
+} else {
+    rm out/* -Recurse -Force -Confirm
+}
+7z a ./out/ClassIsland.zip ./ClassIsland/ClassIsland/* -r -mx=9
+
+echo "Generating MD5..."
+pwsh -ep Bypass -c .\tools\generate-md5.ps1 ./out
+
 
 if ($env:APPVEYOR_REPO_TAG -eq $true) {
     echo "Uploading to AppCenter..."

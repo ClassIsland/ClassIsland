@@ -8,7 +8,8 @@ environment:
 build_script:
   - pwsh: pwsh -ep Bypass -c ./tools/publish.ps1
 artifacts:
-  - path: ./ClassIsland/ClassIsland/ClassIsland.zip
+  - path: ./out/*.*
+    type: File
 deploy:
   - provider: Environment
     name: gh_releases
