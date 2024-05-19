@@ -15,21 +15,22 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 ### 课表显示
 - [X] 显示当日的课表
 - [X] 显示当前进行的课程信息
-- [X] 在上课、下课等重要时间点发出提醒
-- [ ] 在发出提醒时使用语音、强调特效和音效增强提醒 _(即将发布)_
+- [X] 在上课、下课、放学等重要时间点发出提醒
+- [X] 在发出提醒时使用语音、强调特效和音效增强提醒
 ### 课表编辑与管理
-- [X] 直观的的课表编辑工具
+- [X] 直观的课表编辑工具
 - [X] 从表格导入课表
 - [X] 换课
 - [X] 临时启用某个课表
 ### 其它功能
-- [X] 界面缩放
-- [ ] 自动同步软件时间，支持手动调整和自动累加时间偏移 _(即将发布)_
+- [X] 界面缩放，不透明度调节
+- [X] 自动同步软件时间，支持手动调整和自动累加时间偏移
 - [X] 天气显示
+- [X] 考试倒计时显示
 - [X] 从壁纸提取软件主题色
 - [X] 丝滑的过渡动画
-- [ ] 集控管理 _(即将发布)_
 - [X] 明亮、黑暗主题
+- [ ] 集控管理 _(即将发布)_
 - [ ] ……
 
 <details>
@@ -93,8 +94,6 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 | GitHub | [**GitHub下载**](https://github.com/HelloWRC/ClassIsland/releases/latest) | [GitHub下载](https://github.com/HelloWRC/ClassIsland/releases) |
 | AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
-> 如果您下载了测试版，请注意在【应用设置】->【更新】->【更新设置】中手动将通道调整为测试通道，以接收测试版更新。
-
 <!-- > GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。 -->
 
 ### 3. 解压软件
@@ -129,7 +128,7 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 您可以访问以下页面来获取帮助：
 
 - 应用内置的帮助文档
-- [Wiki（技术性文档）](https://github.com/HelloWRC/ClassIsland/wiki)
+- [技术性文档](https://classisland-docs.readthedocs.io/)
 
 您也可以加入以下社群讨论交流：
 
@@ -138,11 +137,16 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 
 如果您确定您遇到的问题是一个 bug，或者您要提出一项新的功能，请[提交一个Issue](https://github.com/HelloWRC/ClassIsland/issues/new/choose)。
 
+## 相关项目
+
+- [HelloWRC/ClassIsland.ManagementServer](https://github.com/HelloWRC/ClassIsland.ManagementServer) - ClassIsland 集控服务端仓库
+- [HelloWRC/classisland-docs](https://github.com/HelloWRC/classisland-docs) - ClassIsland 文档仓库
+
 
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-5-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到[DuguSand/class_form](https://github.com/DuguSand/class_form)的启发而开发。
@@ -161,6 +165,8 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
       <td align="center" valign="top" width="14.28%"><a href="https://www.jiangyin14.top/"><img src="https://avatars.githubusercontent.com/u/106649516?v=4?s=100" width="100px;" alt="姜胤"/><br /><sub><b>姜胤</b></sub></a><br /><a href="https://github.com/HelloWRC/ClassIsland/commits?author=jiangyin14" title="Documentation">📖</a> <a href="#ideas-jiangyin14" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/HelloWRC/ClassIsland/issues?q=author%3Ajiangyin14" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://fossa.com/"><img src="https://avatars.githubusercontent.com/u/29791463?v=4?s=100" width="100px;" alt="fossabot"/><br /><sub><b>fossabot</b></sub></a><br /><a href="#infra-fossabot" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://allcontributors.org/"><img src="https://avatars.githubusercontent.com/u/46410174?v=4?s=100" width="100px;" alt="All Contributors"/><br /><sub><b>All Contributors</b></sub></a><br /><a href="https://github.com/HelloWRC/ClassIsland/commits?author=all-contributors" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TV-ZHU"><img src="https://avatars.githubusercontent.com/u/88492699?v=4?s=100" width="100px;" alt="DSZDev"/><br /><sub><b>DSZDev</b></sub></a><br /><a href="https://github.com/HelloWRC/ClassIsland/commits?author=TV-ZHU" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiuYan-xwx"><img src="https://avatars.githubusercontent.com/u/66517348?v=4?s=100" width="100px;" alt="流焰xwx"/><br /><sub><b>流焰xwx</b></sub></a><br /><a href="https://github.com/HelloWRC/ClassIsland/commits?author=LiuYan-xwx" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
@@ -175,6 +181,8 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 - [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/)
 - [ReoGrid](https://github.com/unvell/ReoGrid)
 - [EPPlus](https://epplussoftware.com/)
+- [NAudio](https://github.com/naudio/NAudio)
+- [Grpc.Tools](https://github.com/grpc/grpc)
 - [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
 - [FluentWpf](https://github.com/sourcechord/FluentWPF)
 - [gong-mdWpf-dragdrop](https://github.com/punker76/gong-mdWpf-dragdrop)
