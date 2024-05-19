@@ -2,7 +2,6 @@ param($path)
 
 echo $path
 rm $path/*.md5sum
-rm "$path/checksums.md"
 $files = Get-ChildItem $path
 $hashes = [ordered]@{}
 $summary = "
@@ -28,3 +27,6 @@ $json = ConvertTo-Json $hashes -Compress
 
 $summary +=  "`n<!-- CLASSISLAND_PKG_MD5 ${json} -->" 
 echo $summary > "$path/checksums.md"
+Write-Host "MD5 Summary:" -ForegroundColor Gray
+Write-Host $summary -ForegroundColor Gray
+Write-Host "----------" -ForegroundColor Gray

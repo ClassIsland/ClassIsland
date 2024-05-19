@@ -9,7 +9,7 @@ build_script:
   - pwsh: pwsh -ep Bypass -c ./tools/publish.ps1
 artifacts:
   - path: ./out/*.*
-    type: File
+    type: Auto
 deploy:
   - provider: Environment
     name: gh_releases
