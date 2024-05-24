@@ -87,12 +87,13 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
-> 测试版包含最新的功能，但也可能包含未完善和不稳定的功能，请谨慎使用。
+> 测试版包含最新的功能，但也可能包含未完善和不稳定的功能，请谨慎使用。<br/>
+> 每日构建包含最新的未经测试的功能，可能出现软件运行不稳定的问题，请谨慎使用。
 
-| 下载渠道/通道 | **🚀正式版** <br/>[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=flat-square&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest)  | 🚧测试版<br/>[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=flat-square&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/) |
-| -- | -- | -- |
-| GitHub | [**GitHub下载**](https://github.com/HelloWRC/ClassIsland/releases/latest) | [GitHub下载](https://github.com/HelloWRC/ClassIsland/releases) |
-| AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
+| 下载渠道/通道 | **🚀正式版** <br/>[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=flat-square&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest)  | 🚧测试版<br/>[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=flat-square&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/) | 📅每日构建<br/>[![GitHub Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland_DailyBuild?include_prereleases&style=flat&logo=github&label=Daily%20Build)](https://github.com/ClassIsland/ClassIsland_DailyBuild/releases) |
+| -- | -- | -- | -- |
+| GitHub | [**GitHub下载**](https://github.com/HelloWRC/ClassIsland/releases/latest) | [GitHub下载](https://github.com/HelloWRC/ClassIsland/releases) | [GitHub下载](https://github.com/ClassIsland/ClassIsland_DailyBuild/releases) |
+| AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) | 无 |
 
 <!-- > GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。 -->
 
