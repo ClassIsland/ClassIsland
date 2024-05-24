@@ -12,8 +12,8 @@ public class DateTimeToDaysLeftConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var ret = ((DateTime)value - DateTime.Today).Days.ToString();
-        return int.Parse(ret) < 0 ? ret : "0";
+        var ret = ((DateTime)value - DateTime.Today).Days;
+        return ret > 0 ? ret.ToString() : "0";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
