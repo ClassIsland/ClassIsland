@@ -1,4 +1,4 @@
-# ClassIsland
+# ClassIsland [官网🔗](https://classisland.tech)
 
 ![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
 
@@ -10,7 +10,7 @@
 [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
 
 ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
-
+[ClassIsland官网🔗](https://classisland.tech)
 ## 功能
 ### 课表显示
 - [X] 显示当日的课表
