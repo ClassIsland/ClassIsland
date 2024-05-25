@@ -14,6 +14,7 @@ public class AppCenterReleaseInfo : ObservableRecipient
     private List<string> _packageHashes = new();
     private string _downloadUrl = "";
     private string _releaseNotes = "";
+    private string _fingerprint = "";
 
     [JsonPropertyName("version")]
     public string Version
@@ -83,6 +84,18 @@ public class AppCenterReleaseInfo : ObservableRecipient
         {
             if (value == _releaseNotes) return;
             _releaseNotes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonPropertyName("fingerprint")]
+    public string Fingerprint
+    {
+        get => _fingerprint;
+        set
+        {
+            if (value == _fingerprint) return;
+            _fingerprint = value;
             OnPropertyChanged();
         }
     }

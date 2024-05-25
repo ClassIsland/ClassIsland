@@ -139,6 +139,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _allowNotificationEffect = true;
     private bool _allowNotificationSound = false;
     private bool _allowNotificationTopmost = true;
+    private string _updateArtifactHash = "";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1103,6 +1104,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _updateVersion)) return;
             _updateVersion = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string UpdateArtifactHash
+    {
+        get => _updateArtifactHash;
+        set
+        {
+            if (value == _updateArtifactHash) return;
+            _updateArtifactHash = value;
             OnPropertyChanged();
         }
     }

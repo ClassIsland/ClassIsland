@@ -10,7 +10,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -165,8 +167,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             SplashService.SplashStatus = "正在准备更新…";
             App.GetService<SplashService>().CurrentProgress = 90;
-            await RestartAppToUpdateAsync();
-            return true;
+            return await RestartAppToUpdateAsync();
         }
 
         if (Settings.UpdateMode < 1)
@@ -227,7 +228,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             Description = "接收应用最新的测试版更新，包含最新的特性和改进，可能包含较多的缺陷和未完工的功能。",
             RootUrl = AppCenterBetaRootUrl,
             RootUrlGitHub = "https://api.github.com/repos/HelloWRC/ClassIsland/releases"
-        },
+        }
     };
 
     public static void ReplaceApplicationFile(string target)
@@ -283,12 +284,34 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         return await WebRequestHelper.GetJson<AppCenterReleaseInfo>(new Uri(versionRoot));
     }
 
+    private string MatchHashInfo(string releaseNote, string artifactKey)
+    {
+        var regex = new Regex(@"<!-- CLASSISLAND_PKG_MD5 (.+?) -->");
+        var match = regex.Match(releaseNote);
+        if (!match.Success)
+        {
+            return "";
+        }
+
+        var json = match.Groups[1].Value;
+        try
+        {
+            var d = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
+            return d![artifactKey];
+        }
+        catch (Exception ex)
+        {
+            return "";
+        }
+    }
+
     public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
         try
         {
             var kind = UpdateSources[Settings.SelectedUpgradeMirror].Kind;
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
+            Settings.UpdateArtifactHash = "";
             Version verCode;
             Logger.LogInformation("正在检查应用更新。{}", kind);
 
@@ -301,12 +324,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     return;
                 }
 
-                var v = (from i in versionsGh
-                    where CurrentUpdateSourceUrl == AppCenterBetaRootUrl || !i.Prerelease
-                    orderby i.CreatedAt
-                    select i).Reverse().ToList()[0]!;
+                var v = (versionsGh.Where(i => CurrentUpdateSourceUrl == AppCenterBetaRootUrl || !i.Prerelease)
+                    .OrderBy(i => i.CreatedAt)).Reverse().First();
                 verCode = Version.Parse(v.TagName);
                 Settings.UpdateReleaseInfo = v.Body;
+                Settings.UpdateArtifactHash = MatchHashInfo(v.Body, "ClassIsland.zip");
                 Settings.LastCheckUpdateInfoCacheGitHub = v;
                 var assetsUrl = v.Assets[0].BrowserDownloadUrl;    
                 Settings.UpdateDownloadUrl = Settings.SelectedUpgradeMirror == GhProxySourceKey ? $"https://mirror.ghproxy.com/{assetsUrl}" : assetsUrl;
@@ -328,6 +350,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                         await GetVersionArtifactsAsync(CurrentUpdateSourceUrl + $"/releases/{v.Id}");
                     Settings.UpdateReleaseInfo = Settings.LastCheckUpdateInfoCache.ReleaseNotes;
                     Settings.UpdateDownloadUrl = Settings.LastCheckUpdateInfoCache.DownloadUrl;
+                    Settings.UpdateArtifactHash = Settings.LastCheckUpdateInfoCache.Fingerprint;
                 }
             }
 
@@ -339,6 +362,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 TaskBarIconService.MainTaskBarIcon.ShowNotification("发现新版本",
                     $"{Assembly.GetExecutingAssembly().GetName().Version} -> {verCode}\n" +
                     "点击以查看详细信息。");
+                Logger.LogDebug("更新包MD5：{}", Settings.UpdateArtifactHash);
+                if (Settings.UpdateArtifactHash == "")
+                {
+                    Logger.LogWarning("未获取到更新包MD5校验值。");
+                }
             }
             else
             {
@@ -478,29 +506,63 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     public async Task ExtractUpdateAsync()
     {
         Logger.LogInformation("正在展开应用更新包。");
-        CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
         await Task.Run(() =>
         {
             ZipFile.ExtractToDirectory(@"./UpdateTemp/update.zip", "./UpdateTemp/extracted", true);
         });
     }
 
-    public async Task RestartAppToUpdateAsync()
+    private async Task ValidateUpdateAsync()
     {
+        if (string.IsNullOrWhiteSpace(Settings.UpdateArtifactHash))
+        {
+            Logger.LogWarning("未找到缓存的校验信息，跳过更新文件校验。");
+            return;
+        }
+
+        await using var stream = File.OpenRead(@"./UpdateTemp/update.zip");
+        var md5 = await MD5.HashDataAsync(stream);
+        var str = BitConverter.ToString(md5);
+        str = str.Replace("-", "");
+        Logger.LogDebug("更新文件哈希：{}", str);
+        if (!string.Equals(str, Settings.UpdateArtifactHash, StringComparison.CurrentCultureIgnoreCase))
+        {
+            throw new Exception("更新文件校验失败，可能下载已经损坏。");
+        }
+    }
+
+    public async Task<bool> RestartAppToUpdateAsync()
+    {
+        var success = true;
         Logger.LogInformation("正在重启至升级模式。");
         TaskBarIconService.MainTaskBarIcon.ShowNotification("正在安装应用更新", "这可能需要10-30秒的时间，请稍后……");
-        await ExtractUpdateAsync();
-        Process.Start(new ProcessStartInfo()
+        CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
+        try
         {
-            FileName = "./UpdateTemp/extracted/ClassIsland.exe",
-            ArgumentList =
-            { 
-                "-urt", Environment.ProcessPath!,
-                "-m", "true"
-            }
-        });
-        Application.Current.Shutdown();
-        App.ReleaseLock();
+            await ValidateUpdateAsync();
+            await ExtractUpdateAsync();
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "./UpdateTemp/extracted/ClassIsland.exe",
+                ArgumentList =
+                {
+                    "-urt", Environment.ProcessPath!,
+                    "-m", "true"
+                }
+            });
+            Application.Current.Shutdown();
+            App.ReleaseLock();
+        }
+        catch (Exception ex)
+        {
+            success = false;
+            Logger.LogError(ex, "无法安装更新");
+            TaskBarIconService.MainTaskBarIcon.ShowNotification("安装更新失败", ex.Message);
+            CurrentWorkingStatus = UpdateWorkingStatus.Idle;
+            await RemoveDownloadedFiles();
+        }
+
+        return success;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
