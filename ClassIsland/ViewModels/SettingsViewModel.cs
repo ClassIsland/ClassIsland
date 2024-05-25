@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Drawing;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
+
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using Edge_tts_sharp;
 using Edge_tts_sharp.Model;
+
 using Color = System.Windows.Media.Color;
 using FontFamily = System.Windows.Media.FontFamily;
 

@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Drawing.Printing;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Shapes;
-using ClassIsland.Core.Models.Management;
+
 using ClassIsland.Core.Models.Profile;
-using ClassIsland.Helpers;
-using ClassIsland.Models;
 using ClassIsland.Services.Management;
+
 using Microsoft.Extensions.Logging;
+
 using static ClassIsland.Core.Helpers.ConfigureFileHelper;
+
 using Path = System.IO.Path;
 
 namespace ClassIsland.Services;

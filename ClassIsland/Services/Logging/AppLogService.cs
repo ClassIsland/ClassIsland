@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+
 using ClassIsland.Models.Logging;
 
 namespace ClassIsland.Services.Logging;

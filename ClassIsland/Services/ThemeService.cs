@@ -2,9 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
+
 using ClassIsland.Models;
-using MaterialDesignColors;
+
 using MaterialDesignThemes.Wpf;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;

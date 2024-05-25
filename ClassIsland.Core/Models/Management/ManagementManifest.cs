@@ -1,5 +1,4 @@
 ﻿using ClassIsland.Core.Enums;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Management;
 

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows;
+
 using ClassIsland.Controls;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
+
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using unvell.ReoGrid;
 
 namespace ClassIsland.ViewModels;

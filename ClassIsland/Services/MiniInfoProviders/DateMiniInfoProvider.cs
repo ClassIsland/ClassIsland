@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ClassIsland.Controls.MiniInfoProvider;
 using ClassIsland.Core.Interfaces;
+
 using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.MiniInfoProviders;

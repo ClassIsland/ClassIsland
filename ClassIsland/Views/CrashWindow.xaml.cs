@@ -1,5 +1,5 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
+
 using ClassIsland.Controls;
 
 namespace ClassIsland.Views;

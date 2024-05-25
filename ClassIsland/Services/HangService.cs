@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using System.Timers;
-using System.Windows.Threading;
 using System.Windows;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;

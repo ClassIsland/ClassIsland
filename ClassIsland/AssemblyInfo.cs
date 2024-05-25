@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Resources;
 using System.Runtime.Versioning;
 using System.Windows;
 

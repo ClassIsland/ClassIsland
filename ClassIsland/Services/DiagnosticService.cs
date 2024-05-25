@@ -5,11 +5,12 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Management;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
+
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 

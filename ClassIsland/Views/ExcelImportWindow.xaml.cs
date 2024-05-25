@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -9,38 +8,35 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
+
 using ClassIsland.Controls;
 using ClassIsland.Converters;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
-using ICSharpCode.AvalonEdit.Editing;
+
 using MaterialDesignThemes.Wpf;
+
 using Microsoft.AppCenter.Analytics;
-using Microsoft.Win32;
+
 using OfficeOpenXml;
+
 using unvell.ReoGrid;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
 using unvell.ReoGrid.IO;
-using unvell.ReoGrid.IO.OpenXML.Schema;
+
 using CheckBox = System.Windows.Controls.CheckBox;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
-using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
 

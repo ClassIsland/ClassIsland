@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Speech.Synthesis;
+﻿using System.Speech.Synthesis;
+
 using ClassIsland.Core.Abstraction.Services;
+
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services.SpeechService;
 

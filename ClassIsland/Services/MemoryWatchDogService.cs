@@ -4,8 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
 using Timer = System.Timers.Timer;
 
 namespace ClassIsland.Services;

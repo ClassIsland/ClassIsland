@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-using ClassIsland.Models;
+
 using ClassIsland.Models.NotificationProviderSettings;
 
 namespace ClassIsland.Controls.NotificationProviders;

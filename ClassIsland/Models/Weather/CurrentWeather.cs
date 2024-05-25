@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using System.Windows;
 
 namespace ClassIsland.Models.Weather;
 

@@ -2,32 +2,20 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.IO;
 using System.Linq;
-using System.Media;
 using System.Runtime.InteropServices;
-using System.Speech.Synthesis;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
+
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core.Abstraction.Models;
 using ClassIsland.Core.Abstraction.Services;
@@ -35,21 +23,20 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Profile;
-using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
+
 using H.NotifyIcon;
-using MaterialDesignThemes.Wpf;
+
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
+
 using NAudio.Wave;
-using unvell.Common.Win32Lib;
+
 using Application = System.Windows.Application;
-using Path = System.IO.Path;
-using ProgressBar = System.Windows.Controls.ProgressBar;
 using Window = System.Windows.Window;
 
 namespace ClassIsland;

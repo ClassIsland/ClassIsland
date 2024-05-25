@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
 using System.Windows.Threading;
-using Walterlv.Threading;
 
 /// <summary>
 /// 表示可以等待一个主要运行在 UI 线程的异步操作。

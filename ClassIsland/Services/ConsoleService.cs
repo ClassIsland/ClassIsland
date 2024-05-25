@@ -1,11 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
-using ClassIsland.Core;
+
 using Pastel;
-using static ClassIsland.NativeWindowHelper;
-using Color = System.Drawing.Color;
 
 namespace ClassIsland.Services;
 

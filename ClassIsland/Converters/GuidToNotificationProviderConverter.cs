@@ -2,8 +2,8 @@
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
+
 using ClassIsland.Services;
-using ClassIsland.Services.NotificationProviders;
 
 namespace ClassIsland.Converters;
 

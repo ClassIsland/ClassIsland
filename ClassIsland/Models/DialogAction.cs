@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Models;

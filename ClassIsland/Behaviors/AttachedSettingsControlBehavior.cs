@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using ClassIsland.Controls;
+
 using ClassIsland.Core;
+
 using Microsoft.Xaml.Behaviors;
-using BindingFlags = System.Reflection.BindingFlags;
 
 namespace ClassIsland.Behaviors;
 

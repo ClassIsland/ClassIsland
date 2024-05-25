@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers;
+
 using Microsoft.Extensions.Logging;
-using Octokit.Internal;
 
 namespace ClassIsland.Helpers;
 

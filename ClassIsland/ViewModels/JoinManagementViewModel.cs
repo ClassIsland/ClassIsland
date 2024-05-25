@@ -1,4 +1,5 @@
 ﻿using ClassIsland.Core.Models.Management;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;

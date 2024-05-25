@@ -2,17 +2,20 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Management;
 using ClassIsland.Core.Protobuf.Enum;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
-using ControlzEx.Standard;
+
 using MaterialDesignThemes.Wpf;
+
 using Microsoft.Extensions.Logging;
+
 using static ClassIsland.Core.Helpers.ConfigureFileHelper;
-using Application = System.Windows.Application;
+
 using CommonDialog = ClassIsland.Controls.CommonDialog;
 
 namespace ClassIsland.Services.Management;

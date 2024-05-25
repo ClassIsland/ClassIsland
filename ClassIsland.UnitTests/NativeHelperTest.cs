@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ClassIsland.UnitTests;
+﻿namespace ClassIsland.UnitTests;
 
 [TestClass]
 public class NativeHelperTest

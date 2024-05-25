@@ -1,7 +1,7 @@
-﻿using System.Text.Json.Serialization;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Windows.Documents;
+using System.Text.Json.Serialization;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;

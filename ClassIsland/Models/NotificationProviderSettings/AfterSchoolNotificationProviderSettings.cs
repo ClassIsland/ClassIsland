@@ -1,4 +1,5 @@
 ﻿using ClassIsland.Core.Abstraction.Models;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.NotificationProviderSettings;

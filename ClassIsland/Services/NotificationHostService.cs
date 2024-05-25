@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,12 +8,13 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Models;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

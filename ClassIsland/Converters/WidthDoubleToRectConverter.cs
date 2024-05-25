@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;

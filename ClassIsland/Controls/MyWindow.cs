@@ -3,11 +3,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Interop;
+
 using ClassIsland.Models;
 using ClassIsland.Services;
-using static ClassIsland.NativeWindowHelper;
 
 namespace ClassIsland.Controls;
 

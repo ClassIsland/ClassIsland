@@ -1,4 +1,5 @@
 using ClassIsland.Core.Protobuf.Enum;
+
 using Google.Protobuf;
 
 namespace ClassIsland.Core.Models.Management;

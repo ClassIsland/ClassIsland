@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
+
 using ClassIsland.Core;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Models;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

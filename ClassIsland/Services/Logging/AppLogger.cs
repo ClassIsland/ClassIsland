@@ -1,5 +1,7 @@
 ﻿using System;
+
 using ClassIsland.Models.Logging;
+
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services.Logging;

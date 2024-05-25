@@ -6,20 +6,15 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
 using ClassIsland.Controls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstraction.Services;
@@ -31,13 +26,14 @@ using ClassIsland.Models.Weather;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
+
 using MaterialDesignThemes.Wpf;
+
 using MdXaml;
+
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Extensions.Logging;
-using Microsoft.Toolkit.Uwp.Notifications;
-using Microsoft.Win32.SafeHandles;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;

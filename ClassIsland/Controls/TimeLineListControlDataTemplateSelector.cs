@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+
 using ClassIsland.Core.Models.Profile;
-using ClassIsland.Models;
 
 namespace ClassIsland.Controls;
 

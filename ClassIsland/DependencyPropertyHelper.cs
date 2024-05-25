@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows;
 
 namespace ClassIsland;

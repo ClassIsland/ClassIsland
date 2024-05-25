@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models.Management;
@@ -8,7 +9,9 @@ using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Protobuf.Command;
 using ClassIsland.Core.Protobuf.Enum;
 using ClassIsland.Services.Management;
+
 using MaterialDesignThemes.Wpf;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

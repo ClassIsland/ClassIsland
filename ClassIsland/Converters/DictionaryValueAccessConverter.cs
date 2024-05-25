@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
+
 using ClassIsland.Core;
 using ClassIsland.Core.Models.Profile;
-using ClassIsland.Models;
 
 namespace ClassIsland.Converters;
 

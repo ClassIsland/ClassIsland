@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Windows.Documents;
-using System.Windows.Media.Imaging;
+
 using Color = System.Drawing.Color;
 
 namespace ClassIsland;

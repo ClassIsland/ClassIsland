@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -10,9 +8,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
+
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

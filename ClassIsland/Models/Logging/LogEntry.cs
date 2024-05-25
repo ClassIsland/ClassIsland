@@ -1,5 +1,7 @@
 ﻿using System;
+
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Models.Logging;

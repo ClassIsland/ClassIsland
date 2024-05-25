@@ -1,12 +1,9 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
+
 using CommunityToolkit.Mvvm.ComponentModel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
-using static ClassIsland.NativeWindowHelper;
 
 namespace ClassIsland.Models;
 

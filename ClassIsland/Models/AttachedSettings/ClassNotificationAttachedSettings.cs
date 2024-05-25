@@ -1,4 +1,5 @@
 ﻿using ClassIsland.Core.Interfaces;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AttachedSettings;

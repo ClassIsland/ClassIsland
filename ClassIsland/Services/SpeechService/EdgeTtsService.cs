@@ -6,15 +6,16 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Interop;
+
 using ClassIsland.Core.Abstraction.Services;
+
 using Edge_tts_sharp;
 using Edge_tts_sharp.Model;
-using Edge_tts_sharp.Utils;
+
 using Microsoft.Extensions.Logging;
+
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClassIsland.Services.SpeechService;
 
