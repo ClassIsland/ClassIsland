@@ -1,0 +1,280 @@
+// 注意： 使用此范例前请移除所有的注释 否则将无法加载！！！！！！！！！
+{
+    "Name": "", // 意义不明
+    "TimeLayouts": { // 时间表列表
+        "5cda50df-2f24-47b1-8f81-e5579ef56539": { // 一个时间表，UUID建议改一下
+            "Name": "时间表1", // 名称
+            "Layouts": [ // 时间点列表
+                { // 上课类型
+                    "StartSecond": "2024-05-25T08:00:00", // 开始时间（日期保持前后一致即可，不必特定）
+                    "EndSecond": "2024-05-25T08:45:00", // 结束时间 同上
+                    "TimeType": 0, // 0上课 1可见 2分割
+                    "IsHideDefault": false, // 默认隐藏
+                    "DefaultClassId": "", // 默认课程的UUID
+                    "AttachedObjects": { // 课程额外设置
+                        "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": { // 此处UUID不变 为特定课程显示设置
+                            "IsAttachSettingsEnabled": false, // 启用此设置
+                            "ShowExtraInfoOnTimePoint": true, // 显示时间点附加信息
+                            "ExtraInfoType": 0, // 0持续时间 1已过/持续 2剩余/持续 3已过百分比 4剩余时间
+                            "IsCountdownEnabled": true, // 结束倒计时启用
+                            "CountdownSeconds": 60, // 结束倒计时
+                            "IsActive": false // 意义不明
+                        },
+                        "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": { // 同上 此处为特定上课提醒设置
+                            "IsClassOnNotificationEnabled": true, // 上课提醒
+                            "IsClassOnPreparingNotificationEnabled": true, // 准备上课提醒
+                            "IsClassOffNotificationEnabled": true, // 下课提醒
+                            "ClassPreparingDeltaTime": 60, // 准备时间
+                            "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。", // 准备提示
+                            "IsAttachSettingsEnabled": false, // 启用此项设置
+                            "IsActive": false // 意义同样不明
+                        },
+                        "7625de96-38aa-4b71-b478-3f156dd9458d": { // 气象预警
+                            "AlertShowMode": 2, // 0关闭 1启用 2全局
+                            "ForecastShowMode": 2, // 同上
+                            "IsAttachSettingsEnabled": true, // 固定为true
+                            "IsActive": false // 不明
+                        }
+                    },
+                    "IsActive": false // 意义不明
+                },
+                { // 下课
+                    "StartSecond": "2024-05-25T08:45:00",
+                    "EndSecond": "2024-05-25T08:55:00",
+                    "TimeType": 1,
+                    "IsHideDefault": false, // 无效
+                    "DefaultClassId": "", // 无效
+                    "AttachedObjects": { // 此处同上
+                        "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": {
+                            "IsAttachSettingsEnabled": false,
+                            "ShowExtraInfoOnTimePoint": true,
+                            "ExtraInfoType": 0,
+                            "IsCountdownEnabled": true,
+                            "CountdownSeconds": 60,
+                            "IsActive": false
+                        },
+                        "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": { // 无效（又不是上课）
+                            "IsClassOnNotificationEnabled": true,
+                            "IsClassOnPreparingNotificationEnabled": true,
+                            "IsClassOffNotificationEnabled": true,
+                            "ClassPreparingDeltaTime": 60,
+                            "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。",
+                            "IsAttachSettingsEnabled": false,
+                            "IsActive": false
+                        },
+                        "7625de96-38aa-4b71-b478-3f156dd9458d": {
+                            "AlertShowMode": 2,
+                            "ForecastShowMode": 2,
+                            "IsAttachSettingsEnabled": true,
+                            "IsActive": false
+                        }
+                    },
+                    "IsActive": false
+                },
+                { // 分割线
+                    "StartSecond": "2024-05-25T08:50:00", // 同上，注意两个时间要完全一致
+                    "EndSecond": "2024-05-25T08:50:00",
+                    "TimeType": 2,
+                    "IsHideDefault": false, // 无效
+                    "DefaultClassId": "", // 无效
+                    "AttachedObjects": { // 均无效 因为它只是一条线
+                        "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": {
+                            "IsAttachSettingsEnabled": false,
+                            "ShowExtraInfoOnTimePoint": true,
+                            "ExtraInfoType": 0,
+                            "IsCountdownEnabled": true,
+                            "CountdownSeconds": 60,
+                            "IsActive": false
+                        },
+                        "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": {
+                            "IsClassOnNotificationEnabled": true,
+                            "IsClassOnPreparingNotificationEnabled": true,
+                            "IsClassOffNotificationEnabled": true,
+                            "ClassPreparingDeltaTime": 60,
+                            "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。",
+                            "IsAttachSettingsEnabled": false,
+                            "IsActive": false
+                        },
+                        "7625de96-38aa-4b71-b478-3f156dd9458d": {
+                            "AlertShowMode": 2,
+                            "ForecastShowMode": 2,
+                            "IsAttachSettingsEnabled": true,
+                            "IsActive": false
+                        }
+                    },
+                    "IsActive": false
+                },
+                { // 上课类型 此处不多说
+                    "StartSecond": "2024-05-25T08:55:00",
+                    "EndSecond": "2024-05-25T09:40:00",
+                    "TimeType": 0,
+                    "IsHideDefault": false,
+                    "DefaultClassId": "",
+                    "AttachedObjects": {
+                        "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": {
+                            "IsAttachSettingsEnabled": false,
+                            "ShowExtraInfoOnTimePoint": true,
+                            "ExtraInfoType": 0,
+                            "IsCountdownEnabled": true,
+                            "CountdownSeconds": 60,
+                            "IsActive": false
+                        },
+                        "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": {
+                            "IsClassOnNotificationEnabled": true,
+                            "IsClassOnPreparingNotificationEnabled": true,
+                            "IsClassOffNotificationEnabled": true,
+                            "ClassPreparingDeltaTime": 60,
+                            "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。",
+                            "IsAttachSettingsEnabled": false,
+                            "IsActive": false
+                        },
+                        "7625de96-38aa-4b71-b478-3f156dd9458d": {
+                            "AlertShowMode": 2,
+                            "ForecastShowMode": 2,
+                            "IsAttachSettingsEnabled": true,
+                            "IsActive": false
+                        }
+                    },
+                    "IsActive": false
+                }
+            ],
+            "AttachedObjects": { // 同理
+                "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": {
+                    "IsAttachSettingsEnabled": false,
+                    "ShowExtraInfoOnTimePoint": true,
+                    "ExtraInfoType": 0,
+                    "IsCountdownEnabled": true,
+                    "CountdownSeconds": 60,
+                    "IsActive": false
+                },
+                "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": {
+                    "IsClassOnNotificationEnabled": true,
+                    "IsClassOnPreparingNotificationEnabled": true,
+                    "IsClassOffNotificationEnabled": true,
+                    "ClassPreparingDeltaTime": 60,
+                    "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。",
+                    "IsAttachSettingsEnabled": false,
+                    "IsActive": false
+                },
+                "8fbc3a26-6d20-44dd-b895-b9411e3ddc51": { // 放学提醒
+                    "IsEnabled": true, // 启用放学提醒
+                    "NotificationMsg": "今天的课程已结束，请同学们有序离开。", // 放学提醒信息
+                    "IsAttachSettingsEnabled": false, // 启用此项
+                    "IsActive": false // 不明
+                }
+            },
+            "IsActive": false // 不明
+        }
+        // 此处可自行添加 记得改UUID
+    },
+    "ClassPlans": { // 课表清单
+        "341aa294-c791-4700-aed1-9a0aaee3ee68": { // 一份课表
+            "TimeLayoutId": "5cda50df-2f24-47b1-8f81-e5579ef56539", // 时间表UUID
+            "TimeRule": { // 启用规则
+                "WeekDay": 1, // 0周日 1~6对应周一到周日
+                "WeekCountDiv": 0, // 0全部 1单周 2双周
+                "IsActive": false // ...
+            },
+            "Classes": [ // 课程列表
+                { // 一个课程
+                    "SubjectId": "a8e3d49f-a8b0-4fb1-b5bc-adcb944ab470", // 课程UUI
+                    "IsActive": false
+                },
+                { // 同上
+                    "SubjectId": "292ef5af-12fa-49cf-980a-047590643ae4",
+                    "IsActive": false
+                }
+            ],
+            "Name": "课表1", // 课表名称
+            "IsOverlay": false, // 是否为临时层
+            "OverlaySourceId": null, // 临时层父层UUID
+            "OverlaySetupTime": "2024-05-25T09:15:25.8014348+08:00", // 临时层创建时间 通常只考虑日期
+            "IsEnabled": true, // 自动启用
+            "AttachedObjects": { // 设置项 时间表里有提到
+                "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": {
+                    "IsAttachSettingsEnabled": false,
+                    "ShowExtraInfoOnTimePoint": true,
+                    "ExtraInfoType": 0,
+                    "IsCountdownEnabled": true,
+                    "CountdownSeconds": 60,
+                    "IsActive": false
+                },
+                "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": {
+                    "IsClassOnNotificationEnabled": true,
+                    "IsClassOnPreparingNotificationEnabled": true,
+                    "IsClassOffNotificationEnabled": true,
+                    "ClassPreparingDeltaTime": 60,
+                    "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。",
+                    "IsAttachSettingsEnabled": false,
+                    "IsActive": false
+                },
+                "8fbc3a26-6d20-44dd-b895-b9411e3ddc51": {
+                    "IsEnabled": true,
+                    "NotificationMsg": "今天的课程已结束，请同学们有序离开。",
+                    "IsAttachSettingsEnabled": false,
+                    "IsActive": false
+                }
+            },
+            "IsActive": false
+        }
+    },
+    "Subjects": { // 科目
+        "292ef5af-12fa-49cf-980a-047590643ae4": { // 一个科目
+            "Name": "课程B", // 科目显示名称
+            "Initial": "课", // 科目简写名称
+            "TeacherName": "小B", // 授课老师（目前只在科目列表内显示）
+            "IsOutDoor": true, // 室外课程
+            "AttachedObjects": { // 设置 不说了
+                "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": {
+                    "IsAttachSettingsEnabled": false,
+                    "ShowExtraInfoOnTimePoint": true,
+                    "ExtraInfoType": 0,
+                    "IsCountdownEnabled": true,
+                    "CountdownSeconds": 60,
+                    "IsActive": false
+                },
+                "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": {
+                    "IsClassOnNotificationEnabled": true,
+                    "IsClassOnPreparingNotificationEnabled": true,
+                    "IsClassOffNotificationEnabled": true,
+                    "ClassPreparingDeltaTime": 60,
+                    "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。",
+                    "IsAttachSettingsEnabled": false,
+                    "IsActive": false
+                }
+            },
+            "IsActive": false
+        },
+        "a8e3d49f-a8b0-4fb1-b5bc-adcb944ab470": { // 同上
+            "Name": "课程A",
+            "Initial": "课",
+            "TeacherName": "小A",
+            "IsOutDoor": false,
+            "AttachedObjects": {
+                "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": {
+                    "IsAttachSettingsEnabled": false,
+                    "ShowExtraInfoOnTimePoint": true,
+                    "ExtraInfoType": 0,
+                    "IsCountdownEnabled": true,
+                    "CountdownSeconds": 60,
+                    "IsActive": false
+                },
+                "08f0d9c3-c770-4093-a3d0-02f3d90c24bc": {
+                    "IsClassOnNotificationEnabled": true,
+                    "IsClassOnPreparingNotificationEnabled": true,
+                    "IsClassOffNotificationEnabled": true,
+                    "ClassPreparingDeltaTime": 60,
+                    "ClassOnPreparingText": "准备上课，请回到座位并保持安静，做好上课准备。",
+                    "IsAttachSettingsEnabled": false,
+                    "IsActive": false
+                }
+            },
+            "IsActive": false
+        }
+    },
+    "IsOverlayClassPlanEnabled": false, // 是否启用临时层
+    "OverlayClassPlanId": null, // 临时层UUID
+    "TempClassPlanId": null, // 临时课表UUID
+    "TempClassPlanSetupTime": "2024-05-25T09:10:50.2392558+08:00", // 临时课表启用时间 一般只考虑日期
+    "IsActive": false
+}
