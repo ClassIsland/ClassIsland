@@ -62,8 +62,8 @@ public partial class WindowsPicker : MyWindow
         var w = NativeWindowHelper.GetAllWindows();
         var q = ViewModel.IsFilteredFullscreen ?
             (from i in w
-            where Screen.AllScreens.Any(s => new System.Drawing.Rectangle(i.WindowRect.Left, i.WindowRect.Top,
-                i.WindowRect.Right - i.WindowRect.Left, i.WindowRect.Bottom - i.WindowRect.Top).Contains(s.Bounds) &&
+            where Screen.AllScreens.Any(s => new System.Drawing.Rectangle(i.WindowRect.left, i.WindowRect.top,
+                i.WindowRect.right - i.WindowRect.left, i.WindowRect.bottom - i.WindowRect.top).Contains(s.Bounds) &&
                                              i.IsVisible && i.ClassName != "WorkerW")
             select i)
             :

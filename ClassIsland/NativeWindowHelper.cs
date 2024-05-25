@@ -13,88 +13,19 @@ namespace ClassIsland;
 
 public static class NativeWindowHelper
 {
-    [DllImport("user32.dll", EntryPoint = "FindWindow")]
-    public static extern IntPtr FindWindow(string? lp1, string? lp2);
+    #region 常量
+    public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
+    public static readonly HWND HWND_BOTTOM = (HWND)new IntPtr(1);
 
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
-
-    [StructLayout(LayoutKind.Sequential)]
-    public struct RECT
-    {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
-    }
-
-    public const int WS_EX_TRANSPARENT = 0x20;
-
-    public const int GWL_EXSTYLE = -20;
+    public const int OF_READWRITE = 2;
+    public const int OF_SHARE_DENY_NONE = 0x40;
 
     public const int WS_EX_DLGMODALFRAME = 0x0001;
-    
-    public const int SWP_NOZORDER = 0x0004;
-    public const int SWP_FRAMECHANGED = 0x0020;
-    public const uint WM_SETICON = 0x0080;
-
-    [DllImport("user32", EntryPoint = "SetWindowLong")]
-    public static extern uint SetWindowLong(IntPtr hwnd, int nIndex, long dwNewLong);
-
-    [DllImport("user32", EntryPoint = "GetWindowLong")]
-    public static extern uint GetWindowLong(IntPtr hwnd, int nIndex);
-
-    public struct POINT
-    {
-        public int X;
-        public int Y;
-        public POINT(int x, int y)
-        {
-            this.X = x;
-            this.Y = y;
-        }
-    }
-
-    /// <summary>   
-    /// 获取鼠标的坐标   
-    /// </summary>   
-    /// <param name="lpPoint">传址参数，坐标point类型</param>   
-    /// <returns>获取成功返回真</returns>   
-    [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    public static extern bool GetCursorPos(out POINT pt);
-
-    [DllImport("user32.dll")]
-    public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
-
-    public const UInt32 SWP_NOSIZE = 0x0001;
-    public const UInt32 SWP_NOMOVE = 0x0002;
-    public const UInt32 SWP_NOACTIVATE = 0x0010;
-    public static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
-
-    public const int GWL_STYLE = -16;
-    public const int WS_SYSMENU = 0x80000;
-    public const int WS_EX_TOOLWINDOW = 0x00000080;
     public const int WS_EX_LAYERED = 0x00080000;
-
-    [DllImport("user32.dll")]
-    private static extern bool GetWindowRect(HandleRef hWnd, [In, Out] ref RECT rect);
-
-    [DllImport("user32.dll")]
-    private static extern IntPtr GetForegroundWindow();
-
-    [DllImport("user32.dll")]
-    public static extern int GetWindowThreadProcessId(
-        [In] IntPtr hWnd,
-        out int id
-    );
-    [DllImport("user32", SetLastError = true)]
-    public static extern int GetWindowText(
-        IntPtr hWnd,//窗口句柄
-        StringBuilder lpString,//标题
-        int nMaxCount //最大值
-    );
-
+    public const int WS_EX_TOOLWINDOW = 0x00000080;
+    public const int WS_EX_TRANSPARENT = 0x20;
+    public const int WS_SYSMENU = 0x80000;
+    #endregion
 
     public static bool IsForegroundFullScreen(Screen screen)
     {
@@ -102,17 +33,16 @@ public static class NativeWindowHelper
         {
             screen = Screen.PrimaryScreen;
         }
-        RECT rect = new RECT();
         var win = GetForegroundWindow();
-        GetWindowRect(new HandleRef(null, win), ref rect);
-        var sb = new StringBuilder(255);
-        GetClassName(win, sb, 255);
+        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
+        var str = new PWSTR();
+        GetClassName(win, str, 255);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (sb.ToString() == "WorkerW" || sb.ToString() == "Progman")
+        if (str.ToString() == "WorkerW" || str.ToString() == "Progman")
         {
             return false;
         }
-        return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.Bounds);
+        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.Bounds);
     }
 
     public static bool IsForegroundMaxWindow(Screen screen)
@@ -121,34 +51,22 @@ public static class NativeWindowHelper
         {
             screen = Screen.PrimaryScreen;
         }
-        RECT rect = new RECT();
         var win = GetForegroundWindow();
-        GetWindowRect(new HandleRef(null, win), ref rect);
-        var sb = new StringBuilder(255);
-        GetClassName(win, sb, 255);
+        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
+        var str = new PWSTR();
+        GetClassName(win, str, 255);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (sb.ToString() == "WorkerW" || sb.ToString() == "Progman")
+        if (str.ToString() == "WorkerW" || str.ToString() == "Progman")
         {
             return false;
         }
-        return new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top).Contains(screen.WorkingArea);
+        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.WorkingArea);
     }
-    
-    // 判断文件是否打开
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr _lopen(string lpPathName, int iReadWrite);
-
-    // 关闭文件句柄
-    [DllImport("kernel32.dll")]
-    public static extern bool CloseHandle(IntPtr hObject);
 
     // 常量
-    public const int OF_READWRITE = 2;
-    public const int OF_SHARE_DENY_NONE = 0x40;
-    public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
     public static bool IsOccupied(string filePath)
     {
-        IntPtr handler = _lopen(filePath, OF_READWRITE | OF_SHARE_DENY_NONE);
+        HANDLE handler = (HANDLE)_lopen(filePath, OF_READWRITE | OF_SHARE_DENY_NONE);
         CloseHandle(handler);
         return handler == HFILE_ERROR;
     }
@@ -159,9 +77,6 @@ public static class NativeWindowHelper
         {
         }
     }
-
-    [DllImport("dwmapi.dll", PreserveSig = false)]
-    public static extern void DwmGetColorizationColor(out int pcrColorization, out bool pfOpaqueBlend);
     
     public static System.Windows.Media.Color GetColor(int argb) => new System.Windows.Media.Color()
     {
@@ -170,24 +85,6 @@ public static class NativeWindowHelper
         G = (byte)(argb >> 8),
         B = (byte)(argb)
     };
-
-    [DllImport("user32.dll", CharSet = CharSet.Ansi, EntryPoint = "FindWindowEx")]
-    public static extern IntPtr FindWindowEx(
-        IntPtr hWndParent,
-        IntPtr hWndChildAfter,
-        string? lpszClass,
-        string? lpszWindow
-    );
-
-    [DllImport("user32.dll", CharSet = CharSet.Ansi, EntryPoint = "GetClassName")]
-    public static extern int GetClassName(
-        IntPtr hWnd,
-        StringBuilder lpClassName,
-        int nMaxCount
-    );
-
-    [DllImport("User32.dll")]
-    public static extern bool IsWindowVisible(IntPtr hWnd);
 
     public static IntPtr FindWindowByClass(string className)
     {
@@ -198,34 +95,23 @@ public static class NativeWindowHelper
             .ToList();
         return q.Count > 0 ? q[0].HWnd : IntPtr.Zero;
     }
-    
-    [DllImport("dwmapi.dll")]
-    public static extern int DwmSetWindowAttribute(IntPtr hwnd, DwmWindowAttribute dwAttribute, ref int pvAttribute, int cbAttribute);
-    
-    [Flags]
-    public enum DwmWindowAttribute : uint
-    {
-        DWMWA_USE_IMMERSIVE_DARK_MODE = 20,
-        DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19,
-        DWMWA_MICA_EFFECT = 1029
-    }
 
 
     public static List<DesktopWindow> GetAllWindows(bool isDetailed=false)
     {
         var windows = new List<DesktopWindow>();
         string className;
-        var queue = new Queue<IntPtr>();
-        queue.Enqueue(IntPtr.Zero);
+        var queue = new Queue<HWND>();
+        queue.Enqueue(HWND.Null);
 
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            var win = FindWindowEx(current, IntPtr.Zero, null, null);
+            var win = FindWindowEx(current, HWND.Null, default(PCWSTR), default(PCWSTR));
             while (win != IntPtr.Zero)
             {
                 // 检查是否存在子窗口
-                var child = FindWindowEx(win, IntPtr.Zero, null, null);
+                var child = FindWindowEx(win, HWND.Null, default(PCWSTR), default(PCWSTR));
                 // 获取窗口信息
                 try
                 {
@@ -239,7 +125,7 @@ public static class NativeWindowHelper
                 }
 
                 // 前往下一个窗口
-                win = FindWindowEx(current, win, null, null);
+                win = FindWindowEx(current, win, default(PCWSTR), default(PCWSTR));
                 if (child == IntPtr.Zero)
                 {
                     continue;
@@ -261,38 +147,4 @@ public static class NativeWindowHelper
         public int styleOld;
         public int styleNew;
     }
-
-    [DllImport("User32.dll")]
-    public static extern bool RedrawWindow(
-        IntPtr hWnd,
-        ref RECT lprcUpdate,
-        IntPtr hrgnUpdate,
-        uint flags
-    );
-
-    [DllImport("User32.dll")]
-
-    public static extern int SendMessage(IntPtr hwnd, int wMsg, int wParam, int lParam);
-
-    [DllImport("kernel32.dll")]
-    public static extern bool AllocConsole();
-
-    [DllImport("kernel32.dll")]
-    public static extern bool FreeConsole();
-
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetConsoleWindow();
-
-    [DllImportAttribute("user32.dll", EntryPoint="ShowWindow")]
-    public static extern  bool ShowWindow(nint hWnd, int nCmdShow) ;
-
-    [DllImport("user32.dll")]
-    public static extern bool SetWindowText(nint hWnd, string lpText);
-
-    public const int SW_SHOW = 5;
-
-    public const int SW_HIDE = 0;
-
-    [DllImport("dwmapi.dll", PreserveSig = false)]
-    public static extern bool DwmIsCompositionEnabled();
 }

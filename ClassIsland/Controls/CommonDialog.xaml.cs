@@ -88,12 +88,14 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
     protected override void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
-        var hWnd = new WindowInteropHelper(this).Handle;
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
         //NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE,
         //    NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) & ~NativeWindowHelper.WS_SYSMENU);
-        SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) | WS_EX_DLGMODALFRAME);
-        SetWindowPos(hWnd, nint.Zero, 0, 0, 0, 0, SWP_NOMOVE |
-                                                    SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+        SetWindowLong(hWnd,
+            WINDOW_LONG_PTR_INDEX.GWL_STYLE,
+            GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE) | WS_EX_DLGMODALFRAME);
+        SetWindowPos(hWnd, default , 0, 0, 0, 0,
+            SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_FRAMECHANGED);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

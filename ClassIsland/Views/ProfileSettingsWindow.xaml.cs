@@ -533,17 +533,17 @@ public partial class ProfileSettingsWindow : MyWindow
     private void DataGridClassPlans_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
     {
         ViewModel.IsClassPlansEditing = true;
-        var hWnd = new WindowInteropHelper(this).Handle;
-        NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE, 
-            NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) & ~NativeWindowHelper.WS_SYSMENU);
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE, 
+            GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE) & ~NativeWindowHelper.WS_SYSMENU);
     }
 
     private void DataGridClassPlans_OnCellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
     {
         ViewModel.IsClassPlansEditing = false;
-        var hWnd = new WindowInteropHelper(this).Handle;
-        NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE,
-            NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_STYLE) | NativeWindowHelper.WS_SYSMENU);
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE,
+            GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_STYLE) | NativeWindowHelper.WS_SYSMENU);
     }
 
     private void ProfileSettingsWindow_OnClosing(object? sender, CancelEventArgs e)

@@ -49,42 +49,39 @@ public class MyWindow : Window
         Debug.WriteLine("rendered.");
     }
 
-    private void UpdateImmersiveDarkMode(int mode)
+    private unsafe void UpdateImmersiveDarkMode(int mode)
     {
         var trueVal = 0x01;
         var falseVal = 0x00;
-        var hWnd = new WindowInteropHelper(this).Handle;
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
         var build = Environment.OSVersion.Version.Build;
         if (build < 17763)
         {
             return;
         }
         //Debug.WriteLine(build);
-        var id = build > 18362 ? 
-            DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE : 
-            DwmWindowAttribute.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD; // 在18362及以前，DWMWA_USE_IMMERSIVE_DARK_MODE=0x19
 
         if (mode == 0)
         {
             DwmSetWindowAttribute(hWnd,
-                id,
-                ref falseVal,
-                Marshal.SizeOf(typeof(int)));
+                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
+                &falseVal,
+                (uint)Marshal.SizeOf(typeof(int)));
         }
         else
         {
             DwmSetWindowAttribute(hWnd,
-                id,
-                ref trueVal,
-                Marshal.SizeOf(typeof(int)));
+                DWMWINDOWATTRIBUTE.DWMWA_USE_IMMERSIVE_DARK_MODE,
+                &trueVal,
+                (uint)Marshal.SizeOf(typeof(int)));
         }
 
         // 在Windows10系统上强制刷新标题栏
         if (build < 22000)
         {
-            var WM_NCACTIVATE = 0x0086;
-            SendMessage(hWnd, WM_NCACTIVATE, !IsActive ? 1:0, 0);
-            SendMessage(hWnd, WM_NCACTIVATE, IsActive ? 1:0, 0);
+            uint WM_NCACTIVATE = 0x0086;
+            SendMessage(hWnd, WM_NCACTIVATE, new WPARAM((nuint)(!IsActive ? 1 : 0)), 0);
+            SendMessage(hWnd, WM_NCACTIVATE, new WPARAM((nuint)(IsActive ? 1 : 0)), 0);
         }
     }
 }

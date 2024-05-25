@@ -229,7 +229,7 @@ public partial class MainWindow : Window
         {
             return;
         }
-        NativeWindowHelper.GetCursorPos(out var ptr);
+        GetCursorPos(out var ptr);
         GetCurrentDpi(out var dpiX, out var dpiY);
         var scale = ViewModel.Settings.Scale;
         //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
@@ -669,17 +669,19 @@ public partial class MainWindow : Window
 
     private void SetBottom()
     {
-        var hWnd = new WindowInteropHelper(this).Handle;
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
         if (ViewModel.Settings.WindowLayer != 0)
         {
             return;
         }
         if (ViewModel.IsNotificationWindowExplicitShowed)
         {
-            NativeWindowHelper.SetWindowPos(hWnd, new IntPtr(0), 0, 0, 0, 0, NativeWindowHelper.SWP_NOSIZE | NativeWindowHelper.SWP_NOMOVE | NativeWindowHelper.SWP_NOACTIVATE);
+            SetWindowPos(hWnd, default, 0, 0, 0, 0,
+                SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
             return;
         }
-        NativeWindowHelper.SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0, NativeWindowHelper.SWP_NOSIZE | NativeWindowHelper.SWP_NOMOVE | NativeWindowHelper.SWP_NOACTIVATE);
+        SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0,
+            SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
     }
 
     private async void UpdateTheme()
@@ -691,17 +693,17 @@ public partial class MainWindow : Window
         }
 
         UpdateWindowPos();
-        var hWnd = new WindowInteropHelper(this).Handle;
-        var style = NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE);
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
         if (!ViewModel.Settings.IsMouseClickingEnabled)
         {
-            var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
+            var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
         }
         else
         {
-            style &= ~(uint)NativeWindowHelper.WS_EX_TRANSPARENT;
-            var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style);
+            style &= ~NativeWindowHelper.WS_EX_TRANSPARENT;
+            var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style);
         }
 
         switch (ViewModel.Settings.WindowLayer)
@@ -728,8 +730,8 @@ public partial class MainWindow : Window
             case 2:
                 try
                 {
-                    NativeWindowHelper.DwmGetColorizationColor(out var color, out _);
-                    var c = NativeWindowHelper.GetColor(color);
+                    DwmGetColorizationColor(out var color, out _);
+                    var c = NativeWindowHelper.GetColor((int)color);
                     primary = secondary = c;
                 }
                 catch (Exception ex)
@@ -1122,7 +1124,7 @@ public partial class MainWindow : Window
             //但是WPF窗口在未设置 AllowsTransparency = true 时，会自动去掉 WS_EX_LAYERED 样式（在 HwndTarget 类中)，
             //如果设置了 AllowsTransparency = true 将使用WPF内置的低性能的透明实现，
             //所以这里通过 Hook 的方式，在不使用WPF内置的透明实现的情况下，强行保证这个样式存在。
-            if (msg == (int)0x007C && (long)wParam == (long)NativeWindowHelper.GWL_EXSTYLE)
+            if (msg == (int)0x007C && (long)wParam == (long)WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE)
             {
                 var styleStruct = (NativeWindowHelper.StyleStruct)Marshal.PtrToStructure(lParam, typeof(NativeWindowHelper.StyleStruct));
                 styleStruct.styleNew |= (int)NativeWindowHelper.WS_EX_LAYERED;

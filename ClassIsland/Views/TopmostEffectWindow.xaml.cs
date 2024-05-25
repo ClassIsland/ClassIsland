@@ -115,7 +115,7 @@ public partial class TopmostEffectWindow : Window
             //但是WPF窗口在未设置 AllowsTransparency = true 时，会自动去掉 WS_EX_LAYERED 样式（在 HwndTarget 类中)，
             //如果设置了 AllowsTransparency = true 将使用WPF内置的低性能的透明实现，
             //所以这里通过 Hook 的方式，在不使用WPF内置的透明实现的情况下，强行保证这个样式存在。
-            if (msg == (int)0x007C && (long)wParam == (long)NativeWindowHelper.GWL_EXSTYLE)
+            if (msg == (int)0x007C && (long)wParam == (long)WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE)
             {
                 var styleStruct = (NativeWindowHelper.StyleStruct)Marshal.PtrToStructure(lParam, typeof(NativeWindowHelper.StyleStruct));
                 styleStruct.styleNew |= (int)NativeWindowHelper.WS_EX_LAYERED;
@@ -128,10 +128,10 @@ public partial class TopmostEffectWindow : Window
 
     private void TopmostEffectWindow_OnContentRendered(object? sender, EventArgs e)
     {
-        var hWnd = new WindowInteropHelper(this).Handle;
-        var style = NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE);
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
-        var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
+        var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
     }
 
     private void TopmostEffectWindow_OnClosing(object? sender, CancelEventArgs e)

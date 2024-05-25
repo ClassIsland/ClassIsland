@@ -13,7 +13,7 @@ namespace ClassIsland.Models;
 public class DesktopWindow : ObservableRecipient
 {
     private string _className = "";
-    private IntPtr _hWnd = IntPtr.Zero;
+    private HWND _hWnd = default;
     private string _windowText = "";
     private Size _windowSize = Size.Empty;
     private BitmapImage _screenShot = new BitmapImage();
@@ -33,7 +33,7 @@ public class DesktopWindow : ObservableRecipient
         }
     }
 
-    public IntPtr HWnd
+    public HWND HWnd
     {
         get => _hWnd;
         set
@@ -127,39 +127,38 @@ public class DesktopWindow : ObservableRecipient
         }
     }
 
-    public static DesktopWindow GetWindowByHWnd(IntPtr hWnd)
+    public static DesktopWindow GetWindowByHWnd(HWND hWnd)
     {
-        var sb = new StringBuilder(255);
-        GetClassName(hWnd, sb, 255);
-        RECT rect = new RECT();
-        GetWindowRect(new HandleRef(null, hWnd).Handle, ref rect);
+        var str = new PWSTR();
+        GetClassName(hWnd, str, 255);
+        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
         return new DesktopWindow()
         {
             HWnd = hWnd,
             WindowRect = rect,
-            ClassName = sb.ToString(),
+            ClassName = str.ToString(),
             IsVisible = IsWindowVisible(hWnd)
         };
     }
 
-    public static DesktopWindow GetWindowByHWndDetailed(IntPtr hWnd)
+    public unsafe static DesktopWindow GetWindowByHWndDetailed(HWND hWnd)
     {
-        var sb = new StringBuilder(255);
-        GetClassName(hWnd, sb, 255);
-        GetWindowThreadProcessId(hWnd, out var pid);
-        var process = Process.GetProcessById(pid);
-        var sb2 = new StringBuilder(255);
-        GetWindowText(hWnd, sb2, 255);
-        RECT rect = new RECT();
-        GetWindowRect(new HandleRef(null, hWnd).Handle, ref rect);
+        var str = new PWSTR();
+        GetClassName(hWnd, str, 255);
+        uint* pid = default;
+        GetWindowThreadProcessId(hWnd, pid);
+        var process = Process.GetProcessById((int)*pid);
+        var str2 = new PWSTR();
+        GetWindowText(hWnd, str2, 255);
+        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
         var bitmap = BitmapConveters.ConvertToBitmapImage(WindowCaptureHelper.CaptureWindowBitBlt(hWnd),h:300);
         var description = process.MainModule?.FileVersionInfo.FileDescription;
         return new DesktopWindow()
         {
             HWnd = hWnd,
-            ClassName = sb.ToString(),
+            ClassName = str.ToString(),
             OwnerProcess = process,
-            WindowText = sb2.ToString(),
+            WindowText = str2.ToString(),
             WindowRect = rect,
             ScreenShot = bitmap,
             Description = (description == "") ? (process.ProcessName) : description ?? process.ProcessName,

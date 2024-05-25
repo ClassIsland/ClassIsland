@@ -35,10 +35,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     public string GetDiagnosticInfo()
     {
         var settings = SettingsService.Settings;
+        DwmIsCompositionEnabled(out BOOL isCompositionEnabled);
         var list = new Dictionary<string, string>
         {
             {"SystemOsVersion",  RuntimeInformation.OSDescription},
-            {"SystemIsCompositionEnabled", NativeWindowHelper.DwmIsCompositionEnabled().ToString()},
+            {"SystemIsCompositionEnabled", isCompositionEnabled.ToString()},
             {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},

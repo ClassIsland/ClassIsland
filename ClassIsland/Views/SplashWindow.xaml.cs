@@ -37,10 +37,10 @@ public partial class SplashWindow : Window
 
     protected override void OnContentRendered(EventArgs e)
     {
-        var hWnd = new WindowInteropHelper(this).Handle;
-        var style = NativeWindowHelper.GetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE);
+        var hWnd = (HWND)new WindowInteropHelper(this).Handle;
+        var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
         style |= NativeWindowHelper.WS_EX_TOOLWINDOW;
-        var r = NativeWindowHelper.SetWindowLong(hWnd, NativeWindowHelper.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
+        var r = SetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE, style | NativeWindowHelper.WS_EX_TRANSPARENT);
         base.OnContentRendered(e);
         Console.WriteLine("splash window rendered.");
         //IsRendered = true;
