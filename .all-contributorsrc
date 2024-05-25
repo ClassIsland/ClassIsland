@@ -76,6 +76,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "TuanZiGit",
+      "name": "团子",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46892455?v=4",
+      "profile": "https://github.com/TuanZiGit",
+      "contributions": [
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,
