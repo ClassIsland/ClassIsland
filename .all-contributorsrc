@@ -85,6 +85,16 @@
       "contributions": [
         "example"
       ]
+    },
+    {
+      "login": "GusuiCommunity",
+      "name": "吕璟辰",
+      "avatar_url": "https://avatars.githubusercontent.com/u/170245818?v=4",
+      "profile": "https://www.gusui.site/",
+      "contributions": [
+        "doc",
+        "promotion"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -92,5 +102,5 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "projectName": "ClassIsland",
-  "projectOwner": "HelloWRC"
+  "projectOwner": "ClassIsland"
 }
