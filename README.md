@@ -1,4 +1,4 @@
-# ClassIsland
+# ClassIsland [官网🔗](https://classisland.tech)
 
 ![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
 
@@ -10,6 +10,7 @@
 [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
 
 ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
+[ClassIsland官网🔗](https://classisland.tech)
 
 ## 功能
 ### 课表显示
@@ -171,7 +172,9 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TuanZiGit"><img src="https://avatars.githubusercontent.com/u/46892455?v=4?s=100" width="100px;" alt="团子"/><br /><sub><b>团子</b></sub></a><br /><a href="#example-TuanZiGit" title="Examples">💡</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.gusui.site"><img src="https://avatars.githubusercontent.com/u/170245818?v=4?s=100" width="100px;" alt="谷穗社区"/><br /><sub><b>谷穗社区</b></sub></a><br /><a href="https://github.com/HelloWRC/ClassIsland/commits?author=GusuiCommunity" title="Code">💻</a></td>
     </tr>
+      
   </tbody>
 </table>
 
