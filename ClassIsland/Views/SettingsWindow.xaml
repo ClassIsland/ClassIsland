@@ -1244,6 +1244,7 @@ The quick brown fox jumps over a lazy dog.
                                                                         Header="允许启用提醒语音"
                                                                         Description="在发出提醒时用语音播报提醒内容。"
                                                                         IsOn="{Binding Settings.AllowNotificationSpeech, Mode=TwoWay}"
+                                                                        IsEnabled="{Binding Settings.IsNotificationSpeechEnabled, Mode=TwoWay}"
                                                                         Margin="-12 0" />
                                                                 </Expander.Header>
                                                                 <Grid Margin="36 0 48 12"
@@ -1271,8 +1272,8 @@ The quick brown fox jumps over a lazy dog.
                                                                             VerticalAlignment="Center">
                                                                         <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
                                                                              SelectedIndex="{Binding Settings.SpeechSource}">
-                                                                            <ListBoxItem Content="系统TTS" />
-                                                                            <ListBoxItem Content="Edge TTS"/>
+                                                                            <ListBoxItem Content="系统TTS" IsEnabled="{Binding Settings.IsSystemSpeechSystemExist}"/>
+                                                                            <ListBoxItem Content="Edge TTS" IsEnabled="{Binding Settings.IsNetworkConnect, Mode=TwoWay}"/>
                                                                         </ListBox>
                                                                     </StackPanel>
 

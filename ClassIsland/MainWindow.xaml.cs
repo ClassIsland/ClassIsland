@@ -234,6 +234,8 @@ public partial class MainWindow : Window
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
     {
+        SettingsService.Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
+        SettingsService.Settings.IsNotificationSpeechEnabled = SettingsService.Settings.IsNetworkConnect || SettingsService.Settings.IsSystemSpeechSystemExist;
         if (SettingsService.Settings.IsMainWindowDebugEnabled)
             ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
 

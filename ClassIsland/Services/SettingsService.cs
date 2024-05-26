@@ -60,6 +60,10 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
                 var r = JsonSerializer.Deserialize<Settings>(json);
                 if (r != null)
                 {
+                    if (!r.IsSystemSpeechSystemExist)
+                    {
+                        r.SpeechSource = 1;
+                    }
                     Settings = r;
                     Settings.PropertyChanged += (sender, args) => SaveSettings();
                 }
