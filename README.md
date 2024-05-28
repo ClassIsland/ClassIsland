@@ -75,15 +75,15 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 <details>
 <summary>最低设备需求</summary>
 
-ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这些系统上运行 ClassIsland 可能会出现运行不稳定的情况。**
+ClassIsland 理论上可以在以下的系统环境中运行：**注意：在这些系统上运行 ClassIsland 可能会出现运行不稳定的情况。**
 
 - Windows 7 及以上版本系统，x64架构
 
 要在 Windows 7 中安装并运行 ClassIsland，您还需要额外进行以下准备工作：[在Windows7中安装 ClassIsland](doc/InstallOnLegaceyOS.md)
 
-</details>
+> **⚠️不建议在 Windows 10 以下的系统运行本应用⚠️** 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**（[#91](https://github.com/HelloWRC/ClassIsland/issues/91)）。
 
-**⚠️不建议在 Windows 10 以下的系统运行本应用⚠️** 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**（[#91](https://github.com/HelloWRC/ClassIsland/issues/91)）。
+</details>
 
 ### 2. 下载软件压缩包
 
@@ -142,8 +142,8 @@ ClassIsland 理论上可以在以下的系统环境中运行。**注意：在这
 
 ## 相关项目
 
-- [HelloWRC/ClassIsland.ManagementServer](https://github.com/HelloWRC/ClassIsland.ManagementServer) - ClassIsland 集控服务端仓库
-- [HelloWRC/classisland-docs](https://github.com/HelloWRC/classisland-docs) - ClassIsland 文档仓库
+- [ClassIsland/ManagementServer](https://github.com/ClassIsland/ManagementServer) - ClassIsland 集控服务端仓库
+- [ClassIsland/classisland-docs](https://github.com/ClassIsland/classisland-docs) - ClassIsland 文档仓库
 
 
 ## 致谢
