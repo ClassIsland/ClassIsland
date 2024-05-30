@@ -291,6 +291,7 @@ public partial class App : Application, IAppHost
                 services.AddLogging(builder =>
                 {
                     builder.AddConsole();
+                    // TODO: 添加写入本地log文件
 #if DEBUG
                     builder.SetMinimumLevel(LogLevel.Trace);
 #endif
