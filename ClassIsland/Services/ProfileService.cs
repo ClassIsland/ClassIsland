@@ -174,7 +174,7 @@ public class ProfileService
     {
         Logger.LogInformation("写入档案文件：{}", $"./Profiles/{filename}");
         if (File.Exists($"Profiles/{filename}.bak")) File.Delete($"./Profiles/{filename}.bak");
-        File.Copy($"./Profiles/{filename}", $"./Profiles/{filename}.bak"); // 备份原档案文件
+        if(File.Exists($"./Profiles/{filename}")) File.Copy($"./Profiles/{filename}", $"./Profiles/{filename}.bak"); // 备份原档案文件
         var json = JsonSerializer.Serialize<Profile>(Profile);
         if(json == null)
         {
