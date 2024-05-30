@@ -9,6 +9,7 @@ public class CountDownMiniInfoProviderSettings : ObservableRecipient
 {
     private string _countDownName = "";
     private DateTime _overTime = DateTime.Now;
+    private int _daysLeft = 0;
     private Color _fontColor = Color.FromRgb(255,0,0);
     private int _fontSize = 16;
 
@@ -32,6 +33,17 @@ public class CountDownMiniInfoProviderSettings : ObservableRecipient
             if (value == null) return;
             if (value.Equals(_overTime)) return;
             _overTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int DaysLeft
+    {
+        get => _daysLeft;
+        set
+        {
+            if (value == _daysLeft) return;
+            _daysLeft = value > 0 ? value : 0;
             OnPropertyChanged();
         }
     }

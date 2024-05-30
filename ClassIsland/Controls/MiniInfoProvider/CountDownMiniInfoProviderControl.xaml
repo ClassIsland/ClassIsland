@@ -10,7 +10,6 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance classIsland:MainWindow}">
     <UserControl.Resources>
-        <converters:DateTimeToDaysLeftConverter x:Key="DateTimeToDaysLeftConverter"/>
         <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CountDownMiniInfoProviderControl}}">
@@ -20,7 +19,7 @@
                  Foreground="{Binding Settings.fontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                  FontSize="{Binding Settings.fontSize}"/>
             <Run Text=" 还有 " FontSize="16"/>
-            <Run Text="{Binding Settings.overTime, Converter={StaticResource DateTimeToDaysLeftConverter}}" 
+            <Run Text="{Binding Settings.DaysLeft, Mode=OneWay}" 
                  Foreground="{Binding Settings.fontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                  FontSize="{Binding Settings.fontSize}"/>
             <Run Text=" 天" FontSize="16"/>
