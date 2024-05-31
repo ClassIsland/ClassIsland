@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 using ClassIsland.Core.Abstraction.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Management;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Core.Protobuf.Enum;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
@@ -185,6 +188,15 @@ public class ManagementService
             return;
         var w = CopyObject(settings);
         w.IsManagementEnabled = true;
+        // 清空旧的配置
+        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, "./Profiles/_management-profile.json"]).Where(File.Exists))
+        {
+            File.Delete(i);
+            if (File.Exists(i + ".bak"))
+            {
+                File.Delete(i + ".bak");
+            }
+        }
         SaveConfig(ManagementSettingsPath, w);
         CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
         
