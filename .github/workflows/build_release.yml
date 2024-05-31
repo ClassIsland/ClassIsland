@@ -80,20 +80,17 @@ jobs:
       
       - name: Publish application
         run: |
-          cd ./ClassIsland
           ls
           pwsh -ep Bypass -c ./tools/publish.ps1
           
       - name: Generate MD5
         run: |
-          cd ./ClassIsland
           pwsh -ep Bypass -c .\tools\generate-md5.ps1 ./out
           
       - name: Upload to AppCenter
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
         run: |
-          cd ./ClassIsland
           Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
           pwsh -ep Bypass -c .\tools\pre-appcenter-upload.ps1
           pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $env:APPCENTER_TOKEN ${env:git_latest_tag}
@@ -101,6 +98,6 @@ jobs:
       - name: Update to release
         uses: ncipollo/release-action@v1.10.0
         with:
-          artifacts: .\ClassIsland\out\*.*
+          artifacts: .\out\*.*
           draft: true
           body: ${{ env.md5_summary }}
