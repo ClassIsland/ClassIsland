@@ -319,6 +319,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
             if (kind == UpdateSourceKind.GitHub)
             {
+                // 使用 GitHub 获取更新
                 var versionsGh = await GetUpdateVersionsGitHubAsync(Settings.DebugGitHubAuthKey);
                 if (versionsGh.Count <= 0)
                 {
@@ -326,8 +327,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     return;
                 }
 
-                var v = (versionsGh.Where(i => CurrentUpdateSourceUrl == AppCenterBetaRootUrl || !i.Prerelease)
-                    .OrderBy(i => i.CreatedAt)).Reverse().First();
+                var v = (versionsGh.Where(i => (CurrentUpdateSourceUrl == AppCenterBetaRootUrl || !i.Prerelease) 
+                                               && Version.TryParse(i.TagName, out _))
+                    .OrderByDescending(i => Version.Parse(i.TagName))).First();
                 verCode = Version.Parse(v.TagName);
                 Settings.UpdateReleaseInfo = v.Body;
                 Settings.UpdateArtifactHash = MatchHashInfo(v.Body, "ClassIsland.zip");
@@ -344,7 +346,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     return;
                 }
 
-                var v = (from i in versions orderby i.UploadTime select i).Reverse().ToList()[0]!;
+                var v = versions.Where(i => Version.TryParse(i.Version, out _)).OrderByDescending(i => Version.Parse(i.Version)).First();
                 verCode = Version.Parse(v.Version);
                 if (IsNewerVersion(isForce, isCancel, verCode))
                 {
