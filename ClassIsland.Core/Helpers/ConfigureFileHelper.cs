@@ -41,27 +41,21 @@ public class ConfigureFileHelper
         // 备份原文件
         if (File.Exists(path + ".bak"))
         {
-            File.Delete(path + ".bak");
+            File.Copy(path, path + ".bak", true);
         }
-        File.Copy(path, path + ".bak");
-        File.WriteAllText(path + ".bak", JsonSerializer.Serialize<T>(o));
-        // 校验备份文件是否写入成功
-        var bakInfo = new FileInfo(path + ".bak");
-        // 由于默认的Profile实际大小为15735，因此如果写入后文件大小小于15700则判断写入失败
-        if (bakInfo.Length <= 15700)
+        else
         {
-            File.Delete(path + ".bak");
-            return;
+            File.WriteAllText(path + ".bak", JsonSerializer.Serialize<T>(o));
+            // 校验备份文件是否写入成功
+            var bakInfo = new FileInfo(path + ".bak");
+            // 由于默认的Profile实际大小为15735，因此如果写入后文件大小小于15700则判断写入失败
+            if (bakInfo.Length <= 0)
+            {
+                File.Delete(path + ".bak");
+                return;
+            }
         }
         File.WriteAllText(path, JsonSerializer.Serialize<T>(o));
-        // 校验写入结果
-        var fileInfo = new FileInfo(path);
-        if (fileInfo.Length > 15700)
-        {
-            File.Delete(path + ".bak");
-            return;
-        }
-        
     }
 
     public static T CopyObject<T>(T o)
