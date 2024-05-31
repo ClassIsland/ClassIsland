@@ -65,8 +65,11 @@
             </Button>
         </StackPanel>
         <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Left" Orientation="Horizontal">
-            <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonCopy_OnClick">
+            <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonCopy_OnClick" Margin="0 0 6 0">
                 <controls:IconText Kind="ContentCopy" Text="复制" IconMargin="3 0 0 0"/>
+            </Button>
+            <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonFeedback_OnClick">
+                <controls:IconText Kind="FeedbackOutline" Text="反馈问题" IconMargin="3 0 0 0"/>
             </Button>
         </StackPanel>
 
