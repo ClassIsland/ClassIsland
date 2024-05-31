@@ -29,5 +29,8 @@ $summary +=  "`n<!-- CLASSISLAND_PKG_MD5 ${json} -->"
 echo $summary > "$path/checksums.md"
 Write-Host "MD5 Summary:" -ForegroundColor Gray
 Write-Host $summary -ForegroundColor Gray
-Write-Output "::set-env name=MD5_SUMMARY::$summary"
 Write-Host "----------" -ForegroundColor Gray
+
+if (-not $GITHUB_ACTION -eq $null) {
+    'MD5_SUMMARY=' + $summary.Replace("`n", "<<") | Out-File -FilePath $env:GITHUB_ENV -Append
+}
