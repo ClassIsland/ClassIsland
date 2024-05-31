@@ -205,6 +205,7 @@ public partial class App : Application, IAppHost
         }
 
         FileFolderService.CreateFolders();
+        bool isSystemSpeechSystemExist = false;
         IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
@@ -237,15 +238,32 @@ public partial class App : Application, IAppHost
                     s.SetOutputToDefaultAudioDevice();
                     return s;
                 });
+                try // 检测SystemSpeechService是否存在
+                {
+                    var testSystemSpeechService = new SystemSpeechService();
+                    isSystemSpeechSystemExist = true;
+                }
+                catch(Exception e)
+                {
+                    // ignore
+                }
                 services.AddSingleton<ISpeechService>((provider =>
                 {
                     var s = provider.GetService<SettingsService>();
-                    return s?.Settings.SpeechSource switch
+                    if (isSystemSpeechSystemExist)
                     {
-                        0 => new SystemSpeechService(),
-                        1 => new EdgeTtsService(),
-                        _ => new SystemSpeechService()
-                    };
+                        return s?.Settings.SpeechSource switch
+                        {
+                            0 => new SystemSpeechService(),
+                            1 => new EdgeTtsService(),
+                            _ => new SystemSpeechService()
+                        };
+                    }
+                    else
+                    {
+                        return new EdgeTtsService();
+                    }
+                    
                 }));
                 services.AddSingleton<ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
@@ -273,6 +291,7 @@ public partial class App : Application, IAppHost
                 services.AddLogging(builder =>
                 {
                     builder.AddConsole();
+                    // TODO: 添加写入本地log文件
 #if DEBUG
                     builder.SetMinimumLevel(LogLevel.Trace);
 #endif
@@ -281,6 +300,8 @@ public partial class App : Application, IAppHost
         await GetService<ManagementService>().SetupManagement();
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
+        Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
+        Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
         Settings.DiagnosticStartupCount++;
         // 记录MLE
         if (ApplicationCommand.PrevSessionMemoryKilled)

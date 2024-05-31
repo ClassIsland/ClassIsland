@@ -22,6 +22,8 @@
 | `DOTNET_GCName` | `clrgc.dll` |
 | `DOTNET_EnableWriteXorExecute` | `0` |
 
+**您可以下载我们的[修复工具](https://github.com/ClassIsland/ClassIsland.RepairToolForWindows7/releases/download/v1.0.0/RepairToolForWindows7.bat)进行一键修复**
+
 您也可以在命令提示符中运行以下的命令快速完成环境变量的设置。
 
 ```
