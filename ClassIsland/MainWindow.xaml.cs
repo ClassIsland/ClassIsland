@@ -216,19 +216,27 @@ public partial class MainWindow : Window
         {
             return;
         }
-        GetCursorPos(out var ptr);
-        GetCurrentDpi(out var dpiX, out var dpiY);
-        var scale = ViewModel.Settings.Scale;
-        //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
-        var root = GridWrapper.PointToScreen(new Point(0, 0));
-        var cx = root.X;
-        var cy = root.Y;
-        var cw = GridWrapper.ActualWidth * dpiX * scale;
-        var ch = GridWrapper.ActualHeight * dpiY * scale;
-        var cr = cx + cw;
-        var cb = cy + ch;
 
-        ViewModel.IsMouseIn = (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+        try
+        {
+            GetCursorPos(out var ptr);
+            GetCurrentDpi(out var dpiX, out var dpiY);
+            var scale = ViewModel.Settings.Scale;
+            //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
+            var root = GridWrapper.PointToScreen(new Point(0, 0));
+            var cx = root.X;
+            var cy = root.Y;
+            var cw = GridWrapper.ActualWidth * dpiX * scale;
+            var ch = GridWrapper.ActualHeight * dpiY * scale;
+            var cr = cx + cw;
+            var cb = cy + ch;
+
+            ViewModel.IsMouseIn = (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "无法更新鼠标状态。");
+        }
         
     }
 
