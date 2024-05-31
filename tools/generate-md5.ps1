@@ -29,4 +29,5 @@ $summary +=  "`n<!-- CLASSISLAND_PKG_MD5 ${json} -->"
 echo $summary > "$path/checksums.md"
 Write-Host "MD5 Summary:" -ForegroundColor Gray
 Write-Host $summary -ForegroundColor Gray
+$env:md5_summary = $summary
 Write-Host "----------" -ForegroundColor Gray
