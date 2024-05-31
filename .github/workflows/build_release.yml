@@ -103,4 +103,4 @@ jobs:
         with:
           artifacts: .\ClassIsland\out\*.*
           draft: true
-          body: ${{ md5_summary }}
+          body: ${{ env.md5_summary }}
