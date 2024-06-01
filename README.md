@@ -193,7 +193,7 @@ ClassIsland 理论上可以在以下的系统环境中运行：**注意：在这
 - [Grpc.Tools](https://github.com/grpc/grpc)
 - [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
 - [FluentWpf](https://github.com/sourcechord/FluentWPF)
-- [gong-mdWpf-dragdrop](https://github.com/punker76/gong-mdWpf-dragdrop)
+- [gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)
 - [MdXaml](https://github.com/whistyun/MdXaml)
 - [Microsoft.AppCenter](https://aka.ms/telgml)
 - [Downloader](https://github.com/bezzad/Downloader)
