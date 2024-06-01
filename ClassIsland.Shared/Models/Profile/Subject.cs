@@ -1,5 +1,8 @@
 ﻿namespace ClassIsland.Shared.Models.Profile;
 
+/// <summary>
+/// 代表一个科目
+/// </summary>
 public class Subject : AttachableSettingsObject
 {
     private string _name = "";
@@ -7,6 +10,9 @@ public class Subject : AttachableSettingsObject
     private string _teacherName = "";
     private bool _isOutDoor = false;
 
+    /// <summary>
+    /// 科目名
+    /// </summary>
     public string Name
     {
         get => _name;
@@ -18,6 +24,9 @@ public class Subject : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 科目简称
+    /// </summary>
     public string Initial
     {
         get => _initial;
@@ -29,6 +38,9 @@ public class Subject : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 教师名
+    /// </summary>
     public string TeacherName
     {
         get => _teacherName;
@@ -40,6 +52,9 @@ public class Subject : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 是否为户外课程
+    /// </summary>
     public bool IsOutDoor
     {
         get => _isOutDoor;
@@ -51,6 +66,9 @@ public class Subject : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 代表一个空科目
+    /// </summary>
     public static readonly Subject Empty = new()
     {
         Initial = "?",

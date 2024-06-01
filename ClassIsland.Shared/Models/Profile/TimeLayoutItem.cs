@@ -2,6 +2,9 @@
 
 namespace ClassIsland.Shared.Models.Profile;
 
+/// <summary>
+/// 代表一个<see cref="TimeLayout"/>中的时间点。
+/// </summary>
 public class TimeLayoutItem : AttachableSettingsObject, IComparable
 {
     private DateTime _startSecond = DateTime.Now;
@@ -87,6 +90,9 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         }
     }
 
+    /// <summary>
+    /// 默认科目ID
+    /// </summary>
     public string DefaultClassId
     {
         get => _defaultClassId;
@@ -98,6 +104,11 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         }
     }
 
+    /// <summary>
+    /// 与另一个<see cref="TimeLayoutItem"/>比较
+    /// </summary>
+    /// <param name="obj">要比较的对象</param>
+    /// <returns></returns>
     public int CompareTo(object? obj)
     {
         var o = (TimeLayoutItem?)obj;

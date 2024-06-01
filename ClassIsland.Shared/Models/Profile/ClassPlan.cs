@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace ClassIsland.Shared.Models.Profile;
 
+/// <summary>
+/// 代表一个课表。
+/// </summary>
 public class ClassPlan : AttachableSettingsObject
 {
     private string _timeLayoutId = "";
@@ -20,15 +23,19 @@ public class ClassPlan : AttachableSettingsObject
     private DateTime _overlaySetupTime = DateTime.Now;
     private int _lastTimeLayoutCount = -1;
 
+    /// <summary>
+    /// 当课程表更新时触发
+    /// </summary>
     public event EventHandler? ClassesChanged;
 
-    public void NotifyClassesChanged()
+
+    private void NotifyClassesChanged()
     {
         ClassesChanged?.Invoke(this, EventArgs.Empty);
     }
 
     [JsonIgnore]
-    public int LastTimeLayoutCount
+    internal int LastTimeLayoutCount
     {
         get => _lastTimeLayoutCount;
         set
@@ -39,6 +46,9 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 实例化对象
+    /// </summary>
     public ClassPlan()
     {
         PropertyChanged += OnPropertyChanged;
@@ -197,7 +207,7 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     [JsonIgnore]
-    public ObservableDictionary<string, TimeLayout> TimeLayouts
+    internal ObservableDictionary<string, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
         set
@@ -209,8 +219,14 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 当前课表的时间表
+    /// </summary>
     [JsonIgnore] public TimeLayout TimeLayout => TimeLayouts[TimeLayoutId];
 
+    /// <summary>
+    /// 当前课表的时间表ID
+    /// </summary>
     public string TimeLayoutId
     {
         get => _timeLayoutId;
@@ -223,6 +239,9 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 课表触发规则
+    /// </summary>
     public TimeRule TimeRule
     {
         get => _timeRule;
@@ -234,6 +253,9 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 课表包含的课程信息
+    /// </summary>
     public ObservableCollection<ClassInfo> Classes
     {
         get => _classes;
@@ -245,6 +267,9 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 课表名称
+    /// </summary>
     public string Name
     {
         get => _name;
@@ -256,7 +281,7 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
-    public void RefreshClassesList(bool isDiffMode=false)
+    internal void RefreshClassesList(bool isDiffMode=false)
     {
         //App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
         // 对齐长度
@@ -299,7 +324,7 @@ public class ClassPlan : AttachableSettingsObject
         LastTimeLayoutCount = TimeLayout.Layouts.Count;
     }
 
-    public void RemoveTimePointSafe(TimeLayoutItem timePoint)
+    internal void RemoveTimePointSafe(TimeLayoutItem timePoint)
     {
         foreach (var i in from i in Classes where i.CurrentTimeLayoutItem == timePoint select i)
         {
@@ -308,6 +333,9 @@ public class ClassPlan : AttachableSettingsObject
         RefreshClassesList();
     }
 
+    /// <summary>
+    /// 课表是否被激活（正在使用）
+    /// </summary>
     [JsonIgnore]
     public bool IsActivated
     {
@@ -320,6 +348,9 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 是否是临时层课表
+    /// </summary>
     public bool IsOverlay
     {
         get => _isOverlay;
@@ -331,6 +362,9 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 临时层课表对应的源课表ID
+    /// </summary>
     public string? OverlaySourceId
     {
         get => _overlaySourceId;
@@ -342,8 +376,11 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 临时层课表对应的源课表
+    /// </summary>
     [JsonIgnore]
-    public ClassPlan? OverlaySource
+    internal ClassPlan? OverlaySource
     {
         get => _overlaySource;
         set
@@ -354,6 +391,9 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 临时层设置时间
+    /// </summary>
     public DateTime OverlaySetupTime
     {
         get => _overlaySetupTime;
@@ -365,7 +405,7 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
-    public void SetupOverlay(ClassPlan source)
+    internal void SetupOverlay(ClassPlan source)
     {
         if (!IsOverlay)
         {
@@ -374,6 +414,9 @@ public class ClassPlan : AttachableSettingsObject
         OverlaySource = source;
     }
 
+    /// <summary>
+    /// 是否默认启用
+    /// </summary>
     public bool IsEnabled
     {
         get => _isEnabled;

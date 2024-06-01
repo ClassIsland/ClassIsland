@@ -3,6 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Notification;
 
+/// <summary>
+/// 提醒设置
+/// </summary>
 public class NotificationSettings : ObservableRecipient, INotificationSettings
 {
     private bool _isNotificationEnabled = true;
@@ -13,6 +16,9 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
     private bool _isSettingsEnabled = false;
     private bool _isNotificationTopmostEnabled = false;
 
+    /// <summary>
+    /// 是否启用提醒
+    /// </summary>
     public bool IsNotificationEnabled
     {
         get => _isNotificationEnabled;
@@ -24,6 +30,9 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    /// <summary>
+    /// 是否启用语音
+    /// </summary>
     public bool IsSpeechEnabled
     {
         get => _isSpeechEnabled;
@@ -35,6 +44,9 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    /// <summary>
+    /// 是否启用提醒效果
+    /// </summary>
     public bool IsNotificationEffectEnabled
     {
         get => _isNotificationEffectEnabled;
@@ -46,6 +58,9 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    /// <summary>
+    /// 是否启用提醒音效
+    /// </summary>
     public bool IsNotificationSoundEnabled
     {
         get => _isNotificationSoundEnabled;
@@ -57,6 +72,9 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    /// <summary>
+    /// 提醒音效路径
+    /// </summary>
     public string NotificationSoundPath
     {
         get => _notificationSoundPath;
@@ -68,6 +86,9 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    /// <summary>
+    /// 是否在提醒时置顶主界面
+    /// </summary>
     public bool IsNotificationTopmostEnabled
     {
         get => _isNotificationTopmostEnabled;
@@ -79,6 +100,9 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
         }
     }
 
+    /// <summary>
+    /// 是否启用此提醒设置。如果为false，那么这里设置的提醒设置将不起作用。
+    /// </summary>
     public bool IsSettingsEnabled
     {
         get => _isSettingsEnabled;

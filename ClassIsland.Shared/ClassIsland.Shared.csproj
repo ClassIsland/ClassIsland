@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,12 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protobuf\Service\*.proto"/>
-    <Protobuf Include="Protobuf\Server\*.proto"/>
-    <Protobuf Include="Protobuf\Client\*.proto"/>
-    <Protobuf Include="Protobuf\Command\*.proto"/>
-    <Protobuf Include="Protobuf\Enum\*.proto"/>
-    <Protobuf Include="Protobuf\Management\*.proto"/>
+    <Protobuf Include="Protobuf\Service\*.proto" />
+    <Protobuf Include="Protobuf\Server\*.proto" />
+    <Protobuf Include="Protobuf\Client\*.proto" />
+    <Protobuf Include="Protobuf\Command\*.proto" />
+    <Protobuf Include="Protobuf\Enum\*.proto" />
+    <Protobuf Include="Protobuf\Management\*.proto" />
   </ItemGroup>
 
 </Project>

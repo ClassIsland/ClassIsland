@@ -2,6 +2,9 @@
 
 namespace ClassIsland.Shared.Models.Profile;
 
+/// <summary>
+/// 代表一个课表<see cref="ClassPlan"/>触发规则。
+/// </summary>
 public class TimeRule : ObservableRecipient
 {
     private int _weekDay = new();

@@ -7,6 +7,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Profile;
 
+/// <summary>
+/// 代表一个存储了课表、时间表和科目等信息的档案。
+/// </summary>
 public class Profile : ObservableRecipient
 {
     private string _name = "";
@@ -19,6 +22,9 @@ public class Profile : ObservableRecipient
     private string? _tempClassPlanId;
     private DateTime _tempClassPlanSetupTime = DateTime.Now;
 
+    /// <summary>
+    /// 实例化对象
+    /// </summary>
     public Profile()
     {
         Subjects.CollectionChanged += SubjectsOnCollectionChanged;
@@ -44,6 +50,12 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 重写指定时间表在所有课表中，某个时间点所有对应的课程的科目
+    /// </summary>
+    /// <param name="timeLayoutId">指定的时间表ID</param>
+    /// <param name="timePoint">要覆写的课程对应的时间点</param>
+    /// <param name="subjectId">要覆写成的科目ID</param>
     public void OverwriteAllClassPlanSubject(string timeLayoutId, TimeLayoutItem timePoint, string subjectId)
     {
         foreach (var classPlan in from i in ClassPlans where i.Value.TimeLayoutId == timeLayoutId select i.Value)
@@ -136,11 +148,14 @@ public class Profile : ObservableRecipient
         UpdateEditingSubjects(e);
     }
 
-    public void NotifyPropertyChanged(string propertyName)
+    internal void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
     }
 
+    /// <summary>
+    /// 档案名称
+    /// </summary>
     public string Name
     {
         get => _name;
@@ -152,6 +167,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 存储的时间表字典，键为GUID
+    /// </summary>
     public ObservableDictionary<string, TimeLayout> TimeLayouts
     {
         get => _timeLayouts;
@@ -163,6 +181,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 存储的课表字典，键为GUID
+    /// </summary>
     public ObservableDictionary<string, ClassPlan> ClassPlans
     {
         get => _classPlans;
@@ -180,7 +201,7 @@ public class Profile : ObservableRecipient
         }
     }
 
-    public void RefreshTimeLayouts()
+    internal void RefreshTimeLayouts()
     {
         foreach (var i in _classPlans)
         {
@@ -188,6 +209,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 存储的科目字典，键为GUID
+    /// </summary>
     public ObservableDictionary<string, Subject> Subjects
     {
         get => _subjects;
@@ -199,6 +223,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 正在在档案编辑器编辑的科目信息
+    /// </summary>
     [JsonIgnore]
     public ObservableCollection<Subject> EditingSubjects
     {
@@ -211,6 +238,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 是否启用临时层课表
+    /// </summary>
     public bool IsOverlayClassPlanEnabled
     {
         get => _isOverlayClassPlanEnabled;
@@ -222,6 +252,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 临时层课表ID
+    /// </summary>
     public string? OverlayClassPlanId
     {
         get => _overlayClassPlanId;
@@ -233,6 +266,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 临时课表ID
+    /// </summary>
     public string? TempClassPlanId
     {
         get => _tempClassPlanId;
@@ -244,6 +280,9 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 临时课表设置时间
+    /// </summary>
     public DateTime TempClassPlanSetupTime
     {
         get => _tempClassPlanSetupTime;

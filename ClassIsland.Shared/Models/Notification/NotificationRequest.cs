@@ -2,7 +2,9 @@
 
 namespace ClassIsland.Shared.Models.Notification;
 
-
+/// <summary>
+/// 提醒请求。
+/// </summary>
 public class NotificationRequest : ObservableRecipient
 {
     private object? _overlayContent;
@@ -18,6 +20,9 @@ public class NotificationRequest : ObservableRecipient
     private NotificationSettings _requestNotificationSettings = new();
     private CancellationTokenSource _completedTokenSource = new();
 
+    /// <summary>
+    /// 提醒时要显示的内容
+    /// </summary>
     public object? OverlayContent
     {
         get => _overlayContent;
@@ -29,6 +34,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 提醒时进入横幅要显示的内容
+    /// </summary>
     public object MaskContent
     {
         get => _maskContent;
@@ -40,6 +48,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 提醒内容显示时长。当<see cref="TargetOverlayEndTime"/>不为null时，此项不起作用。
+    /// </summary>
     public TimeSpan OverlayDuration
     {
         get => _overlayDuration;
@@ -51,6 +62,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 提醒进入横幅时长。当<see cref="TargetMaskEndTime"/>不为null时，此项不起作用。
+    /// </summary>
     public TimeSpan MaskDuration
     {
         get => _maskDuration;
@@ -62,6 +76,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 目标提醒结束时间。如果此项不为null，那么在显示此提醒时，自动将<see cref="OverlayDuration"/>设置为距离此值的时长。
+    /// </summary>
     public DateTime? TargetOverlayEndTime
     {
         get => _targetOverlayEndTime;
@@ -73,6 +90,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 目标进入横幅结束时间。如果此项不为null，那么在显示此提醒时，自动将<see cref="MaskDuration"/>设置为距离此值的时长。
+    /// </summary>
     public DateTime? TargetMaskEndTime
     {
         get => _targetMaskEndTime;
@@ -84,6 +104,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 代表提醒取消的取消令牌源。
+    /// </summary>
     public CancellationTokenSource CancellationTokenSource
     {
         get => _cancellationTokenSource;
@@ -95,6 +118,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 提醒内容的朗读内容。当显示提醒内容时，如果启用了朗读，这里的字符串将被大声读出。
+    /// </summary>
     public string OverlaySpeechContent
     {
         get => _overlaySpeechContent;
@@ -106,6 +132,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 提醒进入横幅的朗读内容。当显示进入横幅时，如果启用了朗读，这里的字符串将被大声读出。
+    /// </summary>
     public string MaskSpeechContent
     {
         get => _maskSpeechContent;
@@ -117,6 +146,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 此次通知是否启用朗读。
+    /// </summary>
     public bool IsSpeechEnabled
     {
         get => _isSpeechEnabled;
@@ -128,6 +160,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 针对此次提醒的特殊设置。如果要使此设置生效，还要将<see cref="NotificationSettings.IsSettingsEnabled"/>设置为true。
+    /// </summary>
     public NotificationSettings RequestNotificationSettings
     {
         get => _requestNotificationSettings;
@@ -139,6 +174,9 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 代表提醒显示完毕的取消令牌源。
+    /// </summary>
     public CancellationTokenSource CompletedTokenSource
     {
         get => _completedTokenSource;

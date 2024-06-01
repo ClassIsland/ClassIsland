@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace ClassIsland.Shared.Models.Profile;
 
+/// <summary>
+/// 代表一个时间表
+/// </summary>
 public class TimeLayout : AttachableSettingsObject
 {
     private ObservableCollection<TimeLayoutItem> _layouts = new();
@@ -12,17 +15,26 @@ public class TimeLayout : AttachableSettingsObject
     private bool _isActivated = false;
     private bool _isActivatedManually = false;
 
+    /// <summary>
+    /// 初始化对象
+    /// </summary>
     public TimeLayout()
     {
         PropertyChanged += OnPropertyChanged;
         Layouts.CollectionChanged += (sender, args) => OnPropertyChanged(nameof(Layouts));
     }
 
+    /// <summary>
+    /// 时间表对象被更改事件
+    /// </summary>
     public event EventHandler? LayoutObjectChanged;
 
+    /// <summary>
+    /// 时间表元素被更改事件
+    /// </summary>
     public event EventHandler<TimeLayoutUpdateEventArgs>? LayoutItemChanged;
 
-    public void SortCompleted()
+    internal void SortCompleted()
     {
         LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -39,6 +51,11 @@ public class TimeLayout : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 在指定索引处插入时间点
+    /// </summary>
+    /// <param name="index">插入时间点的索引</param>
+    /// <param name="item">要插入的时间点</param>
     public void InsertTimePoint(int index, TimeLayoutItem item)
     {
         Layouts.Insert(index, item);
@@ -56,6 +73,10 @@ public class TimeLayout : AttachableSettingsObject
         });
     }
 
+    /// <summary>
+    /// 删除指定的时间点
+    /// </summary>
+    /// <param name="item">要删除的时间点</param>
     public void RemoveTimePoint(TimeLayoutItem item)
     {
         var index = Layouts.IndexOf(item);
@@ -74,6 +95,9 @@ public class TimeLayout : AttachableSettingsObject
         });
     }
 
+    /// <summary>
+    /// 时间表名称
+    /// </summary>
     public string Name
     {
         get => _name;
@@ -85,6 +109,9 @@ public class TimeLayout : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 时间表内容
+    /// </summary>
     public ObservableCollection<TimeLayoutItem> Layouts
     {
         get => _layouts;
@@ -96,6 +123,9 @@ public class TimeLayout : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 时间表是否处于激活（正在使用）状态
+    /// </summary>
     [JsonIgnore]
     public bool IsActivated
     {
@@ -108,6 +138,9 @@ public class TimeLayout : AttachableSettingsObject
         }
     }
 
+    /// <summary>
+    /// 时间表是否是被手动激活
+    /// </summary>
     [JsonIgnore]
     public bool IsActivatedManually
     {
