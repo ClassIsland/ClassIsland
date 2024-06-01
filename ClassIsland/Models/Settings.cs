@@ -147,6 +147,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _allowNotificationSound = false;
     private bool _allowNotificationTopmost = true;
     private string _updateArtifactHash = "";
+    private ObservableCollection<string> _excludedWeatherAlerts = new();
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1294,6 +1295,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _cityName) return;
             _cityName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<string> ExcludedWeatherAlerts
+    {
+        get => _excludedWeatherAlerts;
+        set
+        {
+            if (Equals(value, _excludedWeatherAlerts)) return;
+            _excludedWeatherAlerts = value;
             OnPropertyChanged();
         }
     }

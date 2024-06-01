@@ -413,6 +413,7 @@
         <CollectionViewSource Source="{Binding Settings.NotificationProvidersPriority}"
                               x:Key="CollectionViewSourceNotificationProviders"
                               Filter="CollectionViewSourceNotificationProviders_OnFilter"/>
+        <converters:CollectionToStringConverter x:Key="CollectionToStringConverter" />
     </Window.Resources>
     <Grid>
 
@@ -1768,15 +1769,23 @@ The quick brown fox jumps over a lazy dog.
                                                   Margin="0 3 0 0">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <StackPanel Orientation="Horizontal" Margin="0 2"
-                                                            ToolTip="{Binding Detail}">
-                                                    <materialDesign:PackIcon Kind="CloudWarning"
-                                                                             VerticalAlignment="Center"
-                                                                             Margin="0 0 4 0" />
-                                                    <TextBlock VerticalAlignment="Center">
-                                                        <Run Text="{Binding Title}" />
-                                                    </TextBlock>
-                                                </StackPanel>
+                                                <Expander materialDesign:ExpanderAssist.HorizontalHeaderPadding="0">
+                                                    <Expander.Header>
+                                                        <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                            <Image Width="24" Height="24" 
+                                                                   Margin="0 0 8 0"
+                                                                   VerticalAlignment="Center"
+                                                                   Source="{Binding Images[icon]}"/>
+                                                            <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}">
+                                                                <Run Text="{Binding Title}" />
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                    </Expander.Header>
+                                                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap"
+                                                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                                               FontSize="12"
+                                                               Margin="32 0 24 0"/>
+                                                </Expander>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -1797,6 +1806,30 @@ The quick brown fox jumps over a lazy dog.
                                             </StackPanel>
                                         </controls:SettingsCard.Switcher>
                                     </controls:SettingsCard>
+                                    <!-- 排除预警 -->
+                                    <materialDesign:Card Margin="0 0 0 8">
+                                        <Expander Background="Transparent"
+                                                  IsExpanded="True"
+                                                      TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                            <Expander.Header>
+                                                <controls:SettingsControl IconGlyph="FilterOutline"
+                                                                              Foreground="{DynamicResource MaterialDesignBody}"
+                                                                              Header="排除的气象预警"
+                                                                              HasSwitcher="False"
+                                                                              Description="包含以下字符串的预警将不会显示，一行一条排除项。"
+                                                                              Margin="-12 0" />
+                                            </Expander.Header>
+                                            <Grid Margin="36 0 48 12">
+                                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                         Padding="8"
+                                                         MaxHeight="250"
+                                                         VerticalScrollBarVisibility="Auto"
+                                                         AcceptsReturn="True"
+                                                         Text="{Binding Settings.ExcludedWeatherAlerts, Converter={StaticResource CollectionToStringConverter}}"/>
+                                                
+                                            </Grid>
+                                        </Expander>
+                                    </materialDesign:Card>
                                     <TextBlock TextWrapping="Wrap" FontWeight="Regular" Margin="0 8 0 0">
                                         要调整天气提醒设置，请转到【提醒】选项卡。要调整天气快速信息设置，请在【基本】中快速信息相关选项中调整。
                                     </TextBlock>
