@@ -101,7 +101,8 @@ jobs:
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
         run: |
+          $env:app_ver = (git describe --abbrev=0 --tags)
           Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
           pwsh -ep Bypass -c .\tools\pre-appcenter-upload.ps1
-          pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:TAG
+          pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
           
