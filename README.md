@@ -79,9 +79,10 @@ ClassIsland 理论上可以在以下的系统环境中运行：**注意：在这
 
 - Windows 7 及以上版本系统，x64架构
 
-要在 Windows 7 中安装并运行 ClassIsland，您还需要额外进行以下准备工作：[在Windows7中安装 ClassIsland](doc/InstallOnLegaceyOS.md)
+> ⚠️**不建议在 Windows 10 以下的系统运行本应用。** 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**（[#91](https://github.com/HelloWRC/ClassIsland/issues/91)），需要手动进行修复。
 
-> ⚠️**不建议在 Windows 10 以下的系统运行本应用。** 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**（[#91](https://github.com/HelloWRC/ClassIsland/issues/91)）。
+要在 Windows 7 中安装并运行 ClassIsland，并修复内存泄漏问题，您还需要额外进行以下准备工作：[在Windows7中安装 ClassIsland](doc/InstallOnLegaceyOS.md)
+
 
 </details>
 
