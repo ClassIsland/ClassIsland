@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
@@ -24,7 +24,7 @@ namespace ClassIsland.Services;
 /// 提醒主机服务。
 /// </summary>
 public class NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
-    : IHostedService, INotifyPropertyChanged
+    : IHostedService, INotifyPropertyChanged, INotificationHostService
 {
     private SettingsService SettingsService { get; } = settingsService;
     private ILogger<NotificationHostService> Logger { get; } = logger;

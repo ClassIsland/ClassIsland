@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
-
-using ClassIsland.Models.Logging;
+using ClassIsland.Core.Abstractions.Services.Logging;
+using ClassIsland.Core.Models.Logging;
 
 namespace ClassIsland.Services.Logging;
 
-public class AppLogService
+public class AppLogService : IAppLogService
 {
     public static readonly int MaxLogEntries = 1000;
 

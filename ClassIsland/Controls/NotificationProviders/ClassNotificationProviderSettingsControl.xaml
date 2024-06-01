@@ -7,10 +7,12 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:controls="clr-namespace:ClassIsland.Controls"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+             xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters1:IntToStringConverter x:Key="IntToStringConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderSettingsControl}}">
 
@@ -27,7 +29,7 @@
                               IsExpanded="{Binding Settings.IsClassOnPreparingNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="ClockEnd"
+                            <controls1:SettingsControl IconGlyph="ClockEnd"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在课前准备时发出提醒"
                                                       Description="在上课前一段时间发出醒目提醒，提示做好上课准备。"
@@ -40,33 +42,33 @@
                             <CheckBox Content="启用语音" Margin="0 0 0 6"
                                       IsChecked="{Binding Settings.IsSpeechEnabledOnClassPreparing}"/>
                             <!-- 室内课程课前提醒时间 -->
-                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室内课程课前提醒时间"
+                            <controls1:SettingsControl IconGlyph="ClockAlertOutline" Header="室内课程课前提醒时间"
                                                       Description="在室内课程的上课前指定时间进行上课提醒。"
                                                       IsCompact="True"
                                                       Margin="0 0 0 6">
-                                <controls:SettingsControl.Switcher>
-                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                <controls1:SettingsControl.Switcher>
+                                    <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
                                                               Text="{Binding Settings.InDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
                                                               Width="120"
                                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                               Style="{StaticResource MaterialDesignTextBoxBase}"
                                                               materialDesign:TextFieldAssist.SuffixText="秒" />
-                                </controls:SettingsControl.Switcher>
-                            </controls:SettingsControl>
+                                </controls1:SettingsControl.Switcher>
+                            </controls1:SettingsControl>
                             <!-- 室外课程课前提醒时间 -->
-                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室外课程课前提醒时间"
+                            <controls1:SettingsControl IconGlyph="ClockAlertOutline" Header="室外课程课前提醒时间"
                                                       Description="在室外课程的上课前指定时间进行上课提醒。"
                                                       IsCompact="True"
                                                       Margin="0 0 0 6">
-                                <controls:SettingsControl.Switcher>
-                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                <controls1:SettingsControl.Switcher>
+                                    <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
                                                               Text="{Binding Settings.OutDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
                                                               Width="120"
                                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                               Style="{StaticResource MaterialDesignTextBoxBase}"
                                                               materialDesign:TextFieldAssist.SuffixText="秒" />
-                                </controls:SettingsControl.Switcher>
-                            </controls:SettingsControl>
+                                </controls1:SettingsControl.Switcher>
+                            </controls1:SettingsControl>
                             <!-- 准备上课提醒文字 -->
                             <TextBox Text="{Binding Settings.ClassOnPreparingText}"
                                      materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
@@ -82,7 +84,7 @@
                               IsExpanded="{Binding Settings.IsClassOnNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="BookOutline"
+                            <controls1:SettingsControl IconGlyph="BookOutline"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在上课时发出提醒"
                                                       Description="在上课时发出醒目提醒，提示已经上课。"
@@ -104,7 +106,7 @@
                               IsExpanded="{Binding Settings.IsClassOffNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="ClockOutline"
+                            <controls1:SettingsControl IconGlyph="ClockOutline"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在下课时发出提醒"
                                                       Description="在下课时发出醒目提醒，提示已经下课。"

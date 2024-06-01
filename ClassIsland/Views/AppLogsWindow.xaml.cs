@@ -7,7 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 
 using ClassIsland.Controls;
-using ClassIsland.Models.Logging;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Models.Logging;
 using ClassIsland.Services.Logging;
 using ClassIsland.ViewModels;
 

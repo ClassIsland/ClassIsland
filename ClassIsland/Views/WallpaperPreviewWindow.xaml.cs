@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 
 using ClassIsland.Controls;
+using ClassIsland.Core.Controls;
 using ClassIsland.Services;
 
 namespace ClassIsland.Views;

@@ -2,7 +2,8 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared.Abstraction.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using GuerrillaNtp;
@@ -12,7 +13,7 @@ using Microsoft.Win32;
 
 namespace ClassIsland.Services;
 
-public class ExactTimeService : ObservableRecipient
+public class ExactTimeService : ObservableRecipient, IExactTimeService
 {
     private string _syncStatusMessage = "时间尚未同步。";
 

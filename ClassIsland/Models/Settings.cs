@@ -5,15 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-
+using ClassIsland.Core.Models.Weather;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AllContributors;
-using ClassIsland.Models.Weather;
 using ClassIsland.Services;
-
+using ClassIsland.Services.AppUpdating;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.Extensions.Logging;

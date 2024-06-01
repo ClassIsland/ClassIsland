@@ -7,6 +7,7 @@
              xmlns:local="clr-namespace:ClassIsland.Controls.MiniInfoProvider"
              xmlns:controls="clr-namespace:ClassIsland.Controls"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CountDownMiniInfoProviderSettingsControl}}">
@@ -19,7 +20,7 @@
                         Margin="10 8 0 0" HorizontalAlignment="Left"
                         Width="120"/>
             <TextBlock Text="字体颜色" Margin="0 8 0 0"/>
-            <controls:ColorPicker Color="{Binding Settings.fontColor,Mode=TwoWay}"
+            <controls1:ColorPicker Color="{Binding Settings.fontColor,Mode=TwoWay}"
                                   Margin="10,8,0,0" HorizontalAlignment="Left" Width="auto"/>
             <TextBlock Text="字体大小" Margin="0 8 0 0"/>
             <Slider Width="180" Margin="10,8,0,0" HorizontalAlignment="Left"

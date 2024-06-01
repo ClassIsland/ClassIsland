@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
              xmlns:classIsland="clr-namespace:ClassIsland"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
              d:DataContext="{d:DesignInstance classIsland:MainWindow}"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
@@ -20,7 +21,7 @@
             <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
         </StackPanel>
-        <converters:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
+        <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
 
         <!-- 准备上课 -->
         <Grid x:Key="ClassPrepareNotifyOverlay">

@@ -1,10 +1,11 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.WallpaperPreviewWindow"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.WallpaperPreviewWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClassIsland.Views"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         Icon="/Assets/AppLogo.ico"
         Title="壁纸提取结果预览" Height="450" Width="800"
@@ -32,14 +33,14 @@
                     HorizontalAlignment="Left"
                     IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}"
                     Margin="8">
-                <controls:IconText Kind="Refresh" Text="刷新" />
+                <controls1:IconText Kind="Refresh" Text="刷新" />
             </Button>
             <Button Style="{StaticResource MaterialDesignFlatButton}"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     IsCancel="True"
                     Margin="8">
-                <controls:IconText Kind="Close" Text="关闭" />
+                <controls1:IconText Kind="Close" Text="关闭" />
             </Button>
         </Grid>
         <ProgressBar VerticalAlignment="Bottom"
@@ -66,8 +67,8 @@
             </Border.Style>
             <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right"
                         Margin="0 0 36 24">
-                <controls:TeyvatLoadingControl/>
+                <controls1:TeyvatLoadingControl/>
             </StackPanel>
         </Border>
     </Grid>
-</controls:MyWindow>
+</controls1:MyWindow>

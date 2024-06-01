@@ -2,7 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
-
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Theming;
 using ClassIsland.Models;
 
 using MaterialDesignThemes.Wpf;
@@ -13,7 +14,7 @@ using Microsoft.Win32;
 
 namespace ClassIsland.Services;
 
-public class ThemeService : IHostedService
+public class ThemeService : IHostedService, IThemeService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -23,7 +24,7 @@ public class ThemeService : IHostedService
     {
     }
 
-    public ITheme? CurrentTheme { get; private set; } 
+    public ITheme? CurrentTheme { get; set; } 
 
     public ILogger<ThemeService> Logger { get; }
 
@@ -34,7 +35,7 @@ public class ThemeService : IHostedService
         Logger = logger;
     }
 
-    public int CurrentRealThemeMode { get; private set; } = 0;
+    public int CurrentRealThemeMode { get; set; } = 0;
 
     public void SetTheme(int themeMode, Color primary, Color secondary)
     {

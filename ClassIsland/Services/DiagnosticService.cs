@@ -7,7 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
@@ -90,7 +90,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
             File.Copy("./Settings.json", Path.Combine(temp, "Settings.json"));
-            var profile = App.GetService<ProfileService>().CurrentProfilePath;
+            var profile = App.GetService<IProfileService>().CurrentProfilePath;
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
             Directory.CreateDirectory(Path.Combine(temp, "Management/"));
             foreach (var file in Directory.GetFiles(ManagementService.ManagementConfigureFolderPath))

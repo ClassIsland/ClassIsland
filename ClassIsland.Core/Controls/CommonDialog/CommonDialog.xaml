@@ -1,0 +1,78 @@
+﻿<controls:MyWindow x:Class="ClassIsland.Core.Controls.CommonDialog.CommonDialog"
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:local="clr-namespace:ClassIsland.Core.Controls.CommonDialog"
+          xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+          xmlns:commonDialog="clr-namespace:ClassIsland.Core.Controls.CommonDialog"
+          mc:Ignorable="d"
+          d:DataContext="{d:DesignInstance local:CommonDialog}"
+          TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+          Background="{DynamicResource MaterialDesignPaper}"
+          TextElement.FontWeight="Regular"
+          TextElement.FontSize="14"
+          FontFamily="{StaticResource HarmonyOsSans}"
+          Title="ClassIsland"
+          SizeToContent="Height"
+          ResizeMode="NoResize"
+          WindowStartupLocation="CenterScreen"
+          MinHeight="200" Width="640">
+    <controls:MyWindow.CommandBindings>
+        <CommandBinding Command="{x:Static commonDialog:CommonDialog.ActionCommand}"
+                        Executed="CommandBinding_OnExecuted"/>
+    </controls:MyWindow.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="5"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Content -->
+        <ContentPresenter Grid.Column="0" Grid.Row="0"
+                          VerticalAlignment="Top"
+                          Margin="12 24 0 0"
+                          Content="{Binding DialogIcon, Mode=OneWay}"
+                          MaxWidth="128"
+                          MaxHeight="128"/>
+        <TextBlock Grid.Column="1" Grid.Row="0"
+                   Margin="12 12 12 12"
+                   TextWrapping="Wrap"
+                   Text="{Binding DialogContent, Mode=OneWay}"/>
+        <!-- Sep -->
+        <!--<Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                   Opacity="0.5"/>-->
+
+        <!-- Buttons -->
+        <ItemsControl Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
+                      HorizontalAlignment="Right"
+                      Margin="12"
+                      Focusable="False"
+                      ItemsSource="{Binding Actions, Mode=OneWay}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button IsDefault="{Binding IsPrimary}" 
+                            Command="{x:Static commonDialog:CommonDialog.ActionCommand}"
+                            CommandParameter="{Binding}"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            FocusVisualStyle="{StaticResource {x:Static SystemParameters.FocusVisualStyleKey}}"
+                            Margin="4 0 0 0">
+                        <controls:IconText Kind="{Binding PackIconKind}"
+                                        Text="{Binding Name}"/>
+                    </Button>
+
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</controls:MyWindow>

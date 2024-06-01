@@ -3,8 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-
-using ClassIsland.Models.Weather;
+using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Controls;
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
@@ -248,11 +248,11 @@ public class MainViewModel : ObservableRecipient
 
     public string CurrentProfilePath
     {
-        get => App.GetService<ProfileService>().CurrentProfilePath;
+        get => App.GetService<IProfileService>().CurrentProfilePath;
         set
         {
             if (value == _currentProfilePath) return;
-            App.GetService<ProfileService>().CurrentProfilePath = value;
+            App.GetService<IProfileService>().CurrentProfilePath = value;
             OnPropertyChanged();
         }
     }

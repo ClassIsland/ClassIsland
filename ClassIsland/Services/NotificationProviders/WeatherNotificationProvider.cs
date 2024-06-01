@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -32,21 +33,21 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         Height = 24
     };
 
-    private WeatherService WeatherService { get; }
+    private IWeatherService WeatherService { get; }
 
     private SettingsService SettingsService { get; }
 
     private WeatherNotificationProviderSettings Settings { get; }
 
-    private NotificationHostService NotificationHostService { get; }
+    private INotificationHostService NotificationHostService { get; }
 
-    private AttachedSettingsHostService AttachedSettingsHostService { get; }
+    private IAttachedSettingsHostService AttachedSettingsHostService { get; }
 
     private List<string> ShownAlerts { get; } = new();
 
-    public WeatherNotificationProvider(NotificationHostService notificationHostService,
-        AttachedSettingsHostService attachedSettingsHostService,
-        WeatherService weatherService,
+    public WeatherNotificationProvider(INotificationHostService notificationHostService,
+        IAttachedSettingsHostService attachedSettingsHostService,
+        IWeatherService weatherService,
         SettingsService settingsService)
     {
         NotificationHostService = notificationHostService;
@@ -77,7 +78,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
     {
         if (!WeatherService.IsWeatherRefreshed)
             return;
-        var s = (IWeatherNotificationSettingsBase?)AttachedSettingsHostService
+        var s = (IWeatherNotificationSettingsBase?)IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
                 timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;
         if (!Settings.IsForecastEnabled || s.ForecastShowMode == NotificationModes.Disabled ||
@@ -104,7 +105,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
     {
         if (!WeatherService.IsWeatherRefreshed)
             return;
-        var s = (IWeatherNotificationSettingsBase?)AttachedSettingsHostService
+        var s = (IWeatherNotificationSettingsBase?)IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
                 timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;
         if (!Settings.IsAlertEnabled || s.AlertShowMode == NotificationModes.Disabled ||

@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services.Management;
@@ -17,7 +19,7 @@ using Path = System.IO.Path;
 
 namespace ClassIsland.Services;
 
-public class ProfileService
+public class ProfileService : IProfileService
 {
     public string CurrentProfilePath { 
         get; 
@@ -25,13 +27,13 @@ public class ProfileService
     } = @".\Profiles\Default.json";
 
     public static readonly string ManagementClassPlanPath =
-        Path.Combine(ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
+        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
 
     public static readonly string ManagementTimeLayoutPath =
-        Path.Combine(ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
+        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
 
     public static readonly string ManagementSubjectsPath =
-        Path.Combine(ManagementService.ManagementConfigureFolderPath, "Subjects.json");
+        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
     public Profile Profile {
         get;
@@ -42,9 +44,9 @@ public class ProfileService
 
     private ILogger<ProfileService> Logger { get; }
 
-    private ManagementService ManagementService { get; }
+    private IManagementService ManagementService { get; }
 
-    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, ManagementService managementService)
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService)
     {
         Logger = logger;
         ManagementService = managementService;
@@ -171,7 +173,7 @@ public class ProfileService
         newCp.TimeLayoutId = timeLayoutId;
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
-        newCp.OverlaySetupTime = App.GetService<ExactTimeService>().GetCurrentLocalDateTime().Date;
+        newCp.OverlaySetupTime = App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
         Profile.IsOverlayClassPlanEnabled = true;
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
@@ -200,7 +202,7 @@ public class ProfileService
         }
 
         var cp = Profile.ClassPlans[Profile.OverlayClassPlanId];
-        if (cp.OverlaySetupTime.Date < App.GetService<ExactTimeService>().GetCurrentLocalDateTime().Date)
+        if (cp.OverlaySetupTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
         {
             Logger.LogInformation("清理过期的临时层课表。");
             ClearTempClassPlan();

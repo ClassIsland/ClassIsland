@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
@@ -40,9 +41,9 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
     private bool IsClassOnNotified { get; set; } = false;
 
-    private NotificationHostService NotificationHostService { get; }
+    private INotificationHostService NotificationHostService { get; }
 
-    public ClassNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
+    public ClassNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService)
     {
         NotificationHostService = notificationHostService;
         NotificationHostService.RegisterNotificationProvider(this);
@@ -174,7 +175,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private ClassNotificationAttachedSettings? GetAttachedSettings()
     {
         var mvm = App.GetService<MainWindow>().ViewModel;
-        var settings = AttachedSettingsHostService
+        var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 ClassNotificationAttachedSettings>(
                 ProviderGuid,
@@ -189,7 +190,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private ClassNotificationAttachedSettings? GetAttachedSettingsNext()
     {
         var mvm = App.GetService<MainWindow>().ViewModel;
-        var settings = AttachedSettingsHostService
+        var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 ClassNotificationAttachedSettings>(
                 ProviderGuid,

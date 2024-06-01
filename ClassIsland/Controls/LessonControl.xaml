@@ -8,11 +8,12 @@
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
              d:DesignHeight="450" d:DesignWidth="800"
              >
     <UserControl.Resources>
-        <converters:SecondsLongToMinutesStringConverter x:Key="SecondsLongToMinutesStringConverter" />
-        <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
+        <converters1:SecondsLongToMinutesStringConverter x:Key="SecondsLongToMinutesStringConverter" />
+        <converters1:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControl}}}">
         <StackPanel Orientation="Horizontal">

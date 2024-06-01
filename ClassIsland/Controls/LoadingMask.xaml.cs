@@ -1,7 +1,8 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Theming;
 using ClassIsland.Models;
 using ClassIsland.Services;
 
@@ -12,8 +13,8 @@ namespace ClassIsland.Controls;
 /// </summary>
 public partial class LoadingMask : UserControl
 {
-    private ThemeService ThemeService { get; } = App.GetService<ThemeService>();
-    public HangService HangService { get; } = App.GetService<HangService>();
+    private IThemeService ThemeService { get; } = App.GetService<IThemeService>();
+    public IHangService HangService { get; } = App.GetService<IHangService>();
 
     public LoadingMask()
     {

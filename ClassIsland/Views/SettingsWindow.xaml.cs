@@ -17,13 +17,19 @@ using System.Windows.Media.Imaging;
 
 using ClassIsland.Controls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Controls.CommonDialog;
+using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Core.Models.Weather;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.AllContributors;
-using ClassIsland.Models.Weather;
 using ClassIsland.Services;
+using ClassIsland.Services.AppUpdating;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 
@@ -37,7 +43,7 @@ using Microsoft.Extensions.Logging;
 using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
-using CommonDialog = ClassIsland.Controls.CommonDialog;
+using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using FontFamily = System.Windows.Media.FontFamily;
 using Image = System.Windows.Controls.Image;
 using ListBox = System.Windows.Controls.ListBox;
@@ -85,7 +91,7 @@ public partial class SettingsWindow : MyWindow
         get;
     }
 
-    private TaskBarIconService TaskBarIconService
+    private ITaskBarIconService TaskBarIconService
     {
         get;
     }
@@ -95,24 +101,24 @@ public partial class SettingsWindow : MyWindow
         get;
     }
 
-    public ManagementService ManagementService { get; }
+    public IManagementService ManagementService { get; }
 
     private List<byte[]> _testMemoryLeakList = new();
 
     public DiagnosticService DiagnosticService { get; }
 
-    public WeatherService WeatherService { get; } = App.GetService<WeatherService>();
+    public IWeatherService WeatherService { get; } = App.GetService<IWeatherService>();
 
-    public ExactTimeService ExactTimeService { get; } = App.GetService<ExactTimeService>();
+    public IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
 
     public SettingsWindow()
     {
         UpdateService = App.GetService<UpdateService>();
-        TaskBarIconService = App.GetService<TaskBarIconService>();
+        TaskBarIconService = App.GetService<ITaskBarIconService>();
         WallpaperPickingService = App.GetService<WallpaperPickingService>();
         MiniInfoProviderHostService = App.GetService<MiniInfoProviderHostService>();
         DiagnosticService = App.GetService<DiagnosticService>();
-        ManagementService = App.GetService<ManagementService>();
+        ManagementService = App.GetService<IManagementService>();
         InitializeComponent();
         DataContext = this;
         var settingsService = App.GetService<SettingsService>();
@@ -471,12 +477,12 @@ public partial class SettingsWindow : MyWindow
 
     private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<NotificationHostService>().OnOnBreakingTime(this, EventArgs.Empty);
+        App.GetService<INotificationHostService>().OnOnBreakingTime(this, EventArgs.Empty);
     }
 
     private void MenuItemDebugTriggerOnClass_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<NotificationHostService>().OnOnClass(this, EventArgs.Empty);
+        App.GetService<INotificationHostService>().OnOnClass(this, EventArgs.Empty);
     }
 
     private void ButtonPreviewWallpaper_OnClick(object sender, RoutedEventArgs e)
@@ -761,7 +767,7 @@ public partial class SettingsWindow : MyWindow
         var i = e.Item as string;
         if (i == null)
             return;
-        var host = App.GetService<NotificationHostService>();
+        var host = App.GetService<INotificationHostService>();
         e.Accepted = host.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == i) != null;
     }
 }

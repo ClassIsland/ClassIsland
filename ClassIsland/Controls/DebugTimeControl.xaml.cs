@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services;
 
 namespace ClassIsland.Controls;
@@ -10,7 +11,7 @@ namespace ClassIsland.Controls;
 /// </summary>
 public partial class DebugTimeControl : UserControl
 {
-    private ExactTimeService ExactTimeService { get; } = App.GetService<ExactTimeService>();
+    private IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
     private SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
     public static readonly DependencyProperty TargetDateTimeProperty = DependencyProperty.Register(

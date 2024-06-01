@@ -14,6 +14,12 @@ using System.Windows.Interop;
 
 using ClassIsland.Controls;
 using ClassIsland.Converters;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Converters;
+using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
@@ -40,9 +46,9 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public static RoutedUICommand RemoveSelectedTimeLayoutItemCommand = new RoutedUICommand();
 
-    public HangService HangService { get; } = App.GetService<HangService>();
+    public IHangService HangService { get; } = App.GetService<IHangService>();
 
-    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+    public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 
     public MainViewModel MainViewModel
     {
@@ -68,10 +74,10 @@ public partial class ProfileSettingsWindow : MyWindow
         set;
     } = false;
 
-    public AttachedSettingsHostService AttachedSettingsHostService { get; } =
-        App.GetService<AttachedSettingsHostService>();
+    public IAttachedSettingsHostService AttachedSettingsHostService { get; } =
+        App.GetService<IAttachedSettingsHostService>();
 
-    public ProfileService ProfileService { get; } = App.GetService<ProfileService>();
+    public IProfileService ProfileService { get; } = App.GetService<IProfileService>();
 
     public void OpenDrawer(string key)
     {

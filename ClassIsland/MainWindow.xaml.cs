@@ -17,6 +17,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 using ClassIsland.Controls.NotificationEffects;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
@@ -85,22 +88,22 @@ public partial class MainWindow : Window
         get;
     }
 
-    private TaskBarIconService TaskBarIconService
+    private ITaskBarIconService TaskBarIconService
     {
         get;
     }
 
-    private ThemeService ThemeService
+    private IThemeService ThemeService
     {
         get;
     }
 
-    public NotificationHostService NotificationHostService
+    public INotificationHostService NotificationHostService
     {
         get;
     }
 
-    public ProfileService ProfileService
+    public IProfileService ProfileService
     {
         get;
     }
@@ -112,7 +115,7 @@ public partial class MainWindow : Window
         get;
     } = new();
 
-    private ExactTimeService ExactTimeService { get; }
+    private IExactTimeService ExactTimeService { get; }
 
     public ISpeechService SpeechService { get; }
 
@@ -138,13 +141,13 @@ public partial class MainWindow : Window
     }
 
     public MainWindow(SettingsService settingsService, 
-        ProfileService profileService,
-        NotificationHostService notificationHostService, 
-        TaskBarIconService taskBarIconService,
-        ThemeService themeService, 
+        IProfileService profileService,
+        INotificationHostService notificationHostService, 
+        ITaskBarIconService taskBarIconService,
+        IThemeService themeService, 
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
-        ExactTimeService exactTimeService,
+        IExactTimeService exactTimeService,
         TopmostEffectWindow topmostEffectWindow)
     {
         Logger = logger;
@@ -550,7 +553,7 @@ public partial class MainWindow : Window
         DiagnosticService.EndStartup();
         if (ViewModel.Settings.IsSplashEnabled)
         {
-            App.GetService<SplashService>().EndSplash();
+            App.GetService<ISplashService>().EndSplash();
         }
 
         if (!ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet)

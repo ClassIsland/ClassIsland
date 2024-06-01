@@ -6,6 +6,7 @@
              xmlns:gif="clr-namespace:WpfAnimatedGif;assembly=WpfAnimatedGif"
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
              ShutdownMode="OnMainWindowClose"
              Startup="App_OnStartup"
              DispatcherUnhandledException="App_OnDispatcherUnhandledException">
@@ -59,7 +60,7 @@
 
             <!-- #endregion -->
 
-            <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
+            <converters1:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
             <Style TargetType="Image">
                 <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
                 <Setter Property="UseLayoutRounding" Value="True"/>
@@ -78,10 +79,10 @@
                 <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
             </Style>
 
-            <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
-            <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
-            <converters:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
-            <converters:IntToStringConverter x:Key="IntToStringConverter" />
+            <converters1:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
+            <converters1:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
+            <converters1:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
+            <converters1:IntToStringConverter x:Key="IntToStringConverter" />
 
         </ResourceDictionary>
     </Application.Resources>

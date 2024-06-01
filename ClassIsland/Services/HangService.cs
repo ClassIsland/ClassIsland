@@ -2,12 +2,12 @@
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-
+using ClassIsland.Core.Abstractions.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
 
-public class HangService : ObservableRecipient
+public class HangService : ObservableRecipient, IHangService
 {
     private bool _isHang = false;
     private bool _isChecking = false;

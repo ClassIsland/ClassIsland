@@ -14,10 +14,15 @@ using System.Windows.Threading;
 
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
+using ClassIsland.Services.AppUpdating;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 using ClassIsland.Services.MiniInfoProviders;
@@ -79,7 +84,7 @@ public partial class App : Application, IAppHost
 
     public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
-    public static string AppCodeName => "Firefly";
+    public static string AppCodeName => "Griseo";
 
     public static string AppVersionLong =>
         $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
@@ -213,31 +218,25 @@ public partial class App : Application, IAppHost
             {
                 services.AddSingleton<SettingsService>();
                 services.AddSingleton<UpdateService>();
-                services.AddSingleton<TaskBarIconService>();
+                services.AddSingleton<ITaskBarIconService, TaskBarIconService>();
                 services.AddSingleton<WallpaperPickingService>();
-                services.AddSingleton<NotificationHostService>();
-                services.AddSingleton<ThemeService>();
+                services.AddSingleton<INotificationHostService, NotificationHostService>();
+                services.AddSingleton<IThemeService, ThemeService>();
                 services.AddSingleton<MiniInfoProviderHostService>();
-                services.AddSingleton<WeatherService>();
+                services.AddSingleton<IWeatherService, WeatherService>();
                 services.AddSingleton<FileFolderService>();
-                services.AddSingleton<AttachedSettingsHostService>();
-                services.AddSingleton<ProfileService>();
-                services.AddSingleton<SplashService>();
-                services.AddSingleton<HangService>();
+                services.AddSingleton<IAttachedSettingsHostService, AttachedSettingsHostService>();
+                services.AddSingleton<IProfileService, ProfileService>();
+                services.AddSingleton <ISplashService, SplashService>();
+                services.AddSingleton<IHangService, HangService>();
                 services.AddSingleton<ConsoleService>();
                 //services.AddHostedService<BootService>();
                 services.AddSingleton<UpdateNodeSpeedTestingService>();
                 services.AddSingleton<DiagnosticService>();
-                services.AddSingleton<ManagementService>();
+                services.AddSingleton<IManagementService, ManagementService>();
                 services.AddSingleton<AppLogService>();
                 services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddHostedService<MemoryWatchDogService>();
-                services.AddSingleton<SpeechSynthesizer>(provider =>
-                {
-                    var s = new SpeechSynthesizer();
-                    s.SetOutputToDefaultAudioDevice();
-                    return s;
-                });
                 try // 检测SystemSpeechService是否存在
                 {
                     var testSystemSpeechService = new SystemSpeechService();
@@ -265,7 +264,7 @@ public partial class App : Application, IAppHost
                     }
                     
                 }));
-                services.AddSingleton<ExactTimeService>();
+                services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 // Views
                 services.AddSingleton<MainWindow>();
@@ -297,7 +296,7 @@ public partial class App : Application, IAppHost
 #endif
                 });
             }).Build();
-        await GetService<ManagementService>().SetupManagement();
+        await GetService<IManagementService>().SetupManagement();
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
@@ -316,7 +315,7 @@ public partial class App : Application, IAppHost
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             GetService<SplashWindow>().Show();
-            GetService<SplashService>().CurrentProgress = 25;
+            GetService<ISplashService>().CurrentProgress = 25;
             var b = false;
             while (!b)
             {
@@ -328,12 +327,12 @@ public partial class App : Application, IAppHost
                 await Dispatcher.Yield(DispatcherPriority.Background);
             }
         }
-        GetService<SplashService>().CurrentProgress = 50;
+        GetService<ISplashService>().CurrentProgress = 50;
 
-        GetService<HangService>();
+        GetService<IHangService>();
         try
         {
-            GetService<TaskBarIconService>().MainTaskBarIcon.ForceCreate(false);
+            GetService<ITaskBarIconService>().MainTaskBarIcon.ForceCreate(false);
         }
         catch (Exception ex)
         {
@@ -343,7 +342,7 @@ public partial class App : Application, IAppHost
         if (ApplicationCommand.UpdateDeleteTarget != null)
         {
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
-            GetService<TaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。");
+            GetService<ITaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。");
         }
 
         if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
@@ -351,27 +350,27 @@ public partial class App : Application, IAppHost
             var r = await GetService<UpdateService>().AppStartup();
             if (r)
             {
-                GetService<SplashService>().EndSplash();
+                GetService<ISplashService>().EndSplash();
                 return;
             }
         }
-        var attachedSettingsHostService = GetService<AttachedSettingsHostService>();
+        var attachedSettingsHostService = GetService<IAttachedSettingsHostService>();
         attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
-        GetService<SplashService>().CurrentProgress = 75;
+        GetService<ISplashService>().CurrentProgress = 75;
 
-        await GetService<ProfileService>().LoadProfileAsync();
-        GetService<WeatherService>();
-        GetService<ExactTimeService>();
+        await GetService<IProfileService>().LoadProfileAsync();
+        GetService<IWeatherService>();
+        GetService<IExactTimeService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
         
         Logger.LogInformation("正在初始化MainWindow。");
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
-        GetService<SplashService>().CurrentProgress = 90;
+        GetService<ISplashService>().CurrentProgress = 90;
     }
 
     private bool CategoryLevelFilter(string? arg1, LogLevel arg2)
@@ -467,7 +466,7 @@ public partial class App : Application, IAppHost
     {
         IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
         IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
-        IAppHost.Host?.Services.GetService<ProfileService>()?.SaveProfile();
+        IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
         ReleaseLock();
         Current.Shutdown();
         var path = Environment.ProcessPath;

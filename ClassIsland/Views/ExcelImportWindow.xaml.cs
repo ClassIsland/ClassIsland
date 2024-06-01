@@ -15,6 +15,10 @@ using System.Windows.Threading;
 
 using ClassIsland.Controls;
 using ClassIsland.Converters;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Converters;
+using ClassIsland.Core.Models.Theming;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -47,9 +51,9 @@ public partial class ExcelImportWindow : MyWindow
 {
     public ExcelImportViewModel ViewModel { get; } = new();
 
-    private ThemeService ThemeService { get; }
+    private IThemeService ThemeService { get; }
 
-    public ProfileService ProfileService { get; }
+    public IProfileService ProfileService { get; }
 
     public string ExcelSourcePath { get; set; } = "";
 
@@ -62,7 +66,7 @@ public partial class ExcelImportWindow : MyWindow
 
     public bool ImportTimeLayoutOnly { get; set; } = false;
 
-    public ExcelImportWindow(ThemeService themeService, ProfileService profileService)
+    public ExcelImportWindow(IThemeService themeService, IProfileService profileService)
     {
         InitializeComponent();
         DataContext = this;
@@ -234,7 +238,7 @@ public partial class ExcelImportWindow : MyWindow
             var stream = File.Open(ExcelSourcePath, FileMode.Open);
             var sw = new Stopwatch();
             sw.Start();
-            App.GetService<HangService>().AssumeHang();
+            App.GetService<IHangService>().AssumeHang();
             try
             {
                 Grid.Load(stream, FileFormat.Excel2007);

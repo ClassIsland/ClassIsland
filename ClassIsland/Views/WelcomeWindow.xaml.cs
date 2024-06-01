@@ -5,6 +5,8 @@ using System.IO;
 using System.Windows;
 
 using ClassIsland.Controls;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
@@ -31,7 +33,7 @@ public partial class WelcomeWindow : MyWindow
 
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
-    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+    public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 
     public WelcomeWindow()
     {

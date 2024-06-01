@@ -6,6 +6,11 @@ using System.Windows;
 using System.Windows.Forms;
 
 using ClassIsland.Controls;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Core.Models;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
@@ -73,7 +78,7 @@ public partial class WindowsPicker : MyWindow
             }
         }
 
-        App.GetService<HangService>().AssumeHang();
+        App.GetService<IHangService>().AssumeHang();
         ViewModel.DesktopWindows = c;
     }
 

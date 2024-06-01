@@ -17,6 +17,7 @@
         xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         TextElement.FontSize="14"
@@ -40,7 +41,7 @@
                         Executed="TrayIconOnClicked_OnExecuted"/>
     </Window.CommandBindings>
     <Window.Resources>
-        <converters:IndexConverter x:Key="IndexConverter" />
+        <converters1:IndexConverter x:Key="IndexConverter" />
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
         <Style TargetType="FrameworkElement" x:Key="DockingStyle">
             <Style.Triggers>
@@ -134,7 +135,7 @@
             <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
         </StackPanel>
-        <converters:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
+        <converters1:TimeSpanToTotalSecondsConverter x:Key="TimeSpanToTotalSecondsConverter" />
 
         <!-- 准备上课 -->
         <Grid x:Key="ClassPrepareNotifyOverlay">
@@ -378,9 +379,9 @@
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
-        <converters:IntToStringConverter x:Key="IntToStringConverter" />
-        <converters:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
-        <converters:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
+        <converters1:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters1:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
+        <converters1:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
         <!--#endregion 1-->
     </Window.Resources>
     <Window.Style>

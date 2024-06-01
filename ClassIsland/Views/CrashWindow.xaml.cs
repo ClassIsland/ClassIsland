@@ -4,6 +4,7 @@ using System.Web;
 using System.Windows;
 
 using ClassIsland.Controls;
+using ClassIsland.Core.Controls;
 
 namespace ClassIsland.Views;
 

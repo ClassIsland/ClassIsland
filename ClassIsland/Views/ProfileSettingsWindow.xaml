@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.ProfileSettingsWindow"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.ProfileSettingsWindow"
                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -19,6 +19,8 @@
                    xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                   xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                   xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -42,10 +44,10 @@
         <CommandBinding Command="{x:Static local:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}" Executed="ButtonRemoveTimePoint_OnClick"/>
     </Window.CommandBindings>
     <Window.Resources>
-        <converters:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
+        <converters1:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <profile:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
-        <converters:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
-        <converters:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter"/>
+        <converters1:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
+        <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter"/>
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
             <Setter Property="ItemTemplate">
                 <Setter.Value>
@@ -67,7 +69,7 @@
                          materialDesign:HintAssist.Hint="名称"/>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
-                <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
+                <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
                 <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -202,7 +204,7 @@
                                 FontSize="13"
                                 Click="ButtonConvertToStdClassPlan_OnClick"
                                 ToolTip="将当前临时层课表转换为正常课表。">
-                            <controls:IconText Kind="CogTransferOutline" Text="转换为普通课表"/>
+                            <controls1:IconText Kind="CogTransferOutline" Text="转换为普通课表"/>
                         </Button>
                         <!--<Button Style="{StaticResource MaterialDesignFlatButton}"
                                 HorizontalAlignment="Left"
@@ -244,7 +246,7 @@
                             Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}">
                         <Separator Margin="0 20 0 8" />
-                        <controls:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
+                        <controls1:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
                         <!--<TextBlock Text="{Binding}"/>-->
                         <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
 
@@ -274,7 +276,7 @@
                 </StackPanel>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
-                <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
+                <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
                 <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -293,7 +295,7 @@
         </StackPanel>
 
         <!-- 课程表规则编辑 -->
-        <converters:PreventNullConverter x:Key="PreventNullConverter" />
+        <converters1:PreventNullConverter x:Key="PreventNullConverter" />
         <Grid  Margin="16" Width="300" x:Key="TemporaryClassPlan">
             <Grid.Resources>
                 <CollectionViewSource x:Key="ClassPlanSource" 
@@ -323,7 +325,7 @@
                             </Style>
                         </StackPanel.Style>
                         <Separator Margin="0 16 0 4"/>
-                        <controls:IconText Kind="LayersOutline" Text="临时层" Margin="0 0 0 8"/>
+                        <controls1:IconText Kind="LayersOutline" Text="临时层" Margin="0 0 0 8"/>
                         <TextBlock Text="临时层课表将优先于临时课表应用。临时层课表将在该课表过期后自动清除。"
                                    TextWrapping="Wrap"
                                    Margin="0 0 0 4"/>
@@ -336,12 +338,12 @@
                                 HorizontalAlignment="Left"
                                 Click="ButtonClearTempOverlay_OnClick"
                                 ToolTip="清除临时层课表。">
-                            <controls:IconText Kind="ClearOutline" Text="清除临时层"/>
+                            <controls1:IconText Kind="ClearOutline" Text="清除临时层"/>
                         </Button>
                     </StackPanel>
 
                     <Separator Margin="0 16 0 4"/>
-                    <controls:IconText Kind="FileChartOutline" Text="临时课表" Margin="0 0 0 8"/>
+                    <controls1:IconText Kind="FileChartOutline" Text="临时课表" Margin="0 0 0 8"/>
                     <TextBlock Text="若当天授课计划有变，可临时选择某一课表作为当天的课表。该设置仅在当天有效。" TextWrapping="Wrap"/>
                     <Button Style="{StaticResource MaterialDesignFlatButton}" 
                             HorizontalAlignment="Left"
@@ -349,7 +351,7 @@
                             Margin="0 6 0 0"
                             Click="ButtonClearTemporaryClassPlan_OnClick"
                             Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
-                        <controls:IconText Kind="ClearOutline" Text="清除临时课表"/>
+                        <controls1:IconText Kind="ClearOutline" Text="清除临时课表"/>
                     </Button>
                     <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
                                TextWrapping="Wrap"
@@ -409,13 +411,13 @@
         </StackPanel>
 
         <!-- 删除档案 -->
-        <converters:StringConnectConverter x:Key="StringConnectConverter" />
+        <converters1:StringConnectConverter x:Key="StringConnectConverter" />
         <StackPanel x:Key="DeleteProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
             <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="删除档案"/>
             <TextBlock TextWrapping="Wrap" Margin="0 12 0 0">
                 <Run Text="你确定要删除这个档案吗？一旦删除，这个操作将无法撤销，该档案的所有数据都将丢失！"/>
             </TextBlock>
-            <controls:IconText Text="{Binding ViewModel.SelectedProfile}" HorizontalAlignment="Center"
+            <controls1:IconText Text="{Binding ViewModel.SelectedProfile}" HorizontalAlignment="Center"
                                Margin="0 6 0 0"
                                Kind="FileDocumentOutline"
                                FontFamily="Consolas"/>
@@ -454,13 +456,13 @@
                         </Style>
                     </WrapPanel.Resources>
                     <Button ToolTip="新建档案。" Click="ButtonCreateProfile_OnClick">
-                        <controls:IconText Kind="FileDocumentAddOutline" Text="新建档案"/>
+                        <controls1:IconText Kind="FileDocumentAddOutline" Text="新建档案"/>
                     </Button>
                     <Button ToolTip="打开档案文件夹。" Click="ButtonOpenProfileFolder_OnClick">
-                        <controls:IconText Kind="FolderOpenOutline" Text="打开文件夹"/>
+                        <controls1:IconText Kind="FolderOpenOutline" Text="打开文件夹"/>
                     </Button>
                     <Button ToolTip="重新加载档案列表。" Click="ButtonRefreshProfiles_OnClick">
-                        <controls:IconText Kind="Refresh" Text="刷新"/>
+                        <controls1:IconText Kind="Refresh" Text="刷新"/>
                     </Button>
                 </WrapPanel>
             </StackPanel>
@@ -481,7 +483,7 @@
                                 </ContextMenu>
                             </StackPanel.ContextMenu>
                             <StackPanel.Resources>
-                                <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                <converters1:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
                             </StackPanel.Resources>
                             <RadioButton GroupName="ProfileSelection" VerticalAlignment="Center">
                                 <RadioButton.IsChecked>
@@ -514,8 +516,8 @@
         </Style>
 
 
-        <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
-        <converters:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+        <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+        <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
 
     </Window.Resources>
     <Grid>
@@ -551,7 +553,7 @@
                                     <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
                                         <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                            <controls:IconText Kind="Add" Text="添加"/>
+                                            <controls1:IconText Kind="Add" Text="添加"/>
                                         </Button>
                                         <Button Click="ButtonDuplicateClassPlan_OnClick" ToolTip="复制选中的课表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
@@ -565,7 +567,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
-                                            <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                            <controls1:IconText Kind="ContentCopy" Text="复制"/>
                                         </Button>
                                         <!--<Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <controls:IconText Kind="Add" Text="从表格导入…"/>
@@ -602,7 +604,7 @@
 
                                                     <!-- Info -->
                                                     <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
-                                                        <controls:IconText Kind="ClockOutline" Text="{Binding Value.TimeLayout.Name}" ToolTip="时间表" IconMargin="3"/>
+                                                        <controls1:IconText Kind="ClockOutline" Text="{Binding Value.TimeLayout.Name}" ToolTip="时间表" IconMargin="3"/>
                                                     </WrapPanel>
 
                                                     <!-- Status -->
@@ -650,12 +652,12 @@
                                         </Button>-->
                                             <Button Click="ButtonClassPlanInfoEdit_OnClick" ToolTip="查看并编辑课表的基本信息。"
                                                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                                <controls:IconText Kind="InfoOutline" Text="课表信息" />
+                                                <controls1:IconText Kind="InfoOutline" Text="课表信息" />
                                             </Button>
                                             <Button ToolTip="创建临时课表层。"
                                                     Click="ButtonBeginCreateTempOverlayClassPlan_OnClick"
                                                     IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                                <controls:IconText Kind="LayersOutline" Text="创建临时层" />
+                                                <controls1:IconText Kind="LayersOutline" Text="创建临时层" />
                                             </Button>
                                             <materialDesign:PopupEx x:Name="PopupCreateTempOverlayClassPlan"
                                                                     StaysOpen="False"
@@ -677,14 +679,14 @@
                                                         </ComboBox>
                                                         <Button HorizontalAlignment="Right" Margin="0 12 0 0"
                                                                 Click="ButtonCreateTempOverlayClassPlan_OnClick">
-                                                            <controls:IconText Kind="Check" Text="创建"/>
+                                                            <controls1:IconText Kind="Check" Text="创建"/>
                                                         </Button>
                                                     </StackPanel>
                                                 </Border>
                                             </materialDesign:PopupEx>
                                             <Separator />
                                             <Button Click="ButtonDeleteClassPlan_OnClick" ToolTip="删除该课表。">
-                                                <controls:IconText Kind="Delete" Text="删除课表" />
+                                                <controls1:IconText Kind="Delete" Text="删除课表" />
                                             </Button>
                                         </ToolBar>
 
@@ -728,7 +730,7 @@
                                                                   HorizontalAlignment="Stretch"
                                                                   Visibility="{Binding ViewModel.IsClassPlansEditing, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
                                                                   Mode="Light">
-                                            <controls:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6" />
+                                            <controls1:IconText Kind="Warning" Text="正在编辑课表。若要关闭窗口，请先完成课表编辑。" Margin="6" />
                                         </materialDesign:ColorZone>
                                     </Grid>
                                 </Grid>
@@ -770,7 +772,7 @@
                                     <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}">
                                         <Button Click="ButtonAddTimeLayout_OnClick" ToolTip="新建时间表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                                            <controls:IconText Kind="Add" Text="添加"/>
+                                            <controls1:IconText Kind="Add" Text="添加"/>
                                         </Button>
                                         <Button Click="ButtonDuplicateTimeLayout_OnClick" ToolTip="复制选中的时间表。"
                                                 Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
@@ -783,7 +785,7 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Button.Style>
-                                            <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                            <controls1:IconText Kind="ContentCopy" Text="复制"/>
                                         </Button>
                                     </ToolBar>
 
@@ -842,13 +844,13 @@
                                              IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                         <!--<TextBlock Text="{Binding Layouts}"/>-->
                                         <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <controls:IconText Kind="NotePlusOutline" Text="上课"/>
+                                            <controls1:IconText Kind="NotePlusOutline" Text="上课"/>
                                         </Button>
                                         <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <controls:IconText Kind="ClockPlusOutline" Text="课间"/>
+                                            <controls1:IconText Kind="ClockPlusOutline" Text="课间"/>
                                         </Button>
                                         <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
+                                            <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                                         </Button>
                                         <Separator/>
                                         <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
@@ -862,7 +864,7 @@
                                                     <Setter Property="IsEnabled" Value="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                                                 </Style>
                                             </Button.Style>
-                                            <controls:IconText Kind="Remove" Text="删除"/>
+                                            <controls1:IconText Kind="Remove" Text="删除"/>
                                         </Button>
                                         <!--<Button  Click="ButtonEditTimePoint_OnClick"
                                                  ToolTip="编辑选中的时间点。">
@@ -887,12 +889,12 @@
                                         <Separator/>-->
                                         <Button Click="ButtonEditTimeLayoutInfo_OnClick"
                                                 ToolTip="查看并编辑时间表的基本信息。">
-                                            <controls:IconText Kind="InfoOutline" Text="时间表信息"/>
+                                            <controls1:IconText Kind="InfoOutline" Text="时间表信息"/>
                                         </Button>
                                         <Button Click="ButtonDeleteTimeLayout_OnClick"
                                                 ToolTip="删除该时间表。"
                                                 IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                            <controls:IconText Kind="Delete" Text="删除时间表"/>
+                                            <controls1:IconText Kind="Delete" Text="删除时间表"/>
                                         </Button>
                                     </ToolBar>
 
@@ -968,7 +970,7 @@
                                                             </TextBlock>
 
                                                             <!-- Last Time -->
-                                                            <controls:IconText Grid.Column="1" Grid.Row="1"
+                                                            <controls1:IconText Grid.Column="1" Grid.Row="1"
                                                                                Kind="ClockAutoOutline"
                                                                                Text="{Binding Last}"
                                                                                Margin="0 3 0 0" ToolTip="持续时间" />
@@ -1086,7 +1088,7 @@
                                                     <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButtonTop}">
                                                         <Setter Property="ToolTipService.Placement" Value="Top"/>
                                                     </Style>
-                                                    <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                                    <converters1:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
                                                 </DataTemplate.Resources>
                                                 <RadioButton ToolTip="{Binding ToolTip}"
                                                              IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
@@ -1103,7 +1105,7 @@
                                                               Mode="PrimaryLight"
                                                               Background="LightYellow"
                                                               Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <controls:IconText Kind="Warning" Text="当前时间表处于活动状态，部分设置无法编辑。"
+                                        <controls1:IconText Kind="Warning" Text="当前时间表处于活动状态，部分设置无法编辑。"
                                                            Margin="4"/>
                                     </materialDesign:ColorZone>
 
@@ -1147,13 +1149,13 @@
                                                     SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
                                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                                                     <ListBoxItem>
-                                                        <controls:IconText Kind="BookOutline" Text="上课" />
+                                                        <controls1:IconText Kind="BookOutline" Text="上课" />
                                                     </ListBoxItem>
                                                     <ListBoxItem>
-                                                        <controls:IconText Kind="ClockOutline" Text="课间休息" />
+                                                        <controls1:IconText Kind="ClockOutline" Text="课间休息" />
                                                     </ListBoxItem>
                                                     <ListBoxItem>
-                                                        <controls:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
+                                                        <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
                                                     </ListBoxItem>
                                                 </ListBox>
                                             </StackPanel>
@@ -1175,7 +1177,7 @@
                                                 <TextBlock Text="若默认隐藏一个时间点，那么只有在处于此时间点时，此时间点才会显示。" TextWrapping="Wrap" />
 
                                                 <Separator Margin="0 20 0 8" />
-                                                <controls:IconText Kind="BookOutline" Text="默认课程" Margin="0 0 0 4" />
+                                                <controls1:IconText Kind="BookOutline" Text="默认课程" Margin="0 0 0 4" />
                                                 <ComboBox materialDesign:HintAssist.Hint="默认课程"
                                                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                                           ItemsSource="{Binding ProfileService.Profile.Subjects, UpdateSourceTrigger=PropertyChanged}"
@@ -1190,12 +1192,12 @@
                                                 <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                             Click="ButtonOverwriteClasses_OnClick">
-                                                        <controls:IconText Kind="Upload" Text="覆盖现有课程"/>
+                                                        <controls1:IconText Kind="Upload" Text="覆盖现有课程"/>
                                                     </Button>
                                                 </WrapPanel>
                                             </StackPanel>
                                             <Separator Margin="0 20 0 8" />
-                                            <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
+                                            <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
                                             <ItemsControl
                                                 ItemsSource="{Binding AttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
                                                 <ItemsControl.ItemTemplate>
@@ -1282,7 +1284,7 @@
                                          IsEnabled="{Binding ManagementService.Policy.DisableProfileSubjectsEditing, Converter={StaticResource InvertBooleanConverter}}"
                                          Grid.Row="0" ToolBarTray.IsLocked="True">
                                     <Button Click="ButtonAddSubject_OnClick" ToolTip="添加科目。">
-                                        <controls:IconText Kind="Add" Text="添加"/>
+                                        <controls1:IconText Kind="Add" Text="添加"/>
                                     </Button>
                                     <Separator/>
                                     <!--<TextBlock>
@@ -1300,10 +1302,10 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
-                                        <controls:IconText Kind="ContentCopy" Text="复制"/>
+                                        <controls1:IconText Kind="ContentCopy" Text="复制"/>
                                     </Button>
                                     <Button Click="ButtonSubject_OnClick">
-                                        <controls:IconText Kind="Delete" Text="删除"/>
+                                        <controls1:IconText Kind="Delete" Text="删除"/>
                                     </Button>
                                 </ToolBar>
                                 <!-- 科目选择 -->
@@ -1416,7 +1418,7 @@
                                                       Content="该科目是户外课程"/>
                                             <!-- 附加属性 -->
                                             <Separator Margin="0 20 0 8"/>
-                                            <controls:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
+                                            <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
                                             <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.SubjectSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
@@ -1600,7 +1602,7 @@
                                                     </Style>
                                                 </Style.Resources>
                                             </Style>
-                                            <converters:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                            <converters1:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
                                         </DataTemplate.Resources>
                                         <RadioButton Content="{Binding}" 
                                                      IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
@@ -1657,4 +1659,4 @@
         <materialDesign:Snackbar VerticalAlignment="Bottom" MessageQueue="{Binding ViewModel.MessageQueue}"/>
         <windows:AsyncBox VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
     </Grid>
-</controls:MyWindow>
+</controls1:MyWindow>

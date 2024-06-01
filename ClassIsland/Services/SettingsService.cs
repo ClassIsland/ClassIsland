@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Services.Management;
@@ -13,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class SettingsService(ILogger<SettingsService> logger, ManagementService managementService) : INotifyPropertyChanged
+public class SettingsService(ILogger<SettingsService> logger, IManagementService managementService) : INotifyPropertyChanged
 {
     private Settings _settings = new();
 
@@ -25,7 +26,7 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
 
     private ILogger<SettingsService> Logger { get; } = logger;
 
-    private ManagementService ManagementService { get; } = managementService;
+    private IManagementService ManagementService { get; } = managementService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

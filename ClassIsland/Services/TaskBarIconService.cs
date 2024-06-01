@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-
+using ClassIsland.Core.Abstractions.Services;
 using H.NotifyIcon;
 using H.NotifyIcon.Core;
 
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services;
 
-public class TaskBarIconService : IHostedService
+public class TaskBarIconService : IHostedService, ITaskBarIconService
 {
     private SettingsService SettingsService { get; }
 

@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.HelpsWindow"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.HelpsWindow"
                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,6 +8,7 @@
                    xmlns:generic="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
+                   xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                    mc:Ignorable="d"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                    Background="{DynamicResource MaterialDesignPaper}"
@@ -20,9 +21,9 @@
                    Height="600" Width="1200"
                    MinWidth="1200"
                    Closing="HelpsWindow_OnClosing">
-    <controls:MyWindow.CommandBindings>
+    <controls1:MyWindow.CommandBindings>
         <CommandBinding Command="{x:Static local:HelpsWindow.HyperlinkCommand}" Executed="CommandBinding_OnExecuted"/>
-    </controls:MyWindow.CommandBindings>
+    </controls1:MyWindow.CommandBindings>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="256"/>
@@ -102,7 +103,7 @@
                                   VerticalAlignment="Stretch"
                                   Background="{DynamicResource MaterialDesignPaper}"
                                   Visibility="{Binding ViewModel.IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <controls:TeyvatLoadingControl VerticalAlignment="Bottom"
+            <controls1:TeyvatLoadingControl VerticalAlignment="Bottom"
                                            HorizontalAlignment="Right"
                                            Margin="0 0 80 40"/>
         </materialDesign:ColorZone>
@@ -146,7 +147,7 @@
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                Margin="0 0 16 0"/>
-                    <controls:IconText Kind="FileDocumentOutline" 
+                    <controls1:IconText Kind="FileDocumentOutline" 
                                        VerticalAlignment="Center"
                                        ToolTip="当前的帮助文档"
                                        Text="{Binding ViewModel.SelectedDocumentName, Mode=OneWay}"/>
@@ -155,4 +156,4 @@
             </Grid>
         </materialDesign:ColorZone>
     </Grid>
-</controls:MyWindow>
+</controls1:MyWindow>

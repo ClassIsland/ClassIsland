@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
@@ -41,7 +41,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
-    private ExactTimeService ExactTimeService { get; } = App.GetService<ExactTimeService>();
+    private IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
 
     public static readonly DependencyProperty CurrentTimeLayoutItemProperty = DependencyProperty.Register(
         nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControl), new PropertyMetadata(default(TimeLayoutItem)));
@@ -287,7 +287,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
         final:
         SettingsSource =
-            (ILessonControlSettings?)AttachedSettingsHostService.GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
+            (ILessonControlSettings?)IAttachedSettingsHostService.GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
                 new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
                 CurrentSubject,
                 CurrentTimeLayoutItem,

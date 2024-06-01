@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:views="clr-namespace:ClassIsland.Views"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              Margin="0 20 0 0"
              HorizontalAlignment="Left"
@@ -14,13 +15,13 @@
                 Style="{StaticResource MaterialDesignPaperButton}"
                 IsEnabled="{Binding IsNavigateBackButtonEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:NavigationButtonsControl}}"
                 Command="{x:Static views:ExcelImportWindow.NavigateBackCommand}">
-            <local:IconText Kind="ArrowLeft" Text="上一步"/>
+            <controls:IconText Kind="ArrowLeft" Text="上一步"/>
         </Button>
         <Button Margin="4 0 0 0"
                 IsEnabled="{Binding IsNavigateNextButtonEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:NavigationButtonsControl}}"
                 Command="{x:Static views:ExcelImportWindow.NavigateCommand}"
                 CommandParameter="{Binding NavigationNextCommandParameter, RelativeSource={RelativeSource FindAncestor, AncestorType=local:NavigationButtonsControl}}">
-            <local:IconText Kind="ArrowRight" Text="下一步"/>
+            <controls:IconText Kind="ArrowRight" Text="下一步"/>
         </Button>
     </StackPanel>
 </UserControl>

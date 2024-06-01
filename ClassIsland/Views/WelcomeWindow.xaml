@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.WelcomeWindow"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.WelcomeWindow"
                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -13,6 +13,8 @@
                    xmlns:system="clr-namespace:System;assembly=mscorlib"
                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:demo="clr-namespace:ClassIsland.Controls.Demo"
+                   xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                   xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                    mc:Ignorable="d"
                    Height="600" Width="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -69,7 +71,7 @@
                 </Button>
             </StackPanel>
         </StackPanel>
-        <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+        <converters1:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
 
     </Window.Resources>
     <ww:AsyncBox LoadingViewType="controls:WelcomeWindowIntroControl" x:Name="AsyncBox">
@@ -147,7 +149,7 @@
                                                         </Style>
                                                     </Style.Resources>
                                                 </Style>
-                                                <converters:StringToRadioButtonSelectionConverter
+                                                <converters1:StringToRadioButtonSelectionConverter
                                                     x:Key="StringToRadioButtonSelectionConverter" />
                                             </DataTemplate.Resources>
                                             <RadioButton Content="{Binding}"
@@ -213,11 +215,11 @@
                                             Style="{StaticResource MaterialDesignFlatButton}"
                                             IsEnabled="{Binding ViewModel.IsLicenseAgreed, Mode=OneWay}"
                                             Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
-                                        <controls:IconText Kind="WorkOutline" Text="加入管理" />
+                                        <controls1:IconText Kind="WorkOutline" Text="加入管理" />
                                     </Button>
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}"
                                             IsEnabled="{Binding ViewModel.IsLicenseAgreed, Mode=OneWay}">
-                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                        <controls1:IconText Kind="ArrowRight" Text="下一步" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -239,17 +241,17 @@
                                                FontWeight="Light"
                                                Text="您后续也可以在应用设置中再次调整这些选项。" />
 
-                                    <controls:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
+                                    <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
                                                            Margin="0 6 0 0"
                                                            Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
-                                        <controls:SettingsCard.Switcher>
+                                        <controls1:SettingsCard.Switcher>
                                             <DatePicker
                                                 SelectedDate="{Binding ViewModel.Settings.SingleWeekStartTime}"
                                                 Width="120"
                                                 Foreground="{DynamicResource MaterialDesignBody}" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
-                                    <controls:SettingsCard Grid.Row="1" Margin="0 6 0 0"
+                                        </controls1:SettingsCard.Switcher>
+                                    </controls1:SettingsCard>
+                                    <controls1:SettingsCard Grid.Row="1" Margin="0 6 0 0"
                                                            IconGlyph="ReportLine"
                                                            Header="启用匿名使用情况分析"
                                                            IsOn="{Binding ViewModel.Settings.IsReportingEnabled, Mode=TwoWay}"
@@ -259,10 +261,10 @@
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
                                             Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
                                             Margin="0 0 6 0">
-                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                        <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
-                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                        <controls1:IconText Kind="ArrowRight" Text="下一步" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -281,7 +283,7 @@
                                     <TextBlock Text="外观"
                                                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                                Margin="0 0 0 8" />
-                                    <controls:IconText Kind="ThemeLightDark" Text="明暗主题" />
+                                    <controls1:IconText Kind="ThemeLightDark" Text="明暗主题" />
                                     <Grid SnapsToDevicePixels="True">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
@@ -327,12 +329,12 @@
                                         </RadioButton>
                                     </Grid>
                                     <Separator Margin="0 16 0 8" />
-                                    <controls:IconText Kind="CogOutline" Text="其它设置" Margin="0 0 0 6" />
+                                    <controls1:IconText Kind="CogOutline" Text="其它设置" Margin="0 0 0 6" />
                                     <!-- 界面缩放 -->
-                                    <controls:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
+                                    <controls1:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
                                                            Description="主界面的缩放比例。"
                                                            Margin="0 0 0 6">
-                                        <controls:SettingsCard.Switcher>
+                                        <controls1:SettingsCard.Switcher>
                                             <Slider Width="180" Minimum="0.75" Maximum="2"
                                                     VerticalAlignment="Center"
                                                     Value="{Binding ViewModel.Settings.Scale}"
@@ -341,31 +343,31 @@
                                                     TickPlacement="None"
                                                     IsSnapToTickEnabled="True"
                                                     AutoToolTipPrecision="2" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
+                                        </controls1:SettingsCard.Switcher>
+                                    </controls1:SettingsCard>
                                     <!-- 背景透明度 -->
-                                    <controls:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
+                                    <controls1:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
                                                            Description="课表背景颜色的不透明度。"
                                                            Margin="0 0 0 6">
-                                        <controls:SettingsCard.Switcher>
+                                        <controls1:SettingsCard.Switcher>
                                             <Slider Width="180" Minimum="0" Maximum="1"
                                                     Value="{Binding ViewModel.Settings.Opacity}"
                                                     AutoToolTipPlacement="BottomRight"
                                                     TickFrequency="0.01"
                                                     IsSnapToTickEnabled="True"
                                                     AutoToolTipPrecision="2" />
-                                        </controls:SettingsCard.Switcher>
-                                    </controls:SettingsCard>
+                                        </controls1:SettingsCard.Switcher>
+                                    </controls1:SettingsCard>
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
                                             Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
                                             Margin="0 0 6 0">
-                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                        <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
-                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                        <controls1:IconText Kind="ArrowRight" Text="下一步" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -397,7 +399,7 @@
                                                 </Style>
                                             </StackPanel.Resources>
                                             <CheckBox IsChecked="{Binding ViewModel.CreateStartupShortcut}">
-                                                <controls:SettingsControl HasSwitcher="False"
+                                                <controls1:SettingsControl HasSwitcher="False"
                                                                           IconGlyph="AutoStart" Header="开机自启"
                                                                           Description="在系统启动时自动运行本应用。" />
                                             </CheckBox>
@@ -407,12 +409,12 @@
                                                                           Description="注册*.cip文件格式关联，便于导入档案文件。" />
                                             </CheckBox>-->
                                             <CheckBox IsChecked="{Binding ViewModel.CreateDesktopShortcut}">
-                                                <controls:SettingsControl HasSwitcher="False"
+                                                <controls1:SettingsControl HasSwitcher="False"
                                                                           IconGlyph="Monitor" Header="创建桌面快捷方式"
                                                                           Description="在桌面上添加软件快捷方式。" />
                                             </CheckBox>
                                             <CheckBox IsChecked="{Binding ViewModel.CreateStartMenuShortcut}">
-                                                <controls:SettingsControl HasSwitcher="False"
+                                                <controls1:SettingsControl HasSwitcher="False"
                                                                           IconGlyph="MicrosoftWindows"
                                                                           Header="创建开始菜单快捷方式"
                                                                           Description="在开始菜单上添加软件快捷方式。" />
@@ -424,10 +426,10 @@
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
                                             Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}"
                                             Margin="0 0 6 0">
-                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                        <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Command="{x:Static materialDesign:Transitioner.MoveNextCommand}">
-                                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                                        <controls1:IconText Kind="ArrowRight" Text="下一步" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -475,17 +477,17 @@
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
                                             Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}">
-                                        <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                        <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Click="ButtonFlipNext_OnClick" 
                                             Margin="6 0 0 0"
                                             Visibility="{Binding ViewModel.IsFlipEnd, Converter={StaticResource InverseBoolToVisConverter}}">
-                                        <controls:IconText Kind="ArrowRight" Text="下一页" />
+                                        <controls1:IconText Kind="ArrowRight" Text="下一页" />
                                     </Button>
                                     <Button Click="ButtonClose_OnClick"
                                             Margin="6 0 0 0"
                                             Visibility="{Binding ViewModel.IsFlipEnd, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <controls:IconText Kind="Check" Text="完成" />
+                                        <controls1:IconText Kind="Check" Text="完成" />
                                     </Button>
                                 </StackPanel>
                             </Grid>
@@ -495,4 +497,4 @@
             </materialDesign:DialogHost>
         </Grid>
     </ww:AsyncBox>
-</controls:MyWindow>
+</controls1:MyWindow>

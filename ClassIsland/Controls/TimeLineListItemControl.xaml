@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              SizeChanged="TimeLineListItemControl_OnSizeChanged">
@@ -61,7 +62,7 @@
         </TextBlock>
 
         <!-- Last Time -->
-        <local:IconText Grid.Column="1" Grid.Row="1"
+        <controls:IconText Grid.Column="1" Grid.Row="1"
                            Kind="ClockAutoOutline"
                            Text="{Binding TimePoint.Last}"
                            Margin="0 0 0 0" ToolTip="持续时间" />

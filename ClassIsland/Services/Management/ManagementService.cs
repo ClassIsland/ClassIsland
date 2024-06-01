@@ -4,7 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
@@ -19,11 +20,11 @@ using Microsoft.Extensions.Logging;
 
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
-using CommonDialog = ClassIsland.Controls.CommonDialog;
+using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 
 namespace ClassIsland.Services.Management;
 
-public class ManagementService
+public class ManagementService : IManagementService
 {
     static ManagementService()
     {

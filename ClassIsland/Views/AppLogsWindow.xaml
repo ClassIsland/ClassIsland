@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.AppLogsWindow"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.AppLogsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,6 +9,7 @@
         xmlns:classIsland="clr-namespace:ClassIsland"
         xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
@@ -20,13 +21,13 @@
         Title="日志" Height="600" Width="1200"
         d:DataContext="{d:DesignInstance local:AppLogsWindow}"
         Closing="AppLogsWindow_OnClosing">
-    <controls:MyWindow.Resources>
+    <controls1:MyWindow.Resources>
         <CollectionViewSource x:Key="LogsSource"
                               IsLiveFilteringRequested="True"
                               Source="{Binding AppLogService.Logs}"
                               Filter="LogsSource_OnFilter">
         </CollectionViewSource>
-    </controls:MyWindow.Resources>
+    </controls1:MyWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -39,22 +40,22 @@
                 Style="{StaticResource MaterialDesignFilterChipPrimaryOutlineListBox}"
             >
                 <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredCritical}">
-                    <controls:IconText Kind="LightningBolt" Text="灾难"/>
+                    <controls1:IconText Kind="LightningBolt" Text="灾难"/>
                 </ListBoxItem>
                 <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredError}">
-                    <controls:IconText Kind="Error" Text="错误"/>
+                    <controls1:IconText Kind="Error" Text="错误"/>
                 </ListBoxItem>
                 <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredWarning}">
-                    <controls:IconText Kind="Warning" Text="警告"/>
+                    <controls1:IconText Kind="Warning" Text="警告"/>
                 </ListBoxItem>
                 <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredInfo}">
-                    <controls:IconText Kind="InfoCircleOutline" Text="信息"/>
+                    <controls1:IconText Kind="InfoCircleOutline" Text="信息"/>
                 </ListBoxItem>
                 <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredDebug}">
-                    <controls:IconText Kind="Bug" Text="调试"/>
+                    <controls1:IconText Kind="Bug" Text="调试"/>
                 </ListBoxItem>
                 <ListBoxItem IsSelected="{Binding ViewModel.IsFilteredTrace}">
-                    <controls:IconText Kind="Text" Text="追踪"/>
+                    <controls1:IconText Kind="Text" Text="追踪"/>
                 </ListBoxItem>
             </ListBox>
             
@@ -68,7 +69,7 @@
                      TextChanged="TextBoxBase_OnTextChanged"
                      Text="{Binding ViewModel.FilterText, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
         </Grid>
-        <controls:AutoScrollListView Grid.Row="1"
+        <controls1:AutoScrollListView Grid.Row="1"
                             ItemsSource="{Binding Source={StaticResource LogsSource}}"
                             VirtualizingPanel.IsVirtualizing="True"
                             VirtualizingPanel.ScrollUnit="Pixel"
@@ -78,7 +79,7 @@
                             FontFamily="SimHei"
                             x:Name="MainListView"
                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <controls:AutoScrollListView.ItemContainerStyle>
+            <controls1:AutoScrollListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding LogLevel}" Value="Trace">
@@ -104,8 +105,8 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </controls:AutoScrollListView.ItemContainerStyle>
-            <controls:AutoScrollListView.ItemTemplate>
+            </controls1:AutoScrollListView.ItemContainerStyle>
+            <controls1:AutoScrollListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -146,13 +147,13 @@
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
-            </controls:AutoScrollListView.ItemTemplate>
-        </controls:AutoScrollListView>
+            </controls1:AutoScrollListView.ItemTemplate>
+        </controls1:AutoScrollListView>
 
         <WrapPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}"
                     Click="ButtonClearLogs_OnClick">
-                <controls:IconText Kind="Clear" Text="清空日志"/>
+                <controls1:IconText Kind="Clear" Text="清空日志"/>
             </Button>
             <!--<Button Style="{StaticResource MaterialDesignFlatButton}"
                     Click="ButtonScrollToBottom_OnClick">
@@ -160,8 +161,8 @@
             </Button>-->
             <Button Style="{StaticResource MaterialDesignFlatButton}"
                     Click="ButtonCopySelectedLogs_OnClick">
-                <controls:IconText Kind="ContentCopy" Text="复制选中"/>
+                <controls1:IconText Kind="ContentCopy" Text="复制选中"/>
             </Button>
         </WrapPanel>
     </Grid>
-</controls:MyWindow>
+</controls1:MyWindow>

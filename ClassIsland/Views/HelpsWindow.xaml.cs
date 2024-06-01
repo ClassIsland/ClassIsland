@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 using ClassIsland.Controls;
+using ClassIsland.Core.Controls;
 using ClassIsland.ViewModels;
 
 using MdXaml;

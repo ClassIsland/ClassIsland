@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -19,7 +20,7 @@ namespace ClassIsland.Services.NotificationProviders;
 
 public class AfterSchoolNotificationProvider : INotificationProvider, IHostedService
 {
-    public NotificationHostService NotificationHostService { get; }
+    public INotificationHostService NotificationHostService { get; }
     public string Name { get; set; } = "放学提醒";
     public string Description { get; set; } = "在当天的课程结束后发出提醒。";
     public Guid ProviderGuid { get; set; } = new Guid("8FBC3A26-6D20-44DD-B895-B9411E3DDC51");
@@ -43,7 +44,7 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
         get;
     }
 
-    public AfterSchoolNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
+    public AfterSchoolNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService)
     {
         NotificationHostService = notificationHostService;
         NotificationHostService.RegisterNotificationProvider(this);
@@ -80,7 +81,7 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
     private AfterSchoolNotificationAttachedSettings? GetAttachedSettings()
     {
         var mvm = App.GetService<MainWindow>().ViewModel;
-        var settings = AttachedSettingsHostService
+        var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 AfterSchoolNotificationAttachedSettings>(
                 ProviderGuid,

@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Services.Management;
 
 namespace ClassIsland.Controls;
@@ -14,7 +14,7 @@ public partial class ManagementInfoControl : UserControl
         InitializeComponent();
     }
 
-    public string ManagementOrganization => App.GetService<ManagementService>().Manifest.OrganizationName;
+    public string ManagementOrganization => App.GetService<IManagementService>().Manifest.OrganizationName;
 
-    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+    public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 }

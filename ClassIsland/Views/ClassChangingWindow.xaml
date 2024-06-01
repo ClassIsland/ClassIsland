@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.ClassChangingWindow"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.ClassChangingWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,6 +11,8 @@
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:windows="clr-namespace:Walterlv.Windows"
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         Title="换课" 
         Height="250" Width="600"
@@ -25,7 +27,7 @@
         SizeToContent="WidthAndHeight"
         d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
         WindowStartupLocation="CenterScreen">
-    <controls:MyWindow.Resources>
+    <controls1:MyWindow.Resources>
         <Style x:Key="ClassPlanListBoxItemStyle" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                TargetType="{x:Type ListBoxItem}">
             <Setter Property="Padding" Value="0" />
@@ -36,9 +38,9 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
-        <converters:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+        <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
 
-        <converters:IndexConverter x:Key="IndexConverter" />
+        <converters1:IndexConverter x:Key="IndexConverter" />
         <Style x:Key="ClassPlanListBoxStyle" TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
             <Setter Property="ItemsPanel">
                 <Setter.Value>
@@ -114,9 +116,9 @@
                 <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
-        <converters:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
-        <converters:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
-    </controls:MyWindow.Resources>
+        <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+        <converters1:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
+    </controls1:MyWindow.Resources>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogIdentifier}">
         <Grid>
             <Grid.RowDefinitions>
@@ -246,7 +248,7 @@
                         Margin="0 0 4 0"
                         IsCancel="True"
                         ToolTip="取消换课操作。">
-                    <controls:IconText Kind="Cancel" Text="取消" />
+                    <controls1:IconText Kind="Cancel" Text="取消" />
                 </Button>
                 <Button Margin="0 0 4 0"
                         Click="ButtonPrev_OnClick"
@@ -260,7 +262,7 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                    <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                 </Button>
             </StackPanel>
             <StackPanel Grid.Row="3"
@@ -283,7 +285,7 @@
                     </StackPanel.Style>
                     <Button Margin="12 0 0 0" Click="ButtonNext_OnClick"
                             ToolTip="进入下一步。">
-                        <controls:IconText Kind="ArrowRight" Text="下一步" />
+                        <controls1:IconText Kind="ArrowRight" Text="下一步" />
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
@@ -324,7 +326,7 @@
                     </CheckBox>
                     <Button Margin="12 0 0 0" ToolTip="确认并应用换课。"
                             Click="ButtonConfirmClassChanging_OnClick">
-                        <controls:IconText Kind="Check" Text="确认换课" />
+                        <controls1:IconText Kind="Check" Text="确认换课" />
                     </Button>
                 </StackPanel>
             </StackPanel>
@@ -415,9 +417,9 @@
                 </Border.Style>
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right"
                             Margin="0 0 36 24">
-                    <controls:TeyvatLoadingControl/>
+                    <controls1:TeyvatLoadingControl/>
                 </StackPanel>
             </Border>
         </Grid>
     </materialDesign:DialogHost>
-</controls:MyWindow>
+</controls1:MyWindow>
