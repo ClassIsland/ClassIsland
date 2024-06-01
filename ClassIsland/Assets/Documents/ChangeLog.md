@@ -31,6 +31,35 @@ ClassIsland现在支持从服务器同步当前的精确时间。也可以在此
 ![1711241942861](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1711241942861.png)
 
 
+***
+
+# 1.4.0.1
+
+1.4 - Firefly
+
+本版本主要包含了对 1.4.0.0 的一些优化和修复。
+
+## 新增功能
+- 【倒计时】倒计时功能添加字体颜色与字体大小的设定
+- 【更新】更新时添加MD5校验 （[#131](https://github.com/ClassIsland/ClassIsland/issues/131)）
+- 【天气】排除气象预警（[#139](https://github.com/ClassIsland/ClassIsland/issues/139)）
+- 【问题反馈】从崩溃报告中直接打开issues提交界面
+- 【集控】在加入集控后自动清除上一个集控会话的文件
+
+## 优化
+- 【天气】优化应用设置中天气页面的天气预警显示布局
+- 【更新】优化更新判断逻辑
+- 【档案】禁用默认档案中科目不清晰的上下课前提醒附加设置
+- 【应用】优化配置文件写入逻辑
+
+## Bug修复
+- 【提醒】修复系统 TTS 不可用导致程序无法启动的问题（[#148](https://github.com/ClassIsland/ClassIsland/issues/148)）
+- 【档案】修复档案文件因某些因素写入失败后导致档案文件被清空的问题 （[#150](https://github.com/ClassIsland/ClassIsland/issues/150)）
+- 【档案】修复在一些情况下临时层课表不清除的问题 （[#135](https://github.com/ClassIsland/ClassIsland/issues/135)）
+- 【档案编辑】修复在档案编辑界面中打开其它抽屉后，临时课表失效的问题 （[#154](https://github.com/ClassIsland/ClassIsland/issues/154)）
+- 【倒计时】修复考试倒计时在跨天时无法更新剩余天数的问题
+- 
+- 【主界面】修复在一些情况下可能导致访问没有连接到 `PresentationSource` 的 `Visual` 的问题
 
 ***
 
