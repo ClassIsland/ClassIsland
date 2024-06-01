@@ -598,9 +598,9 @@
                                                           IsEditable="True"
                                                           Margin="0 0 0 6"
                                                           Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                                                    <ComboBoxItem Content="ntp.aliyun.com"/>
                                                     <ComboBoxItem Content="cn.ntp.org.cn"/>
                                                     <ComboBoxItem Content="pool.ntp.org"/>
-                                                    <ComboBoxItem Content="ntp.aliyun.com"/>
                                                     <ComboBoxItem Content="time.windows.com"/>
                                                 </ComboBox>
                                                 

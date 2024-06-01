@@ -8,7 +8,7 @@ public class ClassNotificationSettings : ObservableRecipient
     private bool _isClassOnPreparingNotificationEnabled = true;
     private bool _isClassOffNotificationEnabled = true;
     private int _inDoorClassPreparingDeltaTime = 60;
-    private int _outDoorClassPreparingDeltaTime = 120;
+    private int _outDoorClassPreparingDeltaTime = 600;
     private string _classOnPreparingText = "准备上课，请回到座位并保持安静，做好上课准备。";
     private bool _isSpeechEnabledOnClassPreparing = true;
     private bool _isSpeechEnabledOnClassOn = true;

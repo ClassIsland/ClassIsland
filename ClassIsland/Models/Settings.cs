@@ -127,7 +127,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _speechVolume = 1.0;
     private int _speechSource = 0;
     private string _edgeTtsVoiceName = "zh-CN-XiaoxiaoNeural";
-    private string _exactTimeServer = "cn.ntp.org.cn";
+    private string _exactTimeServer = "ntp.aliyun.com";
     private bool _isExactTimeEnabled = true;
     private double _timeOffsetSeconds = 0.0;
     private bool _isNotificationEffectEnabled = true;
