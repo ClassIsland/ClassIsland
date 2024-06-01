@@ -1,6 +1,7 @@
 # 在 Windows 7 上安装 ClassIsland
 
-**不建议在 Windows 10 以下的操作系统上运行 ClassIsland。** 
+> [!warning]
+> **不建议在 Windows 10 以下的操作系统上运行 ClassIsland。** 
 
 如果要在 Windows 7 上正常运行 ClassIsland，请跟随本指引做以下准备工作。
 
