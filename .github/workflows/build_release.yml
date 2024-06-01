@@ -92,9 +92,9 @@ jobs:
       - name: Update to release
         uses: ncipollo/release-action@v1.10.0
         with:
-          artifacts: .\out\*.zip,.\out\*.md5sum,.\out\*.nupkg
+          artifacts: ./out/*.zip,./out/*.md5sum,./out/*.nupkg
           draft: true
-          bodyFile: ".\out\checksums.md"
+          bodyFile: ./out/checksums.md
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Upload to AppCenter
