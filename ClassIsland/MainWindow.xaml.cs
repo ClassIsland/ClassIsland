@@ -774,6 +774,7 @@ public partial class MainWindow : Window
         {
             ViewModel.Profile.TempClassPlanId = null;
         }
+        ProfileService.CleanExpiredTempClassPlan(); // 清除过期的临时层
 
         // 检测是否启用课表加载
         if (!ViewModel.IsClassPlanEnabled)

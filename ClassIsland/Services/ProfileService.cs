@@ -171,7 +171,7 @@ public class ProfileService
         newCp.TimeLayoutId = timeLayoutId;
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
-        newCp.OverlaySetupTime = DateTime.Now;
+        newCp.OverlaySetupTime = App.GetService<ExactTimeService>().GetCurrentLocalDateTime().Date;
         Profile.IsOverlayClassPlanEnabled = true;
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
@@ -200,7 +200,7 @@ public class ProfileService
         }
 
         var cp = Profile.ClassPlans[Profile.OverlayClassPlanId];
-        if (cp.OverlaySetupTime.Date < DateTime.Now.Date)
+        if (cp.OverlaySetupTime.Date < App.GetService<ExactTimeService>().GetCurrentLocalDateTime().Date)
         {
             Logger.LogInformation("清理过期的临时层课表。");
             ClearTempClassPlan();

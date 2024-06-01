@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="ClassIsland.Controls.DebugTimeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             IsVisibleChanged="DebugTimeControl_OnIsVisibleChanged">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:DebugTimeControl}}"
+                Margin="16">
+        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+            <Run Text="(debug)设置时间"/>
+        </TextBlock>
+        <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+            <Run Text=""/>
+        </TextBlock>
+        <DatePicker SelectedDate="{Binding TargetDateTime}"/>
+        <materialDesign:TimePicker 
+            WithSeconds="True" Is24Hours="True"
+            SelectedTime="{Binding TargetDateTime}"/>
+        <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+            <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        False
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+            <Button Content="重置" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                    Click="ButtonReset_OnClick">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        False
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+            <Button Content="确定" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                    Click="ButtonConfirm_OnClick">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        True
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>
