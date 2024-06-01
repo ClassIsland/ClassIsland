@@ -31,6 +31,6 @@ Write-Host "MD5 Summary:" -ForegroundColor Gray
 Write-Host $summary -ForegroundColor Gray
 Write-Host "----------" -ForegroundColor Gray
 
-if (-not $GITHUB_ACTION -eq $null) {
-    'MD5_SUMMARY=' + $summary.Replace("`n", "<<") | Out-File -FilePath $env:GITHUB_ENV -Append
-}
+#if (-not $GITHUB_ACTION -eq $null) {
+#    'MD5_SUMMARY=' + $summary.Replace("`n", "<<") | Out-File -FilePath $env:GITHUB_ENV -Append
+#}
