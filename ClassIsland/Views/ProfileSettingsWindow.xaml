@@ -293,6 +293,7 @@
         </StackPanel>
 
         <!-- 课程表规则编辑 -->
+        <converters:PreventNullConverter x:Key="PreventNullConverter" />
         <Grid  Margin="16" Width="300" x:Key="TemporaryClassPlan">
             <Grid.Resources>
                 <CollectionViewSource x:Key="ClassPlanSource" 
@@ -359,15 +360,17 @@
                          Margin="0 12 0 0"
                          SelectionMode="Single"
                          Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                         SelectedValue="{Binding ProfileService.Profile.TempClassPlanId, Mode=TwoWay}"
+                         SelectedValue="{Binding ProfileService.Profile.TempClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
                          SelectedValuePath="Key"
                          SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}"
+                            <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
                                       Content="{Binding Value.Name}"
+                                      IsHitTestVisible="False"
+                                      Focusable="False"
                                       HorizontalAlignment="Stretch"/>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
