@@ -5,7 +5,7 @@ rm $path/*.md5sum
 $files = Get-ChildItem $path
 $hashes = [ordered]@{}
 $summary = "
-> [!info]
+> [!important]
 > 下载时请注意核对文件MD5是否正确。
 
 | 文件名 | MD5 |
