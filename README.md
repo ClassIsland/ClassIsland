@@ -113,6 +113,7 @@ ClassIsland 理论上可以在以下的系统环境中运行：**注意：在这
 
 本应用目前的开发状态：
 
+- 正在[`dev`](https://github.com/HelloWRC/ClassIsland/tree/dev)分支上开发版本 [1.5 - Griseo](https://github.com/HelloWRC/ClassIsland/milestone/6)。
 - 正在[`master`](https://github.com/HelloWRC/ClassIsland/tree/master)分支上维护版本 [1.4 - Firefly](https://github.com/HelloWRC/ClassIsland/milestone/5)。
 
 要在本地编译应用，您需要安装以下负载和工具：
