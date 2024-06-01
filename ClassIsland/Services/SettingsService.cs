@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-
+using ClassIsland.Core.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Services.Management;
 
@@ -56,17 +56,9 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
             else
             {
                 Logger.LogInformation("加载配置文件。");
-                var json = await File.ReadAllTextAsync("./Settings.json");
-                var r = JsonSerializer.Deserialize<Settings>(json);
-                if (r != null)
-                {
-                    if (!r.IsSystemSpeechSystemExist)
-                    {
-                        r.SpeechSource = 1;
-                    }
-                    Settings = r;
-                    Settings.PropertyChanged += (sender, args) => SaveSettings();
-                }
+                var r = ConfigureFileHelper.LoadConfig<Settings>("./Settings.json");
+                Settings = r;
+                Settings.PropertyChanged += (sender, args) => SaveSettings();
             }
 
             // 当还没有初始化应用且启用集控时，从集控拉取设置。
@@ -80,12 +72,16 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
             Logger.LogError(ex, "配置文件加载失败。");
             // ignored
         }
+        if (!Settings.IsSystemSpeechSystemExist)
+        {
+            Settings.SpeechSource = 1;
+        }
     }
 
     public void SaveSettings()
     {
         Logger.LogInformation("写入配置文件。");
-        File.WriteAllText("./Settings.json", JsonSerializer.Serialize<Settings>(Settings));
+        ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

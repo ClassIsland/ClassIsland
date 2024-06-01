@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
-
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Profile;
 using ClassIsland.Services.Management;
 
@@ -119,39 +119,13 @@ public class ProfileService
             }
             SaveProfile(filename);
         }
-        Profile? r;
-        try
-        {
-            var json = await File.ReadAllTextAsync(path);
-            r = JsonSerializer.Deserialize<Profile>(json);
-        }
-        catch(Exception ex)
-        {
-            Logger.LogCritical($"尝试读取 {path} 时失败！尝试读取备份");
-            try
-            {
-                var bakJson = await File.ReadAllTextAsync(path + ".bak");
-                r = JsonSerializer.Deserialize<Profile>(bakJson);
-                File.Delete(path);
-                File.Copy(path + ".bak", path);
-                File.Delete(path + ".bak");
-            }
-            catch(Exception e)
-            {
-                Logger.LogCritical($"尝试读取 {path}.bak 时失败！正在写入默认档案……");
-                SaveProfile(filename);
-                var json = await File.ReadAllTextAsync(path);
-                r = JsonSerializer.Deserialize<Profile>(json);
-            }
-        }
- 
-        if (r != null)
-        {
-            Profile = r;
-            if (ManagementService.IsManagementEnabled)
-                await MergeManagementProfileAsync();
-            Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
-        }
+
+        var r = LoadConfig<Profile>(path);
+
+        Profile = r;
+        if (ManagementService.IsManagementEnabled)
+            await MergeManagementProfileAsync();
+        Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
         CurrentProfilePath = filename;
         Logger.LogTrace("成功加载档案！");
@@ -173,28 +147,7 @@ public class ProfileService
     public void SaveProfile(string filename)
     {
         Logger.LogInformation("写入档案文件：{}", $"./Profiles/{filename}");
-        if (File.Exists($"Profiles/{filename}.bak")) File.Delete($"./Profiles/{filename}.bak");
-        if(File.Exists($"./Profiles/{filename}")) File.Copy($"./Profiles/{filename}", $"./Profiles/{filename}.bak"); // 备份原档案文件
-        var json = JsonSerializer.Serialize<Profile>(Profile);
-        if(json == null)
-        {
-            Logger.LogWarning("即将写入的内容为空！已忽略！");
-            return;
-        }
-        //File.WriteAllText("./Profile.json", json);
-        File.WriteAllText($"./Profiles/{filename}", json);
-        // 判断是否写入成功
-        FileInfo fileInfo = new FileInfo($"./Profiles/{filename}");
-        if (fileInfo.Length == 0)
-        {
-            Logger.LogCritical($"写入档案文件 ./Profiles/{filename} 时失败！正在还原回上一版本");
-            File.Delete($"./Profiles/{filename}");
-            File.Copy($"./Profiles/{filename}.bak", $"./Profiles/{filename}");
-            File.Delete($"./Profiles/{filename}.bak");
-            return;
-        }
-        Logger.LogInformation("成功写入档案文件: {}", $"./Profiles/{filename}");
-        File.Delete($"./Profiles/{filename}.bak");
+        SaveConfig($"./Profiles/{filename}", Profile);
     }
 
     private static T DuplicateJson<T>(T o)

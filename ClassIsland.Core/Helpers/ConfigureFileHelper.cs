@@ -29,9 +29,11 @@ public class ConfigureFileHelper
         }
         catch (Exception ex)
         {
-            if (backupEnabled.Value)
-                return LoadConfig<T>(path + ".bak", false, true);
-            throw;
+            if (!backupEnabled.Value)
+                throw;
+            var r = LoadConfig<T>(path + ".bak", false, true);
+            File.Copy(path + ".bak", path, true);
+            return r;
         }
 
     }
@@ -39,7 +41,7 @@ public class ConfigureFileHelper
     public static void SaveConfig<T>(string path, T o)
     {
         // 备份原文件
-        if (File.Exists(path + ".bak"))
+        if (File.Exists(path))
         {
             File.Copy(path, path + ".bak", true);
         }
@@ -48,7 +50,6 @@ public class ConfigureFileHelper
             File.WriteAllText(path + ".bak", JsonSerializer.Serialize<T>(o));
             // 校验备份文件是否写入成功
             var bakInfo = new FileInfo(path + ".bak");
-            // 由于默认的Profile实际大小为15735，因此如果写入后文件大小小于15700则判断写入失败
             if (bakInfo.Length <= 0)
             {
                 File.Delete(path + ".bak");
