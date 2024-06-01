@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Notification;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Helpers;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;

@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ClassIsland.Core.Helpers;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Services.Management;
 

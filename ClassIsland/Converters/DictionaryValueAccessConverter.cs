@@ -2,8 +2,8 @@
 using System.Globalization;
 using System.Windows.Data;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Converters;
 

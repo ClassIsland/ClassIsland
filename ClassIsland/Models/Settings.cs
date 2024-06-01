@@ -6,10 +6,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Abstraction.Models;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Models.Notification;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AllContributors;
 using ClassIsland.Models.Weather;
 using ClassIsland.Services;

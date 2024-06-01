@@ -1,0 +1,15 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Enum;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Enum";
+
+enum Retcode {
+    None = 0;
+    Success = 200;
+    ServerInternalError = 500;
+    InvalidRequest = 404;
+    // service: ClientRegister
+    Registered = 10001;
+    ClientNotFound = 10002;
+    // service: ClientCommandDeliver
+    
+}

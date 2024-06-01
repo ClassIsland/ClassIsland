@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 using ClassIsland.Controls;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;

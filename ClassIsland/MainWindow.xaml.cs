@@ -17,12 +17,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 using ClassIsland.Controls.NotificationEffects;
-using ClassIsland.Core.Abstraction.Models;
-using ClassIsland.Core.Abstraction.Services;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Abstraction.Services;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;

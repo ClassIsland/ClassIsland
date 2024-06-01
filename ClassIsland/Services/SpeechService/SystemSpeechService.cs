@@ -1,6 +1,6 @@
 ﻿using System.Speech.Synthesis;
 
-using ClassIsland.Core.Abstraction.Services;
+using ClassIsland.Shared.Abstraction.Services;
 
 using Microsoft.Extensions.Logging;
 

@@ -4,8 +4,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Helpers;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Helpers;
 
 using Microsoft.Extensions.Logging;
 

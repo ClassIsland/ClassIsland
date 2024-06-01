@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Abstraction.Models;
+﻿using ClassIsland.Shared.Abstraction.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 

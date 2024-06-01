@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Interfaces;
+﻿using ClassIsland.Shared.Interfaces;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 

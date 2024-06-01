@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 

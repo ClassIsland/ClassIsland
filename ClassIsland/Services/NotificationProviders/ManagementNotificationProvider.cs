@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Management;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Protobuf.Command;
-using ClassIsland.Core.Protobuf.Enum;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Management;
+using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Shared.Protobuf.Command;
+using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Services.Management;
 
 using MaterialDesignThemes.Wpf;

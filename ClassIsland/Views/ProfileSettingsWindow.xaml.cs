@@ -14,7 +14,7 @@ using System.Windows.Interop;
 
 using ClassIsland.Controls;
 using ClassIsland.Converters;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;

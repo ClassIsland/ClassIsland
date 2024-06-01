@@ -2,8 +2,8 @@
 using System.Globalization;
 using System.Windows.Data;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Interfaces;
 
 namespace ClassIsland.Converters;
 

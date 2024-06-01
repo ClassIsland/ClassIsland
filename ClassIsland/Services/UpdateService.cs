@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ClassIsland.Core.Enums;
+using ClassIsland.Shared.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 

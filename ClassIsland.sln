@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland", "ClassIsland\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.UnitTests", "ClassIsland.UnitTests\ClassIsland.UnitTests.csproj", "{0513FA8E-72C8-4CCE-A7B9-9507EC0BFBBA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Core", "ClassIsland.Core\ClassIsland.Core.csproj", "{1A19A8AD-A401-445A-8C63-77EC5B7C103F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Shared", "ClassIsland.Shared\ClassIsland.Shared.csproj", "{1A19A8AD-A401-445A-8C63-77EC5B7C103F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walterlv", "Walterlv\Walterlv.csproj", "{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}"
 EndProject

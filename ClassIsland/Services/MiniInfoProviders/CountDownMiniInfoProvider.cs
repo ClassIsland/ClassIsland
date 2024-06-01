@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 
 using ClassIsland.Controls.MiniInfoProvider;
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models;
 
 using Google.Protobuf.WellKnownTypes;

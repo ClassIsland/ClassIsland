@@ -1,0 +1,12 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Service;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Service";
+
+import "Protobuf/Client/ClientRegisterCsReq.proto";
+import "Protobuf/Server/ClientRegisterScRsp.proto";
+
+service ClientRegister {
+    rpc Register (Client.ClientRegisterCsReq) returns (Server.ClientRegisterScRsp);
+    
+    rpc UnRegister (Client.ClientRegisterCsReq) returns (Server.ClientRegisterScRsp);
+}

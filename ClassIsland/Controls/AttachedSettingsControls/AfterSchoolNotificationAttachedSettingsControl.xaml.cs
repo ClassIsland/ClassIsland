@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Controls;
 
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models.AttachedSettings;
 
 namespace ClassIsland.Controls.AttachedSettingsControls;

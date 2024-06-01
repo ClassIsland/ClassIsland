@@ -1,0 +1,8 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Client;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Client";
+
+message ClientRegisterCsReq {
+    string clientUid = 1;
+    string clientId = 2;
+}

@@ -3,8 +3,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models;
 
 using Microsoft.Extensions.Hosting;

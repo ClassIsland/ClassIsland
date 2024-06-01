@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-using ClassIsland.Core.Enums;
+using ClassIsland.Shared.Enums;
 
 namespace ClassIsland.Converters;
 

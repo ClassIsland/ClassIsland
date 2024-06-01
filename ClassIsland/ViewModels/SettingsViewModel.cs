@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models;
 using ClassIsland.Models.Weather;
 

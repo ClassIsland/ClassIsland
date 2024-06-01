@@ -2,8 +2,8 @@
 using System.Windows;
 using System.Windows.Controls;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Interfaces;
 
 namespace ClassIsland.Controls;
 

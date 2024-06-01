@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-using ClassIsland.Core;
+using ClassIsland.Shared;
 
 using Microsoft.Xaml.Behaviors;
 

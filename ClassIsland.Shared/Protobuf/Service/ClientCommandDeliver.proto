@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Service;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Service";
+
+import "Protobuf/Server/ClientCommandDeliverScRsp.proto";
+import "Protobuf/Client/ClientCommandDeliverScReq.proto";
+
+service ClientCommandDeliver {
+  rpc ListenCommand (stream Client.ClientCommandDeliverScReq) returns (stream Server.ClientCommandDeliverScRsp);
+}

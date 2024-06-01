@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
-using ClassIsland.Core.Abstraction.Services;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Models.Management;
-using ClassIsland.Core.Models.Profile;
-using ClassIsland.Core.Protobuf.Enum;
+using ClassIsland.Shared.Abstraction.Services;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Management;
+using ClassIsland.Shared.Models.Profile;
+using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 
@@ -17,7 +17,7 @@ using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Logging;
 
-using static ClassIsland.Core.Helpers.ConfigureFileHelper;
+using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using CommonDialog = ClassIsland.Controls.CommonDialog;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Models.Profile;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 

@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
 
-using ClassIsland.Core.Interfaces.Controls;
+using ClassIsland.Shared.Interfaces.Controls;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 

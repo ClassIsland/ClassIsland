@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Server;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Server";
+
+import "Protobuf/Enum/Retcode.proto";
+
+message ClientRegisterScRsp {
+    Enum.Retcode Retcode = 1;
+    string Message = 2;
+}

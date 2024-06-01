@@ -10,7 +10,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="clr-namespace:ClassIsland.Views"
-    xmlns:profile="clr-namespace:ClassIsland.Core.Models.Profile;assembly=ClassIsland.Core"
+    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
     mc:Ignorable="d" >
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>

@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
 

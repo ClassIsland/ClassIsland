@@ -10,7 +10,7 @@
         xmlns:models="clr-namespace:ClassIsland.Models"
         xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
         xmlns:windows="clr-namespace:Walterlv.Windows"
-        xmlns:profile="clr-namespace:ClassIsland.Core.Models.Profile;assembly=ClassIsland.Core"
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         mc:Ignorable="d"
         Title="换课" 
         Height="250" Width="600"

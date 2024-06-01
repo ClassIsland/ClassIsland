@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
 

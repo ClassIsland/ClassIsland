@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using ClassIsland.Controls;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;

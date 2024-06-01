@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Documents;
 
-using ClassIsland.Core;
+using ClassIsland.Shared;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 

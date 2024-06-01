@@ -17,8 +17,8 @@ using System.Windows.Media.Imaging;
 
 using ClassIsland.Controls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core.Abstraction.Services;
-using ClassIsland.Core.Enums;
+using ClassIsland.Shared.Abstraction.Services;
+using ClassIsland.Shared.Enums;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.AllContributors;

@@ -9,9 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Abstraction.Models;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Services;
 

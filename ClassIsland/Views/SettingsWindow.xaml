@@ -34,8 +34,8 @@
                    xmlns:fluentWpf="clr-namespace:SourceChord.FluentWPF;assembly=FluentWPF"
                    xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-                   xmlns:interfaces="clr-namespace:ClassIsland.Core.Interfaces;assembly=ClassIsland.Core"
-                   xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core">
+                   xmlns:interfaces="clr-namespace:ClassIsland.Shared.Interfaces;assembly=ClassIsland.Shared"
+                   xmlns:notification="clr-namespace:ClassIsland.Shared.Models.Notification;assembly=ClassIsland.Shared">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">

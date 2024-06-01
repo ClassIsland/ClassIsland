@@ -14,8 +14,8 @@ using System.Windows.Threading;
 
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
-using ClassIsland.Core;
-using ClassIsland.Core.Abstraction.Services;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.Logging;
@@ -37,7 +37,7 @@ using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using UpdateStatus = ClassIsland.Core.Enums.UpdateStatus;
+using UpdateStatus = ClassIsland.Shared.Enums.UpdateStatus;
 
 namespace ClassIsland;
 /// <summary>

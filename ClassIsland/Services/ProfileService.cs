@@ -5,13 +5,13 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
-using ClassIsland.Core.Helpers;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Helpers;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
 
-using static ClassIsland.Core.Helpers.ConfigureFileHelper;
+using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
 
