@@ -44,6 +44,7 @@
                 <TextBlock VerticalAlignment="Center" Text="下节课是："/>
                 <TextBlock Text="{Binding ViewModel.NextSubject.Name}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center"/>
                 <TextBlock Margin="6 0 0 0" FontSize="14" VerticalAlignment="Bottom">
+                    <Run Text="{Binding ViewModel.NextSubject.TeacherName}" /><Run Text=" " />
                     <Run Text="{Binding ViewModel.NextTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                     </Run><Run Text="-">
                     </Run><Run Text="{Binding ViewModel.NextTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
@@ -91,6 +92,7 @@
                 <TextBlock VerticalAlignment="Center" Text="下节课是："/>
                 <TextBlock Text="{Binding ViewModel.NextSubject.Name}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center"/>
                 <TextBlock Margin="6 0 0 0" FontSize="14" VerticalAlignment="Bottom">
+                    <Run Text="{Binding ViewModel.NextSubject.TeacherName}" /><Run Text=" " />
                     <Run Text="{Binding ViewModel.NextTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                     </Run><Run Text="-">
                     </Run><Run Text="{Binding ViewModel.NextTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}"/>
