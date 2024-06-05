@@ -1,3 +1,4 @@
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using MaterialDesignThemes.Wpf;
@@ -33,17 +34,23 @@ public abstract class SettingsPageBase : Page
     /// 在设置窗口打开指定的抽屉。
     /// </summary>
     /// <param name="key">抽屉资源键名</param>
-    protected void OpenDrawer(string key)
+    /// <param name="dataContext">抽屉元素的数据上下文</param>
+    protected void OpenDrawer(string key, object? dataContext=null)
     {
-        OpenDrawer(FindResource(key));
+        OpenDrawer(FindResource(key), dataContext);
     }
 
     /// <summary>
     /// 在设置窗口打开指定的抽屉。
     /// </summary>
     /// <param name="o">要在抽屉中显示的对象</param>
-    protected void OpenDrawer(object o)
+    /// <param name="dataContext">抽屉元素的数据上下文</param>
+    protected void OpenDrawer(object o, object? dataContext=null)
     {
+        if (o is FrameworkElement e && dataContext != null)
+        {
+            e.DataContext = dataContext;
+        }
         OpenDrawerCommand.Execute(o);
     }
 

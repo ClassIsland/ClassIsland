@@ -49,7 +49,6 @@ public partial class AboutSettingsPage : SettingsPageBase
         SettingsService = settingsService;
         DiagnosticService = diagnosticService;
         InitializeComponent();
-
         var r = new StreamReader(Application.GetResourceStream(new Uri("/Assets/LICENSE.txt", UriKind.Relative))!.Stream);
         ViewModel.License = r.ReadToEnd();
     }
@@ -121,7 +120,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenDrawer("ContributorsDrawer");
+        OpenDrawer("ContributorsDrawer", this);
         await RefreshContributors();
     }
 
@@ -137,7 +136,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         {
             SettingsService.Settings.ContributorsCache =
                 await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
-                    "https://mirror.ghproxy.com/?q=https%3A%2F%2Fraw.githubusercontent.com%2FHelloWRC%2FClassIsland%2Fmaster%2F.all-contributorsrc"));
+                    "https://mirror.ghproxy.com/?q=https%3A%2F%2Fraw.githubusercontent.com%2FClassIsland%2FClassIsland%2Fmaster%2F.all-contributorsrc"));
         }
         catch (Exception ex)
         {

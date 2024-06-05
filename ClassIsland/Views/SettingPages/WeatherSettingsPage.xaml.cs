@@ -48,7 +48,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
 
     private void ButtonEditCurrentCity_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenDrawer("CitySearcher");
+        OpenDrawer("CitySearcher", this);
     }
 
     private void TextBoxSearchCity_OnTextChanged(object sender, TextChangedEventArgs e)
