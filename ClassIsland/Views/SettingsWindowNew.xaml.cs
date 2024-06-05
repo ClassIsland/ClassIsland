@@ -53,4 +53,18 @@ public partial class SettingsWindowNew : MyWindow
         //ViewModel.FrameContent;
         
     }
+
+    private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        ViewModel.IsViewCompressed = Width < 800;
+        if (!ViewModel.IsViewCompressed)
+        {
+            ViewModel.IsNavigationDrawerOpened = true;
+        }
+    }
+
+    private void ButtonBaseToggleNavigationDrawer_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsNavigationDrawerOpened = !ViewModel.IsNavigationDrawerOpened;
+    }
 }

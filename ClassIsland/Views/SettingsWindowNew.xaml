@@ -20,26 +20,34 @@
         TextOptions.TextFormattingMode="Ideal"
         TextOptions.TextRenderingMode="Auto"
         mc:Ignorable="d"
-        Title="SettingsWindowNew" Height="550" Width="1200">
+        MinWidth="560"
+        Title="SettingsWindowNew" Height="550" Width="1200"
+        SizeChanged="SettingsWindowNew_OnSizeChanged">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <materialDesign:DrawerHost OpenMode="Standard" IsLeftDrawerOpen="True"
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ViewModel.IsNavigationDrawerOpened}"
                                    Grid.Row="1">
+            <materialDesign:DrawerHost.Style>
+                <Style TargetType="materialDesign:DrawerHost">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ViewModel.IsViewCompressed}" Value="True">
+                            <Setter Property="OpenMode" Value="Modal"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="OpenMode" Value="Standard"/>
+                </Style>
+            </materialDesign:DrawerHost.Style>
             <materialDesign:DrawerHost.LeftDrawerContent>
                 <!-- 导航栏 -->
                 <Grid Width="250">
                     <ListBox ItemsSource="{x:Static services:SettingsWindowRegistryService.Registered}"
                              SelectedItem="{Binding ViewModel.SelectedPageInfo}"
                              SelectionChanged="NavigationListBox_OnSelectionChanged"
-                             Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
-                                <Setter Property="Margin" Value="1"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
+                             Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                             ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
@@ -57,7 +65,7 @@
                                             </Style>
                                         </materialDesign:PackIcon.Style>
                                     </materialDesign:PackIcon>
-                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="4 0 0 0"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" Margin="12 0 0 0"/>
                                 </StackPanel>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -94,6 +102,7 @@
                             VerticalAlignment="Center"
                             Padding="0"
                             Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Click="ButtonBaseToggleNavigationDrawer_OnClick"
                             Content="{materialDesign:PackIcon Menu, Size=24}"/>
                 </StackPanel>
 

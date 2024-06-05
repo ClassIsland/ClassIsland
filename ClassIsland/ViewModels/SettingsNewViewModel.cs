@@ -1,5 +1,6 @@
 ﻿using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels;
 
@@ -7,6 +8,8 @@ public class SettingsNewViewModel : ObservableRecipient
 {
     private object? _frameContent;
     private SettingsPageInfo? _selectedPageInfo = null;
+    private bool _isViewCompressed = false;
+    private bool _isNavigationDrawerOpened = true;
 
     public object? FrameContent
     {
@@ -26,6 +29,28 @@ public class SettingsNewViewModel : ObservableRecipient
         {
             if (Equals(value, _selectedPageInfo)) return;
             _selectedPageInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsViewCompressed
+    {
+        get => _isViewCompressed;
+        set
+        {
+            if (value == _isViewCompressed) return;
+            _isViewCompressed = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNavigationDrawerOpened
+    {
+        get => _isNavigationDrawerOpened;
+        set
+        {
+            if (value == _isNavigationDrawerOpened) return;
+            _isNavigationDrawerOpened = value;
             OnPropertyChanged();
         }
     }
