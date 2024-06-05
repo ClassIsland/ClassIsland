@@ -7,6 +7,8 @@
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+             xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
              ShutdownMode="OnMainWindowClose"
              Startup="App_OnStartup"
              DispatcherUnhandledException="App_OnDispatcherUnhandledException">
@@ -77,6 +79,22 @@
 
             <Style TargetType="ListView" BasedOn="{StaticResource MaterialDesignListView}">
                 <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+            </Style>
+
+            <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">
+                <Setter Property="Margin" Value="12" />
+                <Setter Property="MaxWidth" Value="750" />
+                <Style.Resources>
+                    <Style TargetType="controls1:SettingsCard">
+                        <Setter Property="Margin" Value="0 0 0 6" />
+                    </Style>
+                </Style.Resources>
+                <Style.Triggers>
+                    <!-- TODO: 在完成设置页面重构后，用属性声明方式禁用设置页面 -->
+                    <Trigger  Property="Tag" Value="CanPolicyDisable">
+                        <Setter Property="IsEnabled" Value="{Binding ManagementService.Policy.DisableSettingsEditing, Converter={StaticResource InvertBooleanConverter}}"/>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
 
             <converters1:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />

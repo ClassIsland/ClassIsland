@@ -45,20 +45,7 @@
 
         </Style>
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
-        <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">
-            <Setter Property="Margin" Value="12" />
-            <Setter Property="MaxWidth" Value="750" />
-            <Style.Resources>
-                <Style TargetType="controls1:SettingsCard">
-                    <Setter Property="Margin" Value="0 0 0 6" />
-                </Style>
-            </Style.Resources>
-            <Style.Triggers>
-                <Trigger  Property="Tag" Value="CanPolicyDisable">
-                    <Setter Property="IsEnabled" Value="{Binding ManagementService.Policy.DisableSettingsEditing, Converter={StaticResource InvertBooleanConverter}}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
+        
         <Style TargetType="ScrollViewer">
             <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="materialDesign:ScrollViewerAssist.IsAutoHideEnabled" Value="True" />

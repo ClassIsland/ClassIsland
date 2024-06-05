@@ -18,6 +18,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Models;
@@ -29,7 +30,7 @@ using ClassIsland.Services.MiniInfoProviders;
 using ClassIsland.Services.NotificationProviders;
 using ClassIsland.Services.SpeechService;
 using ClassIsland.Views;
-
+using ClassIsland.Views.SettingPages;
 using MaterialDesignThemes.Wpf;
 
 using Microsoft.AppCenter;
@@ -274,6 +275,10 @@ public partial class App : Application, IAppHost
                 services.AddTransient<FeatureDebugWindow>();
                 services.AddSingleton<TopmostEffectWindow>();
                 services.AddSingleton<AppLogsWindow>();
+                services.AddSingleton<SettingsWindowNew>();
+                // 设置页面
+                services.AddSettingsPage<TestSettingsPage>();
+                services.AddSettingsPage<GeneralSettingsPage>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

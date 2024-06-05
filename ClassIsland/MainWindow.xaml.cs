@@ -27,6 +27,7 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
 
@@ -1180,5 +1181,10 @@ public partial class MainWindow : Window
     private void TrayIconOnClicked_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         
+    }
+
+    private void MenuItemSettingsWindow2_OnClick(object sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<SettingsWindowNew>().Show();
     }
 }
