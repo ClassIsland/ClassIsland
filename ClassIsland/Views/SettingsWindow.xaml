@@ -45,12 +45,6 @@
 
         </Style>
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
-        
-        <Style TargetType="ScrollViewer">
-            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="materialDesign:ScrollViewerAssist.IsAutoHideEnabled" Value="True" />
-            <Setter Property="PanningMode" Value="Both" />
-        </Style>
         <converters1:IntToStringConverter x:Key="IntToStringConverter" />
         <converters1:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
 

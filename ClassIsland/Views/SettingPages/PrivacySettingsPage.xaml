@@ -1,0 +1,45 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.PrivacySettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="隐私"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      d:DataContext="{d:DesignInstance local:PrivacySettingsPage}">
+
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
+            <StackPanel Margin="0 0 0 16">
+                <TextBlock Text="匿名使用情况分析"
+                           Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                           FontWeight="Light"
+                           Text="本应用将通过Microsoft AppCenter，来收集本应用的使用情况与错误信息，以帮助改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
+                <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
+                           FontWeight="Light">
+                    <Run Text="关于使用Microsoft AppCenter收集的数据，请见">
+                    </Run>
+                    <Hyperlink Click="HyperlinkMsAppCenter_OnClick">
+                        此处
+                    </Hyperlink>
+                    。
+                </TextBlock>
+            </StackPanel>
+            <controls1:SettingsCard IconGlyph="ReportLine"
+                                    Header="启用匿名使用情况分析"
+                                    IsOn="{Binding SettingsService.Settings.IsReportingEnabled, Mode=TwoWay}"
+                                    Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

@@ -1,0 +1,708 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.UpdatesSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:appUpdating="clr-namespace:ClassIsland.Services.AppUpdating"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:mdXaml="clr-namespace:MdXaml;assembly=MdXaml"
+      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:converters="clr-namespace:ClassIsland.Converters"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="更新"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      d:DataContext="{d:DesignInstance local:UpdatesSettingsPage}">
+
+    <controls:SettingsPageBase.Resources>
+        <converters:SizeLongToStringConverter x:Key="SizeLongToStringConverter" />
+        <ScrollViewer Width="332" x:Key="AdvancedUpdateSettings"
+                      VerticalScrollBarVisibility="Auto"
+                      materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+            <Grid Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="更新高级设置" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Margin="0 16 0 0">
+                    <!-- 强制更新 -->
+                    <TextBlock Text="强制更新" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+                    <TextBlock Text="将应用强制更新到当前分支的最新版本，即使当前版本高于该分支的最新版本。" FontWeight="Light" TextWrapping="Wrap"
+                               Margin="0 6 0 0" />
+                    <Button Margin="0 3 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                            HorizontalAlignment="Left"
+                            Click="ButtonForceUpdate_OnClick">
+                        <controls1:IconText Kind="AlertOutline" Text="强制更新" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+        <Style TargetType="FrameworkElement" x:Key="UpdateEnabledStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}" Value="Idle">
+                    <Setter Property="IsEnabled" Value="True" />
+                </DataTrigger>
+            </Style.Triggers>
+            <Setter Property="IsEnabled" Value="False" />
+        </Style>
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+            <!-- 更新状态 -->
+            <Grid Margin="0 12 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- 更新状态图标 -->
+                <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
+                                         Width="48" Height="48"
+                                         Margin="0 0 8 0">
+                    <materialDesign:PackIcon.Style>
+                        <Style TargetType="materialDesign:PackIcon">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SettingsService.Settings.LastUpdateStatus}"
+                                             Value="UpToDate">
+                                    <Setter Property="Kind" Value="Recent" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SettingsService.Settings.LastUpdateStatus}"
+                                             Value="UpdateAvailable">
+                                    <Setter Property="Kind" Value="Upload" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding SettingsService.Settings.LastUpdateStatus}"
+                                             Value="UpdateDownloaded">
+                                    <Setter Property="Kind" Value="MonitorDownload" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="Kind" Value="Recent" />
+                        </Style>
+                    </materialDesign:PackIcon.Style>
+                </materialDesign:PackIcon>
+
+                <!-- 更新状态说明 -->
+                <StackPanel Grid.Column="1" Grid.Row="0" Margin="0,0,0,16">
+                    <TextBlock FontSize="28" FontWeight="Medium">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpToDate">
+                                        <Setter Property="Text" Value="您已是最新。" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpdateAvailable">
+                                        <Setter Property="Text" Value="更新可用。" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpdateDownloaded">
+                                        <Setter Property="Text" Value="您已准备好安装更新。" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <TextBlock Margin="0 4 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpToDate">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </TextBlock.Style>
+                        <Run Text="上次检查更新：">
+                        </Run>
+                        <Run
+                            Text="{Binding SettingsService.Settings.LastCheckUpdateTime, Mode=OneWay, ConverterCulture=zh-cn}" />
+                    </TextBlock>
+
+                    <TextBlock Margin="0 4 0 0">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpToDate">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Visible" />
+                            </Style>
+                        </TextBlock.Style>
+                        <Run Text="新版本：">
+                        </Run>
+                        <Run Text="{Binding SettingsService.Settings.UpdateVersion, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+
+                <!-- 进度条 -->
+                <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                            HorizontalAlignment="Stretch"
+                            Margin="0 0 0 8">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                    Value="Idle">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="CheckingUpdates">
+                                        <Setter Property="Text" Value="正在检查更新……" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="NetworkError">
+                                        <Setter Property="Text" Value="网络错误。请检查网络连接，然后再试一遍。" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="DownloadingUpdates">
+                                        <Setter Property="Text" Value="正在下载更新……" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="ExtractingUpdates">
+                                        <Setter Property="Text" Value="正在解压更新……" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+
+                    </TextBlock>
+                    <TextBlock>
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus}"
+                                        Value="DownloadingUpdates">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </TextBlock.Style>
+                        <Run
+                            Text="{Binding UpdateService.DownloadedSize, Converter={StaticResource SizeLongToStringConverter}}" />
+                        <Run Text="/" />
+                        <Run
+                            Text="{Binding UpdateService.TotalSize, Converter={StaticResource SizeLongToStringConverter}}" />
+                        <Run
+                            Text="{Binding UpdateService.DownloadSpeed, Converter={StaticResource SizeLongToStringConverter}}" />
+                        <Run Text="/s" />
+                        <Run Text="ETA" />
+                        <Run Text="{Binding UpdateService.DownloadEtcSeconds}" />
+                    </TextBlock>
+
+                    <ProgressBar Margin="0 3 0 0">
+                        <ProgressBar.Style>
+                            <Style TargetType="ProgressBar"
+                                   BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="CheckingUpdates">
+                                        <Setter Property="IsIndeterminate" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="ExtractingUpdates">
+                                        <Setter Property="IsIndeterminate" Value="True" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="DownloadingUpdates">
+                                        <Setter Property="IsIndeterminate" Value="False" />
+                                        <Setter Property="Value"
+                                                Value="{Binding UpdateService.DownloadedSize, Mode=OneWay}" />
+                                        <Setter Property="Maximum"
+                                                Value="{Binding UpdateService.TotalSize, Mode=OneWay}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ProgressBar.Style>
+                    </ProgressBar>
+                </StackPanel>
+
+                <!-- 网络错误 -->
+                <materialDesign:Snackbar Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                         HorizontalAlignment="Stretch"
+                                         IsActive="True"
+                                         Margin="0 6">
+                    <materialDesign:Snackbar.Style>
+                        <Style TargetType="materialDesign:Snackbar">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding UpdateService.NetworkErrorException}"
+                                    Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </materialDesign:Snackbar.Style>
+                    <materialDesign:Snackbar.Message>
+                        <materialDesign:SnackbarMessage ActionContent="确定"
+                                                        Content="网络错误，请检查网络连接，然后再试一遍。"
+                                                        ActionClick="UpdateErrorMessage_OnActionClick" />
+                    </materialDesign:Snackbar.Message>
+                </materialDesign:Snackbar>
+
+                <!-- 更新操作栏 -->
+                <WrapPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3"
+                           Margin="0 6 0 0"
+                           Visibility="Visible">
+                    <WrapPanel.Style>
+                        <Style TargetType="WrapPanel">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                    Value="CheckingUpdates">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </WrapPanel.Style>
+                    <!-- 检查更新 -->
+                    <Button Margin="0 0 6 0" Click="ButtonCheckUpdate_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button"
+                                   BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpToDate">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </Button.Style>
+                        <controls1:IconText Kind="Refresh" Text="检查更新" />
+                    </Button>
+                    <!-- 下载更新  -->
+                    <Button Margin="0 0 6 0" Click="ButtonStartDownloading_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button"
+                                   BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpdateAvailable">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="DownloadingUpdates">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </Button.Style>
+                        <controls1:IconText Kind="Download" Text="下载更新" />
+                    </Button>
+                    <!-- 检查更新 paper  -->
+                    <Button Margin="0 0 6 0"
+                            Click="ButtonCheckUpdate_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button"
+                                   BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpdateAvailable">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="DownloadingUpdates">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </Button.Style>
+                        <controls1:IconText Kind="Refresh" Text="检查更新" />
+                    </Button>
+                    <!-- 重启并安装更新  -->
+                    <Button Margin="0 0 6 0" Click="ButtonRestartToUpdate_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button"
+                                   BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpdateDownloaded">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </Button.Style>
+                        <controls1:IconText Kind="MonitorDownload" Text="重启并安装更新" />
+                    </Button>
+                    <!-- 取消更新  -->
+                    <Button Margin="0 0 6 0" Click="ButtonCancelUpdate_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button"
+                                   BasedOn="{StaticResource MaterialDesignPaperButton}">
+                                <Style.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
+                                        Value="DownloadingUpdates">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                    <DataTrigger
+                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                        Value="UpdateDownloaded">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </Button.Style>
+                        <controls1:IconText Kind="Cancel" Text="取消更新" />
+                    </Button>
+                    <!-- debug -->
+                    <Button Content="（debug）重置更新状态"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Click="ButtonDebugResetUpdate_OnClick"
+                            Visibility="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Button Content="（debug）下载完成"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Click="ButtonDebugDownloaded_OnClick"
+                            Visibility="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Button Content="（debug）网络错误"
+                            Style="{StaticResource MaterialDesignFlatButton}"
+                            Click="ButtonDebugNetworkError_OnClick"
+                            Visibility="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </WrapPanel>
+
+                <!-- 加载中 -->
+                <ProgressBar Grid.Column="0" Grid.Row="3"
+                             HorizontalAlignment="Left"
+                             Visibility="Collapsed"
+                             Style="{StaticResource MaterialDesignCircularProgressBar}"
+                             IsIndeterminate="True"
+                             Value="0" Margin="0,9,0,9" />
+
+                <!-- 重启更新 -->
+                <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
+                          Margin="0,8,0,0"
+                          IsChecked="{Binding SettingsService.Settings.AutoInstallUpdateNextStartup}"
+                          Content="在下次启动应用时自动安装更新。">
+                    <CheckBox.Style>
+                        <Style TargetType="CheckBox"
+                               BasedOn="{StaticResource MaterialDesignCheckBox}">
+                            <Style.Triggers>
+                                <DataTrigger
+                                    Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
+                                    Value="UpdateDownloaded">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Style>
+                    </CheckBox.Style>
+                </CheckBox>
+            </Grid>
+
+            <Separator Margin="0 16" />
+
+            <!-- Content -->
+            <TabControl HorizontalContentAlignment="Left">
+                <TabItem Header="更新日志">
+                    <Grid>
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastUpdateStatus}"
+                                            Value="UpToDate">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+                            <mdXaml:MarkdownScrollViewer
+                                Document="{Binding ViewModel.CurrentMarkdownDocument, Mode=OneWay}"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                PreviewMouseWheel="UIElement_OnPreviewMouseWheel" />
+                        </Grid>
+                        <!-- Up to date -->
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Margin="0 50">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastUpdateStatus}"
+                                            Value="UpToDate">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </Style>
+                            </StackPanel.Style>
+                            <Image Source="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
+                                   Height="81"
+                                   ToolTip="光辉矢愿_遨游" />
+                            <TextBlock Text="你已是最新，真棒，夸夸你哦♪" TextWrapping="Wrap"
+                                       Margin="0 8 0 0" />
+                            <Button HorizontalAlignment="Center" Margin="0 8 0 0"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonChangelogs_OnClick">
+                                <controls1:IconText Kind="FileDocumentOutline" Text="查看新增功能" />
+                            </Button>
+                        </StackPanel>
+                        <!-- Loading -->
+                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Style.Triggers>
+                                        <DataTrigger
+                                            Binding="{Binding UpdateService.CurrentWorkingStatus}"
+                                            Value="CheckingUpdates">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </Style>
+                            </Grid.Style>
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                    Background="{DynamicResource MaterialDesignPaper}"
+                                    Opacity="0.8" />
+                            <controls1:StarRailLoadingControl />
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="更新设置">
+                    <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Margin="0" Tag="CanPolicyDisable">
+                        <!-- 更新模式 -->
+                        <materialDesign:Card Style="{StaticResource UpdateEnabledStyle}">
+                            <StackPanel Margin="12">
+                                <controls1:IconText Kind="Upload" Text="更新模式" Margin="0 0 0 8" />
+                                <Slider Margin="12" Minimum="0" Maximum="3"
+                                        Value="{Binding SettingsService.Settings.UpdateMode}"
+                                        TickFrequency="1"
+                                        Height="32"
+                                        ClipToBounds="False"
+                                        IsSnapToTickEnabled="True"
+                                        TickPlacement="BottomRight" />
+                                <!-- 更新模式说明 -->
+                                <controls1:IconText Margin="0 -8 0 0">
+                                    <controls1:IconText.Style>
+                                        <Style TargetType="controls1:IconText">
+                                            <Style.Triggers>
+                                                <DataTrigger
+                                                    Binding="{Binding SettingsService.Settings.UpdateMode, Mode=OneWay}"
+                                                    Value="0">
+                                                    <Setter Property="Kind" Value="Cancel" />
+                                                    <Setter Property="Text" Value="从不自动检查更新。" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding SettingsService.Settings.UpdateMode, Mode=OneWay}"
+                                                    Value="1">
+                                                    <Setter Property="Kind" Value="RefreshAuto" />
+                                                    <Setter Property="Text"
+                                                            Value="自动检查更新，并在有更新时提醒我。" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding SettingsService.Settings.UpdateMode, Mode=OneWay}"
+                                                    Value="2">
+                                                    <Setter Property="Kind"
+                                                            Value="AutoDownload" />
+                                                    <Setter Property="Text"
+                                                            Value="自动检查更新，并在有更新时自动下载。" />
+                                                </DataTrigger>
+                                                <DataTrigger
+                                                    Binding="{Binding SettingsService.Settings.UpdateMode, Mode=OneWay}"
+                                                    Value="3">
+                                                    <Setter Property="Kind"
+                                                            Value="MonitorDownload" />
+                                                    <Setter Property="Text"
+                                                            Value="自动检查并下载更新，并自动安装。" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </controls1:IconText.Style>
+                                </controls1:IconText>
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <!-- 更新通道 -->
+                        <materialDesign:Card Margin="0 6 0 0"
+                                             Style="{StaticResource UpdateEnabledStyle}">
+                            <StackPanel Margin="12">
+                                <controls1:SettingsControl IconGlyph="DownloadOutline"
+                                                           Header="更新通道"
+                                                           Description="控制应用从何处获取更新。">
+                                    <controls1:SettingsControl.Switcher>
+                                        <ComboBox Width="150"
+                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                  ItemsSource="{x:Static appUpdating:UpdateService.UpdateChannels}"
+                                                  SelectedValue="{Binding SettingsService.Settings.SelectedChannel}"
+                                                  SelectedValuePath="RootUrl">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}" />
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
+                                    </controls1:SettingsControl.Switcher>
+                                </controls1:SettingsControl>
+                                <TextBlock Margin="0 8 0 0"
+                                           FontWeight="Regular"
+                                           TextWrapping="Wrap"
+                                           Text="{Binding ViewModel.SelectedChannelModel.Description, Mode=OneWay}" />
+                                <!--<TextBlock Text="{Binding SettingsService.Settings.SelectedChannel, Mode=OneWay}"/>-->
+                                <!--<Button Content="管理更新频道" Style="{StaticResource MaterialDesignFlatButton}"
+                                                            HorizontalAlignment="Left"
+                                                            Margin="0 3 0 0" />-->
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <!-- 镜像源选择 -->
+                        <materialDesign:Card Margin="0 6 0 0"
+                                             Style="{StaticResource UpdateEnabledStyle}">
+                            <Expander Background="Transparent" IsExpanded="True">
+                                <Expander.Header>
+                                    <controls1:SettingsControl IconGlyph="Web"
+                                                               Foreground="{DynamicResource MaterialDesignBody}"
+                                                               Header="更新镜像源" HasSwitcher="False"
+                                                               Description="从指定的镜像源下载应用更新，一定程度上可以解决在部分网络环境下更新受阻的问题。"
+                                                               Margin="-12 0" />
+                                </Expander.Header>
+                                <StackPanel Margin="36 0 64 12">
+                                    <ListBox
+                                        ItemsSource="{x:Static appUpdating:UpdateService.UpdateSources}"
+                                        Margin="-36 0 -64 0"
+                                        PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                        SelectedValuePath="Key"
+                                        SelectedValue="{Binding SettingsService.Settings.SelectedUpgradeMirror}">
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal"
+                                                            Margin="36 0 64 0">
+                                                    <StackPanel Width="48">
+                                                        <materialDesign:PackIcon Kind="Check"
+                                                            HorizontalAlignment="Center"
+                                                            Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                            Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding Value.Name}" />
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Margin="8 0 0 0">
+                                                        <StackPanel.Style>
+                                                            <Style TargetType="StackPanel">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger
+                                                                        Binding="{Binding Value.SpeedTestResult.IsTested}"
+                                                                        Value="False">
+                                                                        <Setter
+                                                                            Property="Visibility"
+                                                                            Value="Collapsed" />
+                                                                    </DataTrigger>
+                                                                    <DataTrigger
+                                                                        Binding="{Binding Value.SpeedTestResult.IsTesting}"
+                                                                        Value="True">
+                                                                        <Setter
+                                                                            Property="Visibility"
+                                                                            Value="Collapsed" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </StackPanel.Style>
+                                                        <TextBlock
+                                                            Visibility="{Binding Value.SpeedTestResult.CanConnect, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                            <Run
+                                                                Text="{Binding Value.SpeedTestResult.Delay}" />
+                                                            <Run Text="ms" />
+                                                        </TextBlock>
+                                                        <TextBlock
+                                                            Visibility="{Binding Value.SpeedTestResult.CanConnect, Converter={StaticResource InverseBoolToVisConverter}}">
+                                                            <Run Text="无法连接。"
+                                                                 Foreground="IndianRed" />
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <mah:MetroProgressBar
+                                                        IsIndeterminate="True" Width="100"
+                                                        Margin="8 0 0 0"
+                                                        Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                        Visibility="{Binding Value.SpeedTestResult.IsTesting, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+                                    </ListBox>
+                                    <Button Content="测试延迟"
+                                            Click="MenuItemTestUpdateMirrors_OnClick"
+                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                            HorizontalAlignment="Left"
+                                            Margin="0 4 0 0" />
+                                    <Separator Margin="0 4" />
+                                    <controls1:SettingsControl IsCompact="True"
+                                                               IconGlyph="AutoMode"
+                                                               Header="自动选择镜像源"
+                                                               Description="自动选择延迟最低的镜像源下载更新。"
+                                                               IsOn="{Binding SettingsService.Settings.IsAutoSelectUpgradeMirror, Mode=TwoWay}" />
+                                </StackPanel>
+                            </Expander>
+                        </materialDesign:Card>
+
+                        <!-- 高级设置 -->
+                        <Border Style="{StaticResource UpdateEnabledStyle}">
+                            <Button Content="高级设置"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Left"
+                                    Margin="0 8 0 0"
+                                    Click="ButtonAdvancedSettings_OnClick" />
+                        </Border>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

@@ -1185,6 +1185,6 @@ public partial class MainWindow : Window
 
     private void MenuItemSettingsWindow2_OnClick(object sender, RoutedEventArgs e)
     {
-        IAppHost.GetService<SettingsWindowNew>().Show();
+        IAppHost.GetService<SettingsWindowNew>().Open();
     }
 }

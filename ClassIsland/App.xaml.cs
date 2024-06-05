@@ -240,7 +240,7 @@ public partial class App : Application, IAppHost
                 services.AddHostedService<MemoryWatchDogService>();
                 try // 检测SystemSpeechService是否存在
                 {
-                    var testSystemSpeechService = new SystemSpeechService();
+                    _ = new SpeechSynthesizer();
                     isSystemSpeechSystemExist = true;
                 }
                 catch(Exception e)
@@ -279,6 +279,13 @@ public partial class App : Application, IAppHost
                 // 设置页面
                 services.AddSettingsPage<TestSettingsPage>();
                 services.AddSettingsPage<GeneralSettingsPage>();
+                services.AddSettingsPage<AppearanceSettingsPage>();
+                services.AddSettingsPage<NotificationSettingsPage>();
+                services.AddSettingsPage<WindowSettingsPage>();
+                services.AddSettingsPage<WeatherSettingsPage>();
+                services.AddSettingsPage<UpdatesSettingsPage>();
+                services.AddSettingsPage<PrivacySettingsPage>();
+                services.AddSettingsPage<AboutSettingsPage>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

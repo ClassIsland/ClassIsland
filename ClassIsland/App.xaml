@@ -71,6 +71,8 @@
 
             <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
                 <Setter Property="PanningMode" Value="Both"/>
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="materialDesign:ScrollViewerAssist.IsAutoHideEnabled" Value="True" />
             </Style>
 
             <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
