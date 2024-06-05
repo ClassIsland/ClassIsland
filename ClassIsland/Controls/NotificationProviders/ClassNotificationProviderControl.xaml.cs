@@ -60,6 +60,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         {
             Timer.Start();
         }
+        //TODO: 判断是否需要显示教师名称，并提供开关
     }
 
     private void TimerOnTick(object? sender, EventArgs e)

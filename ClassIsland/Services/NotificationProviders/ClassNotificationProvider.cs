@@ -98,7 +98,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(TimeSpan.FromSeconds(deltaTime))}。",
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
                 MaskDuration = TimeSpan.FromSeconds(5),
-                OverlaySpeechContent = $"{message} 下节课是：{NotificationHostService.NextClassSubject.Name}。",
+                OverlaySpeechContent = $"{message} 下节课是：{NotificationHostService.NextClassSubject.TeacherName} {NotificationHostService.NextClassSubject.Name}。",
                 OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
                 {
                     Message = message
@@ -139,7 +139,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             MaskSpeechContent = "课间休息",
             OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay"),
             OverlayDuration = TimeSpan.FromSeconds(10),
-            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.Name}。",
+            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.TeacherName} {App.GetService<MainWindow>().ViewModel.NextSubject.Name}。",
             IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
         });
     }
