@@ -12,7 +12,8 @@
 ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
 
-[![官网](https://img.shields.io/badge/%E7%82%B9%E6%88%91%E6%89%93%E5%BC%80-%E5%AE%98%E7%BD%91-%114514cc?)](https://classisland.tech)
+[![官网](https://img.shields.io/badge/%E7%82%B9%E6%88%91%E6%89%93%E5%BC%80-%E5%AE%98%E7%BD%91-%114514cc?style=flat-square)](https://classisland.tech)
+
 ## 功能
 ### 课表显示
 - [X] 显示当天的课表
@@ -39,7 +40,7 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 <details>
 <summary><strong>🖼️软件截图</strong></summary>
 
-##### >  背景图片来自[Pixiv@辰暮sora](https://www.pixiv.net/artworks/110847880)  <
+>  背景图片来自[Pixiv@辰暮sora](https://www.pixiv.net/artworks/110847880)  
 
 ### 主界面
 
@@ -73,7 +74,7 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 首先，请确保您的设备满足以下推荐需求：
 - Windows 10 及以上版本的系统，x64架构
 - 已安装[.NET 8.0桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.1-windows-x64-installer)
-##### - 开启Aero效果（Windows 8及以上的系统可以忽略此项）
+- <div style="opacity: 0.5">开启Aero效果（Windows 8及以上的系统可以忽略此项）</div>
 
 <details>
 <summary>最低设备需求</summary>
@@ -135,7 +136,7 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 
 ## 获取帮助&加入社区
 
-[![查看Issues](https://img.shields.io/github/issues-search/HelloWRC/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Opened%20issues&color=%233fb950)]() [![GitHub Discussions](https://img.shields.io/github/discussions/HelloWRC/ClassIsland?style=flat-square&logo=Github)](https://github.com/HelloWRC/ClassIsland/discussions) [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
+[![查看Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Opened%20issues&color=%233fb950)]() [![GitHub Discussions](https://img.shields.io/github/discussions/HelloWRC/ClassIsland?style=flat-square&logo=Github)](https://github.com/HelloWRC/ClassIsland/discussions) [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
 
 您可以访问以下页面来获取**帮助**：
 
@@ -155,7 +156,7 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-9-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-11-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到[DuguSand/class_form](https://github.com/DuguSand/class_form)的启发而开发。
@@ -180,6 +181,8 @@ ClassIsland 理论上可以在以下的系统环境中运行：
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TuanZiGit"><img src="https://avatars.githubusercontent.com/u/46892455?v=4?s=100" width="100px;" alt="团子"/><br /><sub><b>团子</b></sub></a><br /><a href="#example-TuanZiGit" title="Examples">💡</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.gusui.site/"><img src="https://avatars.githubusercontent.com/u/170245818?v=4?s=100" width="100px;" alt="吕璟辰"/><br /><sub><b>吕璟辰</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=GusuiCommunity" title="Documentation">📖</a> <a href="#promotion-GusuiCommunity" title="Promotion">📣</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jizilin6732"><img src="https://avatars.githubusercontent.com/u/162853646?v=4?s=100" width="100px;" alt="jizilin6732"/><br /><sub><b>jizilin6732</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=jizilin6732" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.khyan.top/"><img src="https://avatars.githubusercontent.com/u/56215525?v=4?s=100" width="100px;" alt="clover_yan"/><br /><sub><b>clover_yan</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=clover-yan" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
