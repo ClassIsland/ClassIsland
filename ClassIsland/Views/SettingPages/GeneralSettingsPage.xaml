@@ -262,7 +262,6 @@
                                                                       SelectedValuePath="Key"
                                                                       IsEnabled="{Binding SettingsService.Settings.ShowDate, Mode=OneWay}"
                                                                       SelectedValue="{Binding SettingsService.Settings.SelectedMiniInfoProvider}"
-                                                                      SelectedItem="{Binding ViewModel.SelectedMiniInfoProvider, Mode=OneWayToSource}"
                                                                       Width="100">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
@@ -272,9 +271,9 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
                                     <ToggleButton
-                                                                Style="{StaticResource MaterialDesignSwitchToggleButton}"
-                                                                Margin="4 0 0 0"
-                                                                IsChecked="{Binding SettingsService.Settings.ShowDate, Mode=TwoWay}">
+                                        Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                        Margin="4 0 0 0"
+                                        IsChecked="{Binding SettingsService.Settings.ShowDate, Mode=TwoWay}">
                                     </ToggleButton>
                                 </StackPanel>
                             </controls1:SettingsControl.Switcher>

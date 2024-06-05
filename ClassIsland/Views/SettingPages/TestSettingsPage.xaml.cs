@@ -1,3 +1,4 @@
+using System.Windows;
 using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
@@ -12,5 +13,10 @@ public partial class TestSettingsPage : SettingsPageBase
     public TestSettingsPage()
     {
         InitializeComponent();
+    }
+
+    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+    {
+        NavigationService!.Navigate(new Page());
     }
 }

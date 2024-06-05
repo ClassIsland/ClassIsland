@@ -10,5 +10,6 @@
       >
     <Grid>
         <TextBlock>Hello world!</TextBlock>
+        <Button Click="ButtonBase_OnClick">Test sub page</Button>
     </Grid>
 </controls:SettingsPageBase>

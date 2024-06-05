@@ -95,12 +95,15 @@
                             Margin="0 0 16 0"
                             VerticalAlignment="Center"
                             Padding="0"
+                            Click="ButtonGoBack_OnClick"
+                            Visibility="{Binding ViewModel.CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Style="{StaticResource MaterialDesignToolForegroundButton}"
                             Content="{materialDesign:PackIcon ArrowLeft, Size=24}"/>
                     <Button ToolTip="导航栏"
                             Margin="0 0 16 0"
                             VerticalAlignment="Center"
                             Padding="0"
+                            Visibility="{Binding ViewModel.IsViewCompressed, Converter={StaticResource BooleanToVisibilityConverter}}"
                             Style="{StaticResource MaterialDesignToolForegroundButton}"
                             Click="ButtonBaseToggleNavigationDrawer_OnClick"
                             Content="{materialDesign:PackIcon Menu, Size=24}"/>

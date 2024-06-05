@@ -10,6 +10,7 @@ public class SettingsNewViewModel : ObservableRecipient
     private SettingsPageInfo? _selectedPageInfo = null;
     private bool _isViewCompressed = false;
     private bool _isNavigationDrawerOpened = true;
+    private bool _canGoBack = false;
 
     public object? FrameContent
     {
@@ -51,6 +52,17 @@ public class SettingsNewViewModel : ObservableRecipient
         {
             if (value == _isNavigationDrawerOpened) return;
             _isNavigationDrawerOpened = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CanGoBack
+    {
+        get => _canGoBack;
+        set
+        {
+            if (value == _canGoBack) return;
+            _canGoBack = value;
             OnPropertyChanged();
         }
     }

@@ -41,7 +41,11 @@ public partial class SettingsWindowNew : MyWindow
 
     private void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
     {
-        NavigationService.RemoveBackEntry();
+        if (e.ExtraData as bool? == true)
+        {
+            NavigationService.RemoveBackEntry();
+        }
+        ViewModel.CanGoBack = NavigationService.CanGoBack;
     }
 
 
@@ -49,9 +53,10 @@ public partial class SettingsWindowNew : MyWindow
     {
         var page = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(ViewModel.SelectedPageInfo?.Id);
         NavigationService.RemoveBackEntry();
-        NavigationService.Navigate(page);
+        NavigationService.Navigate(page, true);
         //ViewModel.FrameContent;
-        
+        NavigationService.RemoveBackEntry();
+
     }
 
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -66,5 +71,10 @@ public partial class SettingsWindowNew : MyWindow
     private void ButtonBaseToggleNavigationDrawer_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsNavigationDrawerOpened = !ViewModel.IsNavigationDrawerOpened;
+    }
+
+    private void ButtonGoBack_OnClick(object sender, RoutedEventArgs e)
+    {
+        NavigationService.GoBack();
     }
 }
