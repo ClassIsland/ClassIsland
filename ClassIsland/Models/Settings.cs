@@ -147,6 +147,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _allowNotificationTopmost = true;
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
+    private string _currentComponentConfig = "Default";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -707,6 +708,21 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_mainWindowFontWeight2)) return;
             _mainWindowFontWeight2 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Components
+
+    public string CurrentComponentConfig
+    {
+        get => _currentComponentConfig;
+        set
+        {
+            if (value == _currentComponentConfig) return;
+            _currentComponentConfig = value;
             OnPropertyChanged();
         }
     }

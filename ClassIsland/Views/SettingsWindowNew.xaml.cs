@@ -61,13 +61,16 @@ public partial class SettingsWindowNew : MyWindow
 
     public static readonly string StartupSettingsPage = "general";
 
+    private IComponentsService ComponentsService { get; }
 
-    public SettingsWindowNew(IManagementService managementService, IHangService hangService, ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService)
+
+    public SettingsWindowNew(IManagementService managementService, IHangService hangService, ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService, IComponentsService componentsService)
     {
         InitializeComponent();
         Logger = logger;
         DataContext = this;
         ManagementService = managementService;
+        ComponentsService = componentsService;
         DiagnosticService = diagnosticService;
         HangService = hangService;
         SettingsService = settingsService;
@@ -215,6 +218,7 @@ public partial class SettingsWindowNew : MyWindow
         IsOpened = false;
         Hide();
         SettingsService.SaveSettings();
+        ComponentsService.SaveConfig();
         GC.Collect();
     }
 

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
@@ -8,15 +11,82 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
 
+using ComponentSettingsList = ObservableCollection<ComponentSettings>;
+
 public class ComponentsService : ObservableRecipient, IComponentsService
 {
-    private ObservableCollection<ComponentSettings> _currentComponents = new();
+    public static readonly string ComponentSettingsPath = Path.Combine(App.AppConfigPath, "Islands/");
 
-    public ObservableCollection<ComponentSettings> CurrentComponents
+    private ComponentSettingsList _currentComponents = new();
+    private IReadOnlyList<string> _componentConfigs = new List<string>();
+
+    private string SelectedConfigFullPath =>
+        Path.GetFullPath(Path.Combine(ComponentSettingsPath, SettingsService.Settings.CurrentComponentConfig + ".json"));
+
+    private string CurrentConfigFullPath =>
+        Path.GetFullPath(Path.Combine(ComponentSettingsPath, CurrentConfigName + ".json"));
+
+    private SettingsService SettingsService { get; }
+
+    private string CurrentConfigName { get; set; } = "Default";
+
+    public ComponentsService(SettingsService settingsService)
+    {
+        SettingsService = settingsService;
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+
+        if (!Directory.Exists(ComponentSettingsPath))
+        {
+            Directory.CreateDirectory(ComponentSettingsPath);
+        }
+
+        RefreshConfigs();
+        LoadConfig();
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(SettingsService.Settings.CurrentComponentConfig))
+            return;
+        SaveConfig();
+        LoadConfig();
+    }
+
+    private void LoadConfig()
+    {
+        CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
+        CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
+        CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
+    }
+
+    public void SaveConfig()
+    {
+        ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
+    }
+
+    public IReadOnlyList<string> ComponentConfigs
+    {
+        get => _componentConfigs;
+        set
+        {
+            if (Equals(value, _componentConfigs)) return;
+            _componentConfigs = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public void RefreshConfigs()
+    {
+        ComponentConfigs = Directory.GetFiles(ComponentSettingsPath, "*.json").Select(Path.GetFileNameWithoutExtension).SkipWhile(x => x is null).ToList()!;
+    }
+
+
+    public ComponentSettingsList CurrentComponents
     {
         get => _currentComponents;
         set

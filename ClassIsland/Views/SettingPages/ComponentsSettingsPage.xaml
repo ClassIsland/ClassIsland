@@ -26,8 +26,22 @@
     <controls:SettingsPageBase.Resources>
         <CollectionViewSource x:Key="RegisteredComponentsSource" 
                               Source="{x:Static registry:ComponentRegistryService.Registered}"/>
+
+        <StackPanel x:Key="CreateProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="新建档案"/>
+            <TextBox Margin="0 6 0 0" TextWrapping="Wrap" x:Name="TextBoxProfileName" 
+                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                     Text="{Binding ViewModel.CreateProfileName, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="配置名"
+                     materialDesign:TextFieldAssist.SuffixText=".json"/>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="新建" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 
+                        CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}"/>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+            </StackPanel>
+        </StackPanel>
     </controls:SettingsPageBase.Resources>
-    <Grid>
+    <Grid Margin="8 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -35,6 +49,35 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <!-- TODO: 组件方案管理 -->
+        <Grid Grid.Row="0" MaxWidth="750">
+            <StackPanel Grid.Row="0" Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+                <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          ItemsSource="{Binding ComponentsService.ComponentConfigs}"
+                          MinWidth="150"
+                          MaxWidth="300"
+                          SelectedItem="{Binding SettingsService.Settings.CurrentComponentConfig}"
+                          materialDesign:HintAssist.Hint="配置方案"/>
+                <Button Content="{materialDesign:PackIcon Refresh}"
+                        ToolTip="刷新"
+                        VerticalAlignment="Center"
+                        Margin="2 0"
+                        Click="ButtonRefresh_OnClick"
+                        Style="{StaticResource MaterialDesignToolForegroundButton}"/>
+                <Button Content="{materialDesign:PackIcon Add}"
+                        ToolTip="新建…"
+                        VerticalAlignment="Center"
+                        Margin="2 0"
+                        Click="ButtonCreateConfig_OnClick"
+                        Style="{StaticResource MaterialDesignToolForegroundButton}"/>
+                <Button Content="{materialDesign:PackIcon FolderOpenOutline}"
+                        ToolTip="打开配置文件夹…"
+                        VerticalAlignment="Center"
+                        Click="ButtonOpenConfigFolder_OnClick"
+                        Margin="2 0"
+                        Style="{StaticResource MaterialDesignToolForegroundButton}"/>
+            </StackPanel>
+        </Grid>
         <!-- 列表编辑区域 -->
         <ListBox Grid.Row="1"
                  HorizontalAlignment="Stretch"

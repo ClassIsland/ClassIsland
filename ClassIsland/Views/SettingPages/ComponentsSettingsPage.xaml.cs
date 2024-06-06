@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,10 +19,13 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.SettingsPages;
 using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.Wpf;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -33,8 +39,11 @@ public partial class ComponentsSettingsPage : SettingsPageBase
 
     public ComponentsSettingsViewModel ViewModel { get; } = new();
 
-    public ComponentsSettingsPage(IComponentsService componentsService)
+    public SettingsService SettingsService { get; }
+
+    public ComponentsSettingsPage(IComponentsService componentsService, SettingsService settingsService)
     {
+        SettingsService = settingsService;
         ComponentsService = componentsService;
         InitializeComponent();
         DataContext = this;
@@ -47,5 +56,39 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             return;
         ViewModel.SelectedComponentSettings = null;
         ComponentsService.CurrentComponents.Remove(remove);
+    }
+
+    private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
+    {
+        ComponentsService.RefreshConfigs();
+    }
+
+    private async void ButtonCreateConfig_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.CreateProfileName = "";
+        if (FindResource("CreateProfileDialog") is not FrameworkElement content)
+            return;
+        content.DataContext = this;
+        var r = await DialogHost.Show(content, DialogHostIdentifier);
+        Debug.WriteLine(r);
+
+        var path = Path.Combine(ClassIsland.Services.ComponentsService.ComponentSettingsPath,
+            ViewModel.CreateProfileName + ".json");
+        if (r == null || File.Exists(path))
+        {
+            return;
+        }
+        ConfigureFileHelper.SaveConfig(path, new ObservableCollection<ComponentSettings>());
+        ComponentsService.RefreshConfigs();
+        SettingsService.Settings.CurrentComponentConfig = ViewModel.CreateProfileName;
+    }
+
+    private void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath),
+            UseShellExecute = true
+        });
     }
 }
