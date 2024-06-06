@@ -64,6 +64,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\SettingsWindow\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

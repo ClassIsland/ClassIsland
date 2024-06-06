@@ -16,6 +16,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
 
 namespace ClassIsland.Views.SettingPages;
@@ -23,7 +24,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// GeneralSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("general", "基本")]
+[SettingsPageInfo("general", "基本", SettingsPageCategory.Internal)]
 public partial class GeneralSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

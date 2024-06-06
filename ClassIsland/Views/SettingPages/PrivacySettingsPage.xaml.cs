@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
 
@@ -23,7 +24,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// PrivacySettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("privacy", "隐私", PackIconKind.ShieldAccountOutline, PackIconKind.ShieldAccount)]
+[SettingsPageInfo("privacy", "隐私", PackIconKind.ShieldAccountOutline, PackIconKind.ShieldAccount, SettingsPageCategory.Internal)]
 public partial class PrivacySettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

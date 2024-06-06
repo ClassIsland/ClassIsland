@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
@@ -24,7 +25,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// WindowSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("window", "窗口", PackIconKind.WindowMaximize, PackIconKind.WindowMaximize)]
+[SettingsPageInfo("window", "窗口", PackIconKind.WindowMaximize, PackIconKind.WindowMaximize, SettingsPageCategory.Internal)]
 public partial class WindowSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

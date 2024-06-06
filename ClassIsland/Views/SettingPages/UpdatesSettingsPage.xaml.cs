@@ -17,6 +17,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.AppUpdating;
@@ -30,7 +31,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// UpdatesSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("update", "更新", PackIconKind.UploadOutline, PackIconKind.Upload)]
+[SettingsPageInfo("update", "更新", PackIconKind.UploadOutline, PackIconKind.Upload, SettingsPageCategory.Internal)]
 public partial class UpdatesSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

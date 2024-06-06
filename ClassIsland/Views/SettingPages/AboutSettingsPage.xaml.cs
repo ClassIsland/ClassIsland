@@ -18,6 +18,7 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls.CommonDialog;
+using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Helpers;
 using ClassIsland.Models.AllContributors;
 using ClassIsland.Services;
@@ -31,7 +32,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// AboutSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("about", "关于 ClassIsland", PackIconKind.InfoCircleOutline, PackIconKind.InfoCircle)]
+[SettingsPageInfo("about", "关于 ClassIsland", PackIconKind.InfoCircleOutline, PackIconKind.InfoCircle, SettingsPageCategory.About)]
 public partial class AboutSettingsPage : SettingsPageBase
 {
     public AboutSettingsViewModel ViewModel { get; } = new();

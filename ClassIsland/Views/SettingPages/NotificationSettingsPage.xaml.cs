@@ -22,13 +22,14 @@ using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using System.Diagnostics;
+using ClassIsland.Core.Enums.SettingsWindow;
 
 namespace ClassIsland.Views.SettingPages;
 
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("notifications", "提醒", PackIconKind.BellNotificationOutline, PackIconKind.BellNotification)]
+[SettingsPageInfo("notifications", "提醒", PackIconKind.BellNotificationOutline, PackIconKind.BellNotification, SettingsPageCategory.Internal)]
 public partial class NotificationSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

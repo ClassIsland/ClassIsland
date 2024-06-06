@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
@@ -25,7 +26,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// WeatherSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("weather", "天气", PackIconKind.CloudOutline, PackIconKind.Cloud)]
+[SettingsPageInfo("weather", "天气", PackIconKind.CloudOutline, PackIconKind.Cloud, SettingsPageCategory.Internal)]
 public partial class WeatherSettingsPage : SettingsPageBase
 {
     public WeatherSettingsViewModel ViewModel { get; } = new();

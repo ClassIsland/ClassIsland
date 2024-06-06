@@ -11,6 +11,10 @@
         xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:controls2="clr-namespace:ClassIsland.Controls"
         xmlns:ci="clr-namespace:ClassIsland"
+        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:converters1="clr-namespace:ClassIsland.Converters"
         d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -49,6 +53,57 @@
                 </Button>
             </StackPanel>
         </StackPanel>
+        <Storyboard x:Key="NavigationLeaving">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1.00">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuarticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.0500000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuarticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="NavigationEntering">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="300">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <SineEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <SineEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <CollectionViewSource x:Key="NavigationCollectionViewSource"
+                              Source="{x:Static services:SettingsWindowRegistryService.Registered}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Category"/>
+            </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="Category"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+        <converters1:SettingsWindowIsFirstGroupConverter x:Key="SettingsWindowIsFirstGroupConverter" />
     </controls:MyWindow.Resources>
     <controls:MyWindow.CommandBindings>
         <CommandBinding Command="{x:Static controls1:SettingsPageBase.OpenDrawerCommand}" Executed="CommandBindingOpenDrawer_OnExecuted"/>
@@ -79,11 +134,36 @@
                         <materialDesign:DrawerHost.LeftDrawerContent>
                             <!-- 导航栏 -->
                             <Grid Width="250">
-                                <ListBox ItemsSource="{x:Static services:SettingsWindowRegistryService.Registered}"
+                                <ListBox ItemsSource="{Binding Source={StaticResource NavigationCollectionViewSource}}"
                                          SelectedItem="{Binding ViewModel.SelectedPageInfo}"
                                          SelectionChanged="NavigationListBox_OnSelectionChanged"
                                          Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                                          ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}">
+                                    <ListBox.GroupStyle>
+                                        <GroupStyle>
+                                            <GroupStyle.ContainerStyle>
+                                                <Style TargetType="{x:Type GroupItem}">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                                <StackPanel>
+                                                                    <Separator Height="0.5" 
+                                                                               Margin="0 4 0 4"
+                                                                               Visibility="{Binding Converter={StaticResource SettingsWindowIsFirstGroupConverter}, Mode=OneWay, ConverterParameter={StaticResource NavigationCollectionViewSource}}"/>
+                                                                    <ItemsPresenter />
+                                                                </StackPanel>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </GroupStyle.ContainerStyle>
+                                            <GroupStyle.HeaderTemplate>
+                                                <DataTemplate>
+                                                    <Separator/>
+                                                </DataTemplate>
+                                            </GroupStyle.HeaderTemplate>
+                                        </GroupStyle>
+                                    </ListBox.GroupStyle>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
@@ -114,9 +194,27 @@
                             </Grid>
                         </materialDesign:DrawerHost.LeftDrawerContent>
                         <!-- 页面内容 -->
-                        <Frame Content="{Binding ViewModel.FrameContent}" NavigationUIVisibility="Hidden"
-                               x:Name="NavigationFrame">
-                        </Frame>
+                        <Grid>
+                            <Frame Content="{Binding ViewModel.FrameContent}"
+                                   NavigationUIVisibility="Hidden"
+                                   x:Name="NavigationFrame" RenderTransformOrigin="0.5,0.5">
+                                <Frame.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform />
+                                        <SkewTransform />
+                                        <RotateTransform />
+                                        <TranslateTransform X="0" />
+                                    </TransformGroup>
+                                </Frame.RenderTransform>
+                                <d:Frame.Content>
+                                    <Page Background="Pink">
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Text="{StaticResource TestStringLong}" />
+                                    </Page>
+                                </d:Frame.Content>
+                            </Frame>
+                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask"/>
+                        </Grid>
                     </materialDesign:DrawerHost>
                     <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16"
                                               Mode="PrimaryMid"
@@ -190,9 +288,9 @@
                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                     ToolTip="查看您的单位/组织如何管理此ClassIsland实例。"
                                     Icon="{materialDesign:PackIcon WorkOutline}">
-                                    <materialDesign:Chip.CommandParameter>
+                                    <!--<materialDesign:Chip.CommandParameter>
                                         <controls2:ManagementInfoControl />
-                                    </materialDesign:Chip.CommandParameter>
+                                    </materialDesign:Chip.CommandParameter>-->
                                     <TextBlock>
                                         <Run Text="由贵单位管理" />
                                     </TextBlock>

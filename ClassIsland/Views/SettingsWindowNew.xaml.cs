@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,11 +13,16 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,27 +45,73 @@ public partial class SettingsWindowNew : MyWindow
 
     public IManagementService ManagementService { get; }
 
-    public SettingsWindowNew(IManagementService managementService)
+    private IHangService HangService { get; }
+
+    public static readonly string StartupSettingsPage = "general";
+
+    public SettingsWindowNew(IManagementService managementService, IHangService hangService)
     {
         InitializeComponent();
         DataContext = this;
         ManagementService = managementService;
+        HangService = hangService;
         NavigationService = NavigationFrame.NavigationService;
         NavigationService.LoadCompleted += NavigationServiceOnLoadCompleted;
+        NavigationService.Navigating += NavigationServiceOnNavigating;
     }
 
-    private void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
+    protected override void OnContentRendered(EventArgs e)
     {
-        if (e.ExtraData as bool? == true)  // 如果是从设置导航栏导航的，那么就要清除掉返回项目
+        ViewModel.SelectedPageInfo =
+            SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == StartupSettingsPage);
+        base.OnContentRendered(e);
+    }
+
+    private async Task BeginStoryboardAsync(string key)
+    {
+        BeginStoryboard(key, out var complete);
+        if (!complete.IsCancellationRequested)
+            await Task.Run(() => complete.WaitHandle.WaitOne(), complete);
+        await Dispatcher.Yield();
+    }
+
+    private void BeginStoryboard(string key, out CancellationToken cancellationToken)
+    {
+        var complete = new CancellationTokenSource();
+        cancellationToken = complete.Token;
+        if (!IsInitialized)
+            return;
+        if (FindResource(key) is not Storyboard sb)
+            return;
+        sb.Completed += (sender, args) =>
         {
+            complete.Cancel();
+        };
+        sb.Begin();
+    }
+
+    private async void NavigationServiceOnNavigating(object sender, NavigatingCancelEventArgs e)
+    {
+       
+    }
+
+    private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
+    {
+        if (e.ExtraData as SettingsWindowNavigationExtraData? == SettingsWindowNavigationExtraData.NavigateFromNavigationView)  
+        {
+            // 如果是从设置导航栏导航的，那么就要清除掉返回项目
             NavigationService.RemoveBackEntry();
+            await Dispatcher.Yield();
+            await BeginStoryboardAsync("NavigationEntering");
         }
         ViewModel.CanGoBack = NavigationService.CanGoBack;
     }
 
 
-    private void NavigationListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void NavigationListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        await BeginStoryboardAsync("NavigationLeaving");
+        HangService.AssumeHang();
         // 从ioc容器获取页面
         var page = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(ViewModel.SelectedPageInfo?.Id);
         // 清空抽屉
@@ -67,7 +119,7 @@ public partial class SettingsWindowNew : MyWindow
         ViewModel.DrawerContent = null;
         // 进行导航
         NavigationService.RemoveBackEntry();
-        NavigationService.Navigate(page, true);
+        NavigationService.Navigate(page, SettingsWindowNavigationExtraData.NavigateFromNavigationView);
         //ViewModel.FrameContent;
         NavigationService.RemoveBackEntry();
 
@@ -116,6 +168,7 @@ public partial class SettingsWindowNew : MyWindow
         e.Cancel = true;
         IsOpened = false;
         Hide();
+        GC.Collect();
     }
 
     private void CommandBindingOpenDrawer_OnExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -136,6 +189,8 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void ShowRestartDialog()
     {
+        if (DialogHost.IsDialogOpen(SettingsPageBase.DialogHostIdentifier))
+            return;
         var r = await DialogHost.Show(FindResource("RestartDialog"), SettingsPageBase.DialogHostIdentifier);
         if (r as bool? != true)
             return;

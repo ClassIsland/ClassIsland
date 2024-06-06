@@ -18,6 +18,7 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
+using ClassIsland.Core.Enums.SettingsWindow;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -25,7 +26,7 @@ namespace ClassIsland.Views.SettingPages;
 /// AppearanceSettingsPage.xaml 的交互逻辑
 /// </summary>
 
-[SettingsPageInfo("appearance", "外观", PackIconKind.ThemeOutline, PackIconKind.Theme)]
+[SettingsPageInfo("appearance", "外观", PackIconKind.ThemeOutline, PackIconKind.Theme, SettingsPageCategory.Internal)]
 public partial class AppearanceSettingsPage : SettingsPageBase
 {
     public AppearanceSettingsViewModel ViewModel { get; } = new();
