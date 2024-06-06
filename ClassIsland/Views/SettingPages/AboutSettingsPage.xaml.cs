@@ -141,7 +141,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         }
         catch (Exception ex)
         {
-            App.GetService<ILogger<SettingsWindow>>().LogError(ex, "无法获取贡献者名单。");
+            App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "无法获取贡献者名单。");
         }
         ViewModel.IsRefreshingContributors = false;
     }
