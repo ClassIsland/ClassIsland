@@ -14,11 +14,11 @@ public enum SettingsPageCategory
     /// </summary>
     External,
     /// <summary>
+    /// 关于页面
+    /// </summary>
+    About,
+    /// <summary>
     /// 调试页面
     /// </summary>
     Debug,
-    /// <summary>
-    /// 关于页面
-    /// </summary>
-    About
 }

@@ -15,6 +15,9 @@ public class SettingsNewViewModel : ObservableRecipient
     private SnackbarMessageQueue _snackbarMessageQueue = new();
     private bool _isDrawerOpen = false;
     private bool _isRequestedRestart = false;
+    private bool _isNavigating = false;
+    private bool _isPopupOpen = false;
+    private bool _isRendered = false;
 
     public object? FrameContent
     {
@@ -111,6 +114,39 @@ public class SettingsNewViewModel : ObservableRecipient
         {
             if (value == _isRequestedRestart) return;
             _isRequestedRestart = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNavigating
+    {
+        get => _isNavigating;
+        set
+        {
+            if (value == _isNavigating) return;
+            _isNavigating = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsPopupOpen
+    {
+        get => _isPopupOpen;
+        set
+        {
+            if (value == _isPopupOpen) return;
+            _isPopupOpen = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsRendered
+    {
+        get => _isRendered;
+        set
+        {
+            if (value == _isRendered) return;
+            _isRendered = value;
             OnPropertyChanged();
         }
     }

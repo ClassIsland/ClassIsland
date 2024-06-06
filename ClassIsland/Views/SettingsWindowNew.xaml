@@ -53,6 +53,18 @@
                 </Button>
             </StackPanel>
         </StackPanel>
+
+        <ScrollViewer Width="332" x:Key="ExperimentalSettings"
+                      VerticalScrollBarVisibility="Auto"
+                      materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+            <StackPanel Margin="16">
+                <TextBlock Text="实验性功能" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Margin="0 0 0 4" />
+                <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
+                           Margin="0 0 0 16" />
+            </StackPanel>
+        </ScrollViewer>
+
         <Storyboard x:Key="NavigationLeaving">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.Opacity)">
                 <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1.00">
@@ -138,6 +150,7 @@
                                          SelectedItem="{Binding ViewModel.SelectedPageInfo}"
                                          SelectionChanged="NavigationListBox_OnSelectionChanged"
                                          Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                                         IsEnabled="{Binding ViewModel.IsNavigating, Converter={StaticResource InvertBooleanConverter}}"
                                          ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}">
                                     <ListBox.GroupStyle>
                                         <GroupStyle>
@@ -216,7 +229,7 @@
                             <windows:AsyncBox LoadingViewType="controls2:LoadingMask"/>
                         </Grid>
                     </materialDesign:DrawerHost>
-                    <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" Padding="16"
+                    <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Padding="16"
                                               Mode="PrimaryMid"
                                               materialDesign:ElevationAssist.Elevation="Dp4"
                                               Margin="0 0 0 4">
@@ -300,10 +313,32 @@
                                            VerticalAlignment="Center"
                                            ToolTip="应用版本" />
                                 <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
-                                                         IsPopupOpen="{Binding ViewModel.IsPopupMenuOpened, Mode=TwoWay}">
+                                                         IsPopupOpen="{Binding ViewModel.IsPopupOpen, Mode=TwoWay}">
                                     <StackPanel>
-                                        <!--<MenuItem Icon="{materialDesign:PackIcon WarningCircleOutline}" Header="查看崩溃报告…"/>
+                                        <StackPanel>
+                                            <!--<MenuItem Icon="{materialDesign:PackIcon WarningCircleOutline}" Header="查看崩溃报告…"/>
                                         <Separator/>-->
+                                            <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"
+                                                  Click="MenuItemExperimentalSettings_OnClick" />
+                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="加入管理…"
+                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
+                                                  Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <controls2:JoinManagementDialog/>
+                                                </MenuItem.CommandParameter>
+                                            </MenuItem>
+                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="退出管理…"
+                                                  Click="MenuItemExitManagement_OnClick" 
+                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            </MenuItem>
+                                            <Separator/>
+                                            <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}"
+                                                  Header="日志…"
+                                                  Click="MenuItemAppLogs_OnClick"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
+                                                  Header="导出诊断数据"
+                                                  Click="MenuItemExportDiagnosticInfo_OnClick"/>
+                                        </StackPanel>
 
                                     </StackPanel>
                                 </materialDesign:PopupBox>

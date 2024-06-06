@@ -285,6 +285,9 @@ public partial class App : Application, IAppHost
                 services.AddSettingsPage<WeatherSettingsPage>();
                 services.AddSettingsPage<UpdatesSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
+                services.AddSettingsPage<PluginsSettingsPage>();
+                services.AddSettingsPage<DebugPage>();
+                services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();

@@ -53,6 +53,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     {
         base.OnInitialized(e);
         UpdateCache();
+        RefreshDescription();
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

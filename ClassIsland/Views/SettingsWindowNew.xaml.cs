@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -21,6 +22,7 @@ using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Services;
 using ClassIsland.Shared;
@@ -28,6 +30,9 @@ using ClassIsland.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AppCenter.Analytics;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Logging;
+using ClassIsland.Services;
+using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 
 namespace ClassIsland.Views;
 
@@ -47,14 +52,24 @@ public partial class SettingsWindowNew : MyWindow
 
     private IHangService HangService { get; }
 
+    private ILogger<SettingsWindowNew> Logger;
+
+    private DiagnosticService DiagnosticService { get; }
+
+    public SettingsService SettingsService { get; }
+
     public static readonly string StartupSettingsPage = "general";
 
-    public SettingsWindowNew(IManagementService managementService, IHangService hangService)
+
+    public SettingsWindowNew(IManagementService managementService, IHangService hangService, ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService)
     {
         InitializeComponent();
+        Logger = logger;
         DataContext = this;
         ManagementService = managementService;
+        DiagnosticService = diagnosticService;
         HangService = hangService;
+        SettingsService = settingsService;
         NavigationService = NavigationFrame.NavigationService;
         NavigationService.LoadCompleted += NavigationServiceOnLoadCompleted;
         NavigationService.Navigating += NavigationServiceOnNavigating;
@@ -62,9 +77,8 @@ public partial class SettingsWindowNew : MyWindow
 
     protected override void OnContentRendered(EventArgs e)
     {
-        ViewModel.SelectedPageInfo =
-            SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == StartupSettingsPage);
         base.OnContentRendered(e);
+        ViewModel.IsRendered = true;
     }
 
     private async Task BeginStoryboardAsync(string key)
@@ -92,7 +106,7 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationServiceOnNavigating(object sender, NavigatingCancelEventArgs e)
     {
-       
+        ViewModel.IsNavigating = true;
     }
 
     private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
@@ -102,14 +116,17 @@ public partial class SettingsWindowNew : MyWindow
             // 如果是从设置导航栏导航的，那么就要清除掉返回项目
             NavigationService.RemoveBackEntry();
             await Dispatcher.Yield();
+            ViewModel.IsNavigating = false;
             await BeginStoryboardAsync("NavigationEntering");
         }
+        ViewModel.IsNavigating = false;
         ViewModel.CanGoBack = NavigationService.CanGoBack;
     }
 
 
     private async void NavigationListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        ViewModel.IsNavigating = true;
         if (ViewModel.IsViewCompressed)
         {
             ViewModel.IsNavigationDrawerOpened = false;
@@ -148,7 +165,7 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.GoBack();
     }
 
-    public void Open()
+    public void Open(bool isRequiredCustomNavigation = false)
     {
         if (!IsOpened)
         {
@@ -165,6 +182,27 @@ public partial class SettingsWindowNew : MyWindow
 
             Activate();
         }
+
+        if (!ViewModel.IsRendered && !isRequiredCustomNavigation)
+        {
+            ViewModel.SelectedPageInfo =
+                SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == StartupSettingsPage);
+        }
+    }
+
+    public void Open(string key)
+    {
+        ViewModel.SelectedPageInfo =
+            SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key);
+        Open(true);
+    }
+
+    public void OpenUri(Uri uri)
+    {
+        if (uri.Segments.Length <= 2)
+            return;
+        var uriSegment = uri.Segments[2].EndsWith('/') ? uri.Segments[2][..^1] : uri.Segments[2];
+        Open(uriSegment);
     }
 
     private void SettingsWindowNew_OnClosing(object? sender, CancelEventArgs e)
@@ -172,6 +210,7 @@ public partial class SettingsWindowNew : MyWindow
         e.Cancel = true;
         IsOpened = false;
         Hide();
+        SettingsService.SaveSettings();
         GC.Collect();
     }
 
@@ -205,5 +244,76 @@ public partial class SettingsWindowNew : MyWindow
     {
         ViewModel.IsRequestedRestart = true;
         ShowRestartDialog();
+    }
+
+    private void PopupButtonBase_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPopupOpen = false;
+    }
+
+    private void OpenDrawer(string key)
+    {
+        ViewModel.DrawerContent = FindResource(key);
+        ViewModel.IsDrawerOpen = true;
+    }
+
+    private void MenuItemExperimentalSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPopupOpen = false;
+        OpenDrawer("ExperimentalSettings");
+    }
+
+    private async void MenuItemExitManagement_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            await ManagementService.ExitManagementAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "无法退出管理。");
+            CommonDialog.ShowError($"无法退出管理：{ex.Message}");
+        }
+    }
+
+    private void MenuItemAppLogs_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<AppLogsWindow>().Open();
+    }
+
+    private async void MenuItemExportDiagnosticInfo_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var r = CommonDialog.ShowDialog("ClassIsland", $"您正在导出应用的诊断数据。导出的诊断数据将包含应用当前运行的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。", new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
+                60, 60, [
+                    new DialogAction()
+                    {
+                        PackIconKind = PackIconKind.Cancel,
+                        Name = "取消"
+                    },
+                    new DialogAction()
+                    {
+                        PackIconKind = PackIconKind.Check,
+                        Name = "继续",
+                        IsPrimary = true
+                    }
+                ]);
+            if (r != 1)
+                return;
+            var dialog = new SaveFileDialog()
+            {
+                Title = "导出诊断数据",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Filter = "压缩文件(*.zip)|*.zip"
+            };
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            await DiagnosticService.ExportDiagnosticData(dialog.FileName);
+        }
+        catch (Exception exception)
+        {
+            CommonDialog.ShowError($"导出失败：{exception.Message}");
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("notifications", "提醒", PackIconKind.BellNotificationOutline, PackIconKind.BellNotification, SettingsPageCategory.Internal)]
+[SettingsPageInfo("notification", "提醒", PackIconKind.BellNotificationOutline, PackIconKind.BellNotification, SettingsPageCategory.Internal)]
 public partial class NotificationSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }

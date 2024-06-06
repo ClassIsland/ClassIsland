@@ -274,8 +274,7 @@ public partial class HelpsWindow : MyWindow
         switch (uri.Segments[1])
         {
             case "settings/":
-                mw.OpenSettingsWindow();
-                mw.SettingsWindow.OpenUri(uri);
+                App.GetService<SettingsWindowNew>().OpenUri(uri);
                 break;
             case "profile":
                 mw.OpenProfileSettingsWindow();

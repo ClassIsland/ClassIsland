@@ -63,12 +63,6 @@ public partial class MainWindow : Window
         set;
     }
 
-    public SettingsWindow SettingsWindow
-    {
-        get;
-        set;
-    }
-
     public DispatcherTimer UpdateTimer
     {
         get;
@@ -173,12 +167,6 @@ public partial class MainWindow : Window
         ProfileSettingsWindow = App.GetService<ProfileSettingsWindow>();
         ProfileSettingsWindow.MainViewModel = ViewModel;
         ProfileSettingsWindow.Closing += (o, args) => SaveProfile();
-        SettingsWindow = new SettingsWindow()
-        {
-            MainViewModel = ViewModel,
-            Settings = ViewModel.Settings
-        };
-        SettingsWindow.Closed += (o, args) => SaveSettings();
         HelpsWindow = App.GetService<HelpsWindow>();
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
@@ -195,8 +183,7 @@ public partial class MainWindow : Window
 
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 5;
+        App.GetService<SettingsWindowNew>().Open("update");
     }
 
     private int GetSubjectIndex(int index)
@@ -633,7 +620,6 @@ public partial class MainWindow : Window
         var r = SettingsService.Settings;
         ViewModel.Settings = r;
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
-        SettingsWindow.Settings = r;
     }
 
     public void SaveSettings()
@@ -835,26 +821,7 @@ public partial class MainWindow : Window
 
     private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-    }
-
-    public void OpenSettingsWindow()
-    {
-        if (!SettingsWindow.IsOpened)
-        {
-            Analytics.TrackEvent("打开设置窗口");
-            SettingsWindow.IsOpened = true;
-            SettingsWindow.Show();
-        }
-        else
-        {
-            if (SettingsWindow.WindowState == WindowState.Minimized)
-            {
-                SettingsWindow.WindowState = WindowState.Normal;
-            }
-
-            SettingsWindow.Activate();
-        }
+        App.GetService<SettingsWindowNew>().Open();
     }
 
     private void MenuItemDebugOverlayMaskIn_OnClick(object sender, RoutedEventArgs e)
@@ -1010,8 +977,7 @@ public partial class MainWindow : Window
 
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 7;
+        App.GetService<SettingsWindowNew>().Open("about");
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
@@ -1048,8 +1014,7 @@ public partial class MainWindow : Window
 
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 5;
+        App.GetService<SettingsWindowNew>().Open("update");
     }
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -1075,8 +1040,7 @@ public partial class MainWindow : Window
 
     private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsWindow.RootTabControl.SelectedIndex = 2;
-        OpenSettingsWindow();
+        App.GetService<SettingsWindowNew>().Open("notification");
     }
 
     private void MenuItemShowMainWindow_OnChecked(object sender, RoutedEventArgs e)
