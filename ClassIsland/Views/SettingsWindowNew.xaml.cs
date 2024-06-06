@@ -110,6 +110,10 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (ViewModel.IsViewCompressed)
+        {
+            ViewModel.IsNavigationDrawerOpened = false;
+        }
         await BeginStoryboardAsync("NavigationLeaving");
         HangService.AssumeHang();
         // 从ioc容器获取页面

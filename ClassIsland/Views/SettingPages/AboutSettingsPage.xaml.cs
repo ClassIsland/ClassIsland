@@ -121,7 +121,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenDrawer("ContributorsDrawer", this);
+        OpenDrawer("ContributorsDrawer");
         await RefreshContributors();
     }
 

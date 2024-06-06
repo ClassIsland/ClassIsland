@@ -9,6 +9,7 @@
              xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
              xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
              xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+             xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
              ShutdownMode="OnMainWindowClose"
              Startup="App_OnStartup"
              DispatcherUnhandledException="App_OnDispatcherUnhandledException">

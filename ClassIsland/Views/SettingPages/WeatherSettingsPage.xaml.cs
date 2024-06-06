@@ -40,6 +40,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         DataContext = this;
         WeatherService = weatherService;
         SettingsService = settingsService;
+        ViewModel.CitySearchResults = WeatherService.GetCitiesByName("");
     }
 
     private async void ButtonRefreshWeather_OnClick(object sender, RoutedEventArgs e)
@@ -49,7 +50,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
 
     private void ButtonEditCurrentCity_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenDrawer("CitySearcher", this);
+        OpenDrawer("CitySearcher");
     }
 
     private void TextBoxSearchCity_OnTextChanged(object sender, TextChangedEventArgs e)
