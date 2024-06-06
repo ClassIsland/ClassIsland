@@ -9,6 +9,8 @@
       xmlns:controls1="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:dd="urn:gong-wpf-dragdrop"
+      xmlns:controls2="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:controls3="clr-namespace:ClassIsland.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ComponentsSettingsPage"
@@ -23,42 +25,67 @@
 
     <controls:SettingsPageBase.Resources>
         <CollectionViewSource x:Key="RegisteredComponentsSource" 
-                              Source="{x:Static registry:ComponentRegistryService.RegisteredSettings}"/>
+                              Source="{x:Static registry:ComponentRegistryService.Registered}"/>
     </controls:SettingsPageBase.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <!-- TODO: 组件方案管理 -->
         <!-- 列表编辑区域 -->
-        <ListBox Grid.Row="1" Height="40"
+        <ListBox Grid.Row="1"
                  HorizontalAlignment="Stretch"
-                 Background="{DynamicResource MaterialDesignToolBarBackground}"
                  ItemsSource="{Binding ComponentsService.CurrentComponents}"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
-                 dd:DragDrop.UseDefaultEffectDataTemplate="True">
+                 dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                 dd:DragDrop.SelectDroppedItems="True"
+                 HorizontalContentAlignment="Center"
+                 ScrollViewer.PanningMode="HorizontalOnly" 
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 SelectedItem="{Binding ViewModel.SelectedComponentSettings}">
+            <dd:DragDrop.DropHandler>
+                <local:ComponentsSettingsPageDropHandler/>
+            </dd:DragDrop.DropHandler>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <materialDesign:PackIcon Kind="{Binding AssociatedComponentInfo.PackIcon}"
-                                                 VerticalAlignment="Center"/>
+                                                 VerticalAlignment="Center"
+                                                 />
                         <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
                                    VerticalAlignment="Center"/>
+                        <Button Content="{materialDesign:PackIcon Remove}"
+                                Foreground="IndianRed"
+                                Margin="4 -16 -4 -16"
+                                VerticalAlignment="Center"
+                                Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Click="ButtonRemoveSelectedComponent_OnClick"
+                                Style="{StaticResource MaterialDesignToolForegroundButton}"/>
                     </StackPanel>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" IsItemsHost="True"
+                                Height="40"
+                                CanHorizontallyScroll="True"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>
+        <!-- 选中组件信息 -->
+        <StackPanel Grid.Row="2" MaxWidth="750">
+            <StackPanel Orientation="Horizontal">
+                
+            </StackPanel>
+        </StackPanel>
 
         <!-- 组件设置 -->
-        <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+        <Grid Grid.Row="3" HorizontalAlignment="Stretch">
 
             <TabControl HorizontalContentAlignment="Left" 
                         MaxWidth="750">
@@ -67,16 +94,45 @@
                              dd:DragDrop.IsDragSource="True"
                              dd:DragDrop.IsDropTarget="False"
                              dd:DragDrop.DragDropCopyKeyState="LeftMouseButton"
-                             dd:DragDrop.UseDefaultEffectDataTemplate="True">
+                             dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                             HorizontalContentAlignment="Stretch"
+                             VerticalContentAlignment="Stretch"
+                             materialDesign:ListViewAssist.ListViewItemPadding="0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                <Setter Property="Width" Value="180"></Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <materialDesign:PackIcon Width="32" Height="32"
-                                                             HorizontalAlignment="Center"
-                                                             Kind="{Binding AssociatedComponentInfo.PackIcon}"/>
-                                    <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
-                                               HorizontalAlignment="Center"/>
-                                </StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
+                                                             Grid.RowSpan="2"
+                                                             Width="32" Height="32"
+                                                             VerticalAlignment="Center"
+                                                             Margin="0 0 4 0"
+                                                             Kind="{Binding PackIcon}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Top"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="1"
+                                               Text="{Binding Description}"
+                                               Opacity="0.75"
+                                               FontSize="12"
+                                               FontWeight="Regular"
+                                               TextWrapping="Wrap"
+                                               TextTrimming="CharacterEllipsis"/>
+                                </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                         <ListBox.ItemsPanel>
@@ -85,6 +141,13 @@
                             </ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
                     </ListBox>
+                </TabItem>
+                <TabItem Header="组件设置">
+                    <controls3:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
+                                                  IsPresentingSettings="True"/>
+                </TabItem>
+                <TabItem Header="高级设置">
+
                 </TabItem>
             </TabControl>
         </Grid>

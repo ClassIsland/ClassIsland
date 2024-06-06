@@ -114,6 +114,8 @@ public partial class MainWindow : Window
 
     public ISpeechService SpeechService { get; }
 
+    public IComponentsService ComponentsService { get; }
+
     private ILogger<MainWindow> Logger;
 
     private double _latestDpiX = 1.0;
@@ -143,7 +145,8 @@ public partial class MainWindow : Window
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
         IExactTimeService exactTimeService,
-        TopmostEffectWindow topmostEffectWindow)
+        TopmostEffectWindow topmostEffectWindow,
+        IComponentsService componentsService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -154,6 +157,7 @@ public partial class MainWindow : Window
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         TopmostEffectWindow = topmostEffectWindow;
+        ComponentsService = componentsService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -381,7 +385,7 @@ public partial class MainWindow : Window
 
         // Finished update
         ViewModel.Today = ExactTimeService.GetCurrentLocalDateTime();
-        MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
+        //MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
     }
 
     public Point GetCenter()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassIsland.Core.Abstractions.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,20 +13,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
-using ClassIsland;
-using ClassIsland.Models.ComponentSettings;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
 
 /// <summary>
-/// TestComponent.xaml 的交互逻辑
+/// LegacyScheduleComponent.xaml 的交互逻辑
 /// </summary>
-[ComponentInfo("EE8F66BD-C423-4E7C-AB46-AA9976B00E08", "测试组件", "测试测试测试测试文本。")]
-public partial class TestComponent : ComponentBase<TestComponentSettings>
+[ComponentInfo("E7831603-61A0-4180-B51B-54AD75B1A4D3", "课程表（旧）", PackIconKind.Schedule, "显示当前的课程表信息。")]
+public partial class LegacyScheduleComponent : ComponentBase
 {
-    public TestComponent()
+    public LegacyScheduleComponent()
     {
         InitializeComponent();
     }

@@ -17,6 +17,8 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
+using ClassIsland.ViewModels.SettingsPages;
+using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Views.SettingPages;
@@ -29,10 +31,21 @@ public partial class ComponentsSettingsPage : SettingsPageBase
 {
     public IComponentsService ComponentsService { get; }
 
+    public ComponentsSettingsViewModel ViewModel { get; } = new();
+
     public ComponentsSettingsPage(IComponentsService componentsService)
     {
         ComponentsService = componentsService;
         InitializeComponent();
         DataContext = this;
+    }
+
+    private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
+    {
+        var remove = ViewModel.SelectedComponentSettings;
+        if (remove == null)
+            return;
+        ViewModel.SelectedComponentSettings = null;
+        ComponentsService.CurrentComponents.Remove(remove);
     }
 }

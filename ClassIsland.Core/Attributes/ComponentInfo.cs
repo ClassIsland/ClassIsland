@@ -22,7 +22,7 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 组件图标
     /// </summary>
-    public PackIconKind PackIcon { get; } = PackIconKind.Abacus;
+    public PackIconKind PackIcon { get; } = PackIconKind.WidgetsOutline;
 
     /// <summary>
     /// 组件位图图标uri
@@ -33,6 +33,11 @@ public class ComponentInfo : Attribute
     /// 是否使用位图图标
     /// </summary>
     public bool UseBitmapIcon { get; } = false;
+
+    /// <summary>
+    /// 组件描述
+    /// </summary>
+    public string Description { get; } = "";
 
     /// <summary>
     /// 设置界面类型
@@ -52,13 +57,13 @@ public class ComponentInfo : Attribute
 
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name, PackIconKind icon) : this(guid, name)
+    public ComponentInfo(string guid, string name, PackIconKind icon, string description="") : this(guid, name, description)
     {
         PackIcon = icon;
     }
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name, string bitmapIconUri) : this(guid, name)
+    public ComponentInfo(string guid, string name, string bitmapIconUri, string description = "") : this(guid, name, description)
     {
         BitmapIconUri = bitmapIconUri;
         UseBitmapIcon = true;
@@ -66,9 +71,10 @@ public class ComponentInfo : Attribute
     }
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name)
+    public ComponentInfo(string guid, string name, string description = "")
     {
         Guid = Guid.Parse(guid);
         Name = name;
+        Description = description;
     }
 }

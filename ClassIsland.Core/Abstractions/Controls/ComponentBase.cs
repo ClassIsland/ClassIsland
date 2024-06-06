@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 
 namespace ClassIsland.Core.Abstractions.Controls;
@@ -23,5 +24,5 @@ public abstract class ComponentBase<T> : ComponentBase where T : class
     /// <summary>
     /// 当前组件的设置
     /// </summary>
-    internal object? Settings => SettingsInternal as T;
+    public T Settings => (SettingsInternal as T)!;
 }

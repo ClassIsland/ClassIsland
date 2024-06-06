@@ -578,18 +578,22 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <ContentPresenter Grid.Column="0"
-                                          Margin="6 0 12 0"
-                                          VerticalAlignment="Center"
-                                          Visibility="{Binding ViewModel.Settings.ShowDate, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                            <ContentPresenter.Content>
-                                <MultiBinding
-                                    Converter="{StaticResource MiniInfoGuidToMiniInfoProviderElementConverter}">
-                                    <Binding Path="ViewModel.Settings.SelectedMiniInfoProvider" />
-                                    <Binding Path="MiniInfoProviderHostService.Providers" />
-                                </MultiBinding>
-                            </ContentPresenter.Content>
-                        </ContentPresenter>
+                        <ItemsControl Grid.Column="0"
+                                      ItemsSource="{Binding ComponentsService.CurrentComponents}"
+                                      VerticalContentAlignment="Stretch">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <controls:ComponentPresenter Settings="{Binding}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
                         <!-- 没有课程提示 -->
                         <TextBlock Grid.Column="1"
@@ -609,64 +613,7 @@
                         </TextBlock>
 
                         <!-- 课表 -->
-                        <ListBox Grid.Column="1"
-                                 VerticalAlignment="Center"
-                                 HorizontalAlignment="Left"
-                                 ItemsSource="{Binding ViewModel.CurrentClassPlan.TimeLayout.Layouts}"
-                                 SelectionChanged="Selector_OnSelectionChanged"
-                                 IsHitTestVisible="False"
-                                 Margin="0 0 0 0"
-                                 x:Name="MainListBox"
-                                 IsTabStop="False">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemContainerStyle>
-                                <Style BasedOn="{StaticResource MaterialDesignListBoxItem}"
-                                       TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="Padding" Value="0" />
-                                    <Setter Property="IsTabStop" Value="False" />
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <controls:LessonControl
-                                        Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                        Subjects="{Binding ViewModel.Profile.Subjects, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
-                                        CurrentClassPlan="{Binding ViewModel.CurrentClassPlan, RelativeSource={RelativeSource AncestorType={x:Type local:MainWindow}, Mode=FindAncestor}}"
-                                        IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
-                                        <controls:LessonControl.Style>
-                                            <Style TargetType="{x:Type controls:LessonControl}">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                                <Style.Triggers>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding TimeType}" Value="1" />
-                                                            <Condition
-                                                                Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                                                Value="False" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </MultiDataTrigger>
-                                                    <MultiDataTrigger>
-                                                        <MultiDataTrigger.Conditions>
-                                                            <Condition Binding="{Binding TimeType}" Value="0" />
-                                                            <Condition Binding="{Binding IsHideDefault}" Value="True" />
-                                                            <Condition
-                                                                Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                                                Value="False" />
-                                                        </MultiDataTrigger.Conditions>
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </MultiDataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </controls:LessonControl.Style>
-                                    </controls:LessonControl>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        
                     </Grid>
 
                     <!-- Overlay View -->

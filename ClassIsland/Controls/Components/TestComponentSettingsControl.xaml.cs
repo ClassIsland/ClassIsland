@@ -13,19 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Core.Attributes;
-using ClassIsland;
 using ClassIsland.Models.ComponentSettings;
 
 namespace ClassIsland.Controls.Components;
 
 /// <summary>
-/// TestComponent.xaml 的交互逻辑
+/// TestComponentSettingsControl.xaml 的交互逻辑
 /// </summary>
-[ComponentInfo("EE8F66BD-C423-4E7C-AB46-AA9976B00E08", "测试组件", "测试测试测试测试文本。")]
-public partial class TestComponent : ComponentBase<TestComponentSettings>
+public partial class TestComponentSettingsControl : ComponentBase<TestComponentSettings>
 {
-    public TestComponent()
+    public TestComponentSettingsControl()
     {
         InitializeComponent();
     }

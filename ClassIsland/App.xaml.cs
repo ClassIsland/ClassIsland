@@ -293,7 +293,8 @@ public partial class App : Application, IAppHost
                 services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
                 // 主界面组件
-                services.AddComponent<TestComponent>();
+                services.AddComponent<TestComponent, TestComponentSettingsControl>();
+                services.AddComponent<LegacyScheduleComponent>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 
@@ -11,4 +12,6 @@ namespace ClassIsland.Core.Abstractions.Services;
 public interface IComponentsService : INotifyPropertyChanged
 {
     public ObservableCollection<ComponentSettings> CurrentComponents { get; set; }
+
+    public ComponentBase? GetComponent(ComponentSettings settings, bool isSettings);
 }
