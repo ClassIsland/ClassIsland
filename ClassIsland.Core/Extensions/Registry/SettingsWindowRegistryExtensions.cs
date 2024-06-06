@@ -1,14 +1,15 @@
-using System.Runtime.CompilerServices;
-using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Services;
+using ClassIsland.Core.Services.Registry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace ClassIsland.Core.Extensions;
+namespace ClassIsland.Core.Extensions.Registry;
 
-public static class HostExtensions
+/// <summary>
+/// 用于向设置界面注册设置页面的<see cref="IServiceCollection"/>扩展。
+/// </summary>
+public static class SettingsWindowRegistryExtensions
 {
     /// <summary>
     /// 注册设置页面
@@ -22,7 +23,7 @@ public static class HostExtensions
         var type = typeof(T);
         if (type.GetCustomAttributes(false).FirstOrDefault(x => x is SettingsPageInfo) is not SettingsPageInfo info)
         {
-            throw new ArgumentException("无法注册设置页面，因为设置页面没有注册信息。");
+            throw new ArgumentException($"无法注册设置页面 {type.FullName}，因为设置页面没有注册信息。");
         }
 
         if (SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == info.Id) != null)

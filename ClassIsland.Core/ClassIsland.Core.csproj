@@ -49,6 +49,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
+    <PackageReference Include="VirtualizingWrapPanel" Version="2.0.6" />
   </ItemGroup>
 
   <ItemGroup>

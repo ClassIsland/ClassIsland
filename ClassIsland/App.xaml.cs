@@ -14,11 +14,12 @@ using System.Windows.Threading;
 
 using ClassIsland.Controls;
 using ClassIsland.Controls.AttachedSettingsControls;
+using ClassIsland.Controls.Components;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
-using ClassIsland.Core.Extensions;
+using ClassIsland.Core.Extensions.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Models;
@@ -237,6 +238,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<IManagementService, ManagementService>();
                 services.AddSingleton<AppLogService>();
                 services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
+                services.AddSingleton<IComponentsService, ComponentsService>();
                 services.AddHostedService<MemoryWatchDogService>();
                 try // 检测SystemSpeechService是否存在
                 {
@@ -279,6 +281,7 @@ public partial class App : Application, IAppHost
                 // 设置页面
                 services.AddSettingsPage<TestSettingsPage>();
                 services.AddSettingsPage<GeneralSettingsPage>();
+                services.AddSettingsPage<ComponentsSettingsPage>();
                 services.AddSettingsPage<AppearanceSettingsPage>();
                 services.AddSettingsPage<NotificationSettingsPage>();
                 services.AddSettingsPage<WindowSettingsPage>();
@@ -289,6 +292,8 @@ public partial class App : Application, IAppHost
                 services.AddSettingsPage<DebugPage>();
                 services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
+                // 主界面组件
+                services.AddComponent<TestComponent>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

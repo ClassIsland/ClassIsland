@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
-using ClassIsland.Core.Services;
+using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -126,6 +127,9 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (!IsLoaded)
+            return;
+        Logger.LogTrace("开始导航 \n{}", new StackTrace());
         ViewModel.IsNavigating = true;
         if (ViewModel.IsViewCompressed)
         {
