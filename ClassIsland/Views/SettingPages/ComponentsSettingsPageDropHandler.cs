@@ -15,19 +15,32 @@ public class ComponentsSettingsPageDropHandler : IDropTarget
 
     public void DragOver(IDropInfo dropInfo)
     {
-        if (dropInfo is not { Data: ComponentInfo sourceItem }) 
+        if (dropInfo.Data is not ComponentInfo && dropInfo.Data is not ComponentSettings) 
             return;
         dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-        dropInfo.Effects = DragDropEffects.Copy;
+        dropInfo.Effects = dropInfo.Data switch
+        {
+            ComponentInfo info => DragDropEffects.Copy,
+            ComponentSettings settings => DragDropEffects.Move,
+            _ => DragDropEffects.None
+        };
     }
 
     public void Drop(IDropInfo dropInfo)
     {
-        if (dropInfo is not { Data: ComponentInfo sourceItem, TargetCollection: ICollection<ComponentSettings> targetCollection})
-            return;
-        ComponentsService.CurrentComponents.Add(new ComponentSettings()
+        var components = ComponentsService.CurrentComponents;
+        switch (dropInfo.Data)
         {
-            Id = sourceItem.Guid.ToString()
-        });
+            case ComponentInfo info:
+                components.Insert(dropInfo.InsertIndex, new ComponentSettings()
+                {
+                    Id = info.Guid.ToString()
+                });
+                break;
+            case ComponentSettings settings:
+                var newIndex = dropInfo.UnfilteredInsertIndex;
+                components.Move(components.IndexOf(settings), newIndex >= components.Count ? components.Count - 1 : newIndex);
+                break;
+        }
     }
 }
