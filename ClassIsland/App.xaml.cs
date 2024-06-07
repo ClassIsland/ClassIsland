@@ -231,7 +231,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<FileFolderService>();
                 services.AddSingleton<IAttachedSettingsHostService, AttachedSettingsHostService>();
                 services.AddSingleton<IProfileService, ProfileService>();
-                services.AddSingleton <ISplashService, SplashService>();
+                services.AddSingleton<ISplashService, SplashService>();
                 services.AddSingleton<IHangService, HangService>();
                 services.AddSingleton<ConsoleService>();
                 //services.AddHostedService<BootService>();
@@ -241,6 +241,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<AppLogService>();
                 services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddSingleton<IComponentsService, ComponentsService>();
+                services.AddSingleton<ILessonsService, LessonsService>();
                 services.AddHostedService<MemoryWatchDogService>();
                 try // 检测SystemSpeechService是否存在
                 {

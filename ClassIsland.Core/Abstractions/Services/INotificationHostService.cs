@@ -14,23 +14,7 @@ public interface INotificationHostService
 {
     PriorityQueue<NotificationRequest, int> RequestQueue { get; }
     ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
-    TimeSpan OnClassDeltaTime { get; set; }
-    TimeSpan OnBreakingTimeDeltaTime { get; set; }
-    Subject NextClassSubject { get; set; }
-    TimeLayoutItem NextClassTimeLayoutItem { get; set; }
-    TimeLayoutItem NextBreakingTimeLayoutItem { get; set; }
-    bool IsClassPlanLoaded { get; set; }
-    bool IsClassConfirmed { get; set; }
-    TimeState CurrentState { get; set; }
     NotificationRequest? CurrentRequest { get; set; }
-    event EventHandler? UpdateTimerTick;
-    void OnUpdateTimerTick(object sender, EventArgs args);
-    event EventHandler? OnClass;
-    void OnOnClass(object sender, EventArgs args);
-    event EventHandler? OnBreakingTime;
-    void OnOnBreakingTime(object sender, EventArgs args);
-    event EventHandler? CurrentStateChanged;
-    void OnCurrentStateChanged(object sender, EventArgs args);
     NotificationRequest GetRequest();
 
     /// <summary>

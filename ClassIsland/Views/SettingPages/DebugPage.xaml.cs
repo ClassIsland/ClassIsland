@@ -42,13 +42,16 @@ public partial class DebugPage : SettingsPageBase
 
     public ConsoleService ConsoleService { get; }
 
-    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService)
+    private ILessonsService LessonsService { get; }
+
+    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService)
     {
         InitializeComponent();
         DataContext = this;
         SettingsService = settingsService;
         ManagementService = managementService;
         ConsoleService = consoleService;
+        LessonsService = lessonsService;
     }
 
     private void ButtonCloseDebug_OnClick(object sender, RoutedEventArgs e)
@@ -93,12 +96,12 @@ public partial class DebugPage : SettingsPageBase
 
     private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<INotificationHostService>().OnOnBreakingTime(this, EventArgs.Empty);
+        LessonsService.DebugTriggerOnBreakingTime();
     }
 
     private void MenuItemDebugTriggerOnClass_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<INotificationHostService>().OnOnClass(this, EventArgs.Empty);
+        LessonsService.DebugTriggerOnClass();
     }
 
     private void MenuItemTestCommonDialog_OnClick(object sender, RoutedEventArgs e)

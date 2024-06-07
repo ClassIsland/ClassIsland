@@ -63,14 +63,6 @@ public partial class MainWindow : Window
         set;
     }
 
-    public DispatcherTimer UpdateTimer
-    {
-        get;
-    } = new(DispatcherPriority.Render)
-    {
-        Interval = TimeSpan.FromMilliseconds(50)
-    };
-
     private Storyboard NotificationProgressBar { get; set; } = new Storyboard();
 
     private HelpsWindow HelpsWindow
@@ -102,6 +94,8 @@ public partial class MainWindow : Window
     {
         get;
     }
+
+    public ILessonsService LessonsService { get; }
 
     public TopmostEffectWindow TopmostEffectWindow { get; }
 
@@ -146,7 +140,8 @@ public partial class MainWindow : Window
         ISpeechService speechService,
         IExactTimeService exactTimeService,
         TopmostEffectWindow topmostEffectWindow,
-        IComponentsService componentsService)
+        IComponentsService componentsService,
+        ILessonsService lessonsService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -158,44 +153,57 @@ public partial class MainWindow : Window
         ExactTimeService = exactTimeService;
         TopmostEffectWindow = topmostEffectWindow;
         ComponentsService = componentsService;
+        LessonsService = lessonsService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
             LoadSettings();
         };
         TaskBarIconService.MainTaskBarIcon.TrayBalloonTipClicked += TaskBarIconOnTrayBalloonTipClicked;
-        UpdateTimer.Tick += UpdateTimerOnTick;
         DataContext = this;
-        UpdateTimer.Start();
+        LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
+        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel = new MainViewModel();
         ProfileSettingsWindow = App.GetService<ProfileSettingsWindow>();
         ProfileSettingsWindow.MainViewModel = ViewModel;
         ProfileSettingsWindow.Closing += (o, args) => SaveProfile();
         HelpsWindow = App.GetService<HelpsWindow>();
-        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
     }
 
-    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
-        if (e.PropertyName == nameof(ViewModel.CurrentStatus))
+        // 处理提醒请求队列
+        await ProcessNotification();
+    }
+
+    private void LessonsServiceOnPreMainTimerTicked(object? sender, EventArgs e)
+    {
+        SettingsService.Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
+        SettingsService.Settings.IsNotificationSpeechEnabled = SettingsService.Settings.IsNetworkConnect || SettingsService.Settings.IsSystemSpeechSystemExist;
+        if (SettingsService.Settings.IsMainWindowDebugEnabled)
+            ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
+
+        UpdateWindowPos(true);
+        UpdateMouseStatus();
+        if (ViewModel.Settings.WindowLayer == 0)
         {
-            NotificationHostService.CurrentState = ViewModel.CurrentStatus;
-            NotificationHostService.OnCurrentStateChanged(this, EventArgs.Empty);
+            //SetBottom();
         }
+        //NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
+
+        // Detect fullscreen
+        var screen = Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] ??
+                     Screen.PrimaryScreen!;
+        ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
+        ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
+
     }
 
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
     {
         App.GetService<SettingsWindowNew>().Open("update");
-    }
-
-    private int GetSubjectIndex(int index)
-    {
-        var k = ViewModel.CurrentClassPlan?.TimeLayout.Layouts[index];
-        var l = (from t in ViewModel.CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
-        var i = l.IndexOf(k);
-        return i;
     }
 
     private Storyboard BeginStoryboard(string name)
@@ -233,159 +241,6 @@ public partial class MainWindow : Window
             Logger.LogError(ex, "无法更新鼠标状态。");
         }
         
-    }
-
-    private async void UpdateTimerOnTick(object? sender, EventArgs e)
-    {
-        SettingsService.Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
-        SettingsService.Settings.IsNotificationSpeechEnabled = SettingsService.Settings.IsNetworkConnect || SettingsService.Settings.IsSystemSpeechSystemExist;
-        if (SettingsService.Settings.IsMainWindowDebugEnabled)
-            ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
-
-        UpdateWindowPos(true);
-        UpdateMouseStatus();
-        LoadCurrentClassPlan();
-        if (ViewModel.Settings.WindowLayer == 0)
-        {
-            //SetBottom();
-        }
-        NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
-
-        // Detect fullscreen
-        var screen = Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] ??
-                            Screen.PrimaryScreen;
-        ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
-        ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
-
-        // Deactivate
-        foreach (var i in ViewModel.Profile.TimeLayouts.Where(i => !i.Value.IsActivatedManually))
-        {
-            i.Value.IsActivated = false;
-        }
-        foreach (var i in ViewModel.Profile.ClassPlans)
-        {
-            i.Value.IsActivated = false;
-        }
-
-        if (ViewModel.CurrentClassPlan is null || ViewModel.CurrentClassPlan.TimeLayout is null)
-        {
-            ViewModel.CurrentStatus = TimeState.None;
-            ViewModel.CurrentOverlayStatus = TimeState.None;
-            ViewModel.CurrentOverlayEventStatus = TimeState.None;
-            NotificationHostService.IsClassPlanLoaded = false;
-            goto final;
-        }
-        NotificationHostService.IsClassPlanLoaded = true;
-        // Activate selected item
-        ViewModel.CurrentClassPlan.IsActivated = true;
-        ViewModel.CurrentClassPlan.TimeLayout.IsActivated = true;
-
-        var isLessonConfirmed = false;
-        // 更新选择
-        var currentLayout = ViewModel.CurrentClassPlan.TimeLayout.Layouts;
-        foreach (var i in currentLayout)
-        {
-            if (i.StartSecond.TimeOfDay <= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay && i.EndSecond.TimeOfDay >= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay)
-            {
-                ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
-                ViewModel.CurrentTimeLayoutItem = i;
-                NotificationHostService.IsClassConfirmed = isLessonConfirmed = true;
-                if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
-                {
-                    var i0 = GetSubjectIndex(currentLayout.IndexOf(i));
-                    ViewModel.CurrentSubject = ViewModel.Profile.Subjects[ViewModel.CurrentClassPlan.Classes[i0].SubjectId];
-                }
-                else
-                {
-                    ViewModel.CurrentSubject = null;
-                }
-                break;
-            }
-        }
-
-        //var isBreaking = false;
-        if (!isLessonConfirmed)
-        {
-            ViewModel.CurrentSelectedIndex = null;
-            ViewModel.CurrentStatus = TimeState.None;
-        }
-        // 获取下节课信息
-        else if (ViewModel.CurrentSelectedIndex + 1 < currentLayout.Count && ViewModel.CurrentSelectedIndex is not null)
-        {
-            var nextClassTimeLayoutItems = (from i in currentLayout
-                where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
-                      && i.TimeType == 0
-                select i)
-                .ToList();
-            var nextBreakingTimeLayoutItems = (from i in currentLayout
-                    where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
-                          && i.TimeType == 1
-                    select i)
-                .ToList();
-            if (nextClassTimeLayoutItems.Count > 0)
-            {
-                var i0 = GetSubjectIndex(currentLayout.IndexOf(nextClassTimeLayoutItems[0]));
-                var index = ViewModel.CurrentClassPlan.Classes[i0].SubjectId;
-                NotificationHostService.NextClassSubject = ViewModel.NextSubject = ViewModel.Profile.Subjects[index] ?? Subject.Empty;
-                NotificationHostService.NextClassTimeLayoutItem = ViewModel.NextTimeLayoutItem = nextClassTimeLayoutItems[0];
-            }
-
-            if (nextBreakingTimeLayoutItems.Count > 0)
-            {
-                NotificationHostService.NextBreakingTimeLayoutItem = ViewModel.NextBreakingLayoutItem = nextBreakingTimeLayoutItems[0];
-            }
-        }
-
-        var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        ViewModel.OnClassLeftTime = tClassDelta;
-        NotificationHostService.OnClassDeltaTime = tClassDelta;
-        NotificationHostService.OnBreakingTimeDeltaTime =
-            ViewModel.NextBreakingLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        // 获取状态信息
-        if (ViewModel.CurrentSelectedIndex == null)
-        {
-            ViewModel.CurrentStatus = TimeState.None;
-        //} else if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds))
-        //{
-        //    ViewModel.CurrentStatus = TimeState.PrepareOnClass;
-        } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
-        {
-            ViewModel.CurrentStatus = TimeState.OnClass;
-        } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 1)
-        {
-            ViewModel.CurrentStatus = TimeState.Breaking;
-        }
-
-        switch (ViewModel.CurrentStatus)
-        {
-            // 向提醒提供方传递事件
-            // 下课事件
-            case TimeState.Breaking when ViewModel.CurrentOverlayEventStatus != TimeState.Breaking:
-                Logger.LogInformation("发出下课事件。");
-                NotificationHostService.OnOnBreakingTime(this, EventArgs.Empty);
-                ViewModel.CurrentOverlayEventStatus = TimeState.Breaking;
-                break;
-            // 上课事件
-            case TimeState.OnClass when ViewModel.CurrentOverlayEventStatus != TimeState.OnClass:
-                Logger.LogInformation("发出上课事件。");
-                NotificationHostService.OnOnClass(this, EventArgs.Empty);
-                ViewModel.CurrentOverlayEventStatus = TimeState.OnClass;
-                break;
-            case TimeState.None:
-                break;
-            case TimeState.PrepareOnClass:
-                break;
-            default:
-                break;
-        }
-
-        final:
-        // 处理提醒请求队列
-        await ProcessNotification();
-
-        // Finished update
-        ViewModel.Today = ExactTimeService.GetCurrentLocalDateTime();
-        //MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
     }
 
     public Point GetCenter()
@@ -740,65 +595,6 @@ public partial class MainWindow : Window
         OpenProfileSettingsWindow();
     }
 
-    public bool CheckClassPlan(ClassPlan plan)
-    {
-        if (plan.TimeRule.WeekDay != (int)ExactTimeService.GetCurrentLocalDateTime().DayOfWeek)
-        {
-            return false;
-        }
-
-        var dd = ExactTimeService.GetCurrentLocalDateTime().Date - ViewModel.Settings.SingleWeekStartTime.Date;
-        var dw = Math.Floor(dd.TotalDays / 7) + 1;
-        var w = (int)dw % 2;
-        switch (plan.TimeRule.WeekCountDiv)
-        {
-            case 1 when w != 1:
-                return false;
-            case 2 when w != 0:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    public void LoadCurrentClassPlan()
-    {
-        ViewModel.Profile.RefreshTimeLayouts();
-        if (ViewModel.Profile.TempClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
-        {
-            ViewModel.Profile.TempClassPlanId = null;
-        }
-        ProfileService.CleanExpiredTempClassPlan(); // 清除过期的临时层
-
-        // 检测是否启用课表加载
-        if (!ViewModel.IsClassPlanEnabled)
-        {
-            ViewModel.CurrentClassPlan = null;
-            return; 
-        }
-        // 加载临时层
-        if (ViewModel.Profile.IsOverlayClassPlanEnabled && 
-            ViewModel.Profile.OverlayClassPlanId != null &&
-            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.OverlayClassPlanId, out var overlay))
-        {
-            ViewModel.CurrentClassPlan = overlay;
-            return;
-        }
-        // 加载临时课表
-        if (ViewModel.Profile.TempClassPlanId != null &&
-            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.TempClassPlanId, out var tempClassPlan))
-        {
-            ViewModel.CurrentClassPlan = tempClassPlan;
-            return;
-        }
-        // 加载课表
-        var a = (from p in ViewModel.Profile.ClassPlans
-            where CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled
-            select p.Value)
-            .ToList();
-        ViewModel.CurrentClassPlan = a.FirstOrDefault();
-    }
-
     private void ListView_OnMouseDown(object sender, MouseButtonEventArgs e)
     {
         e.Handled = true;
@@ -866,9 +662,9 @@ public partial class MainWindow : Window
             e.Cancel = true;
             return;
         }
+        LessonsService.StopMainTimer();
         SaveProfile();
         SaveSettings();
-        UpdateTimer.Stop();
     }
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
@@ -1069,7 +865,7 @@ public partial class MainWindow : Window
 
     private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentClassPlan == null || ClassChangingWindow != null)
+        if (LessonsService.CurrentClassPlan == null || ClassChangingWindow != null)
         {
             return;
         }
@@ -1077,7 +873,7 @@ public partial class MainWindow : Window
         ViewModel.IsBusy = true;
         ClassChangingWindow = new ClassChangingWindow()
         {
-            ClassPlan = ViewModel.CurrentClassPlan
+            ClassPlan = LessonsService.CurrentClassPlan
         };
         ClassChangingWindow.ShowDialog();
         ClassChangingWindow.DataContext = null;

@@ -43,17 +43,22 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
     private IAttachedSettingsHostService AttachedSettingsHostService { get; }
 
+    private ILessonsService LessonsService { get; }
+
     private List<string> ShownAlerts { get; } = new();
 
     public WeatherNotificationProvider(INotificationHostService notificationHostService,
         IAttachedSettingsHostService attachedSettingsHostService,
         IWeatherService weatherService,
-        SettingsService settingsService)
+        SettingsService settingsService,
+        ILessonsService lessonsService)
     {
         NotificationHostService = notificationHostService;
         WeatherService = weatherService;
         SettingsService = settingsService;
         AttachedSettingsHostService = attachedSettingsHostService;
+        LessonsService = lessonsService;
+
         NotificationHostService.RegisterNotificationProvider(this);
         attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
         //attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
@@ -64,8 +69,8 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
         SettingsElement = new WeatherNotificationProviderSettingsControl(Settings);
 
-        NotificationHostService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
-        NotificationHostService.OnClass += NotificationHostServiceOnOnClass;
+        LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
+        LessonsService.OnClass += NotificationHostServiceOnOnClass;
     }
 
     private void NotificationHostServiceOnOnClass(object? sender, EventArgs e)
@@ -80,7 +85,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
             return;
         var s = (IWeatherNotificationSettingsBase?)IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
-                timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;
+                timeLayoutItem: LessonsService.CurrentTimeLayoutItem) ?? Settings;
         if (!Settings.IsForecastEnabled || s.ForecastShowMode == NotificationModes.Disabled ||
             (s.ForecastShowMode == NotificationModes.Default &&
              Settings.ForecastShowMode == NotificationModes.Disabled))
@@ -107,7 +112,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
             return;
         var s = (IWeatherNotificationSettingsBase?)IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<WeatherNotificationAttachedSettings>(ProviderGuid,
-                timeLayoutItem: App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem) ?? Settings;
+                timeLayoutItem: LessonsService.CurrentTimeLayoutItem) ?? Settings;
         if (!Settings.IsAlertEnabled || s.AlertShowMode == NotificationModes.Disabled ||
             (s.AlertShowMode == NotificationModes.Default &&
              Settings.AlertShowMode == NotificationModes.Disabled))
