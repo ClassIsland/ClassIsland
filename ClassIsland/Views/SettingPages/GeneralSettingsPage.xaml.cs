@@ -47,6 +47,6 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)
     {
-        ExactTimeService.Sync();
+        _ = Task.Run(ExactTimeService.Sync);
     }
 }

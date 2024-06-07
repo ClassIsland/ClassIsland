@@ -50,8 +50,17 @@
         </Grid.RowDefinitions>
         <!-- TODO: 组件方案管理 -->
         <Grid Grid.Row="0" MaxWidth="750">
-            <StackPanel Grid.Row="0" Orientation="Horizontal"
-                        HorizontalAlignment="Right">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="以下组件将显示在主界面上，从组件库拖动组件以添加组件。" 
+                       TextWrapping="Wrap"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"/>
+            <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
                 <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                           ItemsSource="{Binding ComponentsService.ComponentConfigs}"
                           MinWidth="150"
@@ -79,18 +88,37 @@
             </StackPanel>
         </Grid>
         <!-- 列表编辑区域 -->
+        <Border Grid.Row="1"
+                Background="{DynamicResource MaterialDesignToolBarBackground}"
+                Margin="-8 8"/>
         <ListBox Grid.Row="1"
+                 Margin="-8 8"
                  HorizontalAlignment="Stretch"
                  ItemsSource="{Binding ComponentsService.CurrentComponents}"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
-                 dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                 dd:DragDrop.UseDefaultEffectDataTemplate="False"
                  dd:DragDrop.SelectDroppedItems="True"
+                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
                  HorizontalContentAlignment="Center"
+                 SelectionChanged="SelectorComponents_OnSelectionChanged"
                  ScrollViewer.PanningMode="HorizontalOnly" 
                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
                  SelectedItem="{Binding ViewModel.SelectedComponentSettings}">
+            <dd:DragDrop.EffectMoveAdornerTemplate>
+                <DataTemplate>
+                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24"
+                                              CornerRadius="12">
+                        <controls2:IconText Kind="ArrowAll" Text="移动"
+                                            Margin="4 0"
+                                            IconMargin="2"
+                                            TextElement.FontWeight="Medium"
+                                            VerticalAlignment="Center"/>
+                    </materialDesign:ColorZone>
+                </DataTemplate>
+            </dd:DragDrop.EffectMoveAdornerTemplate>
+
             <dd:DragDrop.DropHandler>
                 <local:ComponentsSettingsPageDropHandler/>
             </dd:DragDrop.DropHandler>
@@ -106,6 +134,7 @@
                                 Foreground="IndianRed"
                                 Margin="4 -16 -4 -16"
                                 VerticalAlignment="Center"
+                                ToolTip="删除"
                                 Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Click="ButtonRemoveSelectedComponent_OnClick"
                                 Style="{StaticResource MaterialDesignToolForegroundButton}"/>
@@ -131,16 +160,29 @@
         <Grid Grid.Row="3" HorizontalAlignment="Stretch">
 
             <TabControl HorizontalContentAlignment="Left" 
-                        MaxWidth="750">
-                <TabItem Header="所有组件">
+                        MaxWidth="750"
+                        SelectedIndex="{Binding ViewModel.SettingsTabControlIndex}">
+                <TabItem Header="组件库">
                     <ListBox ItemsSource="{Binding Source={StaticResource RegisteredComponentsSource}}"
                              dd:DragDrop.IsDragSource="True"
                              dd:DragDrop.IsDropTarget="False"
                              dd:DragDrop.DragDropCopyKeyState="LeftMouseButton"
-                             dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                             dd:DragDrop.UseDefaultEffectDataTemplate="False"
                              HorizontalContentAlignment="Stretch"
                              VerticalContentAlignment="Stretch"
                              materialDesign:ListViewAssist.ListViewItemPadding="0">
+                        <dd:DragDrop.EffectCopyAdornerTemplate>
+                            <DataTemplate>
+                                <materialDesign:ColorZone Mode="PrimaryMid" Height="24"
+                                                          CornerRadius="12">
+                                    <controls2:IconText Kind="Add" Text="添加"
+                                                        Margin="4 0"
+                                                        IconMargin="2"
+                                                        TextElement.FontWeight="Medium"
+                                                        VerticalAlignment="Center"/>
+                                </materialDesign:ColorZone>
+                            </DataTemplate>
+                        </dd:DragDrop.EffectCopyAdornerTemplate>
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                                 <Setter Property="Width" Value="180"></Setter>
@@ -185,11 +227,11 @@
                         </ListBox.ItemsPanel>
                     </ListBox>
                 </TabItem>
-                <TabItem Header="组件设置">
+                <TabItem Header="组件设置" Visibility="{Binding ViewModel.IsComponentSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <controls3:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
                                                   IsPresentingSettings="True"/>
                 </TabItem>
-                <TabItem Header="高级设置">
+                <TabItem Header="高级设置" Visibility="{Binding ViewModel.IsComponentAdvancedSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 </TabItem>
             </TabControl>

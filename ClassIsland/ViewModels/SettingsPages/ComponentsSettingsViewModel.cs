@@ -7,6 +7,9 @@ public class ComponentsSettingsViewModel : ObservableRecipient
 {
     private ComponentSettings? _selectedComponentSettings;
     private string _createProfileName = "";
+    private int _settingsTabControlIndex = 0;
+    private bool _isComponentSettingsVisible = false;
+    private bool _isComponentAdvancedSettingsVisible = false;
 
     public ComponentSettings? SelectedComponentSettings
     {
@@ -26,6 +29,39 @@ public class ComponentsSettingsViewModel : ObservableRecipient
         {
             if (value == _createProfileName) return;
             _createProfileName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int SettingsTabControlIndex
+    {
+        get => _settingsTabControlIndex;
+        set
+        {
+            if (value == _settingsTabControlIndex) return;
+            _settingsTabControlIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsComponentSettingsVisible
+    {
+        get => _isComponentSettingsVisible;
+        set
+        {
+            if (value == _isComponentSettingsVisible) return;
+            _isComponentSettingsVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsComponentAdvancedSettingsVisible
+    {
+        get => _isComponentAdvancedSettingsVisible;
+        set
+        {
+            if (value == _isComponentAdvancedSettingsVisible) return;
+            _isComponentAdvancedSettingsVisible = value;
             OnPropertyChanged();
         }
     }

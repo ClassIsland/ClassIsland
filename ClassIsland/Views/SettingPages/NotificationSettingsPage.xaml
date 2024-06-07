@@ -73,6 +73,18 @@
                             SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
                             ItemContainerStyle="{StaticResource MaterialDesignListBoxItem}"
                             Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                            <dd:DragDrop.EffectMoveAdornerTemplate>
+                                <DataTemplate>
+                                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24"
+                                                              CornerRadius="12">
+                                        <controls2:IconText Kind="ArrowUpDown" Text="调整优先级"
+                                                            Margin="4 0"
+                                                            IconMargin="2"
+                                                            TextElement.FontWeight="Medium"
+                                                            VerticalAlignment="Center"/>
+                                    </materialDesign:ColorZone>
+                                </DataTemplate>
+                            </dd:DragDrop.EffectMoveAdornerTemplate>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <Grid

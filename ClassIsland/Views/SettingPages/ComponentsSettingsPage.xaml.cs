@@ -91,4 +91,25 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             UseShellExecute = true
         });
     }
+
+    private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ViewModel.SelectedComponentSettings == null)
+        {
+            ViewModel.IsComponentAdvancedSettingsVisible = false;
+            ViewModel.IsComponentSettingsVisible = false;
+            ViewModel.SettingsTabControlIndex = 0;
+            return;
+        }
+
+        ViewModel.IsComponentAdvancedSettingsVisible = true;
+        if (ViewModel.SelectedComponentSettings.AssociatedComponentInfo.SettingsType == null)
+        {
+            ViewModel.IsComponentSettingsVisible = false;
+            ViewModel.SettingsTabControlIndex = ViewModel.SettingsTabControlIndex == 1 ? 0 : ViewModel.SettingsTabControlIndex;
+            return;
+        }
+        ViewModel.IsComponentSettingsVisible = true;
+        ViewModel.SettingsTabControlIndex = ViewModel.SettingsTabControlIndex == 0 ? 1 : ViewModel.SettingsTabControlIndex;
+    }
 }
