@@ -1,0 +1,42 @@
+﻿<controls:ComponentBase x:TypeArguments="componentSettings:WeatherComponentSettings" 
+                        x:Class="ClassIsland.Controls.Components.WeatherComponent"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                     xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                     xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                     xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                     xmlns:controls1="clr-namespace:ClassIsland.Controls"
+                     mc:Ignorable="d" 
+                     d:DesignHeight="450" d:DesignWidth="800">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <controls1:WeatherPackIconControl Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
+                                             Height="22" Width="22" VerticalAlignment="Center"/>
+            <TextBlock VerticalAlignment="Center" FontSize="16" Margin="6 0 0 0">
+                <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
+                </Run><Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}"/>
+            </TextBlock>
+            <!-- 预警信号 -->
+            <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
+                          Visibility="{Binding Settings.ShowAlerts, Converter={StaticResource BooleanToVisibilityConverter}}"
+                          Margin="6 0 -4 0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel IsItemsHost="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Image Source="{Binding Images[icon]}" 
+                               Width="22" Height="22" Stretch="UniformToFill"
+                               VerticalAlignment="Center"
+                               Margin="2 0 0 0"
+                               Opacity="1"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Grid>
+</controls:ComponentBase>

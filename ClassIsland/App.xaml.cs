@@ -298,6 +298,9 @@ public partial class App : Application, IAppHost
                 // 主界面组件
                 services.AddComponent<TestComponent, TestComponentSettingsControl>();
                 services.AddComponent<LegacyScheduleComponent>();
+                services.AddComponent<DateComponent>();
+                services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
+                services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

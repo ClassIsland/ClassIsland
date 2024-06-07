@@ -503,7 +503,8 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Grid>
-                                        <controls:ComponentPresenter Settings="{Binding}"/>
+                                        <controls:ComponentPresenter Settings="{Binding}"
+                                                                     Margin="4 0"/>
                                     </Grid>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
