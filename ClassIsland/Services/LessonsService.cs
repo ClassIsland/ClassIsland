@@ -61,11 +61,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
         set => SetProperty(ref _nextSubject, value);
     }
 
-    public TimeLayoutItem NextTimeLayoutItem
-    {
-        get => _nextTimeLayoutItem;
-        set => SetProperty(ref _nextTimeLayoutItem, value);
-    }
+    //public TimeLayoutItem NextTimeLayoutItem
+    //{
+    //    get => _nextTimeLayoutItem;
+    //    set => SetProperty(ref _nextTimeLayoutItem, value);
+    //}
 
     public TimeLayoutItem NextBreakingTimeLayoutItem
     {
@@ -271,7 +271,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             }
         }
 
-        var tClassDelta = NextTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        var tClassDelta = NextClassTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         OnClassLeftTime = tClassDelta;
         OnBreakingTimeLeftTime = NextBreakingTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         // 获取状态信息
