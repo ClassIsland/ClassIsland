@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Windows.Win32;
@@ -126,38 +129,38 @@ public class DesktopWindow : ObservableRecipient
         }
     }
 
-    public static DesktopWindow GetWindowByHWnd(HWND hWnd)
+    public static unsafe DesktopWindow GetWindowByHWnd(HWND hWnd)
     {
-        var str = new PWSTR();
-        PInvoke.GetClassName(hWnd, str, 255);
-        PInvoke.GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
+        var str = NativeWindowHelper.BuildPWSTR(256);
+        GetClassName(hWnd, str, 255);
+        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
         return new DesktopWindow()
         {
             HWnd = hWnd,
             WindowRect = rect,
-            ClassName = str.ToString(),
-            IsVisible = PInvoke.IsWindowVisible(hWnd)
+            ClassName = new string(str),
+            IsVisible = IsWindowVisible(hWnd)
         };
     }
 
-    public unsafe static DesktopWindow GetWindowByHWndDetailed(HWND hWnd)
+    public static unsafe DesktopWindow GetWindowByHWndDetailed(HWND hWnd)
     {
-        var str = new PWSTR();
-        PInvoke.GetClassName(hWnd, str, 255);
-        uint* pid = default;
-        PInvoke.GetWindowThreadProcessId(hWnd, pid);
-        var process = Process.GetProcessById((int)*pid);
-        var str2 = new PWSTR();
-        PInvoke.GetWindowText(hWnd, str2, 255);
-        PInvoke.GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
+        var str = NativeWindowHelper.BuildPWSTR(256);
+        GetClassName(hWnd, str, 255);
+        var pid = (uint)0;
+        GetWindowThreadProcessId(hWnd, &pid);
+        var process = Process.GetProcessById((int)pid);
+        var str2 = NativeWindowHelper.BuildPWSTR(256);
+        GetWindowText(hWnd, str2, 255);
+        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
         var bitmap = BitmapConveters.ConvertToBitmapImage(WindowCaptureHelper.CaptureWindowBitBlt(hWnd),h:300);
         var description = process.MainModule?.FileVersionInfo.FileDescription;
         return new DesktopWindow()
         {
             HWnd = hWnd,
-            ClassName = str.ToString(),
+            ClassName = new string(str),
             OwnerProcess = process,
-            WindowText = str2.ToString(),
+            WindowText = new string(str2),
             WindowRect = rect,
             ScreenShot = bitmap,
             Description = (description == "") ? (process.ProcessName) : description ?? process.ProcessName,
