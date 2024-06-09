@@ -194,6 +194,14 @@ public partial class App : Application, IAppHost
             Environment.Exit(0);
         }
 
+        // 检测 DWM
+        DwmIsCompositionEnabled(out var isDwmEnabled);
+        if (!isDwmEnabled)
+        {
+            CommonDialog.ShowError("运行ClassIsland需要开启Aero效果。请在【控制面板】->【个性化】中启用Aero主题，然后再尝试运行ClassIsland。");
+            Environment.Exit(0);
+        }
+
         if (ApplicationCommand.UpdateReplaceTarget != null)
         {
             //MessageBox.Show($"Update replace {ApplicationCommand.UpdateReplaceTarget}");
