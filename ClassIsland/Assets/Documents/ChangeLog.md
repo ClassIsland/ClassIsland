@@ -33,6 +33,24 @@ ClassIsland现在支持从服务器同步当前的精确时间。也可以在此
 
 ***
 
+
+# 1.4.0.2
+
+1.4 - Firefly
+
+本版本主要包含了对 1.4.0.0 与 1.4.0.1 的一些优化和修复。
+
+## 新增功能
+- 【提醒】在显示提醒时展示下节课任课教师（[#156](https://github.com/ClassIsland/ClassIsland/pull/156)）（by [@clover-yan](https://github.com/clover-yan)）
+
+## Bug修复
+- 【应用】修复无法正确判断系统TTS是否可用的问题（[#161](https://github.com/ClassIsland/ClassIsland/discussions/161)）
+- 【应用】修复因无法正确获取窗口类名，导致在Windows桌面被识别成全屏窗口误隐藏的问题 （[#158](https://github.com/ClassIsland/ClassIsland/issues/158)）
+- 【应用】修复窗口选择界面无法正确加载窗口的问题
+
+***
+
+
 # 1.4.0.1
 
 1.4 - Firefly
@@ -58,7 +76,6 @@ ClassIsland现在支持从服务器同步当前的精确时间。也可以在此
 - 【档案】修复在一些情况下临时层课表不清除的问题 （[#135](https://github.com/ClassIsland/ClassIsland/issues/135)）
 - 【档案编辑】修复在档案编辑界面中打开其它抽屉后，临时课表失效的问题 （[#154](https://github.com/ClassIsland/ClassIsland/issues/154)）
 - 【倒计时】修复考试倒计时在跨天时无法更新剩余天数的问题
-- 
 - 【主界面】修复在一些情况下可能导致访问没有连接到 `PresentationSource` 的 `Visual` 的问题
 
 ***
