@@ -240,7 +240,7 @@ public partial class App : Application, IAppHost
                 });
                 try // 检测SystemSpeechService是否存在
                 {
-                    var testSystemSpeechService = new SystemSpeechService();
+                    _ = new SpeechSynthesizer();
                     isSystemSpeechSystemExist = true;
                 }
                 catch(Exception e)
