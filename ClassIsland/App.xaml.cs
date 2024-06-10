@@ -309,6 +309,7 @@ public partial class App : Application, IAppHost
                 services.AddComponent<DateComponent>();
                 services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
                 services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
+                services.AddComponent<CountDownComponent, CountDownComponentSettingsControl>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();

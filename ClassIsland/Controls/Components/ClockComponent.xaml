@@ -12,7 +12,7 @@
                         d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponent}}">
         <TextBlock Text="{Binding CurrentTime}"
-                   FontSize="16"
+                   FontSize="18"
                    VerticalAlignment="Center"/>
     </Grid>
 </controls:ComponentBase>

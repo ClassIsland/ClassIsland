@@ -245,61 +245,8 @@
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Kind="WindowRestore" Text="显示" Margin="0 0 0 8" />
             <!-- 简略信息 -->
-            <materialDesign:Card Margin="0 0 0 6">
-                <Expander Background="Transparent"
-                                                  IsExpanded="{Binding SettingsService.Settings.ShowDate, Mode=OneWay}"
-                                                  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
-                    <Expander.Header>
-                        <controls1:SettingsControl IconGlyph="CardTextOutline"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Header="快速信息"
-                                                                          Description="在主界面显示特定的快速信息，以助于快速获取信息。"
-                                                                          Margin="-12 0">
-                            <controls1:SettingsControl.Switcher>
-                                <StackPanel Orientation="Horizontal">
-                                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      ItemsSource="{Binding MiniInfoProviderHostService.Providers}"
-                                                                      SelectedValuePath="Key"
-                                                                      IsEnabled="{Binding SettingsService.Settings.ShowDate, Mode=OneWay}"
-                                                                      SelectedValue="{Binding SettingsService.Settings.SelectedMiniInfoProvider}"
-                                                                      Width="100">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding Value.Name}"
-                                                                            ToolTip="{Binding Value.Description}" />
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                    <ToggleButton
-                                        Style="{StaticResource MaterialDesignSwitchToggleButton}"
-                                        Margin="4 0 0 0"
-                                        IsChecked="{Binding SettingsService.Settings.ShowDate, Mode=TwoWay}">
-                                    </ToggleButton>
-                                </StackPanel>
-                            </controls1:SettingsControl.Switcher>
-                        </controls1:SettingsControl>
-                    </Expander.Header>
-                    <StackPanel IsEnabled="{Binding SettingsService.Settings.ShowDate, Mode=OneWay}">
-                        <StackPanel Margin="36 0 48 12"
-                                                            d:DataContext="{d:DesignInstance interfaces:IMiniInfoProvider}">
-                            <StackPanel.DataContext>
-                                <MultiBinding
-                                                            Converter="{StaticResource MiniInfoGuidToMiniInfoProviderMultiConverter}">
-                                    <Binding Path="SettingsService.Settings.SelectedMiniInfoProvider"
-                                                                     RelativeSource="{RelativeSource FindAncestor, AncestorType=local:GeneralSettingsPage}" />
-                                    <Binding Path="MiniInfoProviderHostService.Providers"
-                                                                     RelativeSource="{RelativeSource FindAncestor, AncestorType=local:GeneralSettingsPage}" />
-                                </MultiBinding>
-                            </StackPanel.DataContext>
-                            <TextBlock Text="{Binding Description}" TextWrapping="Wrap" />
-                            <Grid Margin="0 8 0 0">
-                                <!-- Content -->
-                                <ContentPresenter Content="{Binding SettingsElement}" />
-                            </Grid>
-                        </StackPanel>
-                    </StackPanel>
-                </Expander>
-            </materialDesign:Card>
+            <TextBlock Text="快速信息已经被【组件】功能取代，请前往【组件】选项卡调整相关设置。" TextWrapping="Wrap"
+                       Margin="0 0 0 6"/>
             <!-- 显示时间点附加信息 -->
             <materialDesign:Card Margin="0 0 0 6">
                 <Expander Background="Transparent"
