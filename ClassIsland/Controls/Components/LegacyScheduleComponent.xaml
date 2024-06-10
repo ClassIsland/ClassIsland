@@ -77,7 +77,7 @@
         <!-- 没有课程提示 -->
         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
                    Text="今天没有课程。" FontSize="16"
-                   Margin="128 0">
+                   Margin="32 0">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="Visibility" Value="Collapsed" />

@@ -283,7 +283,8 @@
                 <FlowDocument FontFamily="{StaticResource HarmonyOsSans}"
                               IsOptimalParagraphEnabled="True">
                     <Paragraph>
-                        <Italic>「宇宙中有无数的星球，无尽的故事，无限的可能。即便仍被重力束缚，人类对未知的畅想永远不会停歇。」</Italic>
+                        <Italic>「钟表的指针周而复始，就像人的困惑、烦恼、软弱…摇摆不停。但最终，人们依旧要前进，就像你的指针，永远落在前方。」</Italic>
+                        <Italic>——拉格沃克•夏尔•米哈伊尔</Italic>
                     </Paragraph>
                     <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
                         关于本应用
