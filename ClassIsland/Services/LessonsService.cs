@@ -315,6 +315,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 break;
         }
 
+        CurrentOverlayEventStatus = CurrentState;
     }
 
     private int GetSubjectIndex(int index)

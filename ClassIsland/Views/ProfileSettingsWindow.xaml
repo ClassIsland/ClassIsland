@@ -310,7 +310,7 @@
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="当前启用的课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
                     <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
-                        <ToggleButton VerticalAlignment="Center" Margin="0 0 4 0" IsChecked="{Binding MainViewModel.IsClassPlanEnabled}"/>
+                        <ToggleButton VerticalAlignment="Center" Margin="0 0 4 0" IsChecked="{Binding LessonsService.IsClassPlanEnabled}"/>
                         <TextBlock Text="加载课表" VerticalAlignment="Center"/>
                     </StackPanel>
 
@@ -1524,13 +1524,13 @@
                                                 <DataTrigger Binding="{Binding ProfileService.Profile.TempClassPlanId}" Value="{x:Null}">
                                                     <Setter Property="Icon" Value="{materialDesign:PackIcon FileChartOutline}"/>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan.IsOverlay}" Value="True">
+                                                <DataTrigger Binding="{Binding LessonsService.CurrentClassPlan.IsOverlay}" Value="True">
                                                     <Setter Property="Icon" Value="{materialDesign:PackIcon LayersOutline}"/>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                                <DataTrigger Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}">
                                                     <Setter Property="Icon" Value="{materialDesign:PackIcon FileOutline}"/>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding MainViewModel.IsClassPlanEnabled}" Value="False">
+                                                <DataTrigger Binding="{Binding LessonsService.IsClassPlanEnabled}" Value="False">
                                                     <Setter Property="Icon" Value="{materialDesign:PackIcon Cancel}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -1547,12 +1547,12 @@
                                         <Run>
                                             <Run.Style>
                                                 <Style TargetType="Run">
-                                                    <Setter Property="Text" Value="{Binding MainViewModel.CurrentClassPlan.Name}"/>
+                                                    <Setter Property="Text" Value="{Binding LessonsService.CurrentClassPlan.Name}"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding MainViewModel.CurrentClassPlan}" Value="{x:Null}">
+                                                        <DataTrigger Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}">
                                                             <Setter Property="Text" Value="（无课表）"/>
                                                         </DataTrigger>
-                                                        <DataTrigger Binding="{Binding MainViewModel.IsClassPlanEnabled}" Value="False">
+                                                        <DataTrigger Binding="{Binding LessonsService.IsClassPlanEnabled}" Value="False">
                                                             <Setter Property="Text" Value="（未启用）"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>

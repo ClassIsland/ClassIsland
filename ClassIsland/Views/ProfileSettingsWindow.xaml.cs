@@ -77,6 +77,8 @@ public partial class ProfileSettingsWindow : MyWindow
     public IAttachedSettingsHostService AttachedSettingsHostService { get; } =
         App.GetService<IAttachedSettingsHostService>();
 
+    public ILessonsService LessonsService { get; } = App.GetService<ILessonsService>();
+
     public IProfileService ProfileService { get; } = App.GetService<IProfileService>();
 
     public void OpenDrawer(string key)
