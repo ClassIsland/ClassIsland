@@ -4,7 +4,7 @@
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/HelloWRC/ClassIsland)
 [![GitHub License](https://img.shields.io/github/license/HelloWRC/ClassIsland?style=flat-square)](LICENSE.txt)
-[![AppVeyor Build](https://img.shields.io/appveyor/build/HelloWRC/ClassIsland?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/HelloWRC/classisland) 
+[![AppVeyor Build](https://img.shields.io/appveyor/build/HelloWRC/classisland-yw873?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/HelloWRC/classisland-yw873) 
 [![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=flat-square&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest) 
 [![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=flat-square&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/)
 [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
