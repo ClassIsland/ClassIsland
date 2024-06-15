@@ -30,5 +30,5 @@ public class ComponentSettings : ObservableRecipient
     /// </summary>
     [JsonIgnore]
     public ComponentInfo AssociatedComponentInfo =>
-        ComponentRegistryService.Registered.FirstOrDefault(x => x.Guid.ToString() == Id) ?? ComponentInfo.Empty;
+        ComponentRegistryService.Registered.FirstOrDefault(x => string.Equals(x.Guid.ToString(), Id, StringComparison.CurrentCultureIgnoreCase)) ?? ComponentInfo.Empty;
 }

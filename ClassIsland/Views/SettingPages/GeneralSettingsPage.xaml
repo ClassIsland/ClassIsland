@@ -11,6 +11,7 @@
       xmlns:interfaces="clr-namespace:ClassIsland.Shared.Interfaces;assembly=ClassIsland.Shared"
       xmlns:views="clr-namespace:ClassIsland.Views"
       xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:commands="clr-namespace:ClassIsland.Core.Commands;assembly=ClassIsland.Core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="GeneralSettingsPage"
@@ -245,8 +246,38 @@
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Kind="WindowRestore" Text="显示" Margin="0 0 0 8" />
             <!-- 简略信息 -->
-            <TextBlock Text="快速信息已经被【组件】功能取代，请前往【组件】选项卡调整相关设置。" TextWrapping="Wrap"
-                       Margin="0 0 0 6"/>
+            <Border Padding="14" 
+                    Margin="0 0 0 8"
+                    BorderBrush="{DynamicResource MaterialDesignDivider}" 
+                    BorderThickness="1" CornerRadius="8"
+                    Visibility="{Binding SettingsService.Settings.ShowComponentsMigrateTip, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <StackPanel>
+                        <materialDesign:PackIcon Kind="WidgetsOutline"
+                                                 Height="24" Width="24"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                        <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
+                            【快速信息】功能已被【组件】取代，您在先前版本中的快速信息设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
+                            利用组件功能，您可以更深入地定制 ClassIsland 主界面上显示的内容。
+                        </TextBlock>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                HorizontalAlignment="Left"
+                                Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                CommandParameter="classisland://app/settings/components"
+                                Margin="0 4 0 0">
+                            <controls1:IconText Kind="ExternalLink" Text="前往【组件】页面" />
+                        </Button>
+                    </StackPanel>
+                    <Button Content="{materialDesign:PackIcon Close}"
+                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Padding="0"
+                            Margin="0 -4 "
+                            ToolTip="关闭"
+                            Click="ButtonCloseMigrationTip_OnClick"/>
+                </Grid>
+            </Border>
             <!-- 显示时间点附加信息 -->
             <materialDesign:Card Margin="0 0 0 6">
                 <Expander Background="Transparent"

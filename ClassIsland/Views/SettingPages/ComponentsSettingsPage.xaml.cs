@@ -78,7 +78,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         {
             return;
         }
-        ConfigureFileHelper.SaveConfig(path, new ObservableCollection<ComponentSettings>());
+        ConfigureFileHelper.SaveConfig(path, ClassIsland.Services.ComponentsService.DefaultComponents);
         ComponentsService.RefreshConfigs();
         SettingsService.Settings.CurrentComponentConfig = ViewModel.CreateProfileName;
     }

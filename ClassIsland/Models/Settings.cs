@@ -148,6 +148,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
     private string _currentComponentConfig = "Default";
+    private Version _lastAppVersion = new Version("0.0.0.0");
+    private bool _showComponentsMigrateTip = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1510,6 +1512,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _contributorsCache)) return;
             _contributorsCache = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Version LastAppVersion
+    {
+        get => _lastAppVersion;
+        set
+        {
+            if (Equals(value, _lastAppVersion)) return;
+            _lastAppVersion = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowComponentsMigrateTip
+    {
+        get => _showComponentsMigrateTip;
+        set
+        {
+            if (value == _showComponentsMigrateTip) return;
+            _showComponentsMigrateTip = value;
             OnPropertyChanged();
         }
     }

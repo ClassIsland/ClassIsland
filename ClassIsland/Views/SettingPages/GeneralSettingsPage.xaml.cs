@@ -49,4 +49,9 @@ public partial class GeneralSettingsPage : SettingsPageBase
     {
         _ = Task.Run(ExactTimeService.Sync);
     }
+
+    private void ButtonCloseMigrationTip_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.ShowComponentsMigrateTip = false;
+    }
 }

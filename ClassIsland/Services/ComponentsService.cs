@@ -25,6 +25,18 @@ public class ComponentsService : ObservableRecipient, IComponentsService
     private ComponentSettingsList _currentComponents = new();
     private IReadOnlyList<string> _componentConfigs = new List<string>();
 
+    public static ComponentSettingsList DefaultComponents { get; } = new()
+    {
+        new ComponentSettings
+        {
+            Id = "DF3F8295-21F6-482E-BADA-FA0E5F14BB66"
+        },
+        new ComponentSettings
+        {
+            Id = "E7831603-61A0-4180-B51B-54AD75B1A4D3"
+        }
+    };
+
     private string SelectedConfigFullPath =>
         Path.GetFullPath(Path.Combine(ComponentSettingsPath, SettingsService.Settings.CurrentComponentConfig + ".json"));
 
@@ -47,6 +59,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
         RefreshConfigs();
         LoadConfig();
+        RefreshConfigs();
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
