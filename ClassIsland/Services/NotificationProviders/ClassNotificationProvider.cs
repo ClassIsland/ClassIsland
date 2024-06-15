@@ -7,6 +7,7 @@ using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Interfaces;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Models.Profile;
 using ClassIsland.Helpers;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
@@ -41,6 +42,12 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private bool IsClassOnNotified { get; set; } = false;
 
     private NotificationHostService NotificationHostService { get; }
+
+    private string FormatTeacher(Subject subject)
+    {
+        var name = subject.GetFirstName();
+        return string.IsNullOrWhiteSpace(name) ? string.Empty : $"由{name}老师任教";
+    }
 
     public ClassNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
     {
@@ -97,10 +104,11 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(TimeSpan.FromSeconds(deltaTime))}。",
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
                 MaskDuration = TimeSpan.FromSeconds(5),
-                OverlaySpeechContent = $"{message} 下节课是：{NotificationHostService.NextClassSubject.TeacherName} {NotificationHostService.NextClassSubject.Name}。",
+                OverlaySpeechContent = $"{message} 下节课是：{NotificationHostService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(NotificationHostService.NextClassSubject) : "")}。",
                 OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
                 {
-                    Message = message
+                    Message = message,
+                    ShowTeacherName = Settings.ShowTeacherName
                 },
                 TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
@@ -133,12 +141,18 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         }
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
-            MaskContent = new ClassNotificationProviderControl("ClassOffNotification"),
+            MaskContent = new ClassNotificationProviderControl("ClassOffNotification")
+            {
+                ShowTeacherName = Settings.ShowTeacherName
+            },
             MaskDuration = TimeSpan.FromSeconds(2),
             MaskSpeechContent = "课间休息",
-            OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay"),
+            OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay")
+            {
+                ShowTeacherName = Settings.ShowTeacherName
+            },
             OverlayDuration = TimeSpan.FromSeconds(10),
-            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.TeacherName} {App.GetService<MainWindow>().ViewModel.NextSubject.Name}。",
+            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(App.GetService<MainWindow>().ViewModel.NextSubject) : "")}。",
             IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
         });
     }
