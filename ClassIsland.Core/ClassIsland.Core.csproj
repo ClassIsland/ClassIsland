@@ -67,6 +67,7 @@
   <ItemGroup>
     <Folder Include="Models\SettingsWindow\" />
     <Folder Include="Properties\" />
+    <Folder Include="Commands\" />
   </ItemGroup>
 
 </Project>

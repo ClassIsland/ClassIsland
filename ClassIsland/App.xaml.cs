@@ -10,6 +10,8 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Diagnostics;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 using ClassIsland.Controls;
@@ -17,8 +19,10 @@ using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.Components;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Commands;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
+using ClassIsland.Core.Extensions;
 using ClassIsland.Core.Extensions.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Services;
@@ -250,6 +254,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddSingleton<IComponentsService, ComponentsService>();
                 services.AddSingleton<ILessonsService, LessonsService>();
+                services.AddSingleton<IUriNavigationService, UriNavigationService>();
                 services.AddHostedService<MemoryWatchDogService>();
                 try // 检测SystemSpeechService是否存在
                 {
@@ -332,6 +337,8 @@ public partial class App : Application, IAppHost
 #endif
                 });
             }).Build();
+        CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(UriNavigationCommands.UriNavigationCommand, UriNavigationCommandExecuted));
+        CommandManager.RegisterClassCommandBinding(typeof(Page), new CommandBinding(UriNavigationCommands.UriNavigationCommand, UriNavigationCommandExecuted));
         await GetService<IManagementService>().SetupManagement();
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
@@ -348,6 +355,11 @@ public partial class App : Application, IAppHost
         //OverrideFocusVisualStyle();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");
+
+        GetService<IUriNavigationService>().HandleAppNavigation("test", args =>
+        {
+            CommonDialog.ShowInfo($"测试导航：{args.Uri}");
+        });
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             GetService<SplashWindow>().Show();
@@ -407,6 +419,29 @@ public partial class App : Application, IAppHost
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
         GetService<ISplashService>().CurrentProgress = 90;
+    }
+
+    private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        var uri = "";
+        if (e.Parameter is string uriRaw)
+        {
+            uri = uriRaw;
+        }
+
+        //if (sender is Hyperlink hyperlink)
+        //{
+        //    uri = hyperlink.GetHref();
+        //}
+        try
+        {
+            IAppHost.GetService<IUriNavigationService>().Navigate(new Uri(uri));
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogError(ex, "无法导航到 {}", uri);
+            CommonDialog.ShowError($"无法导航到 {uri}：{ex.Message}");
+        }
     }
 
     private bool CategoryLevelFilter(string? arg1, LogLevel arg2)

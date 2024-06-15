@@ -64,7 +64,9 @@ public partial class SettingsWindowNew : MyWindow
     private IComponentsService ComponentsService { get; }
 
 
-    public SettingsWindowNew(IManagementService managementService, IHangService hangService, ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService, IComponentsService componentsService)
+    public SettingsWindowNew(IManagementService managementService, IHangService hangService,
+        ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
+        IComponentsService componentsService, IUriNavigationService uriNavigationService)
     {
         InitializeComponent();
         Logger = logger;
