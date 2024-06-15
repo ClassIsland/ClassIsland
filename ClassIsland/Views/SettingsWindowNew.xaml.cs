@@ -63,6 +63,8 @@ public partial class SettingsWindowNew : MyWindow
 
     private IComponentsService ComponentsService { get; }
 
+    private string LaunchSettingsPage { get; set; } = StartupSettingsPage;
+
 
     public SettingsWindowNew(IManagementService managementService, IHangService hangService,
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
@@ -81,10 +83,13 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.Navigating += NavigationServiceOnNavigating;
     }
 
-    protected override void OnContentRendered(EventArgs e)
+    protected override async void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
         ViewModel.IsRendered = true;
+        ViewModel.SelectedPageInfo =
+            SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
+        await CoreNavigate();
     }
 
     private async Task BeginStoryboardAsync(string key)
@@ -134,6 +139,11 @@ public partial class SettingsWindowNew : MyWindow
     {
         if (!IsLoaded)
             return;
+        await CoreNavigate();
+    }
+
+    private async Task CoreNavigate()
+    {
         Logger.LogTrace("开始导航 \n{}", new StackTrace());
         ViewModel.IsNavigating = true;
         if (ViewModel.IsViewCompressed)
@@ -152,7 +162,6 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.Navigate(page, SettingsWindowNavigationExtraData.NavigateFromNavigationView);
         //ViewModel.FrameContent;
         NavigationService.RemoveBackEntry();
-
     }
 
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -174,7 +183,7 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.GoBack();
     }
 
-    public void Open(bool isRequiredCustomNavigation = false)
+    public void Open()
     {
         if (!IsOpened)
         {
@@ -191,19 +200,14 @@ public partial class SettingsWindowNew : MyWindow
 
             Activate();
         }
-
-        if (!ViewModel.IsRendered && !isRequiredCustomNavigation)
-        {
-            ViewModel.SelectedPageInfo =
-                SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == StartupSettingsPage);
-        }
     }
 
     public void Open(string key)
     {
         ViewModel.SelectedPageInfo =
             SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key);
-        Open(true);
+        LaunchSettingsPage = key;
+        Open();
     }
 
     public void OpenUri(Uri uri)
