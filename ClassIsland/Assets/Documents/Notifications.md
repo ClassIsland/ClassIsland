@@ -16,7 +16,7 @@
 
 ## 提醒设置
 
-您可以在[【设置】->【提醒】](ci://app/settings/notification)中调整相关提醒的设置。
+您可以在[【设置】->【提醒】](classisland://app/settings/notification)中调整相关提醒的设置。
 
 ![1694923983253](pack://application:,,,/ClassIsland;component/Assets/Documents/image/notifications/1694923983253.png)
 
@@ -28,7 +28,7 @@
 
 在发出提醒时，ClassIsland会全屏播放提醒特效，并且可以播放提示音效，增强提醒效果，置顶ClassIsland主界面。提醒音效默认禁用，您可以自定义要播放的提示音效。您还可以给每个提醒来源单独设置音效。
 
-您可以在[【设置】->【提醒】->【高级设置】](ci://app/settings/notification)调整相关设置。
+您可以在[【设置】->【提醒】->【高级设置】](classisland://app/settings/notification)调整相关设置。
 
 ![1712379341205](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1712379341205.png)
 
@@ -36,4 +36,4 @@
 
 ## 朗读提醒内容
 
-在发出提醒时，ClassIsland可以大声读出提醒的内容。此功能默认禁用，您可以前往[【设置】->【提醒】->【高级设置】](ci://app/settings/notification)调整相关设置。
+在发出提醒时，ClassIsland可以大声读出提醒的内容。此功能默认禁用，您可以前往[【设置】->【提醒】->【高级设置】](classisland://app/settings/notification)调整相关设置。

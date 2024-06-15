@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 using ClassIsland.Controls;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.ViewModels;
 
@@ -49,9 +50,12 @@ public partial class HelpsWindow : MyWindow
 
     public string InitDocumentName { get; set; } = "欢迎";
 
-    public HelpsWindow(ILogger<HelpsWindow> logger)
+    private IUriNavigationService UriNavigationService { get; }
+
+    public HelpsWindow(ILogger<HelpsWindow> logger, IUriNavigationService uriNavigationService)
     {
         Logger = logger;
+        UriNavigationService = uriNavigationService;
         DataContext = this;
         InitializeComponent();
     }
@@ -253,32 +257,6 @@ public partial class HelpsWindow : MyWindow
             return;
         }
 
-        if (uri.Scheme != "ci")
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo(uri.ToString())
-                {
-                    UseShellExecute = true
-                });
-            }
-            catch (Exception exception)
-            {
-                Logger.LogError(exception, "Unable to open external link.");
-            }
-            return;
-        }
-        if (uri.Host != "app" || uri.Segments.Length <= 1)
-            return;
-        var mw = App.GetService<MainWindow>();
-        switch (uri.Segments[1])
-        {
-            case "settings/":
-                App.GetService<SettingsWindowNew>().OpenUri(uri);
-                break;
-            case "profile":
-                mw.OpenProfileSettingsWindow();
-                break;
-        }
+        UriNavigationService.Navigate(uri);
     }
 }

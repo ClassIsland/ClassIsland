@@ -1,6 +1,6 @@
 ﻿# 欢迎
 
-欢迎使用[ClassIsland](ci://app/settings/about)。这里是ClassIsland帮助文档，关于应用的使用方法和常见问题，请参阅本文档。
+欢迎使用[ClassIsland](classisland://app/settings/about)。这里是ClassIsland帮助文档，关于应用的使用方法和常见问题，请参阅本文档。
 
 ![1694925761903](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Welcome/1694925761903.png)
 

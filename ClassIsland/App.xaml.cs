@@ -356,10 +356,6 @@ public partial class App : Application, IAppHost
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");
 
-        GetService<IUriNavigationService>().HandleAppNavigation("test", args =>
-        {
-            CommonDialog.ShowInfo($"测试导航：{args.Uri}");
-        });
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             GetService<SplashWindow>().Show();
@@ -419,6 +415,13 @@ public partial class App : Application, IAppHost
         MainWindow = GetService<MainWindow>();
         GetService<MainWindow>().Show();
         GetService<ISplashService>().CurrentProgress = 90;
+
+        // 注册uri导航
+        var uriNavigationService = GetService<IUriNavigationService>();
+        uriNavigationService.HandleAppNavigation("test", args => CommonDialog.ShowInfo($"测试导航：{args.Uri}"));
+        uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
+        uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
+        uriNavigationService.HandleAppNavigation("helps", args => GetService<MainWindow>().OpenHelpsWindow());
     }
 
     private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)

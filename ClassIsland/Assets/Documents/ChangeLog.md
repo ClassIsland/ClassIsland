@@ -4,19 +4,19 @@
 
 ## 朗读提醒内容
 
-在发出提醒时，ClassIsland可以大声读出提醒的内容。此功能默认禁用，您可以前往[【设置】->【提醒】->【更多选项】](ci://app/settings/notification)调整相关设置。
+在发出提醒时，ClassIsland可以大声读出提醒的内容。此功能默认禁用，您可以前往[【设置】->【提醒】->【更多选项】](classisland://app/settings/notification)调整相关设置。
 
 ## 增强提醒
 
 在发出提醒时，ClassIsland会全屏播放提醒特效，并且可以播放提示音效，增强提醒效果。提醒音效默认禁用，您可以自定义要播放的提示音效。您还可以给每个提醒来源单独设置音效。
 
-您可以在[【设置】->【提醒】->【更多选项】](ci://app/settings/notification)调整相关设置。
+您可以在[【设置】->【提醒】->【更多选项】](classisland://app/settings/notification)调整相关设置。
 
 ![1712379341205](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1712379341205.png)
 
 ## 精确时间
 
-ClassIsland现在支持从服务器同步当前的精确时间。也可以在此基础上自定义时间偏移值，用于微调时间。此外，ClassIsland还支持在每天以设定的增量值调整时间偏移值。您可以前往[【设置】->【基本】->【时钟】](ci://app/settings/general)调整相关设置。
+ClassIsland现在支持从服务器同步当前的精确时间。也可以在此基础上自定义时间偏移值，用于微调时间。此外，ClassIsland还支持在每天以设定的增量值调整时间偏移值。您可以前往[【设置】->【基本】->【时钟】](classisland://app/settings/general)调整相关设置。
 
 ![1711863876445](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1711863876445.png)
 

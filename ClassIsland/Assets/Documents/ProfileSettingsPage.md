@@ -22,7 +22,7 @@
 
     ![1690357909840](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ProfileSettingsPage/1690357909840.png)
 
-> 您也可以点击[这里](ci://app/profile)快速打开档案设置窗口。
+> 您也可以点击[这里](classisland://app/profile)快速打开档案设置窗口。
 
 ## 从表格导入
 

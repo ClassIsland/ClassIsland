@@ -20,9 +20,9 @@
 
 本软件的主界面默认会显示在屏幕的上方，课表、提醒等信息都会显示在此处。当处于某个课程时，对应课程会展开显示，并在下方显示进度条。
 
-在[【应用设置】→【窗口】](ci://app/settings/window)中，您可以调整主界面的停靠位置和窗口层级。
+在[【应用设置】→【窗口】](classisland://app/settings/window)中，您可以调整主界面的停靠位置和窗口层级。
 
-在[【应用设置】→【外观】](ci://app/settings/appearance)中，您可以调整主界面的缩放大小和背景不透明度。
+在[【应用设置】→【外观】](classisland://app/settings/appearance)中，您可以调整主界面的缩放大小和背景不透明度。
 
 ## 快速信息
 
@@ -30,7 +30,7 @@
 
 ![1694924066147](pack://application:,,,/ClassIsland;component/Assets/Documents/image/MiniInfo/1694924066147.png)
 
-您可以在[【设置】->【基本】](ci://app/settings/general)中修改要显示的快速信息和快速信息相关的设置。
+您可以在[【设置】->【基本】](classisland://app/settings/general)中修改要显示的快速信息和快速信息相关的设置。
 
 ![1694925086975](pack://application:,,,/ClassIsland;component/Assets/Documents/image/MiniInfo/1694925086975.png)
 
@@ -40,18 +40,18 @@
 
 ![miniinfo](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/miniinfo.png)
 
-您可以在[设置](ci://app/settings/general)中开关附加信息的显示，以及调整显示的信息内容。
+您可以在[设置](classisland://app/settings/general)中开关附加信息的显示，以及调整显示的信息内容。
 
 ![1707456825303](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/1707456825303.png)
 
 ## 时间点结束倒计时
 
-> 这和即将上课倒计时不是一个东西。要调整即将上课倒计时，请在[【提醒】](ci://app/settings/notification/08F0D9C3-C770-4093-A3D0-02F3D90C24BC)选项卡中调整相关设置。
+> 这和即将上课倒计时不是一个东西。要调整即将上课倒计时，请在[【提醒】](classisland://app/settings/notification/08F0D9C3-C770-4093-A3D0-02F3D90C24BC)选项卡中调整相关设置。
 
 应用默认会在时间点结束前60秒在显示附加信息的位置显示时间点结束读秒。
 
 ![1707463775853](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/1707463775853.png)
 
-您可以在[设置](ci://app/settings/general)中调整此功能。
+您可以在[设置](classisland://app/settings/general)中调整此功能。
 
 ![1707456835205](pack://application:,,,/ClassIsland;component/Assets/Documents/image/Basic/1707456835205.png)
