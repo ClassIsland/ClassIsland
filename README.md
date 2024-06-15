@@ -4,7 +4,7 @@
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/HelloWRC/ClassIsland)
 [![GitHub License](https://img.shields.io/github/license/HelloWRC/ClassIsland?style=flat-square)](LICENSE.txt)
-[![AppVeyor Build](https://img.shields.io/appveyor/build/HelloWRC/ClassIsland?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/HelloWRC/classisland) 
+[![AppVeyor Build](https://img.shields.io/appveyor/build/HelloWRC/classisland-yw873?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/HelloWRC/classisland-yw873) 
 [![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=flat-square&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest) 
 [![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=flat-square&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/)
 [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
@@ -132,7 +132,7 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 - .NET 桌面开发
 
 
-**我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/HelloWRC/ClassIsland/pulls)。**
+如果您有意愿为 ClassIsland 做出代码贡献，请先阅读[贡献指南](CONTRIBUTING.md)来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/HelloWRC/ClassIsland/pulls)。
 
 ## 获取帮助&加入社区
 

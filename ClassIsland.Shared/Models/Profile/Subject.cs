@@ -1,4 +1,6 @@
-﻿namespace ClassIsland.Shared.Models.Profile;
+using System.Text.RegularExpressions;
+
+namespace ClassIsland.Shared.Models.Profile;
 
 /// <summary>
 /// 代表一个科目
@@ -74,4 +76,33 @@ public class Subject : AttachableSettingsObject
         Initial = "?",
         Name = "???"
     };
+    
+    /// <summary>
+    /// 获取当前科目任课老师姓名的姓氏，如果没有填写任课老师信息，则返回空字符串。
+    /// </summary>
+    /// <returns>任课老师的姓氏。</returns>
+    public string GetFirstName()
+    {
+        if (string.IsNullOrWhiteSpace(TeacherName))
+        {
+            return string.Empty;
+        }
+
+        // 判断是否包含中文字符
+        var containsChinese = Regex.IsMatch(TeacherName, @"[\u4e00-\u9fa5]");
+
+        if (containsChinese)
+        {
+            // 中文姓名，假设姓氏为第一个字符
+            if (TeacherName.Length >= 1) return TeacherName[..1];
+        }
+        else
+        {
+            // 英文姓名，假设姓氏为最后一个单词
+            var nameParts = TeacherName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return nameParts.Length > 1 ? nameParts[^1] : TeacherName; // 处理只有一个单词的情况
+        }
+
+        return "";
+    }
 }

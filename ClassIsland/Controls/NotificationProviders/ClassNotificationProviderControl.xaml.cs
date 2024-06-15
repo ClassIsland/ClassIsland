@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.ViewModels;
 
 namespace ClassIsland.Controls.NotificationProviders;
 
@@ -12,6 +16,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     private object? _element;
     private string _message = "";
     private int _slideIndex = 0;
+    private bool _showTeacherName = false;
 
     public object? Element
     {
@@ -46,6 +51,19 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         }
     }
 
+    public bool ShowTeacherName
+    {
+        get => _showTeacherName;
+        set
+        {
+            if (value == _showTeacherName) return;
+            _showTeacherName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ILessonsService LessonsService { get; } = App.GetService<ILessonsService>();
+
     private DispatcherTimer Timer { get; } = new()
     {
         Interval = TimeSpan.FromSeconds(10)
@@ -54,13 +72,14 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     public ClassNotificationProviderControl(string key)
     {
         InitializeComponent();
-        Element = FindResource(key);
+        var visual = FindResource(key) as FrameworkElement;
+        Element = visual;
         Timer.Tick += TimerOnTick;
         if (key == "ClassPrepareNotifyOverlay")
         {
             Timer.Start();
         }
-        //TODO: 判断是否需要显示教师名称，并提供开关
+        
     }
 
     private void TimerOnTick(object? sender, EventArgs e)

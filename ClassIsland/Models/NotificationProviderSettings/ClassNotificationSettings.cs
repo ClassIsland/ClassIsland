@@ -13,6 +13,7 @@ public class ClassNotificationSettings : ObservableRecipient
     private bool _isSpeechEnabledOnClassPreparing = true;
     private bool _isSpeechEnabledOnClassOn = true;
     private bool _isSpeechEnabledOnClassOff = true;
+    private bool _showTeacherName = false;
 
     public bool IsClassOnNotificationEnabled
     {
@@ -109,6 +110,17 @@ public class ClassNotificationSettings : ObservableRecipient
         {
             if (value == _isSpeechEnabledOnClassOff) return;
             _isSpeechEnabledOnClassOff = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowTeacherName
+    {
+        get => _showTeacherName;
+        set
+        {
+            if (value == _showTeacherName) return;
+            _showTeacherName = value;
             OnPropertyChanged();
         }
     }

@@ -122,6 +122,12 @@
                         </StackPanel>
                     </Expander>
                 </materialDesign:Card>
+                <!-- 显示教科任老师名字 -->
+                <controls1:SettingsCard IconGlyph="Teacher"
+                                       Header="显示科任老师名字"
+                                       Description="在显示课程相关的提醒时同时展示并播报对应科任老师的名字"
+                                       IsOn="{Binding Settings.ShowTeacherName, Mode=TwoWay}"
+                                       Margin="0 0 0 6" />
             </StackPanel>
         </ScrollViewer>
     </Grid>
