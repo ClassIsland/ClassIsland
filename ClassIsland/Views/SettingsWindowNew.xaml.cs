@@ -23,6 +23,7 @@ using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Services.Registry;
@@ -70,7 +71,6 @@ public partial class SettingsWindowNew : MyWindow
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
         IComponentsService componentsService, IUriNavigationService uriNavigationService)
     {
-        InitializeComponent();
         Logger = logger;
         DataContext = this;
         ManagementService = managementService;
@@ -78,17 +78,46 @@ public partial class SettingsWindowNew : MyWindow
         DiagnosticService = diagnosticService;
         HangService = hangService;
         SettingsService = settingsService;
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        InitializeComponent();
         NavigationService = NavigationFrame.NavigationService;
         NavigationService.LoadCompleted += NavigationServiceOnLoadCompleted;
         NavigationService.Navigating += NavigationServiceOnNavigating;
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+
+        if (ManagementService.Policy.DisableSettingsEditing)
+        {
+            LaunchSettingsPage = "about";
+        }
+    }
+
+    private async void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ViewModel.SelectedPageInfo))
+        {
+            if (!IsLoaded || !ViewModel.IsRendered)
+                return;
+            await CoreNavigate();
+        }
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SettingsService.Settings.IsDebugOptionsEnabled))
+        {
+            if (FindResource("NavigationCollectionViewSource") is CollectionViewSource source)
+            {
+                source.View.Refresh();
+            }
+        }
     }
 
     protected override async void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
-        ViewModel.IsRendered = true;
         ViewModel.SelectedPageInfo =
             SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
+        ViewModel.IsRendered = true;
         await CoreNavigate();
     }
 
@@ -137,14 +166,22 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationListBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (!IsLoaded)
-            return;
-        await CoreNavigate();
+        
     }
 
     private async Task CoreNavigate()
     {
         Logger.LogTrace("开始导航 \n{}", new StackTrace());
+        switch (ViewModel.SelectedPageInfo?.Category)
+        {
+            // 判断是否可以导航
+            case SettingsPageCategory.Internal or SettingsPageCategory.External when
+                ManagementService.Policy.DisableSettingsEditing:
+            case SettingsPageCategory.Debug when
+                ManagementService.Policy.DisableDebugMenu:
+                return;
+        }
+
         ViewModel.IsNavigating = true;
         if (ViewModel.IsViewCompressed)
         {
@@ -328,6 +365,27 @@ public partial class SettingsWindowNew : MyWindow
         catch (Exception exception)
         {
             CommonDialog.ShowError($"导出失败：{exception.Message}");
+        }
+    }
+
+    private void NavigationCollectionViewSource_OnFilter(object sender, FilterEventArgs e)
+    {
+        if (e.Item is not SettingsPageInfo item)
+            return;
+        if (item.Category is SettingsPageCategory.Internal or SettingsPageCategory.External && ManagementService.Policy.DisableSettingsEditing)
+        {e.Accepted = false;
+            return;
+        }
+        if (item.Category == SettingsPageCategory.Debug && ManagementService.Policy.DisableDebugMenu)
+        {
+            e.Accepted = false;
+            return;
+        }
+
+        if (item.Category == SettingsPageCategory.Debug && !SettingsService.Settings.IsDebugOptionsEnabled)
+        {
+            e.Accepted = false;
+            return;
         }
     }
 }

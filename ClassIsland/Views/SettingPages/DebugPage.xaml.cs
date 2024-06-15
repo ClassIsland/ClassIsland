@@ -56,7 +56,7 @@ public partial class DebugPage : SettingsPageBase
 
     private void ButtonCloseDebug_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.IsDebugEnabled = false;
+        SettingsService.Settings.IsDebugOptionsEnabled = false;
     }
 
     private void MenuItemFeatureDebugWindow_OnClick(object sender, RoutedEventArgs e)

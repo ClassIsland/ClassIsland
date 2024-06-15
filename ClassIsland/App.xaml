@@ -91,12 +91,6 @@
                         <Setter Property="Margin" Value="0 0 0 6" />
                     </Style>
                 </Style.Resources>
-                <Style.Triggers>
-                    <!-- TODO: 在完成设置页面重构后，用属性声明方式禁用设置页面 -->
-                    <Trigger  Property="Tag" Value="CanPolicyDisable">
-                        <Setter Property="IsEnabled" Value="{Binding ManagementService.Policy.DisableSettingsEditing, Converter={StaticResource InvertBooleanConverter}}"/>
-                    </Trigger>
-                </Style.Triggers>
             </Style>
 
             <converters1:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />

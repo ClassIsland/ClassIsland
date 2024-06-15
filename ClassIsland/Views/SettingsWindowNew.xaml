@@ -107,7 +107,8 @@
         </Storyboard>
 
         <CollectionViewSource x:Key="NavigationCollectionViewSource"
-                              Source="{x:Static services:SettingsWindowRegistryService.Registered}">
+                              Source="{x:Static services:SettingsWindowRegistryService.Registered}"
+                              Filter="NavigationCollectionViewSource_OnFilter">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="Category"/>
             </CollectionViewSource.GroupDescriptions>
@@ -301,9 +302,9 @@
                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                     ToolTip="查看您的单位/组织如何管理此ClassIsland实例。"
                                     Icon="{materialDesign:PackIcon WorkOutline}">
-                                    <!--<materialDesign:Chip.CommandParameter>
+                                    <materialDesign:Chip.CommandParameter>
                                         <controls2:ManagementInfoControl />
-                                    </materialDesign:Chip.CommandParameter>-->
+                                    </materialDesign:Chip.CommandParameter>
                                     <TextBlock>
                                         <Run Text="由贵单位管理" />
                                     </TextBlock>

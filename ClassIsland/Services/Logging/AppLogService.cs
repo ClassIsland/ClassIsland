@@ -13,8 +13,8 @@ public class AppLogService : IAppLogService
 
     public void AddLog(LogEntry log)
     {
-        var dispatcher = Application.Current.Dispatcher;
-        _ = dispatcher.InvokeAsync(() =>
+        var dispatcher = Application.Current?.Dispatcher;
+        _ = dispatcher?.InvokeAsync(() =>
         {
             Logs.Add(log);
             while (Logs.Count > MaxLogEntries)

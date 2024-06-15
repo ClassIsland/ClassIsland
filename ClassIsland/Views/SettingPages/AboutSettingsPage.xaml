@@ -225,6 +225,7 @@
                     <!-- icon -->
                     <materialDesign:Ripple Grid.Column="0" VerticalAlignment="Top"
                                            MouseDown="AppIcon_OnMouseDown"
+                                           Feedback="{DynamicResource MaterialDesignBody}"
                                            ToolTip="ClassIsland">
                         <Image Source="/Assets/AppLogo.ico" Width="40"
                                Height="40" VerticalAlignment="Top" />
