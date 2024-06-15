@@ -132,7 +132,7 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 - .NET 桌面开发
 
 
-**我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/HelloWRC/ClassIsland/pulls)。**
+如果您有意愿为 ClassIsland 做出代码贡献，请先阅读[贡献指南](CONTRIBUTING.md)来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/HelloWRC/ClassIsland/pulls)。
 
 ## 获取帮助&加入社区
 
