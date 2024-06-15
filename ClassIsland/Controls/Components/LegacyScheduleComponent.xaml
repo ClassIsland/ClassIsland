@@ -20,7 +20,7 @@
                  HorizontalAlignment="Left"
                  ItemsSource="{Binding LessonsService.CurrentClassPlan.TimeLayout.Layouts}"
                  IsHitTestVisible="False"
-                 Margin="-6 0"
+                 Margin="-3 0"
                  x:Name="MainListBox"
                  SelectedIndex="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"
                  IsTabStop="False">
