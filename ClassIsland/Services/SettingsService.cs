@@ -100,12 +100,12 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         where T : class
     {
         var fallback = fallbackValue ?? Activator.CreateInstance<T>();
-        var r = Settings.MiniInfoProviderSettings.TryGetValue(key, out var o);
+        var r = Settings.MiniInfoProviderSettings.TryGetValue(key.ToLower(), out var o);
         if (o is JsonElement o1)
         {
             return o1.Deserialize<T>() ?? fallback;
         }
-        return (T?)Settings.MiniInfoProviderSettings[key] ?? fallback;
+        return (T?)Settings.MiniInfoProviderSettings[key.ToLower()] ?? fallback;
     }
 
     private void MigrateSettings()
@@ -115,7 +115,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
             var componentsService = App.GetService<IComponentsService>();
             componentsService.CurrentComponents.Clear();
             var island = componentsService.CurrentComponents;
-            var miniInfo = Settings.SelectedMiniInfoProvider switch
+            var miniInfo = Settings.SelectedMiniInfoProvider?.ToUpper() switch
             {
                 // 日期
                 "D9FC55D6-8061-4C21-B521-6B0532FF735F" => new ComponentSettings
