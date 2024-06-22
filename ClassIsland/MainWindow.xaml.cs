@@ -530,8 +530,11 @@ public partial class MainWindow : Window
         ViewModel.CurrentOverlayElement = null;
         ViewModel.CurrentMaskElement = null;
         ViewModel.IsOverlayOpened = false;
-        ViewModel.IsNotificationWindowExplicitShowed = false;
-        SetBottom();
+        if (ViewModel.IsNotificationWindowExplicitShowed)
+        {
+            ViewModel.IsNotificationWindowExplicitShowed = false;
+            SetBottom();
+        }
         UpdateTheme();
     }
 
