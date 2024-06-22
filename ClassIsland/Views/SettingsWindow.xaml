@@ -35,7 +35,8 @@
                    xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:interfaces="clr-namespace:ClassIsland.Core.Interfaces;assembly=ClassIsland.Core"
-                   xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core">
+                   xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core"
+                   xmlns:validations="clr-namespace:ClassIsland.Validations">
     <Window.Resources>
         <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                x:Key="NotificationsListBoxItemStyle">
@@ -1659,8 +1660,14 @@ The quick brown fox jumps over a lazy dog.
                                             <ComboBox Margin="0 12 0 0"
                                                       Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                                       materialDesign:HintAssist.Hint="显示器"
-                                                      SelectedIndex="{Binding Settings.WindowDockingMonitorIndex}"
                                                       ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
+                                                <ComboBox.SelectedIndex>
+                                                    <Binding Path="Settings.WindowDockingMonitorIndex">
+                                                        <Binding.ValidationRules>
+                                                            <validations:NotNegativeIndexValidationRule/>
+                                                        </Binding.ValidationRules>
+                                                    </Binding>
+                                                </ComboBox.SelectedIndex>
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
                                                         <StackPanel Orientation="Horizontal">

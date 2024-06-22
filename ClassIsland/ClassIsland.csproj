@@ -72,7 +72,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\TimeRules\" />
-    <Folder Include="Validations\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" Link=".editorconfig" />
