@@ -280,9 +280,9 @@
                 <models:ContributionLabel Title="MahApps.Metro"
                                           License="MIT license"
                                           Website="https://github.com/MahApps/MahApps.Metro" />
-                <models:ContributionLabel Title="gong-mdWpf-dragdrop"
+                <models:ContributionLabel Title="gong-wpf-dragdrop"
                                           License="BSD 3-Clause"
-                                          Website="https://github.com/punker76/gong-mdWpf-dragdrop" />
+                                          Website="https://github.com/punker76/gong-wpf-dragdrop" />
                 <models:ContributionLabel Title="H.NotifyIcon.Wpf"
                                           License="MIT License"
                                           Website="https://github.com/HavenDV/H.NotifyIcon" />
