@@ -129,41 +129,46 @@ public class DesktopWindow : ObservableRecipient
 
     public static unsafe DesktopWindow GetWindowByHWnd(HWND hWnd)
     {
-        var str = NativeWindowHelper.BuildPWSTR(256);
+        var str = NativeWindowHelper.BuildPWSTR(256, out var pstr);
         GetClassName(hWnd, str, 255);
         GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
-        return new DesktopWindow()
+        var window = new DesktopWindow()
         {
             HWnd = hWnd,
             WindowRect = rect,
             ClassName = new string(str),
             IsVisible = IsWindowVisible(hWnd)
         };
+        Marshal.FreeHGlobal(pstr);
+        return window;
     }
 
     public static unsafe DesktopWindow GetWindowByHWndDetailed(HWND hWnd)
     {
-        var str = NativeWindowHelper.BuildPWSTR(256);
-        GetClassName(hWnd, str, 255);
+        var pClassName = NativeWindowHelper.BuildPWSTR(256, out var nClassName);
+        GetClassName(hWnd, pClassName, 255);
         var pid = (uint)0;
         GetWindowThreadProcessId(hWnd, &pid);
         var process = Process.GetProcessById((int)pid);
-        var str2 = NativeWindowHelper.BuildPWSTR(256);
-        GetWindowText(hWnd, str2, 255);
+        var pWindowText = NativeWindowHelper.BuildPWSTR(256, out var nWindowText);
+        GetWindowText(hWnd, pWindowText, 255);
         GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
         var bitmap = BitmapConveters.ConvertToBitmapImage(WindowCaptureHelper.CaptureWindowBitBlt(hWnd),h:300);
         var description = process.MainModule?.FileVersionInfo.FileDescription;
-        return new DesktopWindow()
+        var windowByHWndDetailed = new DesktopWindow()
         {
             HWnd = hWnd,
-            ClassName = new string(str),
+            ClassName = new string(pClassName),
             OwnerProcess = process,
-            WindowText = new string(str2),
+            WindowText = new string(pWindowText),
             WindowRect = rect,
             ScreenShot = bitmap,
             Description = (description == "") ? (process.ProcessName) : description ?? process.ProcessName,
             IsVisible = IsWindowVisible(hWnd),
             Icon = BitmapConveters.ConvertToBitmapImage(System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule!.FileName!)!.ToBitmap(), h:32)
         };
+        Marshal.FreeHGlobal(nClassName);
+        Marshal.FreeHGlobal(nWindowText);
+        return windowByHWndDetailed;
     }
 }
