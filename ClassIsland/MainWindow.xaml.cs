@@ -194,10 +194,14 @@ public partial class MainWindow : Window
         //NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
 
         // Detect fullscreen
-        var screen = Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] ??
-                     Screen.PrimaryScreen!;
-        ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
-        ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
+        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
+                     ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
+            Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
+        if (screen != null)
+        {
+            ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
+            ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
+        }
 
     }
 
@@ -380,8 +384,11 @@ public partial class MainWindow : Window
         ViewModel.CurrentOverlayElement = null;
         ViewModel.CurrentMaskElement = null;
         ViewModel.IsOverlayOpened = false;
-        ViewModel.IsNotificationWindowExplicitShowed = false;
-        SetBottom();
+        if (ViewModel.IsNotificationWindowExplicitShowed)
+        {
+            ViewModel.IsNotificationWindowExplicitShowed = false;
+            SetBottom();
+        }
         UpdateTheme();
     }
 
@@ -675,9 +682,11 @@ public partial class MainWindow : Window
         ViewModel.GridRootLeft = Width / 10 * (scale - 1);
         ViewModel.GridRootTop = Height / 10 * (scale - 1);
 
-        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length 
+        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length  && ViewModel.Settings.WindowDockingMonitorIndex >= 0
             ? Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] 
             : Screen.PrimaryScreen;
+        if (screen == null)
+            return;
         var aw = RenderSize.Width * dpiX;
         var ah = RenderSize.Height * dpiY;
         var c = (double)(screen.WorkingArea.Left + screen.WorkingArea.Right) / 2;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -7,9 +8,9 @@ namespace ClassIsland.ViewModels.SettingsPages;
 
 public class WindowSettingsViewModel : ObservableRecipient
 {
-    private Screen[] _screens = Array.Empty<Screen>();
+    private ObservableCollection<Screen> _screens = new();
 
-    public Screen[] Screens
+    public ObservableCollection<Screen> Screens
     {
         get => _screens;
         set

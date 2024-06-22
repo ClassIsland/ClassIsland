@@ -33,10 +33,12 @@ public static class NativeWindowHelper
         }
         var win = GetForegroundWindow();
         GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
-        var str = BuildPWSTR(256);
-        GetClassName(win, str, 255);
+        var pClassName = BuildPWSTR(256, out var nClassName);
+        GetClassName(win, pClassName, 255);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (str.ToString() == "WorkerW" || str.ToString() == "Progman")
+        var className = pClassName.ToString();
+        Marshal.FreeHGlobal(nClassName);
+        if (className == "WorkerW" || className == "Progman")
         {
             return false;
         }
@@ -51,10 +53,12 @@ public static class NativeWindowHelper
         }
         var win = GetForegroundWindow();
         GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
-        var str = BuildPWSTR(256);
-        GetClassName(win, str, 255);
+        var pClassName = BuildPWSTR(256, out var nClassName);
+        GetClassName(win, pClassName, 255);
+        var className = pClassName.ToString();
+        Marshal.FreeHGlobal(nClassName);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (str.ToString() == "WorkerW" || str.ToString() == "Progman")
+        if (className == "WorkerW" || className == "Progman")
         {
             return false;
         }
@@ -140,16 +144,10 @@ public static class NativeWindowHelper
         return windows;
     }
 
-    public static unsafe PWSTR BuildPWSTR(int bufferSize)
+    public static unsafe PWSTR BuildPWSTR(int bufferSize, out nint ptr)
     {
-        unsafe
-        {
-            fixed (char* buffer = new char[bufferSize])
-            {
-                var str = new PWSTR(&buffer[0]);
-                return str;
-            }
-        }
+        ptr = Marshal.AllocHGlobal(bufferSize * sizeof(char));
+        return new PWSTR((char*)ptr.ToPointer());
     }
 
     public struct StyleStruct

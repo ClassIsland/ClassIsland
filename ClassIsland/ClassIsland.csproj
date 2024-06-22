@@ -57,8 +57,6 @@
   <ItemGroup>
     <Folder Include="Models\Logging\" />
     <Folder Include="Models\TimeRules\" />
-    <Folder Include="Models\Weather\" />
-    <Folder Include="Validations\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\.editorconfig" Link=".editorconfig" />

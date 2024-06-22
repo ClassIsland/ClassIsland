@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -37,11 +38,11 @@ public partial class WindowSettingsPage : SettingsPageBase
         InitializeComponent();
         DataContext = this;
         SettingsService = settingsService;
-        ViewModel.Screens = Screen.AllScreens;
+        ViewModel.Screens = new ObservableCollection<Screen>(Screen.AllScreens);
     }
 
     private void ButtonRefreshMonitors_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.Screens = Screen.AllScreens;
+        ViewModel.Screens = new ObservableCollection<Screen>(Screen.AllScreens);
     }
 }

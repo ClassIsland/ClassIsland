@@ -4,6 +4,7 @@ using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Speech.Synthesis;
 using System.Threading;
@@ -12,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Diagnostics;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 using ClassIsland.Controls;
@@ -174,7 +176,7 @@ public partial class App : Application, IAppHost
             }
             else
             {
-                CommonDialog.ShowHint("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。");
+                ProcessInstanceExisted();
                 Environment.Exit(0);
             }
         }
@@ -444,6 +446,39 @@ public partial class App : Application, IAppHost
         {
             Logger?.LogError(ex, "无法导航到 {}", uri);
             CommonDialog.ShowError($"无法导航到 {uri}：{ex.Message}");
+        }
+    }
+
+    private void ProcessInstanceExisted()
+    {
+        var r = new CommonDialogBuilder()
+            .SetContent("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。")
+            .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.RelativeOrAbsolute))
+            .AddAction("退出应用", PackIconKind.ExitToApp)
+            .AddAction("重启现有实例", PackIconKind.Restart, true)
+            .ShowDialog();
+        if (r != 1)
+        {
+            return;
+        }
+
+        try
+        {
+            var proc = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Environment.ProcessPath)).Where(x=>x.Id != Environment.ProcessId);
+            foreach (var i in proc)
+            {
+                i.Kill(true);
+            }
+
+            Process.Start(new ProcessStartInfo(Environment.ProcessPath ?? "")
+            {
+                ArgumentList = { "-m" }
+            });
+        }
+        catch (Exception e)
+        {
+            CommonDialog.ShowError($"无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。\n\n{e.Message}");
+
         }
     }
 

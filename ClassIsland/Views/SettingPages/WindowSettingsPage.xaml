@@ -8,6 +8,7 @@
       xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:validations="clr-namespace:ClassIsland.Validations"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -107,8 +108,14 @@
                     <ComboBox Margin="0 12 0 0"
                               Style="{StaticResource MaterialDesignOutlinedComboBox}"
                               materialDesign:HintAssist.Hint="显示器"
-                              SelectedIndex="{Binding SettingsService.Settings.WindowDockingMonitorIndex}"
                               ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
+                        <ComboBox.SelectedIndex>
+                            <Binding Path="SettingsService.Settings.WindowDockingMonitorIndex">
+                                <Binding.ValidationRules>
+                                    <validations:NotNegativeIndexValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </ComboBox.SelectedIndex>
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
