@@ -6,7 +6,6 @@
              xmlns:hc="https://handyorg.github.io/handycontrol"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-             xmlns:controls="clr-namespace:ClassIsland.Controls"
              xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
              xmlns:controls1="clr-namespace:ClassIsland.Core.Controls"
              x:Class="ClassIsland.Core.Controls.ColorPicker"
