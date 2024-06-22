@@ -22,7 +22,7 @@ namespace ClassIsland.ViewModels;
 
 public class SettingsViewModel : ObservableRecipient
 {
-    private Screen[] _screens = Array.Empty<Screen>();
+    private ObservableCollection<Screen> _screens = new();
     private string _license = "";
     private object? _drawerContent = new();
     private FlowDocument _currentMarkdownDocument = new();
@@ -43,7 +43,7 @@ public class SettingsViewModel : ObservableRecipient
     private bool _isRestartRequired = false;
     private bool _isRefreshingContributors = false;
 
-    public Screen[] Screens
+    public ObservableCollection<Screen> Screens
     {
         get => _screens;
         set

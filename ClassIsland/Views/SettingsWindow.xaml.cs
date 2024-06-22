@@ -184,7 +184,7 @@ public partial class SettingsWindow : MyWindow
 
     private void RefreshMonitors()
     {
-        ViewModel.Screens = Screen.AllScreens;
+        ViewModel.Screens = new ObservableCollection<Screen>(Screen.AllScreens);
     }
 
     private void ButtonRefreshMonitors_OnClick(object sender, RoutedEventArgs e)
