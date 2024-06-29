@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 
 namespace ClassIsland.Shared.Helpers;
 
@@ -60,23 +61,8 @@ public class ConfigureFileHelper
     /// <param name="o">要写入到配置的对象</param>
     public static void SaveConfig<T>(string path, T o)
     {
-        // 备份原文件
-        if (File.Exists(path))
-        {
-            File.Copy(path, path + ".bak", true);
-        }
-        else
-        {
-            File.WriteAllText(path + ".bak", JsonSerializer.Serialize<T>(o));
-            // 校验备份文件是否写入成功
-            var bakInfo = new FileInfo(path + ".bak");
-            if (bakInfo.Length <= 0)
-            {
-                File.Delete(path + ".bak");
-                return;
-            }
-        }
-        File.WriteAllText(path, JsonSerializer.Serialize<T>(o));
+        // 在保存时不对备份文件进行操作，以防止在保存时发生意外断电时，备份文件也受到损坏。
+        WriteAllTextSafe(path, JsonSerializer.Serialize<T>(o));
     }
 
     /// <summary>
@@ -113,5 +99,13 @@ public class ConfigureFileHelper
         }
 
         return raw;
+    }
+
+    private static void WriteAllTextSafe(string path, string content)
+    {
+        using var stream = new FileStream(path, FileMode.Create);
+        using var writer = new StreamWriter(stream);
+        writer.Write(content);
+        stream.Flush(true);
     }
 }
