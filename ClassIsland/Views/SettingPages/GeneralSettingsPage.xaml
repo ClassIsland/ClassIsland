@@ -321,6 +321,9 @@
                             <ComboBoxItem HorizontalContentAlignment="Left">
                                 <TextBlock Text="剩余时间" />
                             </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <TextBlock Text="倒计时" />
+                            </ComboBoxItem>
                         </ComboBox>
                     </Grid>
                 </Expander>
