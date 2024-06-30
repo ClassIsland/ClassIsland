@@ -18,7 +18,7 @@
             <Run Text="{Binding Settings.countDownName}"
                  Foreground="{Binding Settings.fontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                  FontSize="{Binding Settings.fontSize}"/>
-            <Run Text=" 还有 " FontSize="16"/>
+            <Run Text=" 仅剩 " FontSize="16"/>
             <Run Text="{Binding Settings.DaysLeft, Mode=OneWay}" 
                  Foreground="{Binding Settings.fontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
                  FontSize="{Binding Settings.fontSize}"/>
