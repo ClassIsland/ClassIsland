@@ -87,6 +87,9 @@
                         <ComboBoxItem HorizontalContentAlignment="Left">
                             <controls1:IconText Kind="Visibility" Text="显示/隐藏主界面" />
                         </ComboBoxItem>
+                        <ComboBoxItem HorizontalContentAlignment="Left">
+                            <controls1:IconText Kind="SwapHorizontal" Text="打开换课窗口" />
+                        </ComboBoxItem>
                     </ComboBox>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>

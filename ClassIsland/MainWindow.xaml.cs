@@ -467,6 +467,9 @@ public partial class MainWindow : Window
             case 2:
                 ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
                 break;
+            case 3:
+                MenuItemClassSwap_OnClick(null, null);
+                break;
         }
     }
 
