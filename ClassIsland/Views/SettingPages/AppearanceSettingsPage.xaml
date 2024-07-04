@@ -238,7 +238,7 @@
                 <!-- 壁纸层窗口类名 -->
                 <controls1:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
                                                                Visibility="{Binding SettingsService.Settings.IsFallbackModeEnabled, Mode=OneWay, Converter={StaticResource InverseBoolToVisConverter}}"
-                                                               Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Progman。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
+                                                               Description="获取壁纸时要寻找的壁纸窗口的类名，留空将使用默认类名Program。当需要从动态壁纸软件（如Wallpaper Engine等）获取壁纸时，请修改此选项为对应壁纸软件的壁纸窗口类名，以正确获取壁纸。若此栏未填写正确，将无法正常获取壁纸。">
                     <controls1:SettingsCard.Switcher>
                         <DockPanel Width="150">
                             <Button Style="{StaticResource MaterialDesignFlatButton}"
