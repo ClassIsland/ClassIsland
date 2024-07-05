@@ -20,6 +20,7 @@ public class WelcomeViewModel : ObservableRecipient
     private bool _createStartupShortcut = true;
     private bool _createStartMenuShortcut = true;
     private bool _createDesktopShortcut = false;
+    private bool _createChangeClassShortCut = false;
     private int _slideIndexMaster = 0;
 
     public Guid DialogId
@@ -166,6 +167,17 @@ public class WelcomeViewModel : ObservableRecipient
         {
             if (value == _createDesktopShortcut) return;
             _createDesktopShortcut = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    public bool CreateChangeClassShortCut
+    {
+        get => _createChangeClassShortCut;
+        set
+        {
+            if (value == _createChangeClassShortCut) return;
+            _createChangeClassShortCut = value;
             OnPropertyChanged();
         }
     }

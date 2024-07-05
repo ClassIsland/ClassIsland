@@ -419,6 +419,12 @@
                                                                           Header="创建开始菜单快捷方式"
                                                                           Description="在开始菜单上添加软件快捷方式。" />
                                             </CheckBox>
+                                            <CheckBox IsChecked="{Binding ViewModel.CreateChangeClassShortCut}">
+                                                <controls1:SettingsControl HasSwitcher="False"
+                                                                          IconGlyph="SwapHorizontal"
+                                                                          Header="创建换课桌面快捷方式"
+                                                                          Description="在桌面上添加换课快捷方式"/>
+                                            </CheckBox>
                                         </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>

@@ -69,6 +69,14 @@ public partial class WelcomeWindow : MyWindow
                 shortcut.Save(startMenuPath);
             if (ViewModel.CreateDesktopShortcut)
                 shortcut.Save(desktopPath);
+            if (ViewModel.CreateChangeClassShortCut)
+            {
+                using var shortCut1 = new WindowsShortcut();
+                shortCut1.Path = Environment.ProcessPath;
+                shortCut1.WorkingDirectory = Environment.CurrentDirectory;
+                shortCut1.Arguments += "-commandChangeClass";
+                shortCut1.Save(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "ClassIsland快捷换课.lnk"));
+            }
         }
         catch (Exception ex)
         {

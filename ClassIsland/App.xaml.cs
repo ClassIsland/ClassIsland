@@ -151,13 +151,23 @@ public partial class App : Application, IAppHost
             new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
             new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
             new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
-            new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。")
+            new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。"),
+            new Option<bool>(["-commandChangeClass"])
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) =>
         {
             ApplicationCommand = c;
         });
         await command.InvokeAsync(e.Args);
+
+        // 处理指令
+        if (ApplicationCommand.CommandChangeClass)
+        {
+            var sw = new StreamWriter("./Temp/Command.ci", true);
+            sw.Write(''); // 0x1
+            sw.Close();
+            Environment.Exit(0);
+        }
 
         // 检测Mutex
         Mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
@@ -257,6 +267,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<IComponentsService, ComponentsService>();
                 services.AddSingleton<ILessonsService, LessonsService>();
                 services.AddSingleton<IUriNavigationService, UriNavigationService>();
+                services.AddSingleton<UriCommandService>();
                 services.AddHostedService<MemoryWatchDogService>();
                 try // 检测SystemSpeechService是否存在
                 {
@@ -424,6 +435,9 @@ public partial class App : Application, IAppHost
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
         uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
         uriNavigationService.HandleAppNavigation("helps", args => GetService<MainWindow>().OpenHelpsWindow());
+
+        // 启动快捷方式指令服务
+        GetService<UriCommandService>().Init();
     }
 
     private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -448,7 +462,10 @@ public partial class App : Application, IAppHost
             CommonDialog.ShowError($"无法导航到 {uri}：{ex.Message}");
         }
     }
-
+    private void test()
+    {
+        CommonDialog.ShowInfo("测试debugger");
+    }
     private void ProcessInstanceExisted()
     {
         var r = new CommonDialogBuilder()
