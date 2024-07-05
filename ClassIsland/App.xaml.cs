@@ -462,10 +462,7 @@ public partial class App : Application, IAppHost
             CommonDialog.ShowError($"无法导航到 {uri}：{ex.Message}");
         }
     }
-    private void test()
-    {
-        CommonDialog.ShowInfo("测试debugger");
-    }
+    
     private void ProcessInstanceExisted()
     {
         var r = new CommonDialogBuilder()
