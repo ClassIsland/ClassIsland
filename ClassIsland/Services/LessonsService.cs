@@ -212,6 +212,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             CurrentOverlayStatus = TimeState.None;
             CurrentOverlayEventStatus = TimeState.None;
             IsClassPlanLoaded = false;
+            CurrentSelectedIndex = -1;
             return;
         }
         IsClassPlanLoaded = true;
@@ -222,30 +223,30 @@ public class LessonsService : ObservableRecipient, ILessonsService
         var isLessonConfirmed = false;
         // 更新选择
         var currentLayout = CurrentClassPlan.TimeLayout.Layouts;
-        foreach (var i in currentLayout)
+        var currentLayoutItem = currentLayout.FirstOrDefault(i =>
+            i.StartSecond.TimeOfDay <= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay &&
+            i.EndSecond.TimeOfDay >= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay &&
+            i.TimeType != 2);
+        if (currentLayoutItem != null)
         {
-            if (i.StartSecond.TimeOfDay <= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay && i.EndSecond.TimeOfDay >= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay)
+            CurrentSelectedIndex = currentLayout.IndexOf(currentLayoutItem);
+            CurrentTimeLayoutItem = currentLayoutItem;
+            IsLessonConfirmed = isLessonConfirmed = true;
+            if (CurrentTimeLayoutItem.TimeType == 0)
             {
-                CurrentSelectedIndex = currentLayout.IndexOf(i);
-                CurrentTimeLayoutItem = i;
-                IsLessonConfirmed = isLessonConfirmed = true;
-                if (CurrentTimeLayoutItem.TimeType == 0)
-                {
-                    var i0 = GetSubjectIndex(currentLayout.IndexOf(i));
-                    CurrentSubject = Profile.Subjects[CurrentClassPlan.Classes[i0].SubjectId];
-                }
-                else
-                {
-                    CurrentSubject = null;
-                }
-                break;
+                var i0 = GetSubjectIndex(currentLayout.IndexOf(currentLayoutItem));
+                CurrentSubject = Profile.Subjects[CurrentClassPlan.Classes[i0].SubjectId];
+            }
+            else
+            {
+                CurrentSubject = null;
             }
         }
 
         //var isBreaking = false;
         if (!isLessonConfirmed)
         {
-            CurrentSelectedIndex = null;
+            CurrentSelectedIndex = -1;
             CurrentState = TimeState.None;
             IsLessonConfirmed = false;
         }
