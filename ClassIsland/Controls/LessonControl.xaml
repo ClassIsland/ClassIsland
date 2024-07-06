@@ -9,12 +9,15 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
              xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              d:DesignHeight="450" d:DesignWidth="800"
              >
     <UserControl.Resources>
         <converters1:SecondsLongToFormatHoursMinutesStringConverter x:Key="SecondsLongToFormatHoursMinutesStringConverter"/>
         <converters1:SecondsLongToFormatHoursMinutesSecondsStringConverter x:Key="SecondsLongToFormatHoursMinutesSecondsStringConverter"/> 
         <converters1:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter"/>
+
+        <system:Boolean x:Key="TrueValue">True</system:Boolean>
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControl}}}">
         <StackPanel Orientation="Horizontal">
@@ -79,11 +82,10 @@
                             <TabItem>
                                 <TextBlock FontSize="14" VerticalAlignment="Bottom">
                                     <Run
-                                        Text="{Binding Seconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
+                                        Text="{Binding Seconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}, ConverterParameter={StaticResource TrueValue}}">
                                     </Run><Run Text="/">
                                     </Run><Run
                                               Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
-                                    </Run><Run Text="min" FontSize="13">
                                     </Run>
                                 </TextBlock>
                             </TabItem>
@@ -95,7 +97,6 @@
                                     </Run><Run Text="/">
                                     </Run><Run
                                               Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
-                                    </Run><Run Text="min" FontSize="13">
                                     </Run>
                                 </TextBlock>
                             </TabItem>
@@ -115,7 +116,6 @@
                                     <Run Text="-">
                                     </Run><Run
                                               Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
-                                    </Run><Run Text="min" FontSize="13">
                                     </Run>
                                 </TextBlock>
                             </TabItem>

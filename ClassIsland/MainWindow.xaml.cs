@@ -468,7 +468,7 @@ public partial class MainWindow : Window
                 ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
                 break;
             case 3:
-                MenuItemClassSwap_OnClick(null, null);
+                OpenClassSwapWindow();
                 break;
         }
     }
@@ -876,6 +876,11 @@ public partial class MainWindow : Window
     }
 
     private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenClassSwapWindow();
+    }
+
+    private void OpenClassSwapWindow()
     {
         if (LessonsService.CurrentClassPlan == null || ClassChangingWindow != null)
         {
