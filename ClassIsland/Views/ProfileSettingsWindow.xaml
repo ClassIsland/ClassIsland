@@ -575,52 +575,172 @@
                                     </ToolBar>
 
                                     <!-- 课表 -->
-                                    <ListBox Grid.Row="1" Margin="0 12"
+                                    <ListView Grid.Row="1" Margin="0 12"
                                              SelectionChanged="ListViewClassPlans_OnSelectionChanged"
                                              SelectionMode="Single"
                                              HorizontalContentAlignment="Stretch"
-                                             Style="{StaticResource NavigationListBox}"
                                              ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                              x:Name="ListViewClassPlans"
+                                             Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                                              VirtualizingPanel.ScrollUnit="Pixel">
-                                        <ListBox.ItemTemplate>
+                                        <ListView.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto"/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
                                                     <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition/>
+                                                        <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <!-- Icon -->
-                                                    <materialDesign:PackIcon Grid.Column="0" Grid.Row="0" Margin="0 0 6 0" 
-                                                                             Kind="FileChartOutline"/>
 
-                                                    <!-- Name -->
-                                                    <TextBlock Grid.Column="1" Grid.Row="0" FontSize="16" Text="{Binding Value.Name}"
-                                                               ToolTip="课表名称" HorizontalAlignment="Left"/>
-
-                                                    <!-- Info -->
-                                                    <WrapPanel Grid.Column="1" Grid.Row="1" Margin="0 4 0 0">
-                                                        <controls1:IconText Kind="ClockOutline" Text="{Binding Value.TimeLayout.Name}" ToolTip="时间表" IconMargin="3"/>
-                                                    </WrapPanel>
-
-                                                    <!-- Status -->
-                                                    <StackPanel Grid.Column="0" Grid.Row="0"
-                                                                Grid.RowSpan="2" Grid.ColumnSpan="2"
-                                                                HorizontalAlignment="Right"
+                                                    <WrapPanel Orientation="Horizontal"
+                                                               Grid.Column="0">
+                                                        <materialDesign:PackIcon Kind="FileChartOutline"
+                                                            VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Value.Name}"
+                                                                   VerticalAlignment="Center"/>
+                                                        <Border MinWidth="20" Height="24" CornerRadius="12"
+                                                                Margin="2 -8"
+                                                                Padding="8 0"
                                                                 VerticalAlignment="Center"
-                                                                Orientation="Horizontal">
-                                                        <materialDesign:PackIcon Kind="LayersOutline"
-                                                                                 ToolTip="该课表是临时层课表。"
-                                                                                 Visibility="{Binding Value.IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                                                    </StackPanel>
+                                                                BorderBrush="{DynamicResource PrimaryHueMidBrush}">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Value.IsActivated}" Value="True">
+                                                                            <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignPaper}"/>
+                                                                            <Setter Property="BorderThickness" Value="0"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                    <Setter Property="Background" Value="{x:Null}"/>
+                                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                <materialDesign:PackIcon VerticalAlignment="Center">
+                                                                    <materialDesign:PackIcon.Style>
+                                                                        <Style TargetType="materialDesign:PackIcon">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding Value.IsEnabled}"
+                                                                                    Value="False">
+                                                                                    <Setter Property="Kind" Value="LabelOffOutline"/>
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding Value.IsOverlay}"
+                                                                                    Value="True">
+                                                                                    <Setter Property="Kind" Value="LayersOutline"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                            <Setter Property="Kind" Value="LabelMultipleOutline"/>
+                                                                        </Style>
+                                                                    </materialDesign:PackIcon.Style>
+                                                                </materialDesign:PackIcon>
+                                                                <TextBlock Text="{Binding Value.TimeRule.WeekDay, Converter={StaticResource WeekIndexToWeekStringConverter}}"
+                                                                           Margin="2 0 0 0">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding Value.IsEnabled}"
+                                                                                    Value="False">
+                                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding Value.IsOverlay}"
+                                                                                    Value="True">
+                                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                                <TextBlock Margin="4 0 0 0">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding Value.TimeRule.WeekCountDiv}"
+                                                                                    Value="0">
+                                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding Value.IsEnabled}"
+                                                                                    Value="False">
+                                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                </DataTrigger>
+                                                                                <DataTrigger Binding="{Binding Value.IsOverlay}"
+                                                                                    Value="True">
+                                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                    <Run Text="{Binding Value.TimeRule.WeekCountDiv}">
+                                                                    </Run><Run Text="/">
+                                                                    </Run><Run Text="2">
+                                                                    </Run><Run Text="周">
+                                                                    </Run>
+                                                                    <!-- TODO: 支持多周轮换后把这里改成轮换的周数 -->
+                                                                </TextBlock>
+                                                                <TextBlock Text="临时层" Margin="2 0 0 0"
+                                                                           FontWeight="Bold" FontStyle="Italic">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding Value.IsOverlay}"
+                                                                                    Value="True">
+                                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                        </Border>
+
+                                                        <Border MinWidth="20" Height="24" CornerRadius="12"
+                                                                Margin="2 -8"
+                                                                Padding="8 0"
+                                                                VerticalAlignment="Center">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding Value.TimeLayoutId}" Value="">
+                                                                            <Setter Property="BorderBrush" Value="IndianRed"/>
+                                                                            <Setter Property="TextElement.Foreground" Value="IndianRed"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                    <Setter Property="Background" Value="{x:Null}"/>
+                                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                                    <Setter Property="TextElement.Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+                                                                    <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                <materialDesign:PackIcon VerticalAlignment="Center" Kind="Timetable"/>
+                                                                <TextBlock VerticalAlignment="Center"
+                                                                           Margin="4 0 0 0">
+                                                                    <TextBlock.Style>
+                                                                        <Style TargetType="TextBlock">
+                                                                            <Style.Triggers>
+                                                                                <DataTrigger Binding="{Binding Value.TimeLayoutId}" Value="">
+                                                                                    <Setter Property="Text" Value="???"/>
+                                                                                </DataTrigger>
+                                                                            </Style.Triggers>
+                                                                            <Setter Property="Text" Value="{Binding Value.TimeLayout.Name}"/>
+                                                                        </Style>
+                                                                    </TextBlock.Style>
+                                                                </TextBlock>
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </WrapPanel>
+                                                    
+                                                    <!-- 启用状态显示 -->
+                                                    <WrapPanel Orientation="Horizontal"
+                                                               Grid.Column="1"
+                                                               VerticalAlignment="Center">
+                                                        
+                                                    </WrapPanel>
                                                 </Grid>
                                             </DataTemplate>
-                                        </ListBox.ItemTemplate>
-                                    </ListBox>
+                                        </ListView.ItemTemplate>
+                                    </ListView>
                                 </Grid>
 
                                 <!-- 课表编辑 -->

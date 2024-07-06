@@ -97,6 +97,7 @@
             <converters1:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
             <converters1:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
             <converters1:IntToStringConverter x:Key="IntToStringConverter" />
+            <converters1:WeekIndexToWeekStringConverter x:Key="WeekIndexToWeekStringConverter" />
 
         </ResourceDictionary>
     </Application.Resources>
