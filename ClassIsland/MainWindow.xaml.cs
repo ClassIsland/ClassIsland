@@ -461,6 +461,19 @@ public partial class MainWindow : Window
     {
         switch (ViewModel.Settings.TaskBarIconClickBehavior)
         {
+            case 0:
+                if (TaskBarIconService.MainTaskBarIcon.ContextMenu != null)
+                {
+                    GetCursorPos(out var ptr);
+                    if (PresentationSource.FromVisual(this) == null)
+                    {
+                        break;
+                    }
+                    GetCurrentDpi(out var dpiX, out var dpiY, TaskBarIconService.MainTaskBarIcon.ContextMenu);
+                    TaskBarIconService.MainTaskBarIcon.ShowContextMenu(new System.Drawing.Point((int)(ptr.X / dpiX), (int)
+                        (ptr.Y / dpiY)));
+                }
+                break;
             case 1:
                 OpenProfileSettingsWindow();
                 break;
@@ -730,13 +743,14 @@ public partial class MainWindow : Window
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
     }
 
-    public void GetCurrentDpi(out double dpiX, out double dpiY)
+    public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
     {
         dpiX = _latestDpiX;
         dpiY = _latestDpiY;
+        var realVisual = visual ?? this;
         try
         {
-            var source = PresentationSource.FromVisual(this);
+            var source = PresentationSource.FromVisual(realVisual);
             if (source?.CompositionTarget == null) 
                 return;
             _latestDpiX = dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
