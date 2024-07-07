@@ -47,13 +47,26 @@
         <converters1:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <profile:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
         <converters1:SubjectsDictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
+        <converters1:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter"/>
         <converters1:ClassPlanGroupIdToClassPlanGroupConverter x:Key="ClassPlanGroupIdToClassPlanGroupConverter"/>
         <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter"/>
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Mode=OneWay, Converter={StaticResource DictionaryValueAccessConverter}}"/>
+                        <ContentPresenter>
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate DataType="{x:Type profile:Subject}">
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                            <ContentPresenter.Content>
+                                <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                    <Binding Path="ProfileService.Profile.Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}"/>
+                                    <Binding />
+                                </MultiBinding>
+                            </ContentPresenter.Content>
+                        </ContentPresenter>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
