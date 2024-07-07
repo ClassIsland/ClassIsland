@@ -32,7 +32,7 @@
         DragLeave="ExcelImportWindow_OnDragLeave"
         Closing="ExcelImportWindow_OnClosing">
     <controls1:MyWindow.Resources>
-        <converters1:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
+        <converters1:SubjectsDictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
         <Style TargetType="controls1:WizardOptionControl">
             <Setter Property="InvokedCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
         </Style>

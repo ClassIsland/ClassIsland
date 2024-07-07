@@ -342,6 +342,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
         ProfileService.CleanExpiredTempClassPlan(); // 清除过期的临时层
 
+        // 
+
         // 检测是否启用课表加载
         if (!IsClassPlanEnabled)
         {   
@@ -364,16 +366,21 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return;
         }
         // 加载课表
-        var a = (from p in Profile.ClassPlans
-                where CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled
-                select p.Value)
-            .ToList();
+        var a = Profile.ClassPlans.Where(p => CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled)
+            .Select(p => p.Value);
         CurrentClassPlan = a.FirstOrDefault();
     }
 
     public bool CheckClassPlan(ClassPlan plan)
     {
         if (plan.TimeRule.WeekDay != (int)ExactTimeService.GetCurrentLocalDateTime().DayOfWeek)
+        {
+            return false;
+        }
+
+        if (plan.AssociatedGroup != ClassPlanGroup.GlobalGroupGuid.ToString() &&
+            plan.AssociatedGroup != Profile.SelectedClassPlanGroupId &&
+            plan.AssociatedGroup != Profile.TempClassPlanGroupId)
         {
             return false;
         }

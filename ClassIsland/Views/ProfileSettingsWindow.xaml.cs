@@ -109,7 +109,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     protected override void OnContentRendered(EventArgs e)
     {
-        var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
+        var d = (SubjectsDictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
         d.SourceDictionary = MainViewModel.Profile.Subjects;
         var d2 = (ClassPlanDictionaryValueAccessConverter)FindResource("ClassPlanDictionaryValueAccessConverter");
         d2.SourceDictionary = MainViewModel.Profile.TimeLayouts;
@@ -371,7 +371,11 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonAddClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
         Analytics.TrackEvent("档案设置 · 添加课表");
-        MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), new ClassPlan());
+        var newClassPlan = new ClassPlan()
+        {
+            AssociatedGroup = ProfileService.Profile.SelectedClassPlanGroupId
+        };
+        MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), newClassPlan);
         ListViewClassPlans.SelectedIndex = MainViewModel.Profile.ClassPlans.Count - 1;
         ViewModel.DrawerContent = FindResource("ClassPlansInfoEditor");
     }
@@ -939,5 +943,35 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.TempOverlayClassPlanTimeLayoutId =
             ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeLayoutId;
         PopupCreateTempOverlayClassPlan.IsOpen = true;
+    }
+
+    private void ComboBoxClassPlanGroup_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var source = FindResource("ClassPlansViewSource") as CollectionViewSource;
+        if (source == null)
+        {
+            return;
+        }
+    }
+
+    private void ButtonClassPlansGroup_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ClassPlanGroups");
+    }
+
+    private void ClassPlanGroupsSource_OnFilter(object sender, FilterEventArgs e)
+    {
+
+    }
+
+    private void ButtonNewClassPlanGroups_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.Profile.ClassPlanGroups.Add(Guid.NewGuid().ToString(), new());
+    }
+
+    private void ButtonRefreshClassPlans_OnClick(object sender, RoutedEventArgs e)
+    {
+        var source = FindResource("ClassPlansViewSource") as CollectionViewSource;
+        source?.View?.Refresh();
     }
 }

@@ -46,7 +46,8 @@
     <Window.Resources>
         <converters1:KeyValuePairToValueConverter x:Key="KeyValuePairToValueConverter" />
         <profile:TimeLayoutItem x:Key="TimeLayoutItemFallback"/>
-        <converters1:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
+        <converters1:SubjectsDictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
+        <converters1:ClassPlanGroupIdToClassPlanGroupConverter x:Key="ClassPlanGroupIdToClassPlanGroupConverter"/>
         <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter"/>
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
             <Setter Property="ItemTemplate">
@@ -226,6 +227,21 @@
                           IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
                           SelectedItem="{Binding TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
                           ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Value.Name}"
+                                       ToolTip="{Binding Key}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          Margin="0 12 0 0"
+                          materialDesign:HintAssist.Hint="课表群"
+                          IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
+                          SelectedValue="{Binding AssociatedGroup, Mode=TwoWay}"
+                          SelectedValuePath="Key"
+                          SelectionChanged="ComboBoxClassPlanGroup_OnSelectionChanged"
+                          ItemsSource="{Binding ProfileService.Profile.ClassPlanGroups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value.Name}"
@@ -510,6 +526,59 @@
             </materialDesign:Snackbar>
         </Grid>
 
+        <!-- 课表群管理 -->
+        <Grid  Margin="16" Width="300" x:Key="ClassPlanGroups">
+            <Grid.Resources>
+                <CollectionViewSource x:Key="ClassPlanGroupsSource" 
+                                      Source="{Binding MainViewModel.Profile.ClassPlanGroups}"
+                                      Filter="ClassPlanGroupsSource_OnFilter"/>
+            </Grid.Resources>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="课表群" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                    <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
+                        <ToggleButton VerticalAlignment="Center" Margin="0 0 4 0" IsChecked="{Binding LessonsService.IsClassPlanEnabled}"/>
+                        <TextBlock Text="加载课表" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <Separator Margin="0 16 0 4"/>
+                    <controls1:IconText Kind="Group" Text="管理课表群" Margin="0 0 0 8"/>
+                    <TextBlock Text="" TextWrapping="Wrap"/>
+                    <WrapPanel Orientation="Horizontal" Margin="0 6 0 0">
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                                HorizontalAlignment="Left"
+                                ToolTip="创建一个新的课表群。"
+                                Margin="2"
+                                Click="ButtonNewClassPlanGroups_OnClick">
+                            <controls1:IconText Kind="Add" Text="新建课表群"/>
+                        </Button>
+                    </WrapPanel>
+                    
+                    <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
+                               TextWrapping="Wrap"
+                               Margin="0 4 0 0"
+                               Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </StackPanel>
+                <ListBox Grid.Row="1" 
+                         ItemsSource="{Binding Source={StaticResource ClassPlanGroupsSource}}"
+                         Margin="0 12 0 0"
+                         SelectionMode="Single"
+                         HorizontalContentAlignment="Stretch"
+                         VerticalContentAlignment="Stretch">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <controls:ClassPlanGroupItemControl Item="{Binding Value, Mode=OneWay}" 
+                                                                Key="{Binding Key, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Grid>
+
         <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                x:Key="NavigationListBox">
 
@@ -518,6 +587,14 @@
 
         <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
         <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
+
+        <CollectionViewSource x:Key="ClassPlansViewSource" 
+                              IsLiveGroupingRequested="True"
+                              Source="{Binding MainViewModel.Profile.ClassPlans, Mode=OneWay}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Value.AssociatedGroup"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
 
     </Window.Resources>
     <Grid>
@@ -569,6 +646,10 @@
                                             </Button.Style>
                                             <controls1:IconText Kind="ContentCopy" Text="复制"/>
                                         </Button>
+                                        <Separator/>
+                                        <Button Click="ButtonRefreshClassPlans_OnClick" ToolTip="刷新当前视图。">
+                                            <controls1:IconText Kind="Refresh" Text="刷新"/>
+                                        </Button>
                                         <!--<Button Click="ButtonImportFromFile_OnClick" ToolTip="从表格导入课表。" Visibility="{Binding MainViewModel.Settings.ExpIsExcelImportEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <controls:IconText Kind="Add" Text="从表格导入…"/>
                                         </Button>-->
@@ -579,10 +660,51 @@
                                              SelectionChanged="ListViewClassPlans_OnSelectionChanged"
                                              SelectionMode="Single"
                                              HorizontalContentAlignment="Stretch"
-                                             ItemsSource="{Binding MainViewModel.Profile.ClassPlans, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             ItemsSource="{Binding Source={StaticResource ClassPlansViewSource}}"
                                              x:Name="ListViewClassPlans"
                                              Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
-                                             VirtualizingPanel.ScrollUnit="Pixel">
+                                             VirtualizingPanel.ScrollUnit="Pixel"
+                                             VirtualizingPanel.IsVirtualizing="True"
+                                             VirtualizingPanel.IsContainerVirtualizable="True"
+                                             VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                                             dd:DragDrop.IsDragSource="True"
+                                             dd:DragDrop.IsDropTarget="True">
+                                        <ListView.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <VirtualizingStackPanel IsVirtualizingWhenGrouping="True"
+                                                                        IsVirtualizing="True"
+                                                                        IsContainerVirtualizable="True"/>
+                                            </ItemsPanelTemplate>
+                                        </ListView.ItemsPanel>
+                                        <ListView.GroupStyle>
+                                            <GroupStyle>
+                                                <GroupStyle.ContainerStyle>
+                                                    <Style TargetType="{x:Type GroupItem}">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                                    <Expander IsExpanded="True" materialDesign:ExpanderAssist.VerticalHeaderPadding="2"
+                                                                              materialDesign:ExpanderAssist.HorizontalHeaderPadding="2">
+                                                                        <Expander.DataContext>
+                                                                            <MultiBinding Converter="{StaticResource ClassPlanGroupIdToClassPlanGroupConverter}">
+                                                                                <Binding Path="ProfileService.Profile.ClassPlanGroups" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}"/>
+                                                                                <Binding Path="Name"/>
+                                                                            </MultiBinding>
+                                                                        </Expander.DataContext>
+                                                                        <Expander.Header>
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                                                            </StackPanel>
+                                                                        </Expander.Header>
+                                                                        <ItemsPresenter/>
+                                                                    </Expander>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </GroupStyle.ContainerStyle>
+                                            </GroupStyle>
+                                        </ListView.GroupStyle>
                                         <ListView.ItemTemplate>
                                             <DataTemplate>
                                                 <Grid>
@@ -590,13 +712,14 @@
                                                         <ColumnDefinition/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-
+                                                    
                                                     <WrapPanel Orientation="Horizontal"
                                                                Grid.Column="0">
                                                         <materialDesign:PackIcon Kind="FileChartOutline"
                                                             VerticalAlignment="Center"/>
                                                         <TextBlock Text="{Binding Value.Name}"
                                                                    VerticalAlignment="Center"/>
+                                                        <!-- 课表启用规则 -->
                                                         <Border MinWidth="20" Height="24" CornerRadius="12"
                                                                 Margin="2 -8"
                                                                 Padding="8 0"
@@ -694,6 +817,7 @@
                                                             </StackPanel>
                                                         </Border>
 
+                                                        <!-- 时间表 -->
                                                         <Border MinWidth="20" Height="24" CornerRadius="12"
                                                                 Margin="2 -8"
                                                                 Padding="8 0"
@@ -1679,6 +1803,22 @@
                                                 </Style>
                                             </Run.Style>
                                         </Run>
+                                    </TextBlock>
+                                </materialDesign:Chip>
+                                <materialDesign:Chip
+                                    Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
+                                    ToolTip="课表群"
+                                    Icon="{materialDesign:PackIcon Group}"
+                                    Click="ButtonClassPlansGroup_OnClick"
+                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
+                                    <TextBlock>
+                                        <TextBlock.DataContext>
+                                            <MultiBinding Converter="{StaticResource ClassPlanGroupIdToClassPlanGroupConverter}">
+                                                <Binding Path="ProfileService.Profile.ClassPlanGroups"/>
+                                                <Binding Path="ProfileService.Profile.SelectedClassPlanGroupId"/>
+                                            </MultiBinding>
+                                        </TextBlock.DataContext>
+                                        <Run Text="{Binding Name}"/>
                                     </TextBlock>
                                 </materialDesign:Chip>
                             </StackPanel>

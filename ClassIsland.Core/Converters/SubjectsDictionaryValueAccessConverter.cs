@@ -5,7 +5,7 @@ using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Converters;
 
-public class DictionaryValueAccessConverter : IValueConverter
+public class SubjectsDictionaryValueAccessConverter : IValueConverter
 {
     public ObservableDictionary<string, Subject> SourceDictionary
     {

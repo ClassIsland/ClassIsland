@@ -22,6 +22,7 @@ public class ClassPlan : AttachableSettingsObject
     private bool _isEnabled = true;
     private DateTime _overlaySetupTime = DateTime.Now;
     private int _lastTimeLayoutCount = -1;
+    private string _associatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
 
     /// <summary>
     /// 当课程表更新时触发
@@ -424,6 +425,20 @@ public class ClassPlan : AttachableSettingsObject
         {
             if (value == _isEnabled) return;
             _isEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 该课表关联的课表群。
+    /// </summary>
+    public string AssociatedGroup
+    {
+        get => _associatedGroup;
+        set
+        {
+            if (value == _associatedGroup) return;
+            _associatedGroup = value;
             OnPropertyChanged();
         }
     }

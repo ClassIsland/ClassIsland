@@ -626,7 +626,7 @@ public partial class ExcelImportWindow : MyWindow
         classPlan.TimeLayouts = ProfileService.Profile.TimeLayouts;
         classPlan.TimeLayoutId = ViewModel.SelectedTimeLayoutId;
         classPlan.RefreshClassesList();
-        var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
+        var d = (SubjectsDictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
         d.SourceDictionary = ProfileService.Profile.Subjects;
         var count = (from j in timeLayout.Layouts where j.TimeType == 0 select j).ToList().Count;
         //for (var i = 0; i < count; i++)
