@@ -311,7 +311,7 @@ public partial class App : Application, IAppHost
                 services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
                 // 主界面组件
-                services.AddComponent<TestComponent, TestComponentSettingsControl>();
+                services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 services.AddComponent<LegacyScheduleComponent>();
                 services.AddComponent<DateComponent>();
                 services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
