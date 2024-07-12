@@ -18,7 +18,7 @@
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=components:CountDownComponentSettingsControl}}">
         <StackPanel>
             <TextBlock Text="倒计时名称"/>
-            <TextBox Text="{Binding Settings.CountDownName, Mode=TwoWay}" 
+            <TextBox Text="{Binding Settings.CountDownName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                      Margin="10 8 0 0" MinWidth="180" HorizontalAlignment="Left"/>
             <TextBlock Text="结束日期" Margin="0 8 0 0"/>
             <DatePicker SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
