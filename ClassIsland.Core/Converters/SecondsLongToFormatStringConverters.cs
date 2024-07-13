@@ -7,12 +7,12 @@ public class SecondsLongToFormatHoursMinutesStringConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var v = TimeSpan.FromSeconds(value as long? ?? 0);
         var useFloor = parameter as bool? ?? false;
+        var v = TimeSpan.FromMinutes(Round(TimeSpan.FromSeconds(value as long? ?? 0).TotalMinutes));
         return v.TotalSeconds switch
         {
-            >= 3600 => $@"{Round(v.TotalHours)}h{Round(v.TotalMinutes % 60.0)}m",
-            >= 0 => $"{Round(v.TotalMinutes)}m",
+            >= 3600 => $@"{Math.Floor(v.TotalHours)}h{v.Minutes}m",
+            >= 0 => $"{v.Minutes}m",
             _ => ""
         };
 
