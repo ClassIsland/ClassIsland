@@ -342,7 +342,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
         ProfileService.CleanExpiredTempClassPlan(); // 清除过期的临时层
 
-        // 
+        // 清除过期的临时课表群
+        ProfileService.ClearExpiredTempClassPlanGroup();
 
         // 检测是否启用课表加载
         if (!IsClassPlanEnabled)
@@ -366,13 +367,42 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return;
         }
         // 加载课表
-        var a = Profile.ClassPlans.Where(p => CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled)
+        var a = Profile.ClassPlans
+            .Where(x =>
+            {
+                var group = x.Value.AssociatedGroup;
+                var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid.ToString();
+                var matchDefault = group == Profile.SelectedClassPlanGroupId;
+                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null })
+                    return matchDefault || matchGlobal;
+                var matchTemp = group == Profile.TempClassPlanGroupId;
+                return Profile.TempClassPlanGroupType switch
+                {
+                    TempClassPlanGroupType.Inherit => matchDefault || matchTemp || matchGlobal,
+                    TempClassPlanGroupType.Override => matchTemp || matchGlobal,
+                    _ => matchDefault || matchGlobal
+                };
+            })
+            .OrderByDescending(x =>
+            {
+                var group = x.Value.AssociatedGroup;
+                if (group == Profile.TempClassPlanGroupId) return 3;
+                if (group == Profile.SelectedClassPlanGroupId) return 2;
+                if (group == ClassPlanGroup.GlobalGroupGuid.ToString()) return 1;
+                return 0;
+            })
+            .Where(p => CheckClassPlan(p.Value))
             .Select(p => p.Value);
         CurrentClassPlan = a.FirstOrDefault();
+
+
     }
 
     public bool CheckClassPlan(ClassPlan plan)
     {
+        if (plan.IsOverlay || !plan.IsEnabled)
+            return false;
+
         if (plan.TimeRule.WeekDay != (int)ExactTimeService.GetCurrentLocalDateTime().DayOfWeek)
         {
             return false;

@@ -540,6 +540,7 @@
         </Grid>
 
         <!-- 课表群管理 -->
+        <converters1:TempClassPlanGroupTypeToIntConverter x:Key="TempClassPlanGroupTypeToIntConverter" />
         <Grid  Margin="16" Width="300" x:Key="ClassPlanGroups">
             <Grid.Resources>
                 <CollectionViewSource x:Key="ClassPlanGroupsSource" 
@@ -553,12 +554,68 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="课表群" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-                    <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
-                        <ToggleButton VerticalAlignment="Center" Margin="0 0 4 0" IsChecked="{Binding LessonsService.IsClassPlanEnabled}"/>
-                        <TextBlock Text="加载课表" VerticalAlignment="Center"/>
-                    </StackPanel>
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ProfileService.Profile.TempClassPlanGroupId}"
+                                                 Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <controls1:IconText Kind="Group" Text="临时课表群" Margin="0 16 0 8" />
+                        <ContentPresenter>
+                            <ContentPresenter.ContentTemplate>
+                                <DataTemplate DataType="{x:Type profile:ClassPlanGroup}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="当前：" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"
+                                                   VerticalAlignment="Center" />
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                VerticalAlignment="Center"
+                                                Click="ButtonClearTempClassPlanGroup_OnClick">
+                                            <controls1:IconText Kind="Clear" Text="清除" />
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ContentPresenter.ContentTemplate>
+                            <ContentPresenter.Content>
+                                <MultiBinding Converter="{StaticResource ClassPlanGroupIdToClassPlanGroupConverter}">
+                                    <Binding Path="ProfileService.Profile.ClassPlanGroups" />
+                                    <Binding Path="ProfileService.Profile.TempClassPlanGroupId" />
+                                </MultiBinding>
+                            </ContentPresenter.Content>
+                        </ContentPresenter>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ToggleButton Grid.Column="0" VerticalAlignment="Center"
+                                          IsChecked="{Binding ProfileService.Profile.IsTempClassPlanGroupEnabled}" />
+                            <TextBlock Grid.Column="1" Text="已启用" VerticalAlignment="Center"
+                                       Margin="2 0 0 0" />
+                            <DatePicker Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        materialDesign:HintAssist.Hint="失效日期"
+                                        SelectedDate="{Binding ProfileService.Profile.TempClassPlanGroupExpireTime}"
+                                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
+                                        Margin="2 0 0 0" />
+                            <ComboBox Grid.Column="3" Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                      SelectedIndex="{Binding ProfileService.Profile.TempClassPlanGroupType, Converter={StaticResource TempClassPlanGroupTypeToIntConverter}}"
+                                      VerticalAlignment="Center"
+                                      materialDesign:HintAssist.Hint="覆盖模式"
+                                      Margin="2 0 0 0">
+                                <ComboBoxItem>覆盖</ComboBoxItem>
+                                <ComboBoxItem>继承</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
 
-                    <Separator Margin="0 16 0 4"/>
+                        <Separator Margin="0 16 0 4" /></StackPanel>
                     <controls1:IconText Kind="Group" Text="管理课表群" Margin="0 0 0 8"/>
                     <TextBlock Text="" TextWrapping="Wrap"/>
                     <WrapPanel Orientation="Horizontal" Margin="0 6 0 0">
@@ -570,11 +627,6 @@
                             <controls1:IconText Kind="Add" Text="新建课表群"/>
                         </Button>
                     </WrapPanel>
-                    
-                    <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
-                               TextWrapping="Wrap"
-                               Margin="0 4 0 0"
-                               Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </StackPanel>
                 <ListBox Grid.Row="1" 
                          ItemsSource="{Binding Source={StaticResource ClassPlanGroupsSource}}"

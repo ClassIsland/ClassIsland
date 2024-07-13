@@ -9,13 +9,14 @@
              xmlns:views="clr-namespace:ClassIsland.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+    </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassPlanGroupItemControl}}">
         <Grid.ContextMenu>
             <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
-                <MenuItem Icon="{materialDesign:PackIcon FileDocumentMultipleOutline}" Header="临时启用"/>
+                <MenuItem Icon="{materialDesign:PackIcon FileDocumentMultipleOutline}" Header="临时启用" Click="MenuItemTemp_OnClick"/>
                 <Separator/>
                 <MenuItem Icon="{materialDesign:PackIcon RenameOutline}" Header="重命名" Click="MenuItemRename_OnClick"/>
-                <MenuItem Icon="{materialDesign:PackIcon ContentCopy}" Header="复制"/>
                 <!--<MenuItem Icon="{materialDesign:PackIcon FileExportOutline}" Header="导出"/>-->
                 <MenuItem Icon="{materialDesign:PackIcon Remove}" Header="解散"/>
                 <MenuItem Icon="{materialDesign:PackIcon DeleteOutline}" Header="删除"/>

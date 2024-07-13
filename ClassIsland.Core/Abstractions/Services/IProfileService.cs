@@ -60,4 +60,21 @@ public interface IProfileService
     /// 将当前临时层课表转换为普通课表。
     /// </summary>
     void ConvertToStdClassPlan();
+
+    /// <summary>
+    /// 设置临时课表组。
+    /// </summary>
+    /// <param name="key">要设置的临时课表组ID</param>
+    /// <param name="expireTime">临时课表组过期时间，默认为完成一个周期后。</param>
+    void SetupTempClassPlanGroup(string key, DateTime? expireTime = null);
+
+    /// <summary>
+    /// 清除当前的临时课表组。
+    /// </summary>
+    void ClearTempClassPlanGroup();
+
+    /// <summary>
+    /// 清除过期的临时课表群。
+    /// </summary>
+    void ClearExpiredTempClassPlanGroup();
 }

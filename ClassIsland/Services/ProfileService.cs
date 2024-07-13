@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
+using System.Windows.Input;
 
 namespace ClassIsland.Services;
 
@@ -241,5 +242,29 @@ public class ProfileService : IProfileService
         Profile.IsOverlayClassPlanEnabled = false;
         Profile.ClassPlans[Profile.OverlayClassPlanId].IsOverlay = false;
         Profile.OverlayClassPlanId = null;
+    }
+
+    public void SetupTempClassPlanGroup(string key, DateTime? expireTime = null)
+    {
+        // TODO: 判断轮完一个周期的时间
+        expireTime ??= DateTime.Now + TimeSpan.FromDays(7);
+
+        Profile.TempClassPlanGroupExpireTime = expireTime.Value;
+        Profile.TempClassPlanGroupId = key;
+        Profile.IsTempClassPlanGroupEnabled = true;
+    }
+
+    public void ClearTempClassPlanGroup()
+    {
+        Profile.TempClassPlanGroupId = null;
+        Profile.IsTempClassPlanGroupEnabled = false;
+    }
+
+    public void ClearExpiredTempClassPlanGroup()
+    {
+        if (Profile.TempClassPlanGroupExpireTime > App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
+        {
+            ClearTempClassPlanGroup();
+        }
     }
 }

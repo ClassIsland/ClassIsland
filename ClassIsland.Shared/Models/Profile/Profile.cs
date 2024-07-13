@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
-
+using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Profile;
@@ -25,6 +25,8 @@ public class Profile : ObservableRecipient
     private string _selectedClassPlanGroupId = ClassPlanGroup.DefaultGroupGuid.ToString();
     private string? _tempClassPlanGroupId;
     private DateTime _tempClassPlanGroupExpireTime = DateTime.Now;
+    private bool _isTempClassPlanGroupEnabled = false;
+    private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
 
     /// <summary>
     /// 实例化对象
@@ -367,6 +369,34 @@ public class Profile : ObservableRecipient
         {
             if (value.Equals(_tempClassPlanGroupExpireTime)) return;
             _tempClassPlanGroupExpireTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否启用临时课表群。
+    /// </summary>
+    public bool IsTempClassPlanGroupEnabled
+    {
+        get => _isTempClassPlanGroupEnabled;
+        set
+        {
+            if (value == _isTempClassPlanGroupEnabled) return;
+            _isTempClassPlanGroupEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 临时课表群类型。
+    /// </summary>
+    public TempClassPlanGroupType TempClassPlanGroupType
+    {
+        get => _tempClassPlanGroupType;
+        set
+        {
+            if (value == _tempClassPlanGroupType) return;
+            _tempClassPlanGroupType = value;
             OnPropertyChanged();
         }
     }

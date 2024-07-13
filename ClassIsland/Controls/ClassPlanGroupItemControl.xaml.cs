@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
@@ -42,6 +44,8 @@ public partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyCha
         get { return (string)GetValue(KeyProperty); }
         set { SetValue(KeyProperty, value); }
     }
+
+    private IProfileService ProfileService { get; } = App.GetService<IProfileService>();
 
     public bool IsRenaming
     {
@@ -93,5 +97,10 @@ public partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyCha
             IsRenaming = false;
             Focus();
         }
+    }
+
+    private void MenuItemTemp_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.SetupTempClassPlanGroup(Key);
     }
 }

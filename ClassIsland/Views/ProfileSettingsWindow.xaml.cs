@@ -974,4 +974,9 @@ public partial class ProfileSettingsWindow : MyWindow
         var source = FindResource("ClassPlansViewSource") as CollectionViewSource;
         source?.View?.Refresh();
     }
+
+    private void ButtonClearTempClassPlanGroup_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.ClearTempClassPlanGroup();
+    }
 }
