@@ -74,7 +74,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/66517348?v=4",
       "profile": "https://github.com/LiuYan-xwx",
       "contributions": [
-        "doc"
+        "doc",
+        "code"
       ]
     },
     {
@@ -110,6 +111,15 @@
       "name": "clover_yan",
       "avatar_url": "https://avatars.githubusercontent.com/u/56215525?v=4",
       "profile": "https://www.khyan.top/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "DryIce-cc",
+      "name": "DryIce-cc",
+      "avatar_url": "https://avatars.githubusercontent.com/u/165131008?v=4",
+      "profile": "https://github.com/DryIce-cc",
       "contributions": [
         "code"
       ]
