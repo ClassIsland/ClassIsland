@@ -13,16 +13,20 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Attributes;
+using ClassIsland;
 using ClassIsland.Models.ComponentSettings;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
 
 /// <summary>
-/// TestComponentSettingsControl.xaml 的交互逻辑
+/// TestComponent.xaml 的交互逻辑
 /// </summary>
-public partial class TestComponentSettingsControl : ComponentBase<TestComponentSettings>
+[ComponentInfo("EE8F66BD-C423-4E7C-AB46-AA9976B00E08", "文本", PackIconKind.TextBoxOutline, "显示自定义文本。")]
+public partial class TextComponent : ComponentBase<TextComponentSettings>
 {
-    public TestComponentSettingsControl()
+    public TextComponent()
     {
         InitializeComponent();
     }
