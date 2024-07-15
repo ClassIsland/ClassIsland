@@ -246,8 +246,29 @@ public class ProfileService : IProfileService
 
     public void SetupTempClassPlanGroup(string key, DateTime? expireTime = null)
     {
-        // TODO: 判断轮完一个周期的时间
-        expireTime ??= DateTime.Now + TimeSpan.FromDays(7);
+        // TODO: 判断自定义轮换周期
+        var classPlans = Profile.ClassPlans
+            .Where(x => x.Value.AssociatedGroup == key)
+            .Select(x => x.Value);
+        var today = App.GetService<IExactTimeService>().GetCurrentLocalDateTime();
+        var dow = today.DayOfWeek;
+        var dayOffset = 0;
+        var dd = today.Date - SettingsService.Settings.SingleWeekStartTime.Date;
+        var dw = Math.Floor(dd.TotalDays / 7) + 1;
+        var w = (int)dw % 2;
+        foreach (var classPlan in classPlans)
+        {
+            var baseOffset = (int)(classPlan.TimeRule.WeekDay - dow);
+            var divOffset = (classPlan.TimeRule.WeekCountDiv + 2 - w) % 2;
+            var finalOffset = baseOffset + divOffset * 7;
+            if (finalOffset < 0)
+            {
+                finalOffset += 7;
+            }
+
+            dayOffset = Math.Max(finalOffset, dayOffset);
+        }
+        expireTime ??= DateTime.Now + TimeSpan.FromDays(dayOffset);
 
         Profile.TempClassPlanGroupExpireTime = expireTime.Value;
         Profile.TempClassPlanGroupId = key;
