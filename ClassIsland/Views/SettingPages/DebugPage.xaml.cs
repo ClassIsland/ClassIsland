@@ -64,16 +64,6 @@ public partial class DebugPage : SettingsPageBase
         App.GetService<FeatureDebugWindow>().Show();
     }
 
-    private void MenuItemDebugConsole_OnChecked(object sender, RoutedEventArgs e)
-    {
-        ConsoleService.ConsoleVisible = true;
-    }
-
-    private void MenuItemDebugConsole_OnUnchecked(object sender, RoutedEventArgs e)
-    {
-        ConsoleService.ConsoleVisible = false;
-    }
-
     private void ButtonCrash_OnClick(object sender, RoutedEventArgs e)
     {
         throw new Exception("Crash test.");

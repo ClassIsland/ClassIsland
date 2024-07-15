@@ -363,7 +363,6 @@ public partial class App : Application, IAppHost
             Settings.DiagnosticMemoryKillCount++;
             Settings.DiagnosticLastMemoryKillTime = DateTime.Now;
         }
-        ConsoleService.ConsoleVisible = Settings.IsDebugConsoleEnabled;
         //OverrideFocusVisualStyle();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");

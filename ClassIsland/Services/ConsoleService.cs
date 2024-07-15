@@ -8,37 +8,19 @@ namespace ClassIsland.Services;
 
 public class ConsoleService
 {
-    private static bool _consoleVisible;
-
     public static string AsciiLogo = "";
     public static HWND ConsoleHWnd { get; private set; }
 
-    public static bool ConsoleVisible
-    {
-        get => _consoleVisible;
-        set
-        {
-            if (value)
-            {
-                ShowWindow(ConsoleHWnd, SHOW_WINDOW_CMD.SW_SHOW);
-            }
-            else
-            {
-                ShowWindow(ConsoleHWnd, SHOW_WINDOW_CMD.SW_HIDE);
-            }
-            _consoleVisible = value;
-        }
-    }
-
     public static void InitializeConsole()
     {
+#if DEBUG
         if (ConsoleHWnd == nint.Zero)
         {
             AllocConsole();
         }
         ConsoleHWnd = GetConsoleWindow();
         SetWindowText(ConsoleHWnd, "ClassIsland 输出");
-        ShowWindow(ConsoleHWnd, SHOW_WINDOW_CMD.SW_HIDE);
+#endif
         PrintAppInfo();
     }
 

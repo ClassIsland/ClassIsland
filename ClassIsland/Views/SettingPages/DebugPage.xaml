@@ -50,10 +50,6 @@
                                               Click="MenuItemFeatureDebugWindow_OnClick"/>
             <MenuItem IsCheckable="True" Header="调试菜单"
                                               IsChecked="{Binding SettingsService.Settings.IsDebugEnabled}" />
-            <MenuItem IsCheckable="True" Header="调试终端"
-                                              IsChecked="{Binding SettingsService.Settings.IsDebugConsoleEnabled}"
-                                              Checked="MenuItemDebugConsole_OnChecked"
-                                              Unchecked="MenuItemDebugConsole_OnUnchecked" />
             <MenuItem IsCheckable="True" Header="MainWindowDebug"
                                               IsChecked="{Binding SettingsService.Settings.IsMainWindowDebugEnabled}" />
             <MenuItem Icon="{materialDesign:PackIcon Bomb}"
