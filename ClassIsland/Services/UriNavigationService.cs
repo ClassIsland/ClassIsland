@@ -51,27 +51,43 @@ public class UriNavigationService(ILogger<UriNavigationService> logger) : IUriNa
     {
         Application.Current.Dispatcher.Invoke(() =>
         {
+            if (uri.Scheme == IUriNavigationService.UriScheme)
+            {
+                var node = NavigationHandlers.GetNode(uri.Host + uri.AbsolutePath, out var children);
+                node.NavigatedAction?.Invoke(new UriNavigationEventArgs(uri, children));
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo()
+                {
+                    FileName = uri.ToString(),
+                    UseShellExecute = true
+                });
+            }
+        });
+    }
+
+    public void NavigateWrapped(Uri uri, out Exception? exception)
+    {
+        Exception? exc = null;
+        Application.Current.Dispatcher.Invoke(() =>
+        {
             try
             {
-                if (uri.Scheme == IUriNavigationService.UriScheme)
-                {
-                    var node = NavigationHandlers.GetNode(uri.Host + uri.AbsolutePath, out var children);
-                    node.NavigatedAction?.Invoke(new UriNavigationEventArgs(uri, children));
-                }
-                else
-                {
-                    Process.Start(new ProcessStartInfo()
-                    {
-                        FileName = uri.ToString(),
-                        UseShellExecute = true
-                    });
-                }
+                Navigate(uri);
             }
             catch (Exception ex)
             {
+                exc = ex;
                 Logger.LogError(ex, "无法导航到 {}", uri);
                 CommonDialog.ShowError($"无法导航到 {uri}：{ex.Message}");
             }
         });
+        exception = exc;
+    }
+
+    public void NavigateWrapped(Uri uri)
+    {
+        NavigateWrapped(uri, out var _);
     }
 }

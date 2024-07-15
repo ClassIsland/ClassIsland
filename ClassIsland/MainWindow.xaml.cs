@@ -30,7 +30,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
-
+using GrpcDotNetNamedPipes;
 using H.NotifyIcon;
 
 using Microsoft.AppCenter;
@@ -113,11 +113,8 @@ public partial class MainWindow : Window
     private double _latestDpiY = 1.0;
 
     public ClassChangingWindow? ClassChangingWindow { get; set; }
-
-    public MiniInfoProviderHostService MiniInfoProviderHostService
-    {
-        get;
-    } = App.GetService<MiniInfoProviderHostService>();
+    
+    private IUriNavigationService UriNavigationService { get; }
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
@@ -138,7 +135,8 @@ public partial class MainWindow : Window
         IExactTimeService exactTimeService,
         TopmostEffectWindow topmostEffectWindow,
         IComponentsService componentsService,
-        ILessonsService lessonsService)
+        ILessonsService lessonsService,
+        IUriNavigationService uriNavigationService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -151,6 +149,7 @@ public partial class MainWindow : Window
         TopmostEffectWindow = topmostEffectWindow;
         ComponentsService = componentsService;
         LessonsService = lessonsService;
+        UriNavigationService = uriNavigationService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -429,6 +428,19 @@ public partial class MainWindow : Window
                 ViewModel.Settings.IsWelcomeWindowShowed = true;
             }
         }
+
+        if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
+        {
+            try
+            {
+                UriNavigationService.NavigateWrapped(new Uri(App.ApplicationCommand.Uri));
+            }
+            catch (Exception ex)
+            {
+                // ignored
+            }
+        }
+        
         base.OnContentRendered(e);
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
@@ -685,6 +697,7 @@ public partial class MainWindow : Window
         LessonsService.StopMainTimer();
         SaveProfile();
         SaveSettings();
+        App.GetService<NamedPipeServer>().Kill();
     }
 
     private void UpdateWindowPos(bool updateEffectWindow=false)

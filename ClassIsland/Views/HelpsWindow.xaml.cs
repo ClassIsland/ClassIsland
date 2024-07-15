@@ -257,6 +257,6 @@ public partial class HelpsWindow : MyWindow
             return;
         }
 
-        UriNavigationService.Navigate(uri);
+        UriNavigationService.NavigateWrapped(uri);
     }
 }

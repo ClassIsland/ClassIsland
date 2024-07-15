@@ -24,4 +24,7 @@ public interface IUriNavigationService
     public void HandlePluginsNavigation(string path, Action<UriNavigationEventArgs> onNavigated);
 
     public void Navigate(Uri uri);
+
+    public void NavigateWrapped(Uri uri);
+    public void NavigateWrapped(Uri uri, out Exception? exception);
 }

@@ -14,23 +14,20 @@ public class RemoteUriNavigationService(IUriNavigationService uriNavigationServi
     
     public override async Task<UriNavigationScRsp> Navigate(UriNavigationScReq request, ServerCallContext context)
     {
-        try
+        Exception? exception = null;
+        await Task.Run(() =>
         {
-            await Task.Run(() =>
-            {
-                UriNavigationService.Navigate(new Uri(request.Uri));
-            });
-        }
-        // TODO: 捕获 notfound 的情况
-        catch (Exception ex)
+            UriNavigationService.NavigateWrapped(new Uri(request.Uri), out exception);
+        });
+        if (exception != null)
         {
             return new UriNavigationScRsp()
             {
                 RetCode = UriNavigationRetCodes.NavigationError,
-                Message = ex.Message
+                Message = exception.Message
             };
         }
-
+        
         return new UriNavigationScRsp()
         {
             RetCode = UriNavigationRetCodes.Ok,

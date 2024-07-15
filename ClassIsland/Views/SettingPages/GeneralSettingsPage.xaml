@@ -34,6 +34,10 @@
             <controls1:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
                                                            Description="在系统启动时自动运行本应用。"
                                                            IsOn="{Binding SettingsService.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
+            <!-- 注册 Url 协议 -->
+            <controls1:SettingsCard IconGlyph="Code" Header="注册 Url 协议"
+                                    Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用应用的功能。"
+                                    IsOn="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}" />
             <!-- 学期开始时间 -->
             <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
                                                            Description="此时间将作为学期的第一周，用于应用对单双周的计算。">

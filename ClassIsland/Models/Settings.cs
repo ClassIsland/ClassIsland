@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using ClassIsland.Core.Models.Weather;
+using ClassIsland.Helpers;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
@@ -351,6 +352,22 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             if (value == _isReportingEnabled) return;
             _isReportingEnabled = value;
             OnPropertyChanged();
+        }
+    }
+
+    public bool IsUrlProtocolRegistered
+    {
+        get => UriProtocolRegisterHelper.IsRegistered();
+        set
+        {
+            if (value)
+            {
+                UriProtocolRegisterHelper.Register();
+            }
+            else
+            {
+                UriProtocolRegisterHelper.UnRegister();
+            }
         }
     }
 

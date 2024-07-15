@@ -57,6 +57,7 @@ using JetBrains.Profiler.Api;
 using System.Xml.Linq;
 using ClassIsland.Services.Grpc;
 using ClassIsland.Shared.IPC;
+using ClassIsland.Shared.IPC.Protobuf.Client;
 using GrpcDotNetNamedPipes;
 
 namespace ClassIsland;
@@ -136,7 +137,7 @@ public partial class App : Application, IAppHost
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
-
+        Environment.CurrentDirectory = System.Windows.Forms.Application.StartupPath;
 
         //ConsoleService.InitializeConsole();
         System.Windows.Forms.Application.EnableVisualStyles();
@@ -154,7 +155,7 @@ public partial class App : Application, IAppHost
         var command = new RootCommand
         {
             new Option<string>(["--updateReplaceTarget", "-urt"], "更新时要替换的文件"),
-            new Option<string>(["--updateDeleteTarget", "-udt"], "更新完成要删除的文件"),
+            new Option<string>(["--uri"], "启动时要导航到的Uri"),
             new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
             new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
             new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
@@ -183,7 +184,14 @@ public partial class App : Application, IAppHost
             }
             else
             {
-                ProcessInstanceExisted();
+                if (!string.IsNullOrWhiteSpace(ApplicationCommand.Uri))
+                {
+                    ProcessUriNavigation();
+                }
+                else
+                {
+                    ProcessInstanceExisted();
+                }
                 Environment.Exit(0);
             }
         }
@@ -450,6 +458,26 @@ public partial class App : Application, IAppHost
         GetService<NamedPipeServer>().Start();
     }
 
+    private void ProcessUriNavigation()
+    {
+        try
+        {
+            var client = new IpcClient();
+            var uriSc =
+                new Shared.IPC.Protobuf.Service.UriNavigationService.UriNavigationServiceClient(
+                    client.Channel);
+            uriSc.Navigate(new UriNavigationScReq()
+            {
+                Uri = ApplicationCommand.Uri
+            });
+        }
+        catch
+        {
+            ProcessInstanceExisted();
+            // ignored
+        }
+    }
+
     private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         var uri = "";
@@ -464,7 +492,7 @@ public partial class App : Application, IAppHost
         //}
         try
         {
-            IAppHost.GetService<IUriNavigationService>().Navigate(new Uri(uri));
+            IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri(uri));
         }
         catch (Exception ex)
         {
