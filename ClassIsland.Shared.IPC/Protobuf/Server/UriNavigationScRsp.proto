@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.IPC.Protobuf.Server;
+option csharp_namespace = "ClassIsland.Shared.IPC.Protobuf.Server";
+
+import "Protobuf/Enum/UriNavigationRetCodes.proto";
+
+message UriNavigationScRsp {
+  Enum.UriNavigationRetCodes RetCode = 1;
+  string Message = 2;
+}

@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.IPC.Protobuf.Service;
+option csharp_namespace = "ClassIsland.Shared.IPC.Protobuf.Service";
+
+import "Protobuf/Client/UriNavigationScReq.proto";
+import "Protobuf/Server/UriNavigationScRsp.proto";
+
+service UriNavigationService {
+  rpc Navigate (Client.UriNavigationScReq) returns (Server.UriNavigationScRsp); 
+}

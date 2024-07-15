@@ -55,6 +55,9 @@ using UpdateStatus = ClassIsland.Shared.Enums.UpdateStatus;
 using JetBrains.Profiler.Api;
 #endif
 using System.Xml.Linq;
+using ClassIsland.Services.Grpc;
+using ClassIsland.Shared.IPC;
+using GrpcDotNetNamedPipes;
 
 namespace ClassIsland;
 /// <summary>
@@ -262,6 +265,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<ILessonsService, LessonsService>();
                 services.AddSingleton<IUriNavigationService, UriNavigationService>();
                 services.AddHostedService<MemoryWatchDogService>();
+                services.AddSingleton(new NamedPipeServer(IpcClient.PipeName));
                 try // 检测SystemSpeechService是否存在
                 {
                     _ = new SpeechSynthesizer();
@@ -345,6 +349,8 @@ public partial class App : Application, IAppHost
                     builder.SetMinimumLevel(LogLevel.Trace);
 #endif
                 });
+                // Grpc
+                services.AddGrpcService<RemoteUriNavigationService>();
             }).Build();
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
@@ -439,6 +445,9 @@ public partial class App : Application, IAppHost
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
         uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
         uriNavigationService.HandleAppNavigation("helps", args => GetService<MainWindow>().OpenHelpsWindow());
+
+        IAppHost.Host.BindGrpcServices();
+        GetService<NamedPipeServer>().Start();
     }
 
     private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)

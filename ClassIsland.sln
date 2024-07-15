@@ -12,7 +12,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walterlv", "Walterlv\Walter
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Core", "ClassIsland.Core\ClassIsland.Core.csproj", "{DF9F0F39-65EE-411C-A982-FC5973AD7F46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.DocsGenerator", "ClassIsland.DocsGenerator\ClassIsland.DocsGenerator.csproj", "{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.DocsGenerator", "ClassIsland.DocsGenerator\ClassIsland.DocsGenerator.csproj", "{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.Shared.IPC", "ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj", "{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

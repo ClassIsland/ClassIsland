@@ -1,0 +1,9 @@
+syntax = "proto3";
+package ClassIsland.Shared.IPC.Protobuf.Enum;
+option csharp_namespace = "ClassIsland.Shared.IPC.Protobuf.Enum";
+
+enum UriNavigationRetCodes {
+  Ok = 0;
+  NotFound = 1;
+  NavigationError = 2;
+}

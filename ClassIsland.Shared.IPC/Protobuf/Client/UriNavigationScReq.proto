@@ -1,0 +1,7 @@
+syntax = "proto3";
+package ClassIsland.Shared.IPC.Protobuf.Client;
+option csharp_namespace = "ClassIsland.Shared.IPC.Protobuf.Client";
+
+message UriNavigationScReq {
+  string Uri = 1;
+}

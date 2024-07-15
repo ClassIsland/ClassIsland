@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.IPC.Protobuf.Service;
+option csharp_namespace = "ClassIsland.Shared.IPC.Protobuf.Service";
+
+import "Protobuf/Client/EventDeliverScReq.proto";
+import "Protobuf/Server/EventDeliverScRsp.proto";
+
+service EventDeliverService {
+  rpc ListenEvents (stream Client.EventDeliverScRsp) returns (stream Server.EventDeliverScReq);
+}

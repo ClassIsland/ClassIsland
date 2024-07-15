@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
   </ItemGroup>
 
