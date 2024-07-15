@@ -91,6 +91,48 @@ public class Profile : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 解散课表群。解散后课表群内的课表将被移动到默认课表群下。
+    /// </summary>
+    /// <param name="id">要解散的课表群GUID</param>
+    /// <exception cref="ArgumentException">
+    /// 当尝试解散全局课表群和默认课表群时抛出此异常。
+    /// </exception>
+    public void DisbandClassPlanGroup(string id)
+    {
+        if (id == ClassPlanGroup.GlobalGroupGuid.ToString() || id == ClassPlanGroup.DefaultGroupGuid.ToString())
+        {
+            throw new ArgumentException("不能解散默认课表群和全局课表群。", nameof(id));
+        }
+
+        foreach (var (_, value) in ClassPlans   
+                     .Where(x => x.Value.AssociatedGroup == id))
+        {
+            value.AssociatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
+        }
+
+        ClassPlanGroups.Remove(id);
+    }
+
+    /// <summary>
+    /// 删除课表群。删除后课表群内的课表也会被一并删除。
+    /// </summary>
+    /// <param name="id">要删除的课表群GUID</param>
+    public void DeleteClassPlanGroup(string id)
+    {
+        if (id == ClassPlanGroup.GlobalGroupGuid.ToString() || id == ClassPlanGroup.DefaultGroupGuid.ToString())
+        {
+            throw new ArgumentException("不能解散删除课表群和全局课表群。", nameof(id));
+        }
+
+        foreach (var (key, _) in ClassPlans
+                     .Where(x => x.Value.AssociatedGroup == id))
+        {
+            ClassPlans.Remove(key);
+        }
+        ClassPlanGroups.Remove(id);
+    }
+
     private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e=null)
     {
         if (e != null)

@@ -17,13 +17,15 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared.Models.Profile;
+using ClassIsland.Views;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls;
 
 /// <summary>
 /// ClassPlanGroupItemControl.xaml 的交互逻辑
 /// </summary>
-public partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyChanged
+public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyChanged
 {
     public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(
         nameof(Item), typeof(ClassPlanGroup), typeof(ClassPlanGroupItemControl), new PropertyMetadata(new ClassPlanGroup()));
@@ -35,7 +37,14 @@ public partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyCha
     }
 
     public static readonly DependencyProperty KeyProperty = DependencyProperty.Register(
-        nameof(Key), typeof(string), typeof(ClassPlanGroupItemControl), new PropertyMetadata(""));
+        nameof(Key), typeof(string), typeof(ClassPlanGroupItemControl), new PropertyMetadata("", (o, args) =>
+        {
+            if (o is not ClassPlanGroupItemControl control) 
+                return;
+            var key = control.Key;
+            control.IsProtected = key == ClassPlanGroup.DefaultGroupGuid.ToString() ||
+                                  key == ClassPlanGroup.GlobalGroupGuid.ToString();
+        }));
 
     private bool _isRenaming = false;
 
@@ -46,6 +55,20 @@ public partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyCha
     }
 
     private IProfileService ProfileService { get; } = App.GetService<IProfileService>();
+
+    private readonly Guid _parentDialogId;
+    private bool _isProtected = false;
+
+    public bool IsProtected
+    {
+        get => _isProtected;
+        set
+        {
+            if (value == _isProtected) return;
+            _isProtected = value;
+            OnPropertyChanged();
+        }
+    }
 
     public bool IsRenaming
     {
@@ -61,16 +84,17 @@ public partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyCha
     public ClassPlanGroupItemControl()
     {
         InitializeComponent();
+        _parentDialogId = App.GetService<ProfileSettingsWindow>().ViewModel.DialogHostId;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    private bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
         field = value;
@@ -102,5 +126,27 @@ public partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyCha
     private void MenuItemTemp_OnClick(object sender, RoutedEventArgs e)
     {
         ProfileService.SetupTempClassPlanGroup(Key);
+    }
+
+    private async void MenuItemDisband_OnClick(object sender, RoutedEventArgs e)
+    {
+        var r = await DialogHost.Show(FindResource("DisbandConfirmDialog"), _parentDialogId);
+        if (r as bool? != true)
+        {
+            return;
+        }
+
+        ProfileService.Profile.DisbandClassPlanGroup(Key);
+    }
+
+    private async void MenuItemDelete_OnClick(object sender, RoutedEventArgs e)
+    {
+        var r = await DialogHost.Show(FindResource("DeleteConfirmDialog"), _parentDialogId);
+        if (r as bool? != true)
+        {
+            return;
+        }
+
+        ProfileService.Profile.DeleteClassPlanGroup(Key);
     }
 }

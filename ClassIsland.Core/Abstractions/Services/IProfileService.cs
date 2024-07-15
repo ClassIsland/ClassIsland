@@ -77,4 +77,5 @@ public interface IProfileService
     /// 清除过期的临时课表群。
     /// </summary>
     void ClearExpiredTempClassPlanGroup();
+
 }
