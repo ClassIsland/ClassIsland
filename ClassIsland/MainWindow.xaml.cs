@@ -42,6 +42,9 @@ using NAudio.Wave;
 
 using Application = System.Windows.Application;
 using Window = System.Windows.Window;
+#if DEBUG
+using JetBrains.Profiler.Api;
+#endif
 
 namespace ClassIsland;
 /// <summary>
@@ -52,12 +55,6 @@ public partial class MainWindow : Window
     public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
 
     public MainViewModel ViewModel
-    {
-        get;
-        set;
-    }
-
-    public ProfileSettingsWindow ProfileSettingsWindow
     {
         get;
         set;
@@ -164,9 +161,6 @@ public partial class MainWindow : Window
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel = new MainViewModel();
-        ProfileSettingsWindow = App.GetService<ProfileSettingsWindow>();
-        ProfileSettingsWindow.MainViewModel = ViewModel;
-        ProfileSettingsWindow.Closing += (o, args) => SaveProfile();
         HelpsWindow = App.GetService<HelpsWindow>();
         //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
@@ -436,6 +430,9 @@ public partial class MainWindow : Window
             }
         }
         base.OnContentRendered(e);
+#if DEBUG
+        MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
+#endif
     }
 
     private void AutoSetNotificationEffectRenderingScale()
@@ -779,26 +776,13 @@ public partial class MainWindow : Window
 
     private void MenuItemTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        ProfileSettingsWindow.OpenDrawer("TemporaryClassPlan");
+        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
         OpenProfileSettingsWindow();
     }
 
     public void OpenProfileSettingsWindow()
     {
-        if (!ProfileSettingsWindow.IsOpened)
-        {
-            Analytics.TrackEvent("打开档案设置窗口");
-            ProfileSettingsWindow.IsOpened = true;
-            ProfileSettingsWindow.Show();
-        }
-        else
-        {
-            if (ProfileSettingsWindow.WindowState == WindowState.Minimized)
-            {
-                ProfileSettingsWindow.WindowState = WindowState.Normal;
-            }
-            ProfileSettingsWindow.Activate();
-        }
+        App.GetService<ProfileSettingsWindow>().Open();
     }
 
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)

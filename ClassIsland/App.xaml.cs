@@ -51,6 +51,10 @@ using OfficeOpenXml;
 
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using UpdateStatus = ClassIsland.Shared.Enums.UpdateStatus;
+#if DEBUG
+using JetBrains.Profiler.Api;
+#endif
+using System.Xml.Linq;
 
 namespace ClassIsland;
 /// <summary>
@@ -290,12 +294,15 @@ public partial class App : Application, IAppHost
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
-                services.AddSingleton<ProfileSettingsWindow>();
                 services.AddSingleton<HelpsWindow>();
                 services.AddTransient<FeatureDebugWindow>();
                 services.AddSingleton<TopmostEffectWindow>();
                 services.AddSingleton<AppLogsWindow>();
                 services.AddSingleton<SettingsWindowNew>();
+                services.AddSingleton<ProfileSettingsWindow>((s) => new ProfileSettingsWindow()
+                {
+                    MainViewModel = s.GetService<MainWindow>()?.ViewModel ?? new()
+                });
                 // 设置页面
                 services.AddSettingsPage<TestSettingsPage>();
                 services.AddSettingsPage<GeneralSettingsPage>();
@@ -339,6 +346,9 @@ public partial class App : Application, IAppHost
 #endif
                 });
             }).Build();
+#if DEBUG
+        MemoryProfiler.GetSnapshot("Host built");
+#endif
         CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(UriNavigationCommands.UriNavigationCommand, UriNavigationCommandExecuted));
         CommandManager.RegisterClassCommandBinding(typeof(Page), new CommandBinding(UriNavigationCommands.UriNavigationCommand, UriNavigationCommandExecuted));
         await GetService<IManagementService>().SetupManagement();
@@ -414,7 +424,13 @@ public partial class App : Application, IAppHost
         _ = IAppHost.Host.StartAsync();
         
         Logger.LogInformation("正在初始化MainWindow。");
+#if DEBUG
+        MemoryProfiler.GetSnapshot("Pre MainWindow init");
+#endif
         MainWindow = GetService<MainWindow>();
+#if DEBUG
+        MemoryProfiler.GetSnapshot("Pre MainWindow show");
+#endif
         GetService<MainWindow>().Show();
         GetService<ISplashService>().CurrentProgress = 90;
 

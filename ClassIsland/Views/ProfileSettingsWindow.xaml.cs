@@ -554,6 +554,7 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         e.Cancel = true;
         App.GetService<SettingsService>().Settings.TimeLayoutEditorIndex = TabTimeLayoutEditors.SelectedIndex;
+        ProfileService.SaveProfile();
         if (!ViewModel.IsClassPlansEditing)
         {
             Hide();
@@ -978,5 +979,23 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonClearTempClassPlanGroup_OnClick(object sender, RoutedEventArgs e)
     {
         ProfileService.ClearTempClassPlanGroup();
+    }
+
+    public void Open()
+    {
+        if (!IsOpened)
+        {
+            Analytics.TrackEvent("打开档案设置窗口");
+            IsOpened = true;
+            Show();
+        }
+        else
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            Activate();
+        }
     }
 }

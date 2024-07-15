@@ -23,6 +23,9 @@
     <None Remove="Assets\Documents\image\Welcome\1694925761903.png" />
     <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
   </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+        <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6" />
+    </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
     <PackageReference Include="Downloader" Version="3.0.6" />
