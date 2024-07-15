@@ -262,7 +262,7 @@ public class ProfileService : IProfileService
 
     public void ClearExpiredTempClassPlanGroup()
     {
-        if (Profile.TempClassPlanGroupExpireTime > App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
+        if (Profile.TempClassPlanGroupExpireTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
         {
             ClearTempClassPlanGroup();
         }
