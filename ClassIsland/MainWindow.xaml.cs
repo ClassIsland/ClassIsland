@@ -429,6 +429,8 @@ public partial class MainWindow : Window
             }
         }
 
+        UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
+
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
         {
             try

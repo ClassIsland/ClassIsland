@@ -419,6 +419,19 @@
                                                                           Header="创建开始菜单快捷方式"
                                                                           Description="在开始菜单上添加软件快捷方式。" />
                                             </CheckBox>
+                                            <CheckBox IsChecked="{Binding ViewModel.RegisterUrlScheme}">
+                                                <controls1:SettingsControl HasSwitcher="False"
+                                                                           IconGlyph="Code"
+                                                                           Header="注册 Url 协议"
+                                                                           Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用应用的功能。" />
+                                            </CheckBox>
+                                            <CheckBox IsChecked="{Binding ViewModel.CreateClassSwapShortcut}"
+                                                      IsEnabled="{Binding ViewModel.RegisterUrlScheme}">
+                                                <controls1:SettingsControl HasSwitcher="False"
+                                                                           IconGlyph="SwapHorizontal"
+                                                                           Header="在桌面创建快捷换课快捷方式"
+                                                                           Description="创建快捷方式后，可以在桌面点击快捷方式一键开始换课。" />
+                                            </CheckBox>
                                         </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>

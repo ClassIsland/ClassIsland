@@ -7,6 +7,7 @@ using System.Windows;
 using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
+using ClassIsland.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
@@ -51,7 +52,7 @@ public partial class WelcomeWindow : MyWindow
         ViewModel.MasterTabIndex = 1;
     }
 
-    private void ButtonClose_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonClose_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsExitConfirmed = true;
         DialogResult = true;
@@ -69,6 +70,10 @@ public partial class WelcomeWindow : MyWindow
                 shortcut.Save(startMenuPath);
             if (ViewModel.CreateDesktopShortcut)
                 shortcut.Save(desktopPath);
+            if (ViewModel.RegisterUrlScheme)
+                UriProtocolRegisterHelper.Register();
+            if (ViewModel is { CreateClassSwapShortcut: true, RegisterUrlScheme: true })
+                await ShortcutHelpers.CreateClassSwapShortcutAsync();
         }
         catch (Exception ex)
         {
