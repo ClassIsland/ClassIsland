@@ -67,7 +67,8 @@ namespace ClassIsland;
 public partial class App : Application, IAppHost
 {
     private CrashWindow? CrashWindow;
-    private Mutex? Mutex;
+    public Mutex? Mutex { get; set; }
+    public bool IsMutexCreateNew { get; set; } = false;
     private ILogger<App>? Logger { get; set; }
     //public static IHost? Host;
 
@@ -152,46 +153,12 @@ public partial class App : Application, IAppHost
         AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
         await AppCenter.SetEnabledAsync(false);
 
-        var command = new RootCommand
-        {
-            new Option<string>(["--updateReplaceTarget", "-urt"], "更新时要替换的文件"),
-            new Option<string>(["--uri"], "启动时要导航到的Uri"),
-            new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
-            new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
-            new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
-            new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。")
-        };
-        command.Handler = CommandHandler.Create((ApplicationCommand c) =>
-        {
-            ApplicationCommand = c;
-        });
-        await command.InvokeAsync(e.Args);
-
         // 检测Mutex
-        Mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
-        if (!createNew)
+        if (!IsMutexCreateNew)
         {
-            if (ApplicationCommand.WaitMutex)
+            if (!ApplicationCommand.WaitMutex)
             {
-                try
-                {
-                    Mutex.WaitOne();
-                }
-                catch
-                {
-                    // ignored
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrWhiteSpace(ApplicationCommand.Uri))
-                {
-                    ProcessUriNavigation();
-                }
-                else
-                {
-                    ProcessInstanceExisted();
-                }
+                ProcessInstanceExisted();
                 Environment.Exit(0);
             }
         }
@@ -456,26 +423,6 @@ public partial class App : Application, IAppHost
 
         IAppHost.Host.BindGrpcServices();
         GetService<NamedPipeServer>().Start();
-    }
-
-    private void ProcessUriNavigation()
-    {
-        try
-        {
-            var client = new IpcClient();
-            var uriSc =
-                new Shared.IPC.Protobuf.Service.UriNavigationService.UriNavigationServiceClient(
-                    client.Channel);
-            uriSc.Navigate(new UriNavigationScReq()
-            {
-                Uri = ApplicationCommand.Uri
-            });
-        }
-        catch
-        {
-            ProcessInstanceExisted();
-            // ignored
-        }
     }
 
     private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)
