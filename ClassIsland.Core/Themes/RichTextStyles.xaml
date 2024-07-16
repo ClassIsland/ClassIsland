@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:gif="http://wpfanimatedgif.codeplex.com"
-                    xmlns:commands="clr-namespace:ClassIsland.Core.Commands;assembly=ClassIsland.Core"
+                    xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
                     xmlns:extensions="clr-namespace:ClassIsland.Core.Extensions;assembly=ClassIsland.Core">
     <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
         <Setter Property="LineHeight" Value="24"/>

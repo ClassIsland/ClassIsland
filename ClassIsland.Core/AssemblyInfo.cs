@@ -17,5 +17,6 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Converters", AssemblyName = "ClassIsland.Core")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls", AssemblyName = "ClassIsland.Core")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.CommonDialog", AssemblyName = "ClassIsland.Core")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.LessonsControls", AssemblyName = "ClassIsland.Core")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Commands", AssemblyName = "ClassIsland.Core")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Controls", AssemblyName = "ClassIsland.Core")]

@@ -1,0 +1,95 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+                    xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries>
+        <!--hc:Theme/>
+                <hc:ThemeResources/>-->
+        <!-- MahApp -->
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <!-- Theme setting -->
+        <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Light.Blue.xaml" />-->
+        <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="LightBlue" SecondaryColor="LightBlue" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.MahApps;component/Themes/MaterialDesignTheme.MahApps.Flyout.xaml" />
+        <!--<ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>-->
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;component/Themes/Generic.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;component/Themes/RichTextStyles.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+    <system:String x:Key="TestStringLong">
+        某一日，祂从天坠落。人们抬头仰望，于是看见了星空。星月送来神的女儿，她愿成为人的伴侣。长风化作她的轺车，四海落成她的园圃。鸟雀衔来善的种子，百花编织爱的颂歌。她便是这样降生于世，行于大地，与人类一同长大，与世界一起发芽。而今，终焉之时将至。而今，归去之时已至。就此告别吧，美丽的世界。此后，将有群星闪耀，因为我如今来过。此后，将有百花绽放，因为我从未离去。请将我的箭、我的花、与我的爱，织成新生的种子，带向那枯萎的大地。然后，便让它开出永恒而无瑕的…人性之华吧。我名为爱莉希雅……最初的律者，人之律者。
+    </system:String>
+
+    <!-- #region MahApp-->
+    <FontFamily x:Key="MahApps.Fonts.Family.Button">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.Header">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.Window.Title">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.Control">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.ToggleSwitch">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.ToggleSwitch.Header">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <SolidColorBrush x:Key="MahApps.Brushes.Highlight" Color="{DynamicResource Primary700}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.AccentBase" Color="{DynamicResource Primary600}" />
+    <SolidColorBrush x:Key="MahApps.Brushes.Accent" Color="{DynamicResource Primary500}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.Accent2" Color="{DynamicResource Primary400}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.Accent3" Color="{DynamicResource Primary300}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.Accent4" Color="{DynamicResource Primary200}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.WindowTitle" Color="{DynamicResource Primary700}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.Selected.Foreground" Color="{DynamicResource Primary500Foreground}"/>
+    <LinearGradientBrush x:Key="MahApps.Brushes.Progress" EndPoint="0.001,0.5" StartPoint="1.002,0.5">
+        <GradientStop Color="{DynamicResource Primary700}" Offset="0"/>
+        <GradientStop Color="{DynamicResource Primary300}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="MahApps.Brushes.CheckmarkFill" Color="{DynamicResource Primary500}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.RightArrowFill" Color="{DynamicResource Primary500}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.IdealForeground" Color="{DynamicResource Primary500Foreground}"/>
+    <SolidColorBrush x:Key="MahApps.Brushes.IdealForegroundDisabled" Color="{DynamicResource Primary500}" Opacity="0.4"/>
+    <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.OnSwitchBrush.Win10" Color="{DynamicResource Primary500}" />
+    <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.OnSwitchMouseOverBrush.Win10" Color="{DynamicResource Primary400}" />
+    <SolidColorBrush x:Key="MahApps.Metro.Brushes.ToggleSwitchButton.ThumbIndicatorCheckedBrush.Win10" Color="{DynamicResource Primary500Foreground}" />
+
+    <!-- #endregion -->
+
+    <converters:BooleanToBooleanReConverter x:Key="BooleanToBooleanReConverter" />
+    <Style TargetType="Image">
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+        <Setter Property="UseLayoutRounding" Value="True"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+    </Style>
+
+    <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
+        <Setter Property="PanningMode" Value="Both"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+    </Style>
+
+    <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
+        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+    </Style>
+
+    <Style TargetType="ListView" BasedOn="{StaticResource MaterialDesignListView}">
+        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+    </Style>
+
+    <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">
+        <Setter Property="Margin" Value="12" />
+        <Setter Property="MaxWidth" Value="750" />
+        <Style.Resources>
+            <Style TargetType="controls:SettingsCard">
+                <Setter Property="Margin" Value="0 0 0 6" />
+            </Style>
+        </Style.Resources>
+    </Style>
+
+    <converters:StringToFontFamilyConverter x:Key="StringToFontFamilyConverter" />
+    <converters:IntToFontWeightConverter x:Key="IntToFontWeightConverter" />
+    <converters:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
+    <converters:IntToStringConverter x:Key="IntToStringConverter" />
+    <converters:WeekIndexToWeekStringConverter x:Key="WeekIndexToWeekStringConverter" />
+
+</ResourceDictionary>
