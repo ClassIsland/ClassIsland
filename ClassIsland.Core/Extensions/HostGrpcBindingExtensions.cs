@@ -35,7 +35,7 @@ public static class HostGrpcBindingExtensions
             var server = host.Services.GetService(typeof(NamedPipeServer)) as NamedPipeServer;
             if (method == null) continue;
             method.Invoke(null, [server?.ServiceBinder, host.Services.GetRequiredService(s)]);
-            logger?.LogDebug("绑定 Grpc 服务：{}", s);
+            logger?.LogInformation("绑定 Grpc 服务：{}", s);
         }
 
         return host;

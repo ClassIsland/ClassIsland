@@ -53,6 +53,7 @@ public class UriNavigationService(ILogger<UriNavigationService> logger) : IUriNa
         {
             if (uri.Scheme == IUriNavigationService.UriScheme)
             {
+                Logger.LogInformation("正在 Uri 导航：{}", uri);
                 var node = NavigationHandlers.GetNode(uri.Host + uri.AbsolutePath, out var children);
                 node.NavigatedAction?.Invoke(new UriNavigationEventArgs(uri, children));
             }

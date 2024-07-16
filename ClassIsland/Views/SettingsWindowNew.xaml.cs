@@ -171,7 +171,7 @@ public partial class SettingsWindowNew : MyWindow
 
     private async Task CoreNavigate()
     {
-        Logger.LogTrace("开始导航 \n{}", new StackTrace());
+        Logger.LogTrace("开始导航");
         switch (ViewModel.SelectedPageInfo?.Category)
         {
             // 判断是否可以导航
