@@ -20,6 +20,12 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="LessonsListBox">
+                <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
+                                   SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"
+                                   Subjects="{Binding ProfileService.Profile.Subjects}"
+                                   IsLiveUpdatingEnabled="True"/>
+            </TabItem>
             <TabItem Header="水波纹提醒">
                 <DockPanel >
                     <WrapPanel Orientation="Horizontal" DockPanel.Dock="Top">

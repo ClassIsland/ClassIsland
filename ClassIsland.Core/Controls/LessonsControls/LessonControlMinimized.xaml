@@ -1,0 +1,31 @@
+﻿<local:LessonControlBase x:Class="ClassIsland.Core.Controls.LessonsControls.LessonControlMinimized"
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                   xmlns:local="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+                   xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+                   xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                   mc:Ignorable="d" 
+                   d:DesignHeight="450" d:DesignWidth="800">
+    <local:LessonControlBase.Resources>
+        <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
+    </local:LessonControlBase.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
+          Margin="10 8">
+        <ContentPresenter>
+            <ContentPresenter.ContentTemplate>
+                <DataTemplate DataType="{x:Type profile:Subject}">
+                    <TextBlock VerticalAlignment="Center" FontSize="18"
+                               Text="{Binding Initial}"/>
+                </DataTemplate>
+            </ContentPresenter.ContentTemplate>
+            <ContentPresenter.Content>
+                <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}">
+                    <Binding Path="Subjects"/>
+                    <Binding Path="ClassInfo.SubjectId"/>
+                </MultiBinding>
+            </ContentPresenter.Content>
+        </ContentPresenter>
+    </Grid>
+</local:LessonControlBase>

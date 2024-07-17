@@ -69,12 +69,21 @@ public class Subject : AttachableSettingsObject
     }
 
     /// <summary>
-    /// 代表一个空科目
+    /// 代表一个空科目。
     /// </summary>
     public static readonly Subject Empty = new()
     {
         Initial = "?",
         Name = "???"
+    };
+
+    /// <summary>
+    /// 代表一个课间休息科目。
+    /// </summary>
+    public static readonly Subject Breaking = new()
+    {
+        Initial = "休",
+        Name = "课间休息"
     };
     
     /// <summary>

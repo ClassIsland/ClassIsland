@@ -5,13 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
     mc:Ignorable="d">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/LessonsControls/LessonsListBox.xaml"/>
     </ResourceDictionary.MergedDictionaries>
-
-    <Style TargetType="{x:Type lessonsControls:LessonsListBox}"
-           BasedOn="{StaticResource MaterialDesignListBox}">
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-    </Style>
 </ResourceDictionary>
