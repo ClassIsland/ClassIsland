@@ -18,6 +18,7 @@ static class Program
         var command = new RootCommand
         {
             new Option<string>(["--updateReplaceTarget", "-urt"], "更新时要替换的文件"),
+            new Option<string>(["--updateDeleteTarget", "-udt"], "更新完成要删除的文件"),
             new Option<string>(["--uri"], "启动时要导航到的Uri"),
             new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
             new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
