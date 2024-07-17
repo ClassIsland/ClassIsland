@@ -22,7 +22,10 @@
                 <lessonsControls:LessonsListBoxItemTemplateMultiConverter.ExpandedDataTemplate>
                     <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
                         <lessonsControls:LessonControlExpanded IsLiveUpdatingEnabled="{Binding IsLiveUpdatingEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
-                                                               Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}">
+                                                               Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
+                                                               DefaultLessonControlSettings="{Binding LessonControlSettings, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
+                                                               CurrentClassPlan="{Binding ClassPlan, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
+                                                               CurrentTimeLayoutItem="{Binding Mode=OneWay}">
                             <lessonsControls:LessonControlExpanded.ClassInfo>
                                 <MultiBinding Converter="{StaticResource ClassInfoMultiConverter}">
                                     <Binding/>

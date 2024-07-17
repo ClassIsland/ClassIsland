@@ -1,9 +1,11 @@
-﻿namespace ClassIsland.Shared.Abstraction.Models;
+﻿using System.ComponentModel;
+
+namespace ClassIsland.Shared.Abstraction.Models;
 
 /// <summary>
 /// 课程显示设置接口
 /// </summary>
-public interface ILessonControlSettings
+public interface ILessonControlSettings : INotifyPropertyChanged
 {
     /// <summary>
     /// 是否在当前时间点上显示附加信息

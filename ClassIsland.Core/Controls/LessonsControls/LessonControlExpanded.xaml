@@ -17,7 +17,7 @@
             x:Key="SecondsLongToFormatHoursMinutesSecondsStringConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
-        <StackPanel Orientation="Horizontal" Margin="16 0">
+        <StackPanel Orientation="Horizontal" Margin="16 0" VerticalAlignment="Center">
             <ContentPresenter>
                 <ContentPresenter.Style>
                     <Style TargetType="ContentPresenter">
@@ -59,12 +59,12 @@
                             <TabControl.Style>
                                 <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsLiveUpdatingEnabled}" Value="False">
+                                        <DataTrigger Binding="{Binding IsLiveUpdatingEnabled, Mode=OneWay}" Value="False">
                                             <Setter Property="SelectedIndex" Value="0" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                     <Setter Property="SelectedIndex"
-                                            Value="{Binding SettingsSource.ExtraInfoType}" />
+                                            Value="{Binding SettingsSource.ExtraInfoType, Mode=OneWay}" />
                                 </Style>
                             </TabControl.Style>
                             <TabItem>

@@ -1,9 +1,8 @@
 ﻿using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Interfaces;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ClassIsland.Models.AttachedSettings;
+namespace ClassIsland.Core.Models.AttachedSettings;
 
 public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSettings, ILessonControlSettings
 {

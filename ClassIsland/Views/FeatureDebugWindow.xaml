@@ -24,7 +24,7 @@
                 <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
                                    SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"
                                    Subjects="{Binding ProfileService.Profile.Subjects}"
-                                   IsLiveUpdatingEnabled="True"/>
+                                   IsLiveUpdatingEnabled="False"/>
             </TabItem>
             <TabItem Header="水波纹提醒">
                 <DockPanel >

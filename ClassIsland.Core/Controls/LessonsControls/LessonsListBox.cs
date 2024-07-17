@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
@@ -62,13 +63,13 @@ public class LessonsListBox : ListBox
         set { SetValue(IsLiveUpdatingEnabledProperty, value); }
     }
 
-    public static readonly DependencyProperty AdditionInfoTypeProperty = DependencyProperty.Register(
-        nameof(AdditionInfoType), typeof(int), typeof(LessonsListBox), new PropertyMetadata(default(int)));
+    public static readonly DependencyProperty LessonControlSettingsProperty = DependencyProperty.Register(
+        nameof(LessonControlSettings), typeof(ILessonControlSettings), typeof(LessonsListBox), new PropertyMetadata(default(ILessonControlSettings)));
 
-    public int AdditionInfoType
+    public ILessonControlSettings? LessonControlSettings
     {
-        get { return (int)GetValue(AdditionInfoTypeProperty); }
-        set { SetValue(AdditionInfoTypeProperty, value); }
+        get { return (ILessonControlSettings)GetValue(LessonControlSettingsProperty); }
+        set { SetValue(LessonControlSettingsProperty, value); }
     }
 
     static LessonsListBox()

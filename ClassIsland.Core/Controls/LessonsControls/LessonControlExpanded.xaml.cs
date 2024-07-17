@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.AttachedSettings;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
@@ -38,6 +39,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private long _totalSeconds = 0;
     private long _seconds = 0;
     private int _masterTabIndex = 0;
+    private ILessonControlSettings? _settingsSource;
 
     public bool IsLiveUpdatingEnabled
     {
@@ -52,6 +54,24 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     {
         get { return (TimeLayoutItem)GetValue(CurrentTimeLayoutItemProperty); }
         set { SetValue(CurrentTimeLayoutItemProperty, value); }
+    }
+
+    public static readonly DependencyProperty DefaultLessonControlSettingsProperty = DependencyProperty.Register(
+        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlExpanded), new PropertyMetadata(default(ILessonControlSettings)));
+
+    public ILessonControlSettings? DefaultLessonControlSettings
+    {
+        get { return (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty); }
+        set { SetValue(DefaultLessonControlSettingsProperty, value); }
+    }
+
+    public static readonly DependencyProperty CurrentClassPlanProperty = DependencyProperty.Register(
+        nameof(CurrentClassPlan), typeof(ClassPlan), typeof(LessonControlExpanded), new PropertyMetadata(default(ClassPlan)));
+
+    public ClassPlan CurrentClassPlan
+    {
+        get { return (ClassPlan)GetValue(CurrentClassPlanProperty); }
+        set { SetValue(CurrentClassPlanProperty, value); }
     }
 
     public ILessonsService? LessonsService { get; set; }
@@ -90,11 +110,18 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         }
         else
         {
-            LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+            if (LessonsService != null)
+            {
+                LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+            }
         }
     }
 
-    public ILessonControlSettings? SettingsSource { get; set; }
+    public ILessonControlSettings? SettingsSource
+    {
+        get => _settingsSource;
+        set => SetField(ref _settingsSource, value);
+    }
 
     private IExactTimeService? ExactTimeService { get; set; }
 
@@ -112,8 +139,19 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         }
     }
 
+    private Subject CurrentSubject => Subjects.TryGetValue(ClassInfo?.SubjectId ?? "", out var value) ? value : Subject.Breaking;
+
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
+        SettingsSource =
+            (ILessonControlSettings?)IAttachedSettingsHostService.GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
+                new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
+                CurrentSubject,
+                CurrentTimeLayoutItem,
+                CurrentClassPlan,
+                ClassInfo?.CurrentTimeLayout) ??
+            DefaultLessonControlSettings;
+
         if (ExactTimeService != null)
         {
             TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
