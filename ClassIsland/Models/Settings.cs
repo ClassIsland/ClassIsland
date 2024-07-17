@@ -151,6 +151,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _currentComponentConfig = "Default";
     private Version _lastAppVersion = new Version("0.0.0.0");
     private bool _showComponentsMigrateTip = false;
+    private bool _expAllowEditingActivatedTimeLayout = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1356,6 +1357,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _expIsExcelImportEnabled) return;
             _expIsExcelImportEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ExpAllowEditingActivatedTimeLayout
+    {
+        get => _expAllowEditingActivatedTimeLayout;
+        set
+        {
+            if (value == _expAllowEditingActivatedTimeLayout) return;
+            _expAllowEditingActivatedTimeLayout = value;
             OnPropertyChanged();
         }
     }

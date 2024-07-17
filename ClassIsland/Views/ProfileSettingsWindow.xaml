@@ -196,6 +196,7 @@
         </StackPanel>
 
         <!-- 课程表信息 -->
+        <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
         <ScrollViewer x:Key="ClassPlansInfoEditor" Width="332"
                       VerticalScrollBarVisibility="Auto">
             <StackPanel DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}"
@@ -237,9 +238,14 @@
                           x:Name="ComboBox1"
                           Margin="0 12 0 0"
                           materialDesign:HintAssist.Hint="时间表"
-                          IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
                           SelectedItem="{Binding TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
                           ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                    <ComboBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
+                            <Binding Path="IsActivated" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
+                            <Binding Path="MainViewModel.Settings.ExpAllowEditingActivatedTimeLayout" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}" />
+                        </MultiBinding>
+                    </ComboBox.IsEnabled>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value.Name}"
@@ -250,11 +256,16 @@
                 <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}"
                           Margin="0 12 0 0"
                           materialDesign:HintAssist.Hint="课表群"
-                          IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}"
                           SelectedValue="{Binding AssociatedGroup, Mode=TwoWay}"
                           SelectedValuePath="Key"
                           SelectionChanged="ComboBoxClassPlanGroup_OnSelectionChanged"
                           ItemsSource="{Binding ProfileService.Profile.ClassPlanGroups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                    <ComboBox.IsEnabled>
+                        <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
+                            <Binding Path="IsActivated" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
+                            <Binding Path="MainViewModel.Settings.ExpAllowEditingActivatedTimeLayout" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}" />
+                        </MultiBinding>
+                    </ComboBox.IsEnabled>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value.Name}"
@@ -651,7 +662,6 @@
 
 
         <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
-        <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
 
         <CollectionViewSource x:Key="ClassPlansViewSource" 
                               IsLiveGroupingRequested="True"
