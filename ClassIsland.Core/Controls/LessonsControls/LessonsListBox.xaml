@@ -7,7 +7,8 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type lessonsControls:LessonsListBox}"
-           BasedOn="{StaticResource MaterialDesignListBox}">
+           BasedOn="{StaticResource MaterialDesignListBox}"
+           x:Key="ClassIsland.LessonsListBox">
         <Style.Resources>
             <lessonsControls:ClassInfoMultiConverter x:Key="ClassInfoMultiConverter"/>
             <lessonsControls:LessonsListBoxItemTemplateMultiConverter
@@ -43,10 +44,10 @@
                             Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}">
                             <lessonsControls:LessonControlMinimized.ClassInfo>
                                 <MultiBinding Converter="{StaticResource ClassInfoMultiConverter}">
-                                    <Binding/>
-                                    <Binding Path="SelectedIndex" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}"/>
-                                    <Binding Path="Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}"/>
-                                    <Binding Path="ClassPlan" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}"/>
+                                    <Binding Mode="OneWay"/>
+                                    <Binding Path="SelectedIndex" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                    <Binding Path="Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                    <Binding Path="ClassPlan" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                                 </MultiBinding>
                             </lessonsControls:LessonControlMinimized.ClassInfo>
                         </lessonsControls:LessonControlMinimized>
@@ -56,7 +57,7 @@
         </Style.Resources>
         <Setter Property="Height" Value="40"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-        <Setter Property="ItemsSource" Value="{Binding ClassPlan.TimeLayout.Layouts, RelativeSource={RelativeSource Self}}"/>
+        <Setter Property="ItemsSource" Value="{Binding ClassPlan.TimeLayout.Layouts, RelativeSource={RelativeSource Self}, Mode=OneWay}"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="ItemsPanel">
@@ -76,9 +77,9 @@
                         <ContentPresenter.ContentTemplate>
                             <MultiBinding Converter="{StaticResource LessonsListBoxItemTemplateMultiConverter}"
                                               Mode="OneWay">
-                                <Binding Path="TimeType"/>
-                                <Binding Path="IsHideDefault"/>
-                                <Binding Path="SelectedItem" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}"/>
+                                <Binding Path="TimeType" Mode="OneWay"/>
+                                <Binding Path="IsHideDefault" Mode="OneWay"/>
+                                <Binding Path="SelectedItem" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                                 <Binding/>
                             </MultiBinding>
                         </ContentPresenter.ContentTemplate>
@@ -94,4 +95,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="lessonsControls:LessonsListBox"
+           BasedOn="{StaticResource ClassIsland.LessonsListBox}"/>
 </ResourceDictionary>

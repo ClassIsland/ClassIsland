@@ -47,12 +47,13 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         if (values.Length < 4)
             return BlankDataTemplate;
         if (values[0] is not int timeType ||
-            values[1] is not bool isHideDefault ||
-            values[2] is not TimeLayoutItem selectedItem ||
-            values[3] is not TimeLayoutItem currentItem)
+            values[1] is not bool isHideDefault)
         {
             return BlankDataTemplate;
         }
+
+        var selectedItem = values[2] as TimeLayoutItem;
+        var currentItem = values[3] as TimeLayoutItem;
 
         if (timeType == 2)
         {
