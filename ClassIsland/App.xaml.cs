@@ -197,7 +197,7 @@ public partial class App : Application, IAppHost
             Process.Start(new ProcessStartInfo()
             {
                 FileName = ApplicationCommand.UpdateReplaceTarget,
-                ArgumentList = { "-udt", Environment.ProcessPath! }
+                ArgumentList = { "-udt", Environment.ProcessPath!, "-m", "true" }
             });
             Restart();
             return;
