@@ -34,6 +34,15 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         set { SetValue(SeparatorDataTemplateProperty, value); }
     }
 
+    public static readonly DependencyProperty DiscardHidingDefaultProperty = DependencyProperty.Register(
+        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(bool)));
+
+    public bool DiscardHidingDefault
+    {
+        get { return (bool)GetValue(DiscardHidingDefaultProperty); }
+        set { SetValue(DiscardHidingDefaultProperty, value); }
+    }
+
     public DataTemplate BlankDataTemplate { get; } = new();
 
 
@@ -60,7 +69,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
             return SeparatorDataTemplate;
         }
 
-        var hide = (timeType == 1 || isHideDefault) && selectedItem != currentItem;
+        var hide = (timeType == 1 || (isHideDefault && !DiscardHidingDefault)) && selectedItem != currentItem;
         if (hide)
         {
             return BlankDataTemplate;

@@ -72,6 +72,23 @@ public class LessonsListBox : ListBox
         set { SetValue(LessonControlSettingsProperty, value); }
     }
 
+    public static readonly DependencyProperty DiscardHidingDefaultProperty = DependencyProperty.Register(
+        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool),
+            (o, args) =>
+            {
+                var control = o as LessonsListBox;
+                if (control?.FindResource("LessonsListBoxItemTemplateMultiConverter") is not LessonsListBoxItemTemplateMultiConverter cv)
+                    return;
+                cv.DiscardHidingDefault = args.NewValue as bool? ?? false;
+
+            }));
+
+    public bool DiscardHidingDefault
+    {
+        get { return (bool)GetValue(DiscardHidingDefaultProperty); }
+        set { SetValue(DiscardHidingDefaultProperty, value); }
+    }
+
     static LessonsListBox()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(LessonsListBox), new FrameworkPropertyMetadata(typeof(LessonsListBox)));

@@ -13,6 +13,7 @@
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
         mc:Ignorable="d"
         Title="换课" 
         Height="250" Width="600"
@@ -36,55 +37,18 @@
                 <DataTrigger Binding="{Binding TimeType}" Value="2">
                     <Setter Property="IsHitTestVisible" Value="False"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding IsHideDefault}" Value="True">
+                    <Setter Property="Opacity" Value="0.4"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
         <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
 
         <converters1:IndexConverter x:Key="IndexConverter" />
-        <Style x:Key="ClassPlanListBoxStyle" TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
-            <Setter Property="ItemsPanel">
-                <Setter.Value>
-                    <ItemsPanelTemplate>
-                        <StackPanel IsItemsHost="True" Orientation="Horizontal" VerticalAlignment="Top" />
-                    </ItemsPanelTemplate>
-                </Setter.Value>
-            </Setter>
+        <Style x:Key="ClassPlanListBoxStyle" TargetType="ci:LessonsListBox" 
+               BasedOn="{StaticResource ClassIsland.LessonsListBox}">
+            
             <Setter Property="ItemContainerStyle" Value="{StaticResource ClassPlanListBoxItemStyle}"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-            <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-            <Setter Property="ItemTemplate">
-                <Setter.Value>
-                    <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
-                        <controls:LessonControl
-                                        Index="{Binding Converter={StaticResource IndexConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                        Subjects="{Binding ProfileService.Profile.Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassChangingWindow}}"
-                                        CurrentClassPlan="{Binding ClassPlan, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassChangingWindow}}"
-                                        IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                        IsTimerEnabled="False">
-                            <controls:LessonControl.Style>
-                                <Style TargetType="{x:Type controls:LessonControl}">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Style.Triggers>
-                                        <MultiDataTrigger>
-                                            <MultiDataTrigger.Conditions>
-                                                <Condition Binding="{Binding TimeType}" Value="1" />
-                                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
-                                                           Value="False" />
-                                            </MultiDataTrigger.Conditions>
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </MultiDataTrigger>
-                                        <DataTrigger Binding="{Binding IsHideDefault}" Value="True">
-                                            <Setter Property="Opacity" Value="0.4"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </controls:LessonControl.Style>
-                        </controls:LessonControl>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
         <StackPanel x:Key="OverwriteConfirm" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
             <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
@@ -135,14 +99,16 @@
                         <materialDesign:SlideOutWipe />
                     </materialDesign:TransitionerSlide.ForwardWipe>
                     <Grid>
-                        <ListBox VerticalAlignment="Center"
+                        <ci:LessonsListBox VerticalAlignment="Center"
                                  HorizontalAlignment="Center"
                                  Margin="0 8"
-                                 ItemsSource="{Binding ClassPlan.TimeLayout.Layouts}"
+                                 ClassPlan="{Binding ClassPlan, Mode=OneWay}"
                                  Style="{StaticResource ClassPlanListBoxStyle}"
                                  SelectedIndex="{Binding ViewModel.SourceIndex}"
+                                 DiscardHidingDefault="True"
+                                 Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                                  SelectionChanged="Selector_OnSelectionChanged">
-                        </ListBox>
+                        </ci:LessonsListBox>
                     </Grid>
                 </materialDesign:TransitionerSlide>
                 <materialDesign:TransitionerSlide>
@@ -204,12 +170,15 @@
                                 <materialDesign:TransitionerSlide.ForwardWipe>
                                     <materialDesign:SlideOutWipe />
                                 </materialDesign:TransitionerSlide.ForwardWipe>
-                                <ListBox VerticalAlignment="Center"
-                                         HorizontalAlignment="Center"
-                                         ItemsSource="{Binding ClassPlan.TimeLayout.Layouts}"
-                                         Style="{StaticResource ClassPlanListBoxStyle}"
-                                         SelectedIndex="{Binding ViewModel.SwapModeTargetIndex}">
-                                </ListBox>
+                                <ci:LessonsListBox VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center"
+                                                   Margin="0 8"
+                                                   ClassPlan="{Binding ClassPlan, Mode=OneWay}"
+                                                   Style="{StaticResource ClassPlanListBoxStyle}"
+                                                   DiscardHidingDefault="True"
+                                                   Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
+                                                   SelectedIndex="{Binding ViewModel.SwapModeTargetIndex}">
+                                </ci:LessonsListBox>
                             </materialDesign:TransitionerSlide>
                             <materialDesign:TransitionerSlide>
                                 <materialDesign:TransitionerSlide.BackwardWipe>
