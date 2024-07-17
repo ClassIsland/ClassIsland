@@ -551,8 +551,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     "-m", "true"
                 }
             });
-            Application.Current.Shutdown();
-            App.ReleaseLock();
+            App.Stop();
         }
         catch (Exception ex)
         {

@@ -37,8 +37,7 @@ public partial class CrashWindow : MyWindow
 
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
     {
-        System.Windows.Forms.Application.Restart();
-        Application.Current.Shutdown();
+        App.Restart();
     }
 
     private void ButtonCopy_OnClick(object sender, RoutedEventArgs e)

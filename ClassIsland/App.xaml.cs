@@ -199,8 +199,7 @@ public partial class App : Application, IAppHost
                 FileName = ApplicationCommand.UpdateReplaceTarget,
                 ArgumentList = { "-udt", Environment.ProcessPath! }
             });
-            ReleaseLock();
-            Shutdown();
+            Restart();
             return;
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)
@@ -571,13 +570,20 @@ public partial class App : Application, IAppHost
         app.Mutex?.ReleaseMutex();
     }
 
-    public static void Restart(bool quiet=false)
+    public static void Stop()
     {
+        IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
+        IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
         IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
         IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
         IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
         ReleaseLock();
         Current.Shutdown();
+    }
+
+    public static void Restart(bool quiet=false)
+    {
+        Stop();
         var path = Environment.ProcessPath;
         var args = new List<string> { "-m" };
         if (quiet)

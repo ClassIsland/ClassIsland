@@ -599,12 +599,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             {"Source", "档案管理重启"}
         });
-        var mw = (MainWindow)Application.Current.MainWindow!;
-        mw.SaveProfile();
-        mw.SaveSettings();
-        App.ReleaseLock();
-        Application.Current.Shutdown();
-        System.Windows.Forms.Application.Restart();
+        App.Restart();
     }
 
     private async void ButtonCreateProfile_OnClick(object sender, RoutedEventArgs e)

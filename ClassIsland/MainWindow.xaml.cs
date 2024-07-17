@@ -696,10 +696,7 @@ public partial class MainWindow : Window
             e.Cancel = true;
             return;
         }
-        LessonsService.StopMainTimer();
-        SaveProfile();
-        SaveSettings();
-        App.GetService<NamedPipeServer>().Kill();
+        App.Stop();
     }
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
