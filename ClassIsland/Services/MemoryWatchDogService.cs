@@ -54,7 +54,7 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
             Process.Start(startInfo);
         }
         //Process.Start(startInfo);
-        Application.Current.Dispatcher.Invoke(() =>
+        App.Stop();
         {
             App.GetService<SettingsService>().SaveSettings();
             App.GetService<IProfileService>().SaveProfile();
