@@ -87,7 +87,7 @@ public class FileFolderService : IHostedService
             try
             {
                 dir.Delete();
-            } catch (UnauthorizedAccessException)
+            } catch (IOException)
             {
                 args.Add("-udt");
                 args.Add(Environment.ProcessPath!);
@@ -102,7 +102,7 @@ public class FileFolderService : IHostedService
         try
         {
             file.Delete();
-        } catch (UnauthorizedAccessException)
+        } catch (IOException)
         {
             args.Add("-udt");
             args.Add(Environment.ProcessPath!);

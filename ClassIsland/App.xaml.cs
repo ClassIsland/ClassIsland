@@ -518,7 +518,7 @@ public partial class App : Application, IAppHost
                 var args = new List<string> {"-m"};
                 foreach (var i in new[]
                          {
-                             "ClassIsland.exe", // 假设文件名没有被修改…
+                             "ClassIsland.exe", // 假定文件名没有被修改
                              "Settings.json",
                              @".\Profiles",
                              @".\Config",
@@ -540,6 +540,7 @@ public partial class App : Application, IAppHost
                 Process.Start(startInfo);
             } catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 CommonDialog.ShowError($"无法将 ClassIsland 移动到 {FileFolderService.PathToFriendlyPathConverter(destinationDir)}，\n请手动将本应用移动到一个专属的文件夹后再运行。\n\n错误原因：{ex.Message}");
                 if (!debug) Environment.Exit(0);
             }
