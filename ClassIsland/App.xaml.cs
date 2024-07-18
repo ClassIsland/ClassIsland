@@ -319,6 +319,12 @@ public partial class App : Application, IAppHost
                 services.AddLogging(builder =>
                 {
                     builder.AddConsole();
+                    builder.AddSentry(o =>
+                    {
+                        o.InitializeSdk = false;
+                        o.MinimumBreadcrumbLevel = LogLevel.Information;
+                        o.MinimumEventLevel = LogLevel.Error;
+                    });
                     // TODO: 添加写入本地log文件
 #if DEBUG
                     builder.SetMinimumLevel(LogLevel.Trace);
