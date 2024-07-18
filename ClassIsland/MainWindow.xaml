@@ -122,6 +122,7 @@
                 <Separator/>
                 <MenuItem Header="WelcomeWindow" Click="MenuItemDebugWelcomeWindow_OnClick"/>
                 <MenuItem Header="WelcomeWindow (Full)" Click="MenuItemDebugWelcomeWindow2_OnClick"/>
+                <MenuItem Header="MoveClassIslandDirectory" Click="MenuItemDebugMoveClassIslandDirectory_OnClick"/>
                 <Separator/>
                 <MenuItem Header="FitSize" Click="MenuItemDebugFitSize_OnClick"/>
             </MenuItem>
