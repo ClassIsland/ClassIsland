@@ -170,6 +170,62 @@ public partial class App : Application, IAppHost
             Environment.Exit(0);
         }
 
+        // 检测桌面文件夹
+        if (Environment.CurrentDirectory == Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory))
+        {
+            var r = new CommonDialogBuilder()
+                   .SetContent("ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个适合的位置。")
+                   .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.RelativeOrAbsolute))
+                   .AddAction("退出应用", PackIconKind.ExitToApp);
+                // .AddAction($"移动到 {FileFolderService.PathToFriendlyPathConverter(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles))}",
+                //            PackIconKind.FolderMoveOutline);
+            var destinationDirs = new List<string>(3);
+                                                   // {Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}
+            foreach (var drive in DriveInfo.GetDrives().Where(drive => drive.DriveType == DriveType.Fixed && !drive.Name.Contains(Environment.GetEnvironmentVariable("systemdrive")!)))
+            {
+                r.AddAction($"移动到 {FileFolderService.PathToFriendlyPathConverter(drive.Name)}",
+                            PackIconKind.FolderMoveOutline,
+                            drive.Name == @"D:\");
+                destinationDirs.Add(drive.Name);
+            }
+            var c = r.ShowDialog();
+            if (c == 0)
+                Environment.Exit(0);
+            else if (c > 0)
+            {
+                var destinationDir = Path.Combine(destinationDirs[c - 1], "ClassIsland");
+                try
+                {
+                    var args = new List<string> {"-m"};
+                    foreach (var i in new[]
+                             {
+                                 "ClassIsland.exe",
+                                 "Settings.json",
+                                 @".\Profiles",
+                                 @".\Config",
+                                 "Settings.json.bak",
+                                 @".\Cache",
+                                 @".\Temp",
+                             })
+                        FileFolderService.Move(i, destinationDir, ref args);
+                    Stop();
+                    if (ApplicationCommand.Quiet)
+                        args.Add("-q");
+                    var startInfo = new ProcessStartInfo(Path.Combine(destinationDir, Path.GetFileName(GetType().Assembly.Location).Replace(".dll", ".exe", true, null)))
+                    {
+                        CreateNoWindow = false
+                    };
+                    foreach (var i in args)
+                        startInfo.ArgumentList.Add(i);
+                    Process.Start(startInfo);
+                } catch (Exception ex)
+                {
+                    CommonDialog.ShowError($@"无法将ClassIsland移动到 {FileFolderService.PathToFriendlyPathConverter(destinationDir)}，请手动将本应用移动到一个专属的文件夹后再运行。\n\n{ex.Message}");
+                    Environment.Exit(0);
+                }
+            }
+        }
+
         // 检测目录是否可以访问
         try
         {
