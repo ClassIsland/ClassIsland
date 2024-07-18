@@ -59,6 +59,7 @@ using ClassIsland.Services.Grpc;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Protobuf.Client;
 using GrpcDotNetNamedPipes;
+using Sentry;
 
 namespace ClassIsland;
 /// <summary>
@@ -129,12 +130,21 @@ public partial class App : Application, IAppHost
             return;
         }
 #endif
-        Crashes.TrackError(e.Exception);
+        SentrySdk.CaptureException(e.Exception, scope =>
+        {
+            scope.Level = SentryLevel.Fatal;    
+        });
         CrashWindow.ShowDialog();
     }
 
     private async void App_OnStartup(object sender, StartupEventArgs e)
     {
+        var transaction = SentrySdk.StartTransaction(
+            "startup",
+            "startup"
+        );
+        SentrySdk.ConfigureScope(s => s.Transaction = transaction);
+        var spanPreInit = transaction.StartChild("startup-init");
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);
@@ -149,15 +159,14 @@ public partial class App : Application, IAppHost
         AppCenter.LogLevel = Microsoft.AppCenter.LogLevel.Verbose;
 #endif
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
-        Crashes.SendingErrorReport += CrashesOnSendingErrorReport;
-        AppCenter.Start("7039a2b0-8b4e-4d2d-8d2c-3c993ec26514", typeof(Analytics), typeof(Crashes));
-        await AppCenter.SetEnabledAsync(false);
 
         // 检测Mutex
         if (!IsMutexCreateNew)
         {
             if (!ApplicationCommand.WaitMutex)
             {
+                spanPreInit.Finish();
+                transaction.Finish();
                 ProcessInstanceExisted();
                 Environment.Exit(0);
             }
@@ -189,6 +198,7 @@ public partial class App : Application, IAppHost
             CommonDialog.ShowError("运行ClassIsland需要开启Aero效果。请在【控制面板】->【个性化】中启用Aero主题，然后再尝试运行ClassIsland。");
             Environment.Exit(0);
         }
+        var spanProcessUpdate = spanPreInit.StartChild("startup-process-update");
 
         if (ApplicationCommand.UpdateReplaceTarget != null)
         {
@@ -207,9 +217,11 @@ public partial class App : Application, IAppHost
             //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
             UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
         }
+        spanProcessUpdate.Finish();
 
         FileFolderService.CreateFolders();
         bool isSystemSpeechSystemExist = false;
+        var spanHostBuilding = spanPreInit.StartChild("startup-host-building");
         IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
@@ -234,6 +246,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<DiagnosticService>();
                 services.AddSingleton<IManagementService, ManagementService>();
                 services.AddSingleton<AppLogService>();
+                services.AddSingleton<ILoggerProvider, SentryLoggerProvider>();
                 services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddSingleton<IComponentsService, ComponentsService>();
                 services.AddSingleton<ILessonsService, LessonsService>();
@@ -323,7 +336,6 @@ public partial class App : Application, IAppHost
                     {
                         o.InitializeSdk = false;
                         o.MinimumBreadcrumbLevel = LogLevel.Information;
-                        o.MinimumEventLevel = LogLevel.Error;
                     });
                     // TODO: 添加写入本地log文件
 #if DEBUG
@@ -336,9 +348,15 @@ public partial class App : Application, IAppHost
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
 #endif
+        spanHostBuilding.Finish();
+        spanPreInit.Finish();
+        var spanLaunching = transaction.StartChild("startup-launching");
         CommandManager.RegisterClassCommandBinding(typeof(Window), new CommandBinding(UriNavigationCommands.UriNavigationCommand, UriNavigationCommandExecuted));
         CommandManager.RegisterClassCommandBinding(typeof(Page), new CommandBinding(UriNavigationCommands.UriNavigationCommand, UriNavigationCommandExecuted));
+        var spanSetupMgmt = spanLaunching.StartChild("startup-setup-mgmt");
         await GetService<IManagementService>().SetupManagement();
+        spanSetupMgmt.Finish();
+        var spanLoadingSettings = spanLaunching.StartChild("startup-loading-settings");
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
@@ -350,12 +368,14 @@ public partial class App : Application, IAppHost
             Settings.DiagnosticMemoryKillCount++;
             Settings.DiagnosticLastMemoryKillTime = DateTime.Now;
         }
+        spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");
 
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
+            var spanShowSplash = spanLaunching.StartChild("startup-show-splash");
             GetService<SplashWindow>().Show();
             GetService<ISplashService>().CurrentProgress = 25;
             var b = false;
@@ -368,17 +388,24 @@ public partial class App : Application, IAppHost
                 //Console.WriteLine(b);
                 await Dispatcher.Yield(DispatcherPriority.Background);
             }
+            spanShowSplash.Finish();
         }
         GetService<ISplashService>().CurrentProgress = 50;
 
+        var spanStartHangService = spanLaunching.StartChild("startup-start-hang-service");
         GetService<IHangService>();
+        spanStartHangService.Finish();
+
+        var spanCreateTaskbarIcon = spanLaunching.StartChild("startup-create-taskbar-icon");
         try
         {
             GetService<ITaskBarIconService>().MainTaskBarIcon.ForceCreate(false);
+            spanCreateTaskbarIcon.Finish();
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "创建任务栏图标失败。");
+            spanCreateTaskbarIcon.Finish(ex);
         }
 
         if (ApplicationCommand.UpdateDeleteTarget != null)
@@ -389,7 +416,9 @@ public partial class App : Application, IAppHost
 
         if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
         {
+            var spanCheckUpdate = spanLaunching.StartChild("startup-process-update");
             var r = await GetService<UpdateService>().AppStartup();
+            spanCheckUpdate.Finish();
             if (r)
             {
                 GetService<ISplashService>().EndSplash();
@@ -408,12 +437,19 @@ public partial class App : Application, IAppHost
         GetService<IExactTimeService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
-        
+
+        var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
         Logger.LogInformation("正在初始化MainWindow。");
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow init");
 #endif
-        MainWindow = GetService<MainWindow>();
+        var mw = GetService<MainWindow>();
+        MainWindow = mw;
+        mw.StartupCompleted += (o, args) =>
+        {
+            spanLoadMainWindow.Finish();
+            transaction.Finish();
+        };
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow show");
 #endif

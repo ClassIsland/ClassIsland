@@ -35,6 +35,7 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Services;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
+using Sentry;
 
 namespace ClassIsland.Views;
 
@@ -224,7 +225,7 @@ public partial class SettingsWindowNew : MyWindow
     {
         if (!IsOpened)
         {
-            Analytics.TrackEvent("打开设置窗口");
+            SentrySdk.Metrics.Increment("views.SettingsWindow.open");
             IsOpened = true;
             Show();
         }

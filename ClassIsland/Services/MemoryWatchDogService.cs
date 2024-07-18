@@ -55,10 +55,5 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
         }
         //Process.Start(startInfo);
         App.Stop();
-        {
-            App.GetService<SettingsService>().SaveSettings();
-            App.GetService<IProfileService>().SaveProfile();
-            Application.Current.Shutdown(0);
-        });
     }
 }

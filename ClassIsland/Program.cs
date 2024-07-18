@@ -8,6 +8,7 @@ using System.Threading;
 using ClassIsland.Shared.IPC.Protobuf.Client;
 using ClassIsland.Shared.IPC;
 using Sentry;
+using Sentry.Profiling;
 
 namespace ClassIsland;
 
@@ -77,12 +78,20 @@ static class Program
             // Enabling this option is recommended for client applications only. It ensures all threads use the same global scope.
             options.IsGlobalModeEnabled = false;
 
+            options.AddIntegration(new ProfilingIntegration(
+                // During startup, wait up to 500ms to profile the app startup code. This could make launching the app a bit slower so comment it out if your prefer profiling to start asynchronously
+                TimeSpan.FromMilliseconds(500)
+            ));
             // Example sample rate for your transactions: captures 10% of transactions
 #if DEBUG
             options.TracesSampleRate = 1.0;
+            options.ProfilesSampleRate = 1.0;
 #else
             options.TracesSampleRate = 0.1;
+            options.ProfilesSampleRate = 0.016;
 #endif
+            options.AutoSessionTracking = true;
+            options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
         });
 
         var app = new App()
