@@ -33,7 +33,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         },
         new ComponentSettings
         {
-            Id = "E7831603-61A0-4180-B51B-54AD75B1A4D3"
+            Id = "1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8"
         }
     };
 
