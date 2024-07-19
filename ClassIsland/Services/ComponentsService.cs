@@ -72,7 +72,15 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     private void LoadConfig()
     {
-        CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
+        if (!File.Exists(SelectedConfigFullPath))
+        {
+            CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponents);
+            SaveConfig();
+        }
+        else
+        {
+            CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
+        }
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
         CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
     }
