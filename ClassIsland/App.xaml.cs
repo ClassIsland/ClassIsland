@@ -326,6 +326,8 @@ public partial class App : Application, IAppHost
                 });
                 // Grpc
                 services.AddGrpcService<RemoteUriNavigationService>();
+                // Plugins
+                PluginService.InitializePlugins(context, services);
             }).Build();
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");

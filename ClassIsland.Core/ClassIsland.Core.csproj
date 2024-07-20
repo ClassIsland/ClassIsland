@@ -51,6 +51,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="VirtualizingWrapPanel" Version="2.0.6" />
+    <PackageReference Include="YamlDotNet" Version="16.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,6 +68,7 @@
 
   <ItemGroup>
     <Folder Include="Models\SettingsWindow\" />
+    <Folder Include="Models\Plugin\" />
     <Folder Include="Properties\" />
     <Folder Include="Commands\" />
   </ItemGroup>
