@@ -170,6 +170,15 @@ public partial class App : Application, IAppHost
             Environment.Exit(0);
         }
 
+        // 检测桌面文件夹
+        if (!ApplicationCommand.Quiet &&
+            Settings.DirectoryIsDesktopShowed != Environment.UserName &&
+            Environment.CurrentDirectory == Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory))
+        {
+            Settings.DirectoryIsDesktopShowed = Environment.UserName;
+            DirectoryIsDesktop();
+        }
+
         // 检测目录是否可以访问
         try
         {
@@ -480,6 +489,80 @@ public partial class App : Application, IAppHost
         {
             CommonDialog.ShowError($"无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。\n\n{e.Message}");
 
+        }
+    }
+
+    public static void DirectoryIsDesktop(bool debug = false)
+    {
+        var r = new CommonDialogBuilder().SetContent("ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个适合的位置。")
+                                         .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.RelativeOrAbsolute))
+                                         .AddAction("退出应用", PackIconKind.ExitToApp);
+        var destinationDirs = new List<string>(4);
+        if (debug)
+        {
+            destinationDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            destinationDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+        }
+        foreach (var drive in DriveInfo.GetDrives().Where(x => x.DriveType == DriveType.Fixed && !x.Name.Contains(Environment.GetEnvironmentVariable("systemdrive")!)))
+            try
+            {
+                File.WriteAllTextAsync(Path.Combine(drive.Name, ".test-write"), "");
+                File.Delete(Path.Combine(drive.Name, ".test-write"));
+                destinationDirs.Add(drive.Name);
+            } catch (Exception _)
+            { // ignored
+            }
+        foreach (var dir in destinationDirs)
+            r.AddAction($"移动到 {dir.ToFriendlyPath()}", PackIconKind.FolderMoveOutline, isPrimary: dir == @"D:\");
+        var c = r.ShowDialog();
+        if (c == 0)
+        {
+            if (!debug)
+                Environment.Exit(0);
+        } else if (c > 0)
+        {
+            var destinationDir = Path.Combine(destinationDirs[c - 1], "ClassIsland");
+            try
+            {
+                IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
+                IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
+                IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
+                IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
+                IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
+                ReleaseLock();
+                var args = new List<string> {"-m", "-udt", Environment.ProcessPath!.Replace(".dll", ".exe")};
+                foreach (var i in new[]
+                         {
+                             Environment.ProcessPath.Replace(".dll", ".exe"),
+                             "Settings.json",
+                             "Settings.json.bak",
+                             @".\Profiles",
+                             @".\Config",
+                             @".\Temp",
+                             @".\Cache"
+                         })
+                    FileFolderService.Move(i, destinationDir, ref args);
+                new CommonDialogBuilder().SetContent($"已将 ClassIsland 移动到 {destinationDir.ToFriendlyPath()}，桌面上如有遗留文件需要自行删除。")
+                                         .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_点赞.png", UriKind.RelativeOrAbsolute))
+                                         .AddConfirmAction()
+                                         .ShowDialog();
+                Current.Shutdown();
+                var startInfo = new ProcessStartInfo(Path.Combine(destinationDir, new FileInfo(Environment.ProcessPath).Name.Replace(".dll", ".exe")));
+                foreach (var i in args)
+                    startInfo.ArgumentList.Add(i);
+                Process.Start(startInfo);
+            } catch (Exception ex)
+            {
+                Console.WriteLine($"无法将 ClassIsland 移动到 {destinationDir}，\n"
+                                + $"错误原因：{ex}");
+                new CommonDialogBuilder().SetContent($"无法将 ClassIsland 移动到 {destinationDir.ToFriendlyPath()}，请手动将本应用移动到一个专属的文件夹后再运行。\n\n"
+                                                   + $"错误原因：{ex.Message}")
+                                         .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_不可以.png", UriKind.RelativeOrAbsolute))
+                                         .AddConfirmAction()
+                                         .ShowDialog();
+                if (!debug)
+                    Environment.Exit(0);
+            }
         }
     }
 
