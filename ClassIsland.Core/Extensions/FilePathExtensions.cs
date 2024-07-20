@@ -14,8 +14,9 @@ public static class FilePathExtensions
     /// <returns>分区(A:) > 文件夹 > 文件.txt</returns>
     public static string ToFriendlyPath(this string path)
     {
-        foreach (var drive in DriveInfo.GetDrives())
-            path = path.Replace(drive.Name, $"{drive.VolumeLabel} ({drive.Name[..^1]}) > ");
+        path = DriveInfo.GetDrives()
+            .Where(x => x.DriveType == DriveType.Fixed)
+            .Aggregate(path, (current, drive) => current.Replace(drive.Name, $"{drive.VolumeLabel} ({drive.Name[..^1]}) > "));
         path = path.Replace(@"\", " > ").Replace("/", " > ");
         if (path.EndsWith(" > "))
             path = path[..^3];
