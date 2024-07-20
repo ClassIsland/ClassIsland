@@ -12,7 +12,7 @@
     <UserSecretsId>0702af86-626c-4e4a-94e4-f506e4e2beb7</UserSecretsId>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
     <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-    <StartupObject>ClassIsland.Program</StartupObject>
+    <StartupObject></StartupObject>
   </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
 	    <OutputType>WinExe</OutputType>        
