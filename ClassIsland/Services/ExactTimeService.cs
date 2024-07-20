@@ -128,14 +128,15 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         try
         {
             NtpClock = NtpClient.Query();
-            var now = NtpClock.Now.LocalDateTime;
+            var nowBase = SettingsService.Settings.IsExactTimeEnabled ? NtpClock.Now.LocalDateTime : DateTime.Now;
+            var now = nowBase + TimeSpan.FromSeconds(SettingsService.Settings.TimeOffsetSeconds);
             if (TimeSpan.FromSeconds(-30) < now - prev && now < prev)
             {
                 NeedWaiting = true;
                 PrevDateTime = prev;
             }
-            Logger.LogInformation("成功地同步了时间，现在是 {}", now);
-            SyncStatusMessage = $"成功地在{now}同步了时间";
+            Logger.LogInformation("成功地同步了时间，现在是 {}", nowBase);
+            SyncStatusMessage = $"成功地在{nowBase}同步了时间";
         }
         catch (Exception ex)
         {
