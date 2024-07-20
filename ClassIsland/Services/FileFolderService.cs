@@ -46,21 +46,6 @@ public class FileFolderService : IHostedService
     }
 
     /// <summary>
-    /// 将路径转换为友好路径，例如 分区(A:) > 文件夹 > 文件.txt
-    /// </summary>
-    /// <param name="path">磁盘、目录或文件路径</param>
-    /// <returns>友好路径</returns>
-    public static string PathToFriendlyPathConverter(string path)
-    {
-        foreach (var drive in DriveInfo.GetDrives())
-            path = path.Replace(drive.Name, $"{drive.VolumeLabel} ({drive.Name[..^1]}) > ");
-        path = path.Replace(@"\", " > ");
-        if (path.EndsWith(" > "))
-            path = path[..^3];
-        return path;
-    }
-
-    /// <summary>
     /// 同名移动文件或目录。
     /// </summary>
     /// <param name="source">文件或目录</param>
@@ -87,10 +72,9 @@ public class FileFolderService : IHostedService
             try
             {
                 dir.Delete();
-            } catch (IOException)
+            } catch (Exception)
             {
-                args.Add("-udt");
-                args.Add(Environment.ProcessPath!);
+                // delete exception
             }
         }
     }
@@ -102,10 +86,9 @@ public class FileFolderService : IHostedService
         try
         {
             file.Delete();
-        } catch (IOException)
+        } catch (Exception)
         {
-            args.Add("-udt");
-            args.Add(Environment.ProcessPath!);
+            // delete exception
         }
     }
 }

@@ -498,51 +498,68 @@ public partial class App : Application, IAppHost
         var destinationDirs = new List<string>(4);
         if (debug)
         {
-            r.AddAction($"移动到 {FileFolderService.PathToFriendlyPathConverter(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles))}",
-                        PackIconKind.FolderMoveOutline);
             destinationDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            destinationDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
         }
-        foreach (var drive in DriveInfo.GetDrives().Where(drive => drive.DriveType == DriveType.Fixed && !drive.Name.Contains(Environment.GetEnvironmentVariable("systemdrive")!)))
-        {
-            r.AddAction($"移动到 {FileFolderService.PathToFriendlyPathConverter(drive.Name)}", PackIconKind.FolderMoveOutline, drive.Name == @"D:\");
-            destinationDirs.Add(drive.Name);
-        }
+        foreach (var drive in DriveInfo.GetDrives().Where(x => x.DriveType == DriveType.Fixed && !x.Name.Contains(Environment.GetEnvironmentVariable("systemdrive")!)))
+            try
+            {
+                File.WriteAllTextAsync(Path.Combine(drive.Name, ".test-write"), "");
+                File.Delete(Path.Combine(drive.Name, ".test-write"));
+                destinationDirs.Add(drive.Name);
+            } catch (Exception _)
+            { // ignored
+            }
+        foreach (var dir in destinationDirs)
+            r.AddAction($"移动到 {dir.ToFriendlyPath()}", PackIconKind.FolderMoveOutline, isPrimary: dir == @"D:\");
         var c = r.ShowDialog();
         if (c == 0)
-            Environment.Exit(0);
-        else if (c > 0)
+        {
+            if (!debug)
+                Environment.Exit(0);
+        } else if (c > 0)
         {
             var destinationDir = Path.Combine(destinationDirs[c - 1], "ClassIsland");
             try
             {
-                var args = new List<string> {"-m"};
+                IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
+                IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
+                IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
+                IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
+                IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
+                ReleaseLock();
+                var args = new List<string> {"-m", "-udt", Environment.ProcessPath!.Replace(".dll", ".exe")};
                 foreach (var i in new[]
                          {
-                             "ClassIsland.exe", // 假定文件名没有被修改
+                             Environment.ProcessPath.Replace(".dll", ".exe"),
                              "Settings.json",
+                             "Settings.json.bak",
                              @".\Profiles",
                              @".\Config",
-                             "Settings.json.bak",
-                             @".\Cache",
                              @".\Temp",
-                             @"ClassIsland",
+                             @".\Cache"
                          })
                     FileFolderService.Move(i, destinationDir, ref args);
-                Stop();
-                if (ApplicationCommand.Quiet)
-                    args.Add("-q");
-                var startInfo = new ProcessStartInfo(Path.Combine(destinationDir, "ClassIsland.exe"))
-                {
-                    CreateNoWindow = false
-                };
+                new CommonDialogBuilder().SetContent($"已将 ClassIsland 移动到 {destinationDir.ToFriendlyPath()}，桌面上如有遗留文件需要自行删除。")
+                                         .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_点赞.png", UriKind.RelativeOrAbsolute))
+                                         .AddConfirmAction()
+                                         .ShowDialog();
+                Current.Shutdown();
+                var startInfo = new ProcessStartInfo(Path.Combine(destinationDir, new FileInfo(Environment.ProcessPath).Name.Replace(".dll", ".exe")));
                 foreach (var i in args)
                     startInfo.ArgumentList.Add(i);
                 Process.Start(startInfo);
             } catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
-                CommonDialog.ShowError($"无法将 ClassIsland 移动到 {FileFolderService.PathToFriendlyPathConverter(destinationDir)}，\n请手动将本应用移动到一个专属的文件夹后再运行。\n\n错误原因：{ex.Message}");
-                if (!debug) Environment.Exit(0);
+                Console.WriteLine($"无法将 ClassIsland 移动到 {destinationDir}，\n"
+                                + $"错误原因：{ex}");
+                new CommonDialogBuilder().SetContent($"无法将 ClassIsland 移动到 {destinationDir.ToFriendlyPath()}，请手动将本应用移动到一个专属的文件夹后再运行。\n\n"
+                                                   + $"错误原因：{ex.Message}")
+                                         .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_不可以.png", UriKind.RelativeOrAbsolute))
+                                         .AddConfirmAction()
+                                         .ShowDialog();
+                if (!debug)
+                    Environment.Exit(0);
             }
         }
     }
