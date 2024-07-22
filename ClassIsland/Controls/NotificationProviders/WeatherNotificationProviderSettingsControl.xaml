@@ -49,6 +49,22 @@
                         </ComboBox>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
+                <!-- 极端天气文本滚动速度 -->
+                <controls1:SettingsCard IconGlyph="Velocity"
+                                       Header="极端天气预警滚动速度（字/秒）"
+                                       Description="显示天气预警详细信息时文本滚动一轮的速度。无论此选项设置为何值，滚动一轮的时间始终限制在10~90秒内。"
+                                       Margin="0 0 0 6">
+                    <controls1:SettingsCard.Switcher>
+                        <Slider Width="180" Minimum="5" Maximum="12"
+                                VerticalAlignment="Center"
+                                Value="{Binding Settings.WeatherAlertSpeed}"
+                                AutoToolTipPlacement="BottomRight"
+                                TickFrequency="0.1"
+                                TickPlacement="None"
+                                IsSnapToTickEnabled="True"
+                                AutoToolTipPrecision="1" />
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
             </StackPanel>
         </ScrollViewer>
     </Grid>

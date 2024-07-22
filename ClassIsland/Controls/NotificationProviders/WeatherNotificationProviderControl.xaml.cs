@@ -39,11 +39,14 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
         }
     }
 
-    public WeatherNotificationProviderControl(bool isOverlay, WeatherAlert alert)
+    public TimeSpan Duration { get; }
+
+    public WeatherNotificationProviderControl(bool isOverlay, WeatherAlert alert, TimeSpan duration)
     {
         InitializeComponent();
         IsOverlay = isOverlay;
         Alert = alert;
+        Duration = duration;
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -74,7 +77,7 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
         {
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
-            Duration = new Duration(TimeSpan.FromSeconds(20)),
+            Duration = new Duration(Duration),
 
         };
         var storyboard = new Storyboard()
