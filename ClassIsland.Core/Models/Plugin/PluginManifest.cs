@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.IO;
+using CommunityToolkit.Mvvm.ComponentModel;
+using YamlDotNet.Serialization;
 
 namespace ClassIsland.Core.Models.Plugin;
 
@@ -27,4 +29,31 @@ public class PluginManifest : ObservableRecipient
     /// 插件描述。
     /// </summary>
     public string Description { get; set; } = "";
+
+    /// <summary>
+    /// 插件图标路径。默认为icon.png。
+    /// </summary>
+    public string Icon { get; set; } = "icon.png";
+
+    /// <summary>
+    /// 插件自述文件路径。默认为README.md。
+    /// </summary>
+    public string Readme { get; set; } = "README.md";
+
+    /// <summary>
+    /// 项目 Url
+    /// </summary>
+    public string? Url { get; set; }
+
+    /// <summary>
+    /// 插件文件路径。
+    /// </summary>
+    [YamlIgnore] public string PluginFolderPath { get; internal set; } = "";
+
+    [YamlIgnore] public string RealIconPath => Path.Combine(PluginFolderPath, Icon);
+
+    /// <summary>
+    /// 插件加载时错误
+    /// </summary>
+    [YamlIgnore] public Exception? Exception { get; set; }
 }

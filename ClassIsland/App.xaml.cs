@@ -249,6 +249,7 @@ public partial class App : Application, IAppHost
                 services.AddSingleton<IUriNavigationService, UriNavigationService>();
                 services.AddHostedService<MemoryWatchDogService>();
                 services.AddSingleton(new NamedPipeServer(IpcClient.PipeName));
+                services.AddSingleton<IPluginService, PluginService>();
                 try // 检测SystemSpeechService是否存在
                 {
                     _ = new SpeechSynthesizer();

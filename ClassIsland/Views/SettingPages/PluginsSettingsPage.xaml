@@ -5,6 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
       xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Controls"
+      xmlns:plugin="clr-namespace:ClassIsland.Core.Models.Plugin;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:views="clr-namespace:ClassIsland.Views"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="插件"
@@ -18,10 +25,157 @@
       TextOptions.TextRenderingMode="Auto">
 
     <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Image Width="72" Height="72" HorizontalAlignment="Center"
-                   Source="/Assets/HoYoStickers/帕姆_哭哭.png"/>
-            <TextBlock Text="Coming s∞n" FontSize="16" Margin="0 8"/>
-        </StackPanel>
+        <controls1:ListDetailView>
+            <controls1:ListDetailView.LeftContent>
+                <Grid>
+                    <TabControl>
+                        <TabItem Header="市场">
+
+                        </TabItem>
+                        <TabItem Header="已安装">
+                            <ListBox ItemsSource="{x:Static services:IPluginService.LoadedPlugins}"
+                                     SelectedItem="{Binding ViewModel.SelectedPluginManifest}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Background="Transparent">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- 图标 -->
+                                            <ci:IconControl Grid.Column="0" Grid.Row="0"
+                                                            Grid.RowSpan="2"
+                                                            Width="48" Height="48"
+                                                            VerticalAlignment="Center"
+                                                            ClipToBounds="True"
+                                                            Margin="0 0 6 0 "
+                                                            FallbackPackIconKind="PluginOutline"
+                                                            IconKind="Image"
+                                                            ImageSource="{Binding RealIconPath}"/>
+                                            <!-- 标题 -->
+                                            <TextBlock Grid.Column="1" Grid.Row="0"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding Name}"
+                                                   FontSize="16" FontWeight="Medium" />
+                                            <!-- 描述 -->
+                                            <TextBlock Grid.Column="1" Grid.Row="1"
+                                                   TextWrapping="Wrap"
+                                                   FontWeight="Regular"
+                                                   Text="{Binding Description}"
+                                                   FontSize="12" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+            </controls1:ListDetailView.LeftContent>
+            <controls1:ListDetailView.RightContent>
+                <ContentPresenter Content="{Binding ViewModel.SelectedPluginManifest}">
+                    <ContentPresenter.ContentTemplate>
+                        <DataTemplate DataType="{x:Type plugin:PluginManifest}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" Margin="4 8 4 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <ci:IconControl Grid.Column="0" Grid.Row="0"
+                                                    Width="60" Height="60"
+                                                    VerticalAlignment="Top"
+                                                    ClipToBounds="True"
+                                                    Margin="0 0 8 0 "
+                                                    FallbackPackIconKind="PluginOutline"
+                                                    IconKind="Image"
+                                                    ImageSource="{Binding RealIconPath}"/>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontSize="24" 
+                                                   TextTrimming="CharacterEllipsis"
+                                                   FontWeight="Medium"
+                                                   Margin="0 0 0 4"/>
+                                        <TextBlock Text="{Binding Description}"
+                                                   TextWrapping="Wrap"
+                                                   Margin="0 0 0 2"/>
+                                        <TextBlock>
+                                            <Hyperlink CommandParameter="{Binding Url}">
+                                                <Run Text="{Binding Url}"/>
+                                            </Hyperlink>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Grid>
+                                <TabControl Grid.Row="1" HorizontalContentAlignment="Left">
+                                    <TabItem Header="概览">
+                                        <ScrollViewer>
+                                            <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}"
+                                                                         FontFamily="{StaticResource HarmonyOsSans}"
+                                                                         FontWeight="Normal"
+                                                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                                         HorizontalContentAlignment="Stretch"
+                                                                         IsSelectionEnabled="False"
+                                                                         ScrollViewer.CanContentScroll="True"
+                                                                         IsToolBarVisible="False"
+                                                                         ScrollViewer.PanningMode="None"
+                                                                         ToolTipService.Placement="MousePoint">
+                                                <mdxaml:MarkdownScrollViewer.Engine>
+                                                    <mdxaml:Markdown
+                                                        HyperlinkCommand="{x:Static views:HelpsWindow.HyperlinkCommand}" />
+                                                </mdxaml:MarkdownScrollViewer.Engine>
+                                                <mdxaml:MarkdownScrollViewer.Resources>
+                                                    <Style TargetType="ScrollViewer"
+                                                           BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                                        <Setter Property="CanContentScroll" Value="True" />
+                                                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                                                    </Style>
+                                                    <Style TargetType="Hyperlink">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Foreground"
+                                                                        Value="{DynamicResource PrimaryHueLightBrush}">
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Foreground"
+                                                                Value="{DynamicResource PrimaryHueMidBrush}" />
+                                                        <Setter Property="ToolTipService.Placement" Value="Mouse" />
+                                                    </Style>
+                                                </mdxaml:MarkdownScrollViewer.Resources>
+                                                <mdxaml:MarkdownScrollViewer.Style>
+                                                    <Style TargetType="mdxaml:MarkdownScrollViewer">
+                                                        <Style.Resources>
+                                                        
+                                                        </Style.Resources>
+                                                    </Style>
+                                                </mdxaml:MarkdownScrollViewer.Style>
+                                            </mdxaml:MarkdownScrollViewer>
+                                        </ScrollViewer>
+                                    </TabItem>
+                                </TabControl>
+                            </Grid>
+                        </DataTemplate>
+                    </ContentPresenter.ContentTemplate>
+                </ContentPresenter>
+            </controls1:ListDetailView.RightContent>
+        </controls1:ListDetailView>
+        <!-- 插件选择 -->
+        
+
+        <!-- 分割线 -->
+        
+        <!-- 插件信息 -->
     </Grid>
 </controls:SettingsPageBase>

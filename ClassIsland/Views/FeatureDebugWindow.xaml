@@ -20,6 +20,14 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="IconControl">
+                <Grid>
+                    <ci:IconControl PackIconKind="Github"
+                                    Width="64" Height="64"
+                                    IconKind="Image"
+                                    ImageSource="/Assets/HoYoStickers/光辉矢愿_想我了吗.png"/>
+                </Grid>
+            </TabItem>
             <TabItem Header="LessonsListBox">
                 <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
                                    SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"

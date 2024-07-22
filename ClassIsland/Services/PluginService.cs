@@ -41,25 +41,41 @@ public class PluginService : IPluginService
 
             var manifestYaml = File.ReadAllText(manifestPath);
             var manifest = deserializer.Deserialize<PluginManifest>(manifestYaml);
-
-            var loadContext = new PluginLoadContext(Path.GetFullPath(pluginDir));
-            var asm = loadContext.LoadFromAssemblyPath(Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly)));
-            var entrance = asm.ExportedTypes.FirstOrDefault(x => x.BaseType == typeof(PluginBase) || x.GetCustomAttributes().FirstOrDefault(a => a.GetType() == typeof(PluginEntrance)) != null);
-
-            if (entrance == null)
-            {
-                continue;
-            }
-
-            if (Activator.CreateInstance(entrance) is not PluginBase entranceObj)
-            {
-                continue;
-            }
-            entranceObj.Initialize(context, services);
-            services.AddSingleton(typeof(PluginBase), entranceObj);
-            services.AddSingleton(entrance, entranceObj);
+            manifest.PluginFolderPath = Path.GetFullPath(pluginDir);
             IPluginService.LoadedPluginsInternal.Add(manifest);
-            Debug.WriteLine($"Initialize plugin: {pluginDir}");
+            if (File.Exists(Path.Combine(pluginDir, ".disabled")))
+            {
+                continue;
+            }
+
+            try
+            {
+                var loadContext = new PluginLoadContext(Path.GetFullPath(pluginDir));
+                var asm = loadContext.LoadFromAssemblyPath(
+                    Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly)));
+                var entrance = asm.ExportedTypes.FirstOrDefault(x =>
+                    x.BaseType == typeof(PluginBase) ||
+                    x.GetCustomAttributes().FirstOrDefault(a => a.GetType() == typeof(PluginEntrance)) != null);
+
+                if (entrance == null)
+                {
+                    continue;
+                }
+
+                if (Activator.CreateInstance(entrance) is not PluginBase entranceObj)
+                {
+                    continue;
+                }
+
+                entranceObj.Initialize(context, services);
+                services.AddSingleton(typeof(PluginBase), entranceObj);
+                services.AddSingleton(entrance, entranceObj);
+                Console.WriteLine($"Initialize plugin: {pluginDir}");
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

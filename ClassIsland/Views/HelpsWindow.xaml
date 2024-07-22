@@ -34,7 +34,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-
+        
         <!-- 操作中心 -->
         <ListBox Grid.Column="0" Grid.Row="1" 
                  ItemsSource="{Binding ViewModel.HelpDocuments, Mode=OneWay}"
