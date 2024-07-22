@@ -91,6 +91,7 @@
             <Setter.Value>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="Padding" Value="0"/>
+                    <Setter Property="MaxHeight" Value="40"/>
                 </Style>
             </Setter.Value>
         </Setter>
