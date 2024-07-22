@@ -10,6 +10,7 @@
       xmlns:controls2="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
       xmlns:weather="clr-namespace:ClassIsland.Core.Models.Weather;assembly=ClassIsland.Core"
       xmlns:models="clr-namespace:ClassIsland.Models"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="DebugPage"
@@ -90,8 +91,8 @@
                                         materialDesign:HintAssist.Hint="gh更新测试密钥"
                                         Style="{StaticResource MaterialDesignFloatingHintRevealPasswordBox}" />
             <TextBlock>
-                <Hyperlink CommandParameter="https://cn.bing.com">Test link 1</Hyperlink>
-                <Hyperlink CommandParameter="classisland://app/test">Test link 2</Hyperlink>
+                <ci:NavHyperlink NavigateTarget="https://cn.bing.com">Test link 1</ci:NavHyperlink>
+                <ci:NavHyperlink NavigateTarget="classisland://app/test">Test link 2</ci:NavHyperlink>
             </TextBlock>
         </StackPanel>
     </ScrollViewer>

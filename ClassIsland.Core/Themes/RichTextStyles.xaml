@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:gif="http://wpfanimatedgif.codeplex.com"
                     xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
-                    xmlns:extensions="clr-namespace:ClassIsland.Core.Extensions;assembly=ClassIsland.Core">
+                    xmlns:extensions="clr-namespace:ClassIsland.Core.Extensions;assembly=ClassIsland.Core"
+                    xmlns:navHyperlink="clr-namespace:ClassIsland.Core.Controls.NavHyperlink">
     <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
         <Setter Property="LineHeight" Value="24"/>
         <Setter Property="FontWeight" Value="Regular"/>
@@ -112,13 +113,16 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="Hyperlink">
+    <Style x:Key="HyperlinkBaseStyle" TargetType="Hyperlink">
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Foreground" Value="{DynamicResource PrimaryHueLightBrush}"></Setter>
             </Trigger>
         </Style.Triggers>
         <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
-        <Setter Property="Command" Value="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"/>
+        <!-- <Setter Property="Command" Value="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"/> -->
     </Style>
+    
+    <Style TargetType="Hyperlink" BasedOn="{StaticResource HyperlinkBaseStyle}"/>
+    <Style TargetType="navHyperlink:NavHyperlink" BasedOn="{StaticResource HyperlinkBaseStyle}"/>
 </ResourceDictionary>
