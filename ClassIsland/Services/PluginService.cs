@@ -45,9 +45,15 @@ public class PluginService : IPluginService
             var info = new PluginInfo
             {
                 Manifest = manifest,
+                IsLocal = true,
                 PluginFolderPath = Path.GetFullPath(pluginDir),
                 RealIconPath = Path.Combine(Path.GetFullPath(pluginDir), manifest.Icon)
             };
+            if (info.IsUninstalling)
+            {
+                Directory.Delete(pluginDir, true);
+                return;
+            }
             IPluginService.LoadedPluginsInternal.Add(info);
             if (!info.IsEnabled)
             {

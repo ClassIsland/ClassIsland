@@ -17,7 +17,7 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件是否存在于本地
     /// </summary>
-    public bool IsLocal { get; set; } = true;
+    public bool IsLocal { get; set; } = false;
 
     /// <summary>
     /// 插件是否已启用
@@ -43,6 +43,35 @@ public class PluginInfo() : ObservableRecipient
             {
                 File.WriteAllText(path, "");
             }
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件是否将要卸载
+    /// </summary>
+    public bool IsUninstalling
+    {
+        get
+        {
+            if (!IsLocal)
+                return false;
+            return File.Exists(Path.Combine(PluginFolderPath, ".uninstall"));
+        }
+        set
+        {
+            if (!IsLocal)
+                throw new InvalidOperationException("无法为不存在本地的插件设置将要卸载状态。");
+            var path = Path.Combine(PluginFolderPath, ".uninstall");
+            if (value)
+            {
+                File.WriteAllText(path, "");
+            }
+            else
+            {
+                File.Delete(path);
+            }   
+            OnPropertyChanged();
         }
     }
 

@@ -6,10 +6,10 @@ namespace ClassIsland.ViewModels.SettingsPages;
 
 public class PluginsSettingsPageViewModel : ObservableRecipient
 {
-    private PluginInfo _selectedPluginInfo = new();
+    private PluginInfo? _selectedPluginInfo;
     private FlowDocument _readmeDocument = new();
 
-    public PluginInfo SelectedPluginInfo
+    public PluginInfo? SelectedPluginInfo
     {
         get => _selectedPluginInfo;
         set

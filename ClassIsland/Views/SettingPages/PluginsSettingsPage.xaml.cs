@@ -85,4 +85,19 @@ public partial class PluginsSettingsPage : SettingsPageBase
             }
         }
     }
+
+    private void ButtonUninstall_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginInfo == null)
+            return;
+        ViewModel.SelectedPluginInfo.IsUninstalling = true;
+        RequestRestart();
+    }
+
+    private void ButtonUndoUninstall_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginInfo == null)
+            return;
+        ViewModel.SelectedPluginInfo.IsUninstalling = false;
+    }
 }
