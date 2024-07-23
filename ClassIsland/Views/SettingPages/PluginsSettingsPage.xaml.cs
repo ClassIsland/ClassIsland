@@ -46,8 +46,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private async Task UpdateReadmeDocument()
     {
-        var path = System.IO.Path.Combine(ViewModel.SelectedPluginManifest.PluginFolderPath,
-            ViewModel.SelectedPluginManifest.Readme);
+        var path = System.IO.Path.Combine(ViewModel.SelectedPluginInfo.PluginFolderPath,
+            ViewModel.SelectedPluginInfo.Manifest.Readme);
         if (!File.Exists(path))
         {
             return;
@@ -61,7 +61,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         switch (e.PropertyName)
         {
-            case nameof(ViewModel.SelectedPluginManifest):
+            case nameof(ViewModel.SelectedPluginInfo):
                 await UpdateReadmeDocument();
                 break;
         }

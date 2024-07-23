@@ -68,7 +68,6 @@
 
   <ItemGroup>
     <Folder Include="Models\SettingsWindow\" />
-    <Folder Include="Models\Plugin\" />
     <Folder Include="Properties\" />
     <Folder Include="Commands\" />
   </ItemGroup>

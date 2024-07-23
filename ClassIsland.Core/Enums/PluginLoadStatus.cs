@@ -6,6 +6,10 @@
 public enum PluginLoadStatus
 {
     /// <summary>
+    /// 插件未加载
+    /// </summary>
+    NotLoaded,
+    /// <summary>
     /// 插件成功加载。
     /// </summary>
     Loaded,

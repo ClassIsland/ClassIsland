@@ -6,6 +6,7 @@ using System.Reflection;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,10 +42,16 @@ public class PluginService : IPluginService
 
             var manifestYaml = File.ReadAllText(manifestPath);
             var manifest = deserializer.Deserialize<PluginManifest>(manifestYaml);
-            manifest.PluginFolderPath = Path.GetFullPath(pluginDir);
-            IPluginService.LoadedPluginsInternal.Add(manifest);
-            if (File.Exists(Path.Combine(pluginDir, ".disabled")))
+            var info = new PluginInfo
             {
+                Manifest = manifest,
+                PluginFolderPath = Path.GetFullPath(pluginDir),
+                RealIconPath = Path.Combine(Path.GetFullPath(pluginDir), manifest.Icon)
+            };
+            IPluginService.LoadedPluginsInternal.Add(info);
+            if (!info.IsEnabled)
+            {
+                info.LoadStatus = PluginLoadStatus.Disabled;
                 continue;
             }
 
@@ -70,11 +77,13 @@ public class PluginService : IPluginService
                 entranceObj.Initialize(context, services);
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
+                info.LoadStatus = PluginLoadStatus.Loaded;
                 Console.WriteLine($"Initialize plugin: {pluginDir}");
             }
             catch (Exception ex)
             {
-
+                info.Exception = ex;
+                info.LoadStatus = PluginLoadStatus.Error;
             }
         }
     }

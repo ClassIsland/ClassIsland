@@ -10,10 +10,10 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface IPluginService
 {
-    internal static ObservableCollection<PluginManifest> LoadedPluginsInternal { get; } = new();
+    internal static ObservableCollection<PluginInfo> LoadedPluginsInternal { get; } = new();
 
     /// <summary>
     /// 已加载的插件信息列表。
     /// </summary>
-    public static IReadOnlyList<PluginManifest> LoadedPlugins => LoadedPluginsInternal;
+    public static IReadOnlyList<PluginInfo> LoadedPlugins => LoadedPluginsInternal;
 }

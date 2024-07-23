@@ -44,16 +44,4 @@ public class PluginManifest : ObservableRecipient
     /// 项目 Url
     /// </summary>
     public string? Url { get; set; }
-
-    /// <summary>
-    /// 插件文件路径。
-    /// </summary>
-    [YamlIgnore] public string PluginFolderPath { get; internal set; } = "";
-
-    [YamlIgnore] public string RealIconPath => Path.Combine(PluginFolderPath, Icon);
-
-    /// <summary>
-    /// 插件加载时错误
-    /// </summary>
-    [YamlIgnore] public Exception? Exception { get; set; }
 }
