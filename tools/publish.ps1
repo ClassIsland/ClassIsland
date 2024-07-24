@@ -8,7 +8,7 @@ if ($(Test-Path ./out) -eq $false) {
 
 dotnet clean
 
-dotnet build -c Release
+dotnet build -c Release -p:Platform="Any CPU"
 cp ./**/bin/Release/*.nupkg ./out
     
 dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded
