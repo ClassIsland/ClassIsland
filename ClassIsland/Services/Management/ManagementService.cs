@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Shared.Abstraction.Services;
@@ -109,7 +110,7 @@ public class ManagementService : IManagementService
     {
         if (e.Type == CommandTypes.RestartApp)
         {
-            App.Restart(true);
+            AppBase.Current.Restart(true);
         }
     }
 
@@ -201,7 +202,7 @@ public class ManagementService : IManagementService
         SaveConfig(ManagementSettingsPath, w);
         CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
         
-        App.Restart();
+        AppBase.Current.Restart();
     }
 
     public async Task ExitManagementAsync()
@@ -231,6 +232,6 @@ public class ManagementService : IManagementService
 
         CommonDialog.ShowInfo($"已退出组织 {Manifest.OrganizationName} 的管理。应用将重启以应用更改。");
 
-        App.Restart();
+        AppBase.Current.Restart();
     }
 }

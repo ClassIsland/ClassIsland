@@ -4,6 +4,7 @@ using System.Web;
 using System.Windows;
 
 using ClassIsland.Controls;
+using ClassIsland.Core;
 using ClassIsland.Core.Controls;
 
 namespace ClassIsland.Views;
@@ -37,7 +38,7 @@ public partial class CrashWindow : MyWindow
 
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
     {
-        App.Restart();
+        AppBase.Current.Restart();
     }
 
     private void ButtonCopy_OnClick(object sender, RoutedEventArgs e)

@@ -20,6 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -288,7 +289,7 @@ public partial class SettingsWindowNew : MyWindow
         var r = await DialogHost.Show(FindResource("RestartDialog"), SettingsPageBase.DialogHostIdentifier);
         if (r as bool? != true)
             return;
-        App.Restart();
+        AppBase.Current.Restart();
     }
 
     private void CommandBindingRestartApp_OnExecuted(object sender, ExecutedRoutedEventArgs e)

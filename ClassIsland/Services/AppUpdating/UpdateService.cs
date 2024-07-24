@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Helpers;
@@ -551,7 +552,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     "-m", "true"
                 }
             });
-            App.Stop();
+            AppBase.Current.Stop();
         }
         catch (Exception ex)
         {
