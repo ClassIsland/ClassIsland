@@ -6,12 +6,12 @@ if ($(Test-Path ./out) -eq $false) {
     rm out/* -Recurse -Force
 }
 
-dotnet clean
+#dotnet clean
 
-dotnet build -c Release -p:Platform="Any CPU"
-cp ./**/bin/Release/*.nupkg ./out
+#dotnet build -c Release -p:Platform="Any CPU"
     
 dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded
+cp ./**/bin/Release/*.nupkg ./out
 
 Write-Host "Successfully published to $PUBLISH_TARGET" -ForegroundColor Green
 
