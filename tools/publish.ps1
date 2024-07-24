@@ -9,18 +9,7 @@ if ($(Test-Path ./out) -eq $false) {
 dotnet clean
 
 dotnet build -c Release
-
-
-$nuget_packs = @(
-    "ClassIsland.Shared",
-    "ClassIsland.Shared.IPC",
-    "ClassIsland.Core",
-    "ClassIsland.PluginSdk"
-)
-foreach ($i in $nuget_packs) {
-    echo .\${i}\${i}.csproj
-    dotnet pack .\${i}\${i}.csproj -o .\out -c Release -property:DebugType=full
-}
+cp ./**/bin/Release/*.nupkg ./out
     
 dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded
 
