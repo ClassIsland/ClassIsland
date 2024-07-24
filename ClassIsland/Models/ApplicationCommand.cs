@@ -27,4 +27,6 @@ public class ApplicationCommand
     public bool DisableManagement { get; set; } = false;
 
     public string Uri { get; set; } = "";
+
+    public string ExternalPluginPath { get; set; } = "";
 }

@@ -20,7 +20,8 @@ var command = new RootCommand
     new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
     new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
     new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
-    new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。")
+    new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。"),
+    new Option<string>(["-externalPluginPath", "-epp"], "外部插件路径")
 };
 command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
 command.Invoke(args);

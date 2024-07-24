@@ -32,8 +32,12 @@ public class PluginService : IPluginService
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        foreach (var pluginDir in Directory.EnumerateDirectories(PluginsRoot))
+        var pluginDirs = Directory.EnumerateDirectories(PluginsRoot)
+            .Append(App.ApplicationCommand.ExternalPluginPath);
+        foreach (var pluginDir in pluginDirs)
         {
+            if (string.IsNullOrWhiteSpace(pluginDir))
+                continue;
             var manifestPath = Path.Combine(pluginDir, PluginManifestFileName);
             if (!File.Exists(manifestPath))
             {
