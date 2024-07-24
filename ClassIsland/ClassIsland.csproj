@@ -73,6 +73,5 @@
   <ItemGroup>
     <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
-    <ProjectReference Include="..\Walterlv\Walterlv.csproj" />
   </ItemGroup>
 </Project>

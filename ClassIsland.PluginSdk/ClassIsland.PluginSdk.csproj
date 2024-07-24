@@ -4,14 +4,7 @@
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>ClassIsland Plugin SDK</Title>
-		<Authors>HelloWRC</Authors>
-		<Company>HelloWRC.Dev</Company>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<IncludeSymbols>True</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -19,10 +12,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
+		<ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" IncludeAssets="all"/>
 	</ItemGroup>
 
 	<ItemGroup>
 		<Folder Include="Properties\" />
 	</ItemGroup>
+	
+	<Import Project="..\GeneratePackage.props"/>
 </Project>

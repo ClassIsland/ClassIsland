@@ -6,7 +6,7 @@
                    xmlns:local="clr-namespace:ClassIsland.Views"
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
-                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
+                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
                    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                    mc:Ignorable="d"
                    d:DataContext="{d:DesignInstance local:WindowsPicker}"

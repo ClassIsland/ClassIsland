@@ -9,9 +9,9 @@
     <UserSecretsId>d3a133e8-8208-4210-818a-e5c3335f8cbf</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <!-- <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DebugType>embedded</DebugType>
-  </PropertyGroup>
+  </PropertyGroup> -->
 
   <ItemGroup>
     <None Remove="NativeMethods.json" />
@@ -72,4 +72,5 @@
     <Folder Include="Commands\" />
   </ItemGroup>
 
+  <Import Project="..\GeneratePackage.props" />
 </Project>

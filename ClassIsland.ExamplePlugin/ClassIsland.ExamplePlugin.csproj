@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <EnableDynamicLoading>true</EnableDynamicLoading>
+
   </PropertyGroup>
 
   <ItemGroup>

@@ -10,7 +10,7 @@
         xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:controls2="clr-namespace:ClassIsland.Controls"
         xmlns:ci="clr-namespace:ClassIsland"
-        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
+        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:converters1="clr-namespace:ClassIsland.Converters"

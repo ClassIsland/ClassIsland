@@ -16,7 +16,7 @@
                    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
                    xmlns:classIsland="clr-namespace:ClassIsland"
                    xmlns:viewModels="clr-namespace:ClassIsland.ViewModels"
-                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
+                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                    xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"

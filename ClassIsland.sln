@@ -8,8 +8,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.UnitTests", "Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Shared", "ClassIsland.Shared\ClassIsland.Shared.csproj", "{1A19A8AD-A401-445A-8C63-77EC5B7C103F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Walterlv", "Walterlv\Walterlv.csproj", "{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Core", "ClassIsland.Core\ClassIsland.Core.csproj", "{DF9F0F39-65EE-411C-A982-FC5973AD7F46}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.DocsGenerator", "ClassIsland.DocsGenerator\ClassIsland.DocsGenerator.csproj", "{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}"
@@ -18,7 +16,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Shared.IPC", "C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.PluginSdk", "ClassIsland.PluginSdk\ClassIsland.PluginSdk.csproj", "{3ADDAAA5-F261-4B8D-9A2A-CE7E27DEBA5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.ExamplePlugin", "ClassIsland.ExamplePlugin\ClassIsland.ExamplePlugin.csproj", "{4B7FC11A-616F-4E6A-8966-9E7E23665A5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.ExamplePlugin", "ClassIsland.ExamplePlugin\ClassIsland.ExamplePlugin.csproj", "{4B7FC11A-616F-4E6A-8966-9E7E23665A5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +36,6 @@ Global
 		{1A19A8AD-A401-445A-8C63-77EC5B7C103F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A19A8AD-A401-445A-8C63-77EC5B7C103F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A19A8AD-A401-445A-8C63-77EC5B7C103F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DF9F0F39-65EE-411C-A982-FC5973AD7F46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DF9F0F39-65EE-411C-A982-FC5973AD7F46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF9F0F39-65EE-411C-A982-FC5973AD7F46}.Release|Any CPU.ActiveCfg = Release|Any CPU

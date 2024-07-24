@@ -34,4 +34,5 @@
     <Protobuf Include="Protobuf\Management\*.proto" />
   </ItemGroup>
 
+  <Import Project="..\GeneratePackage.props"/>
 </Project>

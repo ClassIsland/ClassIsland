@@ -1,0 +1,9 @@
+<Project>
+    <PropertyGroup>
+        <Authors>HelloWRC</Authors>
+        <Company>HelloWRC.Dev</Company>
+        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    </PropertyGroup>
+</Project>
