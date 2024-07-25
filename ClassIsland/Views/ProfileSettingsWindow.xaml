@@ -1317,7 +1317,7 @@
                                         </TabItem>
                                     </TabControl>
 
-                                    <!-- 新编辑器大小调整 -->
+                                    <!-- 新编辑器大小调整控件 -->
                                     <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal"
                                                 VerticalAlignment="Bottom"
                                                 HorizontalAlignment="Right">
@@ -1344,20 +1344,22 @@
                                                    ToolTip="缩放比例"
                                                    ToolTipService.Placement="Top"
                                                    VerticalAlignment="Center"/>
-                                        <Button Content="{materialDesign:PackIcon ZoomOut}"
-                                                ToolTip="缩小"
-                                                ToolTipService.Placement="Top"
-                                                VerticalAlignment="Center"
-                                                Margin="2 0"
-                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                Click="ButtonZoomOut_OnClick"/>
-                                        <Button Content="{materialDesign:PackIcon ZoomIn}"
-                                                ToolTip="放大"
-                                                ToolTipService.Placement="Top"
-                                                VerticalAlignment="Center"
-                                                Margin="2 0"
-                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                Click="ButtonZoomIn_OnClick"/>
+                                        <RepeatButton Content="{materialDesign:PackIcon ZoomOut}"
+                                                      ToolTip="缩小"
+                                                      Delay="500" Interval="100"
+                                                      ToolTipService.Placement="Top"
+                                                      VerticalAlignment="Center"
+                                                      Margin="2 0"
+                                                      Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                      Click="ButtonZoomOut_OnClick"/>
+                                        <RepeatButton Content="{materialDesign:PackIcon ZoomIn}"
+                                                      ToolTip="放大"
+                                                      Delay="500" Interval="100"
+                                                      ToolTipService.Placement="Top"
+                                                      VerticalAlignment="Center"
+                                                      Margin="2 0"
+                                                      Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                      Click="ButtonZoomIn_OnClick"/>
                                     </StackPanel>
 
                                     <Button Grid.Row="3" 
