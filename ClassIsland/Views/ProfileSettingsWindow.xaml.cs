@@ -231,8 +231,8 @@ public partial class ProfileSettingsWindow : MyWindow
             StartSecond = baseSec,
             EndSecond = baseSec + lastTime,
         };
-        timeLayout.Layouts.Add(newItem);
-        ReSortTimeLayout(newItem);
+        AddTimePoint(newItem);
+        // ReSortTimeLayout(newItem);
         ListViewTimePoints.SelectedValue = newItem;
         //OpenDrawer("TimePointEditor");
         Analytics.TrackEvent("档案设置 · 创建时间点", new Dictionary<string, string>
@@ -241,7 +241,22 @@ public partial class ProfileSettingsWindow : MyWindow
         });
     }
 
-    private void UpdateTimeLayout()
+    public void AddTimeLayoutItem(int timeType, DateTime startTime, DateTime endTime)
+    {
+        var newItem = new TimeLayoutItem
+        {
+            TimeType    = timeType,
+            StartSecond = startTime,
+            EndSecond   = endTime,
+        };
+        AddTimePoint(newItem);
+        Analytics.TrackEvent("档案设置 · 自动创建时间点", new Dictionary<string, string>
+        {
+            {"Type", timeType.ToString()}
+        });
+    }
+
+    public void UpdateTimeLayout()
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var l = timeLayout.Layouts.ToList();
@@ -440,38 +455,22 @@ public partial class ProfileSettingsWindow : MyWindow
         var timeLayoutItemEdit = FindResource("TimePointEditor");
         if (ViewModel.DrawerContent == timeLayoutItemEdit && ViewModel.SelectedTimePoint != null)
         {
-            ReSortTimeLayout(ViewModel.SelectedTimePoint);
+            // ReSortTimeLayout(ViewModel.SelectedTimePoint);
         }
     }
 
-    private void ReSortTimeLayout(TimeLayoutItem item)
+    private void AddTimePoint(TimeLayoutItem item)
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var l = timeLayout.Layouts;
-        l.Remove(item);
-        var c = l.Count;
-        var p = c;
-        for (var i = 0; i < c; i++)
+        for (var i = 0; i < l.Count - 1; i++)
         {
-            if (l[i].StartSecond.TimeOfDay <= item.StartSecond.TimeOfDay) 
+            if (l[i].StartSecond.TimeOfDay < item.StartSecond.TimeOfDay)
                 continue;
-            p = i;
-            break;
+            timeLayout.InsertTimePoint(i, item);
+            return;
         }
-        timeLayout.InsertTimePoint(p, item);
-
-        // 验证
-        for (int i = 0; i < l.Count - 1; i++)
-        {
-            if (l[i].StartSecond.TimeOfDay > l[i + 1].StartSecond.TimeOfDay)
-            {
-                UpdateTimeLayout();
-                break;
-            }
-        }
-
-        ViewModel.SelectedTimePoint = item;
-        timeLayout.SortCompleted();
+        timeLayout.InsertTimePoint(l.Count, item);
     }
 
     private void DataGridClassPlans_OnUnloadingRow(object? sender, DataGridRowEventArgs e)
