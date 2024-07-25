@@ -178,10 +178,10 @@ public partial class ProfileSettingsWindow : MyWindow
     private void AddTimeLayoutItem(int timeType)
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
-        var selected = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
-        var baseSec = selected?.EndSecond ?? DateTime.Now;
-        var settings = App.GetService<SettingsService>().Settings;
-        var lastTime = TimeSpan.FromMinutes(timeType switch
+        var selected   = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
+        var baseSec    = selected?.EndSecond ?? DateTime.Today + new TimeSpan(7, 30, 0);
+        var settings   = App.GetService<SettingsService>().Settings;
+        var lastTime   = TimeSpan.FromMinutes(timeType switch
         {
             0 => settings.DefaultOnClassTimePointMinutes,
             1 => settings.DefaultBreakingTimePointMinutes,
@@ -191,12 +191,12 @@ public partial class ProfileSettingsWindow : MyWindow
         if (selected != null)
         {
             var index = timeLayout.Layouts.IndexOf(selected);
-            if (selected.TimeType == 2)
+            /*if (selected.TimeType == 2)
             {
-                var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
+                // 向前的非线时间段集合
+                // var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
                 selected = l.Count > 0 ? l.Last() : selected;
-                baseSec = selected.EndSecond;
-            }
+            }*/
             if (timeType != 2 && index < timeLayout.Layouts.Count - 1)
             {
                 var nexts = (from i 
@@ -209,10 +209,15 @@ public partial class ProfileSettingsWindow : MyWindow
                     var next = nexts[0];
                     if (next.StartSecond.TimeOfDay <= baseSec.TimeOfDay)
                     {
-                        ViewModel.MessageQueue.Enqueue("没有合适的位置来插入新的时间点。");
-                        return;
+                        if (index != 0)
+                        {
+                            ViewModel.MessageQueue.Enqueue("没有合适的位置来插入新的时间点。");
+                            return;
+                        }
+                        baseSec = selected.StartSecond - lastTime; // 向前插入时间点的简易实现，未考虑分割线
+                        ViewModel.MessageQueue.Enqueue("已向前插入了新的时间点。");
                     }
-                    if (next.StartSecond.TimeOfDay <= baseSec.TimeOfDay + lastTime)
+                    if (next.StartSecond.TimeOfDay < baseSec.TimeOfDay + lastTime)
                     {
                         ViewModel.MessageQueue.Enqueue("没有足够的空间完全插入该时间点，已缩短时间点长度。");
                         lastTime = next.StartSecond.TimeOfDay - baseSec.TimeOfDay;
@@ -222,7 +227,12 @@ public partial class ProfileSettingsWindow : MyWindow
 
             if (timeType == 2)
             {
-                baseSec = selected.EndSecond - (selected.EndSecond - selected.StartSecond) / 2;
+                baseSec = selected.EndSecond;
+                if ((from i in timeLayout.Layouts where i.TimeType == 2 select i.StartSecond).ToList().Contains(baseSec))
+                {
+                    ViewModel.MessageQueue.Enqueue("这里已经存在一条分割线。");
+                    return;
+                }
             }
         }
         var newItem = new TimeLayoutItem()
