@@ -52,6 +52,7 @@
 
     <Style TargetType="{x:Type controls:TimeLineListControl}" BasedOn="{StaticResource MaterialDesignListBox}">
         <Style.Resources>
+            <!-- 档案编辑 > 时间线视图 > 上课/课间休息时间块 -->
             <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
                 <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Grid.Resources>
@@ -88,6 +89,7 @@
                     </materialDesign:ColorZone>
                 </Grid>
             </DataTemplate>
+            <!-- 档案编辑 > 时间线视图 > 分割线 -->
             <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateSeparator">
                 <Grid VerticalAlignment="Stretch">
                     <Grid.Resources>
@@ -119,15 +121,14 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <Canvas IsItemsHost="True" 
+                    <Canvas IsItemsHost="True"
                             HorizontalAlignment="Stretch"
                             Margin="60 0 0 0"
-                            Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
-                    />
+                            Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
@@ -164,6 +165,7 @@
                         <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Style.Resources>
                     <Style.Triggers>
+                        <!-- 档案编辑 > 时间线视图 > 分割线装饰器 -->
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
                             <Setter Property="Height" Value="Auto"/>
                             <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
@@ -248,6 +250,7 @@
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
+                    <!-- 档案编辑 > 时间线视图 > 上课/课间休息时间块装饰器 -->
                     <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                         <Setter.Value>
                             <materialDesign:BehaviorCollection>
