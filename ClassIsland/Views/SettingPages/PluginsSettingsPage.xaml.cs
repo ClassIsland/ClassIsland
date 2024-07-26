@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,11 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Win32;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
+using Path = System.IO.Path;
+using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -46,10 +52,16 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private async Task UpdateReadmeDocument()
     {
+        if (ViewModel.SelectedPluginInfo == null)
+        {
+            ViewModel.ReadmeDocument = new FlowDocument();
+            return;
+        }
         var path = System.IO.Path.Combine(ViewModel.SelectedPluginInfo.PluginFolderPath,
             ViewModel.SelectedPluginInfo.Manifest.Readme);
         if (!File.Exists(path))
         {
+            ViewModel.ReadmeDocument = new FlowDocument();
             return;
         }
 
@@ -99,5 +111,63 @@ public partial class PluginsSettingsPage : SettingsPageBase
         if (ViewModel.SelectedPluginInfo == null)
             return;
         ViewModel.SelectedPluginInfo.IsUninstalling = false;
+    }
+
+    private async void MenuItemPackPlugin_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginInfo == null)
+            return;
+        var dialog = new SaveFileDialog()
+        {
+            Title = "打包插件",
+            FileName = ViewModel.SelectedPluginInfo.Manifest.Id + IPluginService.PluginPackageExtension,
+            Filter = $"ClassIsland 插件包(*{IPluginService.PluginPackageExtension})|*{IPluginService.PluginPackageExtension}"
+        };
+        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            return;
+        try
+        {
+            await Services.PluginService.PackagePluginAsync(ViewModel.SelectedPluginInfo.Manifest.Id, dialog.FileName);
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Path.GetDirectoryName(dialog.FileName) ?? "",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            CommonDialog.ShowError($"无法打包插件 {ViewModel.SelectedPluginInfo.Manifest.Id}：{ex.Message}");
+        }
+    }
+
+    private void MenuItemOpenPluginFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginInfo == null)
+            return;
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = ViewModel.SelectedPluginInfo.PluginFolderPath,
+            UseShellExecute = true
+        });
+    }
+
+    private void ButtonInstallFromLocal_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new OpenFileDialog()
+        {
+            Title = "从本地安装插件",
+            Filter = $"ClassIsland 插件包(*{IPluginService.PluginPackageExtension})|*{IPluginService.PluginPackageExtension}"
+        };
+        if (dialog.ShowDialog() != true)
+            return;
+        try
+        {
+            File.Copy(dialog.FileName, Path.Combine(Services.PluginService.PluginsPkgRoot, Path.GetFileName(dialog.FileName)), true);
+            RequestRestart();
+        }
+        catch (Exception exception)
+        {
+            CommonDialog.ShowError($"无法安装插件：{exception.Message}");
+        }
     }
 }

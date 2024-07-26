@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
@@ -17,9 +19,53 @@ namespace ClassIsland.Services;
 
 public class PluginService : IPluginService
 {
-    private static readonly string PluginsRoot = @".\Plugins\";
+    public static readonly string PluginsRoot = @".\Plugins\";
 
-    private static readonly string PluginManifestFileName = "manifest.yml";
+    public static readonly string PluginsPkgRoot = Path.Combine(App.AppCacheFolderPath, "PluginPackages");
+
+
+    public static readonly string PluginManifestFileName = "manifest.yml";
+
+    public static void ProcessPluginsInstall()
+    {
+        if (!Directory.Exists(PluginsPkgRoot))
+        {
+            Directory.CreateDirectory(PluginsPkgRoot);
+        }
+        if (!Directory.Exists(PluginsRoot))
+        {
+            Directory.CreateDirectory(PluginsRoot);
+        }
+
+        var deserializer = new DeserializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+
+        foreach (var pkgPath in Directory.EnumerateFiles(PluginsPkgRoot).Where(x => Path.GetExtension(x) == IPluginService.PluginPackageExtension))
+        {
+            try
+            {
+                using var pkg = ZipFile.OpenRead(pkgPath);
+                var mf = pkg.GetEntry(PluginManifestFileName);
+                if (mf == null)
+                    continue;
+                var mfText = new StreamReader(mf.Open()).ReadToEnd();
+                var manifest = deserializer.Deserialize<PluginManifest>(mfText);
+                var targetPath = Path.Combine(PluginsRoot, manifest.Id);
+                if (Directory.Exists(targetPath))
+                {
+                    Directory.Delete(targetPath, true);
+                }
+                Directory.CreateDirectory(targetPath);
+                ZipFile.ExtractToDirectory(pkgPath, targetPath);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            File.Delete(pkgPath);
+        }
+    }
 
     public static void InitializePlugins(HostBuilderContext context, IServiceCollection services)
     {
@@ -58,6 +104,9 @@ public class PluginService : IPluginService
                 Directory.Delete(pluginDir, true);
                 return;
             }
+            if (IPluginService.LoadedPluginsIds.Contains(manifest.Id))
+                continue;
+            IPluginService.LoadedPluginsIds.Add(manifest.Id);
             IPluginService.LoadedPluginsInternal.Add(info);
             if (!info.IsEnabled)
             {
@@ -97,4 +146,21 @@ public class PluginService : IPluginService
             }
         }
     }
+
+    public static async Task PackagePluginAsync(string id, string outputPath)
+    {
+        var plugin = IPluginService.LoadedPlugins.FirstOrDefault(x => x.Manifest.Id == id);
+        if (plugin == null)
+        {
+            throw new ArgumentException($"找不到插件 {id}。", nameof(id));
+        }
+
+        await Task.Run(() =>
+        {
+            if (File.Exists(outputPath))
+                File.Delete(outputPath);
+            ZipFile.CreateFromDirectory(plugin.PluginFolderPath, outputPath);
+        });
+    }
+
 }

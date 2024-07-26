@@ -20,7 +20,9 @@ public class FileFolderService : IHostedService
         ManagementService.ManagementConfigureFolderPath,
         "./Temp",
         App.AppCacheFolderPath,
-        EdgeTtsService.EdgeTtsCacheFolderPath
+        EdgeTtsService.EdgeTtsCacheFolderPath,
+        PluginService.PluginsPkgRoot,
+        PluginService.PluginsRoot
     };
 
     public FileFolderService()

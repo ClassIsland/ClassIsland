@@ -10,7 +10,14 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface IPluginService
 {
+    /// <summary>
+    /// 插件包文件扩展名。
+    /// </summary>
+    public static readonly string PluginPackageExtension = ".cipx";
+
     internal static ObservableCollection<PluginInfo> LoadedPluginsInternal { get; } = new();
+
+    internal static ObservableCollection<string> LoadedPluginsIds { get; set; } = new();
 
     /// <summary>
     /// 已加载的插件信息列表。

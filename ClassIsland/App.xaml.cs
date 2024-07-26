@@ -219,6 +219,7 @@ public partial class App : AppBase, IAppHost
         }
 
         FileFolderService.CreateFolders();
+        PluginService.ProcessPluginsInstall();
         bool isSystemSpeechSystemExist = false;
         IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().

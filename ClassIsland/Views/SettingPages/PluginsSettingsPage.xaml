@@ -70,9 +70,9 @@
                                                    FontWeight="Medium"
                                                    Margin="0 0 0 4"/>
                         <TextBlock Margin="0 0 0 2">
-                                            <ci:NavHyperlink CommandParameter="{Binding Manifest.Url}">
-                                                <Run Text="项目主页"/>
-                                            </ci:NavHyperlink>
+                            <ci:NavHyperlink CommandParameter="{Binding Manifest.Url}">
+                                <Run Text="项目主页"/>
+                            </ci:NavHyperlink>
                         </TextBlock>
                         <WrapPanel Orientation="Horizontal">
                             <CheckBox Content="已启用" Margin="0 0 6  0"
@@ -93,7 +93,7 @@
                                 <ci:IconText Kind="Undo" Text="撤销卸载"/>
                             </Button>
                             <TextBlock Opacity="0.8"
-                                                       VerticalAlignment="Center">
+                                       VerticalAlignment="Center">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
@@ -119,6 +119,16 @@
                             </TextBlock>
                         </WrapPanel>
                     </StackPanel>
+                    <materialDesign:PopupBox Grid.Column="1" VerticalAlignment="Top"
+                                             HorizontalAlignment="Right"
+                                             ToolTip="更多选项…">
+                        <StackPanel>
+                            <MenuItem Icon="{materialDesign:PackIcon PackageOutline}" Header="打包插件" Click="MenuItemPackPlugin_OnClick"/>
+                            <Separator/>
+                            <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开插件文件夹…" Click="MenuItemOpenPluginFolder_OnClick"/>
+                            <MenuItem Icon="{materialDesign:PackIcon DatabaseOutline}" Header="打开数据文件夹…"/>
+                        </StackPanel>
+                    </materialDesign:PopupBox>
                 </Grid>
                 <TabControl Grid.Row="1" HorizontalContentAlignment="Left">
                     <TabItem Header="概览">
@@ -204,36 +214,44 @@
                                  materialDesign:TextFieldAssist.LeadingIcon="Search"
                                  Padding="4 4"
                                  Margin="4 0"/>
-                        <ListBox
-                            Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                            HorizontalAlignment="Center"
-                            materialDesign:ListBoxItemAssist.ShowSelection="False"
-                            ScrollViewer.CanContentScroll="True"
-                            HorizontalContentAlignment="Center"
-                            ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                            ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" IsItemsHost="True" />
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                    <Setter Property="Padding" Value="0 0" />
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <RadioButton Content="{Binding}"
-                                                 Style="{StaticResource MaterialDesignTabRadioButton}"
-                                                 Height="36"
-                                                 IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
-                                    </RadioButton>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                            <system:String>市场</system:String>
-                            <system:String>已安装</system:String>
-                        </ListBox>
+                        <DockPanel Dock="Left" LastChildFill="False">
+                            <ListBox
+                                DockPanel.Dock="Left"
+                                Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                HorizontalAlignment="Left"
+                                materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                ScrollViewer.CanContentScroll="True"
+                                HorizontalContentAlignment="Center"
+                                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Setter Property="Padding" Value="0 0" />
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <RadioButton Content="{Binding}"
+                                                     Style="{StaticResource MaterialDesignTabRadioButton}"
+                                                     Height="36"
+                                                     IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                        </RadioButton>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <system:String>市场</system:String>
+                                <system:String>已安装</system:String>
+                            </ListBox>
+                            <Button DockPanel.Dock="Right" 
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonInstallFromLocal_OnClick">
+                                <ci:IconText Kind="PackageDown" Text="从本地安装"/>
+                            </Button>
+                        </DockPanel>
                     </StackPanel>
                     <ListBox Grid.Row="1"
                              ItemsSource="{x:Static services:IPluginService.LoadedPlugins}"
