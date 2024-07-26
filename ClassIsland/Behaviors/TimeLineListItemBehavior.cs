@@ -27,6 +27,7 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
         {
             AssociatedObject.Selected += AssociatedObjectOnSelected;
             AssociatedObject.Unselected += AssociatedObjectOnUnselected;
+            if (AssociatedObject.IsSelected) AttachAdorner();
         }
         base.OnAttached();
     }
@@ -57,6 +58,11 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
     }
 
     private void AssociatedObjectOnSelected(object sender, RoutedEventArgs e)
+    {
+        AttachAdorner();
+    }
+
+    private void AttachAdorner()
     {
         if (AssociatedObject == null)
         {
