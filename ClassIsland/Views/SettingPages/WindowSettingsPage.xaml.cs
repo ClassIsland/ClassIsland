@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
@@ -39,10 +40,24 @@ public partial class WindowSettingsPage : SettingsPageBase
         DataContext = this;
         SettingsService = settingsService;
         ViewModel.Screens = new ObservableCollection<Screen>(Screen.AllScreens);
+        var taskbarTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(1)
+        };
+        taskbarTimer.Tick += TaskbarTimer_Tick;
+        taskbarTimer.Start();
+        TaskbarTimer_Tick();
     }
 
     private void ButtonRefreshMonitors_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.Screens = new ObservableCollection<Screen>(Screen.AllScreens);
+    }
+
+    private void TaskbarTimer_Tick(object? _ = null, EventArgs? e = null)
+    {
+        var t = DateTime.Now.ToShortTimeString();
+        if (DateTime.Now.Second % 2 == 0) t = t.Replace(":", " ");
+        TaskbarTime.Text = t;
     }
 }
