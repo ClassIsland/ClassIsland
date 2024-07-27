@@ -121,12 +121,13 @@
                     </StackPanel>
                     <materialDesign:PopupBox Grid.Column="1" VerticalAlignment="Top"
                                              HorizontalAlignment="Right"
-                                             ToolTip="更多选项…">
-                        <StackPanel>
+                                             ToolTip="更多选项…"
+                                             IsPopupOpen="{Binding ViewModel.IsPluginOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=OneWay}">
+                        <StackPanel ButtonBase.Click="ButtonBase_OnClick">
                             <MenuItem Icon="{materialDesign:PackIcon PackageOutline}" Header="打包插件" Click="MenuItemPackPlugin_OnClick"/>
                             <Separator/>
                             <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开插件文件夹…" Click="MenuItemOpenPluginFolder_OnClick"/>
-                            <MenuItem Icon="{materialDesign:PackIcon DatabaseOutline}" Header="打开数据文件夹…"/>
+                            <MenuItem Icon="{materialDesign:PackIcon DatabaseOutline}" Header="打开配置文件夹…" Click="MenuItemOpenPluginConfigFolder_OnClick"/>
                         </StackPanel>
                     </materialDesign:PopupBox>
                 </Grid>

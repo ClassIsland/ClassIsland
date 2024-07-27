@@ -19,29 +19,31 @@ namespace ClassIsland.Services;
 
 public class PluginService : IPluginService
 {
-    public static readonly string PluginsRoot = @".\Plugins\";
+    public static readonly string PluginsRootPath = @".\Plugins\";
 
-    public static readonly string PluginsPkgRoot = Path.Combine(App.AppCacheFolderPath, "PluginPackages");
+    public static readonly string PluginsPkgRootPath = Path.Combine(App.AppCacheFolderPath, "PluginPackages");
 
 
     public static readonly string PluginManifestFileName = "manifest.yml";
 
+    public static readonly string PluginConfigsFolderPath = Path.Combine(App.AppConfigPath, "Plugins");
+
     public static void ProcessPluginsInstall()
     {
-        if (!Directory.Exists(PluginsPkgRoot))
+        if (!Directory.Exists(PluginsPkgRootPath))
         {
-            Directory.CreateDirectory(PluginsPkgRoot);
+            Directory.CreateDirectory(PluginsPkgRootPath);
         }
-        if (!Directory.Exists(PluginsRoot))
+        if (!Directory.Exists(PluginsRootPath))
         {
-            Directory.CreateDirectory(PluginsRoot);
+            Directory.CreateDirectory(PluginsRootPath);
         }
 
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        foreach (var pkgPath in Directory.EnumerateFiles(PluginsPkgRoot).Where(x => Path.GetExtension(x) == IPluginService.PluginPackageExtension))
+        foreach (var pkgPath in Directory.EnumerateFiles(PluginsPkgRootPath).Where(x => Path.GetExtension(x) == IPluginService.PluginPackageExtension))
         {
             try
             {
@@ -51,7 +53,7 @@ public class PluginService : IPluginService
                     continue;
                 var mfText = new StreamReader(mf.Open()).ReadToEnd();
                 var manifest = deserializer.Deserialize<PluginManifest>(mfText);
-                var targetPath = Path.Combine(PluginsRoot, manifest.Id);
+                var targetPath = Path.Combine(PluginsRootPath, manifest.Id);
                 if (Directory.Exists(targetPath))
                 {
                     Directory.Delete(targetPath, true);
@@ -69,16 +71,16 @@ public class PluginService : IPluginService
 
     public static void InitializePlugins(HostBuilderContext context, IServiceCollection services)
     {
-        if (!Directory.Exists(PluginsRoot))
+        if (!Directory.Exists(PluginsRootPath))
         {
-            Directory.CreateDirectory(PluginsRoot);
+            Directory.CreateDirectory(PluginsRootPath);
         }
 
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        var pluginDirs = Directory.EnumerateDirectories(PluginsRoot)
+        var pluginDirs = Directory.EnumerateDirectories(PluginsRootPath)
             .Append(App.ApplicationCommand.ExternalPluginPath);
         foreach (var pluginDir in pluginDirs)
         {
@@ -133,6 +135,10 @@ public class PluginService : IPluginService
                     continue;
                 }
 
+                entranceObj.PluginConfigFolder = Path.Combine(PluginConfigsFolderPath, manifest.Id);
+                if (!Directory.Exists(entranceObj.PluginConfigFolder))
+                    Directory.CreateDirectory(entranceObj.PluginConfigFolder);
+                entranceObj.Info = info;
                 entranceObj.Initialize(context, services);
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);

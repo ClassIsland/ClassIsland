@@ -8,6 +8,7 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
 {
     private PluginInfo? _selectedPluginInfo;
     private FlowDocument _readmeDocument = new();
+    private bool _isPluginOperationsPopupOpened = false;
 
     public PluginInfo? SelectedPluginInfo
     {
@@ -27,6 +28,17 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
         {
             if (Equals(value, _readmeDocument)) return;
             _readmeDocument = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsPluginOperationsPopupOpened
+    {
+        get => _isPluginOperationsPopupOpened;
+        set
+        {
+            if (value == _isPluginOperationsPopupOpened) return;
+            _isPluginOperationsPopupOpened = value;
             OnPropertyChanged();
         }
     }

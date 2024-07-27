@@ -21,8 +21,9 @@ public class FileFolderService : IHostedService
         "./Temp",
         App.AppCacheFolderPath,
         EdgeTtsService.EdgeTtsCacheFolderPath,
-        PluginService.PluginsPkgRoot,
-        PluginService.PluginsRoot
+        PluginService.PluginsPkgRootPath,
+        PluginService.PluginsRootPath,
+        PluginService.PluginConfigsFolderPath
     };
 
     public FileFolderService()

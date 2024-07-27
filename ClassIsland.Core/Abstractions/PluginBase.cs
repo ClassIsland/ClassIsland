@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics.CodeAnalysis;
+using ClassIsland.Core.Models.Plugin;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -12,7 +14,12 @@ public abstract class PluginBase
     /// <summary>
     /// 当前插件的设置目录。插件的各项设置应当存放在此目录中。
     /// </summary>
-    public string PluginSettingsFolder { get; internal set; } = "";
+    public string PluginConfigFolder { get; internal set; } = "";
+
+    /// <summary>
+    /// 当前插件的信息
+    /// </summary>
+    public PluginInfo Info { get; internal set; } = null!;
 
     /// <summary>
     /// 初始化插件。一般在这个方法中完成插件的各项服务的注册。

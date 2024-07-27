@@ -12,12 +12,12 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件元数据
     /// </summary>
-    public PluginManifest Manifest { get; set; } = new();
+    public PluginManifest Manifest { get; internal set; } = new();
 
     /// <summary>
     /// 插件是否存在于本地
     /// </summary>
-    public bool IsLocal { get; set; } = false;
+    public bool IsLocal { get; internal set; } = false;
 
     /// <summary>
     /// 插件是否已启用
@@ -84,15 +84,15 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 图标真实路径
     /// </summary>
-    public string RealIconPath { get; set; } = "";
+    public string RealIconPath { get; internal set; } = "";
 
     /// <summary>
     /// 插件加载时错误
     /// </summary>
-    public Exception? Exception { get; set; }
+    public Exception? Exception { get; internal set; }
 
     /// <summary>
     /// 插件加载状态
     /// </summary>
-    public PluginLoadStatus LoadStatus { get; set; } = PluginLoadStatus.NotLoaded;
+    public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
 }

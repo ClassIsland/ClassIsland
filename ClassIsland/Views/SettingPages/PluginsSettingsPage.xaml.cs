@@ -162,12 +162,28 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         try
         {
-            File.Copy(dialog.FileName, Path.Combine(Services.PluginService.PluginsPkgRoot, Path.GetFileName(dialog.FileName)), true);
+            File.Copy(dialog.FileName, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(dialog.FileName)), true);
             RequestRestart();
         }
         catch (Exception exception)
         {
             CommonDialog.ShowError($"无法安装插件：{exception.Message}");
         }
+    }
+
+    private void MenuItemOpenPluginConfigFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginInfo == null)
+            return;
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Path.Combine(Services.PluginService.PluginConfigsFolderPath, ViewModel.SelectedPluginInfo.Manifest.Id),
+            UseShellExecute = true
+        });
+    }
+
+    private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPluginOperationsPopupOpened = false;
     }
 }
