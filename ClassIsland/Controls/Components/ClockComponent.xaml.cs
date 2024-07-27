@@ -56,7 +56,8 @@ public partial class ClockComponent : ComponentBase<ClockComponentSettings>, INo
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
         var time = ExactTimeService.GetCurrentLocalDateTime();
-        CurrentTime = Settings.ShowSeconds ? time.ToLongTimeString() : time.ToShortTimeString();
+        CurrentTime = Settings.ShowSeconds ? time.ToLongTimeString() :
+                      time.Second % 2 == 1 ? time.ToShortTimeString() : time.ToShortTimeString().Replace(":", " ");
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
