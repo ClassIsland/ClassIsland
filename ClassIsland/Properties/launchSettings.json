@@ -17,6 +17,10 @@
     "ClassIsland (禁用集控)": {
       "commandName": "Project",
       "commandLineArgs": "-dm"
+    },
+    "ClassIsland (禁用集控) Sentry dbg": {
+      "commandName": "Project",
+      "commandLineArgs": "-dm -esd"
     }
   }
 }

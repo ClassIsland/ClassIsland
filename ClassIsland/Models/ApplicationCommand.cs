@@ -29,4 +29,6 @@ public class ApplicationCommand
     public string Uri { get; set; } = "";
 
     public string ExternalPluginPath { get; set; } = "";
+
+    public bool EnableSentryDebug { get; set; } = false;
 }
