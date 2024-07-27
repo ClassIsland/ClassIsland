@@ -425,7 +425,8 @@
                                                                            Header="注册 Url 协议"
                                                                            Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用应用的功能。" />
                                             </CheckBox>
-                                            <CheckBox IsChecked="{Binding ViewModel.CreateClassSwapShortcut}"
+                                            <CheckBox Margin="22 0 0 0"
+                                                      IsChecked="{Binding ViewModel.CreateClassSwapShortcut}"
                                                       IsEnabled="{Binding ViewModel.RegisterUrlScheme}">
                                                 <controls1:SettingsControl HasSwitcher="False"
                                                                            IconGlyph="SwapHorizontal"
