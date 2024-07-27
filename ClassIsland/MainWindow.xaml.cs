@@ -39,7 +39,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 using NAudio.Wave;
-
+using Sentry;
 using Application = System.Windows.Application;
 using Window = System.Windows.Window;
 #if DEBUG
@@ -53,6 +53,8 @@ namespace ClassIsland;
 public partial class MainWindow : Window
 {
     public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
+
+    public event EventHandler? StartupCompleted;
 
     public MainViewModel ViewModel
     {
@@ -430,6 +432,7 @@ public partial class MainWindow : Window
         }
 
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
+        StartupCompleted?.Invoke(this, EventArgs.Empty);
 
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
         {
@@ -524,6 +527,7 @@ public partial class MainWindow : Window
     protected override void OnInitialized(EventArgs e)
     {
         base.OnInitialized(e);
+        var span = SentrySdk.GetSpan()?.StartChild("startup-initialize-mainWindow");
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
@@ -534,6 +538,7 @@ public partial class MainWindow : Window
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
         SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
+        span?.Finish();
     }
 
     private void OnSystemEventsOnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs args)
@@ -826,7 +831,7 @@ public partial class MainWindow : Window
 
     public void OpenHelpsWindow()
     {
-        Analytics.TrackEvent("打开帮助窗口");
+        SentrySdk.Metrics.Increment("views.HelpWindow.open");
         if (HelpsWindow.ViewModel.IsOpened)
         {
             HelpsWindow.WindowState = HelpsWindow.WindowState == WindowState.Minimized ? WindowState.Normal : HelpsWindow.WindowState;

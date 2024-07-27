@@ -17,6 +17,7 @@ using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
 using System.Windows.Input;
+using Sentry;
 
 namespace ClassIsland.Services;
 
@@ -61,6 +62,8 @@ public class ProfileService : IProfileService
 
     private async Task MergeManagementProfileAsync()
     {
+        var span = SentrySdk.GetSpan();
+        var spanLoadMgmtProfile = span?.StartChild("profile-mgmt-pull-profile");
         Logger.LogInformation("正在拉取集控档案");
         if (ManagementService.Connection == null)
             return;
@@ -71,44 +74,57 @@ public class ProfileService : IProfileService
             Profile? subjects = null;
             if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
             {
+                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-classPlan");
                 var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
                 var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
                 MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
+                spanDownload?.Finish();
             }
             if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
             {
+                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-timeLayout");
                 var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
                 var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
                 MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
+                spanDownload?.Finish();
             }
             if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
             {
+                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-subjects");
                 var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
                 var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
                 MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
+                spanDownload?.Finish();
             }
 
+            var spanSaving = spanLoadMgmtProfile?.StartChild("profile-mgmt-save");
             SaveProfile("_management-profile.json");
             ManagementService.Versions.ClassPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
             ManagementService.Versions.TimeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
             ManagementService.Versions.SubjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
             ManagementService.SaveSettings();
+            spanSaving?.Finish();
         }
         catch (Exception exp)
         {
+            spanLoadMgmtProfile?.Finish(exp);
             Logger.LogError(exp, "拉取档案失败。");
         }
 
+        
         //Profile = ConfigureFileHelper.CopyObject(Profile);
         Profile.Subjects = CopyObject(Profile.Subjects);
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
         Profile.ClassPlans = CopyObject(Profile.ClassPlans);
         Profile.RefreshTimeLayouts();
         Logger.LogTrace("成功拉取集控档案！");
+        spanLoadMgmtProfile?.Finish();
     }
 
     public async Task LoadProfileAsync()
     {
+        var span = SentrySdk.GetSpan();
+        var spanLoadingProfile = span?.StartChild("profile-loading");
         var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
         var path = $"./Profiles/{filename}";
         Logger.LogInformation("加载档案中：{}", path);
@@ -127,12 +143,15 @@ public class ProfileService : IProfileService
 
         Profile = r;
         if (ManagementService.IsManagementEnabled)
+        {
             await MergeManagementProfileAsync();
+        }
         Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
         CurrentProfilePath = filename;
         Logger.LogTrace("成功加载档案！");
         CleanExpiredTempClassPlan();
+        spanLoadingProfile?.Finish();
     }
 
     public void SaveProfile()

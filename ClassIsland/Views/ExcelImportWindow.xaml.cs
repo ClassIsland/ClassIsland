@@ -41,6 +41,7 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
+using Sentry;
 
 namespace ClassIsland.Views;
 
@@ -316,20 +317,7 @@ public partial class ExcelImportWindow : MyWindow
     private void OpenProfileSettingsWindow()
     {
         var window = App.GetService<ProfileSettingsWindow>();
-        if (!window.IsOpened)
-        {
-            Analytics.TrackEvent("打开档案设置窗口");
-            window.IsOpened = true;
-            window.Show();
-        }
-        else
-        {
-            if (window.WindowState == WindowState.Minimized)
-            {
-                window.WindowState = WindowState.Normal;
-            }
-            window.Activate();
-        }
+        window.Open();
     }
 
     private void EnterSelectingModeCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)

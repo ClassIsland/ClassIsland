@@ -8,6 +8,7 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
+using Sentry;
 
 namespace ClassIsland.Services;
 

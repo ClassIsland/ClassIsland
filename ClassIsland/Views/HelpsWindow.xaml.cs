@@ -20,6 +20,7 @@ using MdXaml;
 
 using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
+using Sentry;
 
 namespace ClassIsland.Views;
 
@@ -109,10 +110,9 @@ public partial class HelpsWindow : MyWindow
 
     public async void CoreNavigateTo(string name)
     {
-        Analytics.TrackEvent("浏览帮助文档",
-        new PagesDictionary
+        SentrySdk.Metrics.Increment("views.HelpWindow.navigate", tags: new PagesDictionary()
         {
-            { "Name", name }
+            { "Page", name }
         });
         //ScrollViewerDocument.ScrollToTop();
         ViewModel.IsLoading = true;
