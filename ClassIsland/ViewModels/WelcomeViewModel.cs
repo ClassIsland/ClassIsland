@@ -21,7 +21,7 @@ public class WelcomeViewModel : ObservableRecipient
     private bool _createStartMenuShortcut = true;
     private bool _createDesktopShortcut = false;
     private int _slideIndexMaster = 0;
-    private bool _registerUrlScheme = true;
+    private bool _registerUrlScheme = false;
     private bool _createClassSwapShortcut = false;
 
     public Guid DialogId
