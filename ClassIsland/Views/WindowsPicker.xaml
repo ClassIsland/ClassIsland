@@ -127,7 +127,9 @@
                                              Margin="0 0 0 0">
                         <StackPanel Margin="16">
                             <CheckBox IsChecked="{Binding ViewModel.IsFilteredFullscreen}"
-                                      Content="仅显示全屏窗口。"/>
+                                      Checked="ButtonRefresh_OnClick"
+                                      Unchecked="ButtonRefresh_OnClick"
+                                      Content="仅显示全屏窗口"/>
                         </StackPanel>
                     </materialDesign:PopupBox>
                 </StackPanel>
