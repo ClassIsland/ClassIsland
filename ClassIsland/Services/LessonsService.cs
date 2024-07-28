@@ -20,7 +20,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private TimeLayoutItem _nextTimeLayoutItem = new();
     private TimeLayoutItem _nextBreakingLayoutItem = new();
     private TimeSpan _onClassLeftTime = TimeSpan.Zero;
-    private DateTime _today = DateTime.Now;
     private TimeState _currentStatus = TimeState.None;
     private TimeState _currentOverlayStatus = TimeState.None;
     private TimeLayoutItem _currentTimeLayoutItem = new();
@@ -84,12 +83,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         get => _onClassLeftTime;
         set => SetProperty(ref _onClassLeftTime, value);
-    }
-
-    public DateTime Today
-    {
-        get => _today;
-        set => SetProperty(ref _today, value);
     }
 
     public TimeState CurrentState
