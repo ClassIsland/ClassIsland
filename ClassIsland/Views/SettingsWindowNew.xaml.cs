@@ -206,6 +206,8 @@ public partial class SettingsWindowNew : MyWindow
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
         ViewModel.IsViewCompressed = Width < 800;
+        if (WindowState == WindowState.Maximized)
+            ViewModel.IsViewCompressed = false;
         if (!ViewModel.IsViewCompressed)
         {
             ViewModel.IsNavigationDrawerOpened = true;
