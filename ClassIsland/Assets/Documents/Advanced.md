@@ -24,7 +24,7 @@
 
 ## 天气
 
-本应用可以获取当地的天气信息，并在快速信息上显示。您可以在[【应用设置】→【天气】](classisland://app/settings/weather)中调整相关设置。
+本应用可以获取当地的天气信息，并显示简略信息、天气预报和极端天气预警。您可以在[【应用设置】→【天气】](classisland://app/settings/weather)中调整相关设置。
 
 在设置好城市等相关设置后，您可以在[【应用设置】→【提醒】](classisland://app/settings/notification/7625DE96-38AA-4B71-B478-3F156DD9458D)中开启天气预报和气象预警功能。
 

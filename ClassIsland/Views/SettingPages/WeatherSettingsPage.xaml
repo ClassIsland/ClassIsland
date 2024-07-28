@@ -167,7 +167,7 @@
                 </Expander>
             </materialDesign:Card>
             <TextBlock TextWrapping="Wrap" FontWeight="Regular" Margin="0 8 0 0">
-                要调整天气提醒设置，请转到【提醒】选项卡。要调整天气快速信息设置，请在【基本】中快速信息相关选项中调整。
+                要调整天气提醒设置，请转到【提醒】选项卡。要调整主界面上的天气快速信息，请在【组件】中配置天气简报组件。
             </TextBlock>
         </StackPanel>
     </ScrollViewer>
