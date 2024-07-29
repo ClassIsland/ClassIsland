@@ -264,6 +264,11 @@
                             </Button>
                             <Button HorizontalAlignment="Left" Margin="6"
                                     Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonPrivacy_OnClick">
+                                <controls1:IconText Kind="ScriptOutline" Text="隐私政策" />
+                            </Button>
+                            <Button HorizontalAlignment="Left" Margin="6"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                     Click="ButtonDiagnosticInfo_OnClick">
                                 <controls1:IconText Kind="BugOutline" Text="诊断信息" />

@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Helpers;
@@ -149,5 +150,15 @@ public partial class AboutSettingsPage : SettingsPageBase
     private async void ButtonRefreshContributors_OnClick(object sender, RoutedEventArgs e)
     {
         await RefreshContributors();
+    }
+
+    private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
+    {
+        new DocumentReaderWindow()
+        {
+            Source = new Uri("/Assets/Documents/Privacy.md", UriKind.RelativeOrAbsolute),
+            Owner = Window.GetWindow(this),
+            Title = "ClassIsland 隐私政策"
+        }.ShowDialog();
     }
 }

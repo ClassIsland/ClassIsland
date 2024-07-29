@@ -139,4 +139,14 @@ public partial class WelcomeWindow : MyWindow
     {
         
     }
+
+    private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
+    {
+        new DocumentReaderWindow()
+        {
+            Source = new Uri("/Assets/Documents/Privacy.md", UriKind.RelativeOrAbsolute),
+            Owner = this,
+            Title = "ClassIsland 隐私政策"
+        }.ShowDialog();
+    }
 }
