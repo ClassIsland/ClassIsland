@@ -199,11 +199,17 @@
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock Text="我已阅读并同意" VerticalAlignment="Center" />
                                             <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                    Content="《ClassIsland开源许可》"
+                                                    Content="《ClassIsland 开源许可》"
                                                     Padding="0"
                                                     VerticalAlignment="Center"
                                                     Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                                     CommandParameter="{StaticResource OpenSourceLicense}" />
+                                            <TextBlock Text="和" VerticalAlignment="Center"/>
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                    Content="《ClassIsland 隐私政策》"
+                                                    Padding="0"
+                                                    VerticalAlignment="Center"
+                                                    Click="ButtonPrivacy_OnClick" />
                                             <TextBlock Text="。" VerticalAlignment="Center" />
                                         </StackPanel>
                                     </CheckBox>
