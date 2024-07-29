@@ -594,8 +594,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonProfileManage_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案设置 · 打开档案管理");
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.drawers.profileMgmt.open");
+        OpenDrawer("ProfileManager");
     }
 
     private void SnackbarRestartMessage_OnActionClick(object sender, RoutedEventArgs e)
