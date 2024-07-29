@@ -152,7 +152,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 ShowTeacherName = Settings.ShowTeacherName
             },
             OverlayDuration = TimeSpan.FromSeconds(10),
-            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
+            OverlaySpeechContent = $"本节${LessonsService.CurrentTimeLayoutItem.BreakName}长{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
             IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
         });
     }

@@ -13,6 +13,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     private int _timeType = 0;
     private bool _isHideDefault = false;
     private string _defaultClassId = "";
+    private string _breakName = "课间休息";
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
@@ -105,6 +106,20 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     }
 
     /// <summary>
+    /// 自定义课间名称。
+    /// </summary>
+    public string BreakName
+    {
+        get => _breakName;
+        set
+        {
+            if (_breakName == value) return;
+            _breakName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
     /// 与另一个<see cref="TimeLayoutItem"/>比较
     /// </summary>
     /// <param name="obj">要比较的对象</param>
@@ -119,8 +134,8 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
 
         if (o.StartSecond.TimeOfDay < StartSecond.TimeOfDay)
         {
-            return -1; 
-        } 
+            return -1;
+        }
         if (o.StartSecond.TimeOfDay > StartSecond.TimeOfDay)
         {
             return 1;
