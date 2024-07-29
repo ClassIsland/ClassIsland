@@ -1517,6 +1517,24 @@
                                                     </Button>
                                                 </WrapPanel>
                                             </StackPanel>
+                                            <StackPanel>
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger
+                                                                Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                Value="1">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                    Margin="0 12 0 0"
+                                                    Text="{Binding ViewModel.SelectedTimePoint.BreakName}"
+                                                    materialDesign:HintAssist.Hint="自定义课间名称" />
+                                            </StackPanel>
                                             <Separator Margin="0 20 0 8" />
                                             <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
                                             <ItemsControl
