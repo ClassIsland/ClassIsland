@@ -72,12 +72,10 @@
                                     <materialDesign:PackIcon Kind="MicrosoftWindows"
                                                              Height="10" Width="10" VerticalAlignment="Center"
                                                              HorizontalAlignment="Left" Margin="3" />
-                                    <!-- TODO: 把实时时间加回来 -->
-                                    <TextBlock
-                                        Text="11:45"
-                                        FontSize="8" FontWeight="Light"
-                                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                                        Margin="3" />
+                                    <TextBlock x:Name="TaskbarTime"
+                                               FontSize="8" FontWeight="Light"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Margin="3"/>
                                 </Grid>
                             </materialDesign:ColorZone>
                         </Grid>

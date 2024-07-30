@@ -17,27 +17,26 @@
         <StackPanel Orientation="Horizontal" 
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     Visibility="{Binding IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+            <Image Source="{Binding Alert.Images[icon]}"
+                   Width="22" Height="22" Stretch="UniformToFill"
+                   VerticalAlignment="Center"/>
             <TextBlock Text="{Binding Alert.Title}" FontSize="18" Margin="8 0" FontWeight="Bold"/>
-            <materialDesign:PackIcon Kind="CloudAlert" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
         </StackPanel>
         <Grid Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Image Grid.Column="0" 
+            <Image Grid.Column="0" Panel.ZIndex="1"
                    Source="{Binding Alert.Images[icon]}" 
                    Width="22" Height="22" Stretch="UniformToFill"
                    VerticalAlignment="Center"
                    Margin="16 0"
                    Opacity="1"/>
-            <Grid Grid.Column="1" ClipToBounds="True">
+            <Grid Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True">
                 <Canvas VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
-                        Margin="0 0 16 0"
+                        Margin="27 0 16 0"
                         x:Name="RootCanvas"
                         ClipToBounds="True">
                     <Canvas.OpacityMask>

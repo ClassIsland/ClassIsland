@@ -18,7 +18,7 @@ public interface IExactTimeService : INotifyPropertyChanged, INotifyPropertyChan
     void Sync();
     
     /// <summary>
-    /// 获取当前精确当地事件。
+    /// 获取当前精确当地时间。
     /// </summary>
     /// <returns>当前时间</returns>
     DateTime GetCurrentLocalDateTime();

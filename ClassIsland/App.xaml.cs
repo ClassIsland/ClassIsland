@@ -307,7 +307,6 @@ public partial class App : AppBase, IAppHost
                     MainViewModel = s.GetService<MainWindow>()?.ViewModel ?? new()
                 });
                 // 设置页面
-                services.AddSettingsPage<TestSettingsPage>();
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
                 services.AddSettingsPage<AppearanceSettingsPage>();
@@ -317,6 +316,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<UpdatesSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
+                services.AddSettingsPage<TestSettingsPage>();
                 services.AddSettingsPage<DebugPage>();
                 services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();

@@ -20,6 +20,7 @@ public partial class LoadingMask : UserControl
     {
         InitializeComponent();
         UpdateForeground();
+        ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
     }
 
     private void UpdateForeground()

@@ -206,6 +206,8 @@ public partial class SettingsWindowNew : MyWindow
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
     {
         ViewModel.IsViewCompressed = Width < 800;
+        if (WindowState == WindowState.Maximized)
+            ViewModel.IsViewCompressed = false;
         if (!ViewModel.IsViewCompressed)
         {
             ViewModel.IsNavigationDrawerOpened = true;
@@ -243,18 +245,20 @@ public partial class SettingsWindowNew : MyWindow
 
     public void Open(string key)
     {
-        ViewModel.SelectedPageInfo =
-            SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key);
+        ViewModel.SelectedPageInfo = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key) ?? ViewModel.SelectedPageInfo;
         LaunchSettingsPage = key;
         Open();
     }
 
     public void OpenUri(Uri uri)
     {
-        if (uri.Segments.Length <= 2)
-            return;
-        var uriSegment = uri.Segments[2].EndsWith('/') ? uri.Segments[2][..^1] : uri.Segments[2];
-        Open(uriSegment);
+        if (uri.Segments.Length > 2)
+        {
+            var uriSegment = uri.Segments[2].EndsWith('/') ? uri.Segments[2][..^1] : uri.Segments[2];
+            Open(uriSegment);
+        }
+        else if (uri.Segments.Length == 2)
+            Open();
     }
 
     private void SettingsWindowNew_OnClosing(object? sender, CancelEventArgs e)
