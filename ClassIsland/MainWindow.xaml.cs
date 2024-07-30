@@ -412,7 +412,6 @@ public partial class MainWindow : Window
 
         if (!ViewModel.Settings.IsWelcomeWindowShowed)
         {
-            TaskBarIconService.MainTaskBarIcon.ContextMenu = null;
             var w = new WelcomeWindow()
             {
                 ViewModel =
@@ -429,7 +428,6 @@ public partial class MainWindow : Window
             else
             {
                 ViewModel.Settings.IsWelcomeWindowShowed = true;
-                TaskBarIconService.MainTaskBarIcon.ContextMenu = menu;
             }
         }
 
