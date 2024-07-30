@@ -265,6 +265,7 @@ public partial class App : AppBase, IAppHost
                 services.AddHostedService<MemoryWatchDogService>();
                 services.AddSingleton(new NamedPipeServer(IpcClient.PipeName));
                 services.AddSingleton<IPluginService, PluginService>();
+                services.AddSingleton<IPluginMarketService, PluginMarketService>();
                 try // 检测SystemSpeechService是否存在
                 {
                     _ = new SpeechSynthesizer();

@@ -252,7 +252,54 @@
                                     Click="ButtonInstallFromLocal_OnClick">
                                 <ci:IconText Kind="PackageDown" Text="从本地安装"/>
                             </Button>
+                            <Button DockPanel.Dock="Right" 
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonBaseRefreshPlugins_OnClick"
+                                    IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
+                                <ci:IconText Kind="Refresh" Text="刷新"/>
+                            </Button>
                         </DockPanel>
+                        <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                                  Visibility="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid>
+                                <ProgressBar VerticalAlignment="Stretch"
+                                             Height="28"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             Opacity="0.1"
+                                             Value="{Binding PluginMarketService.PluginSourceDownloadProgress}"/>
+                                <StackPanel Orientation="Horizontal" Margin="8 4">
+                                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                 IsIndeterminate="True" />
+                                    <TextBlock Text="正在刷新插件…" VerticalAlignment="Center"
+                                               Margin="4 0 0 0" />
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
+                        <materialDesign:ColorZone Background="#10FF0000">
+                            <materialDesign:ColorZone.Style>
+                                <Style TargetType="materialDesign:ColorZone">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PluginMarketService.Exception, Mode=OneWay}"
+                                                     Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:ColorZone.Style>
+                            <Grid>
+                                <DockPanel Margin="8 4">
+                                    <materialDesign:PackIcon Kind="ErrorOutline"
+                                                             Height="20" Width="20"/>
+                                    <TextBlock TextWrapping="Wrap"
+                                               VerticalAlignment="Center"
+                                               Margin="4 0 0 0" >
+                                        <Run Text="刷新插件失败："/>
+                                        <Run Text="{Binding PluginMarketService.Exception.Message, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DockPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
                     </StackPanel>
                     <ListBox Grid.Row="1"
                              ItemsSource="{x:Static services:IPluginService.LoadedPlugins}"

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.Json.Serialization;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -17,11 +18,14 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件是否存在于本地
     /// </summary>
+    [JsonIgnore]
     public bool IsLocal { get; internal set; } = false;
 
     /// <summary>
     /// 插件是否已启用
     /// </summary>
+
+    [JsonIgnore]
     public bool IsEnabled
     {
         get
@@ -50,6 +54,8 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件是否将要卸载
     /// </summary>
+
+    [JsonIgnore]
     public bool IsUninstalling
     {
         get
@@ -79,6 +85,8 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件文件路径。
     /// </summary>
+
+    [JsonIgnore]
     public string PluginFolderPath { get; internal set; } = "";
 
     /// <summary>
@@ -89,10 +97,14 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件加载时错误
     /// </summary>
+
+    [JsonIgnore]
     public Exception? Exception { get; internal set; }
 
     /// <summary>
     /// 插件加载状态
     /// </summary>
+
+    [JsonIgnore]
     public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
 }

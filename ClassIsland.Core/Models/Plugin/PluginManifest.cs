@@ -44,4 +44,14 @@ public class PluginManifest : ObservableRecipient
     /// 项目 Url
     /// </summary>
     public string? Url { get; set; }
+
+    /// <summary>
+    /// 插件版本
+    /// </summary>
+    public Version Version { get; set; } = new();
+
+    /// <summary>
+    /// 插件目标 ClassIsland 版本
+    /// </summary>
+    public Version ApiVersion { get; set; } = new();
 }

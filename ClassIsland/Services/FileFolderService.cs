@@ -23,7 +23,8 @@ public class FileFolderService : IHostedService
         EdgeTtsService.EdgeTtsCacheFolderPath,
         PluginService.PluginsPkgRootPath,
         PluginService.PluginsRootPath,
-        PluginService.PluginConfigsFolderPath
+        PluginService.PluginConfigsFolderPath,
+        PluginService.PluginsIndexPath
     };
 
     public FileFolderService()

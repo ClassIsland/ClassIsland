@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
@@ -284,26 +285,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         return await WebRequestHelper.GetJson<AppCenterReleaseInfo>(new Uri(versionRoot));
     }
 
-    private string MatchHashInfo(string releaseNote, string artifactKey)
-    {
-        var regex = new Regex(@"<!-- CLASSISLAND_PKG_MD5 (.+?) -->");
-        var match = regex.Match(releaseNote);
-        if (!match.Success)
-        {
-            return "";
-        }
-
-        var json = match.Groups[1].Value;
-        try
-        {
-            var d = JsonSerializer.Deserialize<Dictionary<string, string>>(json);
-            return d![artifactKey];
-        }
-        catch (Exception ex)
-        {
-            return "";
-        }
-    }
+    
 
     public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
@@ -330,7 +312,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     .OrderByDescending(i => Version.Parse(i.TagName))).First();
                 verCode = Version.Parse(v.TagName);
                 Settings.UpdateReleaseInfo = v.Body;
-                Settings.UpdateArtifactHash = MatchHashInfo(v.Body, "ClassIsland.zip");
+                Settings.UpdateArtifactHash = ChecksumHelper.ExtractHashInfo(v.Body, "ClassIsland.zip");
                 Settings.LastCheckUpdateInfoCacheGitHub = v;
                 var assetsUrl = v.Assets[0].BrowserDownloadUrl;    
                 Settings.UpdateDownloadUrl = Settings.SelectedUpgradeMirror == GhProxySourceKey ? $"https://mirror.ghproxy.com/{assetsUrl}" : assetsUrl;

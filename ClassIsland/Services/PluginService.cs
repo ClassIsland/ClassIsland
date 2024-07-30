@@ -21,6 +21,8 @@ public class PluginService : IPluginService
 {
     public static readonly string PluginsRootPath = @".\Plugins\";
 
+    public static readonly string PluginsIndexPath = Path.Combine(App.AppConfigPath, "PluginsIndex");
+
     public static readonly string PluginsPkgRootPath = Path.Combine(App.AppCacheFolderPath, "PluginPackages");
 
 
@@ -40,6 +42,7 @@ public class PluginService : IPluginService
         }
 
         var deserializer = new DeserializerBuilder()
+            .IgnoreUnmatchedProperties()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
@@ -77,6 +80,7 @@ public class PluginService : IPluginService
         }
 
         var deserializer = new DeserializerBuilder()
+            .IgnoreUnmatchedProperties()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 

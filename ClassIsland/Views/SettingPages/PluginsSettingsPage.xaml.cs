@@ -41,12 +41,14 @@ public partial class PluginsSettingsPage : SettingsPageBase
     public PluginsSettingsPageViewModel ViewModel { get; } = new();
 
     public IPluginService PluginService { get; }
+    public IPluginMarketService PluginMarketService { get; }
 
-    public PluginsSettingsPage(IPluginService pluginService)
+    public PluginsSettingsPage(IPluginService pluginService, IPluginMarketService pluginMarketService)
     {
         InitializeComponent();
         DataContext = this;
         PluginService = pluginService;
+        PluginMarketService = pluginMarketService;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
     }
 
@@ -185,5 +187,10 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsPluginOperationsPopupOpened = false;
+    }
+
+    private async void ButtonBaseRefreshPlugins_OnClick(object sender, RoutedEventArgs e)
+    {
+        await PluginMarketService.RefreshPluginSourceAsync();
     }
 }
