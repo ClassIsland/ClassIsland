@@ -78,6 +78,7 @@
                                                            Description="控制应用选取主题色的途径。">
                 <controls1:SettingsCard.Switcher>
                     <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                      SelectionChanged="ButtonUpdateWallpaper_OnClick"
                                                       HorizontalContentAlignment="Left"
                                                       SelectedIndex="{Binding SettingsService.Settings.ColorSource}">
                         <ComboBoxItem HorizontalContentAlignment="Left">
@@ -88,6 +89,9 @@
                         </ComboBoxItem>
                         <ComboBoxItem HorizontalContentAlignment="Left">
                             <controls1:IconText Kind="MicrosoftWindows" Text="系统" />
+                        </ComboBoxItem>
+                        <ComboBoxItem HorizontalContentAlignment="Left">
+                            <controls1:IconText Kind="PanoramaVariantOutline" Text="屏幕主题色" />
                         </ComboBoxItem>
                     </ComboBox>
                 </controls1:SettingsCard.Switcher>
@@ -259,6 +263,77 @@
                                                                           Foreground="{DynamicResource MaterialDesignBody}"
                                                                           Style="{StaticResource MaterialDesignTextBox}"
                                                                           Text="{Binding SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
+            </StackPanel>
+            <!-- 屏幕主题色 -->
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SettingsService.Settings.ColorSource}" Value="3">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </Style>
+                </StackPanel.Style>
+                <Separator Margin="0 16 0 8" />
+                <controls1:IconText Kind="PanoramaVariantOutline" Text="屏幕主题色" Margin="0 0 0 8" />
+                <materialDesign:Card>
+                    <Grid>
+                        <ProgressBar Visibility="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" IsIndeterminate="True" VerticalAlignment="Top"/>
+                        <StackPanel Margin="12">
+                            <controls1:IconText Kind="PaletteOutline" Text="选择主题色" />
+                            <Grid VerticalAlignment="Bottom" IsEnabled="{Binding WallpaperPickingService.IsWorking, Mode=OneWay, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <!-- 颜色选择 -->
+                                <ListBox Grid.Column="0" HorizontalAlignment="Left" materialDesign:ScrollViewerAssist.BubbleVerticalScroll="True"
+                                         ItemsSource="{Binding SettingsService.Settings.WallpaperColorPlatte, Mode=OneWay}"
+                                         SelectedIndex="{Binding SettingsService.Settings.SelectedPlatteIndex}">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <materialDesign:ColorZone Background="{Binding Converter={StaticResource ColorToColorPickerBrushConverter}}" Width="32" Height="32" Mode="Custom">
+                                                <materialDesign:PackIcon Kind="Check" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="14" Height="14" Background="White" Foreground="Black"
+                                                    Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            </materialDesign:ColorZone>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                <WrapPanel HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Column="1">
+                                    <!-- 刷新 -->
+                                    <Button Click="ButtonUpdateWallpaper_OnClick" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Margin="2 0">
+                                        <controls1:IconText Kind="Refresh" Text="刷新"/>
+                                    </Button>
+                                    <!-- 预览提取结果 -->
+                                    <Button Click="ButtonPreviewWallpaper_OnClick" Style="{StaticResource MaterialDesignFlatButton}" VerticalAlignment="Center" Margin="2 0">
+                                        <controls1:IconText Kind="EyeOutline" Text="预览提取结果"/>
+                                    </Button>
+                                </WrapPanel>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </materialDesign:Card>
+                <!-- 自动提取主题色 -->
+                <controls1:SettingsCard Margin="0 6" IconGlyph="ClockOutline" Header="自动提取主题色间隔" Description="自动从屏幕上提取主题色时间隔的时间，建议设为10秒左右。">
+                    <controls1:SettingsCard.Switcher>
+                        <controls1:NumbericTextBox MaxValue="300" MinValue="0" Width="100" materialDesign:TextFieldAssist.SuffixText="秒" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}"
+                                                   Text="{Binding SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
+                <!-- 取色亮度波峰 -->
+                <controls1:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰" Description="取色时为亮度更接近此值的颜色赋予更高的权重。（默认值：0.6）">
+                    <controls1:SettingsCard.Switcher>
+                        <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="100" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}"
+                                                   Text="{Binding SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
             </StackPanel>
