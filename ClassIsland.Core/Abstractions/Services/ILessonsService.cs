@@ -76,11 +76,6 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     TimeSpan OnClassLeftTime { get; set; }
 
     /// <summary>
-    /// 现在的时间。
-    /// </summary>
-    DateTime Today { get; set; }
-
-    /// <summary>
     /// 当前时间点状态
     /// </summary>
     TimeState CurrentState { get; set; }

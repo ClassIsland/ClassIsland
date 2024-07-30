@@ -392,6 +392,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     ///     <item>0 - 打开主菜单</item>
     ///     <item>1 - 打开档案编辑窗口</item>
     ///     <item>2 - 显示/隐藏主界面</item>
+    ///     <item>3 - 打开换课窗口</item>
     /// </list>
     /// </value>
     public int TaskBarIconClickBehavior

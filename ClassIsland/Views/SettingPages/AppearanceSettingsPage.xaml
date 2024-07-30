@@ -30,7 +30,7 @@
             <controls1:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
                                                            Description="主界面的缩放比例。">
                 <controls1:SettingsCard.Switcher>
-                    <Slider Width="180" Minimum="0.75" Maximum="2"
+                    <Slider Width="180" Minimum="0.75" Maximum="2.5"
                                                     VerticalAlignment="Center"
                                                     Value="{Binding SettingsService.Settings.Scale}"
                                                     AutoToolTipPlacement="BottomRight"
@@ -47,7 +47,7 @@
                     <Slider Width="180" Minimum="0" Maximum="1"
                                                     Value="{Binding SettingsService.Settings.Opacity}"
                                                     AutoToolTipPlacement="BottomRight"
-                                                    TickFrequency="0.01"
+                                                    TickFrequency="0.05"
                                                     IsSnapToTickEnabled="True"
                                                     AutoToolTipPrecision="2" />
                 </controls1:SettingsCard.Switcher>

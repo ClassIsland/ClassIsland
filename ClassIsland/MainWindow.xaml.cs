@@ -875,24 +875,9 @@ public partial class MainWindow : Window
         App.GetService<SettingsWindowNew>().Open("notification");
     }
 
-    private void MenuItemShowMainWindow_OnChecked(object sender, RoutedEventArgs e)
+    private void MenuItemSwitchMainWindowVisibility_OnClick(object sender, RoutedEventArgs e)
     {
-        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
-        {
-            BackgroundSource =
-                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png",
-                    UriKind.Absolute)),
-        };
-    }
-
-    private void MenuItemShowMainWindow_OnUnchecked(object sender, RoutedEventArgs e)
-    {
-        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
-        {
-            BackgroundSource =
-                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo_Fade.png",
-                    UriKind.Absolute)),
-        };
+        ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
     }
 
     private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
@@ -907,7 +892,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        ViewModel.IsBusy = true;
+        // ViewModel.IsBusy = true;
         ClassChangingWindow = new ClassChangingWindow()
         {
             ClassPlan = LessonsService.CurrentClassPlan
@@ -915,7 +900,7 @@ public partial class MainWindow : Window
         ClassChangingWindow.ShowDialog();
         ClassChangingWindow.DataContext = null;
         ClassChangingWindow = null;
-        ViewModel.IsBusy = false;
+        // ViewModel.IsBusy = false;
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)

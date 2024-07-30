@@ -24,15 +24,15 @@
 
 在[【应用设置】→【外观】](classisland://app/settings/appearance)中，您可以调整主界面的缩放大小和背景不透明度。
 
-## 快速信息
+## 组件
 
-快速信息显示在课程表左侧，用以展示一些简略信息。
+组件显示在课程表两旁，用以展示一些简略信息。
 
 ![1694924066147](pack://application:,,,/ClassIsland;component/Assets/Documents/image/MiniInfo/1694924066147.png)
 
-您可以在[【设置】->【基本】](classisland://app/settings/general)中修改要显示的快速信息和快速信息相关的设置。
+您可以在[【设置】->【组件】](classisland://app/settings/components)中自定义要显示的组件。
 
-![1694925086975](pack://application:,,,/ClassIsland;component/Assets/Documents/image/MiniInfo/1694925086975.png)
+![1718443026319](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1718443026319.png)
 
 ## 附加信息
 
