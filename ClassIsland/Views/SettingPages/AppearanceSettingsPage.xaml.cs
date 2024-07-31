@@ -45,7 +45,8 @@ public partial class AppearanceSettingsPage : SettingsPageBase
 
     private async void ButtonUpdateWallpaper_OnClick(object sender, RoutedEventArgs e)
     {
-        await WallpaperPickingService.GetWallpaperAsync();
+        if (SettingsService.Settings.ColorSource is 1 or 3)
+            await WallpaperPickingService.GetWallpaperAsync();
     }
 
     private void ButtonPreviewWallpaper_OnClick(object sender, RoutedEventArgs e)

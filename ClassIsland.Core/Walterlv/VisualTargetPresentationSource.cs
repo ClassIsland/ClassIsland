@@ -28,7 +28,7 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
 {
     public VisualTargetPresentationSource(HostVisual hostVisual)
     {
-        _visualTarget = new VisualTarget(hostVisual);
+        _visualTarget ??= new VisualTarget(hostVisual);
     }
 
     public override Visual RootVisual
