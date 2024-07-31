@@ -452,6 +452,7 @@ public partial class App : AppBase, IAppHost
         GetService<IExactTimeService>();
         _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         _ = IAppHost.Host.StartAsync();
+        IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
 
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
         Logger.LogInformation("正在初始化MainWindow。");

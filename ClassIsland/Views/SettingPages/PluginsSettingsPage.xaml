@@ -61,9 +61,9 @@
                                                     VerticalAlignment="Top"
                                                     ClipToBounds="True"
                                                     Margin="0 0 8 0 "
-                                                    FallbackPackIconKind="PluginOutline"
+                                                    FallbackPackIconKind="Plugin"
                                                     IconKind="Image"
-                                                    ImageSource="{Binding RealIconPath}"/>
+                                                    ImageSource="{Binding RealIconPath, FallbackValue={x:Null}}"/>
                     <StackPanel Grid.Column="1" >
                         <TextBlock Text="{Binding Manifest.Name}"
                                                    FontSize="24" 
@@ -354,9 +354,9 @@
                                                             VerticalAlignment="Center"
                                                             ClipToBounds="True"
                                                             Margin="0 0 6 0 "
-                                                            FallbackPackIconKind="PluginOutline"
+                                                            FallbackPackIconKind="Plugin"
                                                             IconKind="Image"
-                                                            ImageSource="{Binding Value.RealIconPath}"/>
+                                                            ImageSource="{Binding Value.RealIconPath, FallbackValue={x:Null}}"/>
                                     <!-- 标题 -->
                                     <TextBlock Grid.Column="1" Grid.Row="0"
                                                    TextWrapping="Wrap"

@@ -186,7 +186,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
 
     public event EventHandler? RestartRequested;
 
-    private void LoadPluginSource()
+    public void LoadPluginSource()
     {
         MergedPlugins.Clear();
         Indexes.Clear();

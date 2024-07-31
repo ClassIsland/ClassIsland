@@ -49,4 +49,9 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// 请求重启事件
     /// </summary>
     public event EventHandler? RestartRequested;
+
+    /// <summary>
+    /// 重载本地插件源
+    /// </summary>
+    public void LoadPluginSource();
 }

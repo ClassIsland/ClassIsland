@@ -34,7 +34,14 @@ public class IconControl : Control
     }
 
     public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(
-        nameof(ImageSource), typeof(ImageSource), typeof(IconControl), new PropertyMetadata(default(ImageSource)));
+        nameof(ImageSource), typeof(ImageSource), typeof(IconControl), new PropertyMetadata(default(ImageSource),
+            (o, args) =>
+            {
+                if (o is IconControl control)
+                {
+                    control.OnImageSourceChanged(o, args);
+                }
+            }));
 
     public ImageSource ImageSource
     {
@@ -67,7 +74,7 @@ public class IconControl : Control
     }
 
     public static readonly DependencyProperty RealIconKindProperty = DependencyProperty.Register(
-        nameof(RealIconKind), typeof(IconControlIconKind), typeof(IconControl), new PropertyMetadata(default(IconControlIconKind)));
+        nameof(RealIconKind), typeof(IconControlIconKind), typeof(IconControl), new PropertyMetadata(IconControlIconKind.PackIcon));
 
     public IconControlIconKind RealIconKind
     {
@@ -76,7 +83,7 @@ public class IconControl : Control
     }
 
     public static readonly DependencyProperty IsFallbackModeProperty = DependencyProperty.Register(
-        nameof(IsFallbackMode), typeof(bool), typeof(IconControl), new PropertyMetadata(default(bool)));
+        nameof(IsFallbackMode), typeof(bool), typeof(IconControl), new PropertyMetadata(true));
 
     public bool IsFallbackMode
     {
@@ -104,8 +111,19 @@ public class IconControl : Control
 
     private void OnIconKindChanged(DependencyObject o, DependencyPropertyChangedEventArgs args)
     {
+        if (IconKind == IconControlIconKind.Image && ImageSource == null)
+        {
+            RealIconKind = IconControlIconKind.PackIcon;
+            IsFallbackMode = true;
+            return;
+        }
         RealIconKind = IconKind;
         IsFallbackMode = false;
+    }
+
+    private void OnImageSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs args)
+    {
+        Console.WriteLine(ImageSource);
     }
 
     static IconControl()
