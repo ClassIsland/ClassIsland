@@ -699,13 +699,16 @@ public partial class App : AppBase, IAppHost
 
     public override void Stop()
     {
-        IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
-        IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
-        IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
-        IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
-        IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
-        ReleaseLock();
-        Current.Shutdown();
+        Dispatcher.Invoke(() =>
+        {
+            IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
+            IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
+            IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
+            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
+            IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
+            Current.Shutdown();
+            ReleaseLock();
+        });
     }
 
     public override void Restart(bool quiet=false)
