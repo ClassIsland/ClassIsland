@@ -10,10 +10,24 @@ namespace ClassIsland.Core.Models.Plugin;
 /// </summary>
 public class PluginInfo() : ObservableRecipient
 {
+    private DownloadProgress? _downloadProgress;
+    private bool _isAvailableOnMarket = false;
+    private PluginManifest _manifest = new();
+    private bool _restartRequired = false;
+
     /// <summary>
     /// 插件元数据
     /// </summary>
-    public PluginManifest Manifest { get; internal set; } = new();
+    public PluginManifest Manifest
+    {
+        get => _manifest;
+        set
+        {
+            if (Equals(value, _manifest)) return;
+            _manifest = value;
+            OnPropertyChanged();
+        }
+    }
 
     /// <summary>
     /// 插件是否存在于本地
@@ -107,4 +121,50 @@ public class PluginInfo() : ObservableRecipient
 
     [JsonIgnore]
     public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
+
+
+    /// <summary>
+    /// 是否在插件市场上可用
+    /// </summary>
+    [JsonIgnore]
+    public bool IsAvailableOnMarket
+    {
+        get => _isAvailableOnMarket;
+        set
+        {
+            if (value == _isAvailableOnMarket) return;
+            _isAvailableOnMarket = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 关联的下载进度
+    /// </summary>
+    [JsonIgnore]
+    public DownloadProgress? DownloadProgress
+    {
+        get => _downloadProgress;
+        set
+        {
+            if (Equals(value, _downloadProgress)) return;
+            _downloadProgress = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 需要重启
+    /// </summary>
+    [JsonIgnore]
+    public bool RestartRequired
+    {
+        get => _restartRequired;
+        set
+        {
+            if (value == _restartRequired) return;
+            _restartRequired = value;
+            OnPropertyChanged();
+        }
+    }
 }

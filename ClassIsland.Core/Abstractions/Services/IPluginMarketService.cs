@@ -17,7 +17,7 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// <summary>
     /// 已将插件仓库与本地插件合并的全部插件
     /// </summary>
-    public ObservableDictionary<string, PluginIndexItem> MergedPlugins { get; set; }
+    public ObservableDictionary<string, PluginInfo> MergedPlugins { get; set; }
 
     /// <summary>
     /// 是否正在加载插件源
@@ -38,4 +38,15 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// 刷新插件源。
     /// </summary>
     public Task RefreshPluginSourceAsync();
+
+    /// <summary>
+    /// 请求下载插件
+    /// </summary>
+    /// <param name="id">要下载的插件id</param>
+    public void RequestDownloadPlugin(string id);
+
+    /// <summary>
+    /// 请求重启事件
+    /// </summary>
+    public event EventHandler? RestartRequested;
 }

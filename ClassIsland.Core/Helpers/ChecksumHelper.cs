@@ -53,6 +53,7 @@ public static class ChecksumHelper
         var stream = File.OpenRead(filePath);
         var md5 = MD5.HashData(stream);
         var md5Hex = Convert.ToHexString(md5);
+        stream.Close();
         return string.Compare(checksum, md5Hex, StringComparison.CurrentCultureIgnoreCase) == 0;
     }
 

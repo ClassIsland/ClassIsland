@@ -17,9 +17,4 @@ public class PluginIndexItem : PluginInfo
     /// </summary>
     public Dictionary<string, string> DownloadsMd5 { get; set; } = new();
 
-    /// <summary>
-    /// 是否在插件市场上可用
-    /// </summary>
-    [JsonIgnore]
-    public bool IsAvailableOnMarket { get; set; } = false;
 }

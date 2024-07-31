@@ -50,6 +50,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         PluginService = pluginService;
         PluginMarketService = pluginMarketService;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        PluginMarketService.RestartRequested += (sender, args) => RequestRestart();
     }
 
     private async Task UpdateReadmeDocument()
@@ -192,5 +193,12 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private async void ButtonBaseRefreshPlugins_OnClick(object sender, RoutedEventArgs e)
     {
         await PluginMarketService.RefreshPluginSourceAsync();
+    }
+
+    private void ButtonInstallPlugin_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginInfo == null)
+            return;
+        PluginMarketService.RequestDownloadPlugin(ViewModel.SelectedPluginInfo.Manifest.Id);
     }
 }

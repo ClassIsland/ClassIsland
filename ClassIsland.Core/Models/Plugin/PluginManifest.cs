@@ -48,10 +48,10 @@ public class PluginManifest : ObservableRecipient
     /// <summary>
     /// 插件版本
     /// </summary>
-    public Version Version { get; set; } = new();
+    public string Version { get; set; } = "";
 
     /// <summary>
     /// 插件目标 ClassIsland 版本
     /// </summary>
-    public Version ApiVersion { get; set; } = new();
+    public string ApiVersion { get; set; } = "";
 }

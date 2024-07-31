@@ -43,6 +43,7 @@
             </Grid>
         </DataTemplate>
 
+        <ci:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
         <DataTemplate DataType="{x:Type plugin:PluginInfo}" x:Key="PluginDetailDataTemplate">
             <Grid>
                 <Grid.RowDefinitions>
@@ -63,7 +64,7 @@
                                                     FallbackPackIconKind="PluginOutline"
                                                     IconKind="Image"
                                                     ImageSource="{Binding RealIconPath}"/>
-                    <StackPanel Grid.Column="1">
+                    <StackPanel Grid.Column="1" >
                         <TextBlock Text="{Binding Manifest.Name}"
                                                    FontSize="24" 
                                                    TextTrimming="CharacterEllipsis"
@@ -74,7 +75,20 @@
                                 <Run Text="项目主页"/>
                             </ci:NavHyperlink>
                         </TextBlock>
-                        <WrapPanel Orientation="Horizontal">
+                        <!-- Market Operations -->
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}">
+                            <WrapPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                    <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
+                                    <Binding Path="IsAvailableOnMarket"/>
+                                </MultiBinding>
+                            </WrapPanel.Visibility>
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="MonitorDownload" Text="安装"/>
+                            </Button>
+                        </WrapPanel>
+                        <!-- Local Operations -->
+                        <WrapPanel Orientation="Horizontal" Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <CheckBox Content="已启用" Margin="0 0 6  0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{Binding IsEnabled}"/>
@@ -118,6 +132,10 @@
                                 </TextBlock.Style>
                             </TextBlock>
                         </WrapPanel>
+                        <!-- Download Progresses -->
+                        <DockPanel Margin="0 4 0 0" Visibility="{Binding DownloadProgress.IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <ProgressBar Value="{Binding DownloadProgress.Progress}"/>
+                        </DockPanel>
                     </StackPanel>
                     <materialDesign:PopupBox Grid.Column="1" VerticalAlignment="Top"
                                              HorizontalAlignment="Right"
@@ -302,8 +320,9 @@
                         </materialDesign:ColorZone>
                     </StackPanel>
                     <ListBox Grid.Row="1"
-                             ItemsSource="{x:Static services:IPluginService.LoadedPlugins}"
-                             SelectedItem="{Binding ViewModel.SelectedPluginInfo}"
+                             ItemsSource="{Binding PluginMarketService.MergedPlugins}"
+                             SelectedValue="{Binding ViewModel.SelectedPluginInfo}"
+                             SelectedValuePath="Value"
                              HorizontalContentAlignment="Stretch">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -311,7 +330,7 @@
                                     <Grid.Style>
                                         <Style TargetType="Grid">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding LoadStatus}" Value="Loaded">
+                                                <DataTrigger Binding="{Binding Value.LoadStatus}" Value="Loaded">
                                                     <Setter Property="Opacity" Value="1"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -337,18 +356,18 @@
                                                             Margin="0 0 6 0 "
                                                             FallbackPackIconKind="PluginOutline"
                                                             IconKind="Image"
-                                                            ImageSource="{Binding RealIconPath}"/>
+                                                            ImageSource="{Binding Value.RealIconPath}"/>
                                     <!-- 标题 -->
                                     <TextBlock Grid.Column="1" Grid.Row="0"
                                                    TextWrapping="Wrap"
-                                                   Text="{Binding Manifest.Name}"
+                                                   Text="{Binding Value.Manifest.Name}"
                                                    FontSize="16" FontWeight="Medium">
                                     </TextBlock>
                                     <!-- 描述 -->
                                     <TextBlock Grid.Column="1" Grid.Row="1"
                                                    TextWrapping="Wrap"
                                                    FontWeight="Regular"
-                                                   Text="{Binding Manifest.Description}"
+                                                   Text="{Binding Value.Manifest.Description}"
                                                    FontSize="12" />
                                     <!-- 错误标志 -->
                                     <WrapPanel Grid.Column="2"
@@ -360,7 +379,7 @@
                                                                  Foreground="Orange"
                                                                          Width="20" Height="20"
                                                                          VerticalAlignment="Center"
-                                                                         Visibility="{Binding IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                         Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                          Margin="2 0 0 0"
                                                                          Kind="Delete"/>
                                         <materialDesign:PackIcon Foreground="Red"
@@ -372,7 +391,7 @@
                                             <materialDesign:PackIcon.Style>
                                                 <Style TargetType="materialDesign:PackIcon">
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Exception}" Value="{x:Null}">
+                                                        <DataTrigger Binding="{Binding Value.Exception}" Value="{x:Null}">
                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -382,7 +401,7 @@
                                         <materialDesign:PackIcon ToolTip="此插件已安装。"
                                                                  Width="20" Height="20"
                                                                  VerticalAlignment="Center"
-                                                                 Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                  Margin="2 0 0 0"
                                                                  Kind="CheckUnderline"/>
                                     </WrapPanel>
