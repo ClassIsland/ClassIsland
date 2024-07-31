@@ -122,8 +122,7 @@
                 <MenuItem.Visibility>
                     <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
-                        <Binding Path="ViewModel.IsOverlayOpened" Mode="OneWay"
-                                 Converter="{StaticResource BooleanToVisibilityConverter}" />
+                        <Binding Path="ViewModel.IsOverlayOpened" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.Visibility>
             </MenuItem>

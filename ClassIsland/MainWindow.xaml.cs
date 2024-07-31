@@ -609,7 +609,8 @@ public partial class MainWindow : Window
                 primary = ViewModel.Settings.PrimaryColor;
                 secondary = ViewModel.Settings.SecondaryColor;
                 break;
-            case 1:
+            case 1: // 壁纸主题色
+            case 3: // 屏幕主题色
                 primary = secondary = ViewModel.Settings.SelectedPlatte;
                 break;
             case 2:
