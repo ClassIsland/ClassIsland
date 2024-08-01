@@ -143,10 +143,6 @@ public partial class DebugPage : SettingsPageBase
 
     private async void MenuItemTestPluginIndexPack_OnClick(object sender, RoutedEventArgs e)
     {
-        new CommonDialogBuilder().SetContent("输入源目录").AddConfirmAction().HasInput(true)
-            .ShowDialog(out var input);
-        new CommonDialogBuilder().SetContent("输入输出目录").AddConfirmAction().HasInput(true)
-            .ShowDialog(out var output);
-        await PluginMarketHelper.GeneratePluginIndexFromManifests(input, output, token:SettingsService.Settings.DebugGitHubAuthKey);
+        
     }
 }
