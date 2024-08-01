@@ -141,12 +141,12 @@ public partial class DebugPage : SettingsPageBase
             MessageBoxImage.Information, MessageBoxResult.OK);
     }
 
-    private void MenuItemTestPluginIndexPack_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemTestPluginIndexPack_OnClick(object sender, RoutedEventArgs e)
     {
         new CommonDialogBuilder().SetContent("输入源目录").AddConfirmAction().HasInput(true)
             .ShowDialog(out var input);
         new CommonDialogBuilder().SetContent("输入输出目录").AddConfirmAction().HasInput(true)
             .ShowDialog(out var output);
-        PluginMarketHelper.GeneratePluginIndexFromManifests(input, output, token:SettingsService.Settings.DebugGitHubAuthKey);
+        await PluginMarketHelper.GeneratePluginIndexFromManifests(input, output, token:SettingsService.Settings.DebugGitHubAuthKey);
     }
 }

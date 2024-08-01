@@ -19,7 +19,7 @@ public class PluginMarketHelper
     /// <param name="output">插件索引输出目录</param>
     /// <param name="indexBase">索引基础</param>
     /// <param name="token">GitHub 个人访问令牌</param>
-    public static async void GeneratePluginIndexFromManifests(string input, string output, string? indexBase=null, string? token=null)
+    public static async Task GeneratePluginIndexFromManifests(string input, string output, string? indexBase=null, string? token=null)
     {
         try
         {
