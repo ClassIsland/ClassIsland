@@ -287,4 +287,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
 
     }
+
+    private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
+    {
+        RequestRestart();
+    }
 }

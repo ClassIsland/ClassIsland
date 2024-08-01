@@ -145,7 +145,7 @@
                         </WrapPanel>
                         <WrapPanel Orientation="Horizontal" Margin="0 0 0 4"
                                    Visibility="{Binding RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <Button Click="ButtonInstallPlugin_OnClick">
+                            <Button Click="ButtonRestart_OnClick">
                                 <ci:IconText Kind="Restart" Text="重启以应用更改"/>
                             </Button>
                         </WrapPanel>
