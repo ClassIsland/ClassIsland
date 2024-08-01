@@ -54,4 +54,9 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// 重载本地插件源
     /// </summary>
     public void LoadPluginSource();
+
+    /// <summary>
+    /// 已加载的插件源
+    /// </summary>
+    public ObservableDictionary<string, PluginIndex> Indexes { get; }
 }

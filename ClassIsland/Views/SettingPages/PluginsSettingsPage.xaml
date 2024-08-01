@@ -140,7 +140,7 @@
                     <materialDesign:PopupBox Grid.Column="1" VerticalAlignment="Top"
                                              HorizontalAlignment="Right"
                                              ToolTip="更多选项…"
-                                             IsPopupOpen="{Binding ViewModel.IsPluginOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=OneWay}">
+                                             IsPopupOpen="{Binding ViewModel.IsPluginOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=TwoWay}">
                         <StackPanel ButtonBase.Click="ButtonBase_OnClick">
                             <MenuItem Icon="{materialDesign:PackIcon PackageOutline}" Header="打包插件" Click="MenuItemPackPlugin_OnClick"/>
                             <Separator/>
@@ -218,6 +218,79 @@
                 </TabControl>
             </Grid>
         </DataTemplate>
+
+        <Grid x:Key="PluginSourceManageDrawer" Width="500"
+              HorizontalAlignment="Stretch"
+              Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="管理插件源" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                
+                <ci:IconText Kind="SourceRepository" Text="内置插件源" Margin="0 12 0 8"/>
+                <ComboBox materialDesign:HintAssist.Hint="内置插件源镜像"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          SelectedValue="{Binding SettingsService.Settings.OfficialSelectedMirror, Mode=TwoWay}"
+                          SelectedValuePath="Key"
+                          Margin="0 -4"
+                          ItemsSource="{Binding SettingsService.Settings.OfficialIndexMirrors}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Separator Margin="0 16 0 8"/>
+                <ci:IconText Kind="SourceRepositoryMultiple" Text="自定义插件源" Margin="0 0 0 8"/>
+                <WrapPanel Margin="0 0 0 0">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonAddPluginSource_OnClick">
+                        <ci:IconText Kind="Add" Text="添加"/>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonRemovePluginSource_OnClick">
+                        <ci:IconText Kind="Remove" Text="删除"/>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+            <DataGrid Grid.Row="1"
+                      CanUserSortColumns="False"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="True"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow"
+                      ItemsSource="{Binding SettingsService.Settings.PluginIndexes}"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      SelectedItem="{Binding ViewModel.SelectedPluginIndexInfo}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Url" Binding="{Binding Url, Mode=TwoWay}"
+                                        Width="4*"/>
+                    <DataGridTemplateColumn Header="镜像"
+                                            Width="*">
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <ComboBox SelectedValue="{Binding SelectedMirror, Mode=TwoWay}"
+                                          SelectedValuePath="Key"
+                                          Margin="0 -4"
+                                          ItemsSource="{Binding Mirrors}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Key}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SelectedMirror}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </ci:SettingsPageBase.Resources>
     <Grid>
         <controls1:ListDetailView>
@@ -265,17 +338,34 @@
                                 <system:String>市场</system:String>
                                 <system:String>已安装</system:String>
                             </ListBox>
-                            <Button DockPanel.Dock="Right" 
-                                    Style="{StaticResource MaterialDesignFlatButton}"
-                                    Click="ButtonInstallFromLocal_OnClick">
-                                <ci:IconText Kind="PackageDown" Text="从本地安装"/>
-                            </Button>
+
+                            <materialDesign:PopupBox VerticalAlignment="Center"
+                                                     HorizontalAlignment="Right"
+                                                     DockPanel.Dock="Right"
+                                                     ToolTip="更多选项…"
+                                                     IsPopupOpen="{Binding ViewModel.IsPluginMarketOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=TwoWay}">
+                                <StackPanel ButtonBase.Click="ButtonBase2_OnClick">
+                                    <MenuItem Icon="{materialDesign:PackIcon Reload}" Header="从缓存重载插件源" 
+                                              Click="MenuItemReloadFromCache_OnClick"
+                                              IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
+                                    <MenuItem Icon="{materialDesign:PackIcon SourceRepositoryMultiple}" Header="管理插件源…"
+                                              Click="MenuItemManagePluginSources_OnClick"
+                                              IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
+                                    <Separator/>
+                                    <MenuItem Icon="{materialDesign:PackIcon PackageDown}" Header="从本地安装…"
+                                              Click="ButtonInstallFromLocal_OnClick"/>
+                                    <Separator/>
+                                    <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开插件文件夹…"
+                                              Click="MenuItemOpenPluginsFolder_OnClick"/>
+                                </StackPanel>
+                            </materialDesign:PopupBox>
                             <Button DockPanel.Dock="Right" 
                                     Style="{StaticResource MaterialDesignFlatButton}"
                                     Click="ButtonBaseRefreshPlugins_OnClick"
                                     IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
                                 <ci:IconText Kind="Refresh" Text="刷新"/>
                             </Button>
+                            
                         </DockPanel>
                         <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
                                                   Visibility="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource BooleanToVisibilityConverter}}">

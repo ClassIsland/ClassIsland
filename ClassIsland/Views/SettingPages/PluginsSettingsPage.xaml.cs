@@ -20,6 +20,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
+using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
@@ -42,13 +43,15 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     public IPluginService PluginService { get; }
     public IPluginMarketService PluginMarketService { get; }
+    public SettingsService SettingsService { get; }
 
-    public PluginsSettingsPage(IPluginService pluginService, IPluginMarketService pluginMarketService)
+    public PluginsSettingsPage(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService)
     {
         InitializeComponent();
         DataContext = this;
         PluginService = pluginService;
         PluginMarketService = pluginMarketService;
+        SettingsService = settingsService;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         PluginMarketService.RestartRequested += (sender, args) => RequestRestart();
     }
@@ -156,6 +159,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private void ButtonInstallFromLocal_OnClick(object sender, RoutedEventArgs e)
     {
+        ViewModel.IsPluginMarketOperationsPopupOpened = false;
         var dialog = new OpenFileDialog()
         {
             Title = "从本地安装插件",
@@ -200,5 +204,44 @@ public partial class PluginsSettingsPage : SettingsPageBase
         if (ViewModel.SelectedPluginInfo == null)
             return;
         PluginMarketService.RequestDownloadPlugin(ViewModel.SelectedPluginInfo.Manifest.Id);
+    }
+
+    private void MenuItemReloadFromCache_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPluginMarketOperationsPopupOpened = false;
+        PluginMarketService.LoadPluginSource();
+    }
+
+    private void MenuItemManagePluginSources_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPluginMarketOperationsPopupOpened = false;
+        OpenDrawer("PluginSourceManageDrawer");
+    }
+
+    private void MenuItemOpenPluginsFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPluginMarketOperationsPopupOpened = false;
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Services.PluginService.PluginsRootPath,
+            UseShellExecute = true
+        });
+    }
+
+    private void ButtonBase2_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsPluginMarketOperationsPopupOpened = false;
+    }
+
+    private void ButtonAddPluginSource_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PluginIndexes.Add(new PluginIndexInfo());
+    }
+
+    private void ButtonRemovePluginSource_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginIndexInfo == null)
+            return;
+        SettingsService.Settings.PluginIndexes.Remove(ViewModel.SelectedPluginIndexInfo);
     }
 }

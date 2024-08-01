@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
@@ -18,6 +19,8 @@ namespace ClassIsland.Services;
 
 public class PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger) : ObservableRecipient, IPluginMarketService
 {
+    public static string DefaultPluginIndexKey { get; } = "Default";
+
     public SettingsService SettingsService { get; } = settingsService;
     public IPluginService PluginService { get; } = pluginService;
 
@@ -77,45 +80,65 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
 
     public async Task RefreshPluginSourceAsync()
     {
-        // TODO: 使用自定义插件源
-        var repo = "https://test.market.classisland.tech/ClassIsland/PluginIndex/releases/download/latest/index.zip";
+        if (IsLoadingPluginSource)
+            return;
+        IsLoadingPluginSource = true;
+        Exception = null;
+        PluginSourceDownloadProgress = 0.0;
+        Logger.LogInformation("正在刷新插件源……");
         try
         {
-
-            if (IsLoadingPluginSource)
-                return;
-            IsLoadingPluginSource = true;
-            Exception = null;
-            PluginSourceDownloadProgress = 0.0;
-            var archive = Path.GetTempFileName() + ".tmp";
-            var download = DownloadBuilder.New()
-                .WithUrl(repo)
-                .WithFileLocation(archive)
-                .WithConfiguration(new DownloadConfiguration())
-                .Build();
-            download.DownloadProgressChanged +=
-                (sender, args) =>
-                    PluginSourceDownloadProgress = args.ProgressPercentage;
-            await download.StartAsync();
-
-            var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, "Default");
-            if (Directory.Exists(indexFolderPath))
+            var indexes = GetIndexInfos().ToList();
+            var i = 0.0;
+            var total = Math.Max(1, indexes.Count);
+            foreach (var indexInfo in indexes)
             {
-                Directory.Delete(indexFolderPath, true);
+                Logger.LogDebug("正在刷新插件源：{}（{}）", indexInfo.Id, indexInfo.Url);
+                var archive = Path.GetTempFileName() + ".tmp";
+                var download = DownloadBuilder.New()
+                    .WithUrl(indexInfo.Url)
+                    .WithFileLocation(archive)
+                    .WithConfiguration(new DownloadConfiguration())
+                    .Build();
+                var i1 = i;
+                download.DownloadProgressChanged +=
+                    (sender, args) =>
+                        PluginSourceDownloadProgress = args.ProgressPercentage / total + i1 / total * 100.0;
+                await download.StartAsync();
+
+                var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, indexInfo.Id);
+                if (Directory.Exists(indexFolderPath))
+                {
+                    Directory.Delete(indexFolderPath, true);
+                }
+
+                Directory.CreateDirectory(indexFolderPath);
+
+                await Task.Run(() => { ZipFile.ExtractToDirectory(archive, indexFolderPath); });
+                i++;
             }
 
-            Directory.CreateDirectory(indexFolderPath);
-
-            await Task.Run(() => { ZipFile.ExtractToDirectory(archive, indexFolderPath); });
             LoadPluginSource();
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "无法加载插件源：{}", repo);
+            Logger.LogError(ex, "无法加载插件源。");
             Exception = ex;
         }
-
+        Logger.LogInformation("插件源刷新成功。");
         IsLoadingPluginSource = false;
+    }
+
+    private IEnumerable<PluginIndexInfo> GetIndexInfos()
+    {
+        var repo = "{root}/ClassIsland/PluginIndex/releases/download/latest/index.zip".Replace("{root}", SettingsService.Settings.OfficialIndexMirrors[SettingsService.Settings.OfficialSelectedMirror]);
+        return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo()
+        {
+            Id = DefaultPluginIndexKey,
+            Url = repo,
+            SelectedMirror = SettingsService.Settings.OfficialSelectedMirror,
+            Mirrors = SettingsService.Settings.OfficialIndexMirrors
+        });
     }
 
     public async void RequestDownloadPlugin(string id)
@@ -143,9 +166,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
         }
 
         Logger.LogInformation("开始下载插件：{}", id);
-        // TODO: 使用自定义镜像
-        var root = "https://github.moeyy.xyz/https://github.com";
-        var url = item.DownloadUrl.Replace("{root}", root);
+        var url = item.DownloadUrl;
         var md5 = item.DownloadMd5;
         var task = new DownloadProgress()
         {
@@ -188,6 +209,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
 
     public void LoadPluginSource()
     {
+        Logger.LogInformation("正在加载插件源");
         MergedPlugins.Clear();
         Indexes.Clear();
 
@@ -197,12 +219,24 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
             MergedPlugins[id] = pluginLocal;
         }
 
-        foreach (var i in Directory.EnumerateDirectories(Services.PluginService.PluginsIndexPath))
+        var indexInfos = GetIndexInfos().ToList();
+        foreach (var i in indexInfos)
         {
-            var indexPath = Path.Combine(i, "index.json");
+            var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, i.Id);
+            var name = Path.GetFileName(indexFolderPath);
+            Logger.LogDebug("正在加载插件源：{}", name);
+            var indexPath = Path.Combine(indexFolderPath, "index.json");
             if (!File.Exists(indexPath))
                 continue;
-            var index = Indexes[i] = ConfigureFileHelper.LoadConfig<PluginIndex>(indexPath);
+            var index = Indexes[name] = ConfigureFileHelper.LoadConfig<PluginIndex>(indexPath);
+            var mirror = i.SelectedMirror;
+            i.Mirrors = ConfigureFileHelper.CopyObject(index.DownloadMirrors);
+            if (!index.DownloadMirrors.TryGetValue(mirror, out var root))
+            {
+                mirror = i.SelectedMirror = index.DownloadMirrors.First().Key;
+                root = index.DownloadMirrors.First().Value;
+            }
+            Logger.LogDebug("插件源 {} 选择的镜像根：{}", name, root);
             foreach (var plugin in index.Plugins)
             {
                 var id = plugin.Manifest.Id;
@@ -212,13 +246,18 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
                     continue;
                 }
                 plugin.IsAvailableOnMarket = true;
+                plugin.DownloadUrl = plugin.DownloadUrl.Replace("{root}", root);
+                plugin.RealIconPath = plugin.RealIconPath.Replace("{root}", root);
+                plugin.Manifest.Readme = plugin.Manifest.Readme.Replace("{root}", root);
                 MergedPlugins[id] = plugin;
             }
         }
 
+        SettingsService.Settings.OfficialSelectedMirror =
+            indexInfos.First(x => x.Id == DefaultPluginIndexKey).SelectedMirror;
+        SettingsService.Settings.OfficialIndexMirrors = ConfigureFileHelper.CopyObject(
+            Indexes.First(x => x.Key == DefaultPluginIndexKey).Value.DownloadMirrors);
         BindDownloadTasks();
-
-
     }
 
     private void BindDownloadTasks()

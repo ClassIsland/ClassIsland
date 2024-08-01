@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Shared;
@@ -153,6 +154,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _showComponentsMigrateTip = false;
     private bool _expAllowEditingActivatedTimeLayout = false;
     private string _directoryIsDesktopShowed = "";
+    private ObservableDictionary<string, string> _pluginIndexSelectedMirrors = new();
+    private ObservableCollection<string> _userPluginIndexes = new();
+    private ObservableDictionary<string, string> _additionalPluginIndexes = new();
+    private ObservableCollection<PluginIndexInfo> _pluginIndexes = new();
+    private string _officialSelectedMirror = "github";
+    private ObservableDictionary<string, string> _officialIndexMirrors = new()
+    {
+        { "github", "https://github.com" },
+        { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
+        { "moeyy", "https://github.moeyy.xyz/https://github.com" }
+    };
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1468,6 +1480,43 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     public double DiagnosticMemoryKillFreqDay => DiagnosticMemoryKillCount == 0
         ? 0
         : (DiagnosticLastMemoryKillTime - DiagnosticFirstLaunchTime).TotalSeconds / 86400.0 * 1.0 / DiagnosticMemoryKillCount;
+
+    #endregion
+
+    #region Plugins
+
+    public ObservableDictionary<string, string> OfficialIndexMirrors
+    {
+        get => _officialIndexMirrors;
+        set
+        {
+            if (Equals(value, _officialIndexMirrors)) return;
+            _officialIndexMirrors = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OfficialSelectedMirror
+    {
+        get => _officialSelectedMirror;
+        set
+        {
+            if (value == _officialSelectedMirror) return;
+            _officialSelectedMirror = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<PluginIndexInfo> PluginIndexes
+    {
+        get => _pluginIndexes;
+        set
+        {
+            if (Equals(value, _pluginIndexes)) return;
+            _pluginIndexes = value;
+            OnPropertyChanged();
+        }
+    }
 
     #endregion
     public bool IsDebugEnabled
