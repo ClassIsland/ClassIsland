@@ -40,10 +40,18 @@
                           Content="{Binding DialogIcon, Mode=OneWay}"
                           MaxWidth="128"
                           MaxHeight="128"/>
-        <TextBlock Grid.Column="1" Grid.Row="0"
-                   Margin="12 12 12 12"
-                   TextWrapping="Wrap"
-                   Text="{Binding DialogContent, Mode=OneWay}"/>
+        <ScrollViewer Grid.Column="1" Grid.Row="0"
+                      Margin="12 12 12 12"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock 
+                           TextWrapping="Wrap"
+                           Text="{Binding DialogContent, Mode=OneWay}"/>
+                <TextBox Text="{Binding InputResult}" 
+                         Margin="0 8 0 0"
+                         Visibility="{Binding HasInput, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </StackPanel>
+        </ScrollViewer>
         <!-- Sep -->
         <!--<Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                    Opacity="0.5"/>-->

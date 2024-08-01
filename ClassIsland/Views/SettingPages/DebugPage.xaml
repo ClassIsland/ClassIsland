@@ -77,6 +77,8 @@
             <MenuItem Icon="{materialDesign:PackIcon WindowMaximize}" Header="测试Dialog"
                                               Click="MenuItemTestCommonDialog_OnClick" />
             <Separator />
+            <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="测试插件索引打包"
+                      Click="MenuItemTestPluginIndexPack_OnClick"/>
             <!-- 动画缩放 -->
             <controls2:SettingsControl IconGlyph="BugOutline" Header="(Debug)动画缩放"
                                                               Description="主界面动画播放倍速">

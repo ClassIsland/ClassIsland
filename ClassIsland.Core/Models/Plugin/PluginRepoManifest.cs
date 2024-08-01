@@ -7,8 +7,19 @@
 public class PluginRepoManifest : PluginManifest
 {
     /// <summary>
-    /// 插件仓库路径
+    /// 插件仓库所有者
     /// </summary>
-    /// <example>ClassIsland/ExamplePlugins</example>
-    public string RepoPath { get; set; } = "";
+    /// <example>HelloWRC</example>
+    public string RepoOwner { get; set; } = "";
+
+    /// <summary>
+    /// 插件仓库名称
+    /// </summary>
+    /// <example>MyPlugin</example>
+    public string RepoName { get; set; } = "";
+
+    /// <summary>
+    /// 资产文件根目录
+    /// </summary>
+    public string AssetsRoot { get; set; } = "master";
 }

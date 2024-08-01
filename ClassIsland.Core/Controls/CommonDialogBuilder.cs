@@ -60,6 +60,12 @@ public class CommonDialogBuilder
         return this;
     }
 
+    public CommonDialogBuilder HasInput(bool b)
+    {
+        Dialog.HasInput = b;
+        return this;
+    }
+
     public CommonDialogBuilder AddAction(string name, PackIconKind icon, bool isPrimary=false)
     {
         return AddAction(new DialogAction()
@@ -82,5 +88,12 @@ public class CommonDialogBuilder
         Dialog.Owner = owner;
         Dialog.ShowDialog();
         return Dialog.ExecutedActionIndex;
+    }
+
+    public int ShowDialog(out string inputResult, Window? owner = null)
+    {
+        var r = ShowDialog(owner);
+        inputResult = Dialog.InputResult;
+        return r;
     }
 }

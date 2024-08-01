@@ -145,8 +145,8 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
         Logger.LogInformation("开始下载插件：{}", id);
         // TODO: 使用自定义镜像
         var root = "https://github.moeyy.xyz/https://github.com";
-        var url = item.Downloads.First().Value.Replace("{root}", root);
-        var md5 = item.DownloadsMd5.First().Value;
+        var url = item.DownloadUrl.Replace("{root}", root);
+        var md5 = item.DownloadMd5;
         var task = new DownloadProgress()
         {
             IsDownloading = true

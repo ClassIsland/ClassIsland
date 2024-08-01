@@ -23,6 +23,8 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
     private Visual? _dialogIcon;
     private ObservableCollection<DialogAction> _actions = new();
     private int _executedActionIndex = -1;
+    private bool _hasInput = false;
+    private string _inputResult = "";
 
     public static ICommand ActionCommand { get; } = new RoutedCommand();
 
@@ -72,6 +74,28 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
         }
     }
 
+    public bool HasInput
+    {
+        get => _hasInput;
+        set
+        {
+            if (value == _hasInput) return;
+            _hasInput = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string InputResult
+    {
+        get => _inputResult;
+        set
+        {
+            if (value == _inputResult) return;
+            _inputResult = value;
+            OnPropertyChanged();
+        }
+    }
+
     public CommonDialog()
     {
         DataContext = this;
@@ -110,6 +134,13 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
     {
         ExecutedActionIndex = Actions.IndexOf((DialogAction)e.Parameter);
         Close();
+    }
+
+    public void ShowDialog(out string inputResult)
+    {
+        ShowDialog();
+        inputResult = InputResult;
+        return;
     }
 
 

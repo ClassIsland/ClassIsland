@@ -45,6 +45,8 @@
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
 
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
+
+    <PackageReference Include="Octokit" Version="9.1.0" />
     <PackageReference Include="unvell.ReoGridWPF.dll" Version="2.2.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />

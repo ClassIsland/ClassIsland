@@ -8,13 +8,13 @@ namespace ClassIsland.Core.Models.Plugin;
 public class PluginIndexItem : PluginInfo
 {
     /// <summary>
-    /// 下载链接列表，以版本号为键。
+    /// 插件最新版本下载链接
     /// </summary>
-    public Dictionary<string, string> Downloads { get; set; } = new();
+    public string DownloadUrl { get; set; } = "";
 
     /// <summary>
-    /// 下载MD5校验列表，以版本号为键。
+    /// 插件最新版本下载MD5
     /// </summary>
-    public Dictionary<string, string> DownloadsMd5 { get; set; } = new();
+    public string DownloadMd5 { get; set; } = "";
 
 }

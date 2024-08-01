@@ -20,8 +20,10 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
 using Microsoft.AppCenter.Crashes;
@@ -137,5 +139,14 @@ public partial class DebugPage : SettingsPageBase
         });
         MessageBox.Show(Window.GetWindow(this)!, dialog.ExecutedActionIndex.ToString(), "ExecutedActionIndex", MessageBoxButton.OK,
             MessageBoxImage.Information, MessageBoxResult.OK);
+    }
+
+    private void MenuItemTestPluginIndexPack_OnClick(object sender, RoutedEventArgs e)
+    {
+        new CommonDialogBuilder().SetContent("输入源目录").AddConfirmAction().HasInput(true)
+            .ShowDialog(out var input);
+        new CommonDialogBuilder().SetContent("输入输出目录").AddConfirmAction().HasInput(true)
+            .ShowDialog(out var output);
+        PluginMarketHelper.GeneratePluginIndexFromManifests(input, output, token:SettingsService.Settings.DebugGitHubAuthKey);
     }
 }
