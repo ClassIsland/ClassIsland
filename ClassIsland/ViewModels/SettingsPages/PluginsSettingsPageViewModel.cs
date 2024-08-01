@@ -11,6 +11,8 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
     private bool _isPluginOperationsPopupOpened = false;
     private bool _isPluginMarketOperationsPopupOpened = false;
     private PluginIndexInfo? _selectedPluginIndexInfo;
+    private int _pluginCategoryIndex = 0;
+    private string _pluginFilterText = "";
 
     public PluginInfo? SelectedPluginInfo
     {
@@ -63,6 +65,28 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
         {
             if (Equals(value, _selectedPluginIndexInfo)) return;
             _selectedPluginIndexInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int PluginCategoryIndex
+    {
+        get => _pluginCategoryIndex;
+        set
+        {
+            if (value == _pluginCategoryIndex) return;
+            _pluginCategoryIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string PluginFilterText
+    {
+        get => _pluginFilterText;
+        set
+        {
+            if (value == _pluginFilterText) return;
+            _pluginFilterText = value;
             OnPropertyChanged();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json.Serialization;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -53,6 +54,7 @@ public class PluginInfo() : ObservableRecipient
             if (!IsLocal)
                 throw new InvalidOperationException("无法为不存在本地的插件设置启用状态。");
             var path = Path.Combine(PluginFolderPath, ".disabled");
+            RestartRequired = true;
             if (value)
             {
                 File.Delete(path);

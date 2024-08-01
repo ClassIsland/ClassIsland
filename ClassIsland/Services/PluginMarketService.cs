@@ -198,6 +198,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
         }
         catch (Exception e)
         {
+            task.Exception = e;
             Logger.LogError(e, "无法从 {} 下载插件 {}", url, id);
         }
         task.IsDownloading = false;
@@ -268,6 +269,12 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
             if (!b || v == null)
                 continue;
             v.DownloadProgress = i.Value;
+            
+        }
+
+        foreach (var plugin in MergedPlugins.Where(plugin => File.Exists(Path.Combine(Services.PluginService.PluginsPkgRootPath, plugin.Value.Manifest.Id + ".cipx"))))
+        {
+            plugin.Value.RestartRequired = true;
         }
     }
 }

@@ -27,6 +27,9 @@
       TextOptions.TextRenderingMode="Auto">
 
     <ci:SettingsPageBase.Resources>
+        <CollectionViewSource x:Key="PluginSource" 
+                              Source="{Binding PluginMarketService.MergedPlugins}"
+                              Filter="PluginSource_OnFilter"/>
         <DataTemplate x:Key="BlankPluginDetailDataTemplate">
             <Grid>
                 <StackPanel VerticalAlignment="Center"
@@ -71,16 +74,22 @@
                                                    FontWeight="Medium"
                                                    Margin="0 0 0 4"/>
                         <TextBlock Margin="0 0 0 2">
+                            <Run Text="{Binding Manifest.Version}"/>
+                            <Run Text=" "/>
                             <ci:NavHyperlink CommandParameter="{Binding Manifest.Url}">
                                 <Run Text="项目主页"/>
                             </ci:NavHyperlink>
+                            <Run Text=" "/>
+                            <Run Text="{Binding Manifest.Author}"/>
                         </TextBlock>
                         <!-- Market Operations -->
-                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}">
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                   Margin="0 0 0 4">
                             <WrapPanel.Visibility>
                                 <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
                                     <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
                                     <Binding Path="IsAvailableOnMarket"/>
+                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
                                 </MultiBinding>
                             </WrapPanel.Visibility>
                             <Button Click="ButtonInstallPlugin_OnClick">
@@ -88,7 +97,9 @@
                             </Button>
                         </WrapPanel>
                         <!-- Local Operations -->
-                        <WrapPanel Orientation="Horizontal" Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <WrapPanel Orientation="Horizontal" 
+                                   Margin="0 0 0 4"
+                                   Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <CheckBox Content="已启用" Margin="0 0 6  0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{Binding IsEnabled}"/>
@@ -132,14 +143,45 @@
                                 </TextBlock.Style>
                             </TextBlock>
                         </WrapPanel>
+                        <WrapPanel Orientation="Horizontal" Margin="0 0 0 4"
+                                   Visibility="{Binding RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="Restart" Text="重启以应用更改"/>
+                            </Button>
+                        </WrapPanel>
                         <!-- Download Progresses -->
                         <DockPanel Margin="0 4 0 0" Visibility="{Binding DownloadProgress.IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
                             <ProgressBar Value="{Binding DownloadProgress.Progress}"/>
                         </DockPanel>
+                        <materialDesign:ColorZone Background="#10FF0000" Margin="0 2 0 0">
+                            <materialDesign:ColorZone.Style>
+                                <Style TargetType="materialDesign:ColorZone">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DownloadProgress.Exception, Mode=OneWay}"
+                                                     Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:ColorZone.Style>
+                            <Grid>
+                                <DockPanel Margin="8 4">
+                                    <materialDesign:PackIcon Kind="ErrorOutline"
+                                                             Height="20" Width="20"/>
+                                    <TextBlock TextWrapping="Wrap"
+                                               VerticalAlignment="Center"
+                                               Margin="4 0 0 0" >
+                                        <Run Text="无法安装插件，请检查您的网络连接："/>
+                                        <Run Text="{Binding DownloadProgress.Exception.Message, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DockPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
                     </StackPanel>
                     <materialDesign:PopupBox Grid.Column="1" VerticalAlignment="Top"
                                              HorizontalAlignment="Right"
                                              ToolTip="更多选项…"
+                                             Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                              IsPopupOpen="{Binding ViewModel.IsPluginOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=TwoWay}">
                         <StackPanel ButtonBase.Click="ButtonBase_OnClick">
                             <MenuItem Icon="{materialDesign:PackIcon PackageOutline}" Header="打包插件" Click="MenuItemPackPlugin_OnClick"/>
@@ -304,6 +346,8 @@
                         <TextBox materialDesign:HintAssist.Hint="搜索插件…"
                                  materialDesign:TextFieldAssist.HasLeadingIcon="True"
                                  materialDesign:TextFieldAssist.LeadingIcon="Search"
+                                 Text="{Binding ViewModel.PluginFilterText, UpdateSourceTrigger=PropertyChanged}"
+                                 KeyDown="TextBoxFilter_OnKeyDown"
                                  Padding="4 4"
                                  Margin="4 0"/>
                         <DockPanel Dock="Left" LastChildFill="False">
@@ -315,7 +359,9 @@
                                 ScrollViewer.CanContentScroll="True"
                                 HorizontalContentAlignment="Center"
                                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                                ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                SelectedIndex="{Binding ViewModel.PluginCategoryIndex}"
+                                SelectionChanged="ListBoxCategory_OnSelectionChanged">
                                 <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <StackPanel Orientation="Horizontal" IsItemsHost="True" />
@@ -410,7 +456,7 @@
                         </materialDesign:ColorZone>
                     </StackPanel>
                     <ListBox Grid.Row="1"
-                             ItemsSource="{Binding PluginMarketService.MergedPlugins}"
+                             ItemsSource="{Binding Source={StaticResource PluginSource}}"
                              SelectedValue="{Binding ViewModel.SelectedPluginInfo}"
                              SelectedValuePath="Value"
                              HorizontalContentAlignment="Stretch">
@@ -421,6 +467,9 @@
                                         <Style TargetType="Grid">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Value.LoadStatus}" Value="Loaded">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Value.IsLocal}" Value="False">
                                                     <Setter Property="Opacity" Value="1"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
@@ -472,6 +521,13 @@
                                                                          Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                          Margin="2 0 0 0"
                                                                          Kind="Delete"/>
+                                        <materialDesign:PackIcon ToolTip="插件需要重启以应用更改。"
+                                                                 Foreground="Orange"
+                                                                 Width="20" Height="20"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="2 0 0 0"
+                                                                 Kind="Restart"/>
                                         <materialDesign:PackIcon Foreground="Red"
                                                                          ToolTip="加载此插件时出现错误。"
                                                                          Width="20" Height="20"

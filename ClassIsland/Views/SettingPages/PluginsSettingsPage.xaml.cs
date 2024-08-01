@@ -244,4 +244,47 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         SettingsService.Settings.PluginIndexes.Remove(ViewModel.SelectedPluginIndexInfo);
     }
+
+    private void ListBoxCategory_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (FindResource("PluginSource") is CollectionViewSource source)
+        {
+            source.View.Refresh();
+        }
+    }
+
+    private void PluginSource_OnFilter(object sender, FilterEventArgs e)
+    {
+        if (e.Item is not KeyValuePair<string, PluginInfo> kvp) 
+            return;
+        var info = kvp.Value;
+        if (!info.IsLocal && ViewModel.PluginCategoryIndex == 1)
+        {
+            e.Accepted = false;
+            return;
+        }
+        if (!info.IsAvailableOnMarket && ViewModel.PluginCategoryIndex == 0)
+        {
+            e.Accepted = false;
+            return;
+        }
+        
+        var filter = ViewModel.PluginFilterText;
+        if (string.IsNullOrWhiteSpace(filter))
+            return;
+        e.Accepted = info.Manifest.Id.Contains(filter) ||
+                     info.Manifest.Name.Contains(filter) ||
+                     info.Manifest.Description.Contains(filter);
+    }
+
+    private void TextBoxFilter_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter) return;
+        Focus();
+        if (FindResource("PluginSource") is CollectionViewSource source)
+        {
+            source.View.Refresh();
+        }
+
+    }
 }
