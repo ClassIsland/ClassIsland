@@ -81,6 +81,9 @@
                                 <Binding Path="IsHideDefault" Mode="OneWay"/>
                                 <Binding Path="SelectedItem" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                                 <Binding/>
+                                <Binding Path="DiscardHidingDefault" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                <Binding Path="ShowCurrentTimeLayoutItemOnlyOnClass" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+
                             </MultiBinding>
                         </ContentPresenter.ContentTemplate>
                     </ContentPresenter>

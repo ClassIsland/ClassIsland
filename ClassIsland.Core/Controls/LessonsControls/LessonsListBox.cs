@@ -79,7 +79,6 @@ public class LessonsListBox : ListBox
                 var control = o as LessonsListBox;
                 if (control?.FindResource("LessonsListBoxItemTemplateMultiConverter") is not LessonsListBoxItemTemplateMultiConverter cv)
                     return;
-                cv.DiscardHidingDefault = args.NewValue as bool? ?? false;
 
             }));
 
@@ -87,6 +86,15 @@ public class LessonsListBox : ListBox
     {
         get { return (bool)GetValue(DiscardHidingDefaultProperty); }
         set { SetValue(DiscardHidingDefaultProperty, value); }
+    }
+
+    public static readonly DependencyProperty ShowCurrentTimeLayoutItemOnlyOnClassProperty = DependencyProperty.Register(
+        nameof(ShowCurrentTimeLayoutItemOnlyOnClass), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)));
+
+    public bool ShowCurrentTimeLayoutItemOnlyOnClass
+    {
+        get { return (bool)GetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty); }
+        set { SetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty, value); }
     }
 
     static LessonsListBox()
@@ -99,6 +107,21 @@ public class LessonsListBox : ListBox
     {
         //ItemContainerStyleSelector = new LessonsListBoxItemContainerStyleSelector(this);
         //ItemTemplateSelector = new LessonsListBoxItemTemplateSelector(this);
+        Loaded += LessonsListBox_Loaded;
         
+    }
+
+    private void LessonsListBox_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (FindResource("LessonsListBoxItemTemplateMultiConverter") is LessonsListBoxItemTemplateMultiConverter cv)
+        {
+            
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnInitialized(EventArgs e)
+    {
+        base.OnInitialized(e);
     }
 }

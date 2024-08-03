@@ -1,7 +1,7 @@
 ﻿using ClassIsland.Shared.Abstraction.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ClassIsland.Models;
+namespace ClassIsland.Models.ComponentSettings;
 
 public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
 {

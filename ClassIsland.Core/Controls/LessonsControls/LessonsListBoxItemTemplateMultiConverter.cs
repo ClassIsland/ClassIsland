@@ -34,15 +34,6 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         set { SetValue(SeparatorDataTemplateProperty, value); }
     }
 
-    public static readonly DependencyProperty DiscardHidingDefaultProperty = DependencyProperty.Register(
-        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(bool)));
-
-    public bool DiscardHidingDefault
-    {
-        get { return (bool)GetValue(DiscardHidingDefaultProperty); }
-        set { SetValue(DiscardHidingDefaultProperty, value); }
-    }
-
     public DataTemplate BlankDataTemplate { get; } = new();
 
 
@@ -53,23 +44,29 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         // [1]: bool           IsHideDefault
         // [2]: TimeLayoutItem SelectedItem
         // [3]: TimeLayoutItem CurrentItem
-        if (values.Length < 4)
+        // [4]: bool           DiscardHidingDefault (reserved)
+        // [5]: bool           ShowCurrentTimeLayoutItemOnlyOnClass
+        if (values.Length < 6)
             return BlankDataTemplate;
         if (values[0] is not int timeType ||
-            values[1] is not bool isHideDefault)
+            values[1] is not bool isHideDefault ||
+            values[4] is not bool discardHidingDefault ||
+            values[5] is not bool showCurrentTimeLayoutItemOnlyOnClass)
         {
             return BlankDataTemplate;
         }
 
         var selectedItem = values[2] as TimeLayoutItem;
         var currentItem = values[3] as TimeLayoutItem;
+        if (currentItem != selectedItem && selectedItem?.TimeType == 0 && showCurrentTimeLayoutItemOnlyOnClass)
+            return BlankDataTemplate;
 
         if (timeType == 2)
         {
             return SeparatorDataTemplate;
         }
 
-        var hide = (timeType == 1 || (isHideDefault && !DiscardHidingDefault)) && selectedItem != currentItem;
+        var hide = (timeType == 1 || (isHideDefault && !discardHidingDefault)) && selectedItem != currentItem;
         if (hide)
         {
             return BlankDataTemplate;
