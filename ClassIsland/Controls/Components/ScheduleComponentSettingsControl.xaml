@@ -9,6 +9,7 @@
                   xmlns:ci="http://classisland.tech/schemas/xaml/core"
                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                   xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                  xmlns:system="clr-namespace:System;assembly=System.Runtime"
                   mc:Ignorable="d"
                   d:DesignHeight="450" d:DesignWidth="800">
     <Grid
@@ -104,6 +105,43 @@
                                        Description="在处于上课类型的时间点时，只显示当前时间点。"
                                        IsOn="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"
                                        Margin="0 0 0 6" />
+                <!-- 无课程时显示占位符 -->
+                <materialDesign:Card Margin="0 0 0 6">
+                    <Expander Background="Transparent"
+                              IsExpanded="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=OneWay}"
+                              TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                        <Expander.Header>
+                            <ci:SettingsControl IconGlyph="FileChartOutline"
+                                                Foreground="{DynamicResource MaterialDesignBody}"
+                                                Header="无课程时显示占位符"
+                                                Description="当当前没有加载课表时，显示指定的占位符。"
+                                                IsOn="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=TwoWay}"
+                                                Margin="-12 0" />
+                        </Expander.Header>
+                        <Grid Margin="36 0 48 12"
+                              IsEnabled="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=OneWay}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Column="0" Text="占位符内容" VerticalAlignment="Center" />
+                            <ComboBox MinWidth="100"
+                                      MaxWidth="300"
+                                      Grid.Column="1"
+                                      VerticalAlignment="Center"
+                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                      IsEditable="True"
+                                      Text="{Binding Settings.PlaceholderText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <system:String>今天没有课程。</system:String>
+                                <system:String>无</system:String>
+                                <system:String>[ ]</system:String>
+                            </ComboBox>
+                        </Grid>
+                    </Expander>
+                </materialDesign:Card>
             </StackPanel>
         </ScrollViewer>
     </Grid>

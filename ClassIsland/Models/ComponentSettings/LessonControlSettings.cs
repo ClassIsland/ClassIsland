@@ -10,6 +10,8 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private bool _isCountdownEnabled = true;
     private int _countdownSeconds = 60;
     private bool _showCurrentLessonOnlyOnClass = false;
+    private bool _showPlaceholderOnEmptyClassPlan = true;
+    private string _placeholderText = "今天没有课程。";
 
     public bool ShowExtraInfoOnTimePoint
     {
@@ -62,6 +64,28 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _showCurrentLessonOnlyOnClass) return;
             _showCurrentLessonOnlyOnClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowPlaceholderOnEmptyClassPlan
+    {
+        get => _showPlaceholderOnEmptyClassPlan;
+        set
+        {
+            if (value == _showPlaceholderOnEmptyClassPlan) return;
+            _showPlaceholderOnEmptyClassPlan = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string PlaceholderText
+    {
+        get => _placeholderText;
+        set
+        {
+            if (value == _placeholderText) return;
+            _placeholderText = value;
             OnPropertyChanged();
         }
     }

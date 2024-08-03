@@ -17,5 +17,25 @@
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
                            IsLiveUpdatingEnabled="True"
                            ShowCurrentTimeLayoutItemOnlyOnClass="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=OneWay}"/>
+        <Grid>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
+                                <Condition Binding="{Binding LessonsService.IsClassPlanLoaded}" Value="False"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+
+                    </Style.Triggers>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </Grid.Style>
+            <TextBlock Text="{Binding Settings.PlaceholderText}"
+                       FontSize="16"
+                       VerticalAlignment="Center"/>
+        </Grid>
     </Grid>
 </ci:ComponentBase>
