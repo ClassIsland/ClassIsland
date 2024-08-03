@@ -313,6 +313,7 @@
     </Style>
 
     <Style TargetType="{x:Type controls1:WizardOptionsListBox}"
+           x:Key="WizardOptionsListBoxBaseStyle"
            BasedOn="{StaticResource MaterialDesignListBox}">
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
@@ -351,6 +352,7 @@
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="controls1:WizardOptionsListBox" BasedOn="{StaticResource WizardOptionsListBoxBaseStyle}"/>
 
     <converters1:RangePositionToStringConverter x:Key="RangePositionToStringConverter" />
     <Style TargetType="{x:Type controls:ExcelSelectionTextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">

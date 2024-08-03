@@ -33,10 +33,10 @@
         Closing="ExcelImportWindow_OnClosing">
     <controls1:MyWindow.Resources>
         <converters1:SubjectsDictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
-        <Style TargetType="controls1:WizardOptionControl">
+        <Style TargetType="controls1:WizardOptionControl" >
             <Setter Property="InvokedCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
         </Style>
-        <Style TargetType="controls1:WizardOptionsListBox">
+        <Style TargetType="controls1:WizardOptionsListBox" BasedOn="{StaticResource WizardOptionsListBoxBaseStyle}">
             <Setter Property="InvokeCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
         </Style>
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
@@ -472,8 +472,13 @@
                             <Button Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
                                     Margin="0 16 0 0"
                                     CommandParameter="TimePointImportResult"
-                                    HorizontalAlignment="Left"
-                                    IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                    HorizontalAlignment="Left">
+                                <Button.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}">
+                                        <Binding Path="ViewModel.IsTimeLayoutRangeValid"/>
+                                        <Binding Path="ViewModel.IsSelectingMode" Converter="{StaticResource BooleanToBooleanReConverter}" />
+                                    </MultiBinding>
+                                </Button.IsEnabled>
                                 <controls1:IconText Kind="ArrowRight" Text="下一步"/>
                             </Button>
                         </StackPanel>
