@@ -145,4 +145,14 @@ public partial class DebugPage : SettingsPageBase
     {
         
     }
+
+    private void MenuItemStartMainTimer_OnClick(object sender, RoutedEventArgs e)
+    {
+        LessonsService.StartMainTimer();
+    }
+
+    private void MenuItemStopMainTimer_OnClick(object sender, RoutedEventArgs e)
+    {
+        LessonsService.StopMainTimer();
+    }
 }
