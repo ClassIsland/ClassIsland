@@ -70,11 +70,11 @@
                             <TabItem>
                                 <TextBlock FontSize="13" VerticalAlignment="Bottom">
                                     <Run
-                                        Text="{Binding ClassInfo.CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
+                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                                     </Run><Run Text="-">
 
                                     </Run><Run
-                                              Text="{Binding ClassInfo.CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}" />
+                                              Text="{Binding CurrentTimeLayoutItem.EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}" />
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
