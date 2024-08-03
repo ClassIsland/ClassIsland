@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Models;
 using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
 
@@ -24,7 +25,7 @@ namespace ClassIsland.Controls.Components;
 /// ScheduleComponent.xaml 的交互逻辑
 /// </summary>
 [ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", PackIconKind.Schedule, "显示当前的课程表信息。")]
-public partial class ScheduleComponent : ComponentBase
+public partial class ScheduleComponent
 {
     public ILessonsService LessonsService { get; }
 

@@ -9,16 +9,19 @@
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponentSettingsControl}}">
-        <TextBlock Text="文本内容"/>
-        <TextBox HorizontalAlignment="Left" MinWidth="200" Margin="10 4 0 0"
-                 Text="{Binding Settings.TextContent,UpdateSourceTrigger=PropertyChanged}" />
-        <TextBlock Text="字体颜色" Margin="0 8 0 0"/>
-        <ci:ColorPicker Width="auto" Margin="10 8 0 0" HorizontalAlignment="Left"
-            Color="{Binding Settings.FontColor, Mode=TwoWay}"/>
-        <TextBlock Text="字体大小" Margin="0 8 0 0"/>
-        <Slider Width="200" Margin="10 8 0 0" HorizontalAlignment="Left"
-        Maximum="30" Minimum="16" IsSnapToTickEnabled="True" AutoToolTipPlacement="BottomRight"
-        Value="{Binding Settings.FontSize}"/>
-    </StackPanel>
+    <ScrollViewer>
+        <StackPanel
+            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponentSettingsControl}}">
+            <TextBlock Text="文本内容" />
+            <TextBox HorizontalAlignment="Left" MinWidth="200" Margin="10 4 0 0"
+                     Text="{Binding Settings.TextContent,UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Text="字体颜色" Margin="0 8 0 0" />
+            <ci:ColorPicker Width="auto" Margin="10 8 0 0" HorizontalAlignment="Left"
+                            Color="{Binding Settings.FontColor, Mode=TwoWay}" />
+            <TextBlock Text="字体大小" Margin="0 8 0 0" />
+            <Slider Width="200" Margin="10 8 0 0" HorizontalAlignment="Left"
+                    Maximum="30" Minimum="16" IsSnapToTickEnabled="True" AutoToolTipPlacement="BottomRight"
+                    Value="{Binding Settings.FontSize}" />
+        </StackPanel>
+    </ScrollViewer>
 </controls:ComponentBase>

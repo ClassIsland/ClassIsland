@@ -10,10 +10,12 @@
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
-        <StackPanel>
-            <CheckBox IsChecked="{Binding Settings.ShowAlerts}" Content="显示预警信号。"/>
+        <ScrollViewer>
+            <StackPanel>
+                <CheckBox IsChecked="{Binding Settings.ShowAlerts}" Content="显示预警信号。" />
 
-            <TextBlock Text="要调整显示天气的城市，请转到【天气】选项卡。" TextWrapping="Wrap" Margin="0 8 0 0"/>
-        </StackPanel>
+                <TextBlock Text="要调整显示天气的城市，请转到【天气】选项卡。" TextWrapping="Wrap" Margin="0 8 0 0" />
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </controls:ComponentBase>

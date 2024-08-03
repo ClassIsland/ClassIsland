@@ -15,24 +15,27 @@
                          xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                          mc:Ignorable="d" 
                          d:DesignHeight="450" d:DesignWidth="800">
-    <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=components:CountDownComponentSettingsControl}}">
-        <StackPanel>
-            <TextBlock Text="倒计时名称"/>
-            <TextBox Text="{Binding Settings.CountDownName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                     Margin="10 8 0 0" MinWidth="180" HorizontalAlignment="Left"/>
-            <TextBlock Text="结束日期" Margin="0 8 0 0"/>
-            <DatePicker SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
-                        Margin="10 8 0 0" HorizontalAlignment="Left"
-                        Width="120"/>
-            <TextBlock Text="字体颜色" Margin="0 8 0 0"/>
-            <controls1:ColorPicker Color="{Binding Settings.FontColor,Mode=TwoWay}"
-                                  Margin="10,8,0,0" HorizontalAlignment="Left" Width="auto"/>
-            <TextBlock Text="字体大小" Margin="0 8 0 0"/>
-            <Slider Width="180" Margin="10,8,0,0" HorizontalAlignment="Left"
-                    Maximum="30" Minimum="16" TickFrequency="1" TickPlacement="None" IsSnapToTickEnabled="True"
-                    AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2"
-                    Value="{Binding Settings.FontSize}"/>
-            <CheckBox Content="紧凑模式" Margin="0 8 0 0" IsChecked="{Binding Settings.IsCompactModeEnabled}"/>
-        </StackPanel>
-    </Grid>
+    <ScrollViewer>
+        <Grid
+            DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=components:CountDownComponentSettingsControl}}">
+            <StackPanel>
+                <TextBlock Text="倒计时名称" />
+                <TextBox Text="{Binding Settings.CountDownName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="10 8 0 0" MinWidth="180" HorizontalAlignment="Left" />
+                <TextBlock Text="结束日期" Margin="0 8 0 0" />
+                <DatePicker SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
+                            Margin="10 8 0 0" HorizontalAlignment="Left"
+                            Width="120" />
+                <TextBlock Text="字体颜色" Margin="0 8 0 0" />
+                <controls1:ColorPicker Color="{Binding Settings.FontColor,Mode=TwoWay}"
+                                       Margin="10,8,0,0" HorizontalAlignment="Left" Width="auto" />
+                <TextBlock Text="字体大小" Margin="0 8 0 0" />
+                <Slider Width="180" Margin="10,8,0,0" HorizontalAlignment="Left"
+                        Maximum="30" Minimum="16" TickFrequency="1" TickPlacement="None" IsSnapToTickEnabled="True"
+                        AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2"
+                        Value="{Binding Settings.FontSize}" />
+                <CheckBox Content="紧凑模式" Margin="0 8 0 0" IsChecked="{Binding Settings.IsCompactModeEnabled}" />
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </controls2:ComponentBase>

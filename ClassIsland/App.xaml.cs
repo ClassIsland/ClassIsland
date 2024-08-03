@@ -324,7 +324,7 @@ public partial class App : AppBase, IAppHost
                 // 主界面组件
                 services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 services.AddComponent<LegacyScheduleComponent>();
-                services.AddComponent<ScheduleComponent>();
+                services.AddComponent<ScheduleComponent, ScheduleComponentSettingsControl>();
                 services.AddComponent<DateComponent>();
                 services.AddComponent<ClockComponent, ClockComponentSettingsControl>();
                 services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
