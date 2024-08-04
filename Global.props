@@ -1,0 +1,18 @@
+<Project>
+	<PropertyGroup>
+		<GitVersion>false</GitVersion>
+		<!-- we'll do our own versioning -->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="GitInfo" Version="2.3.0">
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<Target Name="PopulateInfo" DependsOnTargets="GitVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
+		<PropertyGroup>
+			<Version>$(GitBaseTag)</Version>
+		</PropertyGroup>
+	</Target>
+</Project>

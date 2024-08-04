@@ -33,6 +33,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{C60E65AA-B5D2-49BD-B3B9-E3F69F33B77D}"
 	ProjectSection(SolutionItems) = preProject
 		GeneratePackage.props = GeneratePackage.props
+		Global.props = Global.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E8120023-59D8-4112-90E7-D10A3A799A4C}"

@@ -16,5 +16,5 @@
 	<ItemGroup>
 		<PackageReference Include="XmlDocMarkdown.Core" Version="2.9.0" />
 	</ItemGroup>
-
+	<Import Project="..\Global.props" />
 </Project>

@@ -35,10 +35,6 @@
         <PackageReference Include="Downloader" Version="3.0.6" />
         <PackageReference Include="Edge_tts_sharp" Version="1.0.4" />
         <PackageReference Include="EPPlus" Version="7.0.8" />
-        <PackageReference Include="GitInfo" Version="2.3.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
         <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0">
@@ -81,4 +77,6 @@
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
     </ItemGroup>
+
+	<Import Project="..\Global.props" />
 </Project>

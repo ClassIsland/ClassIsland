@@ -37,4 +37,5 @@
   </ItemGroup>
 
   <Import Project="..\GeneratePackage.props" />
+  <Import Project="..\Global.props" />
 </Project>
