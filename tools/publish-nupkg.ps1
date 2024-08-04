@@ -15,13 +15,10 @@ if ($is_release) {
     $version = $ver
 } else {
     $version = [System.Version]::new(1, 0, 0, $($count -as [int]))
-
 }
 echo $($version -as [string])
 #dotnet clean
 
 dotnet build -c Release -p:Platform="Any CPU" -p:Version=$($version -as [string])
 cp ./**/bin/Release/*.nupkg ./out
-
-Write-Host "Successfully published to $PUBLISH_TARGET" -ForegroundColor Green
 
