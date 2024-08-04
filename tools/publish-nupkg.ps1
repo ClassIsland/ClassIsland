@@ -14,12 +14,13 @@ $ver = [System.Version]::Parse($tag)
 if ($is_release -eq "true") {
     $version = $ver
 } else {
-    $version = [System.Version]::new(1, 0, 0, $($count -as [int]))
+    $version = $($ver -as [string]) + "-dev" + $count
 }
-echo $($version -as [string])
+echo PackageVersion:$($version -as [string])
+echo Version:$($ver -as [string])
 #dotnet clean
 
-dotnet build -c Release -p:Platform="Any CPU" -p:Version=$($version -as [string])
+dotnet build -c Release -p:Platform="Any CPU" -p:Version=$($ver -as [string]) -p:PackageVersion=$($version -as [string])
 cp ./**/bin/Release/*.nupkg ./out
 
 Get-ChildItem ./out
