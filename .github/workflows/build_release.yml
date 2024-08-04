@@ -117,12 +117,21 @@ jobs:
         run: |
           pwsh -ep Bypass -c ./tools/pre-publish.ps1
       
-      - name: Upload to release
+      - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./out/*.nupkg,./out/ClassIsland.zip,./out/*.zip
+          artifacts: ./out/ClassIsland.zip,./out/*.zip
           draft: true
           bodyFile: ./out/checksums.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Upload Nuget files to release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./out/*.nupkg
+          draft: true
+          bodyFile: ./out/checksums.md
+          allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Upload to AppCenter
