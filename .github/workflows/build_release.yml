@@ -120,7 +120,7 @@ jobs:
       - name: Upload to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./out/*.zip,./out/*.md5sum,./out/*.nupkg
+          artifacts: ./out/ClassIsland.zip,./out/*.zip,./out/*.nupkg
           draft: true
           bodyFile: ./out/checksums.md
           token: ${{ secrets.GITHUB_TOKEN }}
