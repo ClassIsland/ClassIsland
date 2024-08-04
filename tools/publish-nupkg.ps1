@@ -1,4 +1,4 @@
-param($is_release, $is_trim)
+param($is_release)
 
 $PUBLISH_TARGET = "..\out\ClassIsland"
 
