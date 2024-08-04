@@ -9,7 +9,6 @@ using ClassIsland;
 using ClassIsland.Shared.IPC.Protobuf.Client;
 using ClassIsland.Shared.IPC;
 using Sentry;
-using Sentry.Profiling;
 
 Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
 Thread.CurrentThread.SetApartmentState(ApartmentState.STA);

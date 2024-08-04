@@ -40,9 +40,6 @@ using ClassIsland.Views;
 using ClassIsland.Views.SettingPages;
 using MaterialDesignThemes.Wpf;
 
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -167,9 +164,6 @@ public partial class App : AppBase, IAppHost
             Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
         }
 
-#if DEBUG
-        AppCenter.LogLevel = Microsoft.AppCenter.LogLevel.Verbose;
-#endif
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
 
         // 检测Mutex
@@ -623,11 +617,6 @@ public partial class App : AppBase, IAppHost
                     Environment.Exit(0);
             }
         }
-    }
-
-    private void CrashesOnSendingErrorReport(object sender, SendingErrorReportEventArgs e)
-    {
-
     }
 
     private void OverrideFocusVisualStyle()

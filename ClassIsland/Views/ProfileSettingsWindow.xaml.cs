@@ -27,7 +27,6 @@ using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;
 
-using Microsoft.AppCenter.Analytics;
 using Sentry;
 using Application = System.Windows.Application;
 using DataFormats = System.Windows.DataFormats;
@@ -242,7 +241,8 @@ public partial class ProfileSettingsWindow : MyWindow
         //OpenDrawer("TimePointEditor");
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.create", tags: new Dictionary<string, string>()
         {
-            {"Type", timeType.ToString()}
+            {"Type", timeType.ToString()},
+            {"Auto", "False"}
         });
     }
 
@@ -255,9 +255,10 @@ public partial class ProfileSettingsWindow : MyWindow
             EndSecond   = endTime,
         };
         AddTimePoint(newItem);
-        Analytics.TrackEvent("档案设置 · 自动创建时间点", new Dictionary<string, string>
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.create", tags: new Dictionary<string, string>()
         {
-            {"Type", timeType.ToString()}
+            {"Type", timeType.ToString()},
+            {"Auto", "True"}
         });
     }
 

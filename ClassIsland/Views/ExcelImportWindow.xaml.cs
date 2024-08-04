@@ -26,8 +26,6 @@ using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;
 
-using Microsoft.AppCenter.Analytics;
-
 using OfficeOpenXml;
 
 using unvell.ReoGrid;

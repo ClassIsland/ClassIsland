@@ -33,8 +33,6 @@ using ClassIsland.Views;
 using GrpcDotNetNamedPipes;
 using H.NotifyIcon;
 
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
@@ -571,12 +569,6 @@ public partial class MainWindow : Window
 
     private async void UpdateTheme()
     {
-        var aState = await AppCenter.IsEnabledAsync();
-        if (aState != ViewModel.Settings.IsReportingEnabled)
-        {
-            await AppCenter.SetEnabledAsync(ViewModel.Settings.IsReportingEnabled);
-        }
-
         UpdateWindowPos();
         var hWnd = (HWND)new WindowInteropHelper(this).Handle;
         var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);

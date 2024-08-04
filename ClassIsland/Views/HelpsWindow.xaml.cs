@@ -18,8 +18,6 @@ using ClassIsland.Core.Controls;
 using ClassIsland.ViewModels;
 
 using MdXaml;
-
-using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 using Sentry;
 

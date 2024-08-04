@@ -26,7 +26,6 @@ using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
-using Microsoft.AppCenter.Crashes;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using MessageBox = System.Windows.MessageBox;
 
@@ -69,11 +68,6 @@ public partial class DebugPage : SettingsPageBase
     private void ButtonCrash_OnClick(object sender, RoutedEventArgs e)
     {
         throw new Exception("Crash test.");
-    }
-
-    private void MenuItemDebugAppCenterCrashTest_OnClick(object sender, RoutedEventArgs e)
-    {
-        Crashes.GenerateTestCrash();
     }
 
     private void ButtonDebugToastText_OnClick(object sender, RoutedEventArgs e)

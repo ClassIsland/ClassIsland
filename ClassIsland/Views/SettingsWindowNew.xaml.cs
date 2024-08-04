@@ -31,7 +31,6 @@ using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AppCenter.Analytics;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Services;
