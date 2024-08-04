@@ -27,9 +27,4 @@ public abstract class PluginBase
     /// <param name="context"></param>
     /// <param name="services"></param>
     public abstract void Initialize(HostBuilderContext context, IServiceCollection services);
-
-    /// <summary>
-    /// 当应用退出时触发。
-    /// </summary>
-    public abstract void OnShutdown();
 }

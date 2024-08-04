@@ -15,8 +15,4 @@ public class Plugin : PluginBase
         Console.WriteLine("Hello world!");
         services.AddSettingsPage<HelloSettingsPage>();
     }
-
-    public override void OnShutdown()
-    {
-    }
 }

@@ -30,6 +30,16 @@ public abstract class AppBase : Application, IAppHost
     /// <returns></returns>
     public abstract bool IsAssetsTrimmed();
 
+    /// <summary>
+    /// 当应用启动时触发。
+    /// </summary>
+    public abstract event EventHandler? AppStarted;
+
+    /// <summary>
+    /// 当应用正在停止时触发。
+    /// </summary>
+    public abstract event EventHandler? AppStopping;
+
     internal AppBase()
     {
     }

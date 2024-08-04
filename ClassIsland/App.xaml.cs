@@ -365,6 +365,12 @@ public partial class App : AppBase, IAppHost
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();
+        Logger = GetService<ILogger<App>>();
+        var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
+        lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
+        lifetime.ApplicationStopping.Register(() => Logger.LogInformation("App stopping."));
+        lifetime.ApplicationStopped.Register(() => Logger.LogInformation("App stopped."));
+        lifetime.ApplicationStopping.Register(Stop);
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
 #endif
@@ -390,7 +396,6 @@ public partial class App : AppBase, IAppHost
         }
         spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();
-        Logger = GetService<ILogger<App>>();
         Logger.LogInformation("初始化应用。");
 
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
@@ -468,6 +473,7 @@ public partial class App : AppBase, IAppHost
         MainWindow = mw;
         mw.StartupCompleted += (o, args) =>
         {
+            AppStarted?.Invoke(this, EventArgs.Empty);
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);
@@ -701,6 +707,7 @@ public partial class App : AppBase, IAppHost
     {
         Dispatcher.Invoke(() =>
         {
+            AppStopping?.Invoke(this, EventArgs.Empty);
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
             IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
             IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
@@ -712,6 +719,8 @@ public partial class App : AppBase, IAppHost
     }
 
     public override bool IsAssetsTrimmed() => IsAssetsTrimmedInternal;
+    public override event EventHandler? AppStarted;
+    public override event EventHandler? AppStopping;
 
     public override void Restart(bool quiet=false)
     {
