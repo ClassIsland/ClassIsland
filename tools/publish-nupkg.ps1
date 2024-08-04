@@ -22,3 +22,4 @@ echo $($version -as [string])
 dotnet build -c Release -p:Platform="Any CPU" -p:Version=$($version -as [string])
 cp ./**/bin/Release/*.nupkg ./out
 
+Get-ChildItem ./out
