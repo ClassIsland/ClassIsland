@@ -52,7 +52,7 @@ if (!createNew)
     }
 }
 
-SentrySdk.Init(options =>
+void ConfigureSentry(SentryOptions options)
 {
     // A Sentry Data Source Name (DSN) is required.
     // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
@@ -79,6 +79,7 @@ SentrySdk.Init(options =>
         options.TracesSampleRate = 0.1;
         // options.ProfilesSampleRate = 0.016;
     }
+
     options.AutoSessionTracking = true;
     options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
     options.SetBeforeSend(@event =>
@@ -86,7 +87,12 @@ SentrySdk.Init(options =>
         @event.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
         return @event;
     });
-});
+}
+
+if (Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null )
+{
+    SentrySdk.Init(ConfigureSentry);
+}
 var app = new App()
 {
     Mutex = mutex,

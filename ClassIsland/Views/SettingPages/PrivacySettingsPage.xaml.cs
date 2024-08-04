@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
@@ -34,14 +35,22 @@ public partial class PrivacySettingsPage : SettingsPageBase
         InitializeComponent();
         DataContext = this;
         SettingsService = settingsService;
+        SettingsService.Settings.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled))
+            {
+                RequestRestart();
+            }
+        };
     }
 
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        new DocumentReaderWindow()
         {
-            FileName = "https://learn.microsoft.com/zh-cn/appcenter/sdk/data-collected",
-            UseShellExecute = true
-        });
+            Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
+            Owner = Window.GetWindow(this),
+            Title = "ClassIsland 隐私政策"
+        }.ShowDialog();
     }
 }

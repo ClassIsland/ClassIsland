@@ -368,14 +368,22 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public bool IsReportingEnabled
+    [JsonIgnore]
+    public bool IsSentryEnabled
     {
-        get => _isReportingEnabled;
+        get => Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null;
         set
         {
-            if (value == _isReportingEnabled) return;
-            _isReportingEnabled = value;
-            OnPropertyChanged();
+            try
+            {
+                Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", value ? "1" : "0");
+                OnPropertyChanged();
+            }
+            catch (Exception ex)
+            {
+                IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 Sentry 启用状态。");
+            }
+
         }
     }
 

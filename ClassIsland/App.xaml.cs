@@ -714,7 +714,14 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
             Current.Shutdown();
-            ReleaseLock();
+            try
+            {
+                ReleaseLock();
+            }
+            catch (Exception e)
+            {
+                Logger?.LogError(e, "无法释放 Mutex。");
+            }
         });
     }
 

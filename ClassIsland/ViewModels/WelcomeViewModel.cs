@@ -3,6 +3,7 @@
 using ClassIsland.Models;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels;
 
@@ -23,6 +24,7 @@ public class WelcomeViewModel : ObservableRecipient
     private int _slideIndexMaster = 0;
     private bool _registerUrlScheme = false;
     private bool _createClassSwapShortcut = false;
+    private bool _requiresRestarting = false;
 
     public Guid DialogId
     {
@@ -193,4 +195,17 @@ public class WelcomeViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public bool RequiresRestarting
+    {
+        get => _requiresRestarting;
+        set
+        {
+            if (value == _requiresRestarting) return;
+            _requiresRestarting = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public SnackbarMessageQueue SnackbarQueue { get; } = new();
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 
 using ClassIsland.Controls;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Helpers;
@@ -44,6 +45,14 @@ public partial class WelcomeWindow : MyWindow
             .Stream);
         ViewModel.License = reader.ReadToEnd();
         ViewModel.Settings = SettingsService.Settings;
+        SettingsService.Settings.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled))
+            {
+                ViewModel.RequiresRestarting = true;
+                ViewModel.SnackbarQueue.Enqueue("应用将在向导完成后自动重启，以应用部分更改。");
+            }
+        };
     }
 
     protected override async void OnContentRendered(EventArgs e)
@@ -81,6 +90,10 @@ public partial class WelcomeWindow : MyWindow
         }
         
         Close();
+        if (ViewModel.RequiresRestarting)
+        {
+            AppBase.Current.Restart();
+        }
     }
 
     private async void WelcomeWindow_OnClosing(object? sender, CancelEventArgs e)
