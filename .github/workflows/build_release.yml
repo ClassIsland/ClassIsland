@@ -15,14 +15,10 @@ jobs:
     strategy:
       matrix: 
         trim_assets: [true, false]
+    name: Build (AssetsTrimmed ${{ matrix.trim_assets }})
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-          
-      - name: Get application version
-        run: |
-          $env:app_ver = (git describe --abbrev=0 --tags)
-          echo $env:app_ver
       
       - name: List files
         run: ls
