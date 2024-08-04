@@ -25,10 +25,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{D97171AD
 		tools\build-appveyor.ps1 = tools\build-appveyor.ps1
 		tools\generate-md5.ps1 = tools\generate-md5.ps1
 		tools\pre-appcenter-upload.ps1 = tools\pre-appcenter-upload.ps1
+		tools\pre-publish.ps1 = tools\pre-publish.ps1
+		tools\publish-nupkg.ps1 = tools\publish-nupkg.ps1
 		tools\publish.ps1 = tools\publish.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{C60E65AA-B5D2-49BD-B3B9-E3F69F33B77D}"
+	ProjectSection(SolutionItems) = preProject
+		GeneratePackage.props = GeneratePackage.props
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E8120023-59D8-4112-90E7-D10A3A799A4C}"
 	ProjectSection(SolutionItems) = preProject
@@ -77,11 +82,11 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {DE85CB48-0314-4D96-A0A2-0E3AC049E3A3}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D97171AD-1C66-4A93-9D48-7BEC798ADAA6} = {C60E65AA-B5D2-49BD-B3B9-E3F69F33B77D}
 		{E8120023-59D8-4112-90E7-D10A3A799A4C} = {C60E65AA-B5D2-49BD-B3B9-E3F69F33B77D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DE85CB48-0314-4D96-A0A2-0E3AC049E3A3}
 	EndGlobalSection
 EndGlobal

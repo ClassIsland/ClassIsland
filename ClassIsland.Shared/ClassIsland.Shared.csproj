@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageTags>classisland</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,5 +35,5 @@
     <Protobuf Include="Protobuf\Management\*.proto" />
   </ItemGroup>
 
-  <Import Project="..\GeneratePackage.props"/>
+  <Import Project="..\GeneratePackage.props" />
 </Project>
