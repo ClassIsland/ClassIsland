@@ -86,8 +86,10 @@ jobs:
       - name: Upload Nuget packages to GitHub registry
         if: ${{ ! startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }} 
         env:
-          NUGET_API_KEY: ${{ secrets.GITHUB_TOKEN }}
-        run: dotnet nuget push ./out/*.nupkg -k $NUGET_API_KEY -s https://nuget.pkg.github.com/ClassIsland/index.json
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dotnet nuget add source --username ClassIsland --password $env:GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
+          dotnet nuget push ./out/*.nupkg -k $env:GITHUB_TOKEN --source "github" --skip-duplicate
 
       - name: Upload Nuget Packages to artifacts
         if: ${{ !matrix.trim_assets }}
