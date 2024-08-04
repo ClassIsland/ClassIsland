@@ -1,66 +1,27 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will build, test, sign and package a WPF or Windows Forms desktop application
-# built on .NET Core.
-# To learn how to migrate your existing application to .NET Core,
-# refer to https://docs.microsoft.com/en-us/dotnet/desktop-wpf/migration/convert-project-from-net-framework
-#
-# To configure this workflow:
-#
-# 1. Configure environment variables
-# GitHub sets default environment variables for every workflow run.
-# Replace the variables relative to your project in the "env" section below.
-#
-# 2. Signing
-# Generate a signing certificate in the Windows Application
-# Packaging Project or add an existing signing certificate to the project.
-# Next, use PowerShell to encode the .pfx file using Base64 encoding
-# by running the following Powershell script to generate the output string:
-#
-# $pfx_cert = Get-Content '.\SigningCertificate.pfx' -Encoding Byte
-# [System.Convert]::ToBase64String($pfx_cert) | Out-File 'SigningCertificate_Encoded.txt'
-#
-# Open the output file, SigningCertificate_Encoded.txt, and copy the
-# string inside. Then, add the string to the repo as a GitHub secret
-# and name it "Base64_Encoded_Pfx."
-# For more information on how to configure your signing certificate for
-# this workflow, refer to https://github.com/microsoft/github-actions-for-desktop-apps#signing
-#
-# Finally, add the signing certificate password to the repo as a secret and name it "Pfx_Key".
-# See "Build the Windows Application Packaging project" below to see how the secret is used.
-#
-# For more information on GitHub Actions, refer to https://github.com/features/actions
-# For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
-# refer to https://github.com/microsoft/github-actions-for-desktop-apps
-
 name: Publish release
 
 on:
   push:
-    tags:
-      - '*'
 
 jobs:
-
-  build:
-
+  build_app:
     runs-on: windows-latest  # For a list of available runner types, refer to
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
-
     env:
       Solution_Name: ClassIsland.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
       # Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       Wap_Project_Directory: ClassIsland/ClassIsland    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
-
+    strategy:
+      matrix: 
+        trim_assets:
+          - false
+          - true
+    concurrency: 
+      group: Build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
           
       - name: Get application version
         run: |
@@ -81,22 +42,68 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
       
       - name: Publish application
+        env:
+          trim_assets: ${{ trim_assets }}
         run: |
           ls
-          pwsh -ep Bypass -c ./tools/publish.ps1
+          pwsh -ep Bypass -c ./tools/publish.ps1 $env:trim_assets
           
       - name: Generate MD5
         run: |
           pwsh -ep Bypass -c .\tools\generate-md5.ps1 ./out
-          
-      - name: Upload to release
-        uses: ncipollo/release-action@v1
+      - uses: actions/upload-artifact@v4
         with:
-          artifacts: ./out/*.zip,./out/*.md5sum,./out/*.nupkg
-          draft: true
-          bodyFile: ./out/checksums.md
-          token: ${{ secrets.GITHUB_TOKEN }}
+          name: out_app_assetsTrimmed_${{ trim_assets }}
+          path: ./out/
           
+  build_nupkgs:
+    runs-on: windows-latest
+    concurrency:
+      group: Build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get application version
+        run: |
+          $env:app_ver = (git describe --abbrev=0 --tags)
+          echo $env:app_ver
+
+      - name: List files
+        run: ls
+
+      # Install the .NET Core workload
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+
+      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Publish application
+        env:
+          is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          ls
+          pwsh -ep Bypass -c ./tools/publish_nupkgs.ps1 $env:is_release
+
+      - name: Generate MD5
+        run: |
+          pwsh -ep Bypass -c .\tools\generate-md5.ps1 ./out
+          
+      - uses: actions/upload-artifact@v4
+        with:
+          name: out_nuget_pkgs
+          path: ./out/
+          
+  publish_appcenter:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: Publish
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    steps:
       - name: Upload to AppCenter
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
@@ -105,4 +112,17 @@ jobs:
           Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
           pwsh -ep Bypass -c .\tools\pre-appcenter-upload.ps1
           pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
-          
+  
+  publish_github:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: Publish
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    steps:
+      - name: Upload to release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./out/*.zip,./out/*.md5sum,./out/*.nupkg
+          draft: true
+          bodyFile: ./out/checksums.md
+          token: ${{ secrets.GITHUB_TOKEN }}
