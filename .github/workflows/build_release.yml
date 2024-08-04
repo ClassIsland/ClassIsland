@@ -86,10 +86,10 @@ jobs:
       - name: Upload Nuget packages to GitHub registry
         if: ${{ ! startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }} 
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHPKG_KEY: ${{ secrets.GHPKG_KEY }}
         run: |
-          dotnet nuget add source --username ClassIsland --password $env:GITHUB_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
-          dotnet nuget push ./out/*.nupkg -k $env:GITHUB_TOKEN --source "github" --skip-duplicate
+          dotnet nuget add source --username HelloWRC --password $env:GHPKG_KEY --store-password-in-clear-text --name github "https://nuget.pkg.github.com/ClassIsland/index.json"
+          dotnet nuget push .\out\*.nupkg -k $env:GHPKG_KEY --source "github" --skip-duplicate
 
       - name: Upload Nuget Packages to artifacts
         if: ${{ !matrix.trim_assets }}
@@ -117,10 +117,10 @@ jobs:
         run: |
           pwsh -ep Bypass -c ./tools/pre-publish.ps1
       
-      - name: Upload to release
+      - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./out/*.zip,./out/*.md5sum,./out/*.nupkg
+          artifacts: ./out/ClassIsland.zip,./out/*.zip
           draft: true
           bodyFile: ./out/checksums.md
           token: ${{ secrets.GITHUB_TOKEN }}
