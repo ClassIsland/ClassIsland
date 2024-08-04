@@ -256,8 +256,9 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
 
         SettingsService.Settings.OfficialSelectedMirror =
             indexInfos.First(x => x.Id == DefaultPluginIndexKey).SelectedMirror;
+        var defaultIndex = Indexes.FirstOrDefault(x => x.Key == DefaultPluginIndexKey).Value ?? new PluginIndex();
         SettingsService.Settings.OfficialIndexMirrors = ConfigureFileHelper.CopyObject(
-            Indexes.First(x => x.Key == DefaultPluginIndexKey).Value.DownloadMirrors);
+            defaultIndex.DownloadMirrors);
         BindDownloadTasks();
     }
 
