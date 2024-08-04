@@ -9,6 +9,7 @@
 
 	<PropertyGroup>
 	  <PackageTags>classisland;plugin;addin;wpf;material design</PackageTags>
+	  <Description>用于开发应用 ClassIsland 插件的 SDK。</Description>
 	</PropertyGroup>
 
 	<ItemGroup>

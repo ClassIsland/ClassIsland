@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageTags>classisland</PackageTags>
+    <Description>ClassIsland 的核心共享库。</Description>
   </PropertyGroup>
 
   <ItemGroup>

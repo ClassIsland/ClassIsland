@@ -8,6 +8,7 @@
 		<PackageProjectUrl>https://classisland.tech</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/ClassIsland/ClassIsland</RepositoryUrl>
 	    <PackageReadmeFile>README.md</PackageReadmeFile>
+		<Copyright>Copyright (c) 2024 HelloWRC</Copyright>
 	</PropertyGroup>
     <ItemGroup>
 	    <None Include="README.md" Pack="true" PackagePath="\"/>
