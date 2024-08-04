@@ -833,6 +833,11 @@ public partial class MainWindow : Window
     public void OpenHelpsWindow()
     {
         SentrySdk.Metrics.Increment("views.HelpWindow.open");
+        if (AppBase.Current.IsAssetsTrimmed())
+        {
+            UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/"));
+            return;
+        }
         if (HelpsWindow.ViewModel.IsOpened)
         {
             HelpsWindow.WindowState = HelpsWindow.WindowState == WindowState.Minimized ? WindowState.Normal : HelpsWindow.WindowState;

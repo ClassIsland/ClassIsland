@@ -82,6 +82,11 @@ SentrySdk.Init(options =>
     }
     options.AutoSessionTracking = true;
     options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
+    options.SetBeforeSend(@event =>
+    {
+        @event.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
+        return @event;
+    });
 });
 var app = new App()
 {

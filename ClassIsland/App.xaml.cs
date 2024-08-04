@@ -68,6 +68,13 @@ namespace ClassIsland;
 /// </summary>
 public partial class App : AppBase, IAppHost
 {
+    public static bool IsAssetsTrimmedInternal { get; } =
+#if TrimAssets 
+        true;
+#else
+        false;
+#endif
+    
     private CrashWindow? CrashWindow;
     public Mutex? Mutex { get; set; }
     public bool IsMutexCreateNew { get; set; } = false;
@@ -155,6 +162,10 @@ public partial class App : AppBase, IAppHost
         System.Windows.Forms.Application.EnableVisualStyles();
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
+        if (IsAssetsTrimmed())
+        {
+            Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
+        }
 
 #if DEBUG
         AppCenter.LogLevel = Microsoft.AppCenter.LogLevel.Verbose;
@@ -710,6 +721,8 @@ public partial class App : AppBase, IAppHost
             ReleaseLock();
         });
     }
+
+    public override bool IsAssetsTrimmed() => IsAssetsTrimmedInternal;
 
     public override void Restart(bool quiet=false)
     {
