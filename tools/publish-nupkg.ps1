@@ -11,7 +11,7 @@ $tag = $(git describe --tags --abbrev=0)
 $count = $(git rev-list --count HEAD)
 $ver = [System.Version]::Parse($tag)
 
-if ($is_release) {
+if ($is_release -eq "true") {
     $version = $ver
 } else {
     $version = [System.Version]::new(1, 0, 0, $($count -as [int]))
