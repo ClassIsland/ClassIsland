@@ -156,7 +156,7 @@ public partial class AboutSettingsPage : SettingsPageBase
     {
         new DocumentReaderWindow()
         {
-            Source = new Uri("/Assets/Documents/Privacy.md", UriKind.RelativeOrAbsolute),
+            Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
             Owner = Window.GetWindow(this),
             Title = "ClassIsland 隐私政策"
         }.ShowDialog();
