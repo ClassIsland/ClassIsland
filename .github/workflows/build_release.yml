@@ -14,9 +14,7 @@ jobs:
       Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
     strategy:
       matrix: 
-        trim_assets:
-          - false
-          - true
+        trim_assets: [true, false]
     concurrency: 
       group: Build
     steps:
@@ -43,7 +41,7 @@ jobs:
       
       - name: Publish application
         env:
-          trim_assets: ${{ trim_assets }}
+          trim_assets: ${{ matrix.trim_assets }}
         run: |
           ls
           pwsh -ep Bypass -c ./tools/publish.ps1 $env:trim_assets
@@ -53,7 +51,7 @@ jobs:
           pwsh -ep Bypass -c .\tools\generate-md5.ps1 ./out
       - uses: actions/upload-artifact@v4
         with:
-          name: out_app_assetsTrimmed_${{ trim_assets }}
+          name: out_app_assetsTrimmed_${{ matrix.trim_assets }}
           path: ./out/
           
   build_nupkgs:
