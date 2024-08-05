@@ -71,7 +71,8 @@
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
         <Resource Remove="Assets\Documents\**" />
-    </ItemGroup>
+        <Resource Include="Assets\Documents\Privacy_.md" />
+	</ItemGroup>
     <PropertyGroup Condition="'$(TrimAssets)'=='true'">
         <DefineConstants>TrimAssets</DefineConstants>
     </PropertyGroup>
