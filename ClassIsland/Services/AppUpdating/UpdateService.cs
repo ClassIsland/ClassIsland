@@ -114,6 +114,19 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         SplashService = splashService;
         Logger = logger;
 
+        if (AppBase.Current.IsAssetsTrimmed())
+        {
+            foreach (var i in UpdateSources.Where(x => x.Value.Kind == UpdateSourceKind.AppCenter).ToList())
+            {
+                UpdateSources.Remove(i.Key);
+            }
+        }
+
+        if (!UpdateSources.ContainsKey(Settings.SelectedUpgradeMirror))
+        {
+            Settings.SelectedUpgradeMirror = UpdateSources.Keys.FirstOrDefault() ?? Settings.SelectedUpgradeMirror;
+        }
+
         foreach (var i in UpdateSources)
         {
             if (!Settings.SpeedTestResults.ContainsKey(i.Key))
@@ -310,11 +323,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 var v = (versionsGh.Where(i => (CurrentUpdateSourceUrl == AppCenterBetaRootUrl || !i.Prerelease) 
                                                && Version.TryParse((string?)i.TagName, out _))
                     .OrderByDescending(i => Version.Parse(i.TagName))).First();
+                var fileName = AppBase.Current.IsAssetsTrimmed() ? "ClassIsland_AssetsTrimmed.zip" : "ClassIsland.zip";
                 verCode = Version.Parse(v.TagName);
                 Settings.UpdateReleaseInfo = v.Body;
-                Settings.UpdateArtifactHash = ChecksumHelper.ExtractHashInfo(v.Body, "ClassIsland.zip");
+                Settings.UpdateArtifactHash = ChecksumHelper.ExtractHashInfo(v.Body, fileName);
                 Settings.LastCheckUpdateInfoCacheGitHub = v;
-                var assetsUrl = v.Assets[0].BrowserDownloadUrl;    
+                var assetsUrl = v.Assets.First(x => x.Name == fileName).BrowserDownloadUrl;    
                 Settings.UpdateDownloadUrl = Settings.SelectedUpgradeMirror == GhProxySourceKey ? $"https://mirror.ghproxy.com/{assetsUrl}" : assetsUrl;
             }
             else
