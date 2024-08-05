@@ -11,7 +11,7 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
     private bool _isPluginOperationsPopupOpened = false;
     private bool _isPluginMarketOperationsPopupOpened = false;
     private PluginIndexInfo? _selectedPluginIndexInfo;
-    private int _pluginCategoryIndex = 0;
+    private int _pluginCategoryIndex = 1;
     private string _pluginFilterText = "";
 
     public PluginInfo? SelectedPluginInfo

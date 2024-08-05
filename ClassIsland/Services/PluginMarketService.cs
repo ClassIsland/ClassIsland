@@ -29,7 +29,14 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
     public ObservableDictionary<string, PluginIndex> Indexes { get; } = new();
     public ILogger<PluginMarketService> Logger { get; } = logger;
 
-    private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
+    public Dictionary<string, string> FallbackMirrors { get; } = new()
+    {
+        { "github", "https://github.com" },
+        { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
+        { "moeyy", "https://github.moeyy.xyz/https://github.com" }
+    };
+
+private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
     private bool _isLoadingPluginSource = false;
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
@@ -131,7 +138,10 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
 
     private IEnumerable<PluginIndexInfo> GetIndexInfos()
     {
-        var repo = "{root}/ClassIsland/PluginIndex/releases/download/latest/index.zip".Replace("{root}", SettingsService.Settings.OfficialIndexMirrors[SettingsService.Settings.OfficialSelectedMirror]);
+        var mirrors = SettingsService.Settings.OfficialIndexMirrors.Count == 0
+            ? FallbackMirrors
+            : SettingsService.Settings.OfficialIndexMirrors;
+        var repo = "{root}/ClassIsland/PluginIndex/releases/download/latest/index.zip".Replace("{root}", mirrors[SettingsService.Settings.OfficialSelectedMirror]);
         return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo()
         {
             Id = DefaultPluginIndexKey,

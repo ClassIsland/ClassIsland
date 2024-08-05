@@ -197,6 +197,10 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private async void ButtonBaseRefreshPlugins_OnClick(object sender, RoutedEventArgs e)
     {
         await PluginMarketService.RefreshPluginSourceAsync();
+        if (FindResource("PluginSource") is CollectionViewSource source)
+        {
+            source.View.Refresh();
+        }
     }
 
     private void ButtonInstallPlugin_OnClick(object sender, RoutedEventArgs e)

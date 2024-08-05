@@ -13,8 +13,6 @@
         <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <StartupObject></StartupObject>
-
-		<TrimAssets>true</TrimAssets>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release'">
         <OutputType>WinExe</OutputType>
