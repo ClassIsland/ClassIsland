@@ -133,6 +133,7 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             Exception = ex;
         }
         Logger.LogInformation("插件源刷新成功。");
+        SettingsService.Settings.LastRefreshPluginSourceTime = DateTime.Now;
         IsLoadingPluginSource = false;
     }
 

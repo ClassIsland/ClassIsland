@@ -166,6 +166,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     };
 
     private bool _isMigratedFromv14 = false;
+    private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1534,6 +1535,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _pluginIndexes)) return;
             _pluginIndexes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastRefreshPluginSourceTime
+    {
+        get => _lastRefreshPluginSourceTime;
+        set
+        {
+            if (value.Equals(_lastRefreshPluginSourceTime)) return;
+            _lastRefreshPluginSourceTime = value;
             OnPropertyChanged();
         }
     }
