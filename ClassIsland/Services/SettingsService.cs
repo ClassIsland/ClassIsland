@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Models.Components;
@@ -75,7 +76,6 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
             if (ManagementService.IsManagementEnabled && !Settings.IsWelcomeWindowShowed)
             {
                 await LoadManagementSettingsAsync();
-                SkipMigration = false;  // 从集控拉取的默认配置不需要跳过迁移。
             }
         }
         catch(Exception ex)
@@ -88,12 +88,18 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
             Settings.SpeechSource = 1;
         }
 
+        var requiresRestarting = false;
         if (!SkipMigration)
         {
-            MigrateSettings();
+            MigrateSettings(out requiresRestarting);
         }
 
         Settings.LastAppVersion = Assembly.GetExecutingAssembly().GetName().Version!;
+
+        if (requiresRestarting)
+        {
+            AppBase.Current.Restart();
+        }
     }
 
     private T TryGetDictionaryValue<T>(IDictionary<string, object?> dictionary, string key, T? fallbackValue=null)
@@ -108,8 +114,9 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         return (T?)Settings.MiniInfoProviderSettings[key.ToLower()] ?? fallback;
     }
 
-    private void MigrateSettings()
+    private void MigrateSettings(out bool requiresRestarting)
     {
+        requiresRestarting = false;
         if (Settings.LastAppVersion < Version.Parse("1.4.1.0"))  // 从 1.4.1.0 以前的版本升级
         {
             var componentsService = App.GetService<IComponentsService>();
@@ -157,11 +164,27 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
 
             island.Add(new ComponentSettings()
             {
-                Id = "E7831603-61A0-4180-B51B-54AD75B1A4D3"
+                Id = "1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8",
+                Settings = new LessonControlSettings()
+                {
+                    CountdownSeconds = Settings.CountdownSeconds,
+                    ExtraInfoType = Settings.ExtraInfoType,
+                    IsCountdownEnabled = Settings.IsCountdownEnabled,
+                    ShowExtraInfoOnTimePoint = Settings.ShowExtraInfoOnTimePoint
+                }
             });
             Settings.ShowComponentsMigrateTip = true;
+            Settings.IsMigratedFromv1_4 = true;
             Logger.LogInformation("成功迁移了 1.4.1.0 以前的设置。");
         }
+
+        if (Settings.LastAppVersion < Version.Parse("1.4.3.0"))
+        {
+            Settings.IsSentryEnabled = Settings.IsReportingEnabled;
+            requiresRestarting = true;
+            Logger.LogInformation("成功迁移了 1.4.3.0 以前的设置。");
+        }
+
     }
 
     public void SaveSettings()

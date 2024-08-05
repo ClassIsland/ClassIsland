@@ -149,4 +149,23 @@ public partial class DebugPage : SettingsPageBase
     {
         LessonsService.StopMainTimer();
     }
+
+    private void MenuItemShowComponentsMigrateTips_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.ShowComponentsMigrateTip = true;
+    }
+
+    private void MenuItemOverwriteSettingsVersion_OnClick(object sender, RoutedEventArgs e)
+    {
+        var r = new CommonDialogBuilder()
+            .SetContent("输入新的设置版本。如果设置了比当前应用更低的版本，可能会触发设置迁移。")
+            .HasInput(true)
+            .AddConfirmAction()
+            .ShowDialog(out var ver, Window.GetWindow(this));
+        if (r != 0) return;
+        if (!Version.TryParse(ver, out var version)) 
+            return;
+        SettingsService.Settings.LastAppVersion = version;
+        RequestRestart();
+    }
 }

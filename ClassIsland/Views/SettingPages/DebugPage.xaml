@@ -60,12 +60,16 @@
                     <controls1:DebugTimeControl/>
                 </MenuItem.CommandParameter>
             </MenuItem>
+            <Separator/>
+            <MenuItem Icon="{materialDesign:PackIcon ArrowLeftRight}" Header="Settings.ShowComponentsMigrateTip = true;"
+                      Click="MenuItemShowComponentsMigrateTips_OnClick"/>
+            <MenuItem Icon="{materialDesign:PackIcon CogOutline}" Header="覆盖设置版本"
+                      Click="MenuItemOverwriteSettingsVersion_OnClick"/>
             <Separator />
             <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发下课"
                                               Click="MenuItemDebugTriggerAfterClass_OnClick" />
             <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发上课"
                                               Click="MenuItemDebugTriggerOnClass_OnClick" />
-            <Separator />
             <MenuItem Icon="{materialDesign:PackIcon PlayOutline}" Header="启动主计时器"
                       Click="MenuItemStartMainTimer_OnClick" />
             <MenuItem Icon="{materialDesign:PackIcon Pause}" Header="停止主计时器"

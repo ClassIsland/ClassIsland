@@ -165,6 +165,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         { "moeyy", "https://github.moeyy.xyz/https://github.com" }
     };
 
+    private bool _isMigratedFromv14 = false;
+
     public void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
@@ -365,6 +367,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             {
                 App.GetService<ILogger<Settings>>().LogError(ex, "无法创建开机自启动快捷方式。");
             }
+        }
+    }
+
+    public bool IsReportingEnabled
+    {
+        get => _isReportingEnabled;
+        set
+        {
+            if (value == _isReportingEnabled) return;
+            _isReportingEnabled = value;
+            OnPropertyChanged();
         }
     }
 
@@ -1632,6 +1645,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _showComponentsMigrateTip) return;
             _showComponentsMigrateTip = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMigratedFromv1_4
+    {
+        get => _isMigratedFromv14;
+        set
+        {
+            if (value == _isMigratedFromv14) return;
+            _isMigratedFromv14 = value;
             OnPropertyChanged();
         }
     }
