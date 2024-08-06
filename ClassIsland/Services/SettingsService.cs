@@ -80,6 +80,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         }
         catch(Exception ex)
         {
+            SkipMigration = true;
             Logger.LogError(ex, "配置文件加载失败。");
             // ignored
         }
