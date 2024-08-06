@@ -255,6 +255,7 @@
                                                  materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
                                                  IsReadOnly="True"
                                                  IsReadOnlyCaretVisible="True"
+                                                 TextAlignment="Left" TextWrapping="Wrap"
                                                  Text="{Binding Exception, Mode=OneWay}"/>
                     </TabItem>
                 </TabControl>
