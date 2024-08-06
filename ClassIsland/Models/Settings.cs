@@ -340,6 +340,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [JsonIgnore]
     public bool IsAutoStartEnabled
     {
         get => File.Exists(
@@ -401,6 +402,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [JsonIgnore]
     public bool IsUrlProtocolRegistered
     {
         get => UriProtocolRegisterHelper.IsRegistered();
