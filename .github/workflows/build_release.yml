@@ -84,7 +84,7 @@ jobs:
           pwsh -ep Bypass -c ./tools/publish-nupkg.ps1 $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
-        if: ${{ ! startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }} 
+        if: ${{ github.event_name != 'pull_request' }} 
         env:
           GHPKG_KEY: ${{ secrets.GHPKG_KEY }}
         run: |
@@ -116,6 +116,16 @@ jobs:
       - name: Pre publish
         run: |
           pwsh -ep Bypass -c ./tools/pre-publish.ps1
+          
+      - name: Sentry Release
+        uses: getsentry/action-release@v1.7.0
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: classisland
+          SENTRY_PROJECT: classisland
+          SENTRY_URL: ${{ vars.SENTRY_URL }}
+        with:
+          environment: production
       
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
@@ -124,6 +134,13 @@ jobs:
           draft: true
           bodyFile: ./out/checksums.md
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Nuget packages to NuGet Gallery
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        run: |
+          dotnet nuget push ./out/*.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
           
       - name: Upload to AppCenter
         env:
