@@ -34,10 +34,10 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ### 其它功能
 - [X] 自动同步软件时间、手动对齐铃声
 - [X] [天气](https://docs.classisland.tech/zh-cn/latest/app/advanced/#天气)、极端天气预警
-- [X] 添加[组件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)（日期、时间、天气简报、倒计日等）和[插件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)
+- [X] 通过[组件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)（日期、时间、天气简报、倒计日等）和[插件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)高度自定义 ClassIsland
 - [X] 丝滑、流畅的过渡动画
 - [X] 自动获取与系统配色搭配的主题色
-- [X] 软件更新
+- [X] 自动软件更新
 - [ ] [集控管理](https://docs.classisland.tech/zh-cn/latest/management/) _(即将发布)_
 - [ ] ……
 
@@ -83,15 +83,14 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ## 开始使用
 
-### 1. 使用此软件需求
-
-首先，请确保您的设备满足以下推荐需求：
+**首先，请确保您的设备满足以下推荐需求：**
 - Windows 10 及以上版本的系统，x64 架构
 - 安装[.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
-如果要在 Windows 7 中使用 ClassIsland，请参阅[在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/zh-cn/latest/app/setup/#检查系统需求)。
-
-### 2. 下载软件压缩包
+> [!important]
+> **详细安装说明请参阅[ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/setup/)。**
+> 
+> 不建议在 Windows 10 以下的系统运行本应用。 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅[在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/zh-cn/latest/app/setup/#检查系统需求)。
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
@@ -102,52 +101,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 | GitHub | [**GitHub下载**](https://github.com/ClassIsland/ClassIsland/releases/latest) | [GitHub下载](https://github.com/ClassIsland/ClassIsland/releases) |
 | AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
-<details>
-<summary>（有关下载的疑难解答…）</summary>
-
-- #### 如果您使用 Github 下载
-通过上面的链接前往 Github 发布页后，在页面下方的 Assets 中点击 ClassIsland.zip。<br/>
-（ClassIsland_AssetsTrimmed.zip 是本软件的精简版本，删减了部分资源以换取更小的软件体积。）
-
-- #### 如果您使用 App Center 下载
-通过上面的链接前往 App Center 发布页后，在页面右上方点击蓝色 DOWNLOAD 按钮。
-
-- #### 如果您的网络环境不支持您下载
-您可以通过下列经授权的非官方镜像下载，然后通过内置的应用更新升级到最新版本。
-
-| 下载链接 | 密码 | 来源 |
-|:--:|:--:|:--:|
-| https://wwz.lanzouv.com/b00tao8lwb | 0556 | [MC_Sky](https://bilibili.com/read/cv35699004) |
-| https://pan.quark.cn/s/40d1dca97c3d | | |
-
----
-</details>
-
-### 3. 解压软件
-
-下载完成后，将软件压缩包解压到一个**独立的文件夹**，运行软件即可开始使用。
-
-> 本软件会在该文件夹中储存所有配置。在配置完成后，您可以直接将该文件夹带到学校使用。
-
-<details>
-<summary>（如果软件没有正确运行…）</summary>
-
-- #### 如果出现下图英文窗口
-<image src="https://github.com/user-attachments/assets/0e6738ec-ee9b-499d-8dec-07686dd0fabc" width="600"/>
-
-请点击 `Download it now` 安装 .NET 运行时，完成后重新打开本软件。
-
-- #### 如果您使用的是 Windows 7
-请参阅[在 Windows 7 上安装 ClassIsland](doc/InstallOnLegaceyOS.md)。
-
----
-</details>
-
-### 4. 开始使用
-
-首次启动时，会有一个简短的欢迎向导来引导您完成本软件的基本设置，并展示软件的一些基本操作。<p/>
-您也可以观看[入门教程视频](https://www.bilibili.com/video/BV1fA4m1A7uZ/?t=120)来快速上手本软件。<p/>
-如果您要进一步了解本软件，您可以阅读 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/) 或本软件内置的帮助文档。
+下载完成后，将软件压缩包解压到一个**独立的文件夹（运行路径不能有中文）**，运行软件即可开始使用。解压时请不要解压到网盘同步文件夹、【下载】文件夹中，否则可能会出现**文件无法读写、文件丢失**等问题。
 
 ## 获取帮助＆加入社区
 
