@@ -133,16 +133,12 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 <summary>（如果软件没有正确运行…）</summary>
 
 - #### 如果出现下图英文窗口
+<image src="https://github.com/user-attachments/assets/0e6738ec-ee9b-499d-8dec-07686dd0fabc" width="600"/>
+
 请点击 `Download it now` 安装 .NET 运行时，完成后重新打开本软件。
-<div align="center">
-<image src="https://github.com/user-attachments/assets/6f739809-e35a-4148-8cf4-53f20b68e35c" width="600"/>
-</div>
 
 - #### 如果您使用的是 Windows 7
 请参阅[在 Windows 7 上安装 ClassIsland](doc/InstallOnLegaceyOS.md)。
-
-- #### 如果 ClassIsland 弹出深色窗口提示您操作
-请根据软件的指引进行操作。
 
 ---
 </details>
