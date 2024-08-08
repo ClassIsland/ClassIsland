@@ -67,10 +67,6 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
 
         var item = typeof(ClassNotificationAttachedSettingsControl);
-        attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(item);
-        attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(item);
-        attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(item);
-        attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(item);
     }
 
     private void UpdateTimerTick(object? sender, EventArgs e)

@@ -362,6 +362,11 @@ public partial class App : AppBase, IAppHost
                 });
                 // Grpc
                 services.AddGrpcService<RemoteUriNavigationService>();
+                // AttachedSettings
+                services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();
@@ -450,11 +455,6 @@ public partial class App : AppBase, IAppHost
                 return;
             }
         }
-        var attachedSettingsHostService = GetService<IAttachedSettingsHostService>();
-        attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
-        attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
-        attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
-        attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(LessonControlAttachedSettingsControl));
         GetService<ISplashService>().CurrentProgress = 75;
 
         await GetService<IProfileService>().LoadProfileAsync();

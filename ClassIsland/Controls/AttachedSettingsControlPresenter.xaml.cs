@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-
+using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 
@@ -13,11 +14,11 @@ namespace ClassIsland.Controls;
 public partial class AttachedSettingsControlPresenter : UserControl
 {
     public static readonly DependencyProperty ControlInfoProperty = DependencyProperty.Register(
-        nameof(ControlInfo), typeof(Type), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(Type)));
+        nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(AttachedSettingsControlInfo)));
 
-    public Type? ControlInfo
+    public AttachedSettingsControlInfo? ControlInfo
     {
-        get => (Type)GetValue(ControlInfoProperty);
+        get => (AttachedSettingsControlInfo?)GetValue(ControlInfoProperty);
         set => SetValue(ControlInfoProperty, value);
     }
 
@@ -56,12 +57,14 @@ public partial class AttachedSettingsControlPresenter : UserControl
             return;
         }
 
-        ContentObject = Activator.CreateInstance(ControlInfo);
-        if (ContentObject is IAttachedSettingsControlBase c)
-        {
-            c.AttachedSettingsControlHelper.AttachedTarget = TargetObject;
-        }
+        TargetObject.AttachedObjects.TryGetValue(ControlInfo.Guid.ToLower(), out var settings);
+        ContentObject = AttachedSettingsControlBase.GetInstance(ControlInfo, ref settings);
+        //if (ContentObject is IAttachedSettingsControlBase c)
+        //{
+        //    c.AttachedSettingsControlHelper.AttachedTarget = TargetObject;
+        //}
         MainContentPresenter.Content = ContentObject;
+        TargetObject.AttachedObjects[ControlInfo.Guid] = settings;
     }
 
     public AttachedSettingsControlPresenter()

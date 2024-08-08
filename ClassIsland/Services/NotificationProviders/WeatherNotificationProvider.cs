@@ -61,8 +61,6 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         LessonsService = lessonsService;
 
         NotificationHostService.RegisterNotificationProvider(this);
-        attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
-        //attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(typeof(WeatherNotificationAttachedSettingsControl));
 
         Settings = NotificationHostService.GetNotificationProviderSettings
                        <WeatherNotificationProviderSettings>(ProviderGuid)

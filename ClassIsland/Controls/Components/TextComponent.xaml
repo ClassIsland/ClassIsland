@@ -10,9 +10,9 @@
                         xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
+    <controls:ComponentBase.Resources>
         <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
-    </UserControl.Resources>
+    </controls:ComponentBase.Resources>
     <Grid VerticalAlignment="Center" 
           DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponent}}">
         <TextBlock 

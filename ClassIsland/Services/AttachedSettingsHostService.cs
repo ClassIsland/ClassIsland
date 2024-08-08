@@ -11,16 +11,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services;
 
-public class AttachedSettingsHostService : IHostedService, IAttachedSettingsHostService
+public class AttachedSettingsHostService : IAttachedSettingsHostService
 {
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-    }
-
     public ObservableCollection<Type> TimePointSettingsAttachedSettingsControls { get; } = new();
     public ObservableCollection<Type> TimeLayoutSettingsAttachedSettingsControls { get; } = new();
     public ObservableCollection<Type> ClassPlanSettingsAttachedSettingsControls { get; } = new();

@@ -14,9 +14,9 @@
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800"
                         d:DataContext="{d:DesignInstance classIsland:MainWindow}">
-    <UserControl.Resources>
+    <controls:ComponentBase.Resources>
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
-    </UserControl.Resources>
+    </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CountDownComponent}}"
           VerticalAlignment="Center" TextElement.FontSize="16">
         <StackPanel Orientation="Horizontal">

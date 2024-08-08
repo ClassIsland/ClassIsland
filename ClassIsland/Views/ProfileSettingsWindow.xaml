@@ -21,6 +21,7 @@
                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                    xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                   xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -84,7 +85,7 @@
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
                 <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
-                <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
@@ -317,7 +318,7 @@
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
                 <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
-                <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
@@ -1520,7 +1521,7 @@
                                             <Separator Margin="0 20 0 8" />
                                             <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
                                             <ItemsControl
-                                                ItemsSource="{Binding AttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
+                                                ItemsSource="{x:Static services:IAttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
@@ -1740,7 +1741,7 @@
                                             <!-- 附加属性 -->
                                             <Separator Margin="0 20 0 8"/>
                                             <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8"/>
-                                            <ItemsControl ItemsSource="{Binding AttachedSettingsHostService.SubjectSettingsAttachedSettingsControls, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
+                                            <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.SubjectSettingsAttachedSettingsControls}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
