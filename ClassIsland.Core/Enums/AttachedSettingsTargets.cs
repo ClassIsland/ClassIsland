@@ -7,23 +7,27 @@
 public enum AttachedSettingsTargets
 {
     /// <summary>
+    /// 无
+    /// </summary>
+    None=0,
+    /// <summary>
     /// 表示可以附加到课程类型上。
     /// </summary>
-    Lesson,
+    Lesson=1,
     /// <summary>
     /// 表示可以附加到科目类型上。
     /// </summary>
-    Subject,
+    Subject=2,
     /// <summary>
     /// 表示可以附加到时间点类型上。
     /// </summary>
-    TimePoint,
+    TimePoint=4,
     /// <summary>
     /// 表示可以附加到课程表类型上。
     /// </summary>
-    ClassPlan,
+    ClassPlan=8,
     /// <summary>
     /// 表示可以附加到时间表类型上。
     /// </summary>
-    TimeLayout
+    TimeLayout=16
 }
