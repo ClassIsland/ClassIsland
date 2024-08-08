@@ -716,7 +716,7 @@ public partial class App : AppBase, IAppHost
             Current.Shutdown();
             try
             {
-                ReleaseLock();
+                //ReleaseLock();
             }
             catch (Exception e)
             {
