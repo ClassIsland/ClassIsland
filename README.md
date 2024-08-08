@@ -1,69 +1,83 @@
-# ClassIsland
+<div align="center">
 
-![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
+# <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28"/> ClassIsland
 
-![GitHub Repo stars](https://img.shields.io/github/stars/HelloWRC/ClassIsland)
-[![GitHub License](https://img.shields.io/github/license/HelloWRC/ClassIsland?style=flat-square)](LICENSE.txt)
-[![AppVeyor Build](https://img.shields.io/appveyor/build/HelloWRC/classisland-yw873?style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/HelloWRC/classisland-yw873) 
-[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=flat-square&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest) 
-[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=flat-square&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/)
-[![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
+![软件截图-主界面](https://github.com/ClassIsland/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3)
 
-ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具，可以一目了然地显示各种信息。本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
+[![stars](https://img.shields.io/github/stars/ClassIsland/ClassIsland?label=Stars)](https://github.com/ClassIsland/ClassIsland)
+[![Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=正式版)](https://github.com/ClassIsland/ClassIsland/releases/latest) 
+[![Beta](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=测试版)](https://github.com/ClassIsland/ClassIsland/releases/)
+[![Downloads](https://img.shields.io/github/downloads/ClassIsland/ClassIsland/total?style=social&label=下载量&logo=github)](https://github.com/ClassIsland/ClassIsland/releases/latest)
 
+ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具，可以在 Windows 屏幕上显示各种信息。<br/>
+本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
-[![官网](https://img.shields.io/badge/%E7%82%B9%E6%88%91%E6%89%93%E5%BC%80-%E5%AE%98%E7%BD%91-%114514cc?style=flat-square)](https://classisland.tech)
+#### [ClassIsland 网站](https://classisland.tech/)｜[ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/)｜[QQ 群: 958840932](https://qm.qq.com/q/4NsDQKiAuQ)
+
+###### [观看介绍视频，快速了解突破创新 →](https://bilibili.com/video/BV1Lt421n7op/)
+</div>
 
 ## 功能
+💡 您可以点击下方链接或查看[ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/)了解更多。
+
 ### 课表显示
-- [X] 显示当天的课表
-- [X] 显示目前进行的课程信息
-- [X] 在上下课、放学等重要时间点发出提醒
-- [X] 在发出提醒时使用语音、强调特效和音效增强提醒
+- [X] 显示当天的课表、当前进行课程的信息
+- [X] 在上下课等重要时间点发出[提醒](https://docs.classisland.tech/zh-cn/latest/app/notifications/)，自选搭配音效、强调特效和语音[增强提醒](https://docs.classisland.tech/zh-cn/latest/app/notifications/#强调提醒)
+- [X] 自选课表隐藏条件、临时隐藏与鼠标穿透，不影响授课
+
 ### 课表编辑与管理
-- [X] 简洁直观的课表编辑工具
-- [X] 从表格导入课表
-- [X] 临时与永久换课
-- [X] 临时启用某一个课表
+- [X] 简洁直观的[课表编辑工具](https://docs.classisland.tech/zh-cn/latest/app/classplan/)
+- [X] 从 Excel 或其他软件[导入课表](https://docs.classisland.tech/zh-cn/latest/app/profile-settings-page/#从表格导入)
+- [X] 多周轮换、快速录入时间表、自定义设置
+- [X] 临时换课、临时启用某个课表
+
 ### 其它功能
-- [X] 课表界面缩放，不透明度调节
-- [X] 自动同步软件时间，支持手动调整和自动累加时间偏移
-- [X] 天气、极端天气预警
-- [X] 快速显示（日期时间,考试倒计时,天气简报）
-- [X] 从壁纸提取软件主题色
+- [X] 自动同步软件时间、手动对齐铃声
+- [X] [天气](https://docs.classisland.tech/zh-cn/latest/app/advanced/#天气)、极端天气预警
+- [X] 添加[组件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)（日期、时间、天气简报、倒计日等）和[插件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)
 - [X] 丝滑、流畅的过渡动画
-- [X] 明亮、黑暗主题
+- [X] 自动获取与系统配色搭配的主题色
 - [X] 软件更新
-- [ ] 集控管理 _(即将发布)_
+- [ ] [集控管理](https://docs.classisland.tech/zh-cn/latest/management/) _(即将发布)_
 - [ ] ……
 
-<details>
-<summary><strong>🖼️软件截图</strong></summary>
-
->  背景图片来自[Pixiv@辰暮sora](https://www.pixiv.net/artworks/110847880)  
+## 软件截图
+> 背景图片来自 [Pixiv＠辰暮sora](https://pixiv.net/artworks/110847880)
 
 ### 主界面
 
 ##### 1.软件效果
-![软件截图-整体效果](https://github.com/HelloWRC/ClassIsland/assets/55006226/784a2f8c-a9e2-4656-b66d-9f8105f0600c)
-##### 2.软件主页面
-![软件截图-主界面](https://github.com/HelloWRC/ClassIsland/assets/55006226/5299c6e5-5668-43ed-af27-9abe027411a0)
-##### 3.演示上课提醒视频
-<video src="https://github.com/HelloWRC/ClassIsland/assets/55006226/b797138a-84ef-4296-b69b-3989f331f289" loop label="软件截图-上课提醒" autoplay muted></video>
+![软件截图-整体效果](https://github.com/ClassIsland/ClassIsland/assets/55006226/784a2f8c-a9e2-4656-b66d-9f8105f0600c)
+##### 2.演示上课提醒视频
+<video src="https://github.com/ClassIsland/ClassIsland/assets/55006226/b797138a-84ef-4296-b69b-3989f331f289" loop label="软件截图-上课提醒" autoplay muted></video>
+
+<details>
+<summary>查看更多软件截图…</summary>
 
 ### 档案编辑器
 
 ##### 1.课表编辑
-![软件截图-课表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/29d91bf2-4c8a-4cbd-a778-a9034e7d7420)
+![软件截图-课表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/29d91bf2-4c8a-4cbd-a778-a9034e7d7420)
 ##### 2.时间表编辑
-![软件截图-时间表编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/2b3b5c87-c8bb-46f0-8470-01edf3ca52a2)
+![软件截图-时间表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/2b3b5c87-c8bb-46f0-8470-01edf3ca52a2)
 ##### 3.科目编辑
-![软件截图-科目编辑](https://github.com/HelloWRC/ClassIsland/assets/55006226/a2e64983-dfa0-4565-a45a-31c9f9c298a8)
+![软件截图-科目编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/a2e64983-dfa0-4565-a45a-31c9f9c298a8)
 
 ### 设置界面
 
-![软件截图-应用设置](https://github.com/HelloWRC/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
+##### 1.基本设置
+![软件截图-应用设置](https://github.com/ClassIsland/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
+##### 2.组件设置
+![软件截图-组件设置](https://github.com/ClassIsland/ClassIsland/assets/55006226/4b2a761a-69cb-46a5-b23d-a7a8fcbf28c5)
 
+### 提醒
+
+##### 1.上课提醒
+![上课](https://github.com/ClassIsland/ClassIsland/assets/55006226/0c5dc1c0-2d9f-49d1-837c-5d97d613e52c)
+##### 2.下课提醒
+![下课](https://github.com/ClassIsland/ClassIsland/assets/55006226/2bd894ba-3ddb-4d05-92dc-583d0a0a485b)
+##### 3.天气预报
+![天气预报](https://github.com/ClassIsland/ClassIsland/assets/55006226/1b30cb01-7468-496f-a65d-7df3876c46fe)
 
 </details>
 
@@ -72,57 +86,92 @@ ClassIsland是一款适用于班级多媒体屏幕的课表的信息显示工具
 ### 1. 使用此软件需求
 
 首先，请确保您的设备满足以下推荐需求：
-- Windows 10 及以上版本的系统，x64架构
-- 已安装[.NET 8.0桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.1-windows-x64-installer)
-- <div style="opacity: 0.5">开启Aero效果（Windows 8及以上的系统可以忽略此项）</div>
+- Windows 10 及以上版本的系统，x64 架构
+- 安装[.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
-<details>
-<summary>最低设备需求</summary>
-
-ClassIsland 理论上可以在以下的系统环境中运行：
-
-- Windows 7 及以上版本系统，x64架构
-
-**注意：在这些系统上运行 ClassIsland 可能会出现运行不稳定的情况。**
-
-> ⚠️**不建议在 Windows 10 以下的系统运行本应用。** 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**（[#91](https://github.com/HelloWRC/ClassIsland/issues/91)），需要手动进行修复。
-
-要在 Windows 7 中安装并运行 ClassIsland，并修复内存泄漏问题，您还需要额外进行以下准备工作：
-[在Windows7中安装 ClassIsland](doc/InstallOnLegaceyOS.md)
-
-</details>
+如果要在 Windows 7 中使用 ClassIsland，请参阅[在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/zh-cn/latest/app/setup/#检查系统需求)。
 
 ### 2. 下载软件压缩包
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
-> 测试版包含最新的功能，但也可能包含未完善和不稳定的功能，请谨慎使用。<br/>
-> 每日构建包含最新的未经测试的功能，可能出现软件运行不稳定的问题，请谨慎使用。
+> 测试版包含最新的功能，但也可能包含未完善和不稳定的功能。
 
-| 下载渠道/通道 | **🚀正式版** <br/>[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?style=flat-square&logo=GitHub&color=%233fb950)](https://github.com/HelloWRC/ClassIsland/releases/latest)  | 🚧测试版<br/>[![GitHub Release](https://img.shields.io/github/v/release/HelloWRC/ClassIsland?include_prereleases&style=flat-square&logo=GitHub&label=BETA)](https://github.com/HelloWRC/ClassIsland/releases/) | 📅每日构建<br/>[![GitHub Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland_DailyBuild?include_prereleases&style=flat&logo=github&label=Daily%20Build)](https://github.com/ClassIsland/ClassIsland_DailyBuild/releases) |
-| -- | -- | -- | -- |
-| GitHub | [**GitHub下载**](https://github.com/HelloWRC/ClassIsland/releases/latest) | [GitHub下载](https://github.com/HelloWRC/ClassIsland/releases) | [GitHub下载](https://github.com/ClassIsland/ClassIsland_DailyBuild/releases) |
-| AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) | 🚫无 |
+| 下载渠道 | **🚀正式版**<br/>[![正式版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=)](https://github.com/ClassIsland/ClassIsland/releases/latest) | 🚧测试版<br/>[![测试版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)](https://github.com/ClassIsland/ClassIsland/releases/) |
+| :--: | :--: | :--: |
+| GitHub | [**GitHub下载**](https://github.com/ClassIsland/ClassIsland/releases/latest) | [GitHub下载](https://github.com/ClassIsland/ClassIsland/releases) |
+| AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
-<!-- > GitHub Releases 还没有同步历史版本。要下载历史版本，请前往[AppCenter](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)。 -->
+<details>
+<summary>（有关下载的疑难解答…）</summary>
+
+- #### 如果您使用 Github 下载
+通过上面的链接前往 Github 发布页后，在页面下方的 Assets 中点击 ClassIsland.zip。<br/>
+（ClassIsland_AssetsTrimmed.zip 是本软件的精简版本，删减了部分资源以换取更小的软件体积。）
+
+- #### 如果您使用 App Center 下载
+通过上面的链接前往 App Center 发布页后，在页面右上方点击蓝色 DOWNLOAD 按钮。
+
+- #### 如果您的网络环境不支持您下载
+您可以通过下列经授权的非官方镜像下载，然后通过内置的应用更新升级到最新版本。
+
+| 下载链接 | 密码 | 来源 |
+|:--:|:--:|:--:|
+| https://wwz.lanzouv.com/b00tao8lwb | 0556 | [MC_Sky](https://bilibili.com/read/cv35699004) |
+| https://pan.quark.cn/s/40d1dca97c3d | | |
+
+---
+</details>
 
 ### 3. 解压软件
 
-下载完成后，将软件压缩包解压到一个您喜欢的地方，运行软件即可开始使用。
+下载完成后，将软件压缩包解压到一个**独立的文件夹**，运行软件即可开始使用。
+
+> 本软件会在该文件夹中储存所有配置。在配置完成后，您可以直接将该文件夹带到学校使用。
+
+<details>
+<summary>（如果软件没有正确运行…）</summary>
+
+- #### 如果出现下图英文窗口
+请点击 `Download it now` 安装 .NET 运行时，完成后重新打开本软件。
+<div align="center">
+<image src="https://github.com/user-attachments/assets/6f739809-e35a-4148-8cf4-53f20b68e35c" width="600"/>
+</div>
+
+- #### 如果您使用的是 Windows 7
+请参阅[在 Windows 7 上安装 ClassIsland](doc/InstallOnLegaceyOS.md)。
+
+- #### 如果 ClassIsland 弹出深色窗口提示您操作
+请根据软件的指引进行操作。
+
+---
+</details>
 
 ### 4. 开始使用
 
-首次启动时，会有一个简短的欢迎向导来引导您完成本软件的基本设置，并展示软件的一些基本操作。
+首次启动时，会有一个简短的欢迎向导来引导您完成本软件的基本设置，并展示软件的一些基本操作。<p/>
+您也可以观看[入门教程视频](https://www.bilibili.com/video/BV1fA4m1A7uZ/?t=120)来快速上手本软件。<p/>
+如果您要进一步了解本软件，您可以阅读 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/) 或本软件内置的帮助文档。
 
-#### 您也可以观看[![入门教程视频](https://img.shields.io/badge/ClassIsland%E5%85%A5%E9%97%A8%E8%A7%86%E9%A2%91-250067cc?style=flat-square&logo=bilibili)](https://www.bilibili.com/video/BV1fA4m1A7uZ/)来快速上手本软件。如果您要进一步了解本软件，您可以阅读本软件内置的帮助文档。
+## 获取帮助＆加入社区
 
+您可以访问以下页面来**获取帮助**：
+
+- 应用内置的帮助文档
+- [ClassIsland 帮助文档](https://docs.classisland.tech/zh-cn/latest/app/)
+
+您也可以加入这些社区**寻求帮助**：
+
+[![GitHub Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Issues&color=%233fb950)]() [![GitHub Discussions](https://img.shields.io/github/discussions/ClassIsland/ClassIsland?style=flat-square&logo=Github&label=Discussions)](https://github.com/ClassIsland/ClassIsland/discussions) [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
+
+如果您确定您遇到的问题是一个 **Bug**，或者您要提出一项**新的功能**，请[提交 Issue](https://github.com/ClassIsland/ClassIsland/issues/new/choose)。
 
 ## 开发
 
 本项目目前开发状态：
 
-- 正在[`dev`](https://github.com/HelloWRC/ClassIsland/tree/dev)分支上开发版本 [1.5 - Griseo](https://github.com/HelloWRC/ClassIsland/milestone/6)。
-- 正在[`master`](https://github.com/HelloWRC/ClassIsland/tree/master)分支上维护版本 [1.4 - Firefly](https://github.com/HelloWRC/ClassIsland/milestone/5)。
+- 正在[`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev)分支上开发版本 [1.5 - Griseo](https://github.com/ClassIsland/ClassIsland/milestone/6)。
+- 正在[`master`](https://github.com/ClassIsland/ClassIsland/tree/master)分支上维护版本 [1.4 - Firefly](https://github.com/ClassIsland/ClassIsland/milestone/5)。
 
 要在本地编译应用，您需要安装以下负载和工具：
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
@@ -131,27 +180,7 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 对于Visual Studio，您需要在安装时勾选以下工作负载：
 - .NET 桌面开发
 
-
-如果您有意愿为 ClassIsland 做出代码贡献，请先阅读[贡献指南](CONTRIBUTING.md)来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/HelloWRC/ClassIsland/pulls)。
-
-## 获取帮助&加入社区
-
-[![查看Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Opened%20issues&color=%233fb950)]() [![GitHub Discussions](https://img.shields.io/github/discussions/HelloWRC/ClassIsland?style=flat-square&logo=Github)](https://github.com/HelloWRC/ClassIsland/discussions) [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ) 
-
-您可以访问以下页面来获取**帮助**：
-
-- 应用内置的帮助文档
-- [技术性文档](https://classisland-docs.readthedocs.io/)
-
-- 您也可以加入上方的社区获取帮助
-
-如果您确定您遇到的问题是一个 **BUG**，或者您要提出一项**新的功能**，请[提交一个Issue](https://github.com/HelloWRC/ClassIsland/issues/new/choose)。
-
-## 相关项目
-
-- [ClassIsland/ManagementServer](https://github.com/ClassIsland/ManagementServer) - **ClassIsland 集控服务端仓库**
-- [ClassIsland/classisland-docs](https://github.com/ClassIsland/classisland-docs) - **ClassIsland 文档仓库**
-
+如果您有意愿为 ClassIsland 做出代码贡献，请先阅读[贡献指南](CONTRIBUTING.md)来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/ClassIsland/ClassIsland/pulls)。
 
 ## 致谢
 
@@ -159,10 +188,9 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 [![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
-本项目受到[DuguSand/class_form](https://github.com/DuguSand/class_form)的启发而开发。
+本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
 
-感谢以下同学为本项目为本项目的开发提供支持([emoji key](https://allcontributors.org/docs/en/emoji-key))：
-
+感谢以下同学为本项目为本项目的开发提供支持（[Emoji Key✨和贡献类型](https://allcontributors.org/docs/zh-cn/emoji-key)）：
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -193,7 +221,6 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-
 本项目使用到的第三方库和框架：
 - [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/)
 - [ReoGrid](https://github.com/unvell/ReoGrid)
@@ -211,14 +238,19 @@ ClassIsland 理论上可以在以下的系统环境中运行：
 - [WPF](https://github.com/dotnet/Wpf)
 - [.NET](https://github.com/microsoft/dotnet)
 
-详细的致谢信息请前往【应用设置】->【关于】界面中查看。
-
+详细的致谢信息请前往【应用设置】->【关于 ClassIsland】界面中查看。
 
 ## 许可证
-
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland?ref=badge_shield&style=flat-square) 
 
 本项目基于 [MIT License](LICENSE.txt) 获得许可。
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland?ref=badge_large)
+
+
+
+[![Star 历史](https://starchart.cc/ClassIsland/ClassIsland.svg)](https://starchart.cc/caarlos0/starcharts)
+<div align="center">
+如果这个项目对您有帮助，请点亮 Star ⭐
+</div>
