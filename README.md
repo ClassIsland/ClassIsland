@@ -54,6 +54,15 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 <details>
 <summary>查看更多软件截图…</summary>
 
+### 提醒
+
+##### 1.上课提醒
+![上课](https://github.com/user-attachments/assets/965815a0-9e2a-49bb-85b2-18398e3a16bf)
+##### 2.下课提醒
+![下课](https://github.com/user-attachments/assets/c6059b99-f06e-442d-b73e-80d63b7e06aa)
+##### 3.天气预报
+![天气预报](https://github.com/user-attachments/assets/d8b308d3-986f-4768-93ac-f6d634394f98)
+
 ### 档案编辑器
 
 ##### 1.课表编辑
@@ -68,16 +77,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ##### 1.基本设置
 ![软件截图-应用设置](https://github.com/ClassIsland/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
 ##### 2.组件设置
-![软件截图-组件设置](https://github.com/ClassIsland/ClassIsland/assets/55006226/4b2a761a-69cb-46a5-b23d-a7a8fcbf28c5)
-
-### 提醒
-
-##### 1.上课提醒
-![上课](https://github.com/ClassIsland/ClassIsland/assets/55006226/0c5dc1c0-2d9f-49d1-837c-5d97d613e52c)
-##### 2.下课提醒
-![下课](https://github.com/ClassIsland/ClassIsland/assets/55006226/2bd894ba-3ddb-4d05-92dc-583d0a0a485b)
-##### 3.天气预报
-![天气预报](https://github.com/ClassIsland/ClassIsland/assets/55006226/1b30cb01-7468-496f-a65d-7df3876c46fe)
+![软件截图-组件设置](https://github.com/user-attachments/assets/e6185858-ae21-4fc4-8e08-2dc253075f66)
 
 </details>
 
@@ -248,9 +248,10 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland?ref=badge_large)
 
+## Stars 历史
 
-
-[![Star 历史](https://starchart.cc/ClassIsland/ClassIsland.svg)](https://starchart.cc/caarlos0/starcharts)
+[![Star 历史](https://starchart.cc/ClassIsland/ClassIsland.svg?line=%2300bfff)](https://starchart.cc/caarlos0/starcharts)
 <div align="center">
 如果这个项目对您有帮助，请点亮 Star ⭐
+
 </div>
