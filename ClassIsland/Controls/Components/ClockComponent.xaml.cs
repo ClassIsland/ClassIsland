@@ -28,12 +28,9 @@ namespace ClassIsland.Controls.Components;
 [ComponentInfo("9E1AF71D-8F77-4B21-A342-448787104DD9", "时钟", PackIconKind.ClockDigital, "显示现在的时间，支持精确到秒。")]
 public partial class ClockComponent : ComponentBase<ClockComponentSettings>, INotifyPropertyChanged
 {
-    private string _currentTime = "";
-    public ILessonsService LessonsService { get; }
+    private DateTime _currentTime = DateTime.Now;
 
-    public IExactTimeService ExactTimeService { get; }
-
-    public string CurrentTime
+    public DateTime CurrentTime
     {
         get => _currentTime;
         set
@@ -44,20 +41,34 @@ public partial class ClockComponent : ComponentBase<ClockComponentSettings>, INo
         }
     }
 
+    private bool _isTimeSeparatorShowing = true;
+
+    public bool IsTimeSeparatorShowing
+    {
+        get => _isTimeSeparatorShowing;
+        set
+        {
+            if (value == _isTimeSeparatorShowing) return;
+            _isTimeSeparatorShowing = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ILessonsService LessonsService { get; }
+
+    public IExactTimeService ExactTimeService { get; }
+
     public ClockComponent(ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
         InitializeComponent();
 
-        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-    }
-
-    private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
-    {
-        var time = ExactTimeService.GetCurrentLocalDateTime();
-        CurrentTime = Settings.ShowSeconds ? time.ToLongTimeString() :
-                      time.Second % 2 == 1 ? time.ToShortTimeString() : time.ToShortTimeString().Replace(":", " ");
+        LessonsService.PostMainTimerTicked += (_, _) =>
+        {
+            CurrentTime = ExactTimeService.GetCurrentLocalDateTime();
+            IsTimeSeparatorShowing = CurrentTime.Second % 2 == 1 || Settings.ShowSeconds;
+        };
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -6,13 +6,34 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                         xmlns:local="clr-namespace:ClassIsland.Controls.Components"
                         xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
-                        xmlns:classIsland="clr-namespace:ClassIsland"
+                        xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponent}}">
-        <TextBlock Text="{Binding CurrentTime}"
-                   FontSize="18"
-                   VerticalAlignment="Center"/>
+    <controls:ComponentBase.Resources>
+        <converters:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter"/>
+    </controls:ComponentBase.Resources>
+    <Grid VerticalAlignment="Center" TextElement.FontSize="18" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponent}}">
+        <TextBlock>
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsTimeSeparatorShowing}" Value="False">
+                            <Setter Property="Visibility" Value="Hidden" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Settings.ShowSeconds}" Value="False">
+                            <Setter Property="Text" Value="{Binding CurrentTime, StringFormat={}{0:HH:mm}}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="Text" Value="{Binding CurrentTime, StringFormat={}{0:HH:mm:ss}}" />
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <TextBlock HorizontalAlignment="Left"
+                   Text="{Binding CurrentTime, StringFormat={}{0:HH}}"
+                   Visibility="{Binding IsTimeSeparatorShowing, Converter={StaticResource BooleanToVisibilityReConverter}}"/>
+        <TextBlock HorizontalAlignment="Right"
+                   Text="{Binding CurrentTime, StringFormat={}{0:mm}}"
+                   Visibility="{Binding IsTimeSeparatorShowing, Converter={StaticResource BooleanToVisibilityReConverter}}"/>
     </Grid>
 </controls:ComponentBase>
