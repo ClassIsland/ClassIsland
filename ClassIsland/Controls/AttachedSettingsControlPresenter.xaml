@@ -4,10 +4,26 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <ContentPresenter x:Name="MainContentPresenter"/>
-        <!--<TextBlock Text="123111"></TextBlock>-->
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
+        <Expander materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
+                  materialDesign:ExpanderAssist.VerticalHeaderPadding="0"
+                  IsExpanded="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled, Mode=OneWay}">
+            <Expander.Header>
+                <DockPanel>
+                    <ToggleButton DockPanel.Dock="Right"
+                                  IsChecked="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled}"
+                                  ToolTip="是否在此处启用特定的设置"
+                                  Content="{materialDesign:PackIcon LayersOutline}"
+                                  Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <ci:IconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
+                                 Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"/>
+                </DockPanel>
+            </Expander.Header>
+            <ContentPresenter x:Name="MainContentPresenter" IsEnabled="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled, Mode=OneWay}"/>
+        </Expander>
     </Grid>
 </UserControl>

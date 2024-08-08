@@ -40,6 +40,15 @@ public partial class AttachedSettingsControlPresenter : UserControl
         set => SetValue(ContentObjectProperty, value);
     }
 
+    public static readonly DependencyProperty AssociatedAttachedSettingsProperty = DependencyProperty.Register(
+        nameof(AssociatedAttachedSettings), typeof(IAttachedSettings), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(IAttachedSettings?)));
+
+    public IAttachedSettings? AssociatedAttachedSettings
+    {
+        get { return (IAttachedSettings?)GetValue(AssociatedAttachedSettingsProperty); }
+        set { SetValue(AssociatedAttachedSettingsProperty, value); }
+    }
+
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
     {
@@ -65,6 +74,7 @@ public partial class AttachedSettingsControlPresenter : UserControl
         //}
         MainContentPresenter.Content = ContentObject;
         TargetObject.AttachedObjects[ControlInfo.Guid] = settings;
+        AssociatedAttachedSettings = settings as IAttachedSettings;
     }
 
     public AttachedSettingsControlPresenter()

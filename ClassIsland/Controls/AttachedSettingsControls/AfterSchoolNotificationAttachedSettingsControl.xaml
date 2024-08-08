@@ -12,21 +12,17 @@
                                 mc:Ignorable="d" 
                                 d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AfterSchoolNotificationAttachedSettingsControl}}">
-        <!-- 启用特定的放学提醒设置 -->
-        <CheckBox IsChecked="{Binding Settings.IsAttachSettingsEnabled}" 
-                  Content="启用特定的放学提醒设置。"
+
+        <!-- 启用放学提醒 -->
+        <CheckBox IsChecked="{Binding Settings.IsEnabled}" 
+                  Content="启用放学提醒。"
                   Margin="0 0 0 6"/>
-        <StackPanel Visibility="{Binding Settings.IsAttachSettingsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <!-- 启用放学提醒 -->
-            <CheckBox IsChecked="{Binding Settings.IsEnabled}" 
-                      Content="启用放学提醒。"
-                      Margin="0 0 0 6"/>
-            <!-- 放学提醒文字 -->
-            <TextBox Text="{Binding Settings.NotificationMsg}"
-                     materialDesign:HintAssist.Hint="放学提醒文字"
-                     Foreground="{DynamicResource MaterialDesignBody}"
-                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                     Margin="0 0 0 6"/>
-        </StackPanel>
+        <!-- 放学提醒文字 -->
+        <TextBox Text="{Binding Settings.NotificationMsg}"
+                 materialDesign:HintAssist.Hint="放学提醒文字"
+                 Foreground="{DynamicResource MaterialDesignBody}"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 0 0 6"/>
+
     </StackPanel>
 </ci:AttachedSettingsControlBase>

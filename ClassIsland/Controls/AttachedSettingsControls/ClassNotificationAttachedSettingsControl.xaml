@@ -18,37 +18,33 @@
         <converters1:IntToStringConverter x:Key="IntToStringConverter" />
     </UserControl.Resources>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationAttachedSettingsControl}}">
-        <!-- 启用特定的上课提醒设置 -->
-        <CheckBox IsChecked="{Binding Settings.IsAttachSettingsEnabled}" 
-                  Content="启用特定的上课提醒设置。"
+
+       <!-- 启用准备上课提醒 -->
+        <CheckBox IsChecked="{Binding Settings.IsClassOnPreparingNotificationEnabled}" 
+                  Content="启用准备上课提醒。"
                   Margin="0 0 0 6"/>
-        <StackPanel Visibility="{Binding Settings.IsAttachSettingsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <!-- 启用准备上课提醒 -->
-            <CheckBox IsChecked="{Binding Settings.IsClassOnPreparingNotificationEnabled}" 
-                      Content="启用准备上课提醒。"
-                      Margin="0 0 0 6"/>
-            <!-- 启用上课提醒 -->
-            <CheckBox IsChecked="{Binding Settings.IsClassOnNotificationEnabled}" 
-                      Content="启用上课提醒。"
-                      Margin="0 0 0 6"/>
-            <!-- 启用下课提醒 -->
-            <CheckBox IsChecked="{Binding Settings.IsClassOffNotificationEnabled}" 
-                      Content="启用下课提醒。"
-                      Margin="0 0 0 6"/>
-            <!-- 准备上课提醒时间 -->
-            <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
-                                      Text="{Binding Settings.ClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
-                                      materialDesign:HintAssist.Hint="准备上课提醒时间"
-                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                      materialDesign:TextFieldAssist.SuffixText="秒" 
-                                      Margin="0 0 0 6"/>
-            <!-- 准备上课提醒文字 -->
-            <TextBox Text="{Binding Settings.ClassOnPreparingText}"
-                     materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
-                     Foreground="{DynamicResource MaterialDesignBody}"
-                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                     Margin="0 0 0 6"/>
-        </StackPanel>
+        <!-- 启用上课提醒 -->
+        <CheckBox IsChecked="{Binding Settings.IsClassOnNotificationEnabled}" 
+                  Content="启用上课提醒。"
+                  Margin="0 0 0 6"/>
+        <!-- 启用下课提醒 -->
+        <CheckBox IsChecked="{Binding Settings.IsClassOffNotificationEnabled}" 
+                  Content="启用下课提醒。"
+                  Margin="0 0 0 6"/>
+        <!-- 准备上课提醒时间 -->
+        <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
+                                  Text="{Binding Settings.ClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
+                                  materialDesign:HintAssist.Hint="准备上课提醒时间"
+                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                  materialDesign:TextFieldAssist.SuffixText="秒" 
+                                  Margin="0 0 0 6"/>
+        <!-- 准备上课提醒文字 -->
+        <TextBox Text="{Binding Settings.ClassOnPreparingText}"
+                 materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
+                 Foreground="{DynamicResource MaterialDesignBody}"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 0 0 6"/>
+
     </StackPanel>
 </ci:AttachedSettingsControlBase>
