@@ -167,6 +167,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     private bool _isMigratedFromv14 = false;
     private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
+    private bool _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1670,6 +1671,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isMigratedFromv14) return;
             _isMigratedFromv14 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsProfileEditorClassInfoSubjectAutoMoveNextEnabled
+    {
+        get => _isProfileEditorClassInfoSubjectAutoMoveNextEnabled;
+        set
+        {
+            if (value == _isProfileEditorClassInfoSubjectAutoMoveNextEnabled) return;
+            _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = value;
             OnPropertyChanged();
         }
     }

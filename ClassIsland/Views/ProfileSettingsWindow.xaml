@@ -22,6 +22,7 @@
                    xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                    xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+                   xmlns:controls2="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -693,8 +694,9 @@
                         <TabItem Header="课表" Visibility="Collapsed">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
+                                    <ColumnDefinition Width="5"/>
+                                    <ColumnDefinition Width="2*"/>
                                 </Grid.ColumnDefinitions>
                                 <!-- 课表选择 -->
                                 <Grid Grid.Column="0" Margin="0 0 3 0">
@@ -704,8 +706,7 @@
                                     </Grid.RowDefinitions>
                                     <!-- 课表操作 -->
                                     <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
-                                        <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。"
-                                                Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
+                                        <Button Click="ButtonAddClassPlan_OnClick" ToolTip="新建课表。">
                                             <controls1:IconText Kind="Add" Text="添加"/>
                                         </Button>
                                         <Button Click="ButtonDuplicateClassPlan_OnClick" ToolTip="复制选中的课表。"
@@ -736,6 +737,8 @@
                                              SelectionChanged="ListViewClassPlans_OnSelectionChanged"
                                              SelectionMode="Single"
                                              HorizontalContentAlignment="Stretch"
+                                             SelectedValue="{Binding ViewModel.SelectedClassPlan}"
+                                             SelectedValuePath="Value"
                                              ItemsSource="{Binding Source={StaticResource ClassPlansViewSource}}"
                                              x:Name="ListViewClassPlans"
                                              Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
@@ -783,7 +786,7 @@
                                         </ListView.GroupStyle>
                                         <ListView.ItemTemplate>
                                             <DataTemplate>
-                                                <Grid>
+                                                <Grid Margin="0 -4">
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition/>
                                                         <ColumnDefinition Width="Auto"/>
@@ -797,7 +800,7 @@
                                                                    VerticalAlignment="Center"/>
                                                         <!-- 课表启用规则 -->
                                                         <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                                Margin="2 -8"
+                                                                Margin="2 0"
                                                                 Padding="8 0"
                                                                 VerticalAlignment="Center"
                                                                 BorderBrush="{DynamicResource PrimaryHueMidBrush}">
@@ -895,7 +898,7 @@
 
                                                         <!-- 时间表 -->
                                                         <Border MinWidth="20" Height="24" CornerRadius="12"
-                                                                Margin="2 -8"
+                                                                Margin="2 0"
                                                                 Padding="8 0"
                                                                 VerticalAlignment="Center">
                                                             <Border.Style>
@@ -942,9 +945,13 @@
                                         </ListView.ItemTemplate>
                                     </ListView>
                                 </Grid>
+                                
+                                <!-- Splitter -->
+                                <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"/>
 
                                 <!-- 课表编辑 -->
-                                <Grid Grid.Column="1" IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
+                                <Grid Grid.Column="2" IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
                                     <Grid Margin="3 0 0 0"
                                           DataContext="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}">
                                         <Grid.Style>
@@ -1012,7 +1019,14 @@
 
                                         <!-- 课表编辑 -->
                                         <Grid Grid.Row="1">
-                                            <DataGrid AutoGenerateColumns="False"
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="5"/>
+                                                <ColumnDefinition Width="350" MinWidth="300" MaxWidth="450"/>
+                                            </Grid.ColumnDefinitions>
+                                            <DataGrid Grid.Column="0"
+                                                      Margin="0 0 4 0"
+                                                      AutoGenerateColumns="False"
                                                       ItemsSource="{Binding Classes}"
                                                       CanUserAddRows="False"
                                                       CanUserSortColumns="False"
@@ -1022,7 +1036,9 @@
                                                       x:Name="DataGridClassPlans"
                                                       UnloadingRow="DataGridClassPlans_OnUnloadingRow"
                                                       BeginningEdit="DataGridClassPlans_OnBeginningEdit"
-                                                      CellEditEnding="DataGridClassPlans_OnCellEditEnding">
+                                                      CellEditEnding="DataGridClassPlans_OnCellEditEnding"
+                                                      SelectedIndex="{Binding ViewModel.SelectedClassIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
+                                                      SelectedItem="{Binding ViewModel.SelectedClassInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                                 <DataGrid.Columns>
                                                     <DataGridTemplateColumn Header="时间" IsReadOnly="True">
                                                         <DataGridTemplateColumn.CellTemplate>
@@ -1044,6 +1060,106 @@
                                                         EditingElementStyle="{StaticResource ClassPlanDataGridComboBoxStyle}" />
                                                 </DataGrid.Columns>
                                             </DataGrid>
+
+                                            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
+                                                          VerticalAlignment="Stretch"/>
+
+                                            <TabControl Grid.Column="2"
+                                                        HorizontalContentAlignment="Left">
+                                                <TabControl.Style>
+                                                    <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ViewModel.SelectedClassInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        
+                                                    </Style>
+                                                </TabControl.Style>
+                                                <TabItem Header="编辑科目">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <ListBox
+                                                            Grid.Row="0"
+                                                            SelectedValuePath="Key"
+                                                            SelectedValue="{Binding ViewModel.SelectedClassInfo.SubjectId, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, FallbackValue=''}"
+                                                            ItemsSource="{Binding ProfileService.Profile.Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"
+                                                            Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                                                            <ListBox.ItemContainerStyle>
+                                                                <Style
+                                                                    BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}"
+                                                                    TargetType="ListBoxItem">
+                                                                    <Setter Property="Margin" Value="1" />
+                                                                    <Setter Property="Padding" Value="0" />
+                                                                    
+                                                                </Style>
+                                                            </ListBox.ItemContainerStyle>
+                                                            <ListBox.ItemsPanel>
+                                                                <ItemsPanelTemplate>
+                                                                    <controls2:VirtualizingWrapPanel />
+                                                                </ItemsPanelTemplate>
+                                                            </ListBox.ItemsPanel>
+                                                            <ListBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <Border Padding="9" Background="Transparent" MouseUp="EventSetterSubjectSelector_OnClick"> 
+                                                                        <TextBlock Text="{Binding Value.Initial}"
+                                                                                   FontSize="18"
+                                                                                   Background="Transparent"
+                                                                                   />
+                                                                    </Border>
+                                                                </DataTemplate>
+                                                            </ListBox.ItemTemplate>
+                                                        </ListBox>
+                                                        <StackPanel Grid.Row="1" >
+                                                            <materialDesign:ColorZone Background="#20A0D9B4" Visibility="{Binding ViewModel.IsClassPlanEditComplete, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
+                                                                <DockPanel Margin="8 0 4 0">
+                                                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                            Content="{materialDesign:PackIcon Close}"
+                                                                            VerticalAlignment="Center"
+                                                                            DockPanel.Dock="Right"
+                                                                            ToolTip="关闭"
+                                                                            Click="ButtonCloseCompleteTip_OnClick"/>
+                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                            DockPanel.Dock="Right"
+                                                                            Click="ButtonAddClassPlanFromCompletedTip_OnClick"
+                                                                            materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
+                                                                            Foreground="{DynamicResource MaterialDesignBody}">
+                                                                        <controls1:IconText Kind="Add" Text="添加课表"/>
+                                                                    </Button>
+                                                                    <controls1:IconText Kind="DoneOutline" Text="此课表已完成录入。"
+                                                                        VerticalAlignment="Center"/>
+                                                                </DockPanel>
+                                                            </materialDesign:ColorZone>
+                                                            <CheckBox Margin="8"
+                                                                      IsChecked="{Binding MainViewModel.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"  Content="选完科目自动移动到下一个课程"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </TabItem>
+                                                <TabItem Header="附加设置结果">
+
+                                                </TabItem>
+                                            </TabControl>
+
+                                            <StackPanel Grid.Column="2" 
+                                                        VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ViewModel.SelectedClassInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <materialDesign:PackIcon Kind="FileChartOutline" Width="72" Height="72"
+                                                                         HorizontalAlignment="Center"/>
+                                                <TextBlock Text="在左侧课表中选择一节课程，然后在此处进行设置。" TextWrapping="Wrap"
+                                                           Margin="0 8 0 0"/>
+                                            </StackPanel>
                                         </Grid>
                                         <!-- 关闭前警告 -->
                                         <materialDesign:ColorZone Grid.Row="2" Background="Yellow"
@@ -1054,7 +1170,7 @@
                                         </materialDesign:ColorZone>
                                     </Grid>
                                 </Grid>
-                                <StackPanel Grid.Column="1" 
+                                <StackPanel Grid.Column="2" 
                                             VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <StackPanel.Style>
                                         <Style TargetType="StackPanel">

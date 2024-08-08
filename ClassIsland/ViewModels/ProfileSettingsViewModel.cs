@@ -27,6 +27,11 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isPanningModeEnabled = false;
     private bool _isDragEntering = false;
     private string _tempOverlayClassPlanTimeLayoutId = "";
+    private ClassInfo?  _selectedClassInfo;
+    private int _selectedClassIndex = -1;
+    private ClassPlan _selectedClassPlan = new();
+    private bool _isUpdatingClassInfoIndexInBackend = false;
+    private bool _isClassPlanEditComplete = false;
 
     public object DrawerContent
     {
@@ -205,6 +210,61 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (value == _tempOverlayClassPlanTimeLayoutId) return;
             _tempOverlayClassPlanTimeLayoutId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ClassInfo? SelectedClassInfo
+    {
+        get => _selectedClassInfo;
+        set
+        {
+            if (Equals(value,  _selectedClassInfo)) return;
+             _selectedClassInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int SelectedClassIndex
+    {
+        get => _selectedClassIndex;
+        set
+        {
+            if (value == _selectedClassIndex) return;
+            _selectedClassIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ClassPlan SelectedClassPlan
+    {
+        get => _selectedClassPlan;
+        set
+        {
+            if (Equals(value, _selectedClassPlan)) return;
+            _selectedClassPlan = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsUpdatingClassInfoIndexInBackend
+    {
+        get => _isUpdatingClassInfoIndexInBackend;
+        set
+        {
+            if (value == _isUpdatingClassInfoIndexInBackend) return;
+            _isUpdatingClassInfoIndexInBackend = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClassPlanEditComplete
+    {
+        get => _isClassPlanEditComplete;
+        set
+        {
+            if (value == _isClassPlanEditComplete) return;
+            _isClassPlanEditComplete = value;
             OnPropertyChanged();
         }
     }
