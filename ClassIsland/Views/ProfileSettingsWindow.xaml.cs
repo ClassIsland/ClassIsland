@@ -597,7 +597,7 @@ public partial class ProfileSettingsWindow : MyWindow
         if (e.OriginalSource.GetType() != typeof(TabControl))
             return;
         var c = ViewModel.SelectedClassPlan;
-        c.RefreshClassesList();
+        c?.RefreshClassesList();
     }
 
     private void ButtonProfileManage_OnClick(object sender, RoutedEventArgs e)

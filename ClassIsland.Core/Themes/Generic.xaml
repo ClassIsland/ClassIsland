@@ -11,6 +11,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/LessonsControls/LessonsListBox.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/IconControl/IconControl.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Themes/MaterialProgressBar.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     

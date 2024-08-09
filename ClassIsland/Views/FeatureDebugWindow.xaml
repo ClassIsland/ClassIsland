@@ -22,6 +22,11 @@
         <TabControl HorizontalContentAlignment="Left">
             <TabItem Header="IconControl">
                 <Grid>
+                    <ProgressBar IsIndeterminate="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="IconControl">
+                <Grid>
                     <ci:IconControl PackIconKind="Github"
                                     Width="64" Height="64"
                                     IconKind="Image"

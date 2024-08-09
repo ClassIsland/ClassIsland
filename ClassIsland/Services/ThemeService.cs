@@ -100,6 +100,7 @@ public class ThemeService : IHostedService, IThemeService
         paletteHelper.SetTheme(theme);
         CurrentTheme = theme;
         Logger.LogInformation("设置主题：{}", theme);
+        CurrentRealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1;
         ThemeUpdated?.Invoke(this, new ThemeUpdatedEventArgs
         {
             ThemeMode = themeMode,
@@ -107,6 +108,5 @@ public class ThemeService : IHostedService, IThemeService
             Secondary = secondary,
             RealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1
         });
-        CurrentRealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1;
     }
 }

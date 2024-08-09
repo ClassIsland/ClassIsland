@@ -2111,6 +2111,6 @@
 
         <!-- 顶层元素 -->
         <materialDesign:Snackbar VerticalAlignment="Bottom" MessageQueue="{Binding ViewModel.MessageQueue}"/>
-        <windows:AsyncBox VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
+        <windows:AsyncBox VerticalAlignment="Bottom" Height="6" LoadingViewType="controls:LoadingMask"/>
     </Grid>
 </controls1:MyWindow>

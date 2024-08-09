@@ -145,6 +145,6 @@
             <controls1:StarRailLoadingControl VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
 
-        <windows:AsyncBox Grid.Row="0" Grid.RowSpan="4" VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
+        <windows:AsyncBox Grid.Row="0" Grid.RowSpan="4" VerticalAlignment="Bottom" Height="6" LoadingViewType="controls:LoadingMask"/>
     </Grid>
 </controls1:MyWindow>

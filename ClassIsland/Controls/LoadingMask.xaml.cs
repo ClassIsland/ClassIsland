@@ -28,7 +28,10 @@ public partial class LoadingMask : UserControl
         var isLightMode = ThemeService.CurrentRealThemeMode == 0;
         var black = Color.FromArgb(255, 48, 48, 48);
         var white = Color.FromArgb(255, 242, 242, 242);
-        var primary = ThemeService.CurrentTheme?.PrimaryMid.Color ?? Colors.DodgerBlue;
+        var primary =
+            (ThemeService.CurrentRealThemeMode == 0
+                ? ThemeService.CurrentTheme?.PrimaryDark.Color
+                : ThemeService.CurrentTheme?.PrimaryLight.Color) ?? Colors.DodgerBlue;
         Dispatcher.Invoke(() =>
         {
             MetroProgressBar.Foreground = new SolidColorBrush(primary);
