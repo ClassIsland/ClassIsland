@@ -312,6 +312,8 @@ public partial class App : AppBase, IAppHost
                 {
                     MainViewModel = s.GetService<MainWindow>()?.ViewModel ?? new()
                 });
+                services.AddTransient<ClassPlanDetailsWindow>();
+                services.AddSingleton<IProfileAnalyzeService, ProfileAnalyzeService>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();

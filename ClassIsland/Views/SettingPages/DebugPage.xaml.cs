@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,10 +25,13 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
+using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Services;
+using ClassIsland.Shared.Interfaces;
 using MaterialDesignThemes.Wpf;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using MessageBox = System.Windows.MessageBox;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -44,8 +48,9 @@ public partial class DebugPage : SettingsPageBase
     public ConsoleService ConsoleService { get; }
 
     private ILessonsService LessonsService { get; }
+    public IProfileAnalyzeService ProfileAnalyzeService { get; }
 
-    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService)
+    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService)
     {
         InitializeComponent();
         DataContext = this;
@@ -53,6 +58,7 @@ public partial class DebugPage : SettingsPageBase
         ManagementService = managementService;
         ConsoleService = consoleService;
         LessonsService = lessonsService;
+        ProfileAnalyzeService = profileAnalyzeService;
     }
 
     private void ButtonCloseDebug_OnClick(object sender, RoutedEventArgs e)
@@ -167,5 +173,26 @@ public partial class DebugPage : SettingsPageBase
             return;
         SettingsService.Settings.LastAppVersion = version;
         RequestRestart();
+    }
+
+    private async void MenuItemDumpProfileRelations_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileAnalyzeService.Analyze();
+        var result = ProfileAnalyzeService.DumpMermaidGraph();
+        await File.WriteAllTextAsync("./Profile-dump.mmd", result);
+        CommonDialog.ShowInfo($"转储成功。已保存到 {Path.GetFullPath("./Profile-dump.mmd")} 。");
+    }
+
+    private void MenuItemFindNext_OnClick(object sender, RoutedEventArgs e)
+    {
+        new CommonDialogBuilder().SetContent("输入要找的元素 GUID").AddConfirmAction().HasInput(true).ShowDialog(out var guid, Window.GetWindow(this));
+        new CommonDialogBuilder().SetContent("输入要找的元素索引（没有填-1）").AddConfirmAction().HasInput(true).ShowDialog(out var index, Window.GetWindow(this));
+        new CommonDialogBuilder().SetContent("输入要找的设置的GUID").AddConfirmAction().HasInput(true).ShowDialog(out var settingsId, Window.GetWindow(this));
+        if (int.TryParse(index, out var i))
+        {
+            ProfileAnalyzeService.Analyze();
+            var obj = ProfileAnalyzeService.FindNextObjects<IAttachedSettings>(new AttachableObjectAddress(guid.ToLower(), i), settingsId);
+            CommonDialog.ShowInfo(string.Join('\n', obj));
+        }
     }
 }

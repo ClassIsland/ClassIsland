@@ -7,7 +7,7 @@ namespace ClassIsland.Shared.Models.Profile;
 /// <summary>
 /// 代表一个在<see cref="ClassPlan"/>中的课程。
 /// </summary>
-public class ClassInfo : ObservableRecipient
+public class ClassInfo : AttachableSettingsObject
 {
     private string _subjectId = "";
     private int _index = 0;

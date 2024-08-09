@@ -60,6 +60,10 @@
                     <controls1:DebugTimeControl/>
                 </MenuItem.CommandParameter>
             </MenuItem>
+            <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}"  Header="转储课表关系图"
+                      Click="MenuItemDumpProfileRelations_OnClick" />
+            <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}"  Header="测试课表找下级"
+                      Click="MenuItemFindNext_OnClick" />
             <Separator/>
             <MenuItem Icon="{materialDesign:PackIcon ArrowLeftRight}" Header="Settings.ShowComponentsMigrateTip = true;"
                       Click="MenuItemShowComponentsMigrateTips_OnClick"/>
