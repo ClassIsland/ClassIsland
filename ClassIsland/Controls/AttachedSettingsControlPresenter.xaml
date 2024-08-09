@@ -6,12 +6,23 @@
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter
+            x:Key="AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter" />
+    </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
         <Expander materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
-                  materialDesign:ExpanderAssist.VerticalHeaderPadding="0"
-                  IsExpanded="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled, Mode=OneWay}">
+                  materialDesign:ExpanderAssist.VerticalHeaderPadding="0">
+            <Expander.IsExpanded>
+                <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                    <Binding Path="AssociatedAttachedSettings.IsAttachSettingsEnabled"/>
+                    <Binding Path="IsDependencyMode" Converter="{StaticResource InvertBooleanConverter}"/>
+                </MultiBinding>
+            </Expander.IsExpanded>
             <Expander.Header>
                 <DockPanel>
                     <ToggleButton DockPanel.Dock="Right"
@@ -19,11 +30,88 @@
                                   ToolTip="是否在此处启用特定的设置"
                                   Content="{materialDesign:PackIcon LayersOutline}"
                                   Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
-                    <ci:IconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
-                                 Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"/>
+                    <Button DockPanel.Dock="Right"
+                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Margin="4 -4"
+                            ToolTip="查看此设置的继承情况…"
+                            Content="{materialDesign:PackIcon LayersSearchOutline}"
+                            Click="ButtonShowDetails_OnClick">
+                        <Button.Visibility>
+                            <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
+                                <Binding Path="ControlInfo.HasEnabledState" Mode="OneWay"/>
+                                <Binding Path="IsDependencyMode" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}"/>
+
+                            </MultiBinding>
+                        </Button.Visibility>
+                    </Button>
+                    <materialDesign:PopupEx DockPanel.Dock="Right" 
+                                            Margin="0 -2"
+                                            IsOpen="{Binding IsPopupOpened}"
+                                            StaysOpen="False"
+                                            Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border Background="{DynamicResource MaterialDesignPaper}"
+                                Width="350"
+                                MinHeight="300"
+                                MaxHeight="500">
+                            <TabControl>
+                                <TabItem Header="被覆盖">
+                                    <ListBox ItemsSource="{Binding NextItems}">
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate>
+                                                            <local:AttachedSettingsControlPresenter 
+                                                                Margin="4"
+                                                                TargetObject="{Binding Object, Mode=OneWay}"
+                                                                ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                                                ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                                                IsDependencyMode="True"
+                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}"/>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+                                    </ListBox>
+                                </TabItem>
+                                <TabItem Header="继承">
+                                    <ListBox ItemsSource="{Binding PreviousItems}">
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate>
+                                                            <local:AttachedSettingsControlPresenter 
+                                                                Margin="4"
+                                                                TargetObject="{Binding Object, Mode=OneWay}"
+                                                                ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                                                ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                                                IsDependencyMode="True"
+                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}"/>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+                                    </ListBox>
+                                </TabItem>
+                            </TabControl>
+                        </Border>
+                    </materialDesign:PopupEx>
+                    <Grid>
+                        <ci:IconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
+                                     Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
+                                     Visibility="{Binding IsDependencyMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                        <ci:IconText Kind="{Binding DependencyItemPackIconKind, Mode=OneWay}"
+                                     Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
+                                     Visibility="{Binding IsDependencyMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    </Grid>
                 </DockPanel>
             </Expander.Header>
             <ContentPresenter x:Name="MainContentPresenter" IsEnabled="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled, Mode=OneWay}"/>
+
         </Expander>
     </Grid>
 </UserControl>

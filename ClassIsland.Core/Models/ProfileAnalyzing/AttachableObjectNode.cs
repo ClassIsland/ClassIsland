@@ -23,4 +23,6 @@ public class AttachableObjectNode : ObservableRecipient
 
     public AttachableObjectNodeDictionary RelatedLessons { get; set; } = new();
 
+    public AttachableObjectAddress Address { get; set; } = new AttachableObjectAddress();
+
 }

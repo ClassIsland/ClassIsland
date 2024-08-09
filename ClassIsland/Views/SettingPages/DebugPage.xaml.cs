@@ -191,7 +191,7 @@ public partial class DebugPage : SettingsPageBase
         if (int.TryParse(index, out var i))
         {
             ProfileAnalyzeService.Analyze();
-            var obj = ProfileAnalyzeService.FindNextObjects<IAttachedSettings>(new AttachableObjectAddress(guid.ToLower(), i), settingsId);
+            var obj = ProfileAnalyzeService.FindNextObjects(new AttachableObjectAddress(guid.ToLower(), i), settingsId);
             CommonDialog.ShowInfo(string.Join('\n', obj));
         }
     }

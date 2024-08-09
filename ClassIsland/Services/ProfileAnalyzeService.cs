@@ -33,7 +33,8 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
                 new AttachableObjectNode()
             {
                 Object = i.Value,
-                Target = AttachedSettingsTargets.ClassPlan
+                Target = AttachedSettingsTargets.ClassPlan,
+                Address = keyClassPlan
             });
 
 
@@ -42,7 +43,8 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
                 , new AttachableObjectNode()
                 {
                     Object = i.Value.TimeLayout,
-                    Target = AttachedSettingsTargets.TimeLayout
+                    Target = AttachedSettingsTargets.TimeLayout,
+                    Address = keyTimeLayout
                 });
             nodeClassPlan.PreviousNodes.TryAdd(keyTimeLayout, nodeTimeLayout);
             nodeTimeLayout.NextNodes.TryAdd(keyClassPlan, nodeClassPlan);
@@ -60,7 +62,8 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
                 var nodeTimePoint = Nodes.GetOrCreateDefault(keyTimePoint, new AttachableObjectNode()
                 {
                     Object = p,
-                    Target = AttachedSettingsTargets.TimePoint
+                    Target = AttachedSettingsTargets.TimePoint,
+                    Address = keyTimePoint
                 });
 
                 nodeTimeLayout.NextNodes.TryAdd(keyTimePoint, nodeTimePoint);
@@ -76,7 +79,8 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
                 var nodeClassInfo = new AttachableObjectNode()
                 {
                     Object = j,
-                    Target = AttachedSettingsTargets.Lesson
+                    Target = AttachedSettingsTargets.Lesson,
+                    Address = keyClassInfo
                 };
 
                 var keyTimePoint = new AttachableObjectAddress(i.Value.TimeLayoutId,
@@ -84,7 +88,8 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
                 var nodeTimePoint = Nodes.GetOrCreateDefault(keyTimePoint, new AttachableObjectNode()
                 {
                     Object = j.CurrentTimeLayoutItem,
-                    Target = AttachedSettingsTargets.TimePoint
+                    Target = AttachedSettingsTargets.TimePoint,
+                    Address = keyTimePoint
                 });
 
                 var nodeLesson = Nodes.GetOrCreateDefault(keyClassInfo, nodeClassInfo);
@@ -109,7 +114,8 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
                 var nodeSubject = Nodes.GetOrCreateDefault(keySubject, new AttachableObjectNode()
                 {
                     Object = subject,
-                    Target = AttachedSettingsTargets.Subject
+                    Target = AttachedSettingsTargets.Subject,
+                    Address = keySubject
                 });
 
                 nodeLesson.PreviousNodes.TryAdd(keySubject, nodeSubject);
@@ -159,16 +165,37 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
         }
     }
 
-    public List<T?> FindNextObjects<T>(AttachableObjectAddress address, string id, bool requiresEnabled=true) where T : class, IAttachedSettings
+    public List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, string id, bool requiresEnabled=true)
     {
         var results = new List<AttachableObjectNode>();
         Walk(Nodes[address], results, false, true);
 
-        return results.Where(x => x.Object.AttachedObjects.ContainsKey(id))
+        return [.. results.Where(x =>
+            {
+                if (x.Object.AttachedObjects.TryGetValue(id, out var obj) && obj is IAttachedSettings settings)
+                {
+                    return settings.IsAttachSettingsEnabled || !requiresEnabled;
+                }
+                return false;
+            })
             .OrderByDescending(x => x.Target)
-            .Select(x => x.Object.AttachedObjects[id] as T)
-            .Where(x => x is not null)
-            .Where(x => x!.IsAttachSettingsEnabled || !requiresEnabled)
-            .ToList();
+        ];
+    }
+
+    public List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id, bool requiresEnabled = true)
+    {
+        var results = new List<AttachableObjectNode>();
+        Walk(Nodes[address], results, true, true);
+
+        return [.. results.Where(x =>
+            {
+                if (x.Object.AttachedObjects.TryGetValue(id, out var obj) && obj is IAttachedSettings settings)
+                {
+                    return settings.IsAttachSettingsEnabled || !requiresEnabled;
+                }
+                return false;
+            })
+            .OrderBy(x => x.Target)
+        ];
     }
 }

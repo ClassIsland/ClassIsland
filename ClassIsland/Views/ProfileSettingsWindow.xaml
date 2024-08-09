@@ -91,6 +91,7 @@
                         <DataTemplate>
                             <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
                                                                        Margin="0 0 0 8"
+                                                                       ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
                                                                        TargetObject="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -324,6 +325,7 @@
                         <DataTemplate>
                             <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
                                                                        Margin="0 0 0 8"
+                                                                       ContentId="{Binding SelectedItem.Key, ElementName=ListViewClassPlans, Mode=OneWay}"
                                                                        TargetObject="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -672,6 +674,7 @@
                 <PropertyGroupDescription PropertyName="Value.AssociatedGroup"/>
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
+        <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
 
     </Window.Resources>
     <Grid>
@@ -1642,6 +1645,8 @@
                                                     <DataTemplate>
                                                         <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
                                                             Margin="0 0 0 8"
+                                                            ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
+                                                            ContentIndex="{Binding SelectedIndex, ElementName=TimeLineListControl, Mode=OneWay}"
                                                             TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
 
                                                     </DataTemplate>
@@ -1862,7 +1867,14 @@
                                                     <DataTemplate>
                                                         <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
                                                                 Margin="0 0 0 8"
-                                                                TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"/>
+                                                                TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
+                                                            <controls:AttachedSettingsControlPresenter.ContentId>
+                                                                <MultiBinding Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}" Mode="OneWay">
+                                                                    <Binding Path="SelectedItem" ElementName="DataGridSubjects" />
+                                                                    <Binding Path="ProfileService.Profile.Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}"/>
+                                                                </MultiBinding>
+                                                            </controls:AttachedSettingsControlPresenter.ContentId>
+                                                        </controls:AttachedSettingsControlPresenter>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
