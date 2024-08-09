@@ -36,10 +36,22 @@
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                            <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsSelected}" Value="True"/>
+                                <Condition Binding="{Binding CurrentTimeLayoutItem.TimeType}" Value="0"/>
+                            </MultiDataTrigger.Conditions>
                                 <Setter Property="Text" Value="{Binding CurrentSubject.Name}"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
-                            </DataTrigger>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsSelected}" Value="True"/>
+                                <Condition Binding="{Binding CurrentTimeLayoutItem.TimeType}" Value="1"/>
+                            </MultiDataTrigger.Conditions>
+                                <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakName}"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                            </MultiDataTrigger>
                             <DataTrigger Binding="{Binding CurrentTimeLayoutItem.TimeType}" Value="2">
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
