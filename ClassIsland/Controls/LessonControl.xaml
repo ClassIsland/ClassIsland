@@ -12,6 +12,7 @@
              >
     <UserControl.Resources>
         <converters:SecondsLongToMinutesStringConverter x:Key="SecondsLongToMinutesStringConverter" />
+        <converters:SecondsLongToMinutesSecondsStringConverter x:Key="SecondsLongToMinutesSecondsStringConverter" />
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControl}}}">
@@ -114,6 +115,14 @@
                                     </Run><Run
                                               Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesStringConverter}}">
                                     </Run><Run Text="min" FontSize="13">
+                                    </Run>
+                                </TextBlock>
+                            </TabItem>
+                            <TabItem>
+                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                    <Run Text="-">
+                                    </Run><Run
+                                              Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToMinutesSecondsStringConverter}}">
                                     </Run>
                                 </TextBlock>
                             </TabItem>

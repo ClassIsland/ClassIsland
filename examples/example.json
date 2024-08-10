@@ -15,7 +15,7 @@
                         "58e5b69a-764a-472b-bcf7-003b6a8c7fdf": { // 此处UUID不变 为特定课程显示设置
                             "IsAttachSettingsEnabled": false, // 启用此设置
                             "ShowExtraInfoOnTimePoint": true, // 显示时间点附加信息
-                            "ExtraInfoType": 0, // 0持续时间 1已过/持续 2剩余/持续 3已过百分比 4剩余时间
+                            "ExtraInfoType": 0, // 0持续时间 1已过/持续 2剩余/持续 3已过百分比 4剩余时间 5剩余分+秒
                             "IsCountdownEnabled": true, // 结束倒计时启用
                             "CountdownSeconds": 60, // 结束倒计时
                             "IsActive": false // 意义不明

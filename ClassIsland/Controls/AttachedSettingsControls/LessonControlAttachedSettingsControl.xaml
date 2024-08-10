@@ -45,7 +45,10 @@
                         <TextBlock Text="已过时间百分比" />
                     </ComboBoxItem>
                     <ComboBoxItem HorizontalContentAlignment="Left">
-                        <TextBlock Text="剩余时间" />
+                        <TextBlock Text="剩余时间（分钟）" />
+                    </ComboBoxItem>
+                    <ComboBoxItem HorizontalContentAlignment="Left">
+                        <TextBlock Text="剩余时间（分+秒）" />
                     </ComboBoxItem>
                 </ComboBox>
             </WrapPanel>
