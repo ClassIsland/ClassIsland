@@ -58,10 +58,19 @@
                                 <VisualState x:Name="Indeterminate">
                                     <Storyboard RepeatBehavior="Forever">
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Animation"
-                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                                                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)"
+                                                                       >
                                             <EasingDoubleKeyFrame KeyTime="0" Value="0.25" />
-                                            <EasingDoubleKeyFrame KeyTime="0:0:0.75" Value="0.5" />
-                                            <EasingDoubleKeyFrame KeyTime="0:0:1.25" Value="0.5" />
+                                            <EasingDoubleKeyFrame KeyTime="0:0:1" Value="0.5">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseOut"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
+                                            <EasingDoubleKeyFrame KeyTime="0:0:1" Value="0.5">
+                                                <EasingDoubleKeyFrame.EasingFunction>
+                                                    <ExponentialEase EasingMode="EaseOut"/>
+                                                </EasingDoubleKeyFrame.EasingFunction>
+                                            </EasingDoubleKeyFrame>
                                             <EasingDoubleKeyFrame KeyTime="0:0:2" Value="0.25" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <PointAnimationUsingKeyFrames Storyboard.TargetName="Animation" Storyboard.TargetProperty="(UIElement.RenderTransformOrigin)">
