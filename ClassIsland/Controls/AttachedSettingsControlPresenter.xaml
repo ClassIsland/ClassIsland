@@ -45,58 +45,110 @@
                         </Button.Visibility>
                     </Button>
                     <materialDesign:PopupEx DockPanel.Dock="Right" 
-                                            Margin="0 -2"
-                                            IsOpen="{Binding IsPopupOpened}"
-                                            StaysOpen="False"
-                                            Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                           PopupAnimation="Fade"
+                           Closed="Popup_OnClosed"
+                            Margin="0 -2"
+                            IsOpen="{Binding IsPopupOpened}"
+                            StaysOpen="False"
+                            AllowsTransparency="True"
+                           MouseDown="UIElement_OnMouseDown"
+                            Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Border Background="{DynamicResource MaterialDesignPaper}"
                                 Width="350"
+                                Margin="8"
                                 MinHeight="300"
                                 MaxHeight="500">
-                            <TabControl>
-                                <TabItem Header="被覆盖">
-                                    <ListBox ItemsSource="{Binding NextItems}">
-                                        <ListBox.ItemContainerStyle>
-                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate>
-                                                            <local:AttachedSettingsControlPresenter 
-                                                                Margin="4"
-                                                                TargetObject="{Binding Object, Mode=OneWay}"
-                                                                ContentId="{Binding Address.Guid, Mode=OneWay}"
-                                                                ContentIndex="{Binding Address.Index, Mode=OneWay}"
-                                                                IsDependencyMode="True"
-                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}"/>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </ListBox.ItemContainerStyle>
-                                    </ListBox>
-                                </TabItem>
-                                <TabItem Header="继承">
-                                    <ListBox ItemsSource="{Binding PreviousItems}">
-                                        <ListBox.ItemContainerStyle>
-                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                                <Setter Property="Template">
-                                                    <Setter.Value>
-                                                        <ControlTemplate>
-                                                            <local:AttachedSettingsControlPresenter 
-                                                                Margin="4"
-                                                                TargetObject="{Binding Object, Mode=OneWay}"
-                                                                ContentId="{Binding Address.Guid, Mode=OneWay}"
-                                                                ContentIndex="{Binding Address.Index, Mode=OneWay}"
-                                                                IsDependencyMode="True"
-                                                                ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}"/>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </Style>
-                                        </ListBox.ItemContainerStyle>
-                                    </ListBox>
-                                </TabItem>
-                            </TabControl>
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8"
+                                                  Opacity="0.5"
+                                                  Direction="0"
+                                                  ShadowDepth="0"/>
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TabControl Grid.Row="0">
+                                    <TabItem Header="被覆盖">
+                                        <Grid Margin="4">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="以下节点的设置可能会覆盖此处的设置。"/>
+                                            <ListBox Grid.Row="1" ItemsSource="{Binding NextItems}">
+                                                <ListBox.ItemContainerStyle>
+                                                    <Style TargetType="ListBoxItem"
+                                                           BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate>
+                                                                    <local:AttachedSettingsControlPresenter
+                                                                        Margin="4"
+                                                                        TargetObject="{Binding Object, Mode=OneWay}"
+                                                                        ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                                                        ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                                                        IsDependencyMode="True"
+                                                                        ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ListBox.ItemContainerStyle>
+                                            </ListBox></Grid>
+                                    </TabItem>
+                                    <TabItem Header="继承">
+                                        <Grid Margin="4">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="此处的设置可能会覆盖以下节点的设置。"/>
+                                            <ListBox Grid.Row="1" ItemsSource="{Binding PreviousItems}">
+                                                <ListBox.ItemContainerStyle>
+                                                    <Style TargetType="ListBoxItem"
+                                                           BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate>
+                                                                    <local:AttachedSettingsControlPresenter
+                                                                        Margin="4"
+                                                                        TargetObject="{Binding Object, Mode=OneWay}"
+                                                                        ContentId="{Binding Address.Guid, Mode=OneWay}"
+                                                                        ContentIndex="{Binding Address.Index, Mode=OneWay}"
+                                                                        IsDependencyMode="True"
+                                                                        ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ListBox.ItemContainerStyle>
+                                            </ListBox>
+                                        </Grid>
+                                    </TabItem>
+                                </TabControl>
+                                <WrapPanel Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal"
+                                           Margin="4 0 4 4">
+                                    <Button HorizontalAlignment="Left"
+                                            Content="{materialDesign:PackIcon HelpCircleOutline}"
+                                            ToolTip="附加设置帮助…"
+                                            Margin="4 0 0 0"
+                                            Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                            CommandParameter="https://docs.classisland.tech/zh-cn/latest/app/advanced/#%E9%99%84%E5%8A%A0%E8%AE%BE%E7%BD%AE"
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}" />
+                                    <Button HorizontalAlignment="Left"
+                                            Content="{materialDesign:PackIcon Refresh}"
+                                            ToolTip="刷新"
+                                            Margin="4 0 0 0"
+                                            Click="ButtonRefresh_OnClick"
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}" />
+                                </WrapPanel >
+                                <ProgressBar Grid.Row="0"
+                                             IsIndeterminate="True"
+                                             VerticalAlignment="Top"
+                                             Visibility="{Binding IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </Grid>
                         </Border>
                     </materialDesign:PopupEx>
                     <Grid>

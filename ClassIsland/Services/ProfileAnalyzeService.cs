@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Extensions;
@@ -10,21 +12,27 @@ using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
+using Sentry;
 using WebSocketSharp;
 
 namespace ClassIsland.Services;
 
 using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
-public class ProfileAnalyzeService(IProfileService profileService) : ObservableRecipient, IProfileAnalyzeService
+public class ProfileAnalyzeService(IProfileService profileService, ILogger<ProfileAnalyzeService> logger) : ObservableRecipient, IProfileAnalyzeService
 {
     public IProfileService ProfileService { get; } = profileService;
+    public ILogger<ProfileAnalyzeService> Logger { get; } = logger;
 
     public AttachableObjectNodeDictionary Nodes { get; } = new();
 
     public void Analyze()
     {
         Nodes.Clear();
+        using var timer = SentrySdk.Metrics.StartTimer("profileAnalyze.analyzeAll");
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
         var profile = ProfileService.Profile;
         foreach (var i in profile.ClassPlans)
         {
@@ -127,6 +135,8 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
                 nodeSubject.RelatedLessons.TryAdd(keyClassInfo, nodeClassInfo);
             }
         }
+        stopwatch.Stop();
+        Logger.LogInformation("分析结束，发现了{}个节点，耗时{}ms", Nodes.Count, stopwatch.ElapsedMilliseconds);
     }
 
     public string DumpMermaidGraph()
@@ -150,7 +160,7 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
 
     public void Walk(AttachableObjectNode node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit=false)
     {
-        if (!foundNodes.Contains(node))
+        if (!foundNodes.Contains(node) && !isInit)
         {
             foundNodes.Add(node);
         }
@@ -172,11 +182,14 @@ public class ProfileAnalyzeService(IProfileService profileService) : ObservableR
 
         return [.. results.Where(x =>
             {
-                if (x.Object.AttachedObjects.TryGetValue(id, out var obj) && obj is IAttachedSettings settings)
+                if (!x.Object.AttachedObjects.TryGetValue(id, out var obj)) return false;
+                return obj switch
                 {
-                    return settings.IsAttachSettingsEnabled || !requiresEnabled;
-                }
-                return false;
+                    JsonElement json when json.TryGetProperty("IsAttachSettingsEnabled", out var element) =>
+                        element.ValueKind == JsonValueKind.True || !requiresEnabled,
+                    IAttachedSettings settings => settings.IsAttachSettingsEnabled || !requiresEnabled,
+                    _ => false
+                };
             })
             .OrderByDescending(x => x.Target)
         ];

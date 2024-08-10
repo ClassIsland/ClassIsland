@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -87,6 +88,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     private ObservableCollection<AttachableObjectNode> _previousItems = new();
     private PackIconKind _dependencyItemPackIconKind = PackIconKind.CogOutline;
     private string _dependencyItemTitle = "";
+    private bool _isLoading = false;
 
     public bool IsPopupOpened
     {
@@ -147,6 +149,17 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         }
     }
 
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (value == _isLoading) return;
+            _isLoading = value;
+            OnPropertyChanged();
+        }
+    }
+
     public AttachedSettingsControlPresenter(IProfileAnalyzeService profileAnalyzeService, IProfileService profileService)
     {
         ProfileAnalyzeService = profileAnalyzeService;
@@ -169,18 +182,33 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         e.Handled = true;
     }
 
-    private void ButtonShowDetails_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonShowDetails_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ControlInfo == null || ProfileAnalyzeService == null)
+        
+        IsPopupOpened = true;
+        await AnalyzeAsync();
+    }
+
+    private async Task AnalyzeAsync()
+    {
+        if (ControlInfo == null || ProfileAnalyzeService == null || IsLoading)
         {
             return;
         }
-        IsPopupOpened = true;
-        ProfileAnalyzeService.Analyze();
-        NextItems = new(ProfileAnalyzeService.FindNextObjects(new AttachableObjectAddress(ContentId, ContentIndex),
-            ControlInfo.Guid)!);
-        PreviousItems = new(ProfileAnalyzeService.FindPreviousObjects(new AttachableObjectAddress(ContentId, ContentIndex),
-            ControlInfo.Guid)!);
+        IsLoading = true;
+        var contentId = ContentId;
+        var contentIndex = ContentIndex;
+        var guid = ControlInfo.Guid;
+        await Task.Run(() =>
+        {
+            ProfileAnalyzeService.Analyze();
+            NextItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindNextObjects(new AttachableObjectAddress(contentId, contentIndex),
+                guid)!);
+            PreviousItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindPreviousObjects(
+                new AttachableObjectAddress(contentId, contentIndex),
+                guid)!);
+        });
+        IsLoading = false;
     }
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
@@ -284,4 +312,15 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     }
 
     #endregion
+
+    private void Popup_OnClosed(object? sender, EventArgs e)
+    {
+        NextItems.Clear();
+        PreviousItems.Clear();
+    }
+
+    private async void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
+    {
+        await AnalyzeAsync();
+    }
 }
