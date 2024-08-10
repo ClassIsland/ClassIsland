@@ -37,6 +37,7 @@ public static class AttachedSettingsRegistryExtensions
         }
         services.AddKeyedTransient<AttachedSettingsControlBase, T>(info.Guid);
         info.AttachedSettingsControlType = typeof(T);
+        info.Targets = usages.Targets;
         IAttachedSettingsHostService.RegisteredControls.Add(info);
 
         if (usages.Targets.HasFlag(AttachedSettingsTargets.Lesson))

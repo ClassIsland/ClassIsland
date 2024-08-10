@@ -57,6 +57,7 @@
     <ItemGroup>
         <Folder Include="Models\Logging\" />
         <Folder Include="Models\TimeRules\" />
+        <Folder Include="Enums\" />
     </ItemGroup>
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig" />

@@ -16,7 +16,8 @@
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
         <Expander materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
-                  materialDesign:ExpanderAssist.VerticalHeaderPadding="0">
+                  materialDesign:ExpanderAssist.VerticalHeaderPadding="0"
+                  Background="Transparent">
             <Expander.IsExpanded>
                 <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
                     <Binding Path="AssociatedAttachedSettings.IsAttachSettingsEnabled"/>
@@ -157,7 +158,33 @@
                                      Visibility="{Binding IsDependencyMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
                         <ci:IconText Kind="{Binding DependencyItemPackIconKind, Mode=OneWay}"
                                      Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
-                                     Visibility="{Binding IsDependencyMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                     Visibility="{Binding IsDependencyMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <ci:IconText.Style>
+                                <Style TargetType="ci:IconText">
+                                    <Style.Resources>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding State}" Value="Disabled">
+                                                    <Setter Property="Opacity" Value="0.5"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}" Value="Override">
+
+                                                    <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Style.Resources>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding State}" Value="Disabled">
+                                            <Setter Property="Opacity" Value="0.5"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding State}" Value="Override">
+                                            <Setter Property="TextElement.FontStyle" Value="Italic"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ci:IconText.Style>
+                        </ci:IconText>
 
                     </Grid>
                 </DockPanel>

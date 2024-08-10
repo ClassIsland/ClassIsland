@@ -15,6 +15,7 @@
             
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
             <ci:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
+            <ci:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </ci:AppBase>

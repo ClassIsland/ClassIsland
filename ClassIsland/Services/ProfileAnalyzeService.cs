@@ -182,14 +182,11 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
         return [.. results.Where(x =>
             {
-                if (!x.Object.AttachedObjects.TryGetValue(id, out var obj)) return false;
-                return obj switch
+                if (x.Object.AttachedObjects.TryGetValue(id, out var obj))
                 {
-                    JsonElement json when json.TryGetProperty("IsAttachSettingsEnabled", out var element) =>
-                        element.ValueKind == JsonValueKind.True || !requiresEnabled,
-                    IAttachedSettings settings => settings.IsAttachSettingsEnabled || !requiresEnabled,
-                    _ => false
-                };
+                    return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
+                }
+                return false;
             })
             .OrderByDescending(x => x.Target)
         ];
@@ -202,9 +199,9 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
         return [.. results.Where(x =>
             {
-                if (x.Object.AttachedObjects.TryGetValue(id, out var obj) && obj is IAttachedSettings settings)
+                if (x.Object.AttachedObjects.TryGetValue(id, out var obj))
                 {
-                    return settings.IsAttachSettingsEnabled || !requiresEnabled;
+                    return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
                 }
                 return false;
             })

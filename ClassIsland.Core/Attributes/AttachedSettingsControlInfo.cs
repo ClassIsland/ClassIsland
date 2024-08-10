@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ClassIsland.Core.Enums;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Attributes;
@@ -38,4 +39,9 @@ public class AttachedSettingsControlInfo(
     /// </summary>
 
     public Type AttachedSettingsControlType { get; internal set; } = null!;
+
+    /// <summary>
+    /// 附加设置可以附加的目标。
+    /// </summary>
+    public AttachedSettingsTargets Targets { get; internal set; } = AttachedSettingsTargets.None;
 }

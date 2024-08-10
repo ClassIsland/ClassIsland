@@ -697,9 +697,9 @@
                         <TabItem Header="课表" Visibility="Collapsed">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
-                                    <ColumnDefinition Width="5"/>
-                                    <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1*" MinWidth="300" MaxWidth="500"/>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="2*"/>
                                 </Grid.ColumnDefinitions>
                                 <!-- 课表选择 -->
                                 <Grid Grid.Column="0" Margin="0 0 3 0">
@@ -984,6 +984,11 @@
                                                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                                                 <controls1:IconText Kind="InfoOutline" Text="课表信息" />
                                             </Button>
+                                            <Button Click="ButtonClassPlanDetails_OnClick" 
+                                                    ToolTip="查看课表的所有时间点的附加设置继承情况。">
+                                                <controls1:IconText Kind="Text" Text="详细看板…" />
+                                            </Button>
+                                            <Separator />
                                             <Button ToolTip="创建临时课表层。"
                                                     Click="ButtonBeginCreateTempOverlayClassPlan_OnClick"
                                                     IsEnabled="{Binding IsOverlay, Converter={StaticResource BooleanToBooleanReConverter}}">
@@ -991,8 +996,16 @@
                                             </Button>
                                             <materialDesign:PopupEx x:Name="PopupCreateTempOverlayClassPlan"
                                                                     StaysOpen="False"
+                                                                    AllowsTransparency="True"
                                                                     PopupAnimation="Fade">
-                                                <Border Background="{DynamicResource MaterialDesignPaper}" Width="320">
+                                                <Border Background="{DynamicResource MaterialDesignPaper}" Width="320"
+                                                        Margin="8">
+                                                    <Border.Effect>
+                                                        <DropShadowEffect BlurRadius="8"
+                                                                          Opacity="0.5"
+                                                                          Direction="0"
+                                                                          ShadowDepth="0"/>
+                                                    </Border.Effect>
                                                     <StackPanel Margin="12">
                                                         <TextBlock Text="创建临时层" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
                                                         <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" 

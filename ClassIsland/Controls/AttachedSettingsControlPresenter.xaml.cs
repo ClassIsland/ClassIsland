@@ -12,6 +12,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.ProfileAnalyzing;
+using ClassIsland.Enums;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
@@ -160,6 +161,15 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         }
     }
 
+    public static readonly DependencyProperty StateProperty = DependencyProperty.Register(
+        nameof(State), typeof(AttachedSettingsControlState), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(AttachedSettingsControlState.Enabled));
+
+    public AttachedSettingsControlState State
+    {
+        get { return (AttachedSettingsControlState)GetValue(StateProperty); }
+        set { SetValue(StateProperty, value); }
+    }
+
     public AttachedSettingsControlPresenter(IProfileAnalyzeService profileAnalyzeService, IProfileService profileService)
     {
         ProfileAnalyzeService = profileAnalyzeService;
@@ -213,7 +223,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
     {
-        if (e.Property == TargetObjectProperty || e.Property == ControlInfoProperty)
+        if (e.Property == TargetObjectProperty || e.Property == ControlInfoProperty || e.Property == ContentIdProperty)
         {
             UpdateContent();
         }

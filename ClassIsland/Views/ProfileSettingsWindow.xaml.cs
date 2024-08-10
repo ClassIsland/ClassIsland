@@ -1001,4 +1001,12 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         CreateClassPlan();
     }
+
+    private void ButtonClassPlanDetails_OnClick(object sender, RoutedEventArgs e)
+    {
+        var details = App.GetService<ClassPlanDetailsWindow>();
+        details.ViewModel.ClassPlan = ViewModel.SelectedClassPlan;
+        details.Owner = this;
+        details.ShowDialog();
+    }
 }
