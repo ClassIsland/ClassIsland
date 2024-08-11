@@ -137,7 +137,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-12-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -164,6 +164,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jizilin6732"><img src="https://avatars.githubusercontent.com/u/162853646?v=4?s=100" width="100px;" alt="jizilin6732"/><br /><sub><b>jizilin6732</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=jizilin6732" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.khyan.top/"><img src="https://avatars.githubusercontent.com/u/56215525?v=4?s=100" width="100px;" alt="clover_yan"/><br /><sub><b>clover_yan</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=clover-yan" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/DryIce-cc"><img src="https://avatars.githubusercontent.com/u/165131008?v=4?s=100" width="100px;" alt="DryIce-cc"/><br /><sub><b>DryIce-cc</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=DryIce-cc" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/RoboMico"><img src="https://avatars.githubusercontent.com/u/59791306?v=4?s=100" width="100px;" alt="RoboMico"/><br /><sub><b>RoboMico</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=RoboMico" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
