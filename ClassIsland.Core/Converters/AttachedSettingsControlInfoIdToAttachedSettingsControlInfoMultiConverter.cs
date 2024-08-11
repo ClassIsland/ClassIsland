@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Windows.Data;
-using ClassIsland.Core.Abstractions.Converters;
 using ClassIsland.Core.Attributes;
 
-namespace ClassIsland.Converters;
+namespace ClassIsland.Core.Converters;
 
 public class
     AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter : IMultiValueConverter

@@ -159,7 +159,7 @@
                                                         </Style>
                                                     </materialDesign:ColorZone.Style>
                                                 </materialDesign:ColorZone>
-                                                <controls:AttachedSettingsControlPresenter
+                                                <ci:AttachedSettingsControlPresenter
                                                     Grid.Column="1"
                                                     Margin="4 0 0 0"
                                                     ContentId="{Binding Address.Guid, Mode=OneWay}"
@@ -168,7 +168,7 @@
                                                     ControlInfo="{Binding ViewModel.DisplayControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassPlanDetailsWindow}, Mode=OneWay}"
                                                     IsDependencyMode="True"
                                                     State="{Binding State, Mode=OneWay}">
-                                                </controls:AttachedSettingsControlPresenter>
+                                                </ci:AttachedSettingsControlPresenter>
                                             </Grid>
                                         </ControlTemplate>
                                     </Setter.Value>

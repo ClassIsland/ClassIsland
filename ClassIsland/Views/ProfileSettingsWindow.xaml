@@ -89,7 +89,7 @@
                 <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
+                            <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
                                                                        Margin="0 0 0 8"
                                                                        ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
                                                                        TargetObject="{Binding SelectedItem.Value, ElementName=ListViewTimeLayouts}"/>
@@ -323,7 +323,7 @@
                 <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                            <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}"
                                                                        Margin="0 0 0 8"
                                                                        ContentId="{Binding SelectedItem.Key, ElementName=ListViewClassPlans, Mode=OneWay}"
                                                                        TargetObject="{Binding SelectedItem.Value, ElementName=ListViewClassPlans}"/>
@@ -1656,7 +1656,7 @@
                                                 ItemsSource="{x:Static services:IAttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                                                        <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}"
                                                             Margin="0 0 0 8"
                                                             ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
                                                             ContentIndex="{Binding SelectedIndex, ElementName=TimeLineListControl, Mode=OneWay}"
@@ -1878,16 +1878,16 @@
                                             <ItemsControl ItemsSource="{x:Static services:IAttachedSettingsHostService.SubjectSettingsAttachedSettingsControls}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
-                                                        <controls:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
+                                                        <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}" 
                                                                 Margin="0 0 0 8"
                                                                 TargetObject="{Binding ViewModel.SelectedSubject, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
-                                                            <controls:AttachedSettingsControlPresenter.ContentId>
+                                                            <controls1:AttachedSettingsControlPresenter.ContentId>
                                                                 <MultiBinding Converter="{StaticResource SubjectDictionaryKeyFinderMultiConverter}" Mode="OneWay">
                                                                     <Binding Path="SelectedItem" ElementName="DataGridSubjects" />
                                                                     <Binding Path="ProfileService.Profile.Subjects" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}"/>
                                                                 </MultiBinding>
-                                                            </controls:AttachedSettingsControlPresenter.ContentId>
-                                                        </controls:AttachedSettingsControlPresenter>
+                                                            </controls1:AttachedSettingsControlPresenter.ContentId>
+                                                        </controls1:AttachedSettingsControlPresenter>
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>

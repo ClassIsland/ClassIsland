@@ -1,17 +1,18 @@
-﻿<UserControl x:Class="ClassIsland.Controls.AttachedSettingsControlPresenter"
+﻿<UserControl x:Class="ClassIsland.Core.Controls.AttachedSettingsControlPresenter"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClassIsland.Controls"
-             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:converters="clr-namespace:ClassIsland.Converters"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter
+        <converters1:AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter
             x:Key="AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
@@ -85,13 +86,13 @@
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate>
-                                                                    <local:AttachedSettingsControlPresenter
+                                                                    <controls:AttachedSettingsControlPresenter
                                                                         Margin="4"
                                                                         TargetObject="{Binding Object, Mode=OneWay}"
                                                                         ContentId="{Binding Address.Guid, Mode=OneWay}"
                                                                         ContentIndex="{Binding Address.Index, Mode=OneWay}"
                                                                         IsDependencyMode="True"
-                                                                        ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
+                                                                        ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:RootAttachedSettingsDependencyControl}, Mode=OneWay}" />
                                                                 </ControlTemplate>
                                                             </Setter.Value>
                                                         </Setter>
@@ -113,7 +114,7 @@
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate>
-                                                                    <local:AttachedSettingsControlPresenter
+                                                                    <controls:AttachedSettingsControlPresenter
                                                                         Margin="4"
                                                                         TargetObject="{Binding Object, Mode=OneWay}"
                                                                         ContentId="{Binding Address.Guid, Mode=OneWay}"
@@ -135,7 +136,7 @@
                                             Content="{materialDesign:PackIcon HelpCircleOutline}"
                                             ToolTip="附加设置帮助…"
                                             Margin="4 0 0 0"
-                                            Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://docs.classisland.tech/zh-cn/latest/app/advanced/#%E9%99%84%E5%8A%A0%E8%AE%BE%E7%BD%AE"
                                             Style="{StaticResource MaterialDesignToolForegroundButton}" />
                                     <Button HorizontalAlignment="Left"
@@ -153,14 +154,14 @@
                         </Border>
                     </materialDesign:PopupEx>
                     <Grid>
-                        <ci:IconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
+                        <controls:IconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
                                      Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
                                      Visibility="{Binding IsDependencyMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                        <ci:IconText Kind="{Binding DependencyItemPackIconKind, Mode=OneWay}"
+                        <controls:IconText Kind="{Binding DependencyItemPackIconKind, Mode=OneWay}"
                                      Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
                                      Visibility="{Binding IsDependencyMode, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <ci:IconText.Style>
-                                <Style TargetType="ci:IconText">
+                            <controls:IconText.Style>
+                                <Style TargetType="local:IconText">
                                     <Style.Resources>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>
@@ -183,8 +184,8 @@
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </ci:IconText.Style>
-                        </ci:IconText>
+                            </controls:IconText.Style>
+                        </controls:IconText>
 
                     </Grid>
                 </DockPanel>

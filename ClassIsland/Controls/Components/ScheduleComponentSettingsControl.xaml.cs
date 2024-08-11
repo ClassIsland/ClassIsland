@@ -13,6 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Controls;
 using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
 
@@ -43,5 +46,10 @@ public partial class ScheduleComponentSettingsControl
         Settings.ExtraInfoType = settings.ExtraInfoType;
         Settings.IsCountdownEnabled = settings.IsCountdownEnabled;
         Settings.ShowExtraInfoOnTimePoint = settings.ShowExtraInfoOnTimePoint;
+    }
+
+    private void ButtonShowAttachedSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == "58e5b69a-764a-472b-bcf7-003b6a8c7fdf")));
     }
 }

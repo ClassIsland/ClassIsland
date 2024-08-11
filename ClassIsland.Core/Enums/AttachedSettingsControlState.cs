@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Enums;
+﻿namespace ClassIsland.Core.Enums;
 
 public enum AttachedSettingsControlState
 {

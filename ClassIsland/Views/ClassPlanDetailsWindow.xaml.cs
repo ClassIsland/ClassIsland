@@ -17,7 +17,6 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.ProfileAnalyzing;
-using ClassIsland.Enums;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared;

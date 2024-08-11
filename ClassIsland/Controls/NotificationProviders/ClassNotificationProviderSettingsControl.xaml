@@ -23,6 +23,27 @@
                         <Setter Property="Margin" Value="0 3" />
                     </Style>
                 </StackPanel.Resources>
+                <!-- 附加设置覆盖提示 -->
+                <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                          Margin="0 0 0 4">
+                    <Grid>
+                        <DockPanel Margin="8 0 4 0">
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    DockPanel.Dock="Right"
+                                    materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
+                                    Foreground="{DynamicResource MaterialDesignBody}"
+                                    Click="ButtonShowAttachedSettingsInfo_OnClick">
+                                <controls1:IconText Kind="MoreCircleOutline" Text="查看…"/>
+                            </Button>
+                            <materialDesign:PackIcon Kind="LayersOutline"
+                                                     Margin="0 0 4 0"
+                                                     VerticalAlignment="Center"/>
+                            <TextBlock Text="此处的设置可以在档案设置中被附加设置覆盖。"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Grid>
+                </materialDesign:ColorZone>
                 <!-- 在课前准备时发出提醒 -->
                 <materialDesign:Card Margin="0 0 0 6">
                     <Expander Background="Transparent"

@@ -1,5 +1,5 @@
-﻿using ClassIsland.Core.Models.ProfileAnalyzing;
-using ClassIsland.Enums;
+﻿using ClassIsland.Core.Enums;
+using ClassIsland.Core.Models.ProfileAnalyzing;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;

@@ -59,6 +59,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\AttachedSettingsControlPresenter.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\CommonDialog\CommonDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

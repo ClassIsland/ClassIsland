@@ -12,7 +12,7 @@
                                 mc:Ignorable="d" 
                                 d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AfterSchoolNotificationAttachedSettingsControl}}">
-
+        
         <!-- 启用放学提醒 -->
         <CheckBox IsChecked="{Binding Settings.IsEnabled}" 
                   Content="启用放学提醒。"

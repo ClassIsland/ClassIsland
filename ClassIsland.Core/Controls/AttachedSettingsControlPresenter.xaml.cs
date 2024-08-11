@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,13 +9,12 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.ProfileAnalyzing;
-using ClassIsland.Enums;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
 using MaterialDesignThemes.Wpf;
 
-namespace ClassIsland.Controls;
+namespace ClassIsland.Core.Controls;
 
 /// <summary>
 /// AttachedSettingsControlPresenter.xaml 的交互逻辑
@@ -176,7 +172,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         ProfileService = profileService;
     }
 
-    public AttachedSettingsControlPresenter() : this(App.GetService<IProfileAnalyzeService>(), App.GetService<IProfileService>())
+    public AttachedSettingsControlPresenter() : this(IAppHost.GetService<IProfileAnalyzeService>(), IAppHost.GetService<IProfileService>())
     {
         InitializeComponent();
         UpdateContent();
