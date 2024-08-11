@@ -293,17 +293,27 @@
                                                                        IsOn="{Binding SettingsService.Settings.AllowNotificationSound, Mode=TwoWay}"
                                                                        Margin="-12 0" />
                                         </Expander.Header>
-                                        <StackPanel Margin="36 0 48 12"
+                                        <Grid Margin="36 0 48 12"
                                                     IsEnabled="{Binding SettingsService.Settings.AllowNotificationSound}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
                                             <!-- 默认启用 -->
-                                            <CheckBox Content="默认启用"
+                                            <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                                                      Content="默认启用"
                                                       IsChecked="{Binding SettingsService.Settings.IsNotificationSoundEnabled}"
                                                       Margin="0 0 0 6" />
                                             <!-- 自定义音效 -->
-                                            <controls2:SettingsControl
-                                                IconGlyph="FileMusicOutline" Header="自定义音效"
-                                                Foreground="{DynamicResource MaterialDesignBody}"
-                                                Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
+                                            <controls2:SettingsControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                                                                       IconGlyph="FileMusicOutline" Header="自定义音效"
+                                                                       Foreground="{DynamicResource MaterialDesignBody}"
+                                                                       Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
                                                 <controls2:SettingsControl.Switcher>
                                                     <StackPanel Orientation="Horizontal"
                                                                 HorizontalAlignment="Right"
@@ -319,7 +329,22 @@
                                                     </StackPanel>
                                                 </controls2:SettingsControl.Switcher>
                                             </controls2:SettingsControl>
-                                        </StackPanel>
+
+                                            <!-- 提醒音效音量 -->
+                                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                                       Text="提醒音效音量"
+                                                       Margin="0 4 0 0"/>
+                                            <Slider Grid.Row="2" Grid.Column="1"
+                                                    Value="{Binding SettingsService.Settings.NotificationSoundVolume}"
+                                                    Minimum="0" Maximum="1"
+                                                    TickFrequency="0.01"
+                                                    Margin="0 4 0 0"
+                                                    Width="150"
+                                                    AutoToolTipPlacement="BottomRight"
+                                                    AutoToolTipPrecision="2"
+                                                    IsSnapToTickEnabled="True" 
+                                                    />
+                                        </Grid>
                                     </Expander>
                                 </materialDesign:Card>
                                 <!-- 置顶提醒 -->

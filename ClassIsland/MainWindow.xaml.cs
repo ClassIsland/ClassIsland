@@ -41,6 +41,8 @@ using NAudio.Wave;
 using Sentry;
 using Application = System.Windows.Application;
 using Window = System.Windows.Window;
+using NAudio.Wave.SampleProviders;
+
 #if DEBUG
 using JetBrains.Profiler.Api;
 #endif
@@ -310,11 +312,15 @@ public partial class MainWindow : Window
                 {
                     try
                     {
-                        IWaveProvider provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                        var provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                             ? new StreamMediaFoundationReader(
-                                Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream)
+                                Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream).ToSampleProvider()
                             : new AudioFileReader(settings.NotificationSoundPath);
-                        player.Init(provider);
+                        var volume = new VolumeSampleProvider(provider)
+                        {
+                            Volume = (float)SettingsService.Settings.NotificationSoundVolume
+                        };
+                        player.Init(volume);
                         player.Play();
                     }
                     catch (Exception e)

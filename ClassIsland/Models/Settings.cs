@@ -168,6 +168,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isMigratedFromv14 = false;
     private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
     private bool _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = true;
+    private double _notificationSoundVolume = 1.0;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1057,6 +1058,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _allowNotificationTopmost) return;
             _allowNotificationTopmost = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double NotificationSoundVolume
+    {
+        get => _notificationSoundVolume;
+        set
+        {
+            if (value.Equals(_notificationSoundVolume)) return;
+            _notificationSoundVolume = value;
             OnPropertyChanged();
         }
     }
