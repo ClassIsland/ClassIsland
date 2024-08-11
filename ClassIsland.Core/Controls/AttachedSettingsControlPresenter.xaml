@@ -92,7 +92,7 @@
                                                                         ContentId="{Binding Address.Guid, Mode=OneWay}"
                                                                         ContentIndex="{Binding Address.Index, Mode=OneWay}"
                                                                         IsDependencyMode="True"
-                                                                        ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:RootAttachedSettingsDependencyControl}, Mode=OneWay}" />
+                                                                        ControlInfo="{Binding ControlInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}, Mode=OneWay}" />
                                                                 </ControlTemplate>
                                                             </Setter.Value>
                                                         </Setter>
