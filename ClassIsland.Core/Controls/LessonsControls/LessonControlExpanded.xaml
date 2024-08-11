@@ -21,12 +21,6 @@
             <ContentPresenter>
                 <ContentPresenter.Style>
                     <Style TargetType="ContentPresenter">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding CurrentTimeLayoutItem.TimeType, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}"
-                                         Value="1">
-                                <Setter Property="Content" Value="{x:Static profile:Subject.Breaking}"/>
-                            </DataTrigger>
-                        </Style.Triggers>
                         <Setter Property="Content">
                             <Setter.Value>
                                 <MultiBinding Converter="{StaticResource SubjectIdToSubjectConverter}">
@@ -40,8 +34,19 @@
                 <ContentPresenter.ContentTemplate>
                     <DataTemplate DataType="{x:Type profile:Subject}">
                         <TextBlock VerticalAlignment="Center" FontSize="18"
-                                   FontWeight="Bold"
-                                   Text="{Binding Name}"/>
+                                   FontWeight="Bold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding CurrentTimeLayoutItem.TimeType, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}"
+                                                     Value="1">
+                                            <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakNameText, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Text" Value="{Binding Name}"/>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </DataTemplate>
                 </ContentPresenter.ContentTemplate>
             </ContentPresenter>

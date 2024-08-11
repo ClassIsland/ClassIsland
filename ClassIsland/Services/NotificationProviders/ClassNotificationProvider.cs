@@ -146,13 +146,13 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 ShowTeacherName = Settings.ShowTeacherName
             },
             MaskDuration = TimeSpan.FromSeconds(2),
-            MaskSpeechContent = "课间休息",
+            MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
             OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay")
             {
                 ShowTeacherName = Settings.ShowTeacherName
             },
             OverlayDuration = TimeSpan.FromSeconds(10),
-            OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakName}长{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
+            OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}长{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
             IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
         });
     }

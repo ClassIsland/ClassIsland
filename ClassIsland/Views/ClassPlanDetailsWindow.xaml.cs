@@ -87,7 +87,11 @@ public partial class ClassPlanDetailsWindow
                     break;
                 }
                 case 1:
-                    info.Subject = Subject.Breaking;
+                    info.Subject = new()
+                    {
+                        Initial = "休",
+                        Name = info.TimeLayoutItem.BreakNameText
+                    };
                     ViewModel.Classes.Add(info);
                     break;
             }
@@ -128,7 +132,7 @@ public partial class ClassPlanDetailsWindow
                 new AttachableObjectAddress(ViewModel.ClassPlan.TimeLayoutId), ViewModel.ClassPlan.TimeLayout
             },
         };
-        if (ViewModel.SelectedLesson.Subject != Subject.Breaking)
+        if (ViewModel.SelectedLesson.TimeLayoutItem.TimeType != 1)
         {
             nodes.Add(
                 new AttachableObjectAddress(ViewModel.SelectedLesson.SubjectId), ViewModel.SelectedLesson.Subject
@@ -136,8 +140,7 @@ public partial class ClassPlanDetailsWindow
         }
 
         ViewModel.Summary = "小结：将使用在【应用设置】中的设置或默认设置。";
-        foreach (var i in ViewModel.SelectedLesson.Subject != Subject.Breaking ?
-                     nodes : nodes)
+        foreach (var i in nodes)
         {
             if (!ProfileAnalyzeService.Nodes.TryGetValue(i.Key, out var node))
             {
