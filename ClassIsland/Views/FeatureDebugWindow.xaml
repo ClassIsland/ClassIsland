@@ -23,6 +23,21 @@
             <TabItem Header="IconControl">
                 <Grid>
                     <ProgressBar IsIndeterminate="True"/>
+                    <Border Width="40" Height="40"
+                            Background="Red">
+                        <Border.Clip>
+                            <RectangleGeometry RadiusX="5" RadiusY="5">
+                                <RectangleGeometry.Rect>
+                                    <Rect Width="20" Height="30"/>
+                                </RectangleGeometry.Rect>
+                            </RectangleGeometry>
+                        </Border.Clip>
+                        <Grid>
+                            <TextBlock Text="123123"/>
+
+                            <ProgressBar Width="100" VerticalAlignment="Top"/>
+                        </Grid>
+                    </Border>
                 </Grid>
             </TabItem>
             <TabItem Header="IconControl">

@@ -24,6 +24,8 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
         var gw = (double)values[1];
         var gh = (double)values[2];
         var l = (int)values[3];
+        var rX = (double)values[4];
+        var rY = (double)values[5];
 
         var px = 0.0;
         if (double.IsNaN(gw))
@@ -43,7 +45,7 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
         }
 
         //Debug.WriteLine(gw);
-        return new RectangleGeometry(new Rect(new Point(px, 0), new Size(w, gh)));
+        return new RectangleGeometry(new Rect(new Point(px, 0), new Size(w, gh)), rX, rY);
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

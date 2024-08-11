@@ -169,6 +169,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
     private bool _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = true;
     private double _notificationSoundVolume = 1.0;
+    private double _radiusX = 0.0;
+    private double _radiusY = 0.0;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -778,6 +780,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_mainWindowFontWeight2)) return;
             _mainWindowFontWeight2 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double RadiusX
+    {
+        get => _radiusX;
+        set
+        {
+            if (value.Equals(_radiusX)) return;
+            _radiusX = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double RadiusY
+    {
+        get => _radiusY;
+        set
+        {
+            if (value.Equals(_radiusY)) return;
+            _radiusY = value;
             OnPropertyChanged();
         }
     }

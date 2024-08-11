@@ -52,6 +52,19 @@
                                                     AutoToolTipPrecision="2" />
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
+            <!-- 圆角半径 -->
+            <controls1:SettingsCard IconGlyph="BorderRoundCorners" Header="圆角半径"
+                                    Description="主界面圆角半径，数值为20时左右边缘为半圆。">
+                <controls1:SettingsCard.Switcher>
+                    <Slider Grid.Column="1" Grid.Row="0" Width="180" Minimum="0" Maximum="20"
+                            Value="{Binding SettingsService.Settings.RadiusX}"
+                            AutoToolTipPlacement="BottomRight"
+                            TickFrequency="0.5"
+                            IsSnapToTickEnabled="True"
+                            VerticalAlignment="Center"
+                            AutoToolTipPrecision="1" />
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Kind="PaletteOutline" Text="主题" Margin="0 0 0 8" />
             <!-- 应用主题 -->
