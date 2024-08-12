@@ -271,6 +271,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton(new NamedPipeServer(IpcClient.PipeName));
                 services.AddSingleton<IPluginService, PluginService>();
                 services.AddSingleton<IPluginMarketService, PluginMarketService>();
+                services.AddSingleton<IRulesetService, RulesetService>();
                 try // 检测SystemSpeechService是否存在
                 {
                     _ = new SpeechSynthesizer();
@@ -485,6 +486,7 @@ public partial class App : AppBase, IAppHost
 #endif
         GetService<MainWindow>().Show();
         GetService<ISplashService>().CurrentProgress = 90;
+        GetService<RulesetService>();
 
         // 注册uri导航
         var uriNavigationService = GetService<IUriNavigationService>();

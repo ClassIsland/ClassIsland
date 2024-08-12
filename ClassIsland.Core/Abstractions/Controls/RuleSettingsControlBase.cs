@@ -13,7 +13,7 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// <summary>
 /// 可附加设置的控件
 /// </summary>
-public abstract class AttachedSettingsControlBase : UserControl, INotifyPropertyChanged
+public abstract class RuleSettingsControlBase : UserControl, INotifyPropertyChanged
 {
     [NotNull]
     internal object? SettingsInternal { get; set; }
@@ -24,9 +24,9 @@ public abstract class AttachedSettingsControlBase : UserControl, INotifyProperty
     /// <param name="info">控件信息</param>
     /// <param name="settings">要附加的设置对象</param>
     /// <returns>初始化的控件对象。</returns>
-    public static AttachedSettingsControlBase? GetInstance(AttachedSettingsControlInfo info, ref object? settings)
+    public static RuleSettingsControlBase? GetInstance(AttachedSettingsControlInfo info, ref object? settings)
     {
-        var control = IAppHost.Host?.Services.GetKeyedService<AttachedSettingsControlBase>(info.Guid);
+        var control = IAppHost.Host?.Services.GetKeyedService<RuleSettingsControlBase>(info.Guid);
         if (control == null)
         {
             return null;
@@ -71,7 +71,7 @@ public abstract class AttachedSettingsControlBase : UserControl, INotifyProperty
 /// <summary>
 /// 可附加设置的控件
 /// </summary>
-public abstract class AttachedSettingsControlBase<T> : AttachedSettingsControlBase where T : class
+public abstract class RuleSettingsControlBase<T> : RuleSettingsControlBase where T : class
 {
     /// <summary>
     /// 当前控件的设置
