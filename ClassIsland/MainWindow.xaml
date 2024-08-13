@@ -420,6 +420,8 @@
                         <!-- 窗口上课隐藏 -->
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}"
+                                           Value="0" />
                                 <Condition Binding="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}" Value="True" />
                                 <Condition Binding="{Binding LessonsService.CurrentState, Mode=OneWay}" Value="OnClass" />
                                 <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
@@ -429,6 +431,8 @@
                         <!-- 窗口最大化隐藏 -->
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}"
+                                           Value="0" />
                                 <Condition Binding="{Binding ViewModel.Settings.HideOnMaxWindow, Mode=OneWay}"
                                            Value="True" />
                                 <Condition Binding="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
@@ -440,6 +444,8 @@
                         <!-- 窗口全屏隐藏 -->
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}"
+                                           Value="0" />
                                 <Condition Binding="{Binding ViewModel.Settings.HideOnFullscreen, Mode=OneWay}"
                                            Value="True" />
                                 <Condition Binding="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
@@ -448,7 +454,18 @@
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
-                        
+                        <!-- 窗口条件隐藏 -->
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding ViewModel.Settings.HideMode, Mode=OneWay}"
+                                           Value="1" />
+                                <Condition Binding="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
+                                           Value="True" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </MultiDataTrigger>
+
                     </Style.Triggers>
 
                     <Setter Property="Visibility" Value="{Binding ViewModel.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />

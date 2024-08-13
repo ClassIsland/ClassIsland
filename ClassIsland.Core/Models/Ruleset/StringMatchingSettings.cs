@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Text.RegularExpressions;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Ruleset;
 
@@ -36,5 +37,25 @@ public class StringMatchingSettings : ObservableRecipient
             _useRegex = value;
             OnPropertyChanged();
         }
+    }
+
+    /// <summary>
+    /// 判断给定的字符串是否满足此匹配规则。
+    /// </summary>
+    /// <returns>如果满足规则，则返回true.</returns>
+    public bool IsMatching(string str)
+    {
+        if (!UseRegex) 
+            return str == Text;
+        try
+        {
+            var match = Regex.Match(str, Text);
+            return match.Success;
+        }
+        catch
+        {
+            return false;
+        }
+        return str == Text;
     }
 }

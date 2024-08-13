@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
+using ClassIsland.Models.Rules;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -164,20 +165,57 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private ILogger<LessonsService> Logger { get; }
 
     private IExactTimeService ExactTimeService { get; }
+    public IRulesetService RulesetService { get; }
 
     private Profile Profile => ProfileService.Profile;
 
     private Settings Settings => SettingsService.Settings;
 
-    public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService)
+    public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService)
     {
         MainTimer.Tick += MainTimerOnTick;
         SettingsService = settingsService;
         ProfileService = profileService;
         Logger = logger;
         ExactTimeService = exactTimeService;
+        RulesetService = rulesetService;
 
+        RulesetService.RegisterRuleHandler("classisland.lessons.timeState", TimeStateHandler);
+        RulesetService.RegisterRuleHandler("classisland.lessons.currentSubject", CurrentSubjectHandler);
+        CurrentTimeStateChanged += (sender, args) => RulesetService.NotifyStatusChanged();
+        PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(CurrentSubject))
+            {
+                RulesetService.NotifyStatusChanged();
+            }
+        };
         StartMainTimer();
+    }
+
+    private bool CurrentSubjectHandler(object? settings)
+    {
+        if (settings is not CurrentSubjectRuleSettings s)
+        {
+            return false;
+        }
+
+        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject))
+        {
+            return false;
+        }
+
+        return CurrentSubject == subject;
+    }
+
+    private bool TimeStateHandler(object? settings)
+    {
+        if (settings is not TimeStateRuleSettings s)
+        {
+            return false;
+        }
+
+        return CurrentState == s.State;
     }
 
     private void MainTimerOnTick(object? sender, EventArgs e)

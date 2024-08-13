@@ -42,6 +42,11 @@ public abstract class RuleSettingsControlBase : UserControl, INotifyPropertyChan
             {
                 settingsReal = json.Deserialize(settingsType);
             }
+
+            if (settingsReal?.GetType() != settingsType)
+            {
+                settingsReal = Activator.CreateInstance(settingsType);
+            }
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;

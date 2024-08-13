@@ -22,24 +22,10 @@ public class RulesetService : IRulesetService
     {
         Logger = logger;
 
-        eventProc = PfnWinEventProc;
-        SetWinEventHook(
-            EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_FOREGROUND,
-            HMODULE.Null, eventProc,
-            0, 0,
-            WINEVENT_OUTOFCONTEXT);
-        ForegroundWindowChanged += (_, _) => NotifyStatusChanged();
+        
     }
 
-    private static WINEVENTPROC eventProc;
-    private void PfnWinEventProc(HWINEVENTHOOK hook, uint @event, HWND hwnd, int idObject, int child, uint thread, uint time)
-    {
-        Logger.LogTrace("Window event: {} HWND:{} {}", @event, hwnd, hook.Value);
-        _ = Dispatcher.CurrentDispatcher.InvokeAsync(() =>
-        {
-            ForegroundWindowChanged?.Invoke(this, EventArgs.Empty);
-        });
-    }
+    
 
     public event EventHandler? ForegroundWindowChanged;
 

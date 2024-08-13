@@ -12,6 +12,7 @@
       xmlns:views="clr-namespace:ClassIsland.Views"
       xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
       xmlns:commands="clr-namespace:ClassIsland.Core.Commands;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="GeneralSettingsPage"
@@ -26,6 +27,9 @@
 
     <controls:SettingsPageBase.Resources>
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
+
+        <ci:RulesetControl x:Key="RulesetControl"
+                           Ruleset="{Binding SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
@@ -57,20 +61,34 @@
                                                                           Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
                                                                           Margin="-12 0" />
                     </Expander.Header>
-                    <StackPanel Margin="36 0 64 12">
-                        <StackPanel.Resources>
-                            <Style TargetType="CheckBox"
-                                                           BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                <Setter Property="Margin" Value="0 3" />
-                            </Style>
-                        </StackPanel.Resources>
-                        <CheckBox Content="上课时" IsChecked="{Binding SettingsService.Settings.HideOnClass}"
-                                                          Style="{StaticResource MaterialDesignCheckBox}" />
-                        <CheckBox Content="前台是最大化窗口时"
-                                                          IsChecked="{Binding SettingsService.Settings.HideOnMaxWindow}" />
-                        <CheckBox Content="前台是全屏窗口时"
-                                                          IsChecked="{Binding SettingsService.Settings.HideOnFullscreen}" />
-                    </StackPanel>
+                    <TabControl Margin="36 0 64 12" HorizontalContentAlignment="Left"
+                                SelectedIndex="{Binding SettingsService.Settings.HideMode}">
+                        <TabItem Header="基础模式">
+                            <StackPanel >
+                                <StackPanel.Resources>
+                                    <Style TargetType="CheckBox"
+                                           BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                        <Setter Property="Margin" Value="0 3" />
+                                    </Style>
+                                </StackPanel.Resources>
+                                <CheckBox Content="上课时" IsChecked="{Binding SettingsService.Settings.HideOnClass}"
+                                          Style="{StaticResource MaterialDesignCheckBox}" />
+                                <CheckBox Content="前台是最大化窗口时"
+                                          IsChecked="{Binding SettingsService.Settings.HideOnMaxWindow}" />
+                                <CheckBox Content="前台是全屏窗口时"
+                                          IsChecked="{Binding SettingsService.Settings.HideOnFullscreen}" />
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="高级模式">
+                            <StackPanel>
+                                <Button HorizontalAlignment="Left" Style="{StaticResource MaterialDesignFlatButton}"
+                                        Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}"
+                                        CommandParameter="{StaticResource RulesetControl}">
+                                    <controls1:IconText Kind="TagMultipleOutline" Text="编辑规则集…"/>
+                                </Button>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
                 </Expander>
             </materialDesign:Card>
             <!-- 点击托盘图标行为 -->

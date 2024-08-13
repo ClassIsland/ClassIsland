@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Shared;
@@ -171,6 +172,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _notificationSoundVolume = 1.0;
     private double _radiusX = 0.0;
     private double _radiusY = 0.0;
+    private int _hideMode = 0;
+    private Ruleset _hiedRules = new();
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -307,6 +310,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isClassOffNotificationEnabled) return;
             _isClassOffNotificationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int HideMode
+    {
+        get => _hideMode;
+        set
+        {
+            if (value == _hideMode) return;
+            _hideMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Ruleset HiedRules
+    {
+        get => _hiedRules;
+        set
+        {
+            if (Equals(value, _hiedRules)) return;
+            _hiedRules = value;
             OnPropertyChanged();
         }
     }

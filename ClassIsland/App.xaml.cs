@@ -61,6 +61,8 @@ using ClassIsland.Shared.IPC.Protobuf.Client;
 using GrpcDotNetNamedPipes;
 using Sentry;
 using ClassIsland.Core.Controls.Ruleset;
+using ClassIsland.Models.Rules;
+using ClassIsland.Controls.RuleSettingsControls;
 
 namespace ClassIsland;
 /// <summary>
@@ -275,6 +277,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IPluginService, PluginService>();
                 services.AddSingleton<IPluginMarketService, PluginMarketService>();
                 services.AddSingleton<IRulesetService, RulesetService>();
+                services.AddSingleton<IWindowRuleService, WindowRuleService>();
                 try // 检测SystemSpeechService是否存在
                 {
                     _ = new SpeechSynthesizer();
@@ -374,13 +377,14 @@ public partial class App : AppBase, IAppHost
                 services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
                 // 规则
-                services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
-                services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
-                services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.className", "当窗口类名为", PackIconKind.WindowMaximize);
-                services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.text", "当窗口标题为", PackIconKind.FormatTitle);
-                services.AddRule("classisland.windows.status", "当窗口状态为", PackIconKind.DockWindow);
-                services.AddRule("classisland.lessons.currentSubject", "当科目是", PackIconKind.BookOutline);
-                services.AddRule("classisland.lessons.onClass", "当上课时", PackIconKind.BookOutline);
+                //services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
+                //services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
+                services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.className", "前台窗口类名", PackIconKind.WindowMaximize);
+                services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.text", "前台窗口标题", PackIconKind.FormatTitle);
+                services.AddRule<WindowStatusRuleSettings, WindowStatusRuleSettingsControl>("classisland.windows.status", "前台窗口状态是", PackIconKind.DockWindow);
+                services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.processName", "前台窗口进程", PackIconKind.ApplicationCogOutline);
+                services.AddRule<CurrentSubjectRuleSettings, CurrentSubjectRuleSettingsControl>("classisland.lessons.currentSubject", "科目是", PackIconKind.BookOutline);
+                services.AddRule<TimeStateRuleSettings, TimeStateRuleSettingsControl>("classisland.lessons.timeState", "当前时间状态是", PackIconKind.ClockOutline);
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();
@@ -497,7 +501,7 @@ public partial class App : AppBase, IAppHost
 #endif
         GetService<MainWindow>().Show();
         GetService<ISplashService>().CurrentProgress = 90;
-        GetService<IRulesetService>();
+        GetService<IWindowRuleService>();
 
         // 注册uri导航
         var uriNavigationService = GetService<IUriNavigationService>();

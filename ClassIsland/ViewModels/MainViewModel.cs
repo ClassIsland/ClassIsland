@@ -32,6 +32,7 @@ public class MainViewModel : ObservableRecipient
     private DateTime _firstProcessNotifications = DateTime.MinValue;
     private DateTime _debugCurrentTime = DateTime.Now;
     private bool _isNotificationWindowExplicitShowed = false;
+    private bool _isHideRuleSatisfied = false;
 
     public Profile Profile
     {
@@ -120,6 +121,17 @@ public class MainViewModel : ObservableRecipient
             _isForegroundMaxWindow = value;
             OnPropertyChanged();
             //Settings.NotifyPropertyChanged(nameof(Settings.HideOnMaxWindow));
+        }
+    }
+
+    public bool IsHideRuleSatisfied
+    {
+        get => _isHideRuleSatisfied;
+        set
+        {
+            if (value == _isHideRuleSatisfied) return;
+            _isHideRuleSatisfied = value;
+            OnPropertyChanged();
         }
     }
 

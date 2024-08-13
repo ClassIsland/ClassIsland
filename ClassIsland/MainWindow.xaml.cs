@@ -118,6 +118,7 @@ public partial class MainWindow : Window
     public ClassChangingWindow? ClassChangingWindow { get; set; }
     
     private IUriNavigationService UriNavigationService { get; }
+    public IRulesetService RulesetService { get; }
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
@@ -139,7 +140,8 @@ public partial class MainWindow : Window
         TopmostEffectWindow topmostEffectWindow,
         IComponentsService componentsService,
         ILessonsService lessonsService,
-        IUriNavigationService uriNavigationService)
+        IUriNavigationService uriNavigationService,
+        IRulesetService rulesetService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -153,6 +155,7 @@ public partial class MainWindow : Window
         ComponentsService = componentsService;
         LessonsService = lessonsService;
         UriNavigationService = uriNavigationService;
+        RulesetService = rulesetService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -166,6 +169,24 @@ public partial class MainWindow : Window
         HelpsWindow = App.GetService<HelpsWindow>();
         //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
+        RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
+    }
+
+    private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
+    {
+        if (ViewModel.Settings.HideMode == 1)
+        {
+            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HiedRules);
+        }
+        // Detect fullscreen
+        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
+                     ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
+            Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
+        if (screen != null)
+        {
+            ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
+            ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
+        }
     }
 
     private async void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
@@ -188,16 +209,6 @@ public partial class MainWindow : Window
             //SetBottom();
         }
         //NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
-
-        // Detect fullscreen
-        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
-                     ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
-            Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
-        if (screen != null)
-        {
-            ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
-            ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
-        }
 
     }
 
