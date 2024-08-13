@@ -44,9 +44,13 @@ public class RulesetService : IRulesetService
     public event EventHandler? ForegroundWindowChanged;
 
     public event EventHandler? StatusUpdated;
-    public bool IsRulesetSatisfied(Ruleset ruleset)
+    private bool IsRulesetGroupSatisfied(RuleGroup ruleset)
     {
         var rulesetSatisfied = ruleset.Mode == RulesetLogicalMode.And;
+        if (ruleset.Rules.Count <= 0)
+        {
+            return false;
+        }
         foreach (var i in ruleset.Rules)
         {
             if (!IRulesetService.Rules.TryGetValue(i.Id, out var rule))
@@ -91,6 +95,32 @@ public class RulesetService : IRulesetService
         }
         rulesetSatisfied ^= ruleset.IsReversed;
         return rulesetSatisfied;
+    }
+
+    public bool IsRulesetSatisfied(Ruleset ruleset)
+    {
+        var isSatisfied = ruleset.Mode == RulesetLogicalMode.And;
+        if (ruleset.Groups.Count <= 0)
+        {
+            return false;
+        }
+        foreach (var group in ruleset.Groups.Where(x => x.IsEnabled))
+        {
+            var result = IsRulesetGroupSatisfied(group);
+            result ^= group.IsReversed;
+            if (!result && ruleset.Mode == RulesetLogicalMode.And)
+            {
+                isSatisfied = false;
+                break;
+            }
+            if (result && ruleset.Mode == RulesetLogicalMode.Or)
+            {
+                isSatisfied = true;
+                break;
+            }
+        }
+        isSatisfied ^= ruleset.IsReversed;
+        return isSatisfied;
     }
 
     public void RegisterRuleHandler(string id, RuleRegistryInfo.HandleDelegate handler)

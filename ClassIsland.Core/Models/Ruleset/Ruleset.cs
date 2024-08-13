@@ -44,18 +44,8 @@ public class Ruleset : ObservableRecipient
     }
 
     /// <summary>
-    /// 规则条目。
+    /// 规则分组
     /// </summary>
-    public ObservableCollection<Rule> Rules
-    {
-        get => _rules;
-        set
-        {
-            if (Equals(value, _rules)) return;
-            _rules = value;
-            OnPropertyChanged();
-        }
-    }
 
     public ObservableCollection<RuleGroup> Groups
     {

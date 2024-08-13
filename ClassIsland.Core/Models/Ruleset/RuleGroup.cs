@@ -14,6 +14,9 @@ public class RuleGroup : ObservableRecipient
     private bool _isReversed = false;
     private bool _isEnabled = true;
 
+    /// <summary>
+    /// 规则条目。
+    /// </summary>
     public ObservableCollection<Rule> Rules
     {
         get => _rules;
@@ -25,6 +28,9 @@ public class RuleGroup : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 判断模式。
+    /// </summary>
     public RulesetLogicalMode Mode
     {
         get => _mode;
@@ -36,6 +42,9 @@ public class RuleGroup : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 是否反转判断。
+    /// </summary>
     public bool IsReversed
     {
         get => _isReversed;
@@ -47,6 +56,9 @@ public class RuleGroup : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 是否启用规则集。
+    /// </summary>
     public bool IsEnabled
     {
         get => _isEnabled;
