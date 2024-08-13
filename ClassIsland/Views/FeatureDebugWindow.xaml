@@ -8,6 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:notificationEffects="clr-namespace:ClassIsland.Controls.NotificationEffects"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:ruleset="clr-namespace:ClassIsland.Core.Models.Ruleset;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -20,29 +21,25 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
-            <TabItem Header="IconControl">
+            <TabItem Header="RulesetControl">
+                <Grid Background="#99000000">
+                    <ci:RulesetControl Background="{DynamicResource MaterialDesignPaper}"
+                                       HorizontalAlignment="Right">
+                        <ci:RulesetControl.Ruleset>
+                            <ruleset:Ruleset />
+                        </ci:RulesetControl.Ruleset>
+                    </ci:RulesetControl>
+                </Grid>
+            </TabItem>
+            <TabItem Header="ProgressBar">
                 <Grid>
                     <ProgressBar IsIndeterminate="True"/>
-                    <Border Width="40" Height="40"
-                            Background="Red">
-                        <Border.Clip>
-                            <RectangleGeometry RadiusX="5" RadiusY="5">
-                                <RectangleGeometry.Rect>
-                                    <Rect Width="20" Height="30"/>
-                                </RectangleGeometry.Rect>
-                            </RectangleGeometry>
-                        </Border.Clip>
-                        <Grid>
-                            <TextBlock Text="123123"/>
-
-                            <ProgressBar Width="100" VerticalAlignment="Top"/>
-                        </Grid>
-                    </Border>
                 </Grid>
             </TabItem>
             <TabItem Header="IconControl">
                 <Grid>
                     <ci:IconControl PackIconKind="Github"
+                                    FallbackPackIconKind="QuestionMarkCircleOutline"
                                     Width="64" Height="64"
                                     IconKind="Image"
                                     ImageSource="/Assets/HoYoStickers/光辉矢愿_想我了吗.png"/>

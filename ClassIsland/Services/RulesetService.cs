@@ -28,7 +28,7 @@ public class RulesetService : IRulesetService
             HMODULE.Null, eventProc,
             0, 0,
             WINEVENT_OUTOFCONTEXT);
-        ForegroundWindowChanged += (sender, args) => StatusUpdated?.Invoke(this, EventArgs.Empty);
+        ForegroundWindowChanged += (_, _) => NotifyStatusChanged();
     }
 
     private static WINEVENTPROC eventProc;
@@ -101,5 +101,10 @@ public class RulesetService : IRulesetService
         }
 
         ruleRegistryInfo.Handle += handler;
+    }
+
+    public void NotifyStatusChanged()
+    {
+        StatusUpdated?.Invoke(this, EventArgs.Empty);
     }
 }

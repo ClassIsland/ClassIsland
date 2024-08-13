@@ -18,11 +18,12 @@ public static class RulesetRegistryExtensions
     /// <param name="id">规则ID，例如“classisland.example”。</param>
     /// <param name="name">规则名称。/</param>
     /// <param name="iconKind">规则图标。</param>
+    /// <param name="onHandle">规则处理程序。</param>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule(this IServiceCollection services, string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline)
+        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
-        Register(id, name, iconKind);
+        Register(id, name, iconKind, onHandle);
         return services;
     }
 
@@ -33,12 +34,13 @@ public static class RulesetRegistryExtensions
     /// <param name="id">规则ID，例如“classisland.example”。</param>
     /// <param name="name">规则名称。/</param>
     /// <param name="iconKind">规则图标。</param>
+    /// <param name="onHandle">规则处理程序。</param>
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings>(this IServiceCollection services, string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline)
+        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle=null)
     {
-        var info = Register(id, name, iconKind);
+        var info = Register(id, name, iconKind, onHandle);
         info.SettingsType = typeof(TSettings);
         return services;
     }
@@ -50,13 +52,14 @@ public static class RulesetRegistryExtensions
     /// <param name="id">规则ID，例如“classisland.example”。</param>
     /// <param name="name">规则名称。/</param>
     /// <param name="iconKind">规则图标。</param>
+    /// <param name="onHandle">规则处理程序。</param>
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <typeparam name="TSettingsControl">规则设置控件类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline) where TSettingsControl : RuleSettingsControlBase
+        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
     {
-        var info = Register(id, name, iconKind);
+        var info = Register(id, name, iconKind, onHandle);
         services.AddKeyedTransient<RuleSettingsControlBase, TSettingsControl>(id);
         info.SettingsType = typeof(TSettings);
         info.SettingsControlType = typeof(TSettingsControl);
@@ -65,7 +68,7 @@ public static class RulesetRegistryExtensions
 
 
     private static RuleRegistryInfo Register(string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline)
+        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
         if (IRulesetService.Rules.ContainsKey(id))
         {
@@ -73,6 +76,7 @@ public static class RulesetRegistryExtensions
         }
 
         var info = new RuleRegistryInfo(id, name, iconKind);
+        info.Handle += onHandle;
         IRulesetService.Rules.Add(id, info);
         
         return info;

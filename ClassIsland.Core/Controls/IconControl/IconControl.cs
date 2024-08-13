@@ -111,6 +111,12 @@ public class IconControl : Control
 
     private void OnIconKindChanged(DependencyObject o, DependencyPropertyChangedEventArgs args)
     {
+        UpdateIconSource();
+    }
+
+    private void UpdateIconSource()
+    {
+        Console.WriteLine(ImageSource);
         if (IconKind == IconControlIconKind.Image && ImageSource == null)
         {
             RealIconKind = IconControlIconKind.PackIcon;
@@ -123,7 +129,7 @@ public class IconControl : Control
 
     private void OnImageSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs args)
     {
-        Console.WriteLine(ImageSource);
+        UpdateIconSource();
     }
 
     static IconControl()

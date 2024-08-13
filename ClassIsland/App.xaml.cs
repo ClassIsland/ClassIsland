@@ -53,11 +53,14 @@ using JetBrains.Profiler.Api;
 #endif
 using System.Xml.Linq;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Services.Grpc;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Protobuf.Client;
 using GrpcDotNetNamedPipes;
 using Sentry;
+using ClassIsland.Core.Controls.Ruleset;
 
 namespace ClassIsland;
 /// <summary>
@@ -370,6 +373,14 @@ public partial class App : AppBase, IAppHost
                 services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
+                // 规则
+                services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
+                services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
+                services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.className", "当窗口类名为", PackIconKind.WindowMaximize);
+                services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.text", "当窗口标题为", PackIconKind.FormatTitle);
+                services.AddRule("classisland.windows.status", "当窗口状态为", PackIconKind.DockWindow);
+                services.AddRule("classisland.lessons.currentSubject", "当科目是", PackIconKind.BookOutline);
+                services.AddRule("classisland.lessons.onClass", "当上课时", PackIconKind.BookOutline);
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();
@@ -486,7 +497,7 @@ public partial class App : AppBase, IAppHost
 #endif
         GetService<MainWindow>().Show();
         GetService<ISplashService>().CurrentProgress = 90;
-        GetService<RulesetService>();
+        GetService<IRulesetService>();
 
         // 注册uri导航
         var uriNavigationService = GetService<IUriNavigationService>();

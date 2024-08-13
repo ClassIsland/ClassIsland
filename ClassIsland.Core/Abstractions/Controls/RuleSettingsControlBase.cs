@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,15 +25,15 @@ public abstract class RuleSettingsControlBase : UserControl, INotifyPropertyChan
     /// <param name="info">控件信息</param>
     /// <param name="settings">要附加的设置对象</param>
     /// <returns>初始化的控件对象。</returns>
-    public static RuleSettingsControlBase? GetInstance(AttachedSettingsControlInfo info, ref object? settings)
+    public static RuleSettingsControlBase? GetInstance(RuleRegistryInfo info, ref object? settings)
     {
-        var control = IAppHost.Host?.Services.GetKeyedService<RuleSettingsControlBase>(info.Guid);
-        if (control == null)
+        var control = IAppHost.Host?.Services.GetKeyedService<RuleSettingsControlBase>(info.Id);
+        if (control == null || info.SettingsControlType == null)
         {
             return null;
         }
 
-        var baseType = info.AttachedSettingsControlType.BaseType;
+        var baseType = info.SettingsControlType.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();

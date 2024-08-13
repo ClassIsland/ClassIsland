@@ -38,4 +38,9 @@ public interface IRulesetService
     /// <param name="id">要注册的规则ID</param>
     /// <param name="handler">规则处理程序。</param>
     public void RegisterRuleHandler(string id, RuleRegistryInfo.HandleDelegate handler);
+
+    /// <summary>
+    /// 通知当前状态发生变化，需要重新判定规则集。
+    /// </summary>
+    public void NotifyStatusChanged();
 }
