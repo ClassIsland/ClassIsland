@@ -26,7 +26,9 @@
                     <ci:RulesetControl Background="{DynamicResource MaterialDesignPaper}"
                                        HorizontalAlignment="Right">
                         <ci:RulesetControl.Ruleset>
-                            <ruleset:Ruleset />
+                            <ruleset:Ruleset>
+                                
+                            </ruleset:Ruleset>
                         </ci:RulesetControl.Ruleset>
                     </ci:RulesetControl>
                 </Grid>
