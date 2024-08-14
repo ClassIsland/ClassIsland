@@ -1,5 +1,7 @@
 param($is_release)
 
+$ErrorActionPreference = "Stop"
+
 $PUBLISH_TARGET = "..\out\ClassIsland"
 
 if ($(Test-Path ./out) -eq $false) {

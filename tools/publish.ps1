@@ -1,5 +1,7 @@
 ﻿param($is_trim)
 
+$ErrorActionPreference = "Stop"
+
 $PUBLISH_TARGET = "..\out\ClassIsland"
 
 if ($(Test-Path ./out) -eq $false) {

@@ -1,5 +1,7 @@
 ﻿$PUBLISH_TARGET = ".\ClassIsland"
 
+$ErrorActionPreference = "Stop"
+
 Write-Host "Build starting..." -ForegroundColor Cyan
 $env:git_latest_tag = git describe --abbrev=0 --tags
 $env:git_commit_short = $(git rev-parse HEAD).substring(0, 7)
