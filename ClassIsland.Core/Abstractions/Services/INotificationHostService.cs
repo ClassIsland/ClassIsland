@@ -12,7 +12,7 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface INotificationHostService
 {
-    PriorityQueue<NotificationRequest, int> RequestQueue { get; }
+    PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; }
     ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
     NotificationRequest? CurrentRequest { get; set; }
     NotificationRequest GetRequest();

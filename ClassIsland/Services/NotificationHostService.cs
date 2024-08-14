@@ -30,7 +30,9 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     private ILogger<NotificationHostService> Logger { get; } = logger;
     private Settings Settings => SettingsService.Settings;
 
-    public PriorityQueue<NotificationRequest, int> RequestQueue { get; } = new();
+    public PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; } = new();
+
+    private int _queueIndex = 0;
 
     public ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; } = new();
 
@@ -183,7 +185,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
             .FirstOrDefault();
         request.ProviderSettings = request.NotificationSource?.ProviderSettings ?? request.ProviderSettings;
-        RequestQueue.Enqueue(request, request.IsPriorityOverride ? request.PriorityOverride : Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()));
+        if (_queueIndex +1 >= int.MaxValue)
+        {
+            _queueIndex = 0;
+        }
+        RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request)
