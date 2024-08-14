@@ -286,7 +286,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             IsLessonConfirmed = false;
         }
         // 获取下节课信息
-        else if (CurrentSelectedIndex + 1 < currentLayout.Count && CurrentSelectedIndex is not null)
+        if (CurrentSelectedIndex + 1 < currentLayout.Count)
         {
             var nextClassTimeLayoutItem = currentLayout.FirstOrDefault(i =>
                     currentLayout.IndexOf(i) > CurrentSelectedIndex && i.TimeType == 0);

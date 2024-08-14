@@ -92,7 +92,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         if (settingsIsClassOnPreparingNotificationEnabled &&
             tClassDelta > TimeSpan.Zero &&
               tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) &&
-            !IsClassPreparingNotified && LessonsService.CurrentState == TimeState.Breaking)
+            !IsClassPreparingNotified && LessonsService.CurrentState is TimeState.Breaking or TimeState.None)
         {
             var deltaTime = LessonsService.NextClassSubject.IsOutDoor
                 ? settingsOutDoorClassPreparingDeltaTime
