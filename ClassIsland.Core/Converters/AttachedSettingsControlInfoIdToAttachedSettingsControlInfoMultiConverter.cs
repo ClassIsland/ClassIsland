@@ -19,7 +19,7 @@ public class
             return null;
         }
 
-        return c.FirstOrDefault(x => x.Guid == id);
+        return c.FirstOrDefault(x => x.Guid.ToString() == id);
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

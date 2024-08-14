@@ -156,7 +156,7 @@ public partial class ClassPlanDetailsWindow
                 Node = node
             };
             
-            if (!i.Value.AttachedObjects.TryGetValue(id, out var settings))
+            if (!i.Value.AttachedObjects.TryGetValue(id.ToString(), out var settings))
             {
                 item.State = AttachedSettingsControlState.Disabled;
                 goto finish;

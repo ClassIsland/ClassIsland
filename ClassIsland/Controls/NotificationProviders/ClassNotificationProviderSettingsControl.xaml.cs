@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Controls;
@@ -27,6 +28,6 @@ public partial class ClassNotificationProviderSettingsControl : UserControl
 
     private void ButtonShowAttachedSettingsInfo_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == "08F0D9C3-C770-4093-A3D0-02F3D90C24BC")));
+        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("08F0D9C3-C770-4093-A3D0-02F3D90C24BC"))));
     }
 }

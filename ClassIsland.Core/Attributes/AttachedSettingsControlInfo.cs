@@ -17,7 +17,7 @@ public class AttachedSettingsControlInfo(
     /// <summary>
     /// 附加设置 GUID
     /// </summary>
-    public string Guid { get; } = guid;
+    public Guid Guid { get; } = new Guid(guid);
 
     /// <summary>
     /// 附加设置控件名称
