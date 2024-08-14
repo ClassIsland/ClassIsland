@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Ruleset;
-using static JetBrains.FormatRipper.FileExplorer.FileTypeExplorer;
 using System.Text.Json;
 
 namespace ClassIsland.Services;
