@@ -68,7 +68,8 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
     {
         var settings = (IAfterSchoolNotificationProviderSettingsBase?)GetAttachedSettings() ?? Settings;
         if (!settings.IsEnabled || LessonsService.CurrentState != TimeState.None || !LessonsService.IsClassPlanLoaded ||
-            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay > TimeSpan.FromSeconds(5))
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentClassPlan?.TimeLayout.Layouts.LastOrDefault()?.EndSecond.TimeOfDay > TimeSpan.FromSeconds(5)||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay < LessonsService.CurrentClassPlan?.TimeLayout.Layouts.LastOrDefault()?.EndSecond.TimeOfDay)
         {
             return;
         }

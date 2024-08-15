@@ -99,8 +99,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             var deltaTime = TimeSpan.FromSeconds(settingsDeltaTime) - tClassDelta > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpan.FromSeconds(settingsDeltaTime);
             IsClassPreparingNotified = true;
-            IsClassOnNotified = true;
-            NotificationHostService.ShowNotification(new NotificationRequest()
+            var onClassPrepareRequest = new NotificationRequest
             {
                 MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
@@ -113,19 +112,12 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 },
                 TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
-            });
-
-            var onClassRequest = new NotificationRequest()
-            {
-                MaskSpeechContent = "上课",
-                MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
-                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
             };
-            onClassRequest.CompletedTokenSource.Token.Register((o, token) =>
+            onClassPrepareRequest.CompletedTokenSource.Token.Register((o, token) =>
             {
-                IsClassOnNotified = false;
+                IsClassPreparingNotified = false;
             }, false);
-            NotificationHostService.ShowNotification(onClassRequest);
+            NotificationHostService.ShowNotification(onClassPrepareRequest);
         }
     }
 
