@@ -51,10 +51,13 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
     private ILessonsService LessonsService { get; }
 
-    public ClassNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService , ILessonsService lessonsService)
+    private IExactTimeService ExactTimeService { get; }
+
+    public ClassNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService , ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         NotificationHostService = notificationHostService;
         LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
 
         NotificationHostService.RegisterNotificationProvider(this);
         LessonsService.OnClass += OnClass;
@@ -94,14 +97,12 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
               tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) &&
             !IsClassPreparingNotified && LessonsService.CurrentState is TimeState.Breaking or TimeState.None)
         {
-            var deltaTime = LessonsService.NextClassSubject.IsOutDoor
-                ? settingsOutDoorClassPreparingDeltaTime
-                : settingsInDoorClassPreparingDeltaTime;
+            var deltaTime = TimeSpan.FromSeconds(settingsDeltaTime) - tClassDelta > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpan.FromSeconds(settingsDeltaTime);
             IsClassPreparingNotified = true;
             IsClassOnNotified = true;
             NotificationHostService.ShowNotification(new NotificationRequest()
             {
-                MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(TimeSpan.FromSeconds(deltaTime))}。",
+                MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
                 MaskDuration = TimeSpan.FromSeconds(5),
                 OverlaySpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
@@ -135,7 +136,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var settingsIsClassOffNotificationEnabled = settings?.IsAttachSettingsEnabled == true ?
             settings.IsClassOffNotificationEnabled
             : Settings.IsClassOffNotificationEnabled;
-        if (!settingsIsClassOffNotificationEnabled)
+        if (!settingsIsClassOffNotificationEnabled || ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
         {
             return;
         }
@@ -169,6 +170,10 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             return;
         }
         if (IsClassOnNotified)
+        {
+            return;
+        }
+        if (ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
         {
             return;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,10 +47,14 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
 
     private ILessonsService LessonsService { get; }
 
-    public AfterSchoolNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService, ILessonsService lessonsService)
+    private IExactTimeService ExactTimeService { get; }
+
+    public AfterSchoolNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService, ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         NotificationHostService = notificationHostService;
         LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
+
         NotificationHostService.RegisterNotificationProvider(this);
         Settings =
             NotificationHostService.GetNotificationProviderSettings<AfterSchoolNotificationProviderSettings>(ProviderGuid) ??
@@ -62,7 +67,8 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
     private void NotificationHostServiceOnCurrentStateChanged(object? sender, EventArgs e)
     {
         var settings = (IAfterSchoolNotificationProviderSettingsBase?)GetAttachedSettings() ?? Settings;
-        if (!settings.IsEnabled || LessonsService.CurrentState != TimeState.None || !LessonsService.IsClassPlanLoaded)
+        if (!settings.IsEnabled || LessonsService.CurrentState != TimeState.None || !LessonsService.IsClassPlanLoaded ||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay > TimeSpan.FromSeconds(5))
         {
             return;
         }
