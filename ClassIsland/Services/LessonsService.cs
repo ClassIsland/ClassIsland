@@ -289,9 +289,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
         if (CurrentSelectedIndex + 1 < currentLayout.Count)
         {
             var nextClassTimeLayoutItem = currentLayout.FirstOrDefault(i =>
-                    currentLayout.IndexOf(i) > CurrentSelectedIndex && i.TimeType == 0);
+                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 0);
             var nextBreakingTimeLayoutItem = currentLayout.FirstOrDefault(i =>
-                    currentLayout.IndexOf(i) > CurrentSelectedIndex && i.TimeType == 1);
+                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 1);
             if (nextClassTimeLayoutItem != null)
             {
                 NextClassTimeLayoutItem = nextClassTimeLayoutItem;
