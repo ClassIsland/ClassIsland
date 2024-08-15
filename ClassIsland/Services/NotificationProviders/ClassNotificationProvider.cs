@@ -113,10 +113,6 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             };
-            onClassPrepareRequest.CompletedTokenSource.Token.Register((o, token) =>
-            {
-                IsClassPreparingNotified = false;
-            }, false);
             NotificationHostService.ShowNotification(onClassPrepareRequest);
         }
     }
@@ -152,6 +148,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
     private void OnClass(object? sender, EventArgs e)
     {
+        IsClassPreparingNotified = false;
         var settings = GetAttachedSettings();
         var settingsIsClassOnNotificationEnabled = settings?.IsAttachSettingsEnabled == true ? 
             settings.IsClassOnNotificationEnabled 
