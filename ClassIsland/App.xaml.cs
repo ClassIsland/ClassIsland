@@ -509,6 +509,7 @@ public partial class App : AppBase, IAppHost
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
         uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
         uriNavigationService.HandleAppNavigation("helps", args => GetService<MainWindow>().OpenHelpsWindow());
+        uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
 
         IAppHost.Host.BindGrpcServices();
         GetService<NamedPipeServer>().Start();

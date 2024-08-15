@@ -139,7 +139,7 @@ public partial class WelcomeWindow : MyWindow
     {
         ViewModel.FlipNextCount++;
         ViewModel.FlipIndex = ViewModel.FlipIndex + 1 >= 3 ? 0 : ViewModel.FlipIndex + 1;
-        if (ViewModel.FlipNextCount >= 2)
+        if (ViewModel.FlipIndex >= 2)
             ViewModel.IsFlipEnd = true;
     }
 
@@ -161,5 +161,24 @@ public partial class WelcomeWindow : MyWindow
             Owner = this,
             Title = "ClassIsland 隐私政策"
         }.ShowDialog();
+    }
+
+    private void ButtonSkip_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SlideIndex = 4;
+        ViewModel.SnackbarQueue.Enqueue("您稍后可以在【应用设置】中调整这些设置。");
+    }
+
+    private void ButtonCompleteFlipBack_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.FlipIndex > 0)
+        {
+            ViewModel.FlipIndex--;
+            ViewModel.IsFlipEnd = ViewModel.FlipIndex >= 2;
+        }
+        else
+        {
+            ViewModel.SlideIndex--;
+        }
     }
 }

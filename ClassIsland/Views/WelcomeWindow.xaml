@@ -15,6 +15,7 @@
                    xmlns:demo="clr-namespace:ClassIsland.Controls.Demo"
                    xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                   xmlns:commands="http://classisland.tech/schemas/xaml/core"
                    mc:Ignorable="d"
                    Height="600" Width="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -165,6 +166,18 @@
                                     <system:String>完成</system:String>
                                 </ListBox>
                             </StackPanel>
+                            <!--<Button Grid.Column="1" Style="{StaticResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    FontSize="16"
+                                    Margin="0 -4"
+                                    Visibility="{Binding ViewModel.IsLicenseAgreed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    FontWeight="Medium"
+                                    Click="ButtonSkip_OnClick"
+                                    Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                    materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}">
+                                跳过
+                            </Button>-->
                         </Grid>
                     </materialDesign:ColorZone>
 
@@ -464,39 +477,109 @@
                                 </Grid.RowDefinitions>
 
                                 <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
-                                    <StackPanel>
-                                        <TextBlock Text="完成"
-                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                                        <TextBlock Margin="0 6 0 16" TextWrapping="Wrap"
-                                                   FontWeight="Light"
-                                                   Text="应用的基本设置已经完成，感谢您使用本应用。以下是使用本应用的基本操作。" />
-                                        <!--<Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                HorizontalAlignment="Left"
-                                                Click="ButtonViewHelp_OnClick"
-                                                Margin="0 6 0 0">
-                                            <controls:IconText Kind="HelpCircleOutline" Text="查看帮助文档" />
-                                        </Button>-->
-                                        <mah:FlipView MouseHoverBorderEnabled="False"
-                                                      ShowIndex="True"
-                                                      SelectedIndex="{Binding ViewModel.FlipIndex, Mode=OneWay}"
-                                                      BannerForeground="{DynamicResource MaterialDesignBody}"
-                                                      CircularNavigation="True"
-                                                      Width="500">
-                                            <mah:FlipViewItem BannerText="点击任务栏托盘图标可以打开应用主菜单。">
-                                                <demo:OpenTaskBarMenuDemo Margin="0 0 0 30" />
-                                            </mah:FlipViewItem>
-                                            <mah:FlipViewItem BannerText="要编辑课表和时间点，请在应用主菜单中点击【编辑档案】。">
-                                                <Image Source="/Assets/Demo_OpenProfileSettingsWindow.png" Margin="0 0 0 30"/>
-                                            </mah:FlipViewItem>
-                                            <mah:FlipViewItem BannerText="在主菜单中点击【帮助】以查看更多帮助文档。">
-                                                <Image Source="/Assets/Demo_OpenHelpWindow.png" Margin="0 0 0 30"/>
-                                            </mah:FlipViewItem>
-                                        </mah:FlipView>
-                                    </StackPanel>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="完成"
+                                                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                                            <TextBlock Margin="0 6 0 16" TextWrapping="Wrap"
+                                                       FontWeight="Light">
+                                                <Run TextDecorations="{x:Static TextDecorations.Strikethrough}">轰！擦擦擦！推推！</Run>
+                                                应用的基本设置已经完成，感谢您使用本应用。以下是使用本应用的基本操作。
+                                            </TextBlock>
+
+                                        </StackPanel>   
+                                        <materialDesign:Transitioner Grid.Row="1" SelectedIndex="{Binding ViewModel.FlipIndex}">
+                                            <materialDesign:TransitionerSlide>
+                                                <StackPanel VerticalAlignment="Center"
+                                                            HorizontalAlignment="Center">
+                                                    <demo:OpenTaskBarMenuDemo Margin="0 0 0 8" />
+                                                    <TextBlock Text="点击任务栏托盘图标可以打开应用主菜单。"
+                                                               />
+                                                </StackPanel>
+                                            </materialDesign:TransitionerSlide>
+                                            <materialDesign:TransitionerSlide>
+                                                <StackPanel VerticalAlignment="Center"
+                                                            HorizontalAlignment="Center"
+                                                            Width="500">
+                                                    <Image Source="/Assets/Demo_OpenProfileSettingsWindow.png" 
+                                                           Margin="0 0 0 8"/>
+                                                    <TextBlock Text="要编辑课表和时间点，请在应用主菜单中点击【编辑档案】。"/>
+                                                </StackPanel>
+                                            </materialDesign:TransitionerSlide>
+                                            <materialDesign:TransitionerSlide>
+                                                <StackPanel>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <controls1:InfoCard Grid.Column="0"
+                                                                            IconKind="HelpCircleOutline"
+                                                                            Margin="4 0"
+                                                                            VerticalAlignment="Top"
+                                                                            Content="您可以阅读帮助文档来了解更多有关 ClassIsland 的信息。">
+                                                            <controls1:InfoCard.ActionButton>
+                                                                <WrapPanel>
+                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                                            CommandParameter="https://docs.classisland.tech/zh-cn/latest/">
+                                                                        <commands:IconText Kind="Internet" Text="在线阅读…"/>
+                                                                    </Button>
+                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                                            CommandParameter="classisland://app/helps/">
+                                                                        <commands:IconText Kind="FileDocumentOutline" Text="在应用内阅读…"/>
+                                                                    </Button>
+
+                                                                </WrapPanel>
+                                                            </controls1:InfoCard.ActionButton>
+                                                        </controls1:InfoCard>
+                                                        <controls1:InfoCard Grid.Column="1"
+                                                                            IconKind="Youtube"
+                                                                            Margin="4 0"
+                                                                            VerticalAlignment="Top"
+                                                                            Content="您可以观看入门教程视频快速上手 ClassIsland。">
+                                                            <controls1:InfoCard.ActionButton>
+                                                                <WrapPanel>
+                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                                            CommandParameter="https://www.bilibili.com/video/BV1fA4m1A7uZ/">
+                                                                        <commands:IconText Kind="Youtube" Text="观看入门教程视频…"/>
+                                                                    </Button>
+                                                                </WrapPanel>
+                                                            </controls1:InfoCard.ActionButton>
+                                                        </controls1:InfoCard>
+                                                        <controls1:InfoCard Grid.Column="2"
+                                                                            IconKind="ApplicationImport"
+                                                                            VerticalAlignment="Top"
+                                                                            Margin="4 0"
+                                                                            Content="ClassIsland 也支持从其它课表显示软件导入课表信息。">
+                                                            <controls1:InfoCard.ActionButton>
+                                                                <WrapPanel>
+                                                                    
+                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                                            CommandParameter="https://migrate.classisland.tech/">
+                                                                        <commands:IconText Kind="ApplicationImport" Text="从其它课表软件导入…"/>
+                                                                    </Button>
+                                                                </WrapPanel>
+                                                            </controls1:InfoCard.ActionButton>
+                                                        </controls1:InfoCard>
+                                                    </Grid>
+                                                    <TextBlock Text="点击【完成】即可完成设置向导。"/>
+                                                </StackPanel>
+                                            </materialDesign:TransitionerSlide>
+                                        </materialDesign:Transitioner>
+                                    </Grid>
                                 </ScrollViewer>
                                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                                     <Button Style="{StaticResource MaterialDesignPaperButton}"
-                                            Command="{x:Static materialDesign:Transitioner.MovePreviousCommand}">
+                                            Click="ButtonCompleteFlipBack_OnClick">
                                         <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                                     </Button>
                                     <Button Click="ButtonFlipNext_OnClick" 
