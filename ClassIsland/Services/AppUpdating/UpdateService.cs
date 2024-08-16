@@ -245,7 +245,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     };
 
-    public static void ReplaceApplicationFile(string target)
+    public static async Task ReplaceApplicationFile(string target)
     {
         if (!File.Exists(target))
         {
@@ -253,6 +253,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         var s = Environment.ProcessPath!;
         var t = target;
+        Console.WriteLine(Path.GetFullPath(t));
+        Console.WriteLine(Path.GetDirectoryName(Path.GetFullPath(t)));
+        await FileFolderService.CreateBackupAsync(filename: $"Update_Backup_{App.AppVersion}_{DateTime.Now:yy-MMM-dd_HH-mm-ss}", rootPath: Path.GetDirectoryName(Path.GetFullPath(t)) ?? ".");
         NativeWindowHelper.WaitForFile(t);
         File.Move(s, t, true);
     }

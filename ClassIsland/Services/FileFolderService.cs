@@ -192,7 +192,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
 
             foreach (var i in backupFolders)
             {
-                CopyFolder(i, Path.Combine(backupTarget, i));
+                CopyFolder(Path.Combine(rootPath, i), Path.Combine(backupTarget, i));
             }
         });
     }

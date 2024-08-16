@@ -223,7 +223,7 @@ public partial class App : AppBase, IAppHost
         if (ApplicationCommand.UpdateReplaceTarget != null)
         {
             //MessageBox.Show($"Update replace {ApplicationCommand.UpdateReplaceTarget}");
-            UpdateService.ReplaceApplicationFile(ApplicationCommand.UpdateReplaceTarget);
+            await UpdateService.ReplaceApplicationFile(ApplicationCommand.UpdateReplaceTarget);
             Process.Start(new ProcessStartInfo()
             {
                 FileName = ApplicationCommand.UpdateReplaceTarget,
