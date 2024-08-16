@@ -12,10 +12,9 @@ body:
         
         ### 在开始之前，请先检查：
       
-        - [x] 我已经将本应用更新到最新测试版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)，确认我想要的功能没有实现
-        - [x] 我已经在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=label%3A新功能) 中找过我要提出的功能，没有找到相同的功能请求（如已有类似的请求，请直接回复该 issue 进行补充）
-        - [x] 我阅读了 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/)，确认我想要的功能没有实现
-        - [x] 我确认我要提出的功能尚未在 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/) 中实现
+        - [x] 我已将本应用更新到最新测试版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)，并看过 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/)，确认我想要的功能还没有实现
+        - [x] 我已在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=label%3A新功能) 和 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/) 中检索，确认我想要的功能未被提交过
+        - [x] 我认为我想要的功能是用户广泛需要的，且没有超出 ClassIsland 的开发目标（您可以学习 [编写插件](https://docs.classisland.tech/zh-cn/latest/dev/plugins/create-project/) 来实现特殊的需求）
   - type: textarea
     id: back
     attributes:
