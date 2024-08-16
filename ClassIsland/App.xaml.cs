@@ -329,6 +329,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<WindowSettingsPage>();
                 services.AddSettingsPage<WeatherSettingsPage>();
                 services.AddSettingsPage<UpdatesSettingsPage>();
+                services.AddSettingsPage<StorageSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
                 services.AddSettingsPage<TestSettingsPage>();
@@ -513,6 +514,14 @@ public partial class App : AppBase, IAppHost
 
         IAppHost.Host.BindGrpcServices();
         GetService<NamedPipeServer>().Start();
+        try
+        {
+            await App.GetService<FileFolderService>().ProcessAutoBackupAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "无法创建自动备份。");
+        }
     }
 
     private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)

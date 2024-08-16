@@ -174,6 +174,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _radiusY = 0.0;
     private int _hideMode = 0;
     private Ruleset _hiedRules = new();
+    private bool _isAutoBackupEnabled = true;
+    private DateTime _lastAutoBackupTime = DateTime.Now;
+    private int _autoBackupLimit = 16;
+    private int _autoBackupIntervalDays = 7;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1565,6 +1569,54 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     public double DiagnosticMemoryKillFreqDay => DiagnosticMemoryKillCount == 0
         ? 0
         : (DiagnosticLastMemoryKillTime - DiagnosticFirstLaunchTime).TotalSeconds / 86400.0 * 1.0 / DiagnosticMemoryKillCount;
+
+    #endregion
+
+    #region Storage
+
+    public bool IsAutoBackupEnabled
+    {
+        get => _isAutoBackupEnabled;
+        set
+        {
+            if (value == _isAutoBackupEnabled) return;
+            _isAutoBackupEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastAutoBackupTime
+    {
+        get => _lastAutoBackupTime;
+        set
+        {
+            if (value.Equals(_lastAutoBackupTime)) return;
+            _lastAutoBackupTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AutoBackupLimit
+    {
+        get => _autoBackupLimit;
+        set
+        {
+            if (value == _autoBackupLimit) return;
+            _autoBackupLimit = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AutoBackupIntervalDays
+    {
+        get => _autoBackupIntervalDays;
+        set
+        {
+            if (value == _autoBackupIntervalDays) return;
+            _autoBackupIntervalDays = value;
+            OnPropertyChanged();
+        }
+    }
 
     #endregion
 
