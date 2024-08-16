@@ -239,7 +239,7 @@
                     <ProgressBar Margin="0 3 0 0">
                         <ProgressBar.Style>
                             <Style TargetType="ProgressBar"
-                                   BasedOn="{StaticResource MaterialDesignLinearProgressBar}">
+                                   BasedOn="{StaticResource MaterialDesignLinearProgressBar2}">
                                 <Style.Triggers>
                                     <DataTrigger
                                         Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
