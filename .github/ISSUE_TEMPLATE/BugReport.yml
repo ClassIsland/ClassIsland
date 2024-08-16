@@ -19,11 +19,11 @@ body:
       label: 检查清单
       description: 在开始反馈这个问题之前，请先检查：
       options:
-        - label: 我已更新到最新版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=) 或 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&label=) 测试，并看过 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/)，确认这一 Bug 还没有修复
+        - label: 我已更新到最新版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=) 或 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&label=) 测试，并看过 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/)，确认这一 Bug 还没有修复。
           required: true
         - label: 我已在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=label%3ABug) 中检索，确认这一 Bug 未被提交过，并且在[常见问题](https://docs.classisland.tech/zh-cn/latest/app/faq/)中没有解决方案。
           required: true
-        - label: 我已知晓并同意，此处仅用于汇报程序中存在的问题（关于其他非程序本身的问题应当在 Discussion 板块提出）
+        - label: 我已知晓并同意，此处仅用于汇报程序中存在的问题（关于其他非程序本身的问题应当在 Discussion 板块提出）。
           required: true
   - type: markdown
     attributes: 
@@ -32,10 +32,17 @@ body:
 
         描述您遇到的 Bug。您可以附上截图、录屏、堆栈跟踪、日志等材料，便于开发者追踪问题。您可以阅读[此处的文档](https://docs.classisland.tech/zh-cn/latest/app/reporting-issue/)来了解如何收集跟踪错误需要的信息。
   - type: textarea
+    id: excepted
+    attributes:
+      label: 期望的行为
+      description: 详细的描述你期望发生的行为，突出与目前（可能不正确的）行为的不同。
+    validations:
+      required: true
+  - type: textarea
     id: what-happened
     attributes:
-      label: 描述
-      description: 详细描述该 Bug 的具体表现。
+      label: 实际结果
+      description: 实际发生的行为。
     validations:
       required: true
   - type: textarea
@@ -77,7 +84,6 @@ body:
     attributes:
       label: 最后一步
       description: 回顾您的回答
-        ### 版本号确认
       options:
         - label: 我认为上述的描述已经足以详细，以允许开发人员能复现该问题。如果我的 Issue 没有按照上述的要求填写，可能会被无条件关闭。
           required: true
