@@ -18,7 +18,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 </div>
 
 ## 功能
-💡 您可以点击下方链接或查看[ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/)了解更多。
+💡 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/) 了解更多。
 
 ### 课表显示
 - [X] 显示当天的课表、当前进行课程的信息
@@ -88,7 +88,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 - 安装[.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
 > [!important]
-> **详细安装说明请参阅[ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/setup/)。**
+> **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/setup/)。**
 > 
 > 不建议在 Windows 10 以下的系统运行本应用。 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅[在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/zh-cn/latest/app/setup/#检查系统需求)。
 
@@ -114,7 +114,9 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 您也可以加入这些社区**寻求帮助**：
 
-[![GitHub Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Issues&color=%233fb950)]() [![GitHub Discussions](https://img.shields.io/github/discussions/ClassIsland/ClassIsland?style=flat-square&logo=Github&label=Discussions)](https://github.com/ClassIsland/ClassIsland/discussions) [![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
+[![GitHub Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Issues&color=%233fb950)]()
+[![GitHub Discussions](https://img.shields.io/github/discussions/ClassIsland/ClassIsland?style=flat-square&logo=Github&label=Discussions)](https://github.com/ClassIsland/ClassIsland/discussions)
+[![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
 
 如果您确定您遇到的问题是一个 **Bug**，或者您要提出一项**新的功能**，请[提交 Issue](https://github.com/ClassIsland/ClassIsland/issues/new/choose)。
 
@@ -203,7 +205,8 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ## Stars 历史
 
-[![Star 历史](https://starchart.cc/ClassIsland/ClassIsland.svg?line=%2300bfff)](https://starchart.cc/caarlos0/starcharts)
+[![Star 历史](https://starchart.cc/ClassIsland/ClassIsland.svg?variant=adaptive)](https://starchart.cc/ClassIsland/ClassIsland)
+
 <div align="center">
 如果这个项目对您有帮助，请点亮 Star ⭐
 

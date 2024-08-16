@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: 讨论区
-    url: https://github.com/HelloWRC/ClassIsland/discussions/
+    url: https://github.com/ClassIsland/ClassIsland/discussions/
     about: 使用中若遇到问题或有新点子新需求，请先在这里求助和征求意见。
-  - name: 加入QQ群
+  - name: 加入 QQ 群
     url: https://qm.qq.com/q/4NsDQKiAuQ
-    about: 在QQ群和开发者以及其它用户交流讨论。
+    about: 在 QQ 群和开发者以及其它用户交流讨论。（群号：958840932）
