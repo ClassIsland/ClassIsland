@@ -62,7 +62,7 @@ body:
       value: |
         ### 版本号确认
         
-        - [x] 我确认 ClassIsland 版本号为 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)
+        - [x] 我确认 ClassIsland 为当前通道的最新版本
         - [x] 我确认运行 ClassIsland 的操作系统为 Windows 10 或 11，而不是 Windows 7
         
         ### 最后一步：回顾您的表述
