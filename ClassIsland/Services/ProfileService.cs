@@ -48,6 +48,8 @@ public class ProfileService : IProfileService
 
     private IManagementService ManagementService { get; }
 
+    private bool _isProfileLoaded = false;
+
     public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService)
     {
         Logger = logger;
@@ -151,11 +153,16 @@ public class ProfileService : IProfileService
         CurrentProfilePath = filename;
         Logger.LogTrace("成功加载档案！");
         CleanExpiredTempClassPlan();
+        _isProfileLoaded = true;
         spanLoadingProfile?.Finish();
     }
 
     public void SaveProfile()
     {
+        if (!_isProfileLoaded)
+        {
+            return;
+        }
         if (CurrentProfilePath.Contains(".\\Profiles\\"))
         {
             var splittedFileName = CurrentProfilePath.Split("\\");
