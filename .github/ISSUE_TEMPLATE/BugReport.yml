@@ -14,9 +14,8 @@ body:
         
         ### 在开始之前，请先检查：
         
-        - [x] 我已经将本应用更新到最新测试版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)，确认我要反馈的问题还没有修复
-        - [x] 我已经在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=label%3ABug) 中找过我要提出的问题，没有找到相同的问题（如已有类似的问题，请直接回复该 issue 进行补充）
-        - [x] 我确认我要反馈的问题尚未在 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/) 中修复
+        - [x] 我已更新到最新版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=) 或 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&label=)测试，并看过 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/)，确认这一 Bug 还没有修复
+        - [x] 我已在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=label%3ABug) 和 [常见问题](https://docs.classisland.tech/zh-cn/latest/app/faq/) 中检索，确认这一 Bug 未被提交过
         - [x] 我已知晓并同意，此处仅用于汇报程序中存在的问题（关于其他非程序本身问题应当在 Discussion 板块提出）
         - [x] 我使用的系统版本为 Windows 10 / 11（开发者不会受理 Windows 7 系统相关问题）
   - type: markdown
@@ -26,29 +25,22 @@ body:
 
         描述您遇到的 Bug。您可以附上截图、录屏、堆栈跟踪、日志等材料，便于开发者追踪问题。
   - type: textarea
+    id: what-happened
+    attributes:
+      label: 描述
+      description: 详细描述该 Bug 的具体表现。
+    validations:
+      required: true
+  - type: textarea
     id: reproduce-steps
     attributes:
       label: 重现步骤
       description: |
-        我们需要执行哪些操作才能让 bug 出现？
-        简洁清晰的重现步骤能够帮助我们更迅速地定位问题所在。
-        如果此 Bug 可能与操作系统相关，请提供 Windows 操作系统版本，可以运行 `winver.exe` 查看。
+        详细描述要怎么操作才能再次触发这个 Bug。
       placeholder: |
         1. 首先……
         2. 然后……
         3. ……
-    validations:
-      required: true
-  - type: textarea
-    id: excepted
-    attributes:
-      label: 期望的行为
-      description: 详细的描述你期望发生的行为，突出与目前（可能不正确的）行为的不同。
-  - type: textarea
-    id: what-happened
-    attributes:
-      label: 实际结果
-      description: 实际发生的行为。
     validations:
       required: true
   - type: textarea
@@ -57,6 +49,14 @@ body:
       label: 堆栈跟踪（可选）
       description: 如果在遇到这个 bug 时发生了崩溃（弹出崩溃提示），或者产生了错误日志，请将产生的堆栈跟踪信息粘贴到此处，便于定位 bug。
       render: shell
+  - type: input
+    id: os_version
+    attributes:
+      label: 操作系统版本
+      description: |
+        您当前使用的 Windows 操作系统版本，可以运行 `winver.exe` 查看。
+        如果您不能肯定此 Bug 与操作系统无关，请填写此项。
+      placeholder: 如：10.0.22000.0
   - type: markdown
     attributes:
       value: |
