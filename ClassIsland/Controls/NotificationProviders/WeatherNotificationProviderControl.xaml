@@ -31,7 +31,7 @@
                    Source="{Binding Alert.Images[icon]}" 
                    Width="22" Height="22" Stretch="UniformToFill"
                    VerticalAlignment="Center"
-                   Margin="16 0"
+                   Margin="10 0 16 0"
                    Opacity="1"/>
             <Grid Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True">
                 <Canvas VerticalAlignment="Stretch"
