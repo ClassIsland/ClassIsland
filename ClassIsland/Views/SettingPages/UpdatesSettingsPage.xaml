@@ -116,7 +116,7 @@
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
                                         Value="UpdateAvailable">
-                                        <Setter Property="Text" Value="更新可用。" />
+                                        <Setter Property="Text" Value="检测到更新。" />
                                     </DataTrigger>
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
@@ -141,7 +141,7 @@
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </Style>
                         </TextBlock.Style>
-                        <Run Text="上次检查更新：">
+                        <Run Text="上次检查更新时间：">
                         </Run>
                         <Run
                             Text="{Binding SettingsService.Settings.LastCheckUpdateTime, Mode=OneWay, ConverterCulture=zh-cn}" />

@@ -28,7 +28,7 @@
             <controls1:IconText Kind="CogOutline" Text="基本" Margin="0 0 0 8" />
             <!-- 界面缩放 -->
             <controls1:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
-                                                           Description="主界面的缩放比例。">
+                                                           Description="课表主界面的缩放大小。">
                 <controls1:SettingsCard.Switcher>
                     <Slider Width="180" Minimum="0.75" Maximum="2.5"
                                                     VerticalAlignment="Center"
@@ -426,7 +426,8 @@
                                              xml:space="preserve">送给你纯白色的花 塞西莉亚 塞西莉亚
 盛开在起风的地方 沐浴九月的骄阳
 语文 数学 英语 历史 物理 政治 化学 生物 地理
-The quick brown fox jumps over a lazy dog.
+The quick brown fox jumps over a lazy dog
+                114514
 1234567890 +-*/:</TextBox>
         </StackPanel>
     </ScrollViewer>

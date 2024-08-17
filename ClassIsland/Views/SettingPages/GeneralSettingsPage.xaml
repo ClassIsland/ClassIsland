@@ -36,11 +36,11 @@
             <controls1:IconText Kind="LightningBoltOutline" Text="行为" Margin="0 0 0 8" />
             <!-- 开机自启 -->
             <controls1:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
-                                                           Description="在系统启动时自动运行本应用。"
+                                                           Description="在您的系统启动时自动运行本应用。"
                                                            IsOn="{Binding SettingsService.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
             <!-- 注册 Url 协议 -->
             <controls1:SettingsCard IconGlyph="Code" Header="注册 Url 协议"
-                                    Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用应用的功能。"
+                                    Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用本应用内的功能。"
                                     IsOn="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}" />
             <!-- 学期开始时间 -->
             <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
@@ -58,7 +58,7 @@
                         <controls1:SettingsControl IconGlyph="HideOutline"
                                                                           Foreground="{DynamicResource MaterialDesignBody}"
                                                                           Header="隐藏窗口" HasSwitcher="False"
-                                                                          Description="将在以下选定的情况隐藏主界面，以防止影响授课。"
+                                                                          Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。"
                                                                           Margin="-12 0" />
                     </Expander.Header>
                     <TabControl Margin="36 0 64 12" HorizontalContentAlignment="Left"
@@ -143,7 +143,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Row="0" Grid.Column="0" Text="自定义Logo（留空禁用）"
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="自定义启动图标（留空将加载默认图标）"
                                                            VerticalAlignment="Center" />
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
                                                             HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -155,7 +155,7 @@
                                                         VerticalAlignment="Center" />
                         </StackPanel>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" Text="自定义加载文字（留空禁用）"
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="自定义启动文字（留空将加载默认文字）"
                                                            VerticalAlignment="Center" Margin="0 4 0 0" />
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal"
                                                             Margin="0 4 0 0" HorizontalAlignment="Right"
@@ -167,7 +167,7 @@
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
                                                            Margin="0 6 0 0"
-                                                           Text="自定义启动界面功能已被您的组织禁用。" Foreground="IndianRed" TextWrapping="Wrap"
+                                                           Text="自定义启动界面功能已被您所在的组织禁用。" Foreground="IndianRed" TextWrapping="Wrap"
                                                            Visibility="{Binding ManagementService.Policy.DisableSplashCustomize, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </Grid>
                 </Expander>
@@ -184,7 +184,7 @@
                         <controls1:SettingsControl IconGlyph="TimerSyncOutline"
                                                                           Foreground="{DynamicResource MaterialDesignBody}"
                                                                           Header="使用精确时间"
-                                                                          Description="启用后，ClassIsland将自动从指定的服务器上同步精确时间。此设置不影响系统时间。"
+                                                                          Description="启用后，应用将自动从指定的服务器上同步精确时间。此设置不影响系统时间。"
                                                                           IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
                                                                           Margin="-12 0" />
                     </Expander.Header>
@@ -210,6 +210,7 @@
                                                           Margin="0 0 0 6"
                                                           Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
                             <ComboBoxItem Content="ntp.aliyun.com"/>
+                            <ComboBoxItem Content="1ntp.aliyun.com"/>
                             <ComboBoxItem Content="cn.ntp.org.cn"/>
                             <ComboBoxItem Content="pool.ntp.org"/>
                             <ComboBoxItem Content="time.windows.com"/>
@@ -236,7 +237,7 @@
                         <controls1:SettingsControl IconGlyph="ClockArrow"
                                                                           Header="时间偏移"
                                                                           Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Description="设定ClassIsland与当前时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
+                                                                          Description="设定应用内时间与系统时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
                                                                           IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
                                                                           Margin="-12 0">
                             <controls1:SettingsControl.Switcher>
@@ -252,7 +253,7 @@
                     <StackPanel Margin="36 0 48 12">
                         <!-- 自动时间偏移 -->
                         <controls1:SettingsControl IconGlyph="ClockAutoOutline" Header="自动时间偏移"
-                                                                       Description="若启用，每天将自动以设定的增量值调整时间偏移量">
+                                                                       Description="若启用，每天自动以设定的增量值调整时间偏移量">
                             <controls1:SettingsControl.Switcher>
                                 <DockPanel Width="150">
                                     <ToggleButton DockPanel.Dock="Right"
@@ -284,7 +285,7 @@
                                                  Height="24" Width="24"
                                                  Foreground="{DynamicResource PrimaryHueMidBrush}" />
                         <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
-                            【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
+                            抱歉，【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
                             利用组件功能，您可以更自由地定制 ClassIsland 主界面上显示的内容。
                         </TextBlock>
                         <Button Style="{StaticResource MaterialDesignFlatButton}"
