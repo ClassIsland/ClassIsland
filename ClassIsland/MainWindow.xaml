@@ -589,7 +589,7 @@
 
                         <Grid Height="40"
                               x:Name="GridContentRoot"
-                              Margin="16 0">
+                              Margin="12 0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
