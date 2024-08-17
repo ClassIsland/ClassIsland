@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,15 @@ public partial class WindowSettingsPage : SettingsPageBase
         taskbarTimer.Tick += TaskbarTimer_Tick;
         taskbarTimer.Start();
         TaskbarTimer_Tick();
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(SettingsService.Settings.UseRawInput) or nameof(SettingsService.Settings.IsCompatibleWindowTransparentEnabled))
+        {
+            RequestRestart();
+        }
     }
 
     private void ButtonRefreshMonitors_OnClick(object sender, RoutedEventArgs e)

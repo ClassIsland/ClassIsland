@@ -178,6 +178,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _lastAutoBackupTime = DateTime.Now;
     private int _autoBackupLimit = 16;
     private int _autoBackupIntervalDays = 7;
+    private bool _useRawInput = true;
+    private bool _isMouseInFadingEnabled = true;
+    private double _touchInFadingDurationMs = 0;
+    private bool _isCompatibleWindowTransparentEnabled = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1407,6 +1411,50 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isMouseClickingEnabled) return;
             _isMouseClickingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool UseRawInput
+    {
+        get => _useRawInput;
+        set
+        {
+            if (value == _useRawInput) return;
+            _useRawInput = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMouseInFadingEnabled
+    {
+        get => _isMouseInFadingEnabled;
+        set
+        {
+            if (value == _isMouseInFadingEnabled) return;
+            _isMouseInFadingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double TouchInFadingDurationMs
+    {
+        get => _touchInFadingDurationMs;
+        set
+        {
+            if (value.Equals(_touchInFadingDurationMs)) return;
+            _touchInFadingDurationMs = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCompatibleWindowTransparentEnabled
+    {
+        get => _isCompatibleWindowTransparentEnabled;
+        set
+        {
+            if (value == _isCompatibleWindowTransparentEnabled) return;
+            _isCompatibleWindowTransparentEnabled = value;
             OnPropertyChanged();
         }
     }

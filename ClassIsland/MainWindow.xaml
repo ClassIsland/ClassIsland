@@ -365,14 +365,18 @@
         <Style TargetType="Window">
             <Style.Triggers>
                 <!-- 鼠标移入 -->
-                <DataTrigger Binding="{Binding ViewModel.IsMouseIn}" Value="True">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding ViewModel.IsMouseIn, Mode=OneWay}" Value="True"/>
+                        <Condition Binding="{Binding ViewModel.Settings.IsMouseInFadingEnabled, Mode=OneWay}" Value="True"/>
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.ExitActions>
                         <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
+                    </MultiDataTrigger.ExitActions>
+                    <MultiDataTrigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
+                    </MultiDataTrigger.EnterActions>
+                </MultiDataTrigger>
                 <!-- Debug -->
                 <DataTrigger Binding="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Mode=OneWay}" Value="True">
                     <Setter Property="Background" Value="#2FAA0000"/>

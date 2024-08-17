@@ -42,6 +42,8 @@ using Sentry;
 using Application = System.Windows.Application;
 using Window = System.Windows.Window;
 using NAudio.Wave.SampleProviders;
+using Linearstar.Windows.RawInput;
+
 
 #if DEBUG
 using JetBrains.Profiler.Api;
@@ -115,6 +117,10 @@ public partial class MainWindow : Window
     private double _latestDpiX = 1.0;
     private double _latestDpiY = 1.0;
 
+    private DispatcherTimer TouchInFadingTimer { get; set; } = new();
+
+    private Stopwatch RawInputUpdateStopWatch { get; } = new();
+
     public ClassChangingWindow? ClassChangingWindow { get; set; }
     
     private IUriNavigationService UriNavigationService { get; }
@@ -170,6 +176,13 @@ public partial class MainWindow : Window
         //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
+        TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
+    }
+
+    private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
+    {
+        ViewModel.IsMouseIn = false;
+        TouchInFadingTimer.Stop();
     }
 
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
@@ -203,7 +216,6 @@ public partial class MainWindow : Window
             ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
 
         UpdateWindowPos(true);
-        UpdateMouseStatus();
         if (ViewModel.Settings.WindowLayer == 0)
         {
             //SetBottom();
@@ -234,24 +246,29 @@ public partial class MainWindow : Window
         try
         {
             GetCursorPos(out var ptr);
-            GetCurrentDpi(out var dpiX, out var dpiY);
-            var scale = ViewModel.Settings.Scale;
-            //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
-            var root = GridWrapper.PointToScreen(new Point(0, 0));
-            var cx = root.X;
-            var cy = root.Y;
-            var cw = GridWrapper.ActualWidth * dpiX * scale;
-            var ch = GridWrapper.ActualHeight * dpiY * scale;
-            var cr = cx + cw;
-            var cb = cy + ch;
-
-            ViewModel.IsMouseIn = (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+            ViewModel.IsMouseIn = GetMouseStatusByPos(ptr);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "无法更新鼠标状态。");
         }
         
+    }
+
+    private bool GetMouseStatusByPos(System.Drawing.Point ptr)
+    {
+        GetCurrentDpi(out var dpiX, out var dpiY);
+        var scale = ViewModel.Settings.Scale;
+        //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
+        var root = GridWrapper.PointToScreen(new Point(0, 0));
+        var cx = root.X;
+        var cy = root.Y;
+        var cw = GridWrapper.ActualWidth * dpiX * scale;
+        var ch = GridWrapper.ActualHeight * dpiY * scale;
+        var cr = cx + cw;
+        var cb = cy + ch;
+
+        return (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
     }
 
     public Point GetCenter()
@@ -448,6 +465,24 @@ public partial class MainWindow : Window
         }
 
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
+
+        if (SettingsService.Settings.UseRawInput)
+        {
+            var handle = new WindowInteropHelper(this).Handle;
+            RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
+                RawInputDeviceFlags.InputSink, handle);
+            RawInputDevice.RegisterDevice(HidUsageAndPage.TouchScreen,
+                RawInputDeviceFlags.InputSink, handle);
+
+            RawInputUpdateStopWatch.Start();
+            var hWndSource = HwndSource.FromHwnd(handle);
+            hWndSource?.AddHook(ProcWnd);
+        }
+        else
+        {
+            LessonsService.PreMainTimerTicked += ProcessMousePos;
+        }
+
         StartupCompleted?.Invoke(this, EventArgs.Empty);
 
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
@@ -466,6 +501,51 @@ public partial class MainWindow : Window
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+    }
+
+    private void ProcessMousePos(object? sender, EventArgs e)
+    {
+        UpdateMouseStatus();
+    }
+
+    private IntPtr ProcWnd(IntPtr hwnd, int msg, IntPtr param, IntPtr lParam, ref bool handled)
+    {
+        if (msg == 0x00FF)
+        {
+            if (RawInputUpdateStopWatch.ElapsedMilliseconds < 20)
+            {
+                return IntPtr.Zero;
+            }
+            RawInputUpdateStopWatch.Restart();
+            // Create an RawInputData from the handle stored in lParam.
+            var data = RawInputData.FromHandle(lParam);
+
+            switch (data)
+            {
+                case RawInputDigitizerData digitizerData:
+                {
+                    var contacts = digitizerData.Contacts;
+                    //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
+                    ViewModel.IsMouseIn =
+                        contacts.ToList().Exists(x => GetMouseStatusByPos(new System.Drawing.Point(x.X, x.Y)));
+                    if (SettingsService.Settings.TouchInFadingDurationMs > 0)
+                    {
+                        TouchInFadingTimer.Stop();
+                        TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
+                        TouchInFadingTimer.Start();
+                    }
+                    break;
+                }
+                case RawInputMouseData mouseData:
+                    //Logger.LogTrace("MOUSE ({}, {}) {}", mouseData.Mouse.LastX, mouseData.Mouse.LastY, mouseData.Mouse.Buttons);
+                    //if (TouchInFadingTimer.IsEnabled)
+                    //    TouchInFadingTimer.Stop();
+                    UpdateMouseStatus();
+                    break;
+            }
+        }
+
+        return nint.Zero;
     }
 
     private void AutoSetNotificationEffectRenderingScale()
