@@ -526,23 +526,29 @@ public partial class MainWindow : Window
                 {
                     var contacts = digitizerData.Contacts;
                     //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
-                    ViewModel.IsMouseIn =
+                    var r = ViewModel.IsMouseIn =
                         contacts.ToList().Exists(x => GetMouseStatusByPos(new System.Drawing.Point(x.X, x.Y)));
-                    if (SettingsService.Settings.TouchInFadingDurationMs > 0)
+                    if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
                     {
                         TouchInFadingTimer.Stop();
                         TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
                         TouchInFadingTimer.Start();
+                    }
+
+                    if (!r)
+                    {
+                        TouchInFadingTimer.Stop();
                     }
                     break;
                 }
                 case RawInputMouseData mouseData:
                     //Logger.LogTrace("MOUSE ({}, {}) {}", mouseData.Mouse.LastX, mouseData.Mouse.LastY, mouseData.Mouse.Buttons);
                     //if (TouchInFadingTimer.IsEnabled)
-                    //    TouchInFadingTimer.Stop();
+                        TouchInFadingTimer.Stop();
                     UpdateMouseStatus();
                     break;
             }
+
         }
 
         return nint.Zero;
