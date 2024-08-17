@@ -31,6 +31,7 @@ using ClassIsland.Services;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
+using ControlzEx.Windows.Shell;
 using GrpcDotNetNamedPipes;
 using H.NotifyIcon;
 
@@ -43,6 +44,7 @@ using Application = System.Windows.Application;
 using Window = System.Windows.Window;
 using NAudio.Wave.SampleProviders;
 using Linearstar.Windows.RawInput;
+using WindowChrome = System.Windows.Shell.WindowChrome;
 
 
 #if DEBUG
@@ -100,6 +102,8 @@ public partial class MainWindow : Window
     public ILessonsService LessonsService { get; }
 
     public TopmostEffectWindow TopmostEffectWindow { get; }
+
+    private bool IsRunningCompatibleMode { get; set; } = false;
 
     private Stopwatch UserPrefrenceUpdateStopwatch
     {
@@ -177,6 +181,20 @@ public partial class MainWindow : Window
         InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
+        IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
+        if (IsRunningCompatibleMode)
+        {
+            AllowsTransparency = true;
+        }
+        else
+        {
+            SetValue(WindowChrome.WindowChromeProperty, new WindowChrome()
+            {
+                GlassFrameThickness = new Thickness(-1),
+                CaptionHeight = 0,
+                ResizeBorderThickness = new Thickness(0)
+            });
+        }
     }
 
     private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
@@ -358,7 +376,7 @@ public partial class MainWindow : Window
                 }
                 // 播放提醒特效
                 if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationEffect &&
-                    GridRoot.IsVisible && ViewModel.IsMainWindowVisible)
+                    GridRoot.IsVisible && ViewModel.IsMainWindowVisible && !IsRunningCompatibleMode)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
                     {

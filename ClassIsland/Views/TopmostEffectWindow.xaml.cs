@@ -35,8 +35,11 @@ public partial class TopmostEffectWindow : Window
         InitializeComponent();
         DataContext = this;
         ViewModel.EffectControls.CollectionChanged += EffectControlsOnCollectionChanged;
-        Show();
-        Hide();
+        if (!SettingsService.Settings.IsCompatibleWindowTransparentEnabled)
+        {
+            Show();
+            Hide();
+        }
     }
 
     private void EffectControlsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

@@ -387,9 +387,6 @@
             <Setter Property="Background" Value="{x:Null}"/>
         </Style>
     </Window.Style>
-    <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="0"/>
-    </WindowChrome.WindowChrome>
     <Grid>
         <!-- ROOT -->
         <Grid ClipToBounds="True"

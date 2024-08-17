@@ -246,6 +246,7 @@
                                 <!-- 启用提醒强调特效 -->
                                 <materialDesign:Card Margin="0 6 0 0">
                                     <Expander Background="Transparent"
+                                              IsEnabled="{Binding SettingsService.Settings.IsCompatibleWindowTransparentEnabled, Converter={StaticResource InvertBooleanConverter}}"
                                               IsExpanded="{Binding SettingsService.Settings.AllowNotificationEffect, Mode=OneWay}"
                                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                                         <Expander.Header>
@@ -442,6 +443,7 @@
                                                             Margin="0 6 0 0"
                                                             Foreground="{DynamicResource MaterialDesignBody}"
                                                             Header="启用提醒强调特效"
+                                                            IsEnabled="{Binding SettingsService.Settings.IsCompatibleWindowTransparentEnabled, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:NotificationSettingsPage}}"
                                                             Description="启用后，发出提醒时会播放全屏强调特效。"
                                                             IsOn="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}" />
                                     <!-- 启用提醒音效 -->
