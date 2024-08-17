@@ -236,7 +236,7 @@
                         <controls1:SettingsControl IconGlyph="ClockArrow"
                                                                           Header="时间偏移"
                                                                           Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Description="设定应用与系统时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
+                                                                          Description="设定应用内时间与系统时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
                                                                           IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
                                                                           Margin="-12 0">
                             <controls1:SettingsControl.Switcher>
