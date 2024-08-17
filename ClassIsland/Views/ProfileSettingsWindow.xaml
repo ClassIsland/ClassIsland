@@ -1796,12 +1796,6 @@
                                               CanUserSortColumns="False"
                                               VirtualizingPanel.IsVirtualizing="True"
                                               VirtualizingPanel.ScrollUnit="Pixel">
-                                        <DataGrid.CommandBindings>
-                                            <CommandBinding Command="Paste" Executed="Subject_OnPaste" />
-                                        </DataGrid.CommandBindings>
-                                        <DataGrid.InputBindings>
-                                            <KeyBinding Key="V" Modifiers="Control" Command="Paste" />
-                                        </DataGrid.InputBindings>
                                         <DataGrid.Columns>
                                             <DataGridTemplateColumn Header="" IsReadOnly="True"
                                                                     Width="50">
@@ -1872,7 +1866,7 @@
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <!-- 科目名 -->
                                                 <TextBox Grid.Column="0" 

@@ -354,18 +354,6 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.create");
     }
 
-    private void Subject_OnPaste(object? sender, ExecutedRoutedEventArgs e)
-    {
-        foreach (var i in Clipboard.GetText().Split("\n").Select(i => i.Replace("\r", "")).Where(i => !string.IsNullOrWhiteSpace(i)))
-        {
-            if (DataGridSubjects.SelectedIndex == MainViewModel.Profile.EditingSubjects.Count)
-                MainViewModel.Profile.EditingSubjects.Add(new Subject { Name = i });
-            else
-                MainViewModel.Profile.EditingSubjects.Insert(DataGridSubjects.SelectedIndex + 1, new Subject { Name = i });
-            DataGridSubjects.SelectedIndex += 1;
-        }
-    }
-
     private async void ButtonSubject_OnClick(object sender, RoutedEventArgs e)
     {
         var r = (bool?)await DialogHost.Show(FindResource("DeleteSubjectConfirm"),dialogIdentifier: ViewModel.DialogHostId);
