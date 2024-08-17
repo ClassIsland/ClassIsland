@@ -111,7 +111,7 @@
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
                                         Value="UpToDate">
-                                        <Setter Property="Text" Value="您已经是最新版本了。" />
+                                        <Setter Property="Text" Value="您已是最新。" />
                                     </DataTrigger>
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"

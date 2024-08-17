@@ -25,7 +25,7 @@
                            Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                 <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
                            FontWeight="Light"
-                           Text="本应用将通过 SentrySDK 来收集本应用中的使用情况与错误信息，以帮助或改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以启用或禁用此功能。" />
+                           Text="本应用将通过 SentrySDK 来收集本应用中的使用情况与错误信息，以改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。" />
                 <TextBlock Margin="0 6 0 0" TextWrapping="Wrap"
                            FontWeight="Light">
                     <Run Text="更多信息请见">
@@ -39,7 +39,7 @@
             <controls1:SettingsCard IconGlyph="ReportLine"
                                     Header="启用匿名使用情况分析"
                                     IsOn="{Binding SettingsService.Settings.IsSentryEnabled, Mode=TwoWay}"
-                                    Description="启用后，应用将收集应用的使用情况与错误信息并上传，以帮助或改进此应用。上传的信息不包含您的个人信息。" />
+                                    Description="启用后，应用将收集应用的使用情况与错误信息并上传，以改进此应用。上传的信息不包含您的个人信息。" />
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>
