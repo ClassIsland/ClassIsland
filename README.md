@@ -18,7 +18,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 </div>
 
 ## 功能
-💡 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/)了解更多。
+💡 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/) 了解更多。
 
 ### 课表显示
 - [X] 显示当天的课表、当前进行课程的信息
@@ -98,8 +98,8 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 | 下载渠道 | **🚀正式版**<br/>[![正式版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=)](https://github.com/ClassIsland/ClassIsland/releases/latest) | 🚧测试版<br/>[![测试版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)](https://github.com/ClassIsland/ClassIsland/releases/) |
 | :--: | :--: | :--: |
-| GitHub | [**GitHub 下载**](https://github.com/ClassIsland/ClassIsland/releases/latest) | [GitHub 下载](https://github.com/ClassIsland/ClassIsland/releases) |
-| AppCenter | [**AppCenter 下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter 下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
+| GitHub | [**GitHub下载**](https://github.com/ClassIsland/ClassIsland/releases/latest) | [GitHub下载](https://github.com/ClassIsland/ClassIsland/releases) |
+| AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
 如果以上链接无法使用，可以从[镜像链接](https://docs.classisland.tech/zh-cn/latest/app/setup/#%E4%B8%8B%E8%BD%BD%E5%BA%94%E7%94%A8%E6%9C%AC%E4%BD%93)下载。
 
@@ -144,7 +144,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
 
-感谢以下同学为本项目为本项目的开发提供支持（[Emoji Key✨和贡献类型](https://allcontributors.org/docs/zh-cn/emoji-key)）：
+感谢以下同学为本项目为本项目的开发提供支持（[✨](https://allcontributors.org/docs/zh-cn/emoji-key)）：
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -208,6 +208,6 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 [![Star 历史](https://starchart.cc/ClassIsland/ClassIsland.svg?variant=adaptive)](https://starchart.cc/ClassIsland/ClassIsland)
 
 <div align="center">
-如果这个项目对您有帮助，请点亮 Star ⭐。
+如果这个项目对您有帮助，请点亮 Star ⭐
 
 </div>
