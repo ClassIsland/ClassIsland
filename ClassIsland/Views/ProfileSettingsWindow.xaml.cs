@@ -1021,4 +1021,11 @@ public partial class ProfileSettingsWindow : MyWindow
         details.Owner = this;
         details.ShowDialog();
     }
+
+    private void WeekCountDivTotalListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var classPlan = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value;
+        if (classPlan.TimeRule.WeekCountDiv == -1)
+            classPlan.TimeRule.WeekCountDiv = 0;
+    }
 }

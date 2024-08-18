@@ -285,7 +285,7 @@
                                                  Height="24" Width="24"
                                                  Foreground="{DynamicResource PrimaryHueMidBrush}" />
                         <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
-                            抱歉，【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
+                            【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
                             利用组件功能，您可以更自由地定制 ClassIsland 主界面上显示的内容。
                         </TextBlock>
                         <Button Style="{StaticResource MaterialDesignFlatButton}"

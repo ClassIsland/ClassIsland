@@ -52,6 +52,7 @@
         <converters1:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter"/>
         <converters1:ClassPlanGroupIdToClassPlanGroupConverter x:Key="ClassPlanGroupIdToClassPlanGroupConverter"/>
         <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter"/>
+        <converters:WeekCountDivToListItemConverter x:Key="WeekCountDivToListItemConverter"/>
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
             <Setter Property="ItemTemplate">
                 <Setter.Value>
@@ -306,13 +307,47 @@
                             <ListBoxItem Content="周六" />
                         </ListBox>
 
-                        <TextBlock Text="当本周是：" Margin="0 6 0 0" />
-                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                        <TextBlock Text="当本周是：" Margin="0 8 0 0" />
+                        <ListBox ItemsSource="{Binding WeekCountDivs}"
+                                 x:Name="WeekCountDivListBox"
+                                 Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
                                  SelectedIndex="{Binding WeekCountDiv}"
                                  PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                            <ListBoxItem Content="不限" />
-                            <ListBoxItem Content="单周" />
-                            <ListBoxItem Content="双周" />
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem"
+                                       BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBoxItem}">
+                                    <Setter Property="Content">
+                                        <Setter.Value>
+                                            <MultiBinding Converter="{StaticResource WeekCountDivToListItemConverter}">
+                                                <Binding/>
+                                                <Binding Path="ItemsSource.Count" RelativeSource="{RelativeSource AncestorType=ListBox}"/>
+                                            </MultiBinding>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+
+                        <TextBlock Text="每轮周数：" Margin="0 8 0 0"/>
+                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                 SelectedIndex="{Binding WeekCountDivTotal}"
+                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                 SelectionChanged="WeekCountDivTotalListBox_SelectionChanged">
+                            <!--<ListBox.Style>
+                                <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding WeekCountDiv}" Value="0">
+                                            <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="True"/>
+                                </Style>
+                            </ListBox.Style>-->
+                            <ListBoxItem Visibility="Collapsed"/>
+                            <ListBoxItem Visibility="Collapsed"/>
+                            <ListBoxItem Content="两周" />
+                            <ListBoxItem Content="三周" />
+                            <ListBoxItem Content="四周" />
                         </ListBox>
 
                     </StackPanel>
