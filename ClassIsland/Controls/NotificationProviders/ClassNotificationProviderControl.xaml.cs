@@ -17,6 +17,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     private string _message = "";
     private int _slideIndex = 0;
     private bool _showTeacherName = false;
+    private string _maskMessage = "";
 
     public object? Element
     {
@@ -58,6 +59,17 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         {
             if (value == _showTeacherName) return;
             _showTeacherName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string MaskMessage
+    {
+        get => _maskMessage;
+        set
+        {
+            if (value == _maskMessage) return;
+            _maskMessage = value;
             OnPropertyChanged();
         }
     }

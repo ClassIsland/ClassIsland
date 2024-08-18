@@ -9,6 +9,7 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Helpers;
+using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared.Models.Profile;
@@ -77,18 +78,15 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var tClassDelta = LessonsService.OnClassLeftTime;
         var settings = GetAttachedSettingsNext();
         var isAttachedSettingsEnabled = settings?.IsAttachSettingsEnabled == true;
-        var settingsIsClassOnPreparingNotificationEnabled = isAttachedSettingsEnabled ?
-            settings!.IsClassOnPreparingNotificationEnabled
-            : Settings.IsClassOnPreparingNotificationEnabled;
+        var settingsSource = (IClassNotificationSettings?)(isAttachedSettingsEnabled ? settings : Settings) ?? Settings;
+        var settingsIsClassOnPreparingNotificationEnabled = settingsSource.IsClassOnPreparingNotificationEnabled;
         var settingsInDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ? 
                 settings!.ClassPreparingDeltaTime
                 : Settings.InDoorClassPreparingDeltaTime;
         var settingsOutDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ?
                 settings!.ClassPreparingDeltaTime
                 : Settings.OutDoorClassPreparingDeltaTime;
-        var message = isAttachedSettingsEnabled
-            ? settings!.ClassOnPreparingText
-            : Settings.ClassOnPreparingText;
+        var message = settingsSource.ClassOnPreparingText;
         var settingsDeltaTime = LessonsService.NextClassSubject.IsOutDoor
             ? settingsOutDoorClassPreparingDeltaTime
             : settingsInDoorClassPreparingDeltaTime;
@@ -102,7 +100,10 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             var onClassPrepareRequest = new NotificationRequest
             {
                 MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
-                MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
+                MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask")
+                {
+                    MaskMessage = settingsSource.ClassOnPreparingMaskText
+                },
                 MaskDuration = TimeSpan.FromSeconds(5),
                 OverlaySpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
                 OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
@@ -124,6 +125,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var settingsIsClassOffNotificationEnabled = settings?.IsAttachSettingsEnabled == true ?
             settings.IsClassOffNotificationEnabled
             : Settings.IsClassOffNotificationEnabled;
+
+
         if (!settingsIsClassOffNotificationEnabled || ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
         {
             return;
@@ -153,7 +156,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var settingsIsClassOnNotificationEnabled = settings?.IsAttachSettingsEnabled == true ? 
             settings.IsClassOnNotificationEnabled 
             : Settings.IsClassOnNotificationEnabled;
-        
+        var settingsSource = (IClassNotificationSettings?)(settings?.IsAttachSettingsEnabled == true ? settings : Settings) ?? Settings;
+
         if (!settingsIsClassOnNotificationEnabled)
         {
             return;
@@ -173,8 +177,11 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         }
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
-            MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
-            MaskSpeechContent = "上课。",
+            MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
+            {
+                MaskMessage = settingsSource.ClassOnMaskText
+            },
+            MaskSpeechContent = settingsSource.ClassOnMaskText,
             IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
         });
     }

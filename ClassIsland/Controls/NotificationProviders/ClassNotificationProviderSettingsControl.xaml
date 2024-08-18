@@ -96,6 +96,12 @@
                                      Foreground="{DynamicResource MaterialDesignBody}"
                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                      Margin="0 0 0 6" />
+                            <!-- 准备上课遮罩文字 -->
+                            <TextBox Text="{Binding Settings.ClassOnPreparingMaskText}"
+                                     materialDesign:HintAssist.Hint="准备上课遮罩文字"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0 0 0 6" />
                         </StackPanel>
                     </Expander>
                 </materialDesign:Card>
@@ -117,6 +123,12 @@
                             <!-- 启用语音 -->
                             <CheckBox Content="启用语音" Margin="0 0 0 6"
                                       IsChecked="{Binding Settings.IsSpeechEnabledOnClassOn}"/>
+                            <!-- 上课遮罩文字 -->
+                            <TextBox Text="{Binding Settings.ClassOnMaskText}"
+                                     materialDesign:HintAssist.Hint="上课遮罩文字"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0 0 0 6" />
                             
                         </StackPanel>
                     </Expander>

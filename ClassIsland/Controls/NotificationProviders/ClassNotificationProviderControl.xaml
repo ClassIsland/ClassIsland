@@ -17,7 +17,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
-            <TextBlock Text="即将上课" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
+            <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
         </StackPanel>
@@ -59,7 +59,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
-            <TextBlock Text="上课" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
+            <TextBlock Text="{Binding MaskMessage}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <materialDesign:PackIcon Kind="Class" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
         </StackPanel>
