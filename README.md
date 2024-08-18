@@ -18,7 +18,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 </div>
 
 ## 功能
-💡 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/) 了解更多。
+💡 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/)了解更多。
 
 ### 课表显示
 - [X] 显示当天的课表、当前进行课程的信息
@@ -38,7 +38,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 - [X] 丝滑、流畅的过渡动画
 - [X] 自动获取与系统配色搭配的主题色
 - [X] 自动软件更新
-- [ ] [集控管理](https://docs.classisland.tech/zh-cn/latest/management/) _(即将发布)_
+- [ ] [集控管理](https://docs.classisland.tech/zh-cn/latest/management/)_（即将发布）_
 - [ ] ……
 
 ## 软件截图
@@ -85,7 +85,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 **首先，请确保您的设备满足以下推荐需求：**
 - Windows 10 及以上版本的系统，x64 架构
-- 安装[.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
+- 安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
 > [!important]
 > **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/setup/)。**
@@ -98,8 +98,8 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 | 下载渠道 | **🚀正式版**<br/>[![正式版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=)](https://github.com/ClassIsland/ClassIsland/releases/latest) | 🚧测试版<br/>[![测试版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)](https://github.com/ClassIsland/ClassIsland/releases/) |
 | :--: | :--: | :--: |
-| GitHub | [**GitHub下载**](https://github.com/ClassIsland/ClassIsland/releases/latest) | [GitHub下载](https://github.com/ClassIsland/ClassIsland/releases) |
-| AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
+| GitHub | [**GitHub 下载**](https://github.com/ClassIsland/ClassIsland/releases/latest) | [GitHub 下载](https://github.com/ClassIsland/ClassIsland/releases) |
+| AppCenter | [**AppCenter 下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter 下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
 如果以上链接无法使用，可以从[镜像链接](https://docs.classisland.tech/zh-cn/latest/app/setup/#%E4%B8%8B%E8%BD%BD%E5%BA%94%E7%94%A8%E6%9C%AC%E4%BD%93)下载。
 
@@ -116,7 +116,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 [![GitHub Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Issues&color=%233fb950)]()
 [![GitHub Discussions](https://img.shields.io/github/discussions/ClassIsland/ClassIsland?style=flat-square&logo=Github&label=Discussions)](https://github.com/ClassIsland/ClassIsland/discussions)
-[![加入QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
+[![加入 QQ 群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
 
 如果您确定您遇到的问题是一个 **Bug**，或者您要提出一项**新的功能**，请[提交 Issue](https://github.com/ClassIsland/ClassIsland/issues/new/choose)。
 
@@ -124,14 +124,14 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 本项目目前开发状态：
 
-- 正在[`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev)分支上开发版本 [1.5 - Griseo](https://github.com/ClassIsland/ClassIsland/milestone/6)。
-- 正在[`master`](https://github.com/ClassIsland/ClassIsland/tree/master)分支上维护版本 [1.4 - Firefly](https://github.com/ClassIsland/ClassIsland/milestone/5)。
+- 正在 [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) 分支上开发版本 [1.5 - Griseo](https://github.com/ClassIsland/ClassIsland/milestone/6)。
+- 正在 [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) 分支上维护版本 [1.4 - Firefly](https://github.com/ClassIsland/ClassIsland/milestone/5)。
 
 要在本地编译应用，您需要安装以下负载和工具：
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
 - [Visual Studio](https://visualstudio.microsoft.com/)
 
-对于Visual Studio，您需要在安装时勾选以下工作负载：
+对于 Visual Studio，您需要在安装时勾选以下工作负载：
 - .NET 桌面开发
 
 如果您有意愿为 ClassIsland 做出代码贡献，请先阅读[贡献指南](CONTRIBUTING.md)来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/ClassIsland/ClassIsland/pulls)。
@@ -208,6 +208,6 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 [![Star 历史](https://starchart.cc/ClassIsland/ClassIsland.svg?variant=adaptive)](https://starchart.cc/ClassIsland/ClassIsland)
 
 <div align="center">
-如果这个项目对您有帮助，请点亮 Star ⭐
+如果这个项目对您有帮助，请点亮 Star ⭐。
 
 </div>
