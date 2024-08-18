@@ -124,13 +124,13 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
 
         Logger.LogInformation("正在从 {} 同步时间", SettingsService.Settings.ExactTimeServer);
         SyncStatusMessage = $"正在同步时间……";
-        var prev = GetCurrentLocalDateTime();
+        var prev = SettingsService.Settings.IsExactTimeEnabled ? NtpClock.Now.LocalDateTime : DateTime.Now;
         try
         {
             NtpClock = NtpClient.Query();
             var nowBase = SettingsService.Settings.IsExactTimeEnabled ? NtpClock.Now.LocalDateTime : DateTime.Now;
-            var now = nowBase + TimeSpan.FromSeconds(SettingsService.Settings.TimeOffsetSeconds);
-            if (TimeSpan.FromSeconds(-30) < now - prev && now < prev)
+            //var now = nowBase + TimeSpan.FromSeconds(SettingsService.Settings.TimeOffsetSeconds);
+            if (30 > Math.Abs((nowBase - prev).TotalSeconds) && nowBase < prev)
             {
                 NeedWaiting = true;
                 PrevDateTime = prev;
