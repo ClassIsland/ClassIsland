@@ -483,8 +483,7 @@
 盛开在起风的地方 沐浴九月的骄阳
 语文 数学 英语 历史 物理 政治 化学 生物 地理
 The quick brown fox jumps over a lazy dog
-                114514
-1234567890 +-*/:</TextBox>
+:1:234567890 +-*/:</TextBox>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>
