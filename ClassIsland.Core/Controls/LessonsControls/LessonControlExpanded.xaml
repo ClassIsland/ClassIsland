@@ -134,7 +134,7 @@
                     </TabItem>
                     <TabItem>
                         <Grid VerticalAlignment="Bottom">
-                            <Border Height="20"
+                            <Border Height="{DynamicResource MainWindowSecondaryFontSize}"
                                     Background="{DynamicResource PrimaryHueMidBrush}"
                                     ClipToBounds="True"
                                     BorderThickness="1"
@@ -142,15 +142,15 @@
                                     Opacity="0.3"
                                     CornerRadius="12.5">
                             </Border>
-                            <Border Height="20"
+                            <Border Height="{DynamicResource MainWindowSecondaryFontSize}"
                                     ClipToBounds="True"
                                     BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                                     BorderThickness="1"
                                     Padding="8 0"
                                     CornerRadius="12.5">
                                 <Grid>
-                                    <TextBlock FontSize="15" VerticalAlignment="Center">
-                                        <Run Text="-" FontSize="12"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
+                                    <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Center">
+                                        <Run Text="-"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
                                     </TextBlock>
                                 </Grid>
                             </Border>
