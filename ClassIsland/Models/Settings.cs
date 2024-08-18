@@ -182,7 +182,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isMouseInFadingEnabled = true;
     private double _touchInFadingDurationMs = 0;
     private bool _isCompatibleWindowTransparentEnabled = false;
-    private double _mainWindowSecondaryFontSize2 = 13;
     private double _mainWindowSecondaryFontSize = 14;
     private double _mainWindowBodyFontSize = 16;
     private double _mainWindowEmphasizedFontSize = 18;
@@ -840,17 +839,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_radiusY)) return;
             _radiusY = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public double MainWindowSecondaryFontSize2
-    {
-        get => _mainWindowSecondaryFontSize2;
-        set
-        {
-            if (value.Equals(_mainWindowSecondaryFontSize2)) return;
-            _mainWindowSecondaryFontSize2 = value;
             OnPropertyChanged();
         }
     }
