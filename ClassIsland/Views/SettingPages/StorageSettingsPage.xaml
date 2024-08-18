@@ -20,13 +20,13 @@
 
     <ScrollViewer>
         <StackPanel MaxWidth="750" Style="{StaticResource SettingsPageStackPanelStyle}">
-            <Separator Margin="0 16 0 8" />
+            <!--<Separator Margin="0 16 0 8" />
             <ci:IconText Kind="DatabaseOutline" Text="存储空间" Margin="0 0 0 8" />
             <TextBlock Text="以下是 应用内 产生的各个类型文件的空间占用情况，您可以在此处清理部分临时和缓存文件。" 
                        FontWeight="Light"
                        TextWrapping="Wrap"/>
 
-            <Separator Margin="0 16 0 8" />
+            <Separator Margin="0 16 0 8" />-->
             <ci:IconText Kind="SettingsBackupRestore" Text="备份" Margin="0 0 0 8" />
             <!-- 启用自动备份 -->
             <materialDesign:Card Margin="0 0 0 6">

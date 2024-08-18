@@ -8,6 +8,20 @@
 
 您可以通过插件扩展 ClassIsland 的功能，比如获取新的组件、提醒提供方等等。您可以在[插件市场](classisland://app/settings/classisland.plugins)浏览插件。如果您对开发 ClassIsland 插件感兴趣，不妨看看[开发文档](https://docs.classisland.tech/zh-cn/latest/dev)来了解如何开发插件。
 
+## 规则集
+
+![1723953554739](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953554739.png)
+
+目前 ClassIsland 支持通过【规则集】功能，更详细地设定规则，并支持插件注册自定义的规则。
+
+## 附加设置分析
+
+![1723953043655](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953043655.png)
+
+![1723953105695](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953105695.png)
+
+目前档案编辑器支持对各个节点的附加设置覆盖/继承情况进行分析，并支持查看某一课表中各个时间点的附加设置启用情况。
+
 ## 课表组件
 
 目前课表相关控件已经被重构，大幅提升了应用和【换课】界面的加载速度。要体验重构后的课表组件，请向主界面添加“课程表”（原“课程表（实验）”）组件。
@@ -52,6 +66,44 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 应用设置窗口目前经过了重构，并且加入了导航动画。此外，在重构设置界面之后，应用的启动速度也得到了一定的提升。
 
+
+***
+
+# 1.4.4.0
+
+> 1.5 - Griseo 测试版，可能包含未完善和不稳定的功能。
+
+## 新增功能与优化
+
+- **【档案编辑】附加设置分析**：目前档案编辑器支持对各个节点的附加设置覆盖/继承情况进行分析，并支持查看某一课表中各个时间点的附加设置启用情况。([#97](https://github.com/ClassIsland/ClassIsland/issues/97))
+- **【规则集】规则集**：目前 ClassIsland 支持通过【规则集】功能，更详细地设定窗口隐藏规则。([#96](https://github.com/ClassIsland/ClassIsland/issues/96)) ([#179](https://github.com/ClassIsland/ClassIsland/issues/179))
+- 【档案编辑】优化附加设置外观
+- 【主界面】优化主界面提醒动画
+- 【档案编辑】简化课表编辑方式
+- 【提醒】课程提醒现在只在时间点开始时提醒
+- 【提醒】提醒音效音量调节 ([#89](https://github.com/ClassIsland/ClassIsland/issues/89))
+- 【提醒】自定义上下课提醒遮罩文字 ([#69](https://github.com/ClassIsland/ClassIsland/issues/69))
+- 【UI/UX】优化进度条加载动画
+- 【主界面】圆角课表 ([#81](https://github.com/ClassIsland/ClassIsland/issues/81))
+- 【主界面】优化鼠标移入淡化课表功能 ([#82](https://github.com/ClassIsland/ClassIsland/issues/82))
+- 【主界面】透明兼容模式
+- 【主界面】主界面字体大小调整 ([#80](https://github.com/ClassIsland/ClassIsland/issues/80)) ([#26](https://github.com/ClassIsland/ClassIsland/issues/26))
+- 【档案】允许自定义课间名称 ([#63](https://github.com/ClassIsland/ClassIsland/issues/63)) ([#227](https://github.com/ClassIsland/ClassIsland/pull/227)) (by [@RoboMico](https://github.com/RoboMico))
+- 【档案编辑】自动填写科目简称
+- 【档案编辑】粘贴批量导入科目
+- 【欢迎向导】欢迎向导完成页面加入快速链接
+- 【应用】配置文件备份，更新时自动备份
+
+## Bug 修复
+
+- 【应用设置】插件错误信息自动换行
+- 【时间同步】修复在有时间偏移时同步时间会导致时间错误的问题
+- 【应用】修复迁移设置后在重启时覆盖默认档案的问题 ([#251](https://github.com/ClassIsland/ClassIsland/issues/251))
+- 【组件】修复时钟组件闪动分隔符导致组件长度改变的问题 [#226](https://github.com/ClassIsland/ClassIsland/issues/226)
+- 【系统】修复释放 Mutex 时报错的问题
+- 【提醒】修复提醒队列顺序混乱的问题 ([#250](https://github.com/ClassIsland/ClassIsland/issues/250))
+- 【提醒】修复第一节课没有准备上课提醒的问题
+- 【提醒】修复在准备上课提醒结束时显示下节课的问题
 
 ***
 

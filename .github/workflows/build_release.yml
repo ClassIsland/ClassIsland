@@ -117,15 +117,15 @@ jobs:
         run: |
           pwsh -ep Bypass -c ./tools/pre-publish.ps1
           
-      - name: Sentry Release
-        uses: getsentry/action-release@v1.7.0
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: classisland
-          SENTRY_PROJECT: classisland
-          SENTRY_URL: ${{ vars.SENTRY_URL }}
-        with:
-          environment: production
+      # - name: Sentry Release
+      #   uses: getsentry/action-release@v1.7.0
+      #   env:
+      #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     SENTRY_ORG: classisland
+      #     SENTRY_PROJECT: classisland
+      #     SENTRY_URL: ${{ vars.SENTRY_URL }}
+      #   with:
+      #     environment: production
       
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
