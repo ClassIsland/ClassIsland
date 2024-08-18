@@ -142,7 +142,7 @@ public class WindowRuleService : IWindowRuleService
         };
 
         ForegroundHwnd = GetForegroundWindow();
-        Logger.LogTrace("Window event: {} HWND:{} {}", @event, hwnd, hook.Value);
+        //Logger.LogTrace("Window event: {} HWND:{} {}", @event, hwnd, hook.Value);
         _ = Dispatcher.CurrentDispatcher.InvokeAsync(() =>
         {
             ForegroundWindowChanged?.Invoke(hook, @event, hwnd, idObject, child, thread, time);

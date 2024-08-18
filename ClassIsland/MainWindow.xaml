@@ -491,10 +491,11 @@
 
 
             <Border ClipToBounds="True"
-                    CornerRadius="20">
-                
-                
+                    x:Name="ResourceLoaderBorder"
+                    TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
+                <Border.Resources>
 
+                </Border.Resources>
                 <Grid HorizontalAlignment="Stretch"
                       ClipToBounds="True">
                     <Grid.Style>

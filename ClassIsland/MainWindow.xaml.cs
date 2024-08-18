@@ -742,6 +742,17 @@ public partial class MainWindow : Window
 
         }
         ThemeService.SetTheme(ViewModel.Settings.Theme, primary, secondary);
+
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize2)] =
+            SettingsService.Settings.MainWindowSecondaryFontSize2;
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
+            SettingsService.Settings.MainWindowSecondaryFontSize;
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowBodyFontSize)] =
+            SettingsService.Settings.MainWindowBodyFontSize;
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowEmphasizedFontSize)] =
+            SettingsService.Settings.MainWindowEmphasizedFontSize;
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
+            SettingsService.Settings.MainWindowLargeFontSize;
     }
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)

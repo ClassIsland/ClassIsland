@@ -412,6 +412,62 @@
                     </ComboBox>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
+            <!-- 字体大小 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent"
+                          TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="FontSize"
+                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                  Header="字体大小"
+                                                  Description="调整主界面上各类字体的大小。"
+                                                  HasSwitcher="False"
+                                                  Margin="-12 0" />
+                    </Expander.Header>
+                    <Grid Margin="36 0 48 12">
+                        <Grid.Resources>
+                            <Style TargetType="controls1:NumbericTextBox" BasedOn="{StaticResource MaterialDesignTextBoxBase}">
+                                <Setter Property="Width" Value="100"/>
+                                <Setter Property="materialDesign:TextFieldAssist.SuffixText" Value="px"/>
+                                <Setter Property="MinValue" Value="1"/>
+                                <Setter Property="MaxValue" Value="40"/>
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="次次级字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="次级字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="正文字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="强调字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="4" Text="大号字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
+
+                        <controls1:NumbericTextBox
+                                Grid.Column="1" Grid.Row="0"
+                                Text="{Binding SettingsService.Settings.MainWindowSecondaryFontSize2, Converter={StaticResource IntToStringConverter}}"/>
+                        <controls1:NumbericTextBox
+                            Grid.Column="1" Grid.Row="1"
+                            Text="{Binding SettingsService.Settings.MainWindowSecondaryFontSize, Converter={StaticResource IntToStringConverter}}"/>
+                        <controls1:NumbericTextBox
+                            Grid.Column="1" Grid.Row="2"
+                            Text="{Binding SettingsService.Settings.MainWindowBodyFontSize, Converter={StaticResource IntToStringConverter}}"/>
+                        <controls1:NumbericTextBox
+                            Grid.Column="1" Grid.Row="3"
+                            Text="{Binding SettingsService.Settings.MainWindowEmphasizedFontSize, Converter={StaticResource IntToStringConverter}}"/>
+                        <controls1:NumbericTextBox
+                            Grid.Column="1" Grid.Row="4"
+                            Text="{Binding SettingsService.Settings.MainWindowLargeFontSize, Converter={StaticResource IntToStringConverter}}"/>
+                    </Grid>
+                </Expander>
+            </materialDesign:Card>
             <!-- 字体预览 -->
             <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                              FontWeight="{Binding SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"

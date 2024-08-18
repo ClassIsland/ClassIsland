@@ -16,9 +16,11 @@
     <materialDesign:Card
         HorizontalAlignment="Stretch"
         VerticalAlignment="Center"
+        Foreground="{DynamicResource MaterialDesignBody}"
         Padding="12 10 16 10"
     >
         <controls1:SettingsControl 
+            Foreground="{DynamicResource MaterialDesignBody}"
             Header="{Binding Header, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:SettingsCard}}}"
             Description="{Binding Description, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:SettingsCard}}}"
             IconGlyph="{Binding IconGlyph, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:SettingsCard}}}"

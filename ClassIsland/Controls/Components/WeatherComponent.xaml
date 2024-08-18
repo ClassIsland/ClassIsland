@@ -14,7 +14,7 @@
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <controls1:WeatherPackIconControl Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
                                              Height="22" Width="22" VerticalAlignment="Center"/>
-            <TextBlock VerticalAlignment="Center" FontSize="16" Margin="6 0 0 0">
+            <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
                 <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
                 </Run><Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}"/>
             </TextBlock>

@@ -20,7 +20,7 @@
             <Image Source="{Binding Alert.Images[icon]}"
                    Width="22" Height="22" Stretch="UniformToFill"
                    VerticalAlignment="Center"/>
-            <TextBlock Text="{Binding Alert.Title}" FontSize="18" Margin="8 0" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Alert.Title}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
         </StackPanel>
         <Grid Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
             <Grid.ColumnDefinitions>

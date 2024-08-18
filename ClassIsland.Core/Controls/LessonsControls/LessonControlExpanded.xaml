@@ -33,7 +33,7 @@
                 </ContentPresenter.Style>
                 <ContentPresenter.ContentTemplate>
                     <DataTemplate DataType="{x:Type profile:Subject}">
-                        <TextBlock VerticalAlignment="Center" FontSize="18"
+                        <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
                                    FontWeight="Bold">
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
@@ -73,7 +73,7 @@
                                 </Style>
                             </TabControl.Style>
                             <TabItem>
-                                <TextBlock FontSize="13" VerticalAlignment="Bottom">
+                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize2}" VerticalAlignment="Bottom">
                                     <Run
                                         Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                                     </Run><Run Text="-">
@@ -83,7 +83,7 @@
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
                                     <Run
                                         Text="{Binding Seconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}, ConverterParameter={StaticResource TrueValue}}">
                                     </Run><Run Text="/">
@@ -93,7 +93,7 @@
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
                                     <Run Text="-">
                                     </Run><Run
                                               Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
@@ -104,7 +104,7 @@
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
                                     <Run>
                                         <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}"
                                                       Mode="OneWay">
@@ -115,7 +115,7 @@
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
                                     <Run Text="-">
                                     </Run><Run
                                               Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
@@ -123,7 +123,7 @@
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="14" VerticalAlignment="Bottom">
+                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
                                     <Run Text="-">
                                     </Run><Run
                                               Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesSecondsStringConverter}}">

@@ -28,12 +28,12 @@
     </system:String>
 
     <!-- #region MahApp-->
-    <FontFamily x:Key="MahApps.Fonts.Family.Button">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
-    <FontFamily x:Key="MahApps.Fonts.Family.Header">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
-    <FontFamily x:Key="MahApps.Fonts.Family.Window.Title">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
-    <FontFamily x:Key="MahApps.Fonts.Family.Control">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
-    <FontFamily x:Key="MahApps.Fonts.Family.ToggleSwitch">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
-    <FontFamily x:Key="MahApps.Fonts.Family.ToggleSwitch.Header">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.Button">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC, Microsoft YaHei</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.Header">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC, Microsoft YaHei</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.Window.Title">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC, Microsoft YaHei</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.Control">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC, Microsoft YaHei</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.ToggleSwitch">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC, Microsoft YaHei</FontFamily>
+    <FontFamily x:Key="MahApps.Fonts.Family.ToggleSwitch.Header">/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC, Microsoft YaHei</FontFamily>
     <SolidColorBrush x:Key="MahApps.Brushes.Highlight" Color="{DynamicResource Primary700}"/>
     <SolidColorBrush x:Key="MahApps.Brushes.AccentBase" Color="{DynamicResource Primary600}" />
     <SolidColorBrush x:Key="MahApps.Brushes.Accent" Color="{DynamicResource Primary500}"/>
@@ -91,5 +91,11 @@
     <converters:BooleanAndExpressionMultiConverter x:Key="BooleanAndExpressionMultiConverter" />
     <converters:IntToStringConverter x:Key="IntToStringConverter" />
     <converters:WeekIndexToWeekStringConverter x:Key="WeekIndexToWeekStringConverter" />
-
+    
+    <!-- FontSizes -->
+    <system:Double x:Key="MainWindowSecondaryFontSize2">13</system:Double>
+    <system:Double x:Key="MainWindowSecondaryFontSize">14</system:Double>
+    <system:Double x:Key="MainWindowBodyFontSize">16</system:Double>
+    <system:Double x:Key="MainWindowEmphasizedFontSize">18</system:Double>
+    <system:Double x:Key="MainWindowLargeFontSize">20</system:Double>
 </ResourceDictionary>

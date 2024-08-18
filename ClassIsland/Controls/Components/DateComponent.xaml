@@ -9,7 +9,6 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:DateComponent}}"
           VerticalAlignment="Center">
-        <TextBlock FontSize="16"
-                   Text="{Binding Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
+        <TextBlock Text="{Binding Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
     </Grid>
 </controls:ComponentBase>

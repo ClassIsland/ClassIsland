@@ -34,7 +34,6 @@
                 </Style>
             </Grid.Style>
             <TextBlock Text="{Binding Settings.PlaceholderText}"
-                       FontSize="16"
                        VerticalAlignment="Center"/>
         </Grid>
     </Grid>

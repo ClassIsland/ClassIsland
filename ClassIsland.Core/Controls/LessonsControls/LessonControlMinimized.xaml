@@ -16,7 +16,7 @@
         <ContentPresenter>
             <ContentPresenter.ContentTemplate>
                 <DataTemplate DataType="{x:Type profile:Subject}">
-                    <TextBlock VerticalAlignment="Center" FontSize="18"
+                    <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
                                Text="{Binding Initial}"/>
                 </DataTemplate>
             </ContentPresenter.ContentTemplate>

@@ -182,6 +182,11 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isMouseInFadingEnabled = true;
     private double _touchInFadingDurationMs = 0;
     private bool _isCompatibleWindowTransparentEnabled = false;
+    private double _mainWindowSecondaryFontSize2 = 13;
+    private double _mainWindowSecondaryFontSize = 14;
+    private double _mainWindowBodyFontSize = 16;
+    private double _mainWindowEmphasizedFontSize = 18;
+    private double _mainWindowLargeFontSize = 20;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -835,6 +840,61 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_radiusY)) return;
             _radiusY = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowSecondaryFontSize2
+    {
+        get => _mainWindowSecondaryFontSize2;
+        set
+        {
+            if (value.Equals(_mainWindowSecondaryFontSize2)) return;
+            _mainWindowSecondaryFontSize2 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowSecondaryFontSize
+    {
+        get => _mainWindowSecondaryFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowSecondaryFontSize)) return;
+            _mainWindowSecondaryFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowBodyFontSize
+    {
+        get => _mainWindowBodyFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowBodyFontSize)) return;
+            _mainWindowBodyFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowEmphasizedFontSize
+    {
+        get => _mainWindowEmphasizedFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowEmphasizedFontSize)) return;
+            _mainWindowEmphasizedFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowLargeFontSize
+    {
+        get => _mainWindowLargeFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowLargeFontSize)) return;
+            _mainWindowLargeFontSize = value;
             OnPropertyChanged();
         }
     }
