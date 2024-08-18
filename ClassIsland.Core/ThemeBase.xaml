@@ -93,7 +93,6 @@
     <converters:WeekIndexToWeekStringConverter x:Key="WeekIndexToWeekStringConverter" />
     
     <!-- FontSizes -->
-    <system:Double x:Key="MainWindowSecondaryFontSize2">13</system:Double>
     <system:Double x:Key="MainWindowSecondaryFontSize">14</system:Double>
     <system:Double x:Key="MainWindowBodyFontSize">16</system:Double>
     <system:Double x:Key="MainWindowEmphasizedFontSize">18</system:Double>

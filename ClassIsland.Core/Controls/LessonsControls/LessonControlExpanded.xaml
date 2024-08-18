@@ -73,7 +73,7 @@
                                 </Style>
                             </TabControl.Style>
                             <TabItem>
-                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize2}" VerticalAlignment="Bottom">
+                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
                                     <Run
                                         Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                                     </Run><Run Text="-">

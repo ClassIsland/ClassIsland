@@ -442,28 +442,23 @@
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
-                            <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Column="0" Grid.Row="0" Text="次次级字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="0" Grid.Row="1" Text="次级字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="0" Grid.Row="2" Text="正文字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="0" Grid.Row="3" Text="强调字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="0" Grid.Row="4" Text="大号字体大小" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="次级字体大小（时间点附加信息）" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="正文字体大小（主界面）" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="2" Text="强调字体大小（课程表、时钟、提醒标题、天气预报）" Margin="0 0 0 6" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="0" Grid.Row="3" Text="大号字体大小（课程预报）" Margin="0 0 0 6" VerticalAlignment="Center"/>
 
                         <controls1:NumbericTextBox
-                                Grid.Column="1" Grid.Row="0"
-                                Text="{Binding SettingsService.Settings.MainWindowSecondaryFontSize2, Converter={StaticResource IntToStringConverter}}"/>
-                        <controls1:NumbericTextBox
-                            Grid.Column="1" Grid.Row="1"
+                            Grid.Column="1" Grid.Row="0"
                             Text="{Binding SettingsService.Settings.MainWindowSecondaryFontSize, Converter={StaticResource IntToStringConverter}}"/>
                         <controls1:NumbericTextBox
-                            Grid.Column="1" Grid.Row="2"
+                            Grid.Column="1" Grid.Row="1"
                             Text="{Binding SettingsService.Settings.MainWindowBodyFontSize, Converter={StaticResource IntToStringConverter}}"/>
                         <controls1:NumbericTextBox
-                            Grid.Column="1" Grid.Row="3"
+                            Grid.Column="1" Grid.Row="2"
                             Text="{Binding SettingsService.Settings.MainWindowEmphasizedFontSize, Converter={StaticResource IntToStringConverter}}"/>
                         <controls1:NumbericTextBox
-                            Grid.Column="1" Grid.Row="4"
+                            Grid.Column="1" Grid.Row="3"
                             Text="{Binding SettingsService.Settings.MainWindowLargeFontSize, Converter={StaticResource IntToStringConverter}}"/>
                     </Grid>
                 </Expander>

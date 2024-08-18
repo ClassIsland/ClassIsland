@@ -122,7 +122,6 @@
                     <materialDesign:SlideOutWipe/>
                 </materialDesign:TransitionerSlide.ForwardWipe>
                 <TextBlock Text="{Binding Message, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderControl}}"
-                           FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                            VerticalAlignment="Center"
                            HorizontalAlignment="Center"/>
             </materialDesign:TransitionerSlide>

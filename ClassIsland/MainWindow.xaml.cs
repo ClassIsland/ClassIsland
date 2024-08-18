@@ -743,8 +743,6 @@ public partial class MainWindow : Window
         }
         ThemeService.SetTheme(ViewModel.Settings.Theme, primary, secondary);
 
-        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize2)] =
-            SettingsService.Settings.MainWindowSecondaryFontSize2;
         ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
             SettingsService.Settings.MainWindowSecondaryFontSize;
         ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowBodyFontSize)] =
