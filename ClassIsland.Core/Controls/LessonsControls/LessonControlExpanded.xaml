@@ -15,6 +15,7 @@
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
         <converters:SecondsLongToFormatHoursMinutesSecondsStringConverter
             x:Key="SecondsLongToFormatHoursMinutesSecondsStringConverter" />
+        <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
         <StackPanel Orientation="Horizontal" Margin="16 0" VerticalAlignment="Center">
@@ -134,23 +135,25 @@
                     </TabItem>
                     <TabItem>
                         <Grid VerticalAlignment="Bottom">
-                            <Border Height="{DynamicResource MainWindowSecondaryFontSize}"
-                                    Background="{DynamicResource PrimaryHueMidBrush}"
+                            <Border Background="{DynamicResource PrimaryHueMidBrush}"
+                                    Height="{Binding ActualHeight, ElementName=BorderStroke}"
                                     ClipToBounds="True"
                                     BorderThickness="1"
                                     Padding="8 0"
                                     Opacity="0.3"
-                                    CornerRadius="12.5">
+                                    VerticalAlignment="Bottom"
+                                    CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                             </Border>
-                            <Border Height="{DynamicResource MainWindowSecondaryFontSize}"
-                                    ClipToBounds="True"
+                            <Border ClipToBounds="True"
                                     BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                                     BorderThickness="1"
                                     Padding="8 0"
-                                    CornerRadius="12.5">
+                                    x:Name="BorderStroke"
+                                    VerticalAlignment="Bottom"
+                                    CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                                 <Grid>
-                                    <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Center">
-                                        <Run Text="-"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
+                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center">
+                                        <Run Text="-" FontSize="{DynamicResource MainWindowSecondaryFontSize}"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
                                     </TextBlock>
                                 </Grid>
                             </Border>
