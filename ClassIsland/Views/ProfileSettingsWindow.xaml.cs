@@ -1021,18 +1021,5 @@ public partial class ProfileSettingsWindow : MyWindow
         details.Owner = this;
         details.ShowDialog();
     }
-    //private void WeekCountDivListBox_OnLoaded(object sender, RoutedEventArgs e)
-    //{
-    //    UpdateWeekCountDivs();
-    //}
-
-    //private void WeekCountDivTotalListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    //{
-    //    var TimeRule = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeRule;
-    //    if (TimeRule.WeekCountDiv > TimeRule.WeekCountDivTotal)
-    //        TimeRule.WeekCountDiv = 0;
-    //    UpdateWeekCountDivs();
-    //}
-
     
 }
