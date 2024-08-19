@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,10 +67,18 @@ public partial class StorageSettingsPage
 
     private void ButtonViewBackupFiles_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        try
         {
-            FileName = System.IO.Path.GetFullPath("./Backups"),
-            UseShellExecute = true
-        });
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = System.IO.Path.GetFullPath("./Backups"),
+                UseShellExecute = true
+            });
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法浏览备份文件。");
+            CommonDialog.ShowError($"无法浏览备份文件：{exception.Message}");
+        }
     }
 }
