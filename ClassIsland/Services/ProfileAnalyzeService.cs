@@ -182,7 +182,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
         return [.. results.Where(x =>
             {
-                if (x.Object.AttachedObjects.TryGetValue(id, out var obj))
+                if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
                 {
                     return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
                 }
@@ -199,7 +199,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
         return [.. results.Where(x =>
             {
-                if (x.Object.AttachedObjects.TryGetValue(id, out var obj))
+                if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
                 {
                     return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
                 }
