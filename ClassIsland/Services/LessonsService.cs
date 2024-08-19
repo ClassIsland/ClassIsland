@@ -450,18 +450,14 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        var dd = ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date;
-        var dw = Math.Floor(dd.TotalDays / 7) + 1;
-        var w = (int)dw % 2;
-        switch (plan.TimeRule.WeekCountDiv)
-        {
-            case 1 when w != 1:
-                return false;
-            case 2 when w != 0:
-                return false;
-            default:
-                return true;
-        }
+        if (plan.TimeRule.WeekCountDiv == 0)
+            return true;
+
+        var dd = Math.Abs((ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date).TotalDays);
+        var dw = Math.Floor(dd / 7) + 1;
+        var w = (int)dw % plan.TimeRule.WeekCountDivTotal;
+        return (plan.TimeRule.WeekCountDiv == w ||
+                plan.TimeRule.WeekCountDiv == plan.TimeRule.WeekCountDivTotal && w == 0);
     }
 
     public void StartMainTimer()

@@ -1021,4 +1021,5 @@ public partial class ProfileSettingsWindow : MyWindow
         details.Owner = this;
         details.ShowDialog();
     }
+    
 }

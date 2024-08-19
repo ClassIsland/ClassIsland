@@ -287,35 +287,7 @@
 
                 <StackPanel IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" 
                             Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <StackPanel DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}">
-                        <Separator Margin="0 20 0 8" />
-                        <controls1:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
-                        <!--<TextBlock Text="{Binding}"/>-->
-                        <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
-
-                        <TextBlock Text="当今天是：" Margin="0 8 0 0" />
-                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                 SelectedIndex="{Binding WeekDay}"
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                            <ListBoxItem Content="周日" />
-                            <ListBoxItem Content="周一" />
-                            <ListBoxItem Content="周二" />
-                            <ListBoxItem Content="周三" />
-                            <ListBoxItem Content="周四" />
-                            <ListBoxItem Content="周五" />
-                            <ListBoxItem Content="周六" />
-                        </ListBox>
-
-                        <TextBlock Text="当本周是：" Margin="0 6 0 0" />
-                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                 SelectedIndex="{Binding WeekCountDiv}"
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                            <ListBoxItem Content="不限" />
-                            <ListBoxItem Content="单周" />
-                            <ListBoxItem Content="双周" />
-                        </ListBox>
-
-                    </StackPanel>
+                    <controls1:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
                 </StackPanel>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
@@ -877,10 +849,9 @@
                                                                     </TextBlock.Style>
                                                                     <Run Text="{Binding Value.TimeRule.WeekCountDiv}">
                                                                     </Run><Run Text="/">
-                                                                    </Run><Run Text="2">
+                                                                    </Run><Run Text="{Binding Value.TimeRule.WeekCountDivTotal}">
                                                                     </Run><Run Text="周">
                                                                     </Run>
-                                                                    <!-- TODO: 支持多周轮换后把这里改成轮换的周数 -->
                                                                 </TextBlock>
                                                                 <TextBlock Text="临时层" Margin="2 0 0 0"
                                                                            FontWeight="Bold" FontStyle="Italic">
