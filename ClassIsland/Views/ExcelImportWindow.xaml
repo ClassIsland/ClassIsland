@@ -896,13 +896,30 @@
                                             <ListBoxItem Content="周六" />
                                         </ListBox>
 
-                                        <TextBlock Text="当本周是：" Margin="0 6 0 0" />
-                                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                        <TextBlock Text="当本周是：" Margin="0 8 0 0" />
+                                        <ListBox ItemsSource="{Binding WeekCountDivs}"
                                                  SelectedIndex="{Binding WeekCountDiv}"
-                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                            <ListBoxItem Content="不限" />
-                                            <ListBoxItem Content="单周" />
-                                            <ListBoxItem Content="双周" />
+                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                 Loaded="WeekCountDivListBox_OnLoaded">
+                                            <ListBox.Style>
+                                                <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
+                                                </Style>
+                                            </ListBox.Style>
+                                        </ListBox>
+
+                                        <TextBlock Text="多周轮换每轮周数：" Margin="0 8 0 0"/>
+                                        <ListBox SelectedIndex="{Binding WeekCountDivTotal}"
+                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                 SelectionChanged="WeekCountDivTotalListBox_SelectionChanged">
+                                            <ListBox.Style>
+                                                <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
+                                                </Style>
+                                            </ListBox.Style>
+                                            <ListBoxItem Visibility="Collapsed"/>
+                                            <ListBoxItem Visibility="Collapsed" />
+                                            <ListBoxItem Content="两周" />
+                                            <ListBoxItem Content="三周" />
+                                            <ListBoxItem Content="四周" />
                                         </ListBox>
 
                                     </StackPanel>
