@@ -1,4 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
 namespace ClassIsland.Shared.Models.Profile;
@@ -11,7 +13,7 @@ public class TimeRule : ObservableRecipient
     private int _weekDay = new();
     private int _weekCountDiv = 0;
     private int _weekCountDivTotal = 2;
-    private List<int> _weekCountDivs = [0, 1, 2];
+    private ObservableCollection<string> _weekCountDivs = [];
 
     /// <summary>
     /// 在一周中的哪一天启用这个课表
@@ -60,9 +62,8 @@ public class TimeRule : ObservableRecipient
         get => _weekCountDivTotal;
         set
         {
-            if (Equals(value, _weekCountDivTotal)) return;
+            if (value == _weekCountDivTotal) return;
             _weekCountDivTotal = value;
-            WeekCountDivs = Enumerable.Range(0, _weekCountDivTotal + 1).ToList();
             OnPropertyChanged();
         }
     }
@@ -71,12 +72,12 @@ public class TimeRule : ObservableRecipient
     /// 多周轮换选择框的项目列表
     /// </summary>
     [JsonIgnore]
-    public List<int> WeekCountDivs
+    public ObservableCollection<string> WeekCountDivs
     {
         get => _weekCountDivs;
         set
         {
-            if (Equals(value, _weekCountDivs)) return;
+            if (value == _weekCountDivs) return;
             _weekCountDivs = value;
             OnPropertyChanged();
         }

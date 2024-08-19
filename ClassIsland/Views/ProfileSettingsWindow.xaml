@@ -52,7 +52,6 @@
         <converters1:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter"/>
         <converters1:ClassPlanGroupIdToClassPlanGroupConverter x:Key="ClassPlanGroupIdToClassPlanGroupConverter"/>
         <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter"/>
-        <converters:WeekCountDivToListItemConverter x:Key="WeekCountDivToListItemConverter"/>
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
             <Setter Property="ItemTemplate">
                 <Setter.Value>
@@ -309,42 +308,37 @@
 
                         <TextBlock Text="当本周是：" Margin="0 8 0 0" />
                         <ListBox ItemsSource="{Binding WeekCountDivs}"
-                                 x:Name="WeekCountDivListBox"
-                                 Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
                                  SelectedIndex="{Binding WeekCountDiv}"
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="ListBoxItem"
-                                       BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBoxItem}">
-                                    <Setter Property="Content">
-                                        <Setter.Value>
-                                            <MultiBinding Converter="{StaticResource WeekCountDivToListItemConverter}">
-                                                <Binding/>
-                                                <Binding Path="ItemsSource.Count" RelativeSource="{RelativeSource AncestorType=ListBox}"/>
-                                            </MultiBinding>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
-                        </ListBox>
-
-                        <TextBlock Text="每轮周数：" Margin="0 8 0 0"/>
-                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                 SelectedIndex="{Binding WeekCountDivTotal}"
                                  PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                 SelectionChanged="WeekCountDivTotalListBox_SelectionChanged">
-                            <!--<ListBox.Style>
+                                 Loaded="WeekCountDivListBox_OnLoaded">
+                            <ListBox.Style>
                                 <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
-                                    <Style.Triggers>
+                                    <!--<Style.Triggers>
                                         <DataTrigger Binding="{Binding WeekCountDiv}" Value="0">
-                                            <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="False"/>
+                                            <Setter Property="Visibility" Value="Collapsed"/>
                                         </DataTrigger>
                                     </Style.Triggers>
-                                    <Setter Property="materialDesign:ListBoxItemAssist.ShowSelection" Value="True"/>
+                                    <Setter Property="Visibility" Value="Visible"/>-->
                                 </Style>
-                            </ListBox.Style>-->
+                            </ListBox.Style>
+                        </ListBox>
+
+                        <TextBlock Text="多周轮换每轮周数：" Margin="0 8 0 0"/>
+                        <ListBox SelectedIndex="{Binding WeekCountDivTotal}"
+                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                 SelectionChanged="WeekCountDivTotalListBox_SelectionChanged">
+                            <ListBox.Style>
+                                <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
+                                    <!--<Style.Triggers>
+                                        <DataTrigger Binding="{Binding WeekCountDiv}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Visibility" Value="Collapsed"/>-->
+                                </Style>
+                            </ListBox.Style>
                             <ListBoxItem Visibility="Collapsed"/>
-                            <ListBoxItem Visibility="Collapsed"/>
+                            <ListBoxItem Visibility="Collapsed" />
                             <ListBoxItem Content="两周" />
                             <ListBoxItem Content="三周" />
                             <ListBoxItem Content="四周" />
@@ -912,10 +906,9 @@
                                                                     </TextBlock.Style>
                                                                     <Run Text="{Binding Value.TimeRule.WeekCountDiv}">
                                                                     </Run><Run Text="/">
-                                                                    </Run><Run Text="2">
+                                                                    </Run><Run Text="{Binding Value.TimeRule.WeekCountDivTotal}">
                                                                     </Run><Run Text="周">
                                                                     </Run>
-                                                                    <!-- TODO: 支持多周轮换后把这里改成轮换的周数 -->
                                                                 </TextBlock>
                                                                 <TextBlock Text="临时层" Margin="2 0 0 0"
                                                                            FontWeight="Bold" FontStyle="Italic">

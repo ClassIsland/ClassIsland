@@ -1021,11 +1021,43 @@ public partial class ProfileSettingsWindow : MyWindow
         details.Owner = this;
         details.ShowDialog();
     }
+    private void WeekCountDivListBox_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        UpdateWeekCountDivs();
+    }
 
     private void WeekCountDivTotalListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        var classPlan = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value;
-        if (classPlan.TimeRule.WeekCountDiv == -1)
-            classPlan.TimeRule.WeekCountDiv = 0;
+        var TimeRule = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeRule;
+        if (TimeRule.WeekCountDiv > TimeRule.WeekCountDivTotal)
+            TimeRule.WeekCountDiv = 0;
+        UpdateWeekCountDivs();
+    }
+
+    private void UpdateWeekCountDivs()
+    {
+        var TimeRule = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeRule;
+        var w = TimeRule.WeekCountDiv;
+        TimeRule.WeekCountDivs = [];
+        foreach (var i in Enumerable.Range(0, TimeRule.WeekCountDivTotal + 1).ToList())
+            TimeRule.WeekCountDivs.Add(((Func<int, int, string>)delegate (int num, int total)
+        {
+            if (num == 0) return "不限";
+            if (total <= 2)
+            {
+                if (num == 1) return "单周";
+                if (num == 2) return "双周";
+            }
+            var num_ = num switch
+            {
+                1 => "一",
+                2 => "二",
+                3 => "三",
+                4 => "四",
+                _ => num.ToString()
+            };
+            return $"第{num_}周";
+        })(i, TimeRule.WeekCountDivTotal));
+        TimeRule.WeekCountDiv = w;
     }
 }
