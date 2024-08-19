@@ -287,64 +287,7 @@
 
                 <StackPanel IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" 
                             Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <StackPanel DataContext="{Binding SelectedItem.Value.TimeRule, ElementName=ListViewClassPlans}">
-                        <Separator Margin="0 20 0 8" />
-                        <controls1:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
-                        <!--<TextBlock Text="{Binding}"/>-->
-                        <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
-
-                        <TextBlock Text="当今天是：" Margin="0 8 0 0" />
-                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                 SelectedIndex="{Binding WeekDay}"
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                            <ListBoxItem Content="周日" />
-                            <ListBoxItem Content="周一" />
-                            <ListBoxItem Content="周二" />
-                            <ListBoxItem Content="周三" />
-                            <ListBoxItem Content="周四" />
-                            <ListBoxItem Content="周五" />
-                            <ListBoxItem Content="周六" />
-                        </ListBox>
-
-                        <TextBlock Text="当本周是：" Margin="0 8 0 0" />
-                        <ListBox ItemsSource="{Binding WeekCountDivs}"
-                                 SelectedIndex="{Binding WeekCountDiv}"
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                 Loaded="WeekCountDivListBox_OnLoaded">
-                            <ListBox.Style>
-                                <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
-                                    <!--<Style.Triggers>
-                                        <DataTrigger Binding="{Binding WeekCountDiv}" Value="0">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="Visibility" Value="Visible"/>-->
-                                </Style>
-                            </ListBox.Style>
-                        </ListBox>
-
-                        <TextBlock Text="多周轮换每轮周数：" Margin="0 8 0 0"/>
-                        <ListBox SelectedIndex="{Binding WeekCountDivTotal}"
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                 SelectionChanged="WeekCountDivTotalListBox_SelectionChanged">
-                            <ListBox.Style>
-                                <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}">
-                                    <!--<Style.Triggers>
-                                        <DataTrigger Binding="{Binding WeekCountDiv}" Value="0">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="Visibility" Value="Collapsed"/>-->
-                                </Style>
-                            </ListBox.Style>
-                            <ListBoxItem Visibility="Collapsed"/>
-                            <ListBoxItem Visibility="Collapsed" />
-                            <ListBoxItem Content="两周" />
-                            <ListBoxItem Content="三周" />
-                            <ListBoxItem Content="四周" />
-                        </ListBox>
-
-                    </StackPanel>
+                    <controls1:TimeRuleEditControl TimeRule="{Binding TimeRule, Mode=OneWay}"/>
                 </StackPanel>
                 <!-- 附加属性 -->
                 <Separator Margin="0 16 0 8"/>
