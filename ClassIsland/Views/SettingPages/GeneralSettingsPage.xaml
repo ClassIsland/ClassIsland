@@ -61,10 +61,10 @@
                                                                           Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。"
                                                                           Margin="-12 0" />
                     </Expander.Header>
-                    <TabControl Margin="36 0 64 12" HorizontalContentAlignment="Left"
+                    <TabControl Margin="36 -16 64 12" HorizontalContentAlignment="Left"
                                 SelectedIndex="{Binding SettingsService.Settings.HideMode}">
                         <TabItem Header="基础模式">
-                            <StackPanel >
+                            <StackPanel Margin="6 6 0 0">
                                 <StackPanel.Resources>
                                     <Style TargetType="CheckBox"
                                            BasedOn="{StaticResource MaterialDesignCheckBox}">
