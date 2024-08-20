@@ -33,6 +33,12 @@ public class ClassInfoMultiConverter : IMultiValueConverter
         {
             return null;
         }
+
+        if (classPlan.OverlaySource != null && classPlan.OverlaySource.Classes[subjectIndex].SubjectId != classPlan.Classes[subjectIndex].SubjectId)
+            classPlan.Classes[subjectIndex].IsChangedClass = true;
+        else
+            classPlan.Classes[subjectIndex].IsChangedClass = false;
+
         return classPlan.Classes[subjectIndex];
 
         int GetSubjectIndex(int index)

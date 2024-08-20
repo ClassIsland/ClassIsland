@@ -17,7 +17,17 @@
             <ContentPresenter.ContentTemplate>
                 <DataTemplate DataType="{x:Type profile:Subject}">
                     <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
-                               Text="{Binding Initial}"/>
+                               Text="{Binding Initial}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}" Value="True">
+                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                 </DataTemplate>
             </ContentPresenter.ContentTemplate>
             <ContentPresenter.Content>

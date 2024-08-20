@@ -198,6 +198,7 @@ public class ProfileService : IProfileService
 
         newCp.IsOverlay = true;
         newCp.TimeLayoutId = timeLayoutId;
+        newCp.OverlaySource = Profile.ClassPlans[id];
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
         newCp.OverlaySetupTime = App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
