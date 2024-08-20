@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
+
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 
@@ -34,10 +36,13 @@ public class ClassInfoMultiConverter : IMultiValueConverter
             return null;
         }
 
-        if (classPlan.OverlaySource != null && classPlan.OverlaySource.Classes[subjectIndex].SubjectId != classPlan.Classes[subjectIndex].SubjectId)
-            classPlan.Classes[subjectIndex].IsChangedClass = true;
-        else
-            classPlan.Classes[subjectIndex].IsChangedClass = false;
+        if (classPlan.OverlaySourceId != null)
+        {
+            var overlaySource = IAppHost.GetService<IProfileService>().Profile.ClassPlans[classPlan.OverlaySourceId];
+            classPlan.Classes[subjectIndex].IsChangedClass =
+                overlaySource.Classes[subjectIndex].SubjectId == classPlan.Classes[subjectIndex].SubjectId;
+
+        }
 
         return classPlan.Classes[subjectIndex];
 

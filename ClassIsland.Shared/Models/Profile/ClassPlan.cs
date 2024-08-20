@@ -18,7 +18,6 @@ public class ClassPlan : AttachableSettingsObject
     private bool _isActivated = false;
     private bool _isOverlay = false;
     private string? _overlaySourceId;
-    private ClassPlan? _overlaySource = null;
     private bool _isEnabled = true;
     private DateTime _overlaySetupTime = DateTime.Now;
     private int _lastTimeLayoutCount = -1;
@@ -378,21 +377,6 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     /// <summary>
-    /// 临时层课表对应的源课表
-    /// </summary>
-    [JsonIgnore]
-    internal ClassPlan? OverlaySource
-    {
-        get => _overlaySource;
-        set
-        {
-            if (Equals(value, _overlaySource)) return;
-            _overlaySource = value;
-            OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
     /// 临时层设置时间
     /// </summary>
     public DateTime OverlaySetupTime
@@ -404,15 +388,6 @@ public class ClassPlan : AttachableSettingsObject
             _overlaySetupTime = value;
             OnPropertyChanged();
         }
-    }
-
-    internal void SetupOverlay(ClassPlan source)
-    {
-        if (!IsOverlay)
-        {
-            return;
-        }
-        OverlaySource = source;
     }
 
     /// <summary>
