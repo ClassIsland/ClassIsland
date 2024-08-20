@@ -389,15 +389,5 @@
         <Setter Property="Text" Value="{Binding Value, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource RangePositionToStringConverter}}"/>
     </Style>
 
-    <Style TargetType="Slider" BasedOn="{StaticResource MaterialDesignSlider}">
-        <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
-            <Setter.Value>
-                <materialDesign:BehaviorCollection>
-                    <behaviors:SliderManipulationBehavior/>
-                </materialDesign:BehaviorCollection>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style TargetType="controls1:AutoScrollListView" BasedOn="{StaticResource MaterialDesignListView}"/>
 </ResourceDictionary>
