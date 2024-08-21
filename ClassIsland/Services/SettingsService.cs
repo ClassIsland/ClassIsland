@@ -51,7 +51,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         var url = ManagementService.Manifest.DefaultSettingsSource.Value!;
         var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
         Settings = settings;
-        Settings.PropertyChanged += (sender, args) => SaveSettings();
+        Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
         Logger.LogTrace("拉取集控默认设置成功！");
     }
 
@@ -69,7 +69,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
                 Logger.LogInformation("加载配置文件。");
                 var r = ConfigureFileHelper.LoadConfig<Settings>("./Settings.json");
                 Settings = r;
-                Settings.PropertyChanged += (sender, args) => SaveSettings();
+                Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
             }
 
             // 当还没有初始化应用且启用集控时，从集控拉取设置。
@@ -188,9 +188,9 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
 
     }
 
-    public void SaveSettings()
+    public void SaveSettings(string? note = "-")
     {
-        Logger.LogInformation("写入配置文件。");
+        Logger.LogInformation("写入配置文件：" + note);
         ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
     }
 

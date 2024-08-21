@@ -615,8 +615,6 @@ public partial class App : AppBase, IAppHost
                 IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
                 IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
                 IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
-                IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
-                IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
                 ReleaseLock();
                 var args = new List<string> {"-m", "-udt", Environment.ProcessPath!.Replace(".dll", ".exe")};
                 foreach (var i in new[]
@@ -740,7 +738,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
             IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
             IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
-            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
+            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
             Current.Shutdown();
             try
