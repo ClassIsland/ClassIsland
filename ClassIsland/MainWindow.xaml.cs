@@ -376,7 +376,7 @@ public partial class MainWindow : Window
                 }
                 // 播放提醒特效
                 if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationEffect &&
-                    GridRoot.IsVisible && ViewModel.IsMainWindowVisible && !IsRunningCompatibleMode)
+                    GridRoot.IsVisible && ViewModel.Settings.IsMainWindowVisible && !IsRunningCompatibleMode)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
                     {
@@ -612,7 +612,7 @@ public partial class MainWindow : Window
                 OpenProfileSettingsWindow();
                 break;
             case 2:
-                ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
+                ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
                 break;
             case 3:
                 OpenClassSwapWindow();
@@ -1006,7 +1006,7 @@ public partial class MainWindow : Window
 
     private void MenuItemSwitchMainWindowVisibility_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
+        ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
     }
 
     private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)

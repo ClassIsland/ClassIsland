@@ -105,8 +105,7 @@
             <MenuItem Icon="{materialDesign:PackIcon EyeOutLine}" Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
                 <MenuItem.Visibility>
                     <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
-                        <Binding Path="ViewModel.IsMainWindowVisible" Mode="OneWay"
-                                 Converter="{StaticResource InvertBooleanConverter}" />
+                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}" />
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.Visibility>
@@ -114,7 +113,7 @@
             <MenuItem Icon="{materialDesign:PackIcon EyeOffOutline}" Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
                 <MenuItem.Visibility>
                     <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
-                        <Binding Path="ViewModel.IsMainWindowVisible" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay"/>
                         <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
                     </MultiBinding>
                 </MenuItem.Visibility>
@@ -416,7 +415,7 @@
                                 <Condition Binding="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
                                            Value="True" />
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Visibility" Value="{Binding ViewModel.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <Setter Property="Visibility" Value="{Binding ViewModel.Settings.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         </MultiDataTrigger>
                         <!-- 窗口上课隐藏 -->
                         <MultiDataTrigger>
@@ -469,7 +468,7 @@
 
                     </Style.Triggers>
 
-                    <Setter Property="Visibility" Value="{Binding ViewModel.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Setter Property="Visibility" Value="{Binding ViewModel.Settings.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Style>
             </Grid.Style>
             <Grid.Effect>

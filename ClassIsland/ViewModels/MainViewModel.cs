@@ -194,17 +194,6 @@ public class MainViewModel : ObservableRecipient
         }
     }
 
-    public bool IsMainWindowVisible
-    {
-        get => _isMainWindowVisible;
-        set
-        {
-            if (value == _isMainWindowVisible) return;
-            _isMainWindowVisible = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool IsClosing
     {
         get => _isClosing;

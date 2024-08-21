@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
+
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 
@@ -33,6 +35,15 @@ public class ClassInfoMultiConverter : IMultiValueConverter
         {
             return null;
         }
+
+        if (classPlan.OverlaySourceId != null)
+        {
+            var overlaySource = IAppHost.GetService<IProfileService>().Profile.ClassPlans[classPlan.OverlaySourceId];
+            classPlan.Classes[subjectIndex].IsChangedClass =
+                overlaySource.Classes[subjectIndex].SubjectId == classPlan.Classes[subjectIndex].SubjectId;
+
+        }
+
         return classPlan.Classes[subjectIndex];
 
         int GetSubjectIndex(int index)
