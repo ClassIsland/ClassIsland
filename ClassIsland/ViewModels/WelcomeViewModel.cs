@@ -25,6 +25,7 @@ public class WelcomeViewModel : ObservableRecipient
     private bool _registerUrlScheme = false;
     private bool _createClassSwapShortcut = false;
     private bool _requiresRestarting = false;
+    private DateTime _singleWeekStartTime = DateTime.Now;
 
     public Guid DialogId
     {
@@ -203,6 +204,17 @@ public class WelcomeViewModel : ObservableRecipient
         {
             if (value == _requiresRestarting) return;
             _requiresRestarting = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime SingleWeekStartTime
+    {
+        get => _singleWeekStartTime;
+        set
+        {
+            if (value.Equals(_singleWeekStartTime)) return;
+            _singleWeekStartTime = value;
             OnPropertyChanged();
         }
     }

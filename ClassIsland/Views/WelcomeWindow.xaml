@@ -262,10 +262,10 @@
 
                                     <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
                                                            Margin="0 6 0 0"
-                                                           Description="此时间将作为学期的第一天，用于应用对多周轮换课表的计算，应设为一周的第一天。">
+                                                           Description="此时间将作为学期的第一天，用于应用对多周轮换课表的计算。">
                                         <controls1:SettingsCard.Switcher>
                                             <DatePicker
-                                                SelectedDate="{Binding ViewModel.Settings.SingleWeekStartTime}"
+                                                SelectedDate="{Binding ViewModel.SingleWeekStartTime}"
                                                 Width="120"
                                                 Foreground="{DynamicResource MaterialDesignBody}" />
                                         </controls1:SettingsCard.Switcher>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -31,6 +32,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private bool _isLessonConfirmed = false;
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
     private TimeLayoutItem _nextClassTimeLayoutItem = new();
+    private ObservableCollection<int> _multiWeekRotation = [-1, -1, 1, 1, 1];
 
     private DispatcherTimer MainTimer
     {
@@ -133,6 +135,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
         get => _onBreakingTimeLeftTime;
         set => SetProperty(ref _onBreakingTimeLeftTime, value);
     }
+    public ObservableCollection<int> MultiWeekRotation
+    {
+        get => _multiWeekRotation;
+        set => SetProperty(ref _multiWeekRotation, value);
+    }
 
     public event EventHandler? OnClass;
     public event EventHandler? OnBreakingTime;
@@ -165,6 +172,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private ILogger<LessonsService> Logger { get; }
 
     private IExactTimeService ExactTimeService { get; }
+
     public IRulesetService RulesetService { get; }
 
     private Profile Profile => ProfileService.Profile;
@@ -371,6 +379,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void LoadCurrentClassPlan()
     {
         ProfileService.Profile.RefreshTimeLayouts();
+        RefreshMultiWeekRotation();
         if (Profile.TempClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
         {
             Profile.TempClassPlanId = null;
@@ -453,11 +462,19 @@ public class LessonsService : ObservableRecipient, ILessonsService
         if (plan.TimeRule.WeekCountDiv == 0)
             return true;
 
-        var dd = Math.Abs((ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date).TotalDays);
-        var dw = Math.Floor(dd / 7) + 1;
-        var w = (int)dw % plan.TimeRule.WeekCountDivTotal;
-        return (plan.TimeRule.WeekCountDiv == w ||
-                plan.TimeRule.WeekCountDiv == plan.TimeRule.WeekCountDivTotal && w == 0);
+        // RefreshMultiWeekRotation();
+        return plan.TimeRule.WeekCountDiv == MultiWeekRotation[plan.TimeRule.WeekCountDivTotal];
+    }
+
+    public void RefreshMultiWeekRotation()
+    {
+        var dd = (ExactTimeService.GetCurrentLocalDateTime().Date - new DateTime(2022, 4, 18)).TotalDays;
+        int dw = (int)Math.Floor(dd / 7);
+        for (var i = 2; i <= 4; i++)
+        {
+            int w = (dw - Settings.MultiWeekRotationOffset[i] + i) % i;
+            MultiWeekRotation[i] = w + 1;
+        }
     }
 
     public void StartMainTimer()

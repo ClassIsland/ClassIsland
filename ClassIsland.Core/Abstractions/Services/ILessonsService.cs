@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
 
@@ -35,6 +36,11 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// 停止主计时器。
     /// </summary>
     public void StopMainTimer();
+
+    /// <summary>
+    /// 刷新多周轮换周数。
+    /// </summary>
+    public void RefreshMultiWeekRotation();
 
     #endregion
 
@@ -111,6 +117,21 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
     /// 距下课剩余时间
     /// </summary>
     TimeSpan OnBreakingTimeLeftTime { get; set; }
+
+    /// <summary>
+    /// 本周多周轮换周数。
+    /// </summary>
+    /// <remarks>
+    /// 第 2 位 - 双周轮换<br/>
+    /// 第 3 位 - 三周轮换<br/>
+    /// ……<br/>
+    /// <br/>
+    /// 1 - 本周单周<br/>
+    /// 2 - 本周是双周<br/>
+    /// 3 - 本周是 3/x 周<br/>
+    /// ……<br/>
+    /// </remarks>
+    ObservableCollection<int> MultiWeekRotation { get; set; }
 
     #endregion
 

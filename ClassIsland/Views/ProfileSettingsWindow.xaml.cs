@@ -49,6 +49,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 
+    public IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
+
     public MainViewModel MainViewModel
     {
         get;
@@ -1021,5 +1023,21 @@ public partial class ProfileSettingsWindow : MyWindow
         details.Owner = this;
         details.ShowDialog();
     }
-    
+
+    private void MultiWeekRotation_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // LessonsService.RefreshMultiWeekRotation();
+    }
+
+    private void MultiWeekRotation_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var settings = App.GetService<SettingsService>().Settings;
+        int i = int.Parse(((ListBox)sender).Tag.ToString()!);
+
+        var dd = (ExactTimeService.GetCurrentLocalDateTime().Date - new DateTime(2022, 4, 18)).TotalDays;
+        while (dd < i * 7) dd += i * 7;
+        int dw = (int)Math.Floor(dd / 7);
+        int w = (dw - (LessonsService.MultiWeekRotation[i] - 1) + i) % i;
+        settings.MultiWeekRotationOffset[i] = w;
+    }
 }

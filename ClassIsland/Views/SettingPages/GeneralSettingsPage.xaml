@@ -42,15 +42,6 @@
             <controls1:SettingsCard IconGlyph="Code" Header="注册 Url 协议"
                                     Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用本应用内的功能。"
                                     IsOn="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}" />
-            <!-- 学期开始时间 -->
-            <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
-                                                           Description="此时间将作为学期的第一天，用于应用对多周轮换课表的计算，应设为一周的第一天。">
-                <controls1:SettingsCard.Switcher>
-                    <DatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
-                                                        Width="120"
-                                                        Foreground="{DynamicResource MaterialDesignBody}" />
-                </controls1:SettingsCard.Switcher>
-            </controls1:SettingsCard>
             <!-- 隐藏窗口 -->
             <materialDesign:Card Margin="0 0 0 6">
                 <Expander Background="Transparent" IsExpanded="True">

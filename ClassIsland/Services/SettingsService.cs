@@ -186,6 +186,21 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
             Logger.LogInformation("成功迁移了 1.4.3.0 以前的设置。");
         }
 
+        if (Settings.LastAppVersion < Version.Parse("1.4.4.1"))
+        {
+            if (Settings.SingleWeekStartTime != DateTime.MinValue)
+            {
+                var dd = (Settings.SingleWeekStartTime.Date - new DateTime(2022, 4, 18)).TotalDays;
+                int dw = (int)Math.Floor(dd / 7);
+                for (var i = 2; i <= 4; i++)
+                {
+                    Settings.MultiWeekRotationOffset[i] = dw % i;
+                }
+                Settings.SingleWeekStartTime = DateTime.MinValue;
+                Logger.LogInformation("成功迁移了 1.4.4.1 以前的设置。");
+            }
+        }
+
     }
 
     public void SaveSettings(string? note = "-")
