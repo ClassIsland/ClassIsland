@@ -6,6 +6,8 @@ using Windows.Win32.Foundation;
 using ClassIsland.Core.Models;
 using ClassIsland.Shared;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using Timer = System.Threading.Timer;
 
 namespace ClassIsland.Core.Helpers.Native;
 
@@ -65,18 +67,24 @@ public static class NativeWindowHelper
         return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.WorkingArea);
     }
 
-    // 常量
     public static bool IsOccupied(string filePath)
     {
-        HANDLE handler = (HANDLE)PInvoke._lopen(filePath, OF_READWRITE | OF_SHARE_DENY_NONE);
-        PInvoke.CloseHandle(handler);
-        return handler == HFILE_ERROR;
+        try
+        {
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            return false;
+        }
+        catch
+        {
+            return true;
+        }
     }
 
     public static void WaitForFile(string path)
     {
         while (IsOccupied(path))
         {
+            Thread.Sleep(TimeSpan.FromSeconds(0.1));
         }
     }
     
