@@ -229,7 +229,7 @@ public partial class App : AppBase, IAppHost
                 FileName = ApplicationCommand.UpdateReplaceTarget,
                 ArgumentList = { "-udt", Environment.ProcessPath!, "-m", "true" }
             });
-            Restart();
+            Stop();
             return;
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)

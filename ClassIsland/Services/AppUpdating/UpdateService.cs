@@ -263,26 +263,26 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         progressWindow.ProgressText = "正在等待应用退出……";
         await Task.Run(() => NativeWindowHelper.WaitForFile(t));
         progressWindow.ProgressText = "正在覆盖应用文件……";
-        await Task.Run(() => File.Move(s, t, true));
+        await Task.Run(() => File.Copy(s, t, true));
         progressWindow.CanClose = true;
         progressWindow.Close();
     }
 
     public static void RemoveUpdateTemporary(string target)
     {
-        if (!File.Exists(target))
+        if (File.Exists(target))
         {
-            return;
+            NativeWindowHelper.WaitForFile(target);
+            File.Delete(target);
         }
-        NativeWindowHelper.WaitForFile(target);
-        File.Delete(target);
         try
         {
             Directory.Delete("./UpdateTemp", true);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             // ignored
+            Console.WriteLine(e);
         }
     }
 
