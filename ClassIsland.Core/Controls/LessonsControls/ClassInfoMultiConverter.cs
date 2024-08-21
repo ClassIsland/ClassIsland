@@ -40,7 +40,7 @@ public class ClassInfoMultiConverter : IMultiValueConverter
         {
             var overlaySource = IAppHost.GetService<IProfileService>().Profile.ClassPlans[classPlan.OverlaySourceId];
             classPlan.Classes[subjectIndex].IsChangedClass =
-                overlaySource.Classes[subjectIndex].SubjectId == classPlan.Classes[subjectIndex].SubjectId;
+                overlaySource.Classes[subjectIndex].SubjectId != classPlan.Classes[subjectIndex].SubjectId;
 
         }
 
