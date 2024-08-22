@@ -194,48 +194,56 @@
                 <TabControl Grid.Row="1" HorizontalContentAlignment="Left">
                     <TabItem Header="概览">
                         <ScrollViewer>
-                            <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}"
-                                                                         FontFamily="{StaticResource HarmonyOsSans}"
-                                                                         FontWeight="Normal"
-                                                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                                                         HorizontalContentAlignment="Stretch"
-                                                                         IsSelectionEnabled="False"
-                                                                         ScrollViewer.CanContentScroll="True"
-                                                                         IsToolBarVisible="False"
-                                                                         Zoom="90"
-                                                                         Padding="0"
-                                                                         ScrollViewer.PanningMode="None"
-                                                                         ToolTipService.Placement="MousePoint">
-                                <mdxaml:MarkdownScrollViewer.Resources>
-                                    <Style TargetType="ScrollViewer"
-                                                           BasedOn="{StaticResource MaterialDesignScrollViewer}">
-                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="CanContentScroll" Value="True" />
-                                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-                                    </Style>
-                                    <Style TargetType="Hyperlink">
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Foreground"
-                                                                        Value="{DynamicResource PrimaryHueLightBrush}">
-                                                </Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Foreground"
-                                                                Value="{DynamicResource PrimaryHueMidBrush}" />
-                                        <Setter Property="ToolTipService.Placement" Value="Mouse" />
-                                    </Style>
-                                </mdxaml:MarkdownScrollViewer.Resources>
-                                <mdxaml:MarkdownScrollViewer.Style>
-                                    <Style TargetType="mdxaml:MarkdownScrollViewer">
-                                        <Style.Resources>
+                            <Grid>
+                                <mdxaml:MarkdownScrollViewer
+                                    Document="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}"
+                                    FontFamily="{StaticResource HarmonyOsSans}"
+                                    FontWeight="Normal"
+                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsSelectionEnabled="False"
+                                    ScrollViewer.CanContentScroll="True"
+                                    IsToolBarVisible="False"
+                                    Zoom="90"
+                                    Padding="0"
+                                    ScrollViewer.PanningMode="None"
+                                    ToolTipService.Placement="MousePoint">
+                                    <mdxaml:MarkdownScrollViewer.Resources>
+                                        <Style TargetType="ScrollViewer"
+                                               BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                            <Setter Property="CanContentScroll" Value="True" />
+                                            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                                        </Style>
+                                        <Style TargetType="Hyperlink">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Foreground"
+                                                            Value="{DynamicResource PrimaryHueLightBrush}">
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource PrimaryHueMidBrush}" />
+                                            <Setter Property="ToolTipService.Placement" Value="Mouse" />
+                                        </Style>
+                                    </mdxaml:MarkdownScrollViewer.Resources>
+                                    <mdxaml:MarkdownScrollViewer.Style>
+                                        <Style TargetType="mdxaml:MarkdownScrollViewer">
+                                            <Style.Resources>
 
-                                        </Style.Resources>
-                                    </Style>
-                                </mdxaml:MarkdownScrollViewer.Style>
-                            </mdxaml:MarkdownScrollViewer>
+                                            </Style.Resources>
+                                        </Style>
+                                    </mdxaml:MarkdownScrollViewer.Style>
+                                </mdxaml:MarkdownScrollViewer>
+                                <ProgressBar Visibility="{Binding ViewModel.IsLoadingDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                             VerticalAlignment="Top"
+                                             Height="3"
+                                             materialDesign:TransitionAssist.DisableTransitions="True"
+                                             IsIndeterminate="True"/>
+                            </Grid>
                         </ScrollViewer>
                     </TabItem>
                     <TabItem Header="错误信息">

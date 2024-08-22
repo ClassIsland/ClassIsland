@@ -108,7 +108,7 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 图标真实路径
     /// </summary>
-    public string RealIconPath { get; internal set; } = "";
+    public string RealIconPath { get; set; } = "";
 
     /// <summary>
     /// 插件加载时错误

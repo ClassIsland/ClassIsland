@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +27,8 @@ using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
+using Sentry;
+using WebSocketSharp;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Path = System.IO.Path;
@@ -44,6 +48,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
     public IPluginService PluginService { get; }
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
+
+    private CancellationTokenSource DocumentLoadingCancellationTokenSource { get; set; } = new();
 
     public PluginsSettingsPage(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService)
     {
@@ -69,14 +75,31 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
         var path = System.IO.Path.Combine(ViewModel.SelectedPluginInfo.PluginFolderPath,
             ViewModel.SelectedPluginInfo.Manifest.Readme);
-        if (!File.Exists(path))
+        var uri = new Uri(path, UriKind.RelativeOrAbsolute);
+
+        string document;
+        try
         {
-            ViewModel.ReadmeDocument = new FlowDocument();
-            return;
+            await DocumentLoadingCancellationTokenSource.CancelAsync();
+            DocumentLoadingCancellationTokenSource = new();
+            ViewModel.IsLoadingDocument = true;
+            document = uri.Scheme switch
+            {
+                "https" or "http" => await new HttpClient().GetStringAsync(uri, DocumentLoadingCancellationTokenSource.Token),
+                "file" => await File.ReadAllTextAsync(path, DocumentLoadingCancellationTokenSource.Token),
+                _ => ""
+            };
+        }
+        catch (Exception e)
+        {
+            document = $"> 无法加载文档：{e.Message}";
+        }
+        finally
+        {
+            ViewModel.IsLoadingDocument = false;
         }
 
-        var md = await File.ReadAllTextAsync(path);
-        ViewModel.ReadmeDocument = MarkdownConvertHelper.ConvertMarkdown(md);
+        ViewModel.ReadmeDocument = MarkdownConvertHelper.ConvertMarkdown(document);
     }
 
     private async void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
