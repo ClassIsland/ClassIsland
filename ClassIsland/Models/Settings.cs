@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -52,6 +53,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     {
         "explorer"
     };
+    private ObservableCollection<int> _multiWeekRotationOffset = [-1, -1, 0, 0, 0];
 
     private bool _hideOnMaxWindow = false;
     private double _opacity = 0.5;
@@ -247,6 +249,30 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_singleWeekStartTime)) return;
             _singleWeekStartTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 以 2022/4/18 为基准周的多周轮换周数。
+    /// </summary>
+    /// <remarks>
+    /// 第 2 位 - 双周轮换<br/>
+    /// 第 3 位 - 三周轮换<br/>
+    /// ……<br/>
+    /// <br/>
+    /// 0 - 基准周是单周<br/>
+    /// 1 - 基准周是双周<br/>
+    /// 2 - 基准周是 3/x 周<br/>
+    /// ……<br/>
+    /// </remarks>
+    public ObservableCollection<int> MultiWeekRotationOffset
+    {
+        get => _multiWeekRotationOffset;
+        set
+        {
+            if (value.Equals(_multiWeekRotationOffset)) return;
+            _multiWeekRotationOffset = value;
             OnPropertyChanged();
         }
     }

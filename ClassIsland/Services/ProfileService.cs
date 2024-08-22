@@ -236,25 +236,10 @@ public class ProfileService : IProfileService
         }
     }
 
-    public bool CheckClassPlan(ClassPlan plan)
-    {
-        if (plan.TimeRule.WeekDay != (int)DateTime.Now.DayOfWeek)
-        {
-            return false;
-        }
-
-        if (plan.TimeRule.WeekCountDiv == 0)
-            return true;
-
-        var ExactTimeService = App.GetService<IExactTimeService>();
-        var Settings = App.GetService<SettingsService>().Settings;
-
-        var dd = Math.Abs((ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date).TotalDays);
-        var dw = Math.Floor(dd / 7) + 1;
-        var w = (int)dw % plan.TimeRule.WeekCountDivTotal;
-        return (plan.TimeRule.WeekCountDiv == w ||
-                plan.TimeRule.WeekCountDiv == plan.TimeRule.WeekCountDivTotal && w == 0);
-    }
+    //[Obsolete]
+    //public bool CheckClassPlan(ClassPlan plan)
+    //{
+    //}
 
     public void ConvertToStdClassPlan()
     {

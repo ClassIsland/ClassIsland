@@ -88,7 +88,7 @@ public partial class WelcomeWindow : MyWindow
         {
             App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
         }
-        
+
         Close();
         if (ViewModel.RequiresRestarting)
         {

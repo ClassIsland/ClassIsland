@@ -110,7 +110,7 @@
         <!-- 时间节点编辑 -->
         <ScrollViewer x:Key="TimePointEditor" Width="332" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="16">
-                <TextBlock Text="Obslated."/>
+                <TextBlock Text="Obsolete."/>
             </StackPanel>
         </ScrollViewer>
 
@@ -323,6 +323,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="当前启用的课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
@@ -394,6 +395,33 @@
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
+                <StackPanel Grid.Row="2">
+                    <Separator Margin="0 16 0 4" />
+                    <controls1:IconText Kind="CalendarOutline" Text="多周轮换偏移" Margin="0 0 0 8" />
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            HorizontalAlignment="Left"
+                            Click="ButtonOpenWeekOffsetSettings_OnClick">
+                        <ci:IconText Kind="CalendarMultiple" Text="调整多周轮换偏移…"/>
+                    </Button>
+                </StackPanel>
+                <materialDesign:PopupEx Grid.Row="2"
+                                        AllowsTransparency="True"
+                                        StaysOpen="False"
+                                        Placement="Mouse"
+                                        IsOpen="{Binding ViewModel.IsWeekOffsetSettingsOpen}"
+                                        PopupAnimation="Fade">
+                    <Border Background="{DynamicResource MaterialDesignPaper}"
+                            Margin="8"
+                            Button.Click="ButtonWeekOffsetSettingsButtons_OnClick">
+                        <Border.Effect>
+                            <DropShadowEffect Direction="0"
+                                              ShadowDepth="0"
+                                              BlurRadius="8"
+                                              Opacity="0.5"/>
+                        </Border.Effect>
+                        <controls:WeekOffsetSettingsControl/>
+                    </Border>
+                </materialDesign:PopupEx>
             </Grid>
         </Grid>
 

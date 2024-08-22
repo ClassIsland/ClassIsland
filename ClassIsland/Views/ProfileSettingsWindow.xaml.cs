@@ -49,6 +49,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 
+    public IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
+
     public MainViewModel MainViewModel
     {
         get;
@@ -1021,5 +1023,28 @@ public partial class ProfileSettingsWindow : MyWindow
         details.Owner = this;
         details.ShowDialog();
     }
-    
+
+    private void MultiWeekRotation_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // LessonsService.RefreshMultiWeekRotation();
+    }
+
+    private void MultiWeekRotation_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        
+    }
+
+    private void ButtonOpenWeekOffsetSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsWeekOffsetSettingsOpen = true;
+    }
+
+    private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is not Button)
+        {
+            return;
+        }
+        ViewModel.IsWeekOffsetSettingsOpen = false;
+    }
 }
