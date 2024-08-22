@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json.Serialization;
+using System.Windows.Documents;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -15,6 +16,7 @@ public class PluginInfo() : ObservableRecipient
     private bool _isAvailableOnMarket = false;
     private PluginManifest _manifest = new();
     private bool _restartRequired = false;
+    private bool _isUpdateAvailable = false;
 
     /// <summary>
     /// 插件元数据
@@ -166,6 +168,21 @@ public class PluginInfo() : ObservableRecipient
         {
             if (value == _restartRequired) return;
             _restartRequired = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件是否有更新可用。
+    /// </summary>
+    [JsonIgnore]
+    public bool IsUpdateAvailable
+    {
+        get => _isUpdateAvailable;
+        set
+        {
+            if (value == _isUpdateAvailable) return;
+            _isUpdateAvailable = value;
             OnPropertyChanged();
         }
     }

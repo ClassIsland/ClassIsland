@@ -204,6 +204,10 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             BindDownloadTasks();
             await download.StartAsync(task.CancellationToken);
             item.RestartRequired = true;
+            if (MergedPlugins.TryGetValue(id, out var plugin))
+            {
+                plugin.RestartRequired = true;
+            }
             RestartRequested?.Invoke(this, EventArgs.Empty);
             Logger.LogInformation("插件 {} 下载完成。", id);
         }
@@ -252,13 +256,20 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             foreach (var plugin in index.Plugins)
             {
                 var id = plugin.Manifest.Id;
+                plugin.DownloadUrl = plugin.DownloadUrl.Replace("{root}", root);
                 if (MergedPlugins.ContainsKey(id) && MergedPlugins[id].IsLocal)
                 {
-                    MergedPlugins[id].IsAvailableOnMarket = true;
+                    var pluginLocal = MergedPlugins[id];
+                    pluginLocal.IsAvailableOnMarket = true;
+                    if (Version.TryParse(pluginLocal.Manifest.Version, out var versionLocal) &&
+                        Version.TryParse(plugin.Manifest.Version, out var versionRemote) &&
+                        versionRemote > versionLocal)
+                    {
+                        pluginLocal.IsUpdateAvailable = true;
+                    }
                     continue;
                 }
                 plugin.IsAvailableOnMarket = true;
-                plugin.DownloadUrl = plugin.DownloadUrl.Replace("{root}", root);
                 plugin.RealIconPath = plugin.RealIconPath.Replace("{root}", root);
                 plugin.Manifest.Readme = plugin.Manifest.Readme.Replace("{root}", root);
                 MergedPlugins[id] = plugin;

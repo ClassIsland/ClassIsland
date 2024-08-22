@@ -82,20 +82,6 @@
                             <Run Text=" "/>
                             <Run Text="{Binding Manifest.Author}"/>
                         </TextBlock>
-                        <!-- Market Operations -->
-                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
-                                   Margin="0 0 0 4">
-                            <WrapPanel.Visibility>
-                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
-                                    <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
-                                    <Binding Path="IsAvailableOnMarket"/>
-                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
-                                </MultiBinding>
-                            </WrapPanel.Visibility>
-                            <Button Click="ButtonInstallPlugin_OnClick">
-                                <ci:IconText Kind="MonitorDownload" Text="安装"/>
-                            </Button>
-                        </WrapPanel>
                         <!-- Local Operations -->
                         <WrapPanel Orientation="Horizontal" 
                                    Margin="0 0 0 4"
@@ -142,6 +128,34 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
+                        </WrapPanel>
+                        <!-- Market Operations -->
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                   Margin="0 0 0 4">
+                            <WrapPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                    <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
+                                    <Binding Path="IsAvailableOnMarket"/>
+                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
+                                </MultiBinding>
+                            </WrapPanel.Visibility>
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="MonitorDownload" Text="安装"/>
+                            </Button>
+                        </WrapPanel>
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                   Margin="0 0 0 4">
+                            <WrapPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                    <Binding Path="IsLocal" />
+                                    <Binding Path="IsUpdateAvailable" />
+                                    <Binding Path="IsAvailableOnMarket"/>
+                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
+                                </MultiBinding>
+                            </WrapPanel.Visibility>
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="Upload" Text="更新"/>
+                            </Button>
                         </WrapPanel>
                         <WrapPanel Orientation="Horizontal" Margin="0 0 0 4"
                                    Visibility="{Binding RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -553,6 +567,12 @@
                                                 </Style>
                                             </materialDesign:PackIcon.Style>
                                         </materialDesign:PackIcon>
+                                        <materialDesign:PackIcon ToolTip="更新可用。"
+                                                                 Width="20" Height="20"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="2 0 0 0"
+                                                                 Kind="Upload"/>
                                         <materialDesign:PackIcon ToolTip="此插件已安装。"
                                                                  Width="20" Height="20"
                                                                  VerticalAlignment="Center"
