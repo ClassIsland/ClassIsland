@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="ClassIsland.Controls.WeekOffsetSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             IsVisibleChanged="WeekOffsetSettingsControl_OnIsVisibleChanged">
+    <Grid
+         Margin="12"
+         DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:WeekOffsetSettingsControl}}">
+        <StackPanel>
+
+            <TextBlock Text="设置本周在多周轮换中的周数。" TextWrapping="Wrap" Margin="0 0 0 8" />
+            <TextBlock Text="单双周：" />
+            <ListBox
+                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                SelectedIndex="{Binding CurrentWeeks[2]}"
+                Tag="2">
+                <ListBoxItem Visibility="Collapsed" />
+                <ListBoxItem Content="单周" />
+                <ListBoxItem Content="双周" />
+            </ListBox>
+            <TextBlock Text="三周轮换：" />
+            <ListBox
+                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                SelectedIndex="{Binding CurrentWeeks[3]}"
+                Tag="3">
+                <ListBoxItem Visibility="Collapsed" />
+                <ListBoxItem Content="1/3周" />
+                <ListBoxItem Content="2/3周" />
+                <ListBoxItem Content="3/3周" />
+            </ListBox>
+            <TextBlock Text="四周轮换：" />
+            <ListBox
+                Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                SelectedIndex="{Binding CurrentWeeks[4]}"
+                Tag="4">
+                <ListBoxItem Visibility="Collapsed" />
+                <ListBoxItem Content="1/4周" />
+                <ListBoxItem Content="2/4周" />
+                <ListBoxItem Content="3/4周" />
+                <ListBoxItem Content="4/4周" />
+            </ListBox>
+            <WrapPanel Margin="0 6 0 0">
+                <Button HorizontalAlignment="Left" Click="ButtonFinish_OnClick">
+                    <ci:IconText Kind="Check" Text="应用" />
+                </Button>
+                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Click="ButtonClear_OnClick">
+                    <ci:IconText Kind="Refresh" Text="重置偏移"/>
+                </Button>
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -241,7 +241,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #region Gerneral
 
-    [Obsolete]
     public DateTime SingleWeekStartTime
     {
         get => _singleWeekStartTime;

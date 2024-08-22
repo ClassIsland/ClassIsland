@@ -396,38 +396,32 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <StackPanel Grid.Row="2">
-                    <Separator Margin="0 16 0 4"/>
-                    <controls1:IconText Kind="CalendarOutline" Text="多周轮换" Margin="0 0 0 8"/>
-                    <TextBlock Text="设置本周在多周轮换中的周数。" TextWrapping="Wrap" Margin="0 0 0 8"/>
-                    <TextBlock Text="单双周："/>
-                    <ListBox PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                             SelectedIndex="{Binding LessonsService.MultiWeekRotation[2]}"
-                             SelectionChanged="MultiWeekRotation_OnSelectionChanged" Tag="2"
-                             Loaded="MultiWeekRotation_OnLoaded">
-                        <ListBoxItem Visibility="Collapsed" />
-                        <ListBoxItem Content="单周" />
-                        <ListBoxItem Content="双周" />
-                    </ListBox>
-                    <TextBlock Text="三周轮换："/>
-                    <ListBox PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                             SelectedIndex="{Binding LessonsService.MultiWeekRotation[3]}"
-                             SelectionChanged="MultiWeekRotation_OnSelectionChanged" Tag="3">
-                        <ListBoxItem Visibility="Collapsed" />
-                        <ListBoxItem Content="1/3周" />
-                        <ListBoxItem Content="2/3周" />
-                        <ListBoxItem Content="3/3周" />
-                    </ListBox>
-                    <TextBlock Text="四周轮换："/>
-                    <ListBox PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                             SelectedIndex="{Binding LessonsService.MultiWeekRotation[4]}"
-                             SelectionChanged="MultiWeekRotation_OnSelectionChanged" Tag="4">
-                        <ListBoxItem Visibility="Collapsed" />
-                        <ListBoxItem Content="1/4周" />
-                        <ListBoxItem Content="2/4周" />
-                        <ListBoxItem Content="3/4周" />
-                        <ListBoxItem Content="4/4周" />
-                    </ListBox>
+                    <Separator Margin="0 16 0 4" />
+                    <controls1:IconText Kind="CalendarOutline" Text="多周轮换偏移" Margin="0 0 0 8" />
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            HorizontalAlignment="Left"
+                            Click="ButtonOpenWeekOffsetSettings_OnClick">
+                        <ci:IconText Kind="CalendarMultiple" Text="调整多周轮换偏移…"/>
+                    </Button>
                 </StackPanel>
+                <materialDesign:PopupEx Grid.Row="2"
+                                        AllowsTransparency="True"
+                                        StaysOpen="False"
+                                        Placement="Mouse"
+                                        IsOpen="{Binding ViewModel.IsWeekOffsetSettingsOpen}"
+                                        PopupAnimation="Fade">
+                    <Border Background="{DynamicResource MaterialDesignPaper}"
+                            Margin="8"
+                            Button.Click="ButtonWeekOffsetSettingsButtons_OnClick">
+                        <Border.Effect>
+                            <DropShadowEffect Direction="0"
+                                              ShadowDepth="0"
+                                              BlurRadius="8"
+                                              Opacity="0.5"/>
+                        </Border.Effect>
+                        <controls:WeekOffsetSettingsControl/>
+                    </Border>
+                </materialDesign:PopupEx>
             </Grid>
         </Grid>
 

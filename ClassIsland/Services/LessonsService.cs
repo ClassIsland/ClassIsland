@@ -468,11 +468,15 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     public void RefreshMultiWeekRotation()
     {
-        var dd = (ExactTimeService.GetCurrentLocalDateTime().Date - new DateTime(2022, 4, 18)).TotalDays;
-        int dw = (int)Math.Floor(dd / 7);
+        var deltaDays = (ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date).TotalDays;
+        var deltaWeeks = (int)Math.Floor(deltaDays / 7);
         for (var i = 2; i <= 4; i++)
         {
-            int w = (dw - Settings.MultiWeekRotationOffset[i] + i) % i;
+            var w = (deltaWeeks - Settings.MultiWeekRotationOffset[i] + i) % i;
+            if (w < 0)
+            {
+                w += i;
+            }
             MultiWeekRotation[i] = w + 1;
         }
     }

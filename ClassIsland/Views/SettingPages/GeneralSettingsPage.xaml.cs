@@ -18,6 +18,7 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
+using ClassIsland.ViewModels.SettingsPages;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -34,6 +35,8 @@ public partial class GeneralSettingsPage : SettingsPageBase
     public IExactTimeService ExactTimeService { get; }
 
     public MiniInfoProviderHostService MiniInfoProviderHostService { get; }
+
+    public GeneralSettingsViewModel ViewModel { get; } = new();
 
     public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService)
     {
@@ -53,5 +56,19 @@ public partial class GeneralSettingsPage : SettingsPageBase
     private void ButtonCloseMigrationTip_OnClick(object sender, RoutedEventArgs e)
     {
         SettingsService.Settings.ShowComponentsMigrateTip = false;
+    }
+
+    private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is not Button)
+        {
+            return;
+        }
+        ViewModel.IsWeekOffsetSettingsOpen = false;
+    }
+
+    private void ButtonWeekOffsetSettingsOpen_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsWeekOffsetSettingsOpen = true;
     }
 }

@@ -32,6 +32,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private ClassPlan _selectedClassPlan = new();
     private bool _isUpdatingClassInfoIndexInBackend = false;
     private bool _isClassPlanEditComplete = false;
+    private bool _isWeekOffsetSettingsOpen = false;
 
     public object DrawerContent
     {
@@ -265,6 +266,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (value == _isClassPlanEditComplete) return;
             _isClassPlanEditComplete = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsWeekOffsetSettingsOpen
+    {
+        get => _isWeekOffsetSettingsOpen;
+        set
+        {
+            if (value == _isWeekOffsetSettingsOpen) return;
+            _isWeekOffsetSettingsOpen = value;
             OnPropertyChanged();
         }
     }

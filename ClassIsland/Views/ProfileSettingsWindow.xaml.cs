@@ -1031,13 +1031,20 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void MultiWeekRotation_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        var settings = App.GetService<SettingsService>().Settings;
-        int i = int.Parse(((ListBox)sender).Tag.ToString()!);
+        
+    }
 
-        var dd = (ExactTimeService.GetCurrentLocalDateTime().Date - new DateTime(2022, 4, 18)).TotalDays;
-        while (dd < i * 7) dd += i * 7;
-        int dw = (int)Math.Floor(dd / 7);
-        int w = (dw - (LessonsService.MultiWeekRotation[i] - 1) + i) % i;
-        settings.MultiWeekRotationOffset[i] = w;
+    private void ButtonOpenWeekOffsetSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsWeekOffsetSettingsOpen = true;
+    }
+
+    private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is not Button)
+        {
+            return;
+        }
+        ViewModel.IsWeekOffsetSettingsOpen = false;
     }
 }
