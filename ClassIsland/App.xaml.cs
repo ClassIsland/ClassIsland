@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -170,6 +171,10 @@ public partial class App : AppBase, IAppHost
         }
 
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
+
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-Hans-CN");
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-Hans-CN");
+        FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag)));
 
         // 检测Mutex
         if (!IsMutexCreateNew)
