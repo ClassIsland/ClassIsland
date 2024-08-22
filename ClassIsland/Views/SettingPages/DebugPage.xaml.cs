@@ -28,6 +28,7 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Services;
 using ClassIsland.Shared.Interfaces;
+using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using MessageBox = System.Windows.MessageBox;
@@ -48,7 +49,12 @@ public partial class DebugPage : SettingsPageBase
     public ConsoleService ConsoleService { get; }
 
     private ILessonsService LessonsService { get; }
+
     public IProfileAnalyzeService ProfileAnalyzeService { get; }
+
+    private IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
+
+    public DebugPageViewModel ViewModel { get; } = new();
 
     public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService)
     {
@@ -76,16 +82,6 @@ public partial class DebugPage : SettingsPageBase
         throw new Exception("Crash test.");
     }
 
-    private void ButtonDebugToastText_OnClick(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void MenuItemDebugSetTime_OnClick(object sender, RoutedEventArgs e)
-    {
-
-    }
-
     private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)
     {
         LessonsService.DebugTriggerOnBreakingTime();
@@ -96,54 +92,27 @@ public partial class DebugPage : SettingsPageBase
         LessonsService.DebugTriggerOnClass();
     }
 
-    private void MenuItemTestCommonDialog_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonReset_OnClick(object sender, RoutedEventArgs e)
     {
-        var dialog = new CommonDialog()
-        {
-            DialogContent = "Hello world!",
-            DialogIcon = new Image()
-            {
-                Source = new BitmapImage(new Uri("/Assets/HoYoStickers/光辉矢愿_小喇叭.png", UriKind.Relative)),
-                Width = 63,
-                Height = 63
-            },
-            Actions = new ObservableCollection<DialogAction>()
-            {
-                new DialogAction()
-                {
-                    PackIconKind = PackIconKind.Check,
-                    Name = "test"
-                },
-                new DialogAction()
-                {
-                    PackIconKind = PackIconKind.Check,
-                    Name = "OK",
-                    IsPrimary = true
-                }
-            }
-        };
-        dialog.ShowDialog();
-        TaskDialog.ShowDialog(new WindowInteropHelper(Window.GetWindow(this)!).Handle, new TaskDialogPage()
-        {
-            Heading = "测试TaskDialog",
-            EnableLinks = true,
-            SizeToContent = false,
-            Icon = TaskDialogIcon.Information,
-            Expander = new TaskDialogExpander(new StackTrace().ToString()),
-            Buttons = new TaskDialogButtonCollection
-            {
-                new TaskDialogButton("复制")
-            },
-            Footnote = "123123123<a href=\"https://cn.bing.com\">test link</a>",
-            Text = "test task dialog."
-        });
-        MessageBox.Show(Window.GetWindow(this)!, dialog.ExecutedActionIndex.ToString(), "ExecutedActionIndex", MessageBoxButton.OK,
-            MessageBoxImage.Information, MessageBoxResult.OK);
+        SettingsService.Settings.TimeOffsetSeconds = 0;
+        ViewModel.IsTargetDateTimeLoaded = false;
+        ViewModel.TargetDate = ExactTimeService.GetCurrentLocalDateTime().Date;
+        ViewModel.TargetTime = ExactTimeService.GetCurrentLocalDateTime();
+        ViewModel.IsTargetDateTimeLoaded = true;
     }
 
-    private async void MenuItemTestPluginIndexPack_OnClick(object sender, RoutedEventArgs e)
+    private void TargetDateTime_OnLoaded(object sender, RoutedEventArgs e)
     {
-        
+        ViewModel.TargetDate = ExactTimeService.GetCurrentLocalDateTime().Date;
+        ViewModel.TargetTime = ExactTimeService.GetCurrentLocalDateTime();
+        ViewModel.IsTargetDateTimeLoaded = true;
+    }
+
+    private void TargetDateTime_OnChanged(object sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.IsTargetDateTimeLoaded) return;
+        SettingsService.Settings.TimeOffsetSeconds = Math.Round(
+            (ViewModel.TargetDate + (ViewModel.TargetTime - ViewModel.TargetTime.Date) - DateTime.Now).TotalSeconds);
     }
 
     private void MenuItemStartMainTimer_OnClick(object sender, RoutedEventArgs e)
