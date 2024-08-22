@@ -89,13 +89,6 @@ public partial class WelcomeWindow : MyWindow
             App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
         }
 
-        var dd = (ViewModel.SingleWeekStartTime.Date - new DateTime(2022, 4, 18)).TotalDays;
-        int dw = (int)Math.Floor(dd / 7);
-        for (var i = 2; i <= 4; i++)
-        {
-            SettingsService.Settings.MultiWeekRotationOffset[i] = dw % i;
-        }
-
         Close();
         if (ViewModel.RequiresRestarting)
         {
