@@ -142,12 +142,12 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
         var mirrors = SettingsService.Settings.OfficialIndexMirrors.Count == 0
             ? FallbackMirrors
             : SettingsService.Settings.OfficialIndexMirrors;
-        var repo = "{root}/ClassIsland/PluginIndex/releases/download/latest/index.zip".Replace("{root}", mirrors[SettingsService.Settings.OfficialSelectedMirror]);
+        var repo = "{root}/ClassIsland/PluginIndex/releases/download/latest/index.zip".Replace("{root}", mirrors[SettingsService.Settings.OfficialSelectedMirror ?? "github"]);
         return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo()
         {
             Id = DefaultPluginIndexKey,
             Url = repo,
-            SelectedMirror = SettingsService.Settings.OfficialSelectedMirror,
+            SelectedMirror = SettingsService.Settings.OfficialSelectedMirror ?? "github",
             Mirrors = SettingsService.Settings.OfficialIndexMirrors
         });
     }
