@@ -187,6 +187,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _mainWindowBodyFontSize = 16;
     private double _mainWindowEmphasizedFontSize = 18;
     private double _mainWindowLargeFontSize = 20;
+    private bool _isErrorLoadingRawInput = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1515,6 +1516,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isCompatibleWindowTransparentEnabled) return;
             _isCompatibleWindowTransparentEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsErrorLoadingRawInput
+    {
+        get => _isErrorLoadingRawInput;
+        set
+        {
+            if (value == _isErrorLoadingRawInput) return;
+            _isErrorLoadingRawInput = value;
             OnPropertyChanged();
         }
     }

@@ -70,4 +70,9 @@ public partial class WindowSettingsPage : SettingsPageBase
         if (DateTime.Now.Second % 2 == 0) t = t.Replace(":", " ");
         TaskbarTime.Text = t;
     }
+
+    private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
+    {
+        RequestRestart();
+    }
 }

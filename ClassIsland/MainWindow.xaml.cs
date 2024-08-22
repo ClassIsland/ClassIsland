@@ -486,15 +486,16 @@ public partial class MainWindow : Window
 
         if (SettingsService.Settings.UseRawInput)
         {
-            var handle = new WindowInteropHelper(this).Handle;
-            RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
-                RawInputDeviceFlags.InputSink, handle);
-            RawInputDevice.RegisterDevice(HidUsageAndPage.TouchScreen,
-                RawInputDeviceFlags.InputSink, handle);
-
-            RawInputUpdateStopWatch.Start();
-            var hWndSource = HwndSource.FromHwnd(handle);
-            hWndSource?.AddHook(ProcWnd);
+            try
+            {
+                InitializeRawInputHandler();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "无法初始化 RawInput，已回退到兼容模式。");
+                LessonsService.PreMainTimerTicked += ProcessMousePos;
+                ViewModel.Settings.IsErrorLoadingRawInput = true;
+            }
         }
         else
         {
@@ -519,6 +520,19 @@ public partial class MainWindow : Window
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+    }
+
+    private void InitializeRawInputHandler()
+    {
+        var handle = new WindowInteropHelper(this).Handle;
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
+            RawInputDeviceFlags.InputSink, handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.TouchScreen,
+            RawInputDeviceFlags.InputSink, handle);
+
+        RawInputUpdateStopWatch.Start();
+        var hWndSource = HwndSource.FromHwnd(handle);
+        hWndSource?.AddHook(ProcWnd);
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
