@@ -33,7 +33,7 @@ public class IpcClient
     /// <summary>
     /// 连接到 ClassIsland。
     /// </summary>
-    public async void Connect()
+    public async Task Connect()
     {
         Provider.StartServer();
         PeerProxy = await Provider.GetAndConnectToPeerAsync(PipeName);

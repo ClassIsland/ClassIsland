@@ -32,7 +32,6 @@ using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
 using ControlzEx.Windows.Shell;
-using GrpcDotNetNamedPipes;
 using H.NotifyIcon;
 
 using Microsoft.Extensions.Logging;

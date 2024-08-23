@@ -15,26 +15,11 @@
   <ItemGroup>
     <PackageReference Include="dotnetCampus.Ipc" Version="2.0.0-alpha203-HotFix01" />
     <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha200-HotFix01" />
-    <PackageReference Include="GrpcDotNetNamedPipes" Version="3.0.0" />
-    <PackageReference Include="Grpc" Version="2.46.6" />
-    <PackageReference Include="Grpc.Tools" Version="2.62.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>	  
   </ItemGroup>
 
   <ItemGroup>
     <!--<ProjectReference Include="..\analyzers\dotnetCampus.Ipc.SourceGenerators\dotnetCampus.Ipc.SourceGenerators.csproj" />-->
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="Protobuf\Service\*.proto" />
-    <Protobuf Include="Protobuf\Server\*.proto" />
-    <Protobuf Include="Protobuf\Client\*.proto" />
-    <Protobuf Include="Protobuf\Command\*.proto" />
-    <Protobuf Include="Protobuf\Enum\*.proto" />
-    <Protobuf Include="Protobuf\Management\*.proto" />
   </ItemGroup>
 
   <Import Project="..\GeneratePackage.props" />

@@ -1,7 +1,0 @@
-syntax = "proto3";
-package ClassIsland.Shared.IPC.Protobuf.Server;
-option csharp_namespace = "ClassIsland.Shared.IPC.Protobuf.Server";
-
-message EventDeliverScReq {
-
-}

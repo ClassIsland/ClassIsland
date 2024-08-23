@@ -28,7 +28,7 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         _ipcClient = new IpcClient();
-        _ipcClient.Connect();
+        _ = _ipcClient.Connect();
 
         InitializeComponent();
         DataContext = this;

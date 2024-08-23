@@ -56,10 +56,7 @@ using System.Xml.Linq;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Models.Ruleset;
-using ClassIsland.Services.Grpc;
 using ClassIsland.Shared.IPC;
-using ClassIsland.Shared.IPC.Protobuf.Client;
-using GrpcDotNetNamedPipes;
 using Sentry;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Models.Rules;
@@ -280,7 +277,6 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILessonsService, LessonsService>();
                 services.AddSingleton<IUriNavigationService, UriNavigationService>();
                 services.AddHostedService<MemoryWatchDogService>();
-                services.AddSingleton(new NamedPipeServer(GrpcIpcClient.PipeName));
                 services.AddSingleton<IPluginService, PluginService>();
                 services.AddSingleton<IPluginMarketService, PluginMarketService>();
                 services.AddSingleton<IRulesetService, RulesetService>();
@@ -377,8 +373,6 @@ public partial class App : AppBase, IAppHost
                     builder.SetMinimumLevel(LogLevel.Trace);
 #endif
                 });
-                // Grpc
-                services.AddGrpcService<RemoteUriNavigationService>();
                 // AttachedSettings
                 services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
@@ -520,9 +514,7 @@ public partial class App : AppBase, IAppHost
         uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/zh-cn/latest/app/")));
         uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
 
-        IAppHost.Host.BindGrpcServices();
         GetService<IIpcService>().IpcProvider.CreateIpcJoint<IFooService>(new FooService());
-        GetService<NamedPipeServer>().Start();
         try
         {
             await App.GetService<FileFolderService>().ProcessAutoBackupAsync();
@@ -622,7 +614,6 @@ public partial class App : AppBase, IAppHost
             try
             {
                 IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
-                IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
                 IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
                 ReleaseLock();
                 var args = new List<string> {"-m", "-udt", Environment.ProcessPath!.Replace(".dll", ".exe")};
@@ -745,7 +736,6 @@ public partial class App : AppBase, IAppHost
         {
             AppStopping?.Invoke(this, EventArgs.Empty);
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
-            IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
             IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
