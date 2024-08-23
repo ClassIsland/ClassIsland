@@ -13,7 +13,7 @@ using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddr
 /// </summary>
 public class AttachableObjectNode : ObservableRecipient
 {
-    public AttachableSettingsObject Object { get; set; } = new();
+    public AttachableSettingsObject? Object { get; set; } = new();
 
     public AttachedSettingsTargets Target { get; set; } = AttachedSettingsTargets.None;
 

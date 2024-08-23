@@ -158,19 +158,17 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         return mermaid.ToString();
     }
 
-    public void Walk(AttachableObjectNode node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit=false)
+    public void Walk(AttachableObjectNode? node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit=false)
     {
+        if (node == null)
+        {
+            return;
+        }
         if (!foundNodes.Contains(node) && !isInit)
         {
             foundNodes.Add(node);
         }
-        try
-        {
-            if (node.Target == AttachedSettingsTargets.Subject && !isInit)
-            {
-                return;
-            }
-        } catch (NullReferenceException)
+        if (node.Target == AttachedSettingsTargets.Subject && !isInit)
         {
             return;
         }
