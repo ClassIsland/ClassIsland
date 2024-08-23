@@ -106,7 +106,7 @@ static void ProcessUriNavigation()
 {
     try
     {
-        var client = new IpcClient();
+        var client = new GrpcIpcClient();
         var uriSc =
             new ClassIsland.Shared.IPC.Protobuf.Service.UriNavigationService.UriNavigationServiceClient(
                 client.Channel);

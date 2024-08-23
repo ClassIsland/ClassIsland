@@ -17,6 +17,8 @@ using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
 using System.Windows.Input;
+using ClassIsland.Shared.IPC.Abstractions.Services;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
 
 namespace ClassIsland.Services;
@@ -47,14 +49,17 @@ public class ProfileService : IProfileService
     private ILogger<ProfileService> Logger { get; }
 
     private IManagementService ManagementService { get; }
+    public IIpcService IpcService { get; }
 
     private bool _isProfileLoaded = false;
 
-    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService)
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
     {
         Logger = logger;
         ManagementService = managementService;
+        IpcService = ipcService;
         SettingsService = settingsService;
+        IpcService.IpcProvider.CreateIpcJoint<IPublicProfileService>(this);
         if (!Directory.Exists("./Profiles"))
         {
             Directory.CreateDirectory("./Profiles");

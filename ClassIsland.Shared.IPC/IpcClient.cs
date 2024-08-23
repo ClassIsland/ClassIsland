@@ -1,21 +1,41 @@
-using Grpc.Core;
-using GrpcDotNetNamedPipes;
+﻿using dotnetCampus.Ipc.Pipes;
 
 namespace ClassIsland.Shared.IPC;
 
+/// <summary>
+/// 跨进程通信客户端，用于在其他进程中与 ClassIsland 本体进行通信。
+/// </summary>
 public class IpcClient
 {
-    public static string PipeName { get; } = "ClassIsland.IPC";
+    /// <summary>
+    /// IPC 服务端管道名称
+    /// </summary>
+    public static string PipeName { get; } = "ClassIsland.IPC.v2.Server";
 
-    public NamedPipeChannel Channel;
+    /// <summary>
+    /// IPC 提供方。
+    /// </summary>
+    public IpcProvider Provider { get; } = new IpcProvider();
 
-    public IpcClient() : this(".", PipeName)
+    /// <summary>
+    /// 远程的对方
+    /// </summary>
+    public PeerProxy? PeerProxy { get; private set; }
+    
+    /// <summary>
+    /// 初始化一个 <see cref="IpcClient"/> 对象。
+    /// </summary>
+    public IpcClient()
     {
-        
+                
     }
 
-    public IpcClient(string serverName, string pipeName)
+    /// <summary>
+    /// 连接到 ClassIsland。
+    /// </summary>
+    public async void Connect()
     {
-        Channel = new NamedPipeChannel(serverName, pipeName);
+        Provider.StartServer();
+        PeerProxy = await Provider.GetAndConnectToPeerAsync(PipeName);
     }
 }

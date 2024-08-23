@@ -64,6 +64,8 @@ using Sentry;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Models.Rules;
 using ClassIsland.Controls.RuleSettingsControls;
+using ClassIsland.Shared.IPC.Abstractions.Services;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 
 namespace ClassIsland;
 /// <summary>
@@ -278,7 +280,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILessonsService, LessonsService>();
                 services.AddSingleton<IUriNavigationService, UriNavigationService>();
                 services.AddHostedService<MemoryWatchDogService>();
-                services.AddSingleton(new NamedPipeServer(IpcClient.PipeName));
+                services.AddSingleton(new NamedPipeServer(GrpcIpcClient.PipeName));
                 services.AddSingleton<IPluginService, PluginService>();
                 services.AddSingleton<IPluginMarketService, PluginMarketService>();
                 services.AddSingleton<IRulesetService, RulesetService>();
@@ -312,6 +314,7 @@ public partial class App : AppBase, IAppHost
                 }));
                 services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
+                services.AddSingleton<IIpcService, IpcService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
@@ -497,6 +500,7 @@ public partial class App : AppBase, IAppHost
         mw.StartupCompleted += (o, args) =>
         {
             AppStarted?.Invoke(this, EventArgs.Empty);
+            GetService<IIpcService>().IpcProvider.StartServer();
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);
@@ -517,6 +521,7 @@ public partial class App : AppBase, IAppHost
         uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
 
         IAppHost.Host.BindGrpcServices();
+        GetService<IIpcService>().IpcProvider.CreateIpcJoint<IFooService>(new FooService());
         GetService<NamedPipeServer>().Start();
         try
         {

@@ -7,8 +7,10 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
 using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.IPC.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Microsoft.Extensions.Logging;
 using Sentry;
 
@@ -174,12 +176,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private IExactTimeService ExactTimeService { get; }
 
     public IRulesetService RulesetService { get; }
+    public IIpcService IpcService { get; }
 
     private Profile Profile => ProfileService.Profile;
 
     private Settings Settings => SettingsService.Settings;
 
-    public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService)
+    public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService, IIpcService ipcService)
     {
         MainTimer.Tick += MainTimerOnTick;
         SettingsService = settingsService;
@@ -187,7 +190,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
         Logger = logger;
         ExactTimeService = exactTimeService;
         RulesetService = rulesetService;
+        IpcService = ipcService;
 
+        IpcService.IpcProvider.CreateIpcJoint<IPublicLessonsService>(this);
         RulesetService.RegisterRuleHandler("classisland.lessons.timeState", TimeStateHandler);
         RulesetService.RegisterRuleHandler("classisland.lessons.currentSubject", CurrentSubjectHandler);
         CurrentTimeStateChanged += (sender, args) => RulesetService.NotifyStatusChanged();

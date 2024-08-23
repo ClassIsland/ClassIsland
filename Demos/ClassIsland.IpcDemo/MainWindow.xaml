@@ -1,0 +1,34 @@
+﻿<Window x:Class="ClassIsland.IpcDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.IpcDemo"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance local:MainWindow}"
+        Title="ClassIsland.IpcDemo" Height="450" Width="800">
+    <TabControl>
+        <TabItem Header="Uri 导航">
+            <StackPanel Margin="8">
+                <Label Content="Uri"/>
+                <TextBox Text="{Binding ViewModel.Uri}"/>
+                <Button HorizontalAlignment="Left"
+                        Content="导航"
+                        Click="ButtonNavigate_OnClick"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="课程服务">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" HorizontalAlignment="Right"
+                        Content="刷新"
+                        Click="ButtonRefreshLessonInfos_OnClick"/>
+                <TextBox  Grid.Row="1" Text="{Binding ViewModel.LessonInfos}"
+                          IsReadOnly="True"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>
