@@ -602,8 +602,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        //MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
-        ProfileService.Profile.TempClassPlanSetupTime = DateTime.Now;
+        //MainViewModel.TemporaryClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
+        ProfileService.Profile.TempClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
     }
 
     private void TabControlSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1039,11 +1039,5 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         ViewModel.IsWeekOffsetSettingsOpen = false;
-    }
-
-    private void ExpireDatePicker_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-    {
-        (sender as DatePicker)?.BlackoutDates.AddDatesInPast();
-
     }
 }
