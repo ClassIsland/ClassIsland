@@ -282,7 +282,7 @@ public class ProfileService : IProfileService
 
             dayOffset = Math.Max(finalOffset, dayOffset);
         }
-        expireTime ??= DateTime.Now + TimeSpan.FromDays(dayOffset);
+        expireTime ??= App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date + TimeSpan.FromDays(dayOffset);
 
         Profile.TempClassPlanGroupExpireTime = expireTime.Value;
         Profile.TempClassPlanGroupId = key;
