@@ -165,10 +165,10 @@ public partial class App : AppBase, IAppHost
         System.Windows.Forms.Application.EnableVisualStyles();
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
-        if (IsAssetsTrimmed())
-        {
-            Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
-        }
+        //if (IsAssetsTrimmed())
+        //{
+        //    Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
+        //}
 
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
 
