@@ -4,21 +4,21 @@
 
 ## 插件系统
 
-![1722823221695](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1722823221695.png)
+![1722823221695](https://github.com/user-attachments/assets/7464a90d-ef66-47e1-8083-3edbdea603aa)
 
 您可以通过插件扩展 ClassIsland 的功能，比如获取新的组件、提醒提供方等等。您可以在[插件市场](classisland://app/settings/classisland.plugins)浏览插件。如果您对开发 ClassIsland 插件感兴趣，不妨看看[开发文档](https://docs.classisland.tech/zh-cn/latest/dev)来了解如何开发插件。
 
 ## 规则集
 
-![1723953554739](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953554739.png)
+![1723953554739](https://github.com/user-attachments/assets/6491fc26-202d-4d0e-a91a-2dbd7d0f4cf4)
 
 目前 ClassIsland 支持通过【规则集】功能，更详细地设定规则，并支持插件注册自定义的规则。
 
 ## 附加设置分析
 
-![1723953043655](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953043655.png)
+![1723953043655](https://github.com/user-attachments/assets/ae1985e0-1997-4a1d-ba4a-928579eebb26)
 
-![1723953105695](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953105695.png)
+![1723953105695](https://github.com/user-attachments/assets/377341c2-9379-413e-a766-cc4da72f7b74)
 
 目前档案编辑器支持对各个节点的附加设置覆盖/继承情况进行分析，并支持查看某一课表中各个时间点的附加设置启用情况。
 
@@ -44,7 +44,7 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 [(#136)](https://github.com/ClassIsland/ClassIsland/issues/136)
 
-![1721193302305](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1721193302305.png)
+![1721193302305](https://github.com/user-attachments/assets/400e3aa8-4a97-456a-9a1e-e45496eefca4)
 
 ## Url 导航
 
@@ -54,7 +54,7 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ## 组件
 
-![1718443026319](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1718443026319.png)
+![1718443026319](https://github.com/user-attachments/assets/a7b1a888-33a5-4163-9ae9-b23726c9eca0)
 
 新增的【组件】功能目前取代了原有的【快速信息】功能。您可以在主界面上任意排列、添加或删除组件。
 
@@ -62,7 +62,7 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ## 设置窗口更新
 
-![1718443093077](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1718443093077.png)
+![1718443093077](https://github.com/user-attachments/assets/9cdf6e9a-0c47-42d6-b76b-a4789f2136e1)
 
 应用设置窗口目前经过了重构，并且加入了导航动画。此外，在重构设置界面之后，应用的启动速度也得到了一定的提升。
 
