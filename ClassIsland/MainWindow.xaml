@@ -603,6 +603,7 @@
                                     <DataTemplate>
                                         <Grid>
                                             <controls:ComponentPresenter Settings="{Binding}"
+                                                                         IsOnMainWindow="True"
                                                                          HideOnRule="{Binding HideOnRule, Mode=OneWay}"
                                                                          HidingRules="{Binding HidingRules, Mode=OneWay}"
                                                                          Margin="6 0" />

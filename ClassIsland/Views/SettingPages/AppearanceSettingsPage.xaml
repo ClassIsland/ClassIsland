@@ -465,6 +465,22 @@
                     </Grid>
                 </Expander>
             </materialDesign:Card>
+            <!-- 字体颜色 -->
+            <controls1:SettingsCard IconGlyph="FormatColorFill"
+                                    Header="字体颜色"
+                                    Description="调整字体颜色，将覆盖主题默认值。"
+                                    Margin="0 0 0 6">
+                <controls1:SettingsCard.Switcher>
+                    <StackPanel Orientation="Horizontal">
+                        <controls1:ColorPicker VerticalAlignment="Center"
+                                        Margin="0 0 6 0"
+                                        Color="{Binding SettingsService.Settings.CustomForegroundColor, Mode=TwoWay}"
+                                        Visibility="{Binding SettingsService.Settings.IsCustomForegroundColorEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <ToggleButton VerticalAlignment="Center"
+                                      IsChecked="{Binding SettingsService.Settings.IsCustomForegroundColorEnabled}" />
+                    </StackPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
             <!-- 字体预览 -->
             <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                              FontWeight="{Binding SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"

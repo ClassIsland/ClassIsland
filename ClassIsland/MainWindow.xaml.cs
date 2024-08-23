@@ -759,6 +759,23 @@ public partial class MainWindow : Window
             SettingsService.Settings.MainWindowEmphasizedFontSize;
         ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
             SettingsService.Settings.MainWindowLargeFontSize;
+
+        if (ViewModel.Settings.IsCustomForegroundColorEnabled)
+        {
+            var brush = new SolidColorBrush(ViewModel.Settings.CustomForegroundColor);
+            ResourceLoaderBorder.SetValue(ForegroundProperty, brush);
+            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, brush);
+            ResourceLoaderBorder.Resources["MaterialDesignBody"] = brush;
+        }
+        else
+        {
+            if (ResourceLoaderBorder.Resources.Contains("MaterialDesignBody"))
+            {
+                ResourceLoaderBorder.Resources.Remove("MaterialDesignBody");
+            }
+            ResourceLoaderBorder.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, DependencyProperty.UnsetValue);
+        }
     }
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)

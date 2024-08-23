@@ -190,6 +190,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _mainWindowEmphasizedFontSize = 18;
     private double _mainWindowLargeFontSize = 20;
     private bool _isErrorLoadingRawInput = false;
+    private bool _isCustomForegroundColorEnabled = false;
+    private Color _customForegroundColor = Colors.DodgerBlue;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -922,6 +924,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_mainWindowLargeFontSize)) return;
             _mainWindowLargeFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCustomForegroundColorEnabled
+    {
+        get => _isCustomForegroundColorEnabled;
+        set
+        {
+            if (value == _isCustomForegroundColorEnabled) return;
+            _isCustomForegroundColorEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Color CustomForegroundColor
+    {
+        get => _customForegroundColor;
+        set
+        {
+            if (value.Equals(_customForegroundColor)) return;
+            _customForegroundColor = value;
             OnPropertyChanged();
         }
     }
