@@ -69,11 +69,6 @@ public partial class MainWindow : Window
 
     private Storyboard NotificationProgressBar { get; set; } = new Storyboard();
 
-    private HelpsWindow HelpsWindow
-    {
-        get;
-    }
-
     private SettingsService SettingsService
     {
         get;
@@ -176,7 +171,6 @@ public partial class MainWindow : Window
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel = new MainViewModel();
-        HelpsWindow = App.GetService<HelpsWindow>();
         //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
@@ -964,27 +958,7 @@ public partial class MainWindow : Window
 
     private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenHelpsWindow();
-    }
-
-    public void OpenHelpsWindow()
-    {
-        SentrySdk.Metrics.Increment("views.HelpWindow.open");
-        if (AppBase.Current.IsAssetsTrimmed())
-        {
-            UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/"));
-            return;
-        }
-        if (HelpsWindow.ViewModel.IsOpened)
-        {
-            HelpsWindow.WindowState = HelpsWindow.WindowState == WindowState.Minimized ? WindowState.Normal : HelpsWindow.WindowState;
-            HelpsWindow.Activate();
-        }
-        else
-        {
-            HelpsWindow.ViewModel.IsOpened = true;
-            HelpsWindow.Show();
-        }
+        UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/zh-cn/latest/app/"));
     }
 
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)

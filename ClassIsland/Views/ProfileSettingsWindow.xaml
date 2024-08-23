@@ -2126,7 +2126,8 @@
                                 <materialDesign:Chip
                                     ToolTip="查看档案编辑帮助。"
                                     Icon="{materialDesign:PackIcon Help}"
-                                    Click="ButtonHelp_OnClick"
+                                    Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                    CommandParameter="https://docs.classisland.tech/zh-cn/latest/app/profile-settings-page/"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
                                     <TextBlock>
                                         <Run Text="帮助"/>

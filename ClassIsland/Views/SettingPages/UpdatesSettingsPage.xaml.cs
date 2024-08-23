@@ -164,9 +164,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private void ButtonChangelogs_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<MainWindow>().OpenHelpsWindow();
-        App.GetService<HelpsWindow>().InitDocumentName = "新增功能";
-        App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "新增功能";
+        // TODO: 显示新版 CHANGELOG
     }
 
     private async void MenuItemTestUpdateMirrors_OnClick(object sender, RoutedEventArgs e)

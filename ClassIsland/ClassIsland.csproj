@@ -22,7 +22,6 @@
     </PropertyGroup>
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
-        <None Remove="Assets\Documents\image\Welcome\1694925761903.png" />
         <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">

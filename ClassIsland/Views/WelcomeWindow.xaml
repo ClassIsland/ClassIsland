@@ -530,12 +530,6 @@
                                                                             CommandParameter="https://docs.classisland.tech/zh-cn/latest/">
                                                                         <commands:IconText Kind="Internet" Text="在线阅读…"/>
                                                                     </Button>
-                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                                                            CommandParameter="classisland://app/helps/">
-                                                                        <commands:IconText Kind="FileDocumentOutline" Text="在应用内阅读…"/>
-                                                                    </Button>
-
                                                                 </WrapPanel>
                                                             </controls1:InfoCard.ActionButton>
                                                         </controls1:InfoCard>

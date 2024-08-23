@@ -116,16 +116,6 @@ public partial class WelcomeWindow : MyWindow
         }
     }
 
-    private void ButtonViewHelp_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.IsExitConfirmed = true;
-        DialogResult = true;
-        Close();
-
-        var mw = (MainWindow)Application.Current.MainWindow!;
-        mw.OpenHelpsWindow();
-    }
-
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo()
