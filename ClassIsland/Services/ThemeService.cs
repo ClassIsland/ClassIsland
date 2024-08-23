@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
@@ -108,5 +109,13 @@ public class ThemeService : IHostedService, IThemeService
             Secondary = secondary,
             RealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1
         });
+
+        var resource = new ResourceDictionary
+        {
+            Source = CurrentRealThemeMode == 0 ?
+                new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.xaml") :
+                new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.xaml")
+        };
+        Application.Current.Resources.MergedDictionaries[0] = resource;
     }
 }

@@ -46,7 +46,7 @@
                                         <DataTrigger Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" Value="True">
                                             <Setter Property="Effect">
                                                 <Setter.Value>
-                                                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="Yellow" Opacity="0.6"/>
+                                                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="{DynamicResource LuminousClass}"/>
                                                 </Setter.Value>
                                             </Setter>
                                         </DataTrigger>
