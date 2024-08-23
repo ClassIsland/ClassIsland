@@ -64,7 +64,14 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     }
 
     public static readonly DependencyProperty IsOnMainWindowProperty = DependencyProperty.Register(
-        nameof(IsOnMainWindow), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(default(bool)));
+        nameof(IsOnMainWindow), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(default(bool),
+            (o, args) =>
+            {
+                if (o is ComponentPresenter control)
+                {
+                    control.UpdateTheme();
+                }
+            }));
 
     public bool IsOnMainWindow
     {
@@ -107,9 +114,15 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         }
 
         PresentingContent = content;
+        UpdateTheme();
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        UpdateTheme();
+    }
+
+    private void UpdateTheme()
     {
         if (Settings == null || !IsOnMainWindow)
             return;
