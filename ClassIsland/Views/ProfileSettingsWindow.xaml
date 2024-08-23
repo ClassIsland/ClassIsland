@@ -625,7 +625,7 @@
                                         SelectedDate="{Binding ProfileService.Profile.TempClassPlanGroupExpireTime}"
                                         Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
                                         Margin="2 0 0 0"
-                                        Loaded="FutureDatePicker_OnLoaded"/>
+                                        IsVisibleChanged="ExpireDatePicker_OnIsVisibleChanged"/>
                             <ComboBox Grid.Column="3" Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                       SelectedIndex="{Binding ProfileService.Profile.TempClassPlanGroupType, Converter={StaticResource TempClassPlanGroupTypeToIntConverter}}"
                                       VerticalAlignment="Center"

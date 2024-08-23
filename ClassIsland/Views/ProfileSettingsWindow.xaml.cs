@@ -1041,8 +1041,9 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.IsWeekOffsetSettingsOpen = false;
     }
 
-    private void FutureDatePicker_OnLoaded(object sender, RoutedEventArgs e)
+    private void ExpireDatePicker_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         (sender as DatePicker)?.BlackoutDates.AddDatesInPast();
+
     }
 }
