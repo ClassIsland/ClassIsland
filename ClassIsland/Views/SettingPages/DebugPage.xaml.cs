@@ -108,7 +108,17 @@ public partial class DebugPage : SettingsPageBase
         ViewModel.IsTargetDateTimeLoaded = true;
     }
 
-    private void TargetDateTime_OnChanged(object sender, RoutedEventArgs e)
+    private void TargetDate_OnChanged(object sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.IsTargetDateTimeLoaded) return;
+        SettingsService.Settings.TimeOffsetSeconds = Math.Floor(
+              (ViewModel.TargetDate
+            + (ExactTimeService.GetCurrentLocalDateTime() - ExactTimeService.GetCurrentLocalDateTime().Date)
+            -  DateTime.Now).TotalSeconds - 1);
+        // 我也不知道这里为什么会减个 1 。
+    }
+
+    private void TargetTime_OnChanged(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
         SettingsService.Settings.TimeOffsetSeconds = Math.Round(

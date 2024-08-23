@@ -1274,7 +1274,8 @@
                                                          VerticalAlignment="Center"
                                                          Foreground="{DynamicResource MaterialDesignBody}"
                                                          Padding="12 10 12 10"
-                                                         Grid.Row="3" Margin="8 8 6 8">
+                                                         Grid.Row="3" Margin="8 8 6 8"
+                                                         IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                         <StackPanel>
                                             <controls1:NumbericTextBox
                                                 MaxValue="36000" MinValue="0" HorizontalAlignment="Stretch"
