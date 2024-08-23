@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Core.Models.Ruleset;
 
 namespace ClassIsland.Controls;
 
@@ -36,6 +37,30 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         set { SetValue(IsPresentingSettingsProperty, value); }
     }
 
+    public static readonly DependencyProperty HideOnRuleProperty = DependencyProperty.Register(
+        nameof(HideOnRule), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(false, (o, args) =>
+        {
+            if (o is ComponentPresenter control)
+            {
+                control.UpdateWindowRuleState();
+            }
+        }));
+
+    public bool HideOnRule
+    {
+        get { return (bool)GetValue(HideOnRuleProperty); }
+        set { SetValue(HideOnRuleProperty, value); }
+    }
+
+    public static readonly DependencyProperty HidingRulesProperty = DependencyProperty.Register(
+        nameof(HidingRules), typeof(Ruleset), typeof(ComponentPresenter), new PropertyMetadata(default(Ruleset)));
+
+    public Ruleset? HidingRules
+    {
+        get { return (Ruleset)GetValue(HidingRulesProperty); }
+        set { SetValue(HidingRulesProperty, value); }
+    }
+
     private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is ComponentPresenter p)
@@ -43,6 +68,8 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
             p.UpdateContent();
         }
     }
+
+    private IRulesetService RulesetService { get; } = App.GetService<IRulesetService>();
 
     private object? _presentingContent;
 
@@ -80,6 +107,31 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     public ComponentPresenter()
     {
         InitializeComponent();
+    }
+
+    private void UpdateWindowRuleState()
+    {
+        if (HideOnRule)
+        {
+            RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
+        }
+        else
+        {
+            RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
+            Visibility = Visibility.Visible;
+        }
+    }
+
+    private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
+    {
+        if (HidingRules != null && RulesetService.IsRulesetSatisfied(HidingRules))
+        {
+            Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            Visibility = Visibility.Visible;
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
@@ -111,5 +112,14 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         }
         ViewModel.IsComponentSettingsVisible = true;
         ViewModel.SettingsTabControlIndex = ViewModel.SettingsTabControlIndex == 0 ? 1 : ViewModel.SettingsTabControlIndex;
+    }
+
+    private void ButtonOpenRuleset_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (FindResource("RulesetControl") is not RulesetControl control ||
+            ViewModel.SelectedComponentSettings == null) 
+            return;
+        control.Ruleset = ViewModel.SelectedComponentSettings.HidingRules;
+        OpenDrawer("RulesetControl");
     }
 }

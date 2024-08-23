@@ -11,6 +11,7 @@
       xmlns:dd="urn:gong-wpf-dragdrop"
       xmlns:controls2="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
       xmlns:controls3="clr-namespace:ClassIsland.Controls"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ComponentsSettingsPage"
@@ -40,6 +41,9 @@
                 <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
+
+        <ci:RulesetControl x:Key="RulesetControl" />
+
     </controls:SettingsPageBase.Resources>
     <Grid Margin="8 0">
         <Grid.RowDefinitions>
@@ -232,7 +236,28 @@
                                                   IsPresentingSettings="True"/>
                 </TabItem>
                 <TabItem Header="高级设置" Visibility="{Binding ViewModel.IsComponentAdvancedSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-
+                    <ScrollViewer>
+                        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                            <!-- 按规则隐藏 -->
+                            <controls2:SettingsCard IconGlyph="HideOutline"
+                                                    Header="按规则隐藏"
+                                                    Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。"
+                                                    Margin="0 0 0 6">
+                                <controls2:SettingsCard.Switcher>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button HorizontalAlignment="Left"
+                                                Style="{StaticResource MaterialDesignFlatButton}"
+                                                Click="ButtonOpenRuleset_OnClick"
+                                                Visibility="{Binding ViewModel.SelectedComponentSettings.HideOnRule, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <controls2:IconText Kind="TagMultipleOutline" Text="编辑规则集…" />
+                                        </Button>
+                                        <ToggleButton VerticalAlignment="Center"
+                                                      IsChecked="{Binding ViewModel.SelectedComponentSettings.HideOnRule}" />
+                                    </StackPanel>
+                                </controls2:SettingsCard.Switcher>
+                            </controls2:SettingsCard>
+                        </StackPanel>
+                    </ScrollViewer>
                 </TabItem>
             </TabControl>
         </Grid>
