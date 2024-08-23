@@ -101,7 +101,7 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             foreach (var indexInfo in indexes)
             {
                 Logger.LogDebug("正在刷新插件源：{}（{}）", indexInfo.Id, indexInfo.Url);
-                var archive = Path.GetTempFileName() + ".tmp";
+                var archive = Path.GetTempFileName();
                 var download = DownloadBuilder.New()
                     .WithUrl(indexInfo.Url)
                     .WithFileLocation(archive)
