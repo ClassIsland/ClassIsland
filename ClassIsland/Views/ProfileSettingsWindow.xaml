@@ -624,7 +624,8 @@
                                         materialDesign:HintAssist.Hint="失效日期"
                                         SelectedDate="{Binding ProfileService.Profile.TempClassPlanGroupExpireTime}"
                                         Style="{StaticResource MaterialDesignFloatingHintDatePicker}"
-                                        Margin="2 0 0 0" />
+                                        Margin="2 0 0 0"
+                                        Loaded="FutureDatePicker_OnLoaded"/>
                             <ComboBox Grid.Column="3" Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                                       SelectedIndex="{Binding ProfileService.Profile.TempClassPlanGroupType, Converter={StaticResource TempClassPlanGroupTypeToIntConverter}}"
                                       VerticalAlignment="Center"
@@ -1223,6 +1224,7 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
                                         <RowDefinition/>
+                                        <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
                                     <!-- 时间表操作 -->
                                     <ToolBar Grid.Row="0" ToolBarTray.IsLocked="True" IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}">
@@ -1266,6 +1268,30 @@
                                             </DataTemplate>
                                         </ListBox.ItemTemplate>
                                     </ListBox>
+
+                                    <!-- 时间点时长 -->
+                                    <materialDesign:Card HorizontalAlignment="Stretch"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                                         Padding="12 10 12 10"
+                                                         Grid.Row="3" Margin="8 8 6 8">
+                                        <StackPanel>
+                                            <controls1:NumbericTextBox
+                                                MaxValue="36000" MinValue="0" HorizontalAlignment="Stretch"
+                                                materialDesign:TextFieldAssist.SuffixText="分钟"
+                                                Foreground="{DynamicResource MaterialDesignBody}"
+                                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                materialDesign:HintAssist.Hint="默认上课时间点时长"
+                                                Text="{Binding MainViewModel.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                            <controls1:NumbericTextBox
+                                                MaxValue="36000" MinValue="0" HorizontalAlignment="Stretch"
+                                                materialDesign:TextFieldAssist.SuffixText="分钟"
+                                                Foreground="{DynamicResource MaterialDesignBody}"
+                                                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                materialDesign:HintAssist.Hint="默认课间时间点时长"
+                                                Text="{Binding MainViewModel.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                    </materialDesign:Card>
                                 </Grid>
 
                                 <GridSplitter HorizontalAlignment="Stretch" Grid.Column="1"/>
@@ -1988,7 +2014,7 @@
                                     Icon="{materialDesign:PackIcon FileDocumentOutline}"
                                     Click="ButtonProfileManage_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock>
+                                    <TextBlock MaxWidth="150" TextWrapping="Wrap">
                                         <Run Text="{Binding ProfileService.CurrentProfilePath}"/>
                                     </TextBlock>
                                 </materialDesign:Chip>
@@ -2034,7 +2060,7 @@
                                             <Setter Property="Icon" Value="{materialDesign:PackIcon FileDocumentMultipleOutline}"/>
                                         </Style>
                                     </materialDesign:Chip.Style>
-                                    <TextBlock FontFamily="{StaticResource HarmonyOsSans}">
+                                    <TextBlock FontFamily="{StaticResource HarmonyOsSans}" MaxWidth="170" TextWrapping="Wrap">
                                         <Run>
                                             <Run.Style>
                                                 <Style TargetType="Run">
@@ -2058,7 +2084,7 @@
                                     Icon="{materialDesign:PackIcon Group}"
                                     Click="ButtonClassPlansGroup_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock>
+                                    <TextBlock MaxWidth="170" TextWrapping="Wrap">
                                         <TextBlock.DataContext>
                                             <MultiBinding Converter="{StaticResource ClassPlanGroupIdToClassPlanGroupConverter}">
                                                 <Binding Path="ProfileService.Profile.ClassPlanGroups"/>

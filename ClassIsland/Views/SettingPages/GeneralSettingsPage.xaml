@@ -330,30 +330,6 @@
                             Click="ButtonCloseMigrationTip_OnClick"/>
                 </Grid>
             </Border>
-            <Separator Margin="0 16 0 8" />
-            <controls1:IconText Kind="EditOutline" Text="档案编辑" Margin="0 0 0 8" />
-            <!-- 默认上课时间点时长 -->
-            <controls1:SettingsCard IconGlyph="FileClockOutline" Header="默认上课时间点时长"
-                                                           Description="在创建上课类型的时间点时默认时长。">
-                <controls1:SettingsCard.Switcher>
-                    <controls1:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
-                                                                      materialDesign:TextFieldAssist.SuffixText="分钟"
-                                                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Style="{StaticResource MaterialDesignTextBox}"
-                                                                      Text="{Binding SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
-                </controls1:SettingsCard.Switcher>
-            </controls1:SettingsCard>
-            <!-- 默认课间时间点时长 -->
-            <controls1:SettingsCard IconGlyph="ClockOutline" Header="默认课间时间点时长"
-                                                           Description="在创建课间休息类型的时间点时默认时长">
-                <controls1:SettingsCard.Switcher>
-                    <controls1:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
-                                                                      materialDesign:TextFieldAssist.SuffixText="分钟"
-                                                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Style="{StaticResource MaterialDesignTextBox}"
-                                                                      Text="{Binding SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
-                </controls1:SettingsCard.Switcher>
-            </controls1:SettingsCard>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>
