@@ -164,7 +164,13 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         {
             foundNodes.Add(node);
         }
-        if (node.Target == AttachedSettingsTargets.Subject && !isInit)
+        try
+        {
+            if (node.Target == AttachedSettingsTargets.Subject && !isInit)
+            {
+                return;
+            }
+        } catch (NullReferenceException)
         {
             return;
         }
