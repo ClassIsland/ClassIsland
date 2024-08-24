@@ -15,7 +15,10 @@
 
   <ItemGroup>
     <PackageReference Include="dotnetCampus.Ipc" Version="2.0.0-alpha410" />
-    <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha410" />
+    <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha410" OutputItemType="Analyzer" ReferenceOutputAssembly="false">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
