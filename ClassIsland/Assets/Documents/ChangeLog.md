@@ -2,6 +2,7 @@
 
 1.5-Griseo 的新增功能。
 
+
 ## 插件系统
 
 ![1722823221695](https://github.com/user-attachments/assets/7464a90d-ef66-47e1-8083-3edbdea603aa)
@@ -68,6 +69,59 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 
 ***
+
+# 1.4.5.0
+
+> 1.5 - Griseo 测试版，可能包含未完善和不稳定的功能。
+
+🎉 本版本是 1.5 的最后一个 Beta 版，将在确认稳定并修复在这个版本收到的问题后，在下一个版本发布 1.5 的正式版。
+
+## 新增功能与优化
+
+- **【课表服务】多周轮换**：课表支持设置多周轮换，手动设置轮换偏移
+- 【档案编辑】添加课表群描述文本
+- 【档案编辑】将默认时间点时长挪到档案编辑
+- 【组件/课表】高亮显示换课课程
+- 【主界面】记忆隐藏主界面状态
+- 【插件市场】插件市场从插件源显示在线信息
+- 【插件市场】插件更新功能
+- 【组件】为天气图标赋予颜色
+- 【组件】支持设置组件隐藏规则
+- 【组件】自定义全局/组件字体大小和颜色 ([#80](https://github.com/ClassIsland/ClassIsland/issues/80))
+- 【备份】在启动时如果备份文件夹不存在，自动创建备份文件夹
+- 【应用设置】调整【调试】选项卡，为【调试】标签页添加集控选项
+- 【应用设置】优化提醒音效音量调节边距大小
+- 【IPC】跨进程获取 ClassIsland 应用信息，接收 ClassIsland 事件广播
+- 【IPC】为跨进程库加入 .NET Frameworks 支持
+- 【UI】使用本地化日期选择控件
+- 【UI】优化精简模式字体串
+- 【API/提醒】优化提醒提供方 API
+
+## 移除功能
+
+- 【应用帮助】删除应用内置的帮助文档，现改为提供[在线文档](https://docs.classisland.tech)。
+- 【IPC】移除 Grpc 支持，现使用新的跨进程通信方式。
+
+## Bug 修复
+
+- 【档案分析】修复查询到不存在的继承情况时 NullReferenceException 的问题 ([#282](https://github.com/ClassIsland/ClassIsland/issues/282))
+- 【组件/课表】修复下课倒计时大小不正确的问题
+- 【组件/课表】修复在永久换课时课表不更新课程信息的问题 ([#265](https://github.com/ClassIsland/ClassIsland/issues/265))
+- 【UI】修复 Slider 在滚动视图中无法正常滑动修改数值的问题
+- 【UI】修复选择主题色拦截鼠标滚轮事件的问题
+- 【插件市场】修复在一定情况下无法加载插件源的问题
+- 【更新】修复更新完成后无法删除更新临时文件的问题 ([#269](https://github.com/ClassIsland/ClassIsland/issues/269))
+- 【应用】修复文件占用判断不支持中文的问题
+- 【备份】当手动备份文件不存在时报错
+- 【备份】修复在要备份的文件/文件夹不存在时，无法继续备份的问题
+- 【系统】修复 RawInput 初始化失败时导致应用无法启动的问题
+
+
+## Merge
+
+- Merge pull request #268 from LiuYan-xwx/dev
+- Merge pull request #266 from DryIce-cc/dev
+- Merge pull request #274 from DryIce-cc/dev
 
 # 1.4.4.0
 
