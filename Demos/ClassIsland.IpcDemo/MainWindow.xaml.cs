@@ -28,8 +28,11 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         _ipcClient = new IpcClient();
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.CurrentTimeStateChangedNotifyId, () => MessageBox.Show("CurrentTimeStateChanged."));
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnClassNotifyId, () => MessageBox.Show("OnClass."));
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnBreakingTimeNotifyId, () => MessageBox.Show("OnBreakingTime."));
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnAfterSchoolNotifyId, () => MessageBox.Show("OnAfterSchool."));
         _ = _ipcClient.Connect();
-
         InitializeComponent();
         DataContext = this;
     }

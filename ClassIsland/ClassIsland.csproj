@@ -58,6 +58,7 @@
         <Folder Include="Models\Logging\" />
         <Folder Include="Models\TimeRules\" />
         <Folder Include="Enums\" />
+        <Folder Include="Models\Ipc\" />
     </ItemGroup>
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig" />

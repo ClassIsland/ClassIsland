@@ -13,8 +13,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="dotnetCampus.Ipc" Version="2.0.0-alpha203-HotFix01" />
-    <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha200-HotFix01" />
+    <PackageReference Include="dotnetCampus.Ipc" Version="2.0.0-alpha410" />
+    <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha410" />
   </ItemGroup>
 
   <ItemGroup>

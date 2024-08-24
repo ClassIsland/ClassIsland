@@ -495,6 +495,7 @@ public partial class App : AppBase, IAppHost
         {
             AppStarted?.Invoke(this, EventArgs.Empty);
             GetService<IIpcService>().IpcProvider.StartServer();
+            GetService<IIpcService>().JsonRoutedProvider.StartServer();
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);

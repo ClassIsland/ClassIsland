@@ -7,6 +7,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
 using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -203,6 +204,17 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 RulesetService.NotifyStatusChanged();
             }
         };
+
+
+        CurrentTimeStateChanged += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.CurrentTimeStateChangedNotifyId);
+        OnClass += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnClassNotifyId);
+        OnBreakingTime += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnBreakingTimeNotifyId);
+        OnAfterSchool += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnAfterSchoolNotifyId);
+
         StartMainTimer();
     }
 

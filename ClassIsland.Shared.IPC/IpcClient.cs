@@ -1,4 +1,5 @@
-﻿using dotnetCampus.Ipc.Pipes;
+﻿using dotnetCampus.Ipc.IpcRouteds.DirectRouteds;
+using dotnetCampus.Ipc.Pipes;
 
 namespace ClassIsland.Shared.IPC;
 
@@ -21,13 +22,18 @@ public class IpcClient
     /// 远程的对方
     /// </summary>
     public PeerProxy? PeerProxy { get; private set; }
+
+    /// <summary>
+    /// JSON IPC 提供方。
+    /// </summary>
+    public JsonIpcDirectRoutedProvider JsonIpcProvider { get; }
     
     /// <summary>
     /// 初始化一个 <see cref="IpcClient"/> 对象。
     /// </summary>
     public IpcClient()
     {
-                
+        JsonIpcProvider = new JsonIpcDirectRoutedProvider(Provider);
     }
 
     /// <summary>
@@ -36,6 +42,7 @@ public class IpcClient
     public async Task Connect()
     {
         Provider.StartServer();
+        JsonIpcProvider.StartServer();
         PeerProxy = await Provider.GetAndConnectToPeerAsync(PipeName);
     }
 }
