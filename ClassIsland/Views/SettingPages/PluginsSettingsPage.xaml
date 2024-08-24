@@ -358,7 +358,7 @@
         </Grid>
     </ci:SettingsPageBase.Resources>
     <Grid>
-        <controls1:ListDetailView>
+        <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}">
             <controls1:ListDetailView.LeftContent>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -601,5 +601,63 @@
                 </ContentPresenter>
             </controls1:ListDetailView.RightContent>
         </controls1:ListDetailView>
+        <Border Background="{DynamicResource MaterialDesignPaper}"
+                Visibility="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ScrollViewer>
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="75" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="75" />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="/Assets/AppLogo.png" />
+                        <materialDesign:PackIcon Grid.Column="1"
+                                                 VerticalAlignment="Center"
+                                                 Width="25" Height="25"
+                                                 Margin="16 0"
+                                                 Kind="Plus" />
+                        <materialDesign:PackIcon Grid.Column="2" Kind="Plugin"
+                                                 VerticalAlignment="Stretch"
+                                                 HorizontalAlignment="Stretch"
+                                                 Height="75"
+                                                 Width="75" />
+                    </Grid>
+                    <TextBlock Text="插件"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="0 8 0 0"
+                               Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                    <TextBlock Margin="0 6 0 0"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Width="320">
+                        <Run Text="欢迎使用插件。您可以通过插件扩展 ClassIsland 的功能，比如添加一个组件，或者和其它软件联动，等等。" />
+
+                    </TextBlock>
+                    <Border Width="320"
+                            Background="#22FF8800"
+                            Margin="0 8 0 0"
+                            Padding="8">
+                        <StackPanel>
+                            <materialDesign:PackIcon Kind="Warning"
+                                                     Margin="0 0 0 4"
+                                                     HorizontalAlignment="Center"/>
+                            <TextBlock TextAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Text="需要注意，插件可以以 ClassIsland 的身份进行各项活动，使用各项系统资源，并自由地访问此设备上的文件。出于安全考虑，不要安装来路不明的插件。即使是插件市场的插件，也无法完全保证安全。使用插件造成的一切后果，ClassIsland 开发团队概不负责。" />
+                        </StackPanel>
+                    </Border>
+
+                    <Button HorizontalAlignment="Center"
+                            Margin="0 16 0 0"
+                            Click="ButtonAgreePluginNotice_OnClick">
+                        <ci:IconText Kind="Check" Text="同意并开始使用插件"></ci:IconText>
+                    </Button>
+                </StackPanel></ScrollViewer>
+        </Border>
     </Grid>
 </ci:SettingsPageBase>

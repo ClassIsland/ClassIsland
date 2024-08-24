@@ -192,6 +192,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isErrorLoadingRawInput = false;
     private bool _isCustomForegroundColorEnabled = false;
     private Color _customForegroundColor = Colors.DodgerBlue;
+    private bool _isPluginMarketWarningVisible = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1833,6 +1834,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_lastRefreshPluginSourceTime)) return;
             _lastRefreshPluginSourceTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsPluginMarketWarningVisible
+    {
+        get => _isPluginMarketWarningVisible;
+        set
+        {
+            if (value == _isPluginMarketWarningVisible) return;
+            _isPluginMarketWarningVisible = value;
             OnPropertyChanged();
         }
     }

@@ -323,4 +323,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         RequestRestart();
     }
+
+    private void ButtonAgreePluginNotice_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.IsPluginMarketWarningVisible = false;
+    }
 }
