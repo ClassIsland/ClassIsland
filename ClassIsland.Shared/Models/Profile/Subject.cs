@@ -23,7 +23,7 @@ public class Subject : AttachableSettingsObject
             if (value == _name) return;
             _name = value;
             if (string.IsNullOrEmpty(Initial) && !string.IsNullOrWhiteSpace(Name))
-                Initial = Name[..1];
+                Initial = Name.Substring(0, 1);
             OnPropertyChanged();
         }
     }
@@ -105,13 +105,13 @@ public class Subject : AttachableSettingsObject
         if (containsChinese)
         {
             // 中文姓名，假设姓氏为第一个字符
-            if (TeacherName.Length >= 1) return TeacherName[..1];
+            if (TeacherName.Length >= 1) return TeacherName.Substring(0, 1);
         }
         else
         {
             // 英文姓名，假设姓氏为最后一个单词
-            var nameParts = TeacherName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            return nameParts.Length > 1 ? nameParts[^1] : TeacherName; // 处理只有一个单词的情况
+            var nameParts = TeacherName.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+            return nameParts.Length > 1 ? nameParts[nameParts.Length - 1] : TeacherName; // 处理只有一个单词的情况
         }
 
         return "";

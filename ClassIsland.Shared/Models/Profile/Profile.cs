@@ -105,10 +105,10 @@ public class Profile : ObservableRecipient
             throw new ArgumentException("不能解散默认课表群和全局课表群。", nameof(id));
         }
 
-        foreach (var (_, value) in ClassPlans   
+        foreach (var i in ClassPlans   
                      .Where(x => x.Value.AssociatedGroup == id))
         {
-            value.AssociatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
+            i.Value.AssociatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
         }
 
         ClassPlanGroups.Remove(id);
@@ -125,10 +125,10 @@ public class Profile : ObservableRecipient
             throw new ArgumentException("不能解散删除课表群和全局课表群。", nameof(id));
         }
 
-        foreach (var (key, _) in ClassPlans
+        foreach (var i in ClassPlans
                      .Where(x => x.Value.AssociatedGroup == id))
         {
-            ClassPlans.Remove(key);
+            ClassPlans.Remove(i.Key);
         }
         ClassPlanGroups.Remove(id);
     }

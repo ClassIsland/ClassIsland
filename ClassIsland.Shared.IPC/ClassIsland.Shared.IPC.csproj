@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+	  <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageTags>classisland;ipc;grpc;addin;plugin</PackageTags>
     <Description>用于的客户端与 ClassIsland 应用进行跨进程通信库。</Description>
+	  <LangVersion>12</LangVersion>
 
 	  <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 

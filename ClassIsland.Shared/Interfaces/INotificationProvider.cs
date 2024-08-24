@@ -1,4 +1,6 @@
-﻿namespace ClassIsland.Shared.Interfaces;
+﻿#if !NETFRAMEWORK
+
+namespace ClassIsland.Shared.Interfaces;
 
 /// <summary>
 /// 提醒提供方接口。
@@ -37,3 +39,4 @@ public interface INotificationProvider
 
     public static readonly Uri DefaultNotificationSoundUri = new Uri("pack://application:,,,/ClassIsland;component/Assets/Media/Notification/1.wav");
 }
+#endif
