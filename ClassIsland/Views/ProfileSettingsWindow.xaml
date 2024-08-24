@@ -60,7 +60,7 @@
                         <ContentPresenter>
                             <ContentPresenter.ContentTemplate>
                                 <DataTemplate DataType="{x:Type profile:Subject}">
-                                    <TextBlock Text="{Binding Name}"/>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}"/>
                                 </DataTemplate>
                             </ContentPresenter.ContentTemplate>
                             <ContentPresenter.Content>
@@ -1066,10 +1066,10 @@
                                                             <DataTemplate>
                                                                 <TextBlock>
                                                                     <Run
-                                                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}}" />
+                                                                        Text="{Binding CurrentTimeLayoutItem.StartSecond, StringFormat={}{0:HH:mm:ss}, Mode=OneWay}" />
                                                                     <Run Text="-" />
                                                                     <Run
-                                                                        Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}}" />
+                                                                        Text="{Binding CurrentTimeLayoutItem.EndSecond, StringFormat={}{0:HH:mm:ss}, Mode=OneWay}" />
                                                                 </TextBlock>
                                                             </DataTemplate>
                                                         </DataGridTemplateColumn.CellTemplate>
