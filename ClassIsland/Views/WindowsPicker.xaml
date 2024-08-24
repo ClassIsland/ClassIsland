@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.WindowsPicker"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.WindowsPicker"
                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +6,8 @@
                    xmlns:local="clr-namespace:ClassIsland.Views"
                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                    xmlns:controls="clr-namespace:ClassIsland.Controls"
-                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
+                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
+                   xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                    mc:Ignorable="d"
                    d:DataContext="{d:DesignInstance local:WindowsPicker}"
                    Height="600" Width="1300"
@@ -93,10 +94,10 @@
             <StackPanel Grid.Column="2" Orientation="Horizontal">
                 <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
                         Click="ButtonCancel_OnClick">
-                    <controls:IconText Kind="Cancel" Text="取消"/>
+                    <controls1:IconText Kind="Cancel" Text="取消"/>
                 </Button>
                 <Button Click="ButtonDone_OnClick">
-                    <controls:IconText Kind="Check" Text="确定"/>
+                    <controls1:IconText Kind="Check" Text="确定"/>
                 </Button>
             </StackPanel>
         </Grid>
@@ -126,7 +127,9 @@
                                              Margin="0 0 0 0">
                         <StackPanel Margin="16">
                             <CheckBox IsChecked="{Binding ViewModel.IsFilteredFullscreen}"
-                                      Content="仅显示全屏窗口。"/>
+                                      Checked="ButtonRefresh_OnClick"
+                                      Unchecked="ButtonRefresh_OnClick"
+                                      Content="仅显示全屏窗口"/>
                         </StackPanel>
                     </materialDesign:PopupBox>
                 </StackPanel>
@@ -139,9 +142,9 @@
             <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
                     Background="{DynamicResource MaterialDesignPaper}"
                     Opacity="0.8"/>
-            <controls:StarRailLoadingControl VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <controls1:StarRailLoadingControl VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
 
-        <windows:AsyncBox Grid.Row="0" Grid.RowSpan="4" VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
+        <windows:AsyncBox Grid.Row="0" Grid.RowSpan="4" VerticalAlignment="Bottom" Height="6" LoadingViewType="controls:LoadingMask"/>
     </Grid>
-</controls:MyWindow>
+</controls1:MyWindow>

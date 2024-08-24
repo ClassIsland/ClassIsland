@@ -8,18 +8,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
-using ClassIsland.Models.Weather;
-
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class WeatherService : IHostedService
+public class WeatherService : IHostedService, IWeatherService
 {
     public const string CitiesDatabasePath = "./Temp/xiaomi_weather.db";
 

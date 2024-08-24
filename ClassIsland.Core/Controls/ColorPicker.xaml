@@ -1,0 +1,72 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Converters"
+             xmlns:controls1="clr-namespace:ClassIsland.Core.Controls"
+             x:Class="ClassIsland.Core.Controls.ColorPicker"
+             mc:Ignorable="d" 
+             d:DesignWidth="200">
+    <UserControl.Resources>
+        <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+    </UserControl.Resources>
+    <Grid>
+        <Button Style="{DynamicResource MaterialDesignPaperButton}" Padding="10 5" Click="ButtonBase_OnClick">
+            <StackPanel Orientation="Horizontal">
+                <Rectangle Width="12" Height="12" VerticalAlignment="Center" d:Fill="Black" Stroke="White" Fill="{Binding ColorBrush, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:ColorPicker}}}" />
+                <TextBlock VerticalAlignment="Center" Margin="3 0 0 0" d:Text="#114514"  Text="{Binding ColorHex, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:ColorPicker}}}"/>
+            </StackPanel>
+        </Button>
+        <Popup x:Name="Pop" d:IsOpen="True" AllowsTransparency="True" StaysOpen="False" PopupAnimation="Fade">
+            <materialDesign:Card Background="{DynamicResource MaterialDesignPaper}" Margin="16">
+                <Grid Height="300" Width="400">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <materialDesign:ColorPicker Grid.Row="0" x:Name="Picker"
+                                                Color="{Binding Color, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type controls1:ColorPicker}}, Delay=20}" />
+                    <Grid Grid.Row="1" Margin="12 0 12 12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="128"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Rectangle Grid.Column="0" Width="50" Margin="2,0,10,2" Fill="{Binding Color, ElementName=Picker, Converter={StaticResource ColorToColorPickerBrushConverter}}" />
+                        <TextBox Margin="2,0,10,2"
+                                 Padding="6"
+                                 Grid.Column="1"
+                                 materialDesign:HintAssist.Hint="HEX"
+                                 KeyDown="UIElement_OnKeyDown"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding Color, ElementName=Picker, UpdateSourceTrigger=LostFocus}" />
+                        <TextBox Margin="2,0,3,2"
+                                 Padding="6"
+                                 Grid.Column="2"
+                                 materialDesign:HintAssist.Hint="R"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding Color.R, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="2,0,3,2"
+                                 Padding="6"
+                                 Grid.Column="3"
+                                 materialDesign:HintAssist.Hint="G"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding Color.G, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Margin="2,0,0,2"
+                                 Padding="6"
+                                 Grid.Column="4"
+                                 materialDesign:HintAssist.Hint="B"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Text="{Binding Color.B, ElementName=Picker, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+                </Grid>
+            </materialDesign:Card>
+        </Popup>
+    </Grid>
+</UserControl>

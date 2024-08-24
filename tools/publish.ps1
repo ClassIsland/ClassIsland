@@ -1,13 +1,24 @@
-﻿$PUBLISH_TARGET = ".\ClassIsland"
+﻿param($is_trim)
 
-dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded
+$ErrorActionPreference = "Stop"
 
-Write-Host "Successfully published to $PUBLISH_TARGET" -ForegroundColor Green
+$PUBLISH_TARGET = "..\out\ClassIsland"
 
-Write-Host "Packaging..." -ForegroundColor Cyan
 if ($(Test-Path ./out) -eq $false) {
     mkdir out
 } else {
     rm out/* -Recurse -Force
 }
-7z a ./out/ClassIsland.zip ./ClassIsland/ClassIsland/* -r -mx=9
+#dotnet clean
+
+dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded -p:TrimAssets=$is_trim
+
+Write-Host "Successfully published to $PUBLISH_TARGET" -ForegroundColor Green
+
+Write-Host "Packaging..." -ForegroundColor Cyan
+
+rm ./out/ClassIsland/*.xml
+
+7z a ./out/ClassIsland.zip ./out/ClassIsland/* -r -mx=9
+
+rm -Recurse -Force ./out/ClassIsland

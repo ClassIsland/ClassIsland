@@ -5,10 +5,32 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AfterSchoolNotificationProviderSettingsControl}}">
         <StackPanel Margin="4">
+            <!-- 附加设置覆盖提示 -->
+            <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                      Margin="0 0 0 4">
+                <Grid>
+                    <DockPanel Margin="8 0 4 0">
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                DockPanel.Dock="Right"
+                                materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Click="ButtonShowAttachedSettingsInfo_OnClick">
+                            <ci:IconText Kind="MoreCircleOutline" Text="查看…"/>
+                        </Button>
+                        <materialDesign:PackIcon Kind="LayersOutline"
+                                                 Margin="0 0 4 0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="此处的设置可以在档案设置中被附加设置覆盖。"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </DockPanel>
+                </Grid>
+            </materialDesign:ColorZone>
             <CheckBox Content="已启用" IsChecked="{Binding Settings.IsEnabled}" 
                       Margin="0 0 0 8"/>
             <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows.Controls;
 
-using ClassIsland.Core;
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models.AttachedSettings;
 
 namespace ClassIsland.Controls;

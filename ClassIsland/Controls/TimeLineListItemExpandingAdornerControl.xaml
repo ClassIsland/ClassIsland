@@ -43,6 +43,9 @@
                 CornerRadius="1"
                 BorderBrush="{DynamicResource MaterialDesignBody}"/>
         <Grid Grid.Column="1" Margin="0 -8" Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=local:TimeLineListItemExpandingAdornerControl}, Converter={StaticResource InverseBoolToVisConverter}}">
+            <Thumb VerticalAlignment="Stretch"
+                   Cursor="SizeAll"
+                   DragDelta="Thumb_OnDragDelta"/>
             <Thumb Template="{StaticResource ResizeThumbTemplate}"
                    VerticalAlignment="Top"
                    Cursor="SizeNS"

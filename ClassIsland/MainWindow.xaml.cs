@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -17,27 +18,37 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 using ClassIsland.Controls.NotificationEffects;
-using ClassIsland.Core.Abstraction.Models;
-using ClassIsland.Core.Abstraction.Services;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Abstraction.Services;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
-
+using ControlzEx.Windows.Shell;
 using H.NotifyIcon;
 
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
 using NAudio.Wave;
-
+using Sentry;
 using Application = System.Windows.Application;
 using Window = System.Windows.Window;
+using NAudio.Wave.SampleProviders;
+using Linearstar.Windows.RawInput;
+using WindowChrome = System.Windows.Shell.WindowChrome;
+
+
+#if DEBUG
+using JetBrains.Profiler.Api;
+#endif
 
 namespace ClassIsland;
 /// <summary>
@@ -47,86 +58,71 @@ public partial class MainWindow : Window
 {
     public static readonly ICommand TrayIconLeftClickedCommand = new RoutedCommand();
 
+    public event EventHandler? StartupCompleted;
+
     public MainViewModel ViewModel
     {
         get;
         set;
     }
 
-    public ProfileSettingsWindow ProfileSettingsWindow
-    {
-        get;
-        set;
-    }
-
-    public SettingsWindow SettingsWindow
-    {
-        get;
-        set;
-    }
-
-    public DispatcherTimer UpdateTimer
-    {
-        get;
-    } = new(DispatcherPriority.Render)
-    {
-        Interval = TimeSpan.FromMilliseconds(50)
-    };
-
     private Storyboard NotificationProgressBar { get; set; } = new Storyboard();
-
-    private HelpsWindow HelpsWindow
-    {
-        get;
-    }
 
     private SettingsService SettingsService
     {
         get;
     }
 
-    private TaskBarIconService TaskBarIconService
+    private ITaskBarIconService TaskBarIconService
     {
         get;
     }
 
-    private ThemeService ThemeService
+    private IThemeService ThemeService
     {
         get;
     }
 
-    public NotificationHostService NotificationHostService
+    public INotificationHostService NotificationHostService
     {
         get;
     }
 
-    public ProfileService ProfileService
+    public IProfileService ProfileService
     {
         get;
     }
+
+    public ILessonsService LessonsService { get; }
 
     public TopmostEffectWindow TopmostEffectWindow { get; }
+
+    private bool IsRunningCompatibleMode { get; set; } = false;
 
     private Stopwatch UserPrefrenceUpdateStopwatch
     {
         get;
     } = new();
 
-    private ExactTimeService ExactTimeService { get; }
+    private IExactTimeService ExactTimeService { get; }
 
     public ISpeechService SpeechService { get; }
+
+    public IComponentsService ComponentsService { get; }
 
     private ILogger<MainWindow> Logger;
 
     private double _latestDpiX = 1.0;
     private double _latestDpiY = 1.0;
 
-    public ClassChangingWindow? ClassChangingWindow { get; set; }
+    private DispatcherTimer TouchInFadingTimer { get; set; } = new();
 
-    public MiniInfoProviderHostService MiniInfoProviderHostService
-    {
-        get;
-    } = App.GetService<MiniInfoProviderHostService>();
+    private Stopwatch RawInputUpdateStopWatch { get; } = new();
+
+    public ClassChangingWindow? ClassChangingWindow { get; set; }
+    
+    private IUriNavigationService UriNavigationService { get; }
+    public IRulesetService RulesetService { get; }
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
@@ -138,14 +134,18 @@ public partial class MainWindow : Window
     }
 
     public MainWindow(SettingsService settingsService, 
-        ProfileService profileService,
-        NotificationHostService notificationHostService, 
-        TaskBarIconService taskBarIconService,
-        ThemeService themeService, 
+        IProfileService profileService,
+        INotificationHostService notificationHostService, 
+        ITaskBarIconService taskBarIconService,
+        IThemeService themeService, 
         ILogger<MainWindow> logger, 
         ISpeechService speechService,
-        ExactTimeService exactTimeService,
-        TopmostEffectWindow topmostEffectWindow)
+        IExactTimeService exactTimeService,
+        TopmostEffectWindow topmostEffectWindow,
+        IComponentsService componentsService,
+        ILessonsService lessonsService,
+        IUriNavigationService uriNavigationService,
+        IRulesetService rulesetService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -156,51 +156,88 @@ public partial class MainWindow : Window
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         TopmostEffectWindow = topmostEffectWindow;
+        ComponentsService = componentsService;
+        LessonsService = lessonsService;
+        UriNavigationService = uriNavigationService;
+        RulesetService = rulesetService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
             LoadSettings();
         };
         TaskBarIconService.MainTaskBarIcon.TrayBalloonTipClicked += TaskBarIconOnTrayBalloonTipClicked;
-        UpdateTimer.Tick += UpdateTimerOnTick;
         DataContext = this;
-        UpdateTimer.Start();
+        LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
+        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel = new MainViewModel();
-        ProfileSettingsWindow = App.GetService<ProfileSettingsWindow>();
-        ProfileSettingsWindow.MainViewModel = ViewModel;
-        ProfileSettingsWindow.Closing += (o, args) => SaveProfile();
-        SettingsWindow = new SettingsWindow()
-        {
-            MainViewModel = ViewModel,
-            Settings = ViewModel.Settings
-        };
-        SettingsWindow.Closed += (o, args) => SaveSettings();
-        HelpsWindow = App.GetService<HelpsWindow>();
-        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
+        RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
+        TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
+        IsRunningCompatibleMode = SettingsService.Settings.IsCompatibleWindowTransparentEnabled;
+        if (IsRunningCompatibleMode)
+        {
+            AllowsTransparency = true;
+        }
+        else
+        {
+            SetValue(WindowChrome.WindowChromeProperty, new WindowChrome()
+            {
+                GlassFrameThickness = new Thickness(-1),
+                CaptionHeight = 0,
+                ResizeBorderThickness = new Thickness(0)
+            });
+        }
     }
 
-    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void TouchInFadingTimerOnTick(object? sender, EventArgs e)
     {
-        if (e.PropertyName == nameof(ViewModel.CurrentStatus))
+        ViewModel.IsMouseIn = false;
+        TouchInFadingTimer.Stop();
+    }
+
+    private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
+    {
+        if (ViewModel.Settings.HideMode == 1)
         {
-            NotificationHostService.CurrentState = ViewModel.CurrentStatus;
-            NotificationHostService.OnCurrentStateChanged(this, EventArgs.Empty);
+            ViewModel.IsHideRuleSatisfied = RulesetService.IsRulesetSatisfied(ViewModel.Settings.HiedRules);
         }
+        // Detect fullscreen
+        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
+                     ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
+            Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
+        if (screen != null)
+        {
+            ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
+            ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
+        }
+    }
+
+    private async void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
+    {
+        // 处理提醒请求队列
+        await ProcessNotification();
+    }
+
+    private void LessonsServiceOnPreMainTimerTicked(object? sender, EventArgs e)
+    {
+        SettingsService.Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
+        SettingsService.Settings.IsNotificationSpeechEnabled = SettingsService.Settings.IsNetworkConnect || SettingsService.Settings.IsSystemSpeechSystemExist;
+        if (SettingsService.Settings.IsMainWindowDebugEnabled)
+            ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
+
+        UpdateWindowPos(true);
+        if (ViewModel.Settings.WindowLayer == 0)
+        {
+            //SetBottom();
+        }
+        //NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
+
     }
 
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 5;
-    }
-
-    private int GetSubjectIndex(int index)
-    {
-        var k = ViewModel.CurrentClassPlan?.TimeLayout.Layouts[index];
-        var l = (from t in ViewModel.CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
-        var i = l.IndexOf(k);
-        return i;
+        App.GetService<SettingsWindowNew>().Open("update");
     }
 
     private Storyboard BeginStoryboard(string name)
@@ -220,18 +257,7 @@ public partial class MainWindow : Window
         try
         {
             GetCursorPos(out var ptr);
-            GetCurrentDpi(out var dpiX, out var dpiY);
-            var scale = ViewModel.Settings.Scale;
-            //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
-            var root = GridWrapper.PointToScreen(new Point(0, 0));
-            var cx = root.X;
-            var cy = root.Y;
-            var cw = GridWrapper.ActualWidth * dpiX * scale;
-            var ch = GridWrapper.ActualHeight * dpiY * scale;
-            var cr = cx + cw;
-            var cb = cy + ch;
-
-            ViewModel.IsMouseIn = (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+            ViewModel.IsMouseIn = GetMouseStatusByPos(ptr);
         }
         catch (Exception ex)
         {
@@ -240,161 +266,20 @@ public partial class MainWindow : Window
         
     }
 
-    private async void UpdateTimerOnTick(object? sender, EventArgs e)
+    private bool GetMouseStatusByPos(System.Drawing.Point ptr)
     {
-        SettingsService.Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
-        SettingsService.Settings.IsNotificationSpeechEnabled = SettingsService.Settings.IsNetworkConnect || SettingsService.Settings.IsSystemSpeechSystemExist;
-        if (SettingsService.Settings.IsMainWindowDebugEnabled)
-            ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
+        GetCurrentDpi(out var dpiX, out var dpiY);
+        var scale = ViewModel.Settings.Scale;
+        //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
+        var root = GridWrapper.PointToScreen(new Point(0, 0));
+        var cx = root.X;
+        var cy = root.Y;
+        var cw = GridWrapper.ActualWidth * dpiX * scale;
+        var ch = GridWrapper.ActualHeight * dpiY * scale;
+        var cr = cx + cw;
+        var cb = cy + ch;
 
-        UpdateWindowPos(true);
-        UpdateMouseStatus();
-        LoadCurrentClassPlan();
-        if (ViewModel.Settings.WindowLayer == 0)
-        {
-            //SetBottom();
-        }
-        NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
-
-        // Detect fullscreen
-        var screen = ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
-                     ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
-            Screen.AllScreens[ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
-        if (screen != null)
-        {
-            ViewModel.IsForegroundFullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
-            ViewModel.IsForegroundMaxWindow = NativeWindowHelper.IsForegroundMaxWindow(screen);
-        }
-
-        // Deactivate
-        foreach (var i in ViewModel.Profile.TimeLayouts.Where(i => !i.Value.IsActivatedManually))
-        {
-            i.Value.IsActivated = false;
-        }
-        foreach (var i in ViewModel.Profile.ClassPlans)
-        {
-            i.Value.IsActivated = false;
-        }
-
-        if (ViewModel.CurrentClassPlan is null || ViewModel.CurrentClassPlan.TimeLayout is null)
-        {
-            ViewModel.CurrentStatus = TimeState.None;
-            ViewModel.CurrentOverlayStatus = TimeState.None;
-            ViewModel.CurrentOverlayEventStatus = TimeState.None;
-            NotificationHostService.IsClassPlanLoaded = false;
-            goto final;
-        }
-        NotificationHostService.IsClassPlanLoaded = true;
-        // Activate selected item
-        ViewModel.CurrentClassPlan.IsActivated = true;
-        ViewModel.CurrentClassPlan.TimeLayout.IsActivated = true;
-
-        var isLessonConfirmed = false;
-        // 更新选择
-        var currentLayout = ViewModel.CurrentClassPlan.TimeLayout.Layouts;
-        foreach (var i in currentLayout)
-        {
-            if (i.StartSecond.TimeOfDay <= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay && i.EndSecond.TimeOfDay >= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay)
-            {
-                ViewModel.CurrentSelectedIndex = currentLayout.IndexOf(i);
-                ViewModel.CurrentTimeLayoutItem = i;
-                NotificationHostService.IsClassConfirmed = isLessonConfirmed = true;
-                if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
-                {
-                    var i0 = GetSubjectIndex(currentLayout.IndexOf(i));
-                    ViewModel.CurrentSubject = ViewModel.Profile.Subjects[ViewModel.CurrentClassPlan.Classes[i0].SubjectId];
-                }
-                else
-                {
-                    ViewModel.CurrentSubject = null;
-                }
-                break;
-            }
-        }
-
-        //var isBreaking = false;
-        if (!isLessonConfirmed)
-        {
-            ViewModel.CurrentSelectedIndex = null;
-            ViewModel.CurrentStatus = TimeState.None;
-        }
-        // 获取下节课信息
-        else if (ViewModel.CurrentSelectedIndex + 1 < currentLayout.Count && ViewModel.CurrentSelectedIndex is not null)
-        {
-            var nextClassTimeLayoutItems = (from i in currentLayout
-                where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
-                      && i.TimeType == 0
-                select i)
-                .ToList();
-            var nextBreakingTimeLayoutItems = (from i in currentLayout
-                    where currentLayout.IndexOf(i) > ViewModel.CurrentSelectedIndex
-                          && i.TimeType == 1
-                    select i)
-                .ToList();
-            if (nextClassTimeLayoutItems.Count > 0)
-            {
-                var i0 = GetSubjectIndex(currentLayout.IndexOf(nextClassTimeLayoutItems[0]));
-                var index = ViewModel.CurrentClassPlan.Classes[i0].SubjectId;
-                NotificationHostService.NextClassSubject = ViewModel.NextSubject = ViewModel.Profile.Subjects[index] ?? Subject.Empty;
-                NotificationHostService.NextClassTimeLayoutItem = ViewModel.NextTimeLayoutItem = nextClassTimeLayoutItems[0];
-            }
-
-            if (nextBreakingTimeLayoutItems.Count > 0)
-            {
-                NotificationHostService.NextBreakingTimeLayoutItem = ViewModel.NextBreakingLayoutItem = nextBreakingTimeLayoutItems[0];
-            }
-        }
-
-        var tClassDelta = ViewModel.NextTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        ViewModel.OnClassLeftTime = tClassDelta;
-        NotificationHostService.OnClassDeltaTime = tClassDelta;
-        NotificationHostService.OnBreakingTimeDeltaTime =
-            ViewModel.NextBreakingLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        // 获取状态信息
-        if (ViewModel.CurrentSelectedIndex == null)
-        {
-            ViewModel.CurrentStatus = TimeState.None;
-        //} else if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(ViewModel.Settings.ClassPrepareNotifySeconds))
-        //{
-        //    ViewModel.CurrentStatus = TimeState.PrepareOnClass;
-        } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 0)
-        {
-            ViewModel.CurrentStatus = TimeState.OnClass;
-        } else if (ViewModel.CurrentTimeLayoutItem.TimeType == 1)
-        {
-            ViewModel.CurrentStatus = TimeState.Breaking;
-        }
-
-        switch (ViewModel.CurrentStatus)
-        {
-            // 向提醒提供方传递事件
-            // 下课事件
-            case TimeState.Breaking when ViewModel.CurrentOverlayEventStatus != TimeState.Breaking:
-                Logger.LogInformation("发出下课事件。");
-                NotificationHostService.OnOnBreakingTime(this, EventArgs.Empty);
-                ViewModel.CurrentOverlayEventStatus = TimeState.Breaking;
-                break;
-            // 上课事件
-            case TimeState.OnClass when ViewModel.CurrentOverlayEventStatus != TimeState.OnClass:
-                Logger.LogInformation("发出上课事件。");
-                NotificationHostService.OnOnClass(this, EventArgs.Empty);
-                ViewModel.CurrentOverlayEventStatus = TimeState.OnClass;
-                break;
-            case TimeState.None:
-                break;
-            case TimeState.PrepareOnClass:
-                break;
-            default:
-                break;
-        }
-
-        final:
-        // 处理提醒请求队列
-        await ProcessNotification();
-
-        // Finished update
-        ViewModel.Today = ExactTimeService.GetCurrentLocalDateTime();
-        MainListBox.SelectedIndex = ViewModel.CurrentSelectedIndex ?? -1;
+        return (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
     }
 
     public Point GetCenter()
@@ -466,11 +351,15 @@ public partial class MainWindow : Window
                 {
                     try
                     {
-                        IWaveProvider provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
+                        var provider = string.IsNullOrWhiteSpace(settings.NotificationSoundPath)
                             ? new StreamMediaFoundationReader(
-                                Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream)
+                                Application.GetResourceStream(INotificationProvider.DefaultNotificationSoundUri)!.Stream).ToSampleProvider()
                             : new AudioFileReader(settings.NotificationSoundPath);
-                        player.Init(provider);
+                        var volume = new VolumeSampleProvider(provider)
+                        {
+                            Volume = (float)SettingsService.Settings.NotificationSoundVolume
+                        };
+                        player.Init(volume);
                         player.Play();
                     }
                     catch (Exception e)
@@ -480,7 +369,7 @@ public partial class MainWindow : Window
                 }
                 // 播放提醒特效
                 if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationEffect &&
-                    GridRoot.IsVisible && ViewModel.IsMainWindowVisible)
+                    GridRoot.IsVisible && ViewModel.Settings.IsMainWindowVisible && !IsRunningCompatibleMode)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
                     {
@@ -557,7 +446,7 @@ public partial class MainWindow : Window
         DiagnosticService.EndStartup();
         if (ViewModel.Settings.IsSplashEnabled)
         {
-            App.GetService<SplashService>().EndSplash();
+            App.GetService<ISplashService>().EndSplash();
         }
 
         if (!ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet)
@@ -585,7 +474,109 @@ public partial class MainWindow : Window
                 ViewModel.Settings.IsWelcomeWindowShowed = true;
             }
         }
+
+        UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
+
+        if (SettingsService.Settings.UseRawInput)
+        {
+            try
+            {
+                InitializeRawInputHandler();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "无法初始化 RawInput，已回退到兼容模式。");
+                LessonsService.PreMainTimerTicked += ProcessMousePos;
+                ViewModel.Settings.IsErrorLoadingRawInput = true;
+            }
+        }
+        else
+        {
+            LessonsService.PreMainTimerTicked += ProcessMousePos;
+        }
+
+        StartupCompleted?.Invoke(this, EventArgs.Empty);
+
+        if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
+        {
+            try
+            {
+                UriNavigationService.NavigateWrapped(new Uri(App.ApplicationCommand.Uri));
+            }
+            catch (Exception ex)
+            {
+                // ignored
+            }
+        }
+        
         base.OnContentRendered(e);
+#if DEBUG
+        MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
+#endif
+    }
+
+    private void InitializeRawInputHandler()
+    {
+        var handle = new WindowInteropHelper(this).Handle;
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
+            RawInputDeviceFlags.InputSink, handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.TouchScreen,
+            RawInputDeviceFlags.InputSink, handle);
+
+        RawInputUpdateStopWatch.Start();
+        var hWndSource = HwndSource.FromHwnd(handle);
+        hWndSource?.AddHook(ProcWnd);
+    }
+
+    private void ProcessMousePos(object? sender, EventArgs e)
+    {
+        UpdateMouseStatus();
+    }
+
+    private IntPtr ProcWnd(IntPtr hwnd, int msg, IntPtr param, IntPtr lParam, ref bool handled)
+    {
+        if (msg == 0x00FF)
+        {
+            if (RawInputUpdateStopWatch.ElapsedMilliseconds < 20)
+            {
+                return IntPtr.Zero;
+            }
+            RawInputUpdateStopWatch.Restart();
+            // Create an RawInputData from the handle stored in lParam.
+            var data = RawInputData.FromHandle(lParam);
+
+            switch (data)
+            {
+                case RawInputDigitizerData digitizerData:
+                {
+                    var contacts = digitizerData.Contacts;
+                    //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
+                    var r = ViewModel.IsMouseIn =
+                        contacts.ToList().Exists(x => GetMouseStatusByPos(new System.Drawing.Point(x.X, x.Y)));
+                    if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
+                    {
+                        TouchInFadingTimer.Stop();
+                        TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
+                        TouchInFadingTimer.Start();
+                    }
+
+                    if (!r)
+                    {
+                        TouchInFadingTimer.Stop();
+                    }
+                    break;
+                }
+                case RawInputMouseData mouseData:
+                    //Logger.LogTrace("MOUSE ({}, {}) {}", mouseData.Mouse.LastX, mouseData.Mouse.LastY, mouseData.Mouse.Buttons);
+                    //if (TouchInFadingTimer.IsEnabled)
+                        TouchInFadingTimer.Stop();
+                    UpdateMouseStatus();
+                    break;
+            }
+
+        }
+
+        return nint.Zero;
     }
 
     private void AutoSetNotificationEffectRenderingScale()
@@ -611,11 +602,27 @@ public partial class MainWindow : Window
     {
         switch (ViewModel.Settings.TaskBarIconClickBehavior)
         {
+            case 0:
+                if (TaskBarIconService.MainTaskBarIcon.ContextMenu != null)
+                {
+                    GetCursorPos(out var ptr);
+                    if (PresentationSource.FromVisual(this) == null)
+                    {
+                        break;
+                    }
+                    GetCurrentDpi(out var dpiX, out var dpiY, TaskBarIconService.MainTaskBarIcon.ContextMenu);
+                    TaskBarIconService.MainTaskBarIcon.ShowContextMenu(new System.Drawing.Point((int)(ptr.X / dpiX), (int)
+                        (ptr.Y / dpiY)));
+                }
+                break;
             case 1:
                 OpenProfileSettingsWindow();
                 break;
             case 2:
-                ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
+                ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
+                break;
+            case 3:
+                OpenClassSwapWindow();
                 break;
         }
     }
@@ -636,18 +643,18 @@ public partial class MainWindow : Window
         var r = SettingsService.Settings;
         ViewModel.Settings = r;
         ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
-        SettingsWindow.Settings = r;
     }
 
     public void SaveSettings()
     {
         UpdateTheme();
-        SettingsService.SaveSettings();
+        SettingsService.SaveSettings(ToString() + " 的 SaveSettings()");
     }
 
     protected override void OnInitialized(EventArgs e)
     {
         base.OnInitialized(e);
+        var span = SentrySdk.GetSpan()?.StartChild("startup-initialize-mainWindow");
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
@@ -658,6 +665,7 @@ public partial class MainWindow : Window
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
         SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
+        span?.Finish();
     }
 
     private void OnSystemEventsOnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs args)
@@ -690,12 +698,6 @@ public partial class MainWindow : Window
 
     private async void UpdateTheme()
     {
-        var aState = await AppCenter.IsEnabledAsync();
-        if (aState != ViewModel.Settings.IsReportingEnabled)
-        {
-            await AppCenter.SetEnabledAsync(ViewModel.Settings.IsReportingEnabled);
-        }
-
         UpdateWindowPos();
         var hWnd = (HWND)new WindowInteropHelper(this).Handle;
         var style = GetWindowLong(hWnd, WINDOW_LONG_PTR_INDEX.GWL_EXSTYLE);
@@ -728,7 +730,8 @@ public partial class MainWindow : Window
                 primary = ViewModel.Settings.PrimaryColor;
                 secondary = ViewModel.Settings.SecondaryColor;
                 break;
-            case 1:
+            case 1: // 壁纸主题色
+            case 3: // 屏幕主题色
                 primary = secondary = ViewModel.Settings.SelectedPlatte;
                 break;
             case 2:
@@ -746,70 +749,37 @@ public partial class MainWindow : Window
 
         }
         ThemeService.SetTheme(ViewModel.Settings.Theme, primary, secondary);
+
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowSecondaryFontSize)] =
+            SettingsService.Settings.MainWindowSecondaryFontSize;
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowBodyFontSize)] =
+            SettingsService.Settings.MainWindowBodyFontSize;
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowEmphasizedFontSize)] =
+            SettingsService.Settings.MainWindowEmphasizedFontSize;
+        ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
+            SettingsService.Settings.MainWindowLargeFontSize;
+
+        if (ViewModel.Settings.IsCustomForegroundColorEnabled)
+        {
+            var brush = new SolidColorBrush(ViewModel.Settings.CustomForegroundColor);
+            ResourceLoaderBorder.SetValue(ForegroundProperty, brush);
+            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, brush);
+            ResourceLoaderBorder.Resources["MaterialDesignBody"] = brush;
+        }
+        else
+        {
+            if (ResourceLoaderBorder.Resources.Contains("MaterialDesignBody"))
+            {
+                ResourceLoaderBorder.Resources.Remove("MaterialDesignBody");
+            }
+            ResourceLoaderBorder.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, DependencyProperty.UnsetValue);
+        }
     }
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
     {
         OpenProfileSettingsWindow();
-    }
-
-    public bool CheckClassPlan(ClassPlan plan)
-    {
-        if (plan.TimeRule.WeekDay != (int)ExactTimeService.GetCurrentLocalDateTime().DayOfWeek)
-        {
-            return false;
-        }
-
-        var dd = ExactTimeService.GetCurrentLocalDateTime().Date - ViewModel.Settings.SingleWeekStartTime.Date;
-        var dw = Math.Floor(dd.TotalDays / 7) + 1;
-        var w = (int)dw % 2;
-        switch (plan.TimeRule.WeekCountDiv)
-        {
-            case 1 when w != 1:
-                return false;
-            case 2 when w != 0:
-                return false;
-            default:
-                return true;
-        }
-    }
-
-    public void LoadCurrentClassPlan()
-    {
-        ViewModel.Profile.RefreshTimeLayouts();
-        if (ViewModel.Profile.TempClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
-        {
-            ViewModel.Profile.TempClassPlanId = null;
-        }
-        ProfileService.CleanExpiredTempClassPlan(); // 清除过期的临时层
-
-        // 检测是否启用课表加载
-        if (!ViewModel.IsClassPlanEnabled)
-        {
-            ViewModel.CurrentClassPlan = null;
-            return; 
-        }
-        // 加载临时层
-        if (ViewModel.Profile.IsOverlayClassPlanEnabled && 
-            ViewModel.Profile.OverlayClassPlanId != null &&
-            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.OverlayClassPlanId, out var overlay))
-        {
-            ViewModel.CurrentClassPlan = overlay;
-            return;
-        }
-        // 加载临时课表
-        if (ViewModel.Profile.TempClassPlanId != null &&
-            ViewModel.Profile.ClassPlans.TryGetValue(ViewModel.Profile.TempClassPlanId, out var tempClassPlan))
-        {
-            ViewModel.CurrentClassPlan = tempClassPlan;
-            return;
-        }
-        // 加载课表
-        var a = (from p in ViewModel.Profile.ClassPlans
-            where CheckClassPlan(p.Value) && !p.Value.IsOverlay && p.Value.IsEnabled
-            select p.Value)
-            .ToList();
-        ViewModel.CurrentClassPlan = a.FirstOrDefault();
     }
 
     private void ListView_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -838,32 +808,13 @@ public partial class MainWindow : Window
 
     private void MenuItemSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-    }
-
-    public void OpenSettingsWindow()
-    {
-        if (!SettingsWindow.IsOpened)
-        {
-            Analytics.TrackEvent("打开设置窗口");
-            SettingsWindow.IsOpened = true;
-            SettingsWindow.Show();
-        }
-        else
-        {
-            if (SettingsWindow.WindowState == WindowState.Minimized)
-            {
-                SettingsWindow.WindowState = WindowState.Normal;
-            }
-
-            SettingsWindow.Activate();
-        }
+        App.GetService<SettingsWindowNew>().Open();
     }
 
     private void MenuItemDebugOverlayMaskIn_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.CurrentMaskElement = FindResource("ClassPrepareNotifyMask");
-        ViewModel.CurrentOverlayElement = FindResource("ClassPrepareNotifyOverlay");
+        ViewModel.CurrentMaskElement = new TextBlock(new Run("Mask"));
+        ViewModel.CurrentOverlayElement = new TextBlock(new Run("Overlay"));
         var a = (Storyboard)FindResource("OverlayMaskIn");
         a.Begin();
     }
@@ -898,9 +849,7 @@ public partial class MainWindow : Window
             e.Cancel = true;
             return;
         }
-        SaveProfile();
-        SaveSettings();
-        UpdateTimer.Stop();
+        AppBase.Current.Stop();
     }
 
     private void UpdateWindowPos(bool updateEffectWindow=false)
@@ -956,13 +905,14 @@ public partial class MainWindow : Window
             TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
     }
 
-    public void GetCurrentDpi(out double dpiX, out double dpiY)
+    public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
     {
         dpiX = _latestDpiX;
         dpiY = _latestDpiY;
+        var realVisual = visual ?? this;
         try
         {
-            var source = PresentationSource.FromVisual(this);
+            var source = PresentationSource.FromVisual(realVisual);
             if (source?.CompositionTarget == null) 
                 return;
             _latestDpiX = dpiX = 1.0 * source.CompositionTarget.TransformToDevice.M11;
@@ -991,32 +941,18 @@ public partial class MainWindow : Window
 
     private void MenuItemTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        ProfileSettingsWindow.OpenDrawer("TemporaryClassPlan");
+        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
         OpenProfileSettingsWindow();
     }
 
     public void OpenProfileSettingsWindow()
     {
-        if (!ProfileSettingsWindow.IsOpened)
-        {
-            Analytics.TrackEvent("打开档案设置窗口");
-            ProfileSettingsWindow.IsOpened = true;
-            ProfileSettingsWindow.Show();
-        }
-        else
-        {
-            if (ProfileSettingsWindow.WindowState == WindowState.Minimized)
-            {
-                ProfileSettingsWindow.WindowState = WindowState.Normal;
-            }
-            ProfileSettingsWindow.Activate();
-        }
+        App.GetService<ProfileSettingsWindow>().Open();
     }
 
     private void MenuItemAbout_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 7;
+        App.GetService<SettingsWindowNew>().Open("about");
     }
 
     private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
@@ -1031,30 +967,19 @@ public partial class MainWindow : Window
         SaveSettings();
     }
 
-    private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
+    private void MenuItemDebugMoveClassIslandDirectory_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenHelpsWindow();
+        App.DirectoryIsDesktop(true);
     }
 
-    public void OpenHelpsWindow()
+    private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("打开帮助窗口");
-        if (HelpsWindow.ViewModel.IsOpened)
-        {
-            HelpsWindow.WindowState = HelpsWindow.WindowState == WindowState.Minimized ? WindowState.Normal : HelpsWindow.WindowState;
-            HelpsWindow.Activate();
-        }
-        else
-        {
-            HelpsWindow.ViewModel.IsOpened = true;
-            HelpsWindow.Show();
-        }
+        UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/zh-cn/latest/app/"));
     }
 
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenSettingsWindow();
-        SettingsWindow.RootTabControl.SelectedIndex = 5;
+        App.GetService<SettingsWindowNew>().Open("update");
     }
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -1080,46 +1005,35 @@ public partial class MainWindow : Window
 
     private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsWindow.RootTabControl.SelectedIndex = 2;
-        OpenSettingsWindow();
+        App.GetService<SettingsWindowNew>().Open("notification");
     }
 
-    private void MenuItemShowMainWindow_OnChecked(object sender, RoutedEventArgs e)
+    private void MenuItemSwitchMainWindowVisibility_OnClick(object sender, RoutedEventArgs e)
     {
-        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
-        {
-            BackgroundSource =
-                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png",
-                    UriKind.Absolute)),
-        };
-    }
-
-    private void MenuItemShowMainWindow_OnUnchecked(object sender, RoutedEventArgs e)
-    {
-        TaskBarIconService.MainTaskBarIcon.IconSource = new GeneratedIconSource()
-        {
-            BackgroundSource =
-                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo_Fade.png",
-                    UriKind.Absolute)),
-        };
+        ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
     }
 
     private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.CurrentClassPlan == null || ClassChangingWindow != null)
+        OpenClassSwapWindow();
+    }
+
+    private void OpenClassSwapWindow()
+    {
+        if (LessonsService.CurrentClassPlan == null || ClassChangingWindow != null)
         {
             return;
         }
 
-        ViewModel.IsBusy = true;
+        // ViewModel.IsBusy = true;
         ClassChangingWindow = new ClassChangingWindow()
         {
-            ClassPlan = ViewModel.CurrentClassPlan
+            ClassPlan = LessonsService.CurrentClassPlan
         };
         ClassChangingWindow.ShowDialog();
         ClassChangingWindow.DataContext = null;
         ClassChangingWindow = null;
-        ViewModel.IsBusy = false;
+        // ViewModel.IsBusy = false;
     }
 
     private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -1186,5 +1100,10 @@ public partial class MainWindow : Window
     private void TrayIconOnClicked_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         
+    }
+
+    private void MenuItemSettingsWindow2_OnClick(object sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<SettingsWindowNew>().Open();
     }
 }

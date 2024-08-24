@@ -1,26 +1,22 @@
 ﻿using System;
 using System.Windows.Controls;
-
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Enums;
+using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models.AttachedSettings;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.AttachedSettingsControls;
 
 /// <summary>
 /// WeatherNotificationAttachedSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class WeatherNotificationAttachedSettingsControl : UserControl, IAttachedSettingsControlBase
+[AttachedSettingsUsage(AttachedSettingsTargets.TimePoint)]
+[AttachedSettingsControlInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气提醒设置", PackIconKind.WeatherCloudy, false)]
+public partial class WeatherNotificationAttachedSettingsControl
 {
     public WeatherNotificationAttachedSettingsControl()
     {
         InitializeComponent();
     }
-
-    public IAttachedSettingsHelper AttachedSettingsControlHelper { get; set; } =
-        new AttachedSettingsControlHelper<WeatherNotificationAttachedSettings>(
-            new Guid("7625DE96-38AA-4B71-B478-3F156DD9458D"), new WeatherNotificationAttachedSettings());
-
-    public WeatherNotificationAttachedSettings Settings =>
-        ((AttachedSettingsControlHelper<WeatherNotificationAttachedSettings>)AttachedSettingsControlHelper)
-        .AttachedSettings ?? new WeatherNotificationAttachedSettings();
 }

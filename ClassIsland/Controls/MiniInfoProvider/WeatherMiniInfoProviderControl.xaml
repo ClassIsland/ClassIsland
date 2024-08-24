@@ -6,10 +6,11 @@
              xmlns:local="clr-namespace:ClassIsland.Controls.MiniInfoProvider"
              xmlns:controls="clr-namespace:ClassIsland.Controls"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:WebImageUrlToBitmapImageConverter x:Key="WebImageUrlToBitmapImageConverter" />
+        <converters1:WebImageUrlToBitmapImageConverter x:Key="WebImageUrlToBitmapImageConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherMiniInfoProviderControl}}">
         <StackPanel Orientation="Horizontal">

@@ -1,0 +1,335 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.GeneralSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:controls2="clr-namespace:ClassIsland.Controls"
+      xmlns:interfaces="clr-namespace:ClassIsland.Shared.Interfaces;assembly=ClassIsland.Shared"
+      xmlns:views="clr-namespace:ClassIsland.Views"
+      xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:commands="clr-namespace:ClassIsland.Core.Commands;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="GeneralSettingsPage"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      d:DataContext="{d:DesignInstance local:GeneralSettingsPage}">
+
+    <controls:SettingsPageBase.Resources>
+        <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
+
+        <ci:RulesetControl x:Key="RulesetControl"
+                           Ruleset="{Binding SettingsService.Settings.HiedRules, Mode=TwoWay}"/>
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
+            <controls1:IconText Kind="LightningBoltOutline" Text="行为" Margin="0 0 0 8" />
+            <!-- 开机自启 -->
+            <controls1:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
+                                                           Description="在您的系统启动时自动运行本应用。"
+                                                           IsOn="{Binding SettingsService.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
+            <!-- 注册 Url 协议 -->
+            <controls1:SettingsCard IconGlyph="Code" Header="注册 Url 协议"
+                                    Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用本应用内的功能。"
+                                    IsOn="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}" />
+            <!-- 学期开始时间 -->
+            <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
+                                    Description="此时间将作为学期的第一天，用于应用对多周轮换课表的计算，应设为一周的第一天。">
+                <controls1:SettingsCard.Switcher>
+                    <StackPanel Orientation="Horizontal">
+                        <DatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
+                                    Width="120"
+                                    Foreground="{DynamicResource MaterialDesignBody}" />
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                Content="{materialDesign:PackIcon CalendarMultiple}"
+                                Click="ButtonWeekOffsetSettingsOpen_OnClick"
+                                ToolTip="调整偏移…"/>
+                        <materialDesign:PopupEx Grid.Row="2"
+                                                AllowsTransparency="True"
+                                                StaysOpen="False"
+                                                Placement="Mouse"
+                                                IsOpen="{Binding ViewModel.IsWeekOffsetSettingsOpen}"
+                                                PopupAnimation="Fade">
+                            <Border Background="{DynamicResource MaterialDesignPaper}"
+                                    Margin="8"
+                                    Button.Click="ButtonWeekOffsetSettingsButtons_OnClick">
+                                <Border.Effect>
+                                    <DropShadowEffect Direction="0"
+                                                      ShadowDepth="0"
+                                                      BlurRadius="8"
+                                                      Opacity="0.5"/>
+                                </Border.Effect>
+                                <controls2:WeekOffsetSettingsControl/>
+                            </Border>
+                        </materialDesign:PopupEx>
+                    </StackPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
+            <!-- 隐藏窗口 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent" IsExpanded="True">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="HideOutline"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Header="隐藏窗口" HasSwitcher="False"
+                                                                          Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。"
+                                                                          Margin="-12 0" />
+                    </Expander.Header>
+                    <TabControl Margin="36 -16 64 12" HorizontalContentAlignment="Left"
+                                SelectedIndex="{Binding SettingsService.Settings.HideMode}">
+                        <TabItem Header="基础模式">
+                            <StackPanel Margin="6 6 0 0">
+                                <StackPanel.Resources>
+                                    <Style TargetType="CheckBox"
+                                           BasedOn="{StaticResource MaterialDesignCheckBox}">
+                                        <Setter Property="Margin" Value="0 3" />
+                                    </Style>
+                                </StackPanel.Resources>
+                                <CheckBox Content="上课时" IsChecked="{Binding SettingsService.Settings.HideOnClass}"
+                                          Style="{StaticResource MaterialDesignCheckBox}" />
+                                <CheckBox Content="前台是最大化窗口时"
+                                          IsChecked="{Binding SettingsService.Settings.HideOnMaxWindow}" />
+                                <CheckBox Content="前台是全屏窗口时"
+                                          IsChecked="{Binding SettingsService.Settings.HideOnFullscreen}" />
+                            </StackPanel>
+                        </TabItem>
+                        <TabItem Header="高级模式">
+                            <StackPanel>
+                                <Button HorizontalAlignment="Left" Style="{StaticResource MaterialDesignFlatButton}"
+                                        Command="{x:Static ci:SettingsPageBase.OpenDrawerCommand}"
+                                        CommandParameter="{StaticResource RulesetControl}">
+                                    <controls1:IconText Kind="TagMultipleOutline" Text="编辑规则集…"/>
+                                </Button>
+                            </StackPanel>
+                        </TabItem>
+                    </TabControl>
+                </Expander>
+            </materialDesign:Card>
+            <!-- 点击托盘图标行为 -->
+            <controls1:SettingsCard IconGlyph="CursorDefaultClickOutline"
+                                                           Header="点击托盘图标行为"
+                                                           Description="鼠标左键点击本应用托盘图标时应用进行的操作。无论此设置设置为什么选项，右键点击/触屏长按托盘图标仍会打开主菜单。"
+                                                           IsOn="{Binding SettingsService.Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}">
+                <controls1:SettingsCard.Switcher>
+                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                      SelectedIndex="{Binding SettingsService.Settings.TaskBarIconClickBehavior}"
+                                                      HorizontalContentAlignment="Left">
+                        <ComboBoxItem HorizontalContentAlignment="Left">
+                            <controls1:IconText Kind="Menu" Text="打开主菜单" />
+                        </ComboBoxItem>
+                        <ComboBoxItem HorizontalContentAlignment="Left">
+                            <controls1:IconText Kind="FileDocumentEdit" Text="打开档案编辑窗口" />
+                        </ComboBoxItem>
+                        <ComboBoxItem HorizontalContentAlignment="Left">
+                            <controls1:IconText Kind="Visibility" Text="显示/隐藏主界面" />
+                        </ComboBoxItem>
+                        <ComboBoxItem HorizontalContentAlignment="Left">
+                            <controls1:IconText Kind="SwapHorizontal" Text="打开换课窗口" />
+                        </ComboBoxItem>
+                    </ComboBox>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
+            <!-- 显示启动加载界面 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent" IsExpanded="False"
+                                                  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="RocketLaunchOutline"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Header="显示启动加载界面"
+                                                                          Description="启动时显示加载界面。"
+                                                                          IsOn="{Binding SettingsService.Settings.IsSplashEnabled, Mode=TwoWay}"
+                                                                          Margin="-12 0" />
+                    </Expander.Header>
+                    <Grid Margin="36 0 48 12">
+                        <Grid.IsEnabled>
+                            <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}">
+                                <Binding Path="SettingsService.Settings.IsSplashEnabled"/>
+                                <Binding Path="ManagementService.Policy.DisableSplashCustomize" Converter="{StaticResource InvertBooleanConverter}"/>
+                            </MultiBinding>
+                        </Grid.IsEnabled>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="自定义启动图标（留空将加载默认图标）"
+                                                           VerticalAlignment="Center" />
+                        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
+                                                            HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <TextBox MinWidth="150" MaxWidth="250"
+                                                             Text="{Binding SettingsService.Settings.SplashCustomLogoSource}"
+                                                             VerticalAlignment="Center" Margin="0 0 2 0" />
+                            <controls2:FileBrowserButton
+                                                        CurrentPath="{Binding SettingsService.Settings.SplashCustomLogoSource, Mode=TwoWay}"
+                                                        VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="自定义启动文字（留空将加载默认文字）"
+                                                           VerticalAlignment="Center" Margin="0 4 0 0" />
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal"
+                                                            Margin="0 4 0 0" HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center">
+                            <TextBox MinWidth="200" MaxWidth="250"
+                                                             Text="{Binding SettingsService.Settings.SplashCustomText}"
+                                                             VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                                                           Margin="0 6 0 0"
+                                                           Text="自定义启动界面功能已被您所在的组织禁用。" Foreground="IndianRed" TextWrapping="Wrap"
+                                                           Visibility="{Binding ManagementService.Policy.DisableSplashCustomize, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </Grid>
+                </Expander>
+            </materialDesign:Card>
+
+            <Separator Margin="0 16 0 8" />
+            <controls1:IconText Kind="ClockOutline" Text="时钟" Margin="0 0 0 8" />
+            <!-- 使用精确时间 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent"
+                                                  IsExpanded="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}"
+                                                  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="TimerSyncOutline"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Header="使用精确时间"
+                                                                          Description="启用后，应用将自动从指定的服务器上同步精确时间。此设置不影响系统时间。"
+                                                                          IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
+                                                                          Margin="-12 0" />
+                    </Expander.Header>
+                    <Grid Margin="36 0 48 12"
+                                                  IsEnabled="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=OneWay}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <ComboBox VerticalAlignment="Stretch"
+                                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                          materialDesign:HintAssist.Hint="时间服务器"
+                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                          Text="{Binding SettingsService.Settings.ExactTimeServer}"
+                                                          HorizontalContentAlignment="Left"
+                                                          IsEditable="True"
+                                                          Margin="0 0 0 6"
+                                                          Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                            <ComboBoxItem Content="ntp.aliyun.com"/>
+                            <ComboBoxItem Content="1ntp.aliyun.com"/>
+                            <ComboBoxItem Content="cn.ntp.org.cn"/>
+                            <ComboBoxItem Content="pool.ntp.org"/>
+                            <ComboBoxItem Content="time.windows.com"/>
+                        </ComboBox>
+
+                        <TextBlock Margin="0 6 0 0" Text="{Binding ExactTimeService.SyncStatusMessage}"
+                                                           TextWrapping="Wrap" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"/>
+                        <Button Margin="0 6 0 0" 
+                                                        Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+                                                        HorizontalAlignment="Left"
+                                                        Click="ButtonSyncTimeNow_OnClick"
+                                                        Style="{StaticResource MaterialDesignFlatButton}">
+                            <controls1:IconText Kind="Refresh" Text="立即同步"/>
+                        </Button>
+                    </Grid>
+                </Expander>
+            </materialDesign:Card>
+            <!-- 时间偏移 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent"
+                                                  IsExpanded="True"
+                                                  TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="ClockArrow"
+                                                                          Header="时间偏移"
+                                                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                                                          Description="设定应用内时间与系统时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
+                                                                          IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
+                                                                          Margin="-12 0">
+                            <controls1:SettingsControl.Switcher>
+                                <TextBox Grid.Column="1" Grid.Row="1"
+                                                                 VerticalAlignment="Center"
+                                                                 MinWidth="150"
+                                                                 Foreground="{DynamicResource MaterialDesignBody}"
+                                                                 materialDesign:TextFieldAssist.SuffixText="秒"
+                                                                 Text="{Binding SettingsService.Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
+                            </controls1:SettingsControl.Switcher>
+                        </controls1:SettingsControl>
+                    </Expander.Header>
+                    <StackPanel Margin="36 0 48 12">
+                        <!-- 自动时间偏移 -->
+                        <controls1:SettingsControl IconGlyph="ClockAutoOutline" Header="自动时间偏移"
+                                                                       Description="若启用，每天自动以设定的增量值调整时间偏移量">
+                            <controls1:SettingsControl.Switcher>
+                                <DockPanel Width="150">
+                                    <ToggleButton DockPanel.Dock="Right"
+                                                                          Margin="8 0 0 0"
+                                                                          IsChecked="{Binding SettingsService.Settings.IsTimeAutoAdjustEnabled}"/>
+                                    <TextBox Foreground="{DynamicResource MaterialDesignBody}"
+                                                                     IsEnabled="{Binding SettingsService.Settings.IsTimeAutoAdjustEnabled}"
+                                                                     Text="{Binding SettingsService.Settings.TimeAutoAdjustSeconds, Converter={StaticResource IntToStringConverter}}"
+                                                                     materialDesign:TextFieldAssist.SuffixText="秒"/>
+                                </DockPanel>
+                            </controls1:SettingsControl.Switcher>
+                        </controls1:SettingsControl>
+                    </StackPanel>
+                </Expander>
+            </materialDesign:Card>
+            <Separator Margin="0 16 0 8" 
+                       Visibility="{Binding SettingsService.Settings.ShowComponentsMigrateTip, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <controls1:IconText Kind="WindowRestore" Text="显示" Margin="0 0 0 8" 
+                                Visibility="{Binding SettingsService.Settings.ShowComponentsMigrateTip, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <!-- 简略信息 -->
+            <Border Padding="14" 
+                    Margin="0 0 0 8"
+                    BorderBrush="{DynamicResource MaterialDesignDivider}" 
+                    BorderThickness="1" CornerRadius="8"
+                    Visibility="{Binding SettingsService.Settings.ShowComponentsMigrateTip, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <StackPanel>
+                        <materialDesign:PackIcon Kind="WidgetsOutline"
+                                                 Height="24" Width="24"
+                                                 Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                        <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
+                            【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
+                            利用组件功能，您可以更自由地定制 ClassIsland 主界面上显示的内容。
+                        </TextBlock>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                HorizontalAlignment="Left"
+                                Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                CommandParameter="classisland://app/settings/components"
+                                Margin="0 4 0 0">
+                            <controls1:IconText Kind="ExternalLink" Text="前往【组件】页面" />
+                        </Button>
+                    </StackPanel>
+                    <Button Content="{materialDesign:PackIcon Close}"
+                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            Padding="0"
+                            Margin="0 -4 "
+                            ToolTip="关闭"
+                            Click="ButtonCloseMigrationTip_OnClick"/>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

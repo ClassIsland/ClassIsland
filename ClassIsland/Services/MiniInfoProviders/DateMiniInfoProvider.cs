@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ClassIsland.Controls.MiniInfoProvider;
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared.Interfaces;
 
 using Microsoft.Extensions.Hosting;
 

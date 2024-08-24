@@ -1,0 +1,5 @@
+id: classisland.example
+name: 示例插件
+description: 插件描述
+entranceAssembly: "ClassIsland.ExamplePlugin.dll"
+url: https://github.com/ClassIsland/ClassIsland

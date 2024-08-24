@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.ExcelImportWindow"
+﻿<controls1:MyWindow x:Class="ClassIsland.Views.ExcelImportWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,9 +9,11 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:ci="clr-namespace:ClassIsland"
         xmlns:models="clr-namespace:ClassIsland.Models"
-        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=Walterlv"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+        xmlns:windows1="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:ExcelImportWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -29,12 +31,12 @@
         Drop="ProfileSettingsWindow_OnDrop"
         DragLeave="ExcelImportWindow_OnDragLeave"
         Closing="ExcelImportWindow_OnClosing">
-    <controls:MyWindow.Resources>
-        <converters:DictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
-        <Style TargetType="controls:WizardOptionControl">
+    <controls1:MyWindow.Resources>
+        <converters1:SubjectsDictionaryValueAccessConverter x:Key="DictionaryValueAccessConverter"/>
+        <Style TargetType="controls1:WizardOptionControl" >
             <Setter Property="InvokedCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
         </Style>
-        <Style TargetType="controls:WizardOptionsListBox">
+        <Style TargetType="controls1:WizardOptionsListBox" BasedOn="{StaticResource WizardOptionsListBoxBaseStyle}">
             <Setter Property="InvokeCommand" Value="{x:Static local:ExcelImportWindow.NavigateCommand}"/>
         </Style>
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}" x:Key="ClassPlanDataGridComboBoxStyle">
@@ -159,8 +161,8 @@
                 </Button>
             </StackPanel>
         </StackPanel>
-    </controls:MyWindow.Resources>
-    <controls:MyWindow.CommandBindings>
+    </controls1:MyWindow.Resources>
+    <controls1:MyWindow.CommandBindings>
         <CommandBinding Command="{x:Static local:ExcelImportWindow.SelectionValueUpdateCommand}"
                         Executed="SelectionValueUpdateCommand_OnExecuted"/>
         <CommandBinding Command="{x:Static local:ExcelImportWindow.EnterSelectingModeCommand}"
@@ -169,7 +171,7 @@
                         Executed="NavigateCommand_OnExecuted"/>
         <CommandBinding Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}"
                         Executed="NavigateBackCommand_OnExecuted"/>
-    </controls:MyWindow.CommandBindings>
+    </controls1:MyWindow.CommandBindings>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogId}">
         <Grid>
             <Grid.RowDefinitions>
@@ -348,7 +350,7 @@
                             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 6 0 0"
                                     HorizontalAlignment="Center"
                                     Click="ButtonBrowseExcelFile_OnClick">
-                                <controls:IconText Kind="FolderOutline" Text="浏览文件…"/>
+                                <controls1:IconText Kind="FolderOutline" Text="浏览文件…"/>
                             </Button>
                         </StackPanel>
                     </materialDesign:TransitionerSlide>
@@ -387,7 +389,7 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Button.Style>
-                                    <controls:IconText Kind="ArrowRight" Text="开始"/>
+                                    <controls1:IconText Kind="ArrowRight" Text="开始"/>
                                 </Button>
                             </StackPanel>
                         </StackPanel>
@@ -402,16 +404,16 @@
                             </TextBlock>
                             <TextBlock Text="选择一种适合您的语言风格，然后点击下一步继续。"/>
 
-                            <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.DescriptionMode}">
+                            <controls1:WizardOptionsListBox SelectedIndex="{Binding ViewModel.DescriptionMode}">
                                 <models:WizardOption Header="详细" Content="对每个选项和流程做出详细解释，适用于刚接触本软件的新手。"
                                                      InvokeCommandParameter="TimeLayoutSource"/>
                                 <models:WizardOption Header="简洁" Content="简化流程和语言说明，提供简洁的体验，适用于熟悉本软件的用户。"
                                                      InvokeCommandParameter="TimeLayoutSource"/>
-                            </controls:WizardOptionsListBox>
+                            </controls1:WizardOptionsListBox>
                             <Button HorizontalAlignment="Left" Margin="0 8 0 0"
                                     Style="{StaticResource MaterialDesignPaperButton}"
                                     Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步"/>
+                                <controls1:IconText Kind="ArrowLeft" Text="上一步"/>
                             </Button>
                         </StackPanel>
                     </materialDesign:TransitionerSlide>
@@ -432,18 +434,18 @@
                                 <TextBlock Text="选择导入时间表的方式，然后点击下一步继续。该选项在确认后不可修改。" />
 
                             </StackPanel>
-                            <controls:WizardOptionsListBox Grid.Row="1" SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
+                            <controls1:WizardOptionsListBox Grid.Row="1" SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
                                 <models:WizardOption Header="我的时间表在这个文件中" Content="将从本文件导入时间表。"
                                                      InvokeCommandParameter="ImportTimeLayoutFromThisFile" />
                                 <models:WizardOption Header="我的时间表另一个文件中" Content="将打开另一个表格，并从该表格导入时间表。"
                                                      InvokeCommandParameter="ImportTimeLayoutFromOtherFile" />
                                 <models:WizardOption Header="我想手动创建时间表" Content="手动创建时间表。"
                                                      InvokeCommandParameter="CreateTimeLayoutManually" />
-                            </controls:WizardOptionsListBox>
+                            </controls1:WizardOptionsListBox>
                             <Button Grid.Row="2" HorizontalAlignment="Left" Margin="0 8 0 0"
                                     Style="{StaticResource MaterialDesignPaperButton}"
                                     Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
-                                <controls:IconText Kind="ArrowLeft" Text="上一步" />
+                                <controls1:IconText Kind="ArrowLeft" Text="上一步" />
                             </Button>
                         </Grid>
                     </materialDesign:TransitionerSlide>
@@ -464,15 +466,20 @@
                                                             SelectionPropertyName="TimePointSourcePosition"
                                                             materialDesign:HintAssist.Hint="选择时间安排区域"
                                                             TextChanged="TextBoxTimeLayoutRange_OnTextChanged"/>
-                            <controls:IconText Kind="Warning" Text="选择区域无效。"
+                            <controls1:IconText Kind="Warning" Text="选择区域无效。"
                                                Visibility="{Binding ViewModel.IsTimeLayoutRangeValid, Converter={StaticResource InverseBoolToVisConverter}}"
                                                Foreground="IndianRed" Margin="0 16 0 0"/>
                             <Button Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
                                     Margin="0 16 0 0"
                                     CommandParameter="TimePointImportResult"
-                                    HorizontalAlignment="Left"
-                                    IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                <controls:IconText Kind="ArrowRight" Text="下一步"/>
+                                    HorizontalAlignment="Left">
+                                <Button.IsEnabled>
+                                    <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}">
+                                        <Binding Path="ViewModel.IsTimeLayoutRangeValid"/>
+                                        <Binding Path="ViewModel.IsSelectingMode" Converter="{StaticResource BooleanToBooleanReConverter}" />
+                                    </MultiBinding>
+                                </Button.IsEnabled>
+                                <controls1:IconText Kind="ArrowRight" Text="下一步"/>
                             </Button>
                         </StackPanel>
                     </materialDesign:TransitionerSlide>
@@ -500,7 +507,7 @@
                                     Margin="0 8 0 0"
                                     Style="{StaticResource MaterialDesignFlatButton}"
                                     Click="ButtonOpenProfileSettingsWindow_OnClick">
-                                <controls:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
+                                <controls1:IconText Kind="FileDocumentEditOutline" Text="打开档案编辑窗口"/>
                             </Button>
                             <Button Command="{x:Static local:ExcelImportWindow.NavigateCommand}"
                                     CommandParameter="SelectVerticalMode"
@@ -520,7 +527,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                                <controls:IconText Kind="ArrowRight" Text="下一步"/>
+                                <controls1:IconText Kind="ArrowRight" Text="下一步"/>
                             </Button>
                         </StackPanel>
                     </materialDesign:TransitionerSlide>
@@ -593,7 +600,7 @@
                                                             SelectionPropertyName="SubjectSourcePosition"
                                                             materialDesign:HintAssist.Hint="选择课程区域"
                                                             TextChanged="TextBoxClassPlanRange_OnTextChanged"/>
-                            <controls:IconText Kind="Warning" Text="选择区域无效。"
+                            <controls1:IconText Kind="Warning" Text="选择区域无效。"
                                                Margin="0 16 0 0"
                                                Foreground="IndianRed" Visibility="{Binding ViewModel.IsSubjectsSourceRangeValid, Converter={StaticResource InverseBoolToVisConverter}}"/>
                             <controls:NavigationButtonsControl NavigationNextCommandParameter="RowClassesTimeRelationshipImportMan"
@@ -639,12 +646,12 @@
                             <TextBlock >
                                 <Run Text=""/>
                             </TextBlock>
-                            <controls:WizardOptionsListBox SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
+                            <controls1:WizardOptionsListBox SelectedIndex="{Binding ViewModel.TimeLayoutImportSource}">
                                 <models:WizardOption Header="自动识别" Content=""
                                                      InvokeCommandParameter="RowClassesTimeRelationshipImportAuto"/>
                                 <models:WizardOption Header="手动指定" Content=""
                                                      InvokeCommandParameter="RowClassesTimeRelationshipImportMan"/>
-                            </controls:WizardOptionsListBox>
+                            </controls1:WizardOptionsListBox>
                             <!--<Button HorizontalAlignment="Left" Margin="0 8 0 0"
                                     Style="{StaticResource MaterialDesignPaperButton}"
                                     Command="{x:Static local:ExcelImportWindow.NavigateBackCommand}">
@@ -724,7 +731,7 @@
                                     CommandParameter="SelectClassPlanArea"
                                     HorizontalAlignment="Left"
                                     IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}">
-                                <controls:IconText Kind="ArrowRight" Text="下一步"/>
+                                <controls1:IconText Kind="ArrowRight" Text="下一步"/>
                             </Button>
                         </Grid>
                     </materialDesign:TransitionerSlide>
@@ -869,36 +876,7 @@
                                            TextWrapping="Wrap" />
                                 <StackPanel
                                     Visibility="{Binding ViewModel.CurrentClassPlan.IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                    <StackPanel
-                                        DataContext="{Binding ViewModel.CurrentClassPlan.TimeRule}">
-                                        <Separator Margin="0 8 0 8" />
-                                        <controls:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
-                                        <!--<TextBlock Text="{Binding}"/>-->
-                                        <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
-
-                                        <TextBlock Text="当今天是：" Margin="0 8 0 0" />
-                                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                                 SelectedIndex="{Binding WeekDay}"
-                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                            <ListBoxItem Content="周日" />
-                                            <ListBoxItem Content="周一" />
-                                            <ListBoxItem Content="周二" />
-                                            <ListBoxItem Content="周三" />
-                                            <ListBoxItem Content="周四" />
-                                            <ListBoxItem Content="周五" />
-                                            <ListBoxItem Content="周六" />
-                                        </ListBox>
-
-                                        <TextBlock Text="当本周是：" Margin="0 6 0 0" />
-                                        <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                                 SelectedIndex="{Binding WeekCountDiv}"
-                                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                            <ListBoxItem Content="不限" />
-                                            <ListBoxItem Content="单周" />
-                                            <ListBoxItem Content="双周" />
-                                        </ListBox>
-
-                                    </StackPanel>
+                                    <controls1:TimeRuleEditControl TimeRule="{Binding ViewModel.CurrentClassPlan.TimeRule, Mode=OneWay}"/>
                                 </StackPanel>
                                 <controls:NavigationButtonsControl NavigationNextCommandParameter="AllClassPlansView"
                                                                    IsEnabled="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToBooleanReConverter}}" />
@@ -927,7 +905,7 @@
                                      Margin="0 8 0 16">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <controls:IconText Kind="FileChartOutline" Text="{Binding Name}" />
+                                        <controls1:IconText Kind="FileChartOutline" Text="{Binding Name}" />
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
@@ -966,7 +944,7 @@
                             </TextBlock>
                             <WrapPanel HorizontalAlignment="Left" Margin="0 16 0 0">
                                 <Button Click="ButtonFinished_OnClick">
-                                    <controls:IconText Kind="Check" Text="完成"/>
+                                    <controls1:IconText Kind="Check" Text="完成"/>
                                 </Button>
                             </WrapPanel>
                         </StackPanel>
@@ -1004,9 +982,9 @@
                                VerticalAlignment="Center"/>
                 </StackPanel>
             </Grid>
-            <windows:AsyncBox Grid.Row="0" Grid.Column="0"
+            <windows1:AsyncBox Grid.Row="0" Grid.Column="0"
                               Grid.RowSpan="2" Grid.ColumnSpan="3"
-                              VerticalAlignment="Bottom" Height="8" LoadingViewType="controls:LoadingMask"/>
+                              VerticalAlignment="Bottom" Height="6" LoadingViewType="controls:LoadingMask"/>
         </Grid>
     </materialDesign:DialogHost>
-</controls:MyWindow>
+</controls1:MyWindow>

@@ -8,11 +8,11 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 
 using Microsoft.Extensions.Hosting;
@@ -24,13 +24,15 @@ namespace ClassIsland.Services;
 /// 提醒主机服务。
 /// </summary>
 public class NotificationHostService(SettingsService settingsService, ILogger<NotificationHostService> logger)
-    : IHostedService, INotifyPropertyChanged
+    : IHostedService, INotifyPropertyChanged, INotificationHostService
 {
     private SettingsService SettingsService { get; } = settingsService;
     private ILogger<NotificationHostService> Logger { get; } = logger;
     private Settings Settings => SettingsService.Settings;
 
-    public PriorityQueue<NotificationRequest, int> RequestQueue { get; } = new();
+    public PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; } = new();
+
+    private int _queueIndex = 0;
 
     public ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; } = new();
 
@@ -183,7 +185,11 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
             .FirstOrDefault();
         request.ProviderSettings = request.NotificationSource?.ProviderSettings ?? request.ProviderSettings;
-        RequestQueue.Enqueue(request, request.IsPriorityOverride ? request.PriorityOverride : Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()));
+        if (_queueIndex +1 >= int.MaxValue)
+        {
+            _queueIndex = 0;
+        }
+        RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request)
@@ -212,16 +218,18 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     /// <typeparam name="T">提醒服务类型</typeparam>
     /// <param name="id">提醒服务id</param>
     /// <returns>对应提醒服务实例。若不存在，则返回null。</returns>
-    public T? GetNotificationProviderSettings<T>(Guid id)
+    public T GetNotificationProviderSettings<T>(Guid id) where T : class
     {
         Logger.LogInformation("获取提醒提供方设置：{}", id);
         var o = Settings.NotificationProvidersSettings[id.ToString()];
-        if (o is JsonElement)
+        var settings = o switch
         {
-            var o1 = (JsonElement)o;
-            return o1.Deserialize<T>();
-        }
-        return (T?)Settings.NotificationProvidersSettings[id.ToString()];
+            JsonElement json => json.Deserialize<T>() ?? Activator.CreateInstance<T>(),
+            T s => s,
+            _ => Activator.CreateInstance<T>()
+        };
+        Settings.NotificationProvidersSettings[id.ToString()] = settings;
+        return settings;
     }
 
     public void WriteNotificationProviderSettings<T>(Guid id, T settings)

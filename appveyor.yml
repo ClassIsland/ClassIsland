@@ -9,10 +9,19 @@ environment:
 build_script:
   - pwsh: pwsh -ep Bypass -c ./tools/build-appveyor.ps1
 artifacts:
-  - path: ./out/*.*
-    type: Auto
+  - path: ./out/*.zip
+    type: Zip
+  - path: ./out/*.nupkg
+    type: NuGetPackage
+  - path: ./out/*.md5sum
+    type: File
+  - path: ./out/*.md
+    type: File
 deploy:
   - provider: Environment
     name: gh_releases
     on:
       APPVEYOR_REPO_TAG: true
+nuget:
+  project_feed: true
+  disable_publish_on_pr: true

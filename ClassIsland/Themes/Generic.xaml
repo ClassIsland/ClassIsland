@@ -10,14 +10,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:views="clr-namespace:ClassIsland.Views"
-    xmlns:profile="clr-namespace:ClassIsland.Core.Models.Profile;assembly=ClassIsland.Core"
+    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+    xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
     mc:Ignorable="d" >
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+        <ResourceDictionary Source="/Themes/MaterialDesignYouNavigationStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
-    <Style TargetType="controls:NumbericTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+    <Style TargetType="controls1:NumbericTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
     </Style>
@@ -45,15 +48,16 @@
         <Setter Property="Control.ToolTip" Value="foo"/>
     </Style>
 
-    <converters:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
+    <converters1:DayTimeSpanToHeightConverter x:Key="DayTimeSpanToHeightConverter" />
 
     <Style TargetType="{x:Type controls:TimeLineListControl}" BasedOn="{StaticResource MaterialDesignListBox}">
         <Style.Resources>
+            <!-- 档案编辑 > 时间线视图 > 上课/课间休息时间块 -->
             <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateTimePoint">
                 <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Grid.Resources>
-                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
-                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                        <converters1:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Grid.Resources>
                     <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
                     <materialDesign:ColorZone SnapsToDevicePixels="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -85,11 +89,12 @@
                     </materialDesign:ColorZone>
                 </Grid>
             </DataTemplate>
+            <!-- 档案编辑 > 时间线视图 > 分割线 -->
             <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateSeparator">
                 <Grid VerticalAlignment="Stretch">
                     <Grid.Resources>
-                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
-                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                        <converters1:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Grid.Resources>
                     <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
                     <Line SnapsToDevicePixels="True" StrokeThickness="6" Stroke="Red"
@@ -116,15 +121,14 @@
         <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <Canvas IsItemsHost="True" 
+                    <Canvas IsItemsHost="True"
                             HorizontalAlignment="Stretch"
                             Margin="60 0 0 0"
-                            Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"
-                    />
+                            Height="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource DayTimeSpanToHeightConverter}}"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
@@ -157,10 +161,11 @@
             <Setter.Value>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Style.Resources>
-                        <converters:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
-                        <converters:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                        <converters1:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Style.Resources>
                     <Style.Triggers>
+                        <!-- 档案编辑 > 时间线视图 > 分割线装饰器 -->
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
                             <Setter Property="Height" Value="Auto"/>
                             <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
@@ -245,6 +250,7 @@
                             </MultiBinding>
                         </Setter.Value>
                     </Setter>
+                    <!-- 档案编辑 > 时间线视图 > 上课/课间休息时间块装饰器 -->
                     <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                         <Setter.Value>
                             <materialDesign:BehaviorCollection>
@@ -306,7 +312,8 @@
         
     </Style>
 
-    <Style TargetType="{x:Type controls:WizardOptionsListBox}"
+    <Style TargetType="{x:Type controls1:WizardOptionsListBox}"
+           x:Key="WizardOptionsListBoxBaseStyle"
            BasedOn="{StaticResource MaterialDesignListBox}">
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
@@ -323,30 +330,31 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type models:WizardOption}">
-                    <controls:WizardOptionControl OptionHeader="{Binding Header}"
+                    <controls1:WizardOptionControl OptionHeader="{Binding Header}"
                                                   OptionContent="{Binding Content}"
                                                   IsSelected="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}">
-                        <controls:WizardOptionControl.Style>
-                            <Style TargetType="controls:WizardOptionControl">
+                        <controls1:WizardOptionControl.Style>
+                            <Style TargetType="controls1:WizardOptionControl">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding InvokeCommand}" Value="{x:Null}">
-                                        <Setter Property="InvokedCommand" Value="{Binding InvokeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:WizardOptionsListBox}}"/>
+                                        <Setter Property="InvokedCommand" Value="{Binding InvokeCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=controls1:WizardOptionsListBox}}"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding InvokeCommandParameter}" Value="{x:Null}">
-                                        <Setter Property="InvokeCommandParameter" Value="{Binding InvokeCommandParameter, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:WizardOptionsListBox}}"/>
+                                        <Setter Property="InvokeCommandParameter" Value="{Binding InvokeCommandParameter, RelativeSource={RelativeSource FindAncestor, AncestorType=controls1:WizardOptionsListBox}}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                                 <Setter Property="InvokedCommand" Value="{Binding InvokeCommand}"/>
                                 <Setter Property="InvokeCommandParameter" Value="{Binding InvokeCommandParameter}"/>
                             </Style>
-                        </controls:WizardOptionControl.Style>
-                    </controls:WizardOptionControl>
+                        </controls1:WizardOptionControl.Style>
+                    </controls1:WizardOptionControl>
                 </DataTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+    <Style TargetType="controls1:WizardOptionsListBox" BasedOn="{StaticResource WizardOptionsListBoxBaseStyle}"/>
 
-    <converters:RangePositionToStringConverter x:Key="RangePositionToStringConverter" />
+    <converters1:RangePositionToStringConverter x:Key="RangePositionToStringConverter" />
     <Style TargetType="{x:Type controls:ExcelSelectionTextBox}" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsCurrentSelecting, RelativeSource={RelativeSource Self}}" Value="True">
@@ -381,15 +389,5 @@
         <Setter Property="Text" Value="{Binding Value, RelativeSource={RelativeSource Self}, Mode=OneWay, Converter={StaticResource RangePositionToStringConverter}}"/>
     </Style>
 
-    <Style TargetType="Slider" BasedOn="{StaticResource MaterialDesignSlider}">
-        <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
-            <Setter.Value>
-                <materialDesign:BehaviorCollection>
-                    <behaviors:SliderManipulationBehavior/>
-                </materialDesign:BehaviorCollection>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="controls:AutoScrollListView" BasedOn="{StaticResource MaterialDesignListView}"/>
+    <Style TargetType="controls1:AutoScrollListView" BasedOn="{StaticResource MaterialDesignListView}"/>
 </ResourceDictionary>

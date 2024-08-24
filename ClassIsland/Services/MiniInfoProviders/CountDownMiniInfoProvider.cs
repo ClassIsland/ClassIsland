@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-
+using ClassIsland.Controls.Components;
 using ClassIsland.Controls.MiniInfoProvider;
-using ClassIsland.Core.Interfaces;
+using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models;
 
 using Google.Protobuf.WellKnownTypes;
@@ -27,13 +27,6 @@ public class CountDownMiniInfoProvider : IMiniInfoProvider, IHostedService
 
     private CountDownMiniInfoProviderSettings CountDownMiniInfoProviderSettings { get; set; }
 
-    private DispatcherTimer dispatcherTimer 
-    {
-        get; 
-    } = new(DispatcherPriority.Render)
-    {
-        Interval = TimeSpan.FromMilliseconds(50)
-    };
 
     public CountDownMiniInfoProvider(SettingsService settingsService, MiniInfoProviderHostService miniInfoProviderHostService)
     {
@@ -43,26 +36,13 @@ public class CountDownMiniInfoProvider : IMiniInfoProvider, IHostedService
             miniInfoProviderHostService.GetMiniInfoProviderSettings<CountDownMiniInfoProviderSettings>(ProviderGuid)
             ?? new();
         CountDownMiniInfoProviderSettings.DaysLeft = (CountDownMiniInfoProviderSettings.overTime - DateTime.Today).Days;
-        InfoElement = new CountDownMiniInfoProviderControl(CountDownMiniInfoProviderSettings);
-        SettingsElement = new CountDownMiniInfoProviderSettingsControl(CountDownMiniInfoProviderSettings);
-        miniInfoProviderHostService.WriteMiniInfoProviderSettings(ProviderGuid, CountDownMiniInfoProviderSettings);
-
-        dispatcherTimer.Tick += UpdateCountDownTick;
-        dispatcherTimer.Start();
-    }
-
-    private void UpdateCountDownTick(object? sender,EventArgs e)
-    {
-        CountDownMiniInfoProviderSettings.DaysLeft = (CountDownMiniInfoProviderSettings.overTime - DateTime.Today).Days;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
     {
-        
     }
 }

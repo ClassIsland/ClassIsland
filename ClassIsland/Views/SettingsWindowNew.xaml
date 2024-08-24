@@ -1,0 +1,362 @@
+﻿<controls:MyWindow x:Class="ClassIsland.Views.SettingsWindowNew"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:controls="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+        xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+        xmlns:controls2="clr-namespace:ClassIsland.Controls"
+        xmlns:ci="clr-namespace:ClassIsland"
+        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+        xmlns:converters1="clr-namespace:ClassIsland.Converters"
+        xmlns:services="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
+        d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        mc:Ignorable="d"
+        MinWidth="560"
+        Title="应用设置" Height="550" Width="1200"
+        SizeChanged="SettingsWindowNew_OnSizeChanged"
+        Closing="SettingsWindowNew_OnClosing">
+    <controls:MyWindow.Resources>
+        <StackPanel VerticalAlignment="Stretch" Margin="16" MaxWidth="400" x:Key="RestartDialog">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="需要重启"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="部分设置需要重启以应用。"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="稍后" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="立即重启" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+        <ScrollViewer Width="332" x:Key="ExperimentalSettings"
+                      VerticalScrollBarVisibility="Auto"
+                      materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
+            <StackPanel Margin="16">
+                <TextBlock Text="实验性功能" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Margin="0 0 0 4" />
+                <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
+                           Margin="0 0 0 16" />
+                <CheckBox Content="允许编辑已启用的时间表" IsChecked="{Binding SettingsService.Settings.ExpAllowEditingActivatedTimeLayout}"/>
+                <TextBlock TextWrapping="Wrap" 
+                           Foreground="IndianRed"
+                           FontWeight="Bold"
+                           FontStyle="Italic"
+                           Text="警告！此功能与组件“课程表（旧）”不兼容。在使用时请务必移除所有“课程表（旧）”组件，改用“课程表（实验）”组件，否则可能会出现一些奇怪的问题。"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Storyboard x:Key="NavigationLeaving">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1.00">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuarticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.0500000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuarticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="NavigationEntering">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="300">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <SineEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <SineEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <CollectionViewSource x:Key="NavigationCollectionViewSource"
+                              Source="{x:Static services:SettingsWindowRegistryService.Registered}"
+                              Filter="NavigationCollectionViewSource_OnFilter">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Category"/>
+            </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="Category"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+        <converters1:SettingsWindowIsFirstGroupConverter x:Key="SettingsWindowIsFirstGroupConverter" />
+    </controls:MyWindow.Resources>
+    <controls:MyWindow.CommandBindings>
+        <CommandBinding Command="{x:Static controls1:SettingsPageBase.OpenDrawerCommand}" Executed="CommandBindingOpenDrawer_OnExecuted"/>
+        <CommandBinding Command="{x:Static controls1:SettingsPageBase.CloseDrawerCommand}" Executed="CommandBindingCloseDrawer_OnExecuted"/>
+        <CommandBinding Command="{x:Static controls1:SettingsPageBase.RequestRestartCommand}" Executed="CommandBindingRestartApp_OnExecuted"></CommandBinding>
+    </controls:MyWindow.CommandBindings>
+    <Grid>
+        <materialDesign:DialogHost Identifier="{x:Static controls1:SettingsPageBase.DialogHostIdentifier}">
+            <materialDesign:DrawerHost IsRightDrawerOpen="{Binding ViewModel.IsDrawerOpen}"
+                                       RightDrawerContent="{Binding ViewModel.DrawerContent}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ViewModel.IsNavigationDrawerOpened}"
+                                               Grid.Row="1">
+                        <materialDesign:DrawerHost.Style>
+                            <Style TargetType="materialDesign:DrawerHost">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel.IsViewCompressed}" Value="True">
+                                        <Setter Property="OpenMode" Value="Modal" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="OpenMode" Value="Standard" />
+                            </Style>
+                        </materialDesign:DrawerHost.Style>
+                        <materialDesign:DrawerHost.LeftDrawerContent>
+                            <!-- 导航栏 -->
+                            <Grid Width="250">
+                                <ListBox ItemsSource="{Binding Source={StaticResource NavigationCollectionViewSource}}"
+                                         SelectedItem="{Binding ViewModel.SelectedPageInfo}"
+                                         SelectionChanged="NavigationListBox_OnSelectionChanged"
+                                         Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                                         IsEnabled="{Binding ViewModel.IsNavigating, Converter={StaticResource InvertBooleanConverter}}"
+                                         ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}">
+                                    <ListBox.GroupStyle>
+                                        <GroupStyle>
+                                            <GroupStyle.ContainerStyle>
+                                                <Style TargetType="{x:Type GroupItem}">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                                <StackPanel>
+                                                                    <Separator Height="0.5" 
+                                                                               Margin="0 4 0 4"
+                                                                               Visibility="{Binding Converter={StaticResource SettingsWindowIsFirstGroupConverter}, Mode=OneWay, ConverterParameter={StaticResource NavigationCollectionViewSource}}"/>
+                                                                    <ItemsPresenter />
+                                                                </StackPanel>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </GroupStyle.ContainerStyle>
+                                            <GroupStyle.HeaderTemplate>
+                                                <DataTemplate>
+                                                    <Separator/>
+                                                </DataTemplate>
+                                            </GroupStyle.HeaderTemplate>
+                                        </GroupStyle>
+                                    </ListBox.GroupStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon VerticalAlignment="Center"
+                                                                         Width="18" Height="18">
+                                                    <materialDesign:PackIcon.Style>
+                                                        <Style TargetType="materialDesign:PackIcon">
+                                                            <Style.Triggers>
+                                                                <!-- TODO: 添加对BitmapImage支持 -->
+                                                                <DataTrigger
+                                                                    Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
+                                                                    Value="True">
+                                                                    <Setter Property="Kind"
+                                                                            Value="{Binding SelectedPackIcon}" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Kind"
+                                                                    Value="{Binding UnSelectedPackIcon}" />
+                                                        </Style>
+                                                    </materialDesign:PackIcon.Style>
+                                                </materialDesign:PackIcon>
+                                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                                           Margin="12 0 0 0" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </materialDesign:DrawerHost.LeftDrawerContent>
+                        <!-- 页面内容 -->
+                        <Grid>
+                            <Frame Content="{Binding ViewModel.FrameContent}"
+                                   NavigationUIVisibility="Hidden"
+                                   x:Name="NavigationFrame" RenderTransformOrigin="0.5,0.5">
+                                <Frame.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform />
+                                        <SkewTransform />
+                                        <RotateTransform />
+                                        <TranslateTransform X="0" />
+                                    </TransformGroup>
+                                </Frame.RenderTransform>
+                                <d:Frame.Content>
+                                    <Page Background="Pink">
+                                        <TextBlock TextWrapping="Wrap"
+                                                   Text="{StaticResource TestStringLong}" />
+                                    </Page>
+                                </d:Frame.Content>
+                            </Frame>
+                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask"/>
+                        </Grid>
+                    </materialDesign:DrawerHost>
+                    <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Padding="16"
+                                              Mode="PrimaryMid"
+                                              materialDesign:ElevationAssist.Elevation="Dp4"
+                                              Margin="0 0 0 4">
+                        <Grid Margin="4 0 4 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <!--<ToggleButton Grid.Column="0"
+                            Style="{StaticResource MaterialDesignHamburgerToggleButton}" />-->
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" VerticalAlignment="Center"
+                                        Margin="0 -16">
+                                <Button ToolTip="返回"
+                                        Margin="0 0 16 0"
+                                        VerticalAlignment="Center"
+                                        Padding="0"
+                                        Click="ButtonGoBack_OnClick"
+                                        Visibility="{Binding ViewModel.CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Content="{materialDesign:PackIcon ArrowLeft, Size=24}" />
+                                <Button ToolTip="导航栏"
+                                        Margin="0 0 16 0"
+                                        VerticalAlignment="Center"
+                                        Padding="0"
+                                        Visibility="{Binding ViewModel.IsViewCompressed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Click="ButtonBaseToggleNavigationDrawer_OnClick"
+                                        Content="{materialDesign:PackIcon Menu, Size=24}" />
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal" Grid.Column="1">
+
+                                <TextBlock Text="应用设置"
+                                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                           HorizontalAlignment="Left"
+                                           Margin="0 0 0 0"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <StackPanel.Resources>
+                                    <Style TargetType="materialDesign:Chip"
+                                           BasedOn="{StaticResource MaterialDesignOutlineChip}">
+                                        <Style.Resources>
+                                            <converters:SolidColorBrushOpacityConverter
+                                                x:Key="SolidColorBrushOpacityConverter" />
+                                        </Style.Resources>
+                                        <Setter Property="Foreground"
+                                                Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}" />
+                                        <Setter Property="BorderBrush"
+                                                Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}" />
+                                        <Setter Property="IconForeground" Value="{DynamicResource MaterialDesignBody}" />
+                                        <Setter Property="IconBackground"
+                                                Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground), Converter={StaticResource SolidColorBrushOpacityConverter}, ConverterParameter=0.5, Mode=OneWay}" />
+                                        <Setter Property="Margin" Value="0 -8 6 -8" />
+                                    </Style>
+                                </StackPanel.Resources>
+                                <materialDesign:Chip
+                                    Visibility="{Binding ViewModel.IsRequestedRestart, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    ToolTip="部分设置需要重启以应用"
+                                    Click="ButtonRestartApp_OnClick"
+                                    Icon="{materialDesign:PackIcon Restart}">
+                                    <TextBlock>
+                                        <Run Text="需要重启" />
+                                    </TextBlock>
+                                </materialDesign:Chip>
+                                <materialDesign:Chip
+                                    Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                    ToolTip="查看您的单位/组织如何管理此ClassIsland实例。"
+                                    Icon="{materialDesign:PackIcon WorkOutline}">
+                                    <materialDesign:Chip.CommandParameter>
+                                        <controls2:ManagementInfoControl />
+                                    </materialDesign:Chip.CommandParameter>
+                                    <TextBlock>
+                                        <Run Text="由贵单位管理" />
+                                    </TextBlock>
+                                </materialDesign:Chip>
+                                <TextBlock Text="{x:Static ci:App.AppVersion}"
+                                           Margin="8 0 0 0"
+                                           VerticalAlignment="Center"
+                                           ToolTip="应用版本" />
+                                <materialDesign:PopupBox Margin="8 0 -8 0" ToolTip="更多选项…" StaysOpen="False"
+                                                         IsPopupOpen="{Binding ViewModel.IsPopupOpen, Mode=TwoWay}">
+                                    <StackPanel>
+                                        <StackPanel>
+                                            <!--<MenuItem Icon="{materialDesign:PackIcon WarningCircleOutline}" Header="查看崩溃报告…"/>
+                                        <Separator/>-->
+                                            <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"
+                                                  Click="MenuItemExperimentalSettings_OnClick" />
+                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="加入管理…"
+                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
+                                                  Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                                <MenuItem.CommandParameter>
+                                                    <controls2:JoinManagementDialog/>
+                                                </MenuItem.CommandParameter>
+                                            </MenuItem>
+                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="退出管理…"
+                                                  Click="MenuItemExitManagement_OnClick" 
+                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            </MenuItem>
+                                            <Separator/>
+                                            <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}"
+                                                  Header="日志…"
+                                                  Click="MenuItemAppLogs_OnClick"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
+                                                  Header="导出诊断数据"
+                                                  Click="MenuItemExportDiagnosticInfo_OnClick"/>
+                                        </StackPanel>
+
+                                    </StackPanel>
+                                </materialDesign:PopupBox>
+                            </StackPanel>
+                        </Grid>
+                    </materialDesign:ColorZone>
+                </Grid>
+            </materialDesign:DrawerHost>
+        </materialDesign:DialogHost>
+        <materialDesign:Snackbar MessageQueue="{Binding ViewModel.SnackbarMessageQueue}"
+                                 VerticalAlignment="Bottom"
+                                 HorizontalAlignment="Center"/>
+    </Grid>
+</controls:MyWindow>

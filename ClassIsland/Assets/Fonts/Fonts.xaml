@@ -1,4 +1,4 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <FontFamily x:Key="HarmonyOsSans" >/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC</FontFamily>
+    <FontFamily x:Key="HarmonyOsSans" >/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC, HarmonyOS Sans SC, Microsoft YaHei UI, SimHei</FontFamily>
 </ResourceDictionary>

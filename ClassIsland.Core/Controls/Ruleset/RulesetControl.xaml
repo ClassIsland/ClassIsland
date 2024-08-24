@@ -1,0 +1,152 @@
+﻿<UserControl x:Class="ClassIsland.Core.Controls.Ruleset.RulesetControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls.Ruleset"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{x:Static local:RulesetControl.AddRuleCommand}" Executed="CommandAddRule_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:RulesetControl.RemoveRuleCommand}" Executed="CommandRemoveRuleCommand_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:RulesetControl.RemoveGroupCommand}" Executed="CommandRemoveGroupCommand_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:RulesetControl.DuplicateGroupCommand}" Executed="CommandDuplicateGroup_OnExecuted"/>
+    </UserControl.CommandBindings>
+    <UserControl.Resources>
+        <converters:RuleLogicalModeToIntConverter x:Key="RuleLogicalModeToIntConverter" />
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RulesetControl}}"
+          Margin="16"
+          Width="500">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="规则集" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Margin="0 0 0 8" />
+            <WrapPanel Orientation="Horizontal">
+                <ComboBox SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          materialDesign:HintAssist.Hint="模式">
+                    <ComboBoxItem>
+                        <controls:IconText Kind="SelectMultiple" Text="当以下任意条件组满足时"/>
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <controls:IconText Kind="SelectGroup" Text="当以下所有条件组满足时"/>
+                    </ComboBoxItem>
+                </ComboBox>
+                <CheckBox Content="反转" IsChecked="{Binding Ruleset.IsReversed}"/>
+                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Click="ButtonAddRule_OnClick">
+                    <controls:IconText Kind="Add" Text="添加组"/>
+                </Button>
+            </WrapPanel>
+            
+        </StackPanel>
+        <!-- Main list box -->
+        <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}"
+                 HorizontalContentAlignment="Stretch"
+                 materialDesign:ListBoxItemAssist.ShowSelection="False">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource MaterialDesignToolBarBackground}"
+                            Padding="8"
+                            CornerRadius="2"
+                            Margin="-4">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <WrapPanel Grid.Row="0" Orientation="Horizontal"
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Center">
+                                <ComboBox SelectedIndex="{Binding Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
+                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                          materialDesign:HintAssist.Hint="模式">
+                                    <ComboBoxItem>
+                                        <controls:IconText Kind="SelectMultiple" Text="当以下任意条件满足时"/>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <controls:IconText Kind="SelectGroup" Text="当以下所有条件满足时"/>
+                                    </ComboBoxItem>
+                                </ComboBox>
+                                <CheckBox Content="反转" IsChecked="{Binding IsReversed}"/>
+                                <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                        Command="{x:Static local:RulesetControl.AddRuleCommand}"
+                                        CommandParameter="{Binding}">
+                                    <controls:IconText Kind="Add" Text="添加规则"/>
+                                </Button>
+                            </WrapPanel>
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center"
+                                        HorizontalAlignment="Right">
+                                <ToggleButton ToolTip="启用规则集"
+                                              IsChecked="{Binding IsEnabled}"
+                                              Margin="0 0 4 0"/>
+                                <Button Content="{materialDesign:PackIcon ContentDuplicate}"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        ToolTip="复制"
+                                        Command="{x:Static local:RulesetControl.DuplicateGroupCommand}"
+                                        CommandParameter="{Binding}"
+                                        Margin="0 0 4 0"
+                                />
+                                <Button Content="{materialDesign:PackIcon Remove}"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Command="{x:Static local:RulesetControl.RemoveGroupCommand}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip="删除"
+                                />
+                            </StackPanel>
+
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Rules}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0 4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="2*" />
+                                                <ColumnDefinition Width="3*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="0" Content="{materialDesign:PackIcon Remove}"
+                                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                    ToolTip="删除"
+                                                    Command="{x:Static local:RulesetControl.RemoveRuleCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    />
+                                            <CheckBox Grid.Column="1"
+                                                      Content="反转" IsChecked="{Binding IsReversed}" />
+                                            <ComboBox Grid.Column="2"
+                                                      SelectedValue="{Binding Id}"
+                                                      SelectedValuePath="Key"
+                                                      ItemsSource="{x:Static services:IRulesetService.Rules}">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <controls:IconText Kind="{Binding Value.IconKind}"
+                                                                           Text="{Binding Value.Name}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                            <local:RulesetSettingsControlPresenter Grid.Column="3"
+                                                Rule="{Binding Mode=OneWay}"
+                                                RuleId="{Binding Id, Mode=OneWay}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- 无结果 -->
+    </Grid>
+</UserControl>

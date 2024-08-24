@@ -3,11 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Management;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Protobuf.Command;
-using ClassIsland.Core.Protobuf.Enum;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Management;
+using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Shared.Protobuf.Command;
+using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Services.Management;
 
 using MaterialDesignThemes.Wpf;
@@ -30,14 +32,14 @@ public class ManagementNotificationProvider : INotificationProvider, IHostedServ
         Height = 24
     };
     
-    private NotificationHostService NotificationHostService { get; }
+    private INotificationHostService NotificationHostService { get; }
     
-    private ManagementService ManagementService { get; }
+    private IManagementService ManagementService { get; }
     
     private ILogger<ManagementNotificationProvider> Logger { get; }
 
-    public ManagementNotificationProvider(NotificationHostService notificationHostService, 
-        ManagementService managementService,
+    public ManagementNotificationProvider(INotificationHostService notificationHostService, 
+        IManagementService managementService,
         ILogger<ManagementNotificationProvider> logger)
     {
         NotificationHostService = notificationHostService;

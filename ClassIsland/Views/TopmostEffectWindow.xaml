@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:TopmostEffectWindow}"
         Topmost="True"
+        ShowActivated="False"
         ContentRendered="TopmostEffectWindow_OnContentRendered"
         Title="顶层效果窗口" Height="0" Width="0"
         Top="0"

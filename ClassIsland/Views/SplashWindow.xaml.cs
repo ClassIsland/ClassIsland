@@ -2,7 +2,9 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
-
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Services;
 
 namespace ClassIsland.Views;
@@ -12,9 +14,9 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class SplashWindow : Window
 {
-    public SplashService SplashService { get; }
+    public ISplashService SplashService { get; }
 
-    public SplashWindow(SplashService splashService)
+    public SplashWindow(ISplashService splashService)
     {
         SplashService = splashService;
         InitializeComponent();

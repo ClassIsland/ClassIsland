@@ -1,4 +1,4 @@
-﻿<controls:MyWindow x:Class="ClassIsland.Views.FeatureDebugWindow"
+﻿<ci:MyWindow x:Class="ClassIsland.Views.FeatureDebugWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,6 +7,8 @@
         xmlns:controls="clr-namespace:ClassIsland.Controls"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:notificationEffects="clr-namespace:ClassIsland.Controls.NotificationEffects"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:ruleset="clr-namespace:ClassIsland.Core.Models.Ruleset;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -19,6 +21,38 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="RulesetControl">
+                <Grid Background="#99000000">
+                    <ci:RulesetControl Background="{DynamicResource MaterialDesignPaper}"
+                                       HorizontalAlignment="Right">
+                        <ci:RulesetControl.Ruleset>
+                            <ruleset:Ruleset>
+                                
+                            </ruleset:Ruleset>
+                        </ci:RulesetControl.Ruleset>
+                    </ci:RulesetControl>
+                </Grid>
+            </TabItem>
+            <TabItem Header="ProgressBar">
+                <Grid>
+                    <ProgressBar IsIndeterminate="True"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="IconControl">
+                <Grid>
+                    <ci:IconControl PackIconKind="Github"
+                                    FallbackPackIconKind="QuestionMarkCircleOutline"
+                                    Width="64" Height="64"
+                                    IconKind="Image"
+                                    ImageSource="/Assets/HoYoStickers/光辉矢愿_想我了吗.png"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="LessonsListBox">
+                <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
+                                   SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"
+                                   Subjects="{Binding ProfileService.Profile.Subjects}"
+                                   IsLiveUpdatingEnabled="False"/>
+            </TabItem>
             <TabItem Header="水波纹提醒">
                 <DockPanel >
                     <WrapPanel Orientation="Horizontal" DockPanel.Dock="Top">
@@ -62,8 +96,9 @@
                             AutoToolTipPlacement="BottomRight"
                             IsSnapToTickEnabled="True"
                             TickFrequency="0.1"></Slider>
+                    <ci:IconText/>
                 </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>
-</controls:MyWindow>
+</ci:MyWindow>

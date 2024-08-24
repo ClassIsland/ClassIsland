@@ -1,21 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ClassIsland.Core.Helpers;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Models.Components;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
-public class SettingsService(ILogger<SettingsService> logger, ManagementService managementService) : INotifyPropertyChanged
+public class SettingsService(ILogger<SettingsService> logger, IManagementService managementService) : INotifyPropertyChanged
 {
     private Settings _settings = new();
+
+    private bool SkipMigration { get; set; } = false;
 
     public Settings Settings
     {
@@ -25,7 +35,7 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
 
     private ILogger<SettingsService> Logger { get; } = logger;
 
-    private ManagementService ManagementService { get; } = managementService;
+    private IManagementService ManagementService { get; } = managementService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -41,7 +51,7 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
         var url = ManagementService.Manifest.DefaultSettingsSource.Value!;
         var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
         Settings = settings;
-        Settings.PropertyChanged += (sender, args) => SaveSettings();
+        Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
         Logger.LogTrace("拉取集控默认设置成功！");
     }
 
@@ -51,6 +61,7 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
         {
             if (!File.Exists("./Settings.json"))
             {
+                SkipMigration = true;  // 如果是新的配置文件，那么就需要跳过迁移。
                 Logger.LogInformation("配置文件不存在，跳过加载。");
             }
             else
@@ -58,7 +69,7 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
                 Logger.LogInformation("加载配置文件。");
                 var r = ConfigureFileHelper.LoadConfig<Settings>("./Settings.json");
                 Settings = r;
-                Settings.PropertyChanged += (sender, args) => SaveSettings();
+                Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
             }
 
             // 当还没有初始化应用且启用集控时，从集控拉取设置。
@@ -69,6 +80,7 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
         }
         catch(Exception ex)
         {
+            SkipMigration = true;
             Logger.LogError(ex, "配置文件加载失败。");
             // ignored
         }
@@ -76,11 +88,109 @@ public class SettingsService(ILogger<SettingsService> logger, ManagementService 
         {
             Settings.SpeechSource = 1;
         }
+
+        var requiresRestarting = false;
+        if (!SkipMigration)
+        {
+            MigrateSettings(out requiresRestarting);
+        }
+
+        Settings.LastAppVersion = Assembly.GetExecutingAssembly().GetName().Version!;
+
+        if (requiresRestarting)
+        {
+            AppBase.Current.Restart();
+        }
     }
 
-    public void SaveSettings()
+    private T TryGetDictionaryValue<T>(IDictionary<string, object?> dictionary, string key, T? fallbackValue=null)
+        where T : class
     {
-        Logger.LogInformation("写入配置文件。");
+        var fallback = fallbackValue ?? Activator.CreateInstance<T>();
+        var r = Settings.MiniInfoProviderSettings.TryGetValue(key.ToLower(), out var o);
+        if (o is JsonElement o1)
+        {
+            return o1.Deserialize<T>() ?? fallback;
+        }
+        return (T?)Settings.MiniInfoProviderSettings[key.ToLower()] ?? fallback;
+    }
+
+    private void MigrateSettings(out bool requiresRestarting)
+    {
+        requiresRestarting = false;
+        if (Settings.LastAppVersion < Version.Parse("1.4.1.0"))  // 从 1.4.1.0 以前的版本升级
+        {
+            var componentsService = App.GetService<IComponentsService>();
+            componentsService.CurrentComponents.Clear();
+            var island = componentsService.CurrentComponents;
+            var miniInfo = Settings.SelectedMiniInfoProvider?.ToUpper() switch
+            {
+                // 日期
+                "D9FC55D6-8061-4C21-B521-6B0532FF735F" => new ComponentSettings
+                    { Id = "DF3F8295-21F6-482E-BADA-FA0E5F14BB66" },
+                // 天气简报 
+                "EA336289-5A60-49EF-AD36-858109F37644" => new ComponentSettings
+                {
+                    Id = "CA495086-E297-4BEB-9603-C5C1C1A8551E",
+                    Settings = new WeatherComponentSettings()
+                    {
+                        ShowAlerts = TryGetDictionaryValue(Settings.MiniInfoProviderSettings,
+                                "EA336289-5A60-49EF-AD36-858109F37644", new WeatherMiniInfoProviderSettings())
+                            .IsAlertEnabled
+                    }
+                },
+                // 倒计时日 
+                "DE09B49D-FE61-11EE-9DF4-43208C458CC8" => new ComponentSettings
+                {
+                    Id = "7C645D35-8151-48BA-B4AC-15017460D994",
+                    Settings = new CountDownComponentSettings()
+                    {
+                        CountDownName =
+                            TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(Settings.MiniInfoProviderSettings,
+                                "DE09B49D-FE61-11EE-9DF4-43208C458CC8").countDownName,
+                        FontColor = TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(
+                            Settings.MiniInfoProviderSettings, "DE09B49D-FE61-11EE-9DF4-43208C458CC8").fontColor,
+                        FontSize = TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(
+                            Settings.MiniInfoProviderSettings, "DE09B49D-FE61-11EE-9DF4-43208C458CC8").fontSize,
+                        OverTime = TryGetDictionaryValue<CountDownMiniInfoProviderSettings>(
+                            Settings.MiniInfoProviderSettings, "DE09B49D-FE61-11EE-9DF4-43208C458CC8").overTime
+                    }
+                },
+                _ => new ComponentSettings { Id = "DF3F8295-21F6-482E-BADA-FA0E5F14BB66" }
+            };
+            if (Settings.ShowDate)
+            {
+                island.Add(miniInfo);
+            }
+
+            island.Add(new ComponentSettings()
+            {
+                Id = "1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8",
+                Settings = new LessonControlSettings()
+                {
+                    CountdownSeconds = Settings.CountdownSeconds,
+                    ExtraInfoType = Settings.ExtraInfoType,
+                    IsCountdownEnabled = Settings.IsCountdownEnabled,
+                    ShowExtraInfoOnTimePoint = Settings.ShowExtraInfoOnTimePoint
+                }
+            });
+            Settings.ShowComponentsMigrateTip = true;
+            Settings.IsMigratedFromv1_4 = true;
+            Logger.LogInformation("成功迁移了 1.4.1.0 以前的设置。");
+        }
+
+        if (Settings.LastAppVersion < Version.Parse("1.4.3.0"))
+        {
+            Settings.IsSentryEnabled = Settings.IsReportingEnabled;
+            requiresRestarting = true;
+            Logger.LogInformation("成功迁移了 1.4.3.0 以前的设置。");
+        }
+
+    }
+
+    public void SaveSettings(string? note = "-")
+    {
+        Logger.LogInformation("写入配置文件：" + note);
         ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
     }
 

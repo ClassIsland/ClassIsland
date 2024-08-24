@@ -1,5 +1,5 @@
-﻿using ClassIsland.Core.Abstraction.Models;
-using ClassIsland.Core.Enums;
+﻿using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Enums;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -11,6 +11,7 @@ public class WeatherNotificationProviderSettings : ObservableRecipient, IWeather
     private NotificationModes _forecastShowMode;
     private bool _isAlertEnabled = true;
     private bool _isForecastEnabled = true;
+    private double _weatherAlertSpeed = 7.0;
 
     public NotificationModes AlertShowMode
     {
@@ -52,6 +53,17 @@ public class WeatherNotificationProviderSettings : ObservableRecipient, IWeather
         {
             if (value == _isForecastEnabled) return;
             _isForecastEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double WeatherAlertSpeed
+    {
+        get => _weatherAlertSpeed;
+        set
+        {
+            if (value.Equals(_weatherAlertSpeed)) return;
+            _weatherAlertSpeed = value;
             OnPropertyChanged();
         }
     }

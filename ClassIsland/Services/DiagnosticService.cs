@@ -7,11 +7,11 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
-using Microsoft.AppCenter.Analytics;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
@@ -44,6 +44,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
+            {"AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString()},
             {
                 nameof(settings.DiagnosticFirstLaunchTime),
                 settings.DiagnosticFirstLaunchTime.ToString(CultureInfo.CurrentCulture)
@@ -75,10 +76,6 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         var t1 = Math.Min(30, sec);
         var text = $"[{t1}, {t1 + 2})";
         App.GetService<ILogger<DiagnosticService>>().LogInformation("启动共花费 {}ms, {}", StartupDurationMs, text);
-        Analytics.TrackEvent(STARTUP_EVENT_NAME, new Dictionary<string, string>()
-        {
-            {"Duration", text}
-        });
     }
 
     public async Task ExportDiagnosticData(string path)
@@ -90,7 +87,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
             File.Copy("./Settings.json", Path.Combine(temp, "Settings.json"));
-            var profile = App.GetService<ProfileService>().CurrentProfilePath;
+            var profile = App.GetService<IProfileService>().CurrentProfilePath;
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
             Directory.CreateDirectory(Path.Combine(temp, "Management/"));
             foreach (var file in Directory.GetFiles(ManagementService.ManagementConfigureFolderPath))

@@ -1,86 +1,93 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <UseWindowsForms>True</UseWindowsForms>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-    <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
-    <AssemblyVersion>0.3</AssemblyVersion>
-    <FileVersion>0.3</FileVersion>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UserSecretsId>0702af86-626c-4e4a-94e4-f506e4e2beb7</UserSecretsId>
-    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-    <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
-    <StartupObject>ClassIsland.Program</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="assets\documents\ChangeLog.md" />
-    <None Remove="Assets\Documents\image\Welcome\1694925761903.png" />
-    <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-    <PackageReference Include="Downloader" Version="3.0.6" />
-    <PackageReference Include="Edge_tts_sharp" Version="1.0.4" />
-    <PackageReference Include="EPPlus" Version="7.0.8" />
-    <PackageReference Include="GitInfo" Version="2.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="FluentWPF" Version="0.10.2" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
-    <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
-    <PackageReference Include="Grpc.Tools" Version="2.62.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="GuerrillaNtp" Version="3.1.0" />
-    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.115" />
-    <PackageReference Include="MahApps.Metro" Version="2.4.10" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.8.0" />
-    <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.2.8" />
-    <PackageReference Include="MdXaml" Version="1.21.0" />
-    <PackageReference Include="MdXaml.AnimatedGif" Version="1.21.0" />
-    <PackageReference Include="MdXaml.Html" Version="1.21.0" />
-    <PackageReference Include="Microsoft.AppCenter" Version="5.0.2" />
-    <PackageReference Include="Microsoft.AppCenter.Analytics" Version="5.0.2" />
-    <PackageReference Include="Microsoft.AppCenter.Crashes" Version="5.0.2" />
-    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
-    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="Octokit" Version="9.1.0" />
-    <PackageReference Include="Pastel" Version="4.2.0" />
-    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-    <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
-    <PackageReference Include="System.Speech" Version="8.0.0" />
-    <PackageReference Include="unvell.ReoGridWPF.dll" Version="2.2.0" />
-    <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\TimeRules\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Assets\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
-    <ProjectReference Include="..\Walterlv\Walterlv.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWPF>true</UseWPF>
+        <UseWindowsForms>True</UseWindowsForms>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
+<!--        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>-->
+        <UserSecretsId>0702af86-626c-4e4a-94e4-f506e4e2beb7</UserSecretsId>
+        <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+        <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
+        <StartupObject></StartupObject>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <OutputType>WinExe</OutputType>
+        <DebugType>embedded</DebugType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+        <OutputType>Exe</OutputType>
+        <DefineConstants>TRACE</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <None Remove="assets\documents\ChangeLog.md" />
+        <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'=='Debug'">
+        <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="Downloader" Version="3.0.6" />
+        <PackageReference Include="Edge_tts_sharp" Version="1.0.4" />
+        <PackageReference Include="EPPlus" Version="7.0.8" />
+        <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
+        <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
+        <PackageReference Include="Grpc.Tools" Version="2.62.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="GuerrillaNtp" Version="3.1.0" />
+        <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="NAudio" Version="2.2.1" />
+        <PackageReference Include="Octokit" Version="9.1.0" />
+        <PackageReference Include="Pastel" Version="4.2.0" />
+        <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
+        <PackageReference Include="Sentry" Version="4.9.0" />
+        <PackageReference Include="Sentry.Extensions.Logging" Version="4.9.0" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
+        <PackageReference Include="System.Speech" Version="8.0.0" />
+        <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Models\Logging\" />
+        <Folder Include="Models\TimeRules\" />
+        <Folder Include="Enums\" />
+        <Folder Include="Models\Ipc\" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="..\..\.editorconfig" Link=".editorconfig" />
+    </ItemGroup>
+    <ItemGroup>
+        <Resource Include="Assets\**" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TrimAssets)'=='true'">
+        <Resource Remove="Assets\Fonts\*.ttf" />
+	</ItemGroup>
+    <PropertyGroup Condition="'$(TrimAssets)'=='true'">
+        <DefineConstants>TrimAssets</DefineConstants>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
+        <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="Themes\LightTheme.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Themes\DarkTheme.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>
+
+	<Import Project="..\Global.props" />
 </Project>

@@ -1,0 +1,246 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WindowSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:validations="clr-namespace:ClassIsland.Validations"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      Title="窗口"
+      d:DataContext="{d:DesignInstance local:WindowSettingsPage}">
+
+    <controls:SettingsPageBase.Resources>
+        <converters:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
+            <!-- 窗口停靠位置 -->
+            <ci:IconText Kind="Monitor" Text="窗口停靠位置" />
+            <Grid Margin="0 12 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0 0 8 0">
+                    <materialDesign:ColorZone
+                        BorderBrush="{DynamicResource MaterialDesignBody}"
+                        BorderThickness="8" CornerRadius="4"
+                        VerticalAlignment="Center"
+                        Height="220">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="8">
+                                <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left"
+                                             IsChecked="{Binding SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}" />
+                                <RadioButton VerticalAlignment="Top"
+                                             HorizontalAlignment="Center"
+                                             IsChecked="{Binding SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}" />
+                                <RadioButton VerticalAlignment="Top"
+                                             HorizontalAlignment="Right"
+                                             IsChecked="{Binding SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}" />
+
+                                <RadioButton VerticalAlignment="Bottom"
+                                             HorizontalAlignment="Left"
+                                             IsChecked="{Binding SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}" />
+                                <RadioButton VerticalAlignment="Bottom"
+                                             HorizontalAlignment="Center"
+                                             IsChecked="{Binding SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}" />
+                                <RadioButton VerticalAlignment="Bottom"
+                                             HorizontalAlignment="Right"
+                                             IsChecked="{Binding SettingsService.Settings.WindowDockingLocation, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}" />
+                            </Grid>
+                            <materialDesign:ColorZone Mode="Dark" Grid.Row="1" Height="16"
+                                                      Background="#99000000"
+                                                      BorderThickness="0">
+                                <Grid>
+                                    <materialDesign:PackIcon Kind="MicrosoftWindows"
+                                                             Height="10" Width="10" VerticalAlignment="Center"
+                                                             HorizontalAlignment="Left" Margin="3" />
+                                    <TextBlock x:Name="TaskbarTime"
+                                               FontSize="8" FontWeight="Light"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"
+                                               Margin="3"/>
+                                </Grid>
+                            </materialDesign:ColorZone>
+                        </Grid>
+                    </materialDesign:ColorZone>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" HorizontalAlignment="Stretch"
+                            Margin="8 0 0 0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <!-- 向右偏移 -->
+                        <ci:NumbericTextBox Grid.Column="0"
+                                                   Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                   Padding="6" Margin="0 0 4 0"
+                                                   materialDesign:HintAssist.Hint="向右偏移"
+                                                   Text="{Binding SettingsService.Settings.WindowDockingOffsetX, Converter={StaticResource IntToStringConverter}}" />
+                        <!-- 向下偏移 -->
+                        <ci:NumbericTextBox Grid.Column="1"
+                                                   Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                                   Padding="6" Margin="4 0 0 0"
+                                                   materialDesign:HintAssist.Hint="向下偏移"
+                                                   Text="{Binding SettingsService.Settings.WindowDockingOffsetY, Converter={StaticResource IntToStringConverter}}" />
+                    </Grid>
+                    <!-- 显示器 -->
+                    <ComboBox Margin="0 12 0 0"
+                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                              materialDesign:HintAssist.Hint="显示器"
+                              ItemsSource="{Binding ViewModel.Screens, Mode=OneWay}">
+                        <ComboBox.SelectedIndex>
+                            <Binding Path="SettingsService.Settings.WindowDockingMonitorIndex">
+                                <Binding.ValidationRules>
+                                    <validations:NotNegativeIndexValidationRule/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </ComboBox.SelectedIndex>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Monitor"
+                                                             VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                                        <Run Text="{Binding DeviceName, Mode=OneWay}" />
+                                        <Run Text="(">
+                                        </Run>
+                                        <Run Text="{Binding Bounds.Width, Mode=OneWay}">
+                                        </Run>
+                                        <Run Text="x">
+                                        </Run>
+                                        <Run Text="{Binding Bounds.Height, Mode=OneWay}">
+                                        </Run>
+                                        <Run Text=")" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Button Margin="0 8 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                            HorizontalAlignment="Left" Click="ButtonRefreshMonitors_OnClick">
+                        <ci:IconText Kind="Refresh" Text="刷新显示器列表" />
+                    </Button>
+
+                    <TextBlock Margin="0 16 0 0" TextWrapping="Wrap"
+                               Text="应用会以左图的位置显示在指定的显示器上。如果指定的显示器不存在，那么应用会显示在主显示器上。" />
+                    <!--<TextBlock Text="{Binding SettingsService.Settings.WindowDockingLocation, Mode=OneWay}"/>-->
+                </StackPanel>
+            </Grid>
+            <Separator Margin="0 16" />
+
+            <!-- 窗口层级 -->
+            <ci:SettingsCard IconGlyph="LayersOutline" Header="窗口层级"
+                                    Description="窗口在屏幕上的层级。置底则会显示在所有窗口的后方，置顶则将显示在所有窗口的前方。">
+                <ci:SettingsCard.Switcher>
+                    <ComboBox SelectedIndex="{Binding SettingsService.Settings.WindowLayer, Mode=TwoWay}"
+                              Foreground="{DynamicResource MaterialDesignBody}">
+                        <ComboBoxItem>
+                            <ci:IconText Kind="LayersMinus" Text="置底" />
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            <ci:IconText Kind="LayersPlus" Text="置顶" />
+                        </ComboBoxItem>
+                    </ComboBox>
+                </ci:SettingsCard.Switcher>
+            </ci:SettingsCard>
+
+            <!-- 指针移入淡化 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent"
+                          IsExpanded="{Binding SettingsService.Settings.IsMouseInFadingEnabled, Mode=OneWay}"
+                          TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <ci:SettingsControl IconGlyph="MouseMoveDown"
+                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                  Header="指针移入淡化"
+                                                  Description="启用后，在鼠标移入或触屏点击主界面区域时，将淡化主界面。"
+                                                  IsOn="{Binding SettingsService.Settings.IsMouseInFadingEnabled, Mode=TwoWay}"
+                                                  Margin="-12 0" />
+                    </Expander.Header>
+                    <StackPanel Margin="36 0 48 12"
+                                IsEnabled="{Binding SettingsService.Settings.IsMouseInFadingEnabled}">
+                        <StackPanel>
+                            <materialDesign:ColorZone Background="#22FF0000"
+                                                      Visibility="{Binding SettingsService.Settings.IsErrorLoadingRawInput, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                      Margin="0 0 0 4">
+                                <Grid>
+                                    <DockPanel Margin="8 4 4 4">
+                                        <materialDesign:PackIcon Kind="ErrorOutline"
+                                                                 Margin="0 0 4 0"
+                                                                 VerticalAlignment="Center"/>
+                                        <TextBlock Text="初始化 RawInput 失败，将使用兼容模式判断光标位置。详细请查看日志。"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Grid>
+                            </materialDesign:ColorZone>
+                            <!-- 使用原始输入 -->
+                            <ci:SettingsControl IconGlyph="Input"
+                                                    IsCompact="True"
+                                                   Header="使用原始输入"
+                                                   Description="启用后，ClassIsland 使用 RawInput 接受鼠标/触屏事件，将可以辨别鼠标和触摸事件，做出更适合鼠标/触屏的响应。如果出现不兼容的问题，请尝试禁用此选项。禁用后将采用1.4及以前版本中轮询判断光标位置的行为。"
+                                                   IsOn="{Binding SettingsService.Settings.UseRawInput, Mode=TwoWay}"
+                                                   Margin="0 0 0 6" />
+                            <!-- 触屏点击后自动恢复 -->
+                            <ci:SettingsControl IconGlyph="ClockOutline"
+                                                       IsCompact="True"
+                                                       Visibility="{Binding SettingsService.Settings.UseRawInput, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                       Header="触屏点击后自动恢复时间"
+                                                       Description="启用后，触屏点击主界面区域后将在一定时间后自动恢复主界面显示。设置为0为禁用。"
+                                                       Margin="0 0 0 6">
+                                <ci:SettingsControl.Switcher>
+                                    <ComboBox materialDesign:TextFieldAssist.SuffixText="ms"
+                                             Width="100"
+                                             IsEditable="True"
+                                             Text="{Binding SettingsService.Settings.TouchInFadingDurationMs, Converter={StaticResource IntToStringConverter}}"
+                                             Foreground="{DynamicResource MaterialDesignBody}">
+                                        <system:String>0</system:String>
+                                        <system:String>1500</system:String>
+                                        <system:String>3000</system:String>
+                                        <system:String>4500</system:String>
+                                        <system:String>6000</system:String>
+                                    </ComboBox>
+                                </ci:SettingsControl.Switcher>
+                            </ci:SettingsControl>
+
+                        </StackPanel>
+                    </StackPanel>
+                </Expander>
+            </materialDesign:Card>
+
+            <!-- 兼容透明模式 -->
+            <ci:SettingsCard IconGlyph="CogOutline"
+                                   Header="兼容透明模式"
+                                   Description="默认情况下主界面使用性能较好的 WindowChrome 实现窗口透明。如果出现显示异常（如叠加异常、黑底等问题），可以开启此选项。启用后将使用兼容性较好的 AllowTransparency 实现透明，但资源占用可能略高，且部分功能（如全屏提醒特效等）将不可用。"
+                                   IsOn="{Binding SettingsService.Settings.IsCompatibleWindowTransparentEnabled, Mode=TwoWay}"
+                                   Margin="0 0 0 6" />
+
+            <!-- 指针穿透 --><!--
+            <ci:SettingsCard IconGlyph="MouseMoveUp" Header="启用鼠标点击"
+                                   Description="启用时鼠标可以与主界面窗口上的元素交互。若禁用，那么鼠标在点击应用主界面窗口时，会穿透到窗口后方。"
+                                   IsOn="{Binding SettingsService.Settings.IsMouseClickingEnabled, Mode=TwoWay}" />-->
+
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

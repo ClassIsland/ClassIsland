@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="MaterialDesignYouPrimaryNavigationListBoxItemStyle"
+           TargetType="ListBoxItem"
+           BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBoxItem}">
+        <Setter Property="materialDesign:ListBoxItemAssist.CornerRadius" Value="0 20 20 0"/>
+        <Setter Property="Margin" Value="0 1"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Padding" Value="16 0 0 0"/>
+    </Style>
+</ResourceDictionary>

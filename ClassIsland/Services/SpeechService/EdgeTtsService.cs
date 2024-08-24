@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ClassIsland.Core.Abstraction.Services;
+using ClassIsland.Shared.Abstraction.Services;
 
 using Edge_tts_sharp;
 using Edge_tts_sharp.Model;

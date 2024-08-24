@@ -5,8 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-
-using ClassIsland.Models.Weather;
+using ClassIsland.Core.Models.Weather;
 
 namespace ClassIsland.Controls.NotificationProviders;
 
@@ -40,11 +39,14 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
         }
     }
 
-    public WeatherNotificationProviderControl(bool isOverlay, WeatherAlert alert)
+    public TimeSpan Duration { get; }
+
+    public WeatherNotificationProviderControl(bool isOverlay, WeatherAlert alert, TimeSpan duration)
     {
         InitializeComponent();
         IsOverlay = isOverlay;
         Alert = alert;
+        Duration = duration;
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -75,7 +77,7 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
         {
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
-            Duration = new Duration(TimeSpan.FromSeconds(20)),
+            Duration = new Duration(Duration),
 
         };
         var storyboard = new Storyboard()

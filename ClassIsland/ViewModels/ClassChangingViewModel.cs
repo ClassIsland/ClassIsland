@@ -1,6 +1,6 @@
 ﻿using System;
 
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Shared.Models.Profile;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 

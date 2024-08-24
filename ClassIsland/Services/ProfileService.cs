@@ -5,19 +5,25 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
-using ClassIsland.Core.Helpers;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Shared.Helpers;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
 
-using static ClassIsland.Core.Helpers.ConfigureFileHelper;
+using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
+using System.Windows.Input;
+using ClassIsland.Shared.IPC.Abstractions.Services;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
+using Sentry;
 
 namespace ClassIsland.Services;
 
-public class ProfileService
+public class ProfileService : IProfileService
 {
     public string CurrentProfilePath { 
         get; 
@@ -25,13 +31,13 @@ public class ProfileService
     } = @".\Profiles\Default.json";
 
     public static readonly string ManagementClassPlanPath =
-        Path.Combine(ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
+        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
 
     public static readonly string ManagementTimeLayoutPath =
-        Path.Combine(ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
+        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
 
     public static readonly string ManagementSubjectsPath =
-        Path.Combine(ManagementService.ManagementConfigureFolderPath, "Subjects.json");
+        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
     public Profile Profile {
         get;
@@ -42,13 +48,18 @@ public class ProfileService
 
     private ILogger<ProfileService> Logger { get; }
 
-    private ManagementService ManagementService { get; }
+    private IManagementService ManagementService { get; }
+    public IIpcService IpcService { get; }
 
-    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, ManagementService managementService)
+    private bool _isProfileLoaded = false;
+
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
     {
         Logger = logger;
         ManagementService = managementService;
+        IpcService = ipcService;
         SettingsService = settingsService;
+        IpcService.IpcProvider.CreateIpcJoint<IPublicProfileService>(this);
         if (!Directory.Exists("./Profiles"))
         {
             Directory.CreateDirectory("./Profiles");
@@ -58,6 +69,8 @@ public class ProfileService
 
     private async Task MergeManagementProfileAsync()
     {
+        var span = SentrySdk.GetSpan();
+        var spanLoadMgmtProfile = span?.StartChild("profile-mgmt-pull-profile");
         Logger.LogInformation("正在拉取集控档案");
         if (ManagementService.Connection == null)
             return;
@@ -68,44 +81,57 @@ public class ProfileService
             Profile? subjects = null;
             if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
             {
+                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-classPlan");
                 var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
                 var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
                 MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
+                spanDownload?.Finish();
             }
             if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
             {
+                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-timeLayout");
                 var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
                 var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
                 MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
+                spanDownload?.Finish();
             }
             if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
             {
+                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-subjects");
                 var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
                 var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
                 MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
+                spanDownload?.Finish();
             }
 
+            var spanSaving = spanLoadMgmtProfile?.StartChild("profile-mgmt-save");
             SaveProfile("_management-profile.json");
             ManagementService.Versions.ClassPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
             ManagementService.Versions.TimeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
             ManagementService.Versions.SubjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
             ManagementService.SaveSettings();
+            spanSaving?.Finish();
         }
         catch (Exception exp)
         {
+            spanLoadMgmtProfile?.Finish(exp);
             Logger.LogError(exp, "拉取档案失败。");
         }
 
+        
         //Profile = ConfigureFileHelper.CopyObject(Profile);
         Profile.Subjects = CopyObject(Profile.Subjects);
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
         Profile.ClassPlans = CopyObject(Profile.ClassPlans);
         Profile.RefreshTimeLayouts();
         Logger.LogTrace("成功拉取集控档案！");
+        spanLoadMgmtProfile?.Finish();
     }
 
     public async Task LoadProfileAsync()
     {
+        var span = SentrySdk.GetSpan();
+        var spanLoadingProfile = span?.StartChild("profile-loading");
         var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
         var path = $"./Profiles/{filename}";
         Logger.LogInformation("加载档案中：{}", path);
@@ -124,16 +150,24 @@ public class ProfileService
 
         Profile = r;
         if (ManagementService.IsManagementEnabled)
+        {
             await MergeManagementProfileAsync();
+        }
         Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
         CurrentProfilePath = filename;
         Logger.LogTrace("成功加载档案！");
         CleanExpiredTempClassPlan();
+        _isProfileLoaded = true;
+        spanLoadingProfile?.Finish();
     }
 
     public void SaveProfile()
     {
+        if (!_isProfileLoaded)
+        {
+            return;
+        }
         if (CurrentProfilePath.Contains(".\\Profiles\\"))
         {
             var splittedFileName = CurrentProfilePath.Split("\\");
@@ -171,7 +205,7 @@ public class ProfileService
         newCp.TimeLayoutId = timeLayoutId;
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
-        newCp.OverlaySetupTime = App.GetService<ExactTimeService>().GetCurrentLocalDateTime().Date;
+        newCp.OverlaySetupTime = App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
         Profile.IsOverlayClassPlanEnabled = true;
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
@@ -200,33 +234,17 @@ public class ProfileService
         }
 
         var cp = Profile.ClassPlans[Profile.OverlayClassPlanId];
-        if (cp.OverlaySetupTime.Date < App.GetService<ExactTimeService>().GetCurrentLocalDateTime().Date)
+        if (cp.OverlaySetupTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
         {
             Logger.LogInformation("清理过期的临时层课表。");
             ClearTempClassPlan();
         }
     }
 
-    public bool CheckClassPlan(ClassPlan plan)
-    {
-        if (plan.TimeRule.WeekDay != (int)DateTime.Now.DayOfWeek)
-        {
-            return false;
-        }
-
-        var dd = DateTime.Now.Date - SettingsService.Settings.SingleWeekStartTime.Date;
-        var dw = Math.Floor(dd.TotalDays / 7) + 1;
-        var w = (int)dw % 2;
-        switch (plan.TimeRule.WeekCountDiv)
-        {
-            case 1 when w != 1:
-                return false;
-            case 2 when w != 0:
-                return false;
-            default:
-                return true;
-        }
-    }
+    //[Obsolete]
+    //public bool CheckClassPlan(ClassPlan plan)
+    //{
+    //}
 
     public void ConvertToStdClassPlan()
     {
@@ -239,5 +257,49 @@ public class ProfileService
         Profile.IsOverlayClassPlanEnabled = false;
         Profile.ClassPlans[Profile.OverlayClassPlanId].IsOverlay = false;
         Profile.OverlayClassPlanId = null;
+    }
+
+    public void SetupTempClassPlanGroup(string key, DateTime? expireTime = null)
+    {
+        var classPlans = Profile.ClassPlans
+            .Where(x => x.Value.AssociatedGroup == key)
+            .Select(x => x.Value);
+        var today = App.GetService<IExactTimeService>().GetCurrentLocalDateTime();
+        var dow = today.DayOfWeek;
+        var dayOffset = 0;
+        var dd = today.Date - SettingsService.Settings.SingleWeekStartTime.Date;
+        var dw = Math.Floor(dd.TotalDays / 7) + 1;
+        foreach (var classPlan in classPlans)
+        {
+            var w = (int)dw % classPlan.TimeRule.WeekCountDivTotal;
+            var baseOffset = (int)(classPlan.TimeRule.WeekDay - dow);
+            var divOffset = (classPlan.TimeRule.WeekCountDiv + classPlan.TimeRule.WeekCountDivTotal - w) % classPlan.TimeRule.WeekCountDivTotal;
+            var finalOffset = baseOffset + divOffset * 7;
+            if (finalOffset < 0)
+            {
+                finalOffset += 7;
+            }
+
+            dayOffset = Math.Max(finalOffset, dayOffset);
+        }
+        expireTime ??= App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date + TimeSpan.FromDays(dayOffset);
+
+        Profile.TempClassPlanGroupExpireTime = expireTime.Value;
+        Profile.TempClassPlanGroupId = key;
+        Profile.IsTempClassPlanGroupEnabled = true;
+    }
+
+    public void ClearTempClassPlanGroup()
+    {
+        Profile.TempClassPlanGroupId = null;
+        Profile.IsTempClassPlanGroupEnabled = false;
+    }
+
+    public void ClearExpiredTempClassPlanGroup()
+    {
+        if (Profile.TempClassPlanGroupExpireTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
+        {
+            ClearTempClassPlanGroup();
+        }
     }
 }

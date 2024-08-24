@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 
 using ClassIsland.Controls;
-
+using ClassIsland.Core;
 using Microsoft.Xaml.Behaviors;
 
 namespace ClassIsland.Behaviors;

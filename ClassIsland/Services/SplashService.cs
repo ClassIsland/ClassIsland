@@ -1,12 +1,13 @@
 ﻿using System;
-
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Services.Management;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
 
-public class SplashService: ObservableRecipient
+public class SplashService: ObservableRecipient, ISplashService
 {
     private string _splashStatus = "正在启动…";
     private double _currentProgress = 0.0;
@@ -48,7 +49,7 @@ public class SplashService: ObservableRecipient
 
     private static string DefaultText { get; } = "正在启动…";
 
-    public SplashService(SettingsService settingsService, ManagementService managementService)
+    public SplashService(SettingsService settingsService, IManagementService managementService)
     {
         SettingsService = settingsService;
         if (managementService.Policy.DisableSplashCustomize)

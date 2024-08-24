@@ -20,7 +20,7 @@
     </UserControl.Resources>
     <Grid Visibility="{Binding HangService.IsHang, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}, Converter={StaticResource BooleanToVisibilityConverter}}">
         <ProgressBar IsIndeterminate="True" VerticalAlignment="Top"
-                      Height="8"
+                      Height="6"
                       Background="{x:Null}"
                       BorderThickness="0"
                       materialDesign:TransitionAssist.DisableTransitions="True"

@@ -4,14 +4,15 @@ using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Helpers;
+using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
-
+using ClassIsland.Shared.Models.Profile;
 using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Hosting;
@@ -41,90 +42,77 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
     private bool IsClassOnNotified { get; set; } = false;
 
-    private NotificationHostService NotificationHostService { get; }
-
     private string FormatTeacher(Subject subject)
     {
         var name = subject.GetFirstName();
         return string.IsNullOrWhiteSpace(name) ? string.Empty : $"由{name}老师任教";
     }
+    
+    private INotificationHostService NotificationHostService { get; }
 
-    public ClassNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
+    private ILessonsService LessonsService { get; }
+
+    private IExactTimeService ExactTimeService { get; }
+
+    public ClassNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService , ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         NotificationHostService = notificationHostService;
+        LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
+
         NotificationHostService.RegisterNotificationProvider(this);
-        NotificationHostService.OnClass += OnClass;
-        NotificationHostService.OnBreakingTime += OnBreakingTime;
-        NotificationHostService.UpdateTimerTick += UpdateTimerTick;
+        LessonsService.OnClass += OnClass;
+        LessonsService.OnBreakingTime += OnBreakingTime;
+        LessonsService.PostMainTimerTicked += UpdateTimerTick;
         Settings = NotificationHostService.GetNotificationProviderSettings
-                       <ClassNotificationSettings>(ProviderGuid)
-                   ?? new ClassNotificationSettings();
+                       <ClassNotificationSettings>(ProviderGuid);
         SettingsElement = new ClassNotificationProviderSettingsControl(Settings);
-        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
 
         var item = typeof(ClassNotificationAttachedSettingsControl);
-        attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(item);
-        attachedSettingsHostService.SubjectSettingsAttachedSettingsControls.Add(item);
-        attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(item);
-        attachedSettingsHostService.TimePointSettingsAttachedSettingsControls.Add(item);
     }
 
     private void UpdateTimerTick(object? sender, EventArgs e)
     {
-        var tClassDelta = NotificationHostService.OnClassDeltaTime;
+        var tClassDelta = LessonsService.OnClassLeftTime;
         var settings = GetAttachedSettingsNext();
         var isAttachedSettingsEnabled = settings?.IsAttachSettingsEnabled == true;
-        var settingsIsClassOnPreparingNotificationEnabled = isAttachedSettingsEnabled ?
-            settings!.IsClassOnPreparingNotificationEnabled
-            : Settings.IsClassOnPreparingNotificationEnabled;
+        var settingsSource = (IClassNotificationSettings?)(isAttachedSettingsEnabled ? settings : Settings) ?? Settings;
+        var settingsIsClassOnPreparingNotificationEnabled = settingsSource.IsClassOnPreparingNotificationEnabled;
         var settingsInDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ? 
                 settings!.ClassPreparingDeltaTime
                 : Settings.InDoorClassPreparingDeltaTime;
         var settingsOutDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ?
                 settings!.ClassPreparingDeltaTime
                 : Settings.OutDoorClassPreparingDeltaTime;
-        var message = isAttachedSettingsEnabled
-            ? settings!.ClassOnPreparingText
-            : Settings.ClassOnPreparingText;
-        var settingsDeltaTime = NotificationHostService.NextClassSubject.IsOutDoor
+        var message = settingsSource.ClassOnPreparingText;
+        var settingsDeltaTime = LessonsService.NextClassSubject.IsOutDoor
             ? settingsOutDoorClassPreparingDeltaTime
             : settingsInDoorClassPreparingDeltaTime;
         if (settingsIsClassOnPreparingNotificationEnabled &&
             tClassDelta > TimeSpan.Zero &&
               tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) &&
-            !IsClassPreparingNotified && NotificationHostService.CurrentState == TimeState.Breaking)
+            !IsClassPreparingNotified && LessonsService.CurrentState is TimeState.Breaking or TimeState.None)
         {
-            var deltaTime = NotificationHostService.NextClassSubject.IsOutDoor
-                ? settingsOutDoorClassPreparingDeltaTime
-                : settingsInDoorClassPreparingDeltaTime;
+            var deltaTime = TimeSpan.FromSeconds(settingsDeltaTime) - tClassDelta > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpan.FromSeconds(settingsDeltaTime);
             IsClassPreparingNotified = true;
-            IsClassOnNotified = true;
-            NotificationHostService.ShowNotification(new NotificationRequest()
+            var onClassPrepareRequest = new NotificationRequest
             {
-                MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(TimeSpan.FromSeconds(deltaTime))}。",
-                MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask"),
+                MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
+                MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask")
+                {
+                    MaskMessage = settingsSource.ClassOnPreparingMaskText
+                },
                 MaskDuration = TimeSpan.FromSeconds(5),
-                OverlaySpeechContent = $"{message} 下节课是：{NotificationHostService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(NotificationHostService.NextClassSubject) : "")}。",
+                OverlaySpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
                 OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
                 {
                     Message = message,
                     ShowTeacherName = Settings.ShowTeacherName
                 },
-                TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(NotificationHostService.NextClassTimeLayoutItem.StartSecond),
+                TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
-            });
-
-            var onClassRequest = new NotificationRequest()
-            {
-                MaskSpeechContent = "上课",
-                MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
-                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
             };
-            onClassRequest.CompletedTokenSource.Token.Register((o, token) =>
-            {
-                IsClassOnNotified = false;
-            }, false);
-            NotificationHostService.ShowNotification(onClassRequest);
+            NotificationHostService.ShowNotification(onClassPrepareRequest);
         }
     }
 
@@ -135,7 +123,9 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var settingsIsClassOffNotificationEnabled = settings?.IsAttachSettingsEnabled == true ?
             settings.IsClassOffNotificationEnabled
             : Settings.IsClassOffNotificationEnabled;
-        if (!settingsIsClassOffNotificationEnabled)
+
+
+        if (!settingsIsClassOffNotificationEnabled || ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
         {
             return;
         }
@@ -146,29 +136,35 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 ShowTeacherName = Settings.ShowTeacherName
             },
             MaskDuration = TimeSpan.FromSeconds(2),
-            MaskSpeechContent = "课间休息",
+            MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
             OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay")
             {
                 ShowTeacherName = Settings.ShowTeacherName
             },
             OverlayDuration = TimeSpan.FromSeconds(10),
-            OverlaySpeechContent = $"本节课间休息长{TimeSpanFormatHelper.Format(App.GetService<MainWindow>().ViewModel.CurrentTimeLayoutItem.Last)}，下节课是：{App.GetService<MainWindow>().ViewModel.NextSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(App.GetService<MainWindow>().ViewModel.NextSubject) : "")}。",
+            OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}长{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
             IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
         });
     }
 
     private void OnClass(object? sender, EventArgs e)
     {
+        IsClassPreparingNotified = false;
         var settings = GetAttachedSettings();
         var settingsIsClassOnNotificationEnabled = settings?.IsAttachSettingsEnabled == true ? 
             settings.IsClassOnNotificationEnabled 
             : Settings.IsClassOnNotificationEnabled;
-        
+        var settingsSource = (IClassNotificationSettings?)(settings?.IsAttachSettingsEnabled == true ? settings : Settings) ?? Settings;
+
         if (!settingsIsClassOnNotificationEnabled)
         {
             return;
         }
         if (IsClassOnNotified)
+        {
+            return;
+        }
+        if (ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
         {
             return;
         }
@@ -179,8 +175,11 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         }
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
-            MaskContent = new ClassNotificationProviderControl("ClassOnNotification"),
-            MaskSpeechContent = "上课。",
+            MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
+            {
+                MaskMessage = settingsSource.ClassOnMaskText
+            },
+            MaskSpeechContent = settingsSource.ClassOnMaskText,
             IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
         });
     }
@@ -188,14 +187,14 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private ClassNotificationAttachedSettings? GetAttachedSettings()
     {
         var mvm = App.GetService<MainWindow>().ViewModel;
-        var settings = AttachedSettingsHostService
+        var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 ClassNotificationAttachedSettings>(
                 ProviderGuid,
-                mvm.CurrentSubject,
-                mvm.CurrentTimeLayoutItem,
-                mvm.CurrentClassPlan,
-                mvm.CurrentClassPlan?.TimeLayout
+                LessonsService.CurrentSubject,
+                LessonsService.CurrentTimeLayoutItem,
+                LessonsService.CurrentClassPlan,
+                LessonsService.CurrentClassPlan?.TimeLayout
             );
         return settings;
     }
@@ -203,14 +202,14 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private ClassNotificationAttachedSettings? GetAttachedSettingsNext()
     {
         var mvm = App.GetService<MainWindow>().ViewModel;
-        var settings = AttachedSettingsHostService
+        var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 ClassNotificationAttachedSettings>(
                 ProviderGuid,
-                mvm.NextSubject,
-                mvm.NextTimeLayoutItem,
-                mvm.CurrentClassPlan,
-                mvm.CurrentClassPlan?.TimeLayout
+                LessonsService.NextClassSubject,
+                LessonsService.NextClassTimeLayoutItem,
+                LessonsService.CurrentClassPlan,
+                LessonsService.CurrentClassPlan?.TimeLayout
             );
         return settings;
     }

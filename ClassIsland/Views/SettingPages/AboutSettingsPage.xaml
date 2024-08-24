@@ -1,0 +1,370 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AboutSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:ci="clr-namespace:ClassIsland"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:models="clr-namespace:ClassIsland.Models"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="关于"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      d:DataContext="{d:DesignInstance local:AboutSettingsPage}">
+
+    <controls:SettingsPageBase.Resources>
+        <Grid Margin="16" x:Key="ContributorsDrawer" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="贡献人员" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <TextBlock Grid.Row="1" Margin="0 6 0 0" Text="感谢以下同学为本项目做出的贡献！"/>
+            <Button Grid.Row="2" HorizontalAlignment="Left" 
+                    Click="ButtonRefreshContributors_OnClick"
+                    Margin="0 2 0 0"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding ViewModel.IsRefreshingContributors}"
+                    IsEnabled="{Binding ViewModel.IsRefreshingContributors, Converter={StaticResource InvertBooleanConverter}}">
+                <controls1:IconText Kind="Refresh" Text="刷新"/>
+            </Button>
+            <ListView Grid.Row="3" Margin="0 2 0 0"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ItemsSource="{Binding SettingsService.Settings.ContributorsCache.Contributors}"
+                      materialDesign:ListBoxItemAssist.ShowSelection="False">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" VerticalAlignment="Center"
+                                  Width="32" Height="32"
+                                  Margin="0 0 6 0">
+                                <Grid.Clip>
+                                    <RectangleGeometry RadiusX="16" RadiusY="16"
+                                                       Rect="0,0,32,32" />
+                                </Grid.Clip>
+                                <Border Background="{DynamicResource MaterialDesignBody}" Opacity="0.1" />
+                                <Image Source="{Binding AvatarUri}"
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       Width="32" Height="32">
+                                </Image>
+                            </Grid>
+                            <TextBlock Grid.Column="1" TextWrapping="Wrap">
+                                <Run FontSize="15"
+                                     Text="{Binding Name, Mode=OneWay}" />
+                                <LineBreak />
+                                <Run FontSize="11"
+                                     FontWeight="Light"
+                                     Text="{Binding ContributionText, Mode=OneWay}" />
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        <Grid Margin="16" x:Key="ThirdPartyLibs" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="第三方库" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <ListView Grid.Row="1" Margin="0 6 0 0" HorizontalContentAlignment="Stretch"
+                      VirtualizingPanel.ScrollUnit="Pixel">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:ContributionLabel}">
+                        <Grid>
+                            <Grid.ToolTip>
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="License"
+                                                                 Margin="0 0 3 0" />
+                                        <TextBlock Text="{Binding License}"
+                                                   Margin="0 0 12 0" TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Web"
+                                                                 Margin="0 0 3 0" />
+                                        <TextBlock Text="{Binding Website}"
+                                                   Margin="0 0 12 0" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid.ToolTip>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
+                                                     Kind="PackageVariant" VerticalAlignment="Center"
+                                                     Margin="0 0 6 0" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       VerticalAlignment="Center" FontSize="14"
+                                       FontWeight="Bold" TextWrapping="Wrap" />
+                            <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
+                                          License="MIT License"
+                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/" />
+                <models:ContributionLabel Title="FluentWpf"
+                                          License="MIT License"
+                                          Website="https://github.com/sourcechord/FluentWPF" />
+                <models:ContributionLabel Title="ReoGrid"
+                                          License="MIT license"
+                                          Website="https://github.com/unvell/ReoGrid" />
+                <models:ContributionLabel Title="EPPlus"
+                                          License="Polyform Noncommercial 1.0.0"
+                                          Website="https://epplussoftware.com/" />
+                <models:ContributionLabel Title="Walterlv"
+                                          License="&quot;Anti 996&quot; License Version 1.0"
+                                          Website="https://github.com/walterlv/walterlv.demo" />
+                <models:ContributionLabel Title="MahApps.Metro"
+                                          License="MIT license"
+                                          Website="https://github.com/MahApps/MahApps.Metro" />
+                <models:ContributionLabel Title="gong-mdWpf-dragdrop"
+                                          License="BSD 3-Clause"
+                                          Website="https://github.com/punker76/gong-mdWpf-dragdrop" />
+                <models:ContributionLabel Title="H.NotifyIcon.Wpf"
+                                          License="MIT License"
+                                          Website="https://github.com/HavenDV/H.NotifyIcon" />
+                <models:ContributionLabel Title="MdXaml"
+                                          License="MIT License"
+                                          Website="https://github.com/whistyun/MdXaml" />
+                <models:ContributionLabel Title="Microsoft.AppCenter"
+                                          License="MIT License"
+                                          Website="https://aka.ms/telgml" />
+                <models:ContributionLabel Title="Downloader"
+                                          License="MIT License"
+                                          Website="https://github.com/bezzad/Downloader" />
+                <models:ContributionLabel Title="HarmonyOS Sans" License="-"
+                                          Website="https://developer.harmonyos.com/cn/design/resource" />
+                <models:ContributionLabel Title="MVVM Toolkit"
+                                          Website="https://github.com/CommunityToolkit/dotnet"
+                                          License="MIT License" />
+                <models:ContributionLabel Title="WPF" License="MIT License"
+                                          Website="https://github.com/dotnet/Wpf" />
+                <models:ContributionLabel Title=".NET" License="MIT License"
+                                          Website="https://github.com/microsoft/dotnet" />
+            </ListView>
+        </Grid>
+
+        <Grid x:Key="OpenSourceLicense" Margin="16" Height="400" Width="550" MaxHeight="{Binding Height}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="开放源代码许可" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <TextBox Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0 12 0 0"
+                     Padding="8" Text="{Binding ViewModel.License, Mode=OneWay}" IsReadOnly="True"
+                     VerticalScrollBarVisibility="Auto" FontFamily="Consolas" />
+            <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定"
+                    IsDefault="True"
+                    HorizontalAlignment="Right" Margin="0 8 0 0"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+
+            </Button>
+        </Grid>
+
+        <Grid x:Key="DiagnosticInfoDialog" Margin="16" Height="400" Width="550" MaxHeight="{Binding Height}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="诊断信息" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <TextBox Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedTextBox}" Margin="0 12 0 0"
+                     Padding="8" Text="{Binding ViewModel.DiagnosticInfo, Mode=OneWay}" IsReadOnly="True"
+                     VerticalContentAlignment="Top"
+                     VerticalScrollBarVisibility="Auto" FontFamily="Consolas" />
+            <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定"
+                    IsDefault="True"
+                    HorizontalAlignment="Right" Margin="0 8 0 0"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+
+            </Button>
+        </Grid>
+
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Margin="6" MaxWidth="750">
+            <StackPanel>
+                <!-- banner -->
+                <!--<Grid Height="100">
+                        <Image Source="/Assets/banner.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>-->
+                <Grid HorizontalAlignment="Stretch" Margin="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <!-- icon -->
+                    <materialDesign:Ripple Grid.Column="0" VerticalAlignment="Top"
+                                           MouseDown="AppIcon_OnMouseDown"
+                                           Feedback="{DynamicResource MaterialDesignBody}"
+                                           ToolTip="ClassIsland">
+                        <Image Source="/Assets/AppLogo.ico" Width="40"
+                               Height="40" VerticalAlignment="Top" />
+                    </materialDesign:Ripple>
+                    <!-- about -->
+                    <StackPanel Grid.Column="1" Margin="10 0 0 0">
+                        <TextBlock>
+                            <Run Text="ClassIsland" FontSize="24" FontWeight="Bold" />
+                            <LineBreak />
+                            <Run Text="{x:Static ci:App.AppVersion}" />
+                            <Run Text="(Codename " />
+                            <Run Text="{x:Static ci:App.AppCodeName}" /><Run Text=")" />
+                            <LineBreak />
+                            <Run Text="{x:Static ci:App.AppVersionLong}" FontFamily="Consolas" />
+                            <LineBreak />
+                            <Run Text="Copyright (c) 2024 HelloWRC" />
+                        </TextBlock>
+                        <WrapPanel>
+                            <Button HorizontalAlignment="Left" Margin="6"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonGithub_OnClick">
+                                <controls1:IconText Kind="MicrosoftGithub" Text="GitHub" />
+                            </Button>
+                            <Button HorizontalAlignment="Left" Margin="6"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonFeedback_OnClick">
+                                <controls1:IconText Kind="BugOutline" Text="问题反馈" />
+                            </Button>
+                            <Button HorizontalAlignment="Left" Margin="6"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                <controls1:IconText Kind="License" Text="开源许可" />
+                                <Button.CommandParameter>
+                                    <StaticResource ResourceKey="OpenSourceLicense" />
+                                </Button.CommandParameter>
+                            </Button>
+                            <Button HorizontalAlignment="Left" Margin="6"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonPrivacy_OnClick">
+                                <controls1:IconText Kind="ScriptOutline" Text="隐私政策" />
+                            </Button>
+                            <Button HorizontalAlignment="Left" Margin="6"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                    Click="ButtonDiagnosticInfo_OnClick">
+                                <controls1:IconText Kind="BugOutline" Text="诊断信息" />
+                                <Button.CommandParameter>
+                                    <StaticResource ResourceKey="DiagnosticInfoDialog" />
+                                </Button.CommandParameter>
+                            </Button>
+                        </WrapPanel>
+                    </StackPanel>
+                </Grid>
+
+            </StackPanel>
+
+            <FlowDocumentScrollViewer ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                      IsSelectionEnabled="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay}"
+                                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                      ContextMenu="{x:Null}">
+                <FlowDocument FontFamily="{StaticResource HarmonyOsSans}"
+                              IsOptimalParagraphEnabled="True">
+                    <Paragraph>
+                        <Italic>「钟表的指针周而复始，就像人的困惑、烦恼、软弱…摇摆不停。但最终，人们依旧要前进，就像你的指针，永远落在前方。」</Italic>
+                        <Italic>——拉格沃克•夏尔•米哈伊尔</Italic>
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource MarkdownHeadline1Style}">
+                        关于本应用
+                    </Paragraph>
+                    <Paragraph>
+                        ClassIsland，名字灵感源于 iOS 灵动岛（Dynamic Island）功能，基于 WPF 开发，适用于班级多媒体屏幕的课表等信息显示工具，信息一目了然。
+                    </Paragraph>
+                    <Paragraph Style="{StaticResource MarkdownHeadline2Style}"
+                               LineHeight="2">
+                        鸣谢：
+                    </Paragraph>
+                    <Paragraph TextBlock.LineHeight="1">
+                        <Button HorizontalAlignment="Left" Margin="6"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="ButtonContributors_OnClick">
+                            <controls1:IconText Kind="PeopleGroupOutline" Text="贡献人员" />
+                        </Button>
+                        <Button HorizontalAlignment="Left" Margin="6"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="ButtonThirdPartyLibs_OnClick">
+                            <controls1:IconText Kind="PackageVariant" Text="第三方库" />
+                        </Button>
+                    </Paragraph>
+                    <List LineHeight="6">
+                        <ListItem>
+                            <Paragraph>
+                                本项目受到
+                                <Hyperlink Click="Hyperlink2_OnClick">DuguSand/class_form</Hyperlink>
+                                的启发而开发。
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                应用字体使用了华为出品的 HarmonyOS Sans。
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                协助本应用测试的同学。
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                应用分发、匿名使用情况统计使用了 App Center 的服务。
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                天气数据来源于小米天气。
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                部分图像资源（/Assets/HoYoStickers/*）来自米游社和Bilibili装扮表情包，版权归 miHoYo 所有。
+                            </Paragraph>
+                        </ListItem>
+                        <ListItem>
+                            <Paragraph>
+                                其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
+                            </Paragraph>
+                        </ListItem>
+                    </List>
+
+                    <Paragraph Foreground="#03f7d1ec">
+                        永远喜欢爱莉希雅
+                    </Paragraph>
+
+                </FlowDocument>
+            </FlowDocumentScrollViewer>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

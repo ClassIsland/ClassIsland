@@ -1,0 +1,39 @@
+﻿<ci:MyWindow x:Class="ClassIsland.Views.UpdateProgressWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        mc:Ignorable="d"
+        Title="正在更新 ClassIsland…" 
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Height="100" Width="300"
+        WindowStartupLocation="Manual"
+        d:DataContext="{d:DesignInstance local:UpdateProgressWindow}"
+        Top="50"
+        Left="50"
+        ResizeMode="NoResize"
+        Closing="UpdateProgressWindow_OnClosing"
+        >
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" TextWrapping="Wrap">
+            <Run Text="正在更新 ClassIsland……"/><LineBreak/>
+            <Run Text="{Binding ProgressText}"/>
+        </TextBlock>
+
+        <ProgressBar Grid.Row="1" 
+                     Margin="0 8 0 0"
+                     IsIndeterminate="True"/>
+    </Grid>
+</ci:MyWindow>

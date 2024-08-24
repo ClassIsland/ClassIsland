@@ -7,10 +7,12 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:controls="clr-namespace:ClassIsland.Controls"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+             xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters1:IntToStringConverter x:Key="IntToStringConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassNotificationProviderSettingsControl}}">
 
@@ -21,13 +23,34 @@
                         <Setter Property="Margin" Value="0 3" />
                     </Style>
                 </StackPanel.Resources>
+                <!-- 附加设置覆盖提示 -->
+                <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                          Margin="0 0 0 4">
+                    <Grid>
+                        <DockPanel Margin="8 0 4 0">
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    DockPanel.Dock="Right"
+                                    materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
+                                    Foreground="{DynamicResource MaterialDesignBody}"
+                                    Click="ButtonShowAttachedSettingsInfo_OnClick">
+                                <controls1:IconText Kind="MoreCircleOutline" Text="查看…"/>
+                            </Button>
+                            <materialDesign:PackIcon Kind="LayersOutline"
+                                                     Margin="0 0 4 0"
+                                                     VerticalAlignment="Center"/>
+                            <TextBlock Text="此处的设置可以在档案设置中被附加设置覆盖。"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Grid>
+                </materialDesign:ColorZone>
                 <!-- 在课前准备时发出提醒 -->
                 <materialDesign:Card Margin="0 0 0 6">
                     <Expander Background="Transparent"
                               IsExpanded="{Binding Settings.IsClassOnPreparingNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="ClockEnd"
+                            <controls1:SettingsControl IconGlyph="ClockEnd"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在课前准备时发出提醒"
                                                       Description="在上课前一段时间发出醒目提醒，提示做好上课准备。"
@@ -40,36 +63,42 @@
                             <CheckBox Content="启用语音" Margin="0 0 0 6"
                                       IsChecked="{Binding Settings.IsSpeechEnabledOnClassPreparing}"/>
                             <!-- 室内课程课前提醒时间 -->
-                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室内课程课前提醒时间"
+                            <controls1:SettingsControl IconGlyph="ClockAlertOutline" Header="室内课程课前提醒时间"
                                                       Description="在室内课程的上课前指定时间进行上课提醒。"
                                                       IsCompact="True"
                                                       Margin="0 0 0 6">
-                                <controls:SettingsControl.Switcher>
-                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                <controls1:SettingsControl.Switcher>
+                                    <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
                                                               Text="{Binding Settings.InDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
                                                               Width="120"
                                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                               Style="{StaticResource MaterialDesignTextBoxBase}"
                                                               materialDesign:TextFieldAssist.SuffixText="秒" />
-                                </controls:SettingsControl.Switcher>
-                            </controls:SettingsControl>
+                                </controls1:SettingsControl.Switcher>
+                            </controls1:SettingsControl>
                             <!-- 室外课程课前提醒时间 -->
-                            <controls:SettingsControl IconGlyph="ClockAlertOutline" Header="室外课程课前提醒时间"
+                            <controls1:SettingsControl IconGlyph="ClockAlertOutline" Header="室外课程课前提醒时间"
                                                       Description="在室外课程的上课前指定时间进行上课提醒。"
                                                       IsCompact="True"
                                                       Margin="0 0 0 6">
-                                <controls:SettingsControl.Switcher>
-                                    <controls:NumbericTextBox MaxValue="3600" MinValue="0"
+                                <controls1:SettingsControl.Switcher>
+                                    <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
                                                               Text="{Binding Settings.OutDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
                                                               Width="120"
                                                               Foreground="{DynamicResource MaterialDesignBody}"
                                                               Style="{StaticResource MaterialDesignTextBoxBase}"
                                                               materialDesign:TextFieldAssist.SuffixText="秒" />
-                                </controls:SettingsControl.Switcher>
-                            </controls:SettingsControl>
+                                </controls1:SettingsControl.Switcher>
+                            </controls1:SettingsControl>
                             <!-- 准备上课提醒文字 -->
                             <TextBox Text="{Binding Settings.ClassOnPreparingText}"
                                      materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0 0 0 6" />
+                            <!-- 准备上课遮罩文字 -->
+                            <TextBox Text="{Binding Settings.ClassOnPreparingMaskText}"
+                                     materialDesign:HintAssist.Hint="准备上课遮罩文字"
                                      Foreground="{DynamicResource MaterialDesignBody}"
                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                      Margin="0 0 0 6" />
@@ -82,7 +111,7 @@
                               IsExpanded="{Binding Settings.IsClassOnNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="BookOutline"
+                            <controls1:SettingsControl IconGlyph="BookOutline"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在上课时发出提醒"
                                                       Description="在上课时发出醒目提醒，提示已经上课。"
@@ -94,6 +123,12 @@
                             <!-- 启用语音 -->
                             <CheckBox Content="启用语音" Margin="0 0 0 6"
                                       IsChecked="{Binding Settings.IsSpeechEnabledOnClassOn}"/>
+                            <!-- 上课遮罩文字 -->
+                            <TextBox Text="{Binding Settings.ClassOnMaskText}"
+                                     materialDesign:HintAssist.Hint="上课遮罩文字"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0 0 0 6" />
                             
                         </StackPanel>
                     </Expander>
@@ -104,7 +139,7 @@
                               IsExpanded="{Binding Settings.IsClassOffNotificationEnabled, Mode=OneWay}"
                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                         <Expander.Header>
-                            <controls:SettingsControl IconGlyph="ClockOutline"
+                            <controls1:SettingsControl IconGlyph="ClockOutline"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       Header="在下课时发出提醒"
                                                       Description="在下课时发出醒目提醒，提示已经下课。"
@@ -121,7 +156,7 @@
                     </Expander>
                 </materialDesign:Card>
                 <!-- 显示教科任老师名字 -->
-                <controls:SettingsCard IconGlyph="Teacher"
+                <controls1:SettingsCard IconGlyph="Teacher"
                                        Header="显示科任老师名字"
                                        Description="在显示课程相关的提醒时同时展示并播报对应科任老师的名字"
                                        IsOn="{Binding Settings.ShowTeacherName, Mode=TwoWay}"

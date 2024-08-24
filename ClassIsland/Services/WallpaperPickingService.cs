@@ -12,7 +12,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-
+using ClassIsland.Core;
+using ClassIsland.Core.Helpers.Native;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -101,6 +102,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                 UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
                 break;
             case nameof(SettingsService.Settings.IsWallpaperAutoUpdateEnabled):
+            case nameof(SettingsService.Settings.ColorSource):
                 UpdateUpdateTimerEnableState();
                 break;
         }
@@ -108,7 +110,8 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
     private void UpdateUpdateTimerEnableState()
     {
-        if (SettingsService.Settings.IsWallpaperAutoUpdateEnabled)
+        if (SettingsService.Settings.ColorSource == 1 && SettingsService.Settings.IsWallpaperAutoUpdateEnabled ||
+            SettingsService.Settings.ColorSource == 3)
         {
             UpdateTimer.Start();
         }
@@ -152,6 +155,21 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         }
     }
 
+    private Bitmap? GetFullScreenShot(Screen screen)
+    {
+        try
+        {
+            var baseImage = new Bitmap(screen.Bounds.Width, screen.Bounds.Height);
+            var g = Graphics.FromImage(baseImage);
+            g.CopyFromScreen(new(0, 0), new(0, 0), screen.Bounds.Size);
+            g.Dispose();
+            return baseImage;
+        } catch (Exception ex)
+        {
+            Logger.LogError(ex, "获取屏幕截图失败。");
+            return null;
+        }
+    }
 
     public static Bitmap? GetScreenShot(string className)
     {
@@ -220,7 +238,8 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
         await Task.Run(() =>
         {
-            var bitmap = SettingsService.Settings.IsFallbackModeEnabled ?
+            var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
+                : SettingsService.Settings.IsFallbackModeEnabled ?
                 (GetFallbackWallpaper())
                 :
                 (GetScreenShot(

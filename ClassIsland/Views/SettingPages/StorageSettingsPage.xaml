@@ -1,0 +1,108 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.StorageSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      d:DataContext="{d:DesignInstance local:StorageSettingsPage}"
+      Title="StorageSettingsPage">
+
+    <ScrollViewer>
+        <StackPanel MaxWidth="750" Style="{StaticResource SettingsPageStackPanelStyle}">
+            <!--<Separator Margin="0 16 0 8" />
+            <ci:IconText Kind="DatabaseOutline" Text="存储空间" Margin="0 0 0 8" />
+            <TextBlock Text="以下是 应用内 产生的各个类型文件的空间占用情况，您可以在此处清理部分临时和缓存文件。" 
+                       FontWeight="Light"
+                       TextWrapping="Wrap"/>
+
+            <Separator Margin="0 16 0 8" />-->
+            <ci:IconText Kind="SettingsBackupRestore" Text="备份" Margin="0 0 0 8" />
+            <!-- 启用自动备份 -->
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent"
+                          IsExpanded="{Binding SettingsService.Settings.IsAutoBackupEnabled, Mode=TwoWay}"
+                          TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <ci:SettingsControl IconGlyph="AutoMode"
+                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                  Header="启用自动备份"
+                                                  Description="启用后，ClassIsland 将每隔一段时间自动备份当前的档案和配置文件。"
+                                                  IsOn="{Binding SettingsService.Settings.IsAutoBackupEnabled, Mode=TwoWay}"
+                                                  Margin="-12 0" />
+                    </Expander.Header>
+                    <StackPanel Margin="36 0 48 12"
+                                IsEnabled="{Binding SettingsService.Settings.IsAutoBackupEnabled}">
+                        <!-- 自动备份间隔 -->
+                        <ci:SettingsControl IconGlyph="ClockAutoOutline"
+                                               Header="自动备份间隔"
+                                               IsCompact="True"
+                                               Description="自动备份时的间隔天数。"
+                                               Margin="0 0 0 6">
+                            <ci:SettingsControl.Switcher>
+                                <TextBox materialDesign:TextFieldAssist.SuffixText="天"
+                                         Width="100"
+                                         Text="{Binding SettingsService.Settings.AutoBackupIntervalDays, Converter={StaticResource IntToStringConverter}}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
+                            </ci:SettingsControl.Switcher>
+                        </ci:SettingsControl>
+                        <!-- 自动备份上限 -->
+                        <ci:SettingsControl IconGlyph="ArchiveArrowUpOutline"
+                                            Header="自动备份上限"
+                                            IsCompact="True"
+                                            Description="最多允许存在的自动备份上限。当自动备份数量达到上限时，将覆盖最旧的备份。设置为 0 则为无上限。"
+                                            Margin="0 0 0 6">
+                            <ci:SettingsControl.Switcher>
+                                <TextBox materialDesign:TextFieldAssist.SuffixText="个"
+                                         Width="100"
+                                         Text="{Binding SettingsService.Settings.AutoBackupLimit, Converter={StaticResource IntToStringConverter}}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"/>
+                            </ci:SettingsControl.Switcher>
+                        </ci:SettingsControl>
+                        <TextBlock TextWrapping="Wrap" Margin="0 0 0 6">
+                            <Run Text="上次成功自动备份："/>
+                            <Run Text="{Binding SettingsService.Settings.LastAutoBackupTime, ConverterCulture=zh-cn}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Expander>
+            </materialDesign:Card>
+            <!-- 备份 -->
+            <materialDesign:Card Padding="12 10 16 10">
+                <StackPanel>
+                    <ci:SettingsControl IconGlyph="BackupRestore"
+                                        Header="手动备份"
+                                        Description="进行手动备份。备份的内容包括 Config/ 文件夹内的配置文件、 Profiles/ 文件夹内的档案文件和 Settings.json 设置文件。手动备份产生的备份文件不会被自动清除。"
+                                        Margin="0 0 0 6"
+                                        HasSwitcher="False"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                IsEnabled="{Binding ViewModel.IsBackingUp, Converter={StaticResource InvertBooleanConverter}}"
+                                Click="ButtonCreateBackup_OnClick">
+                            <ci:IconText Kind="BackupRestore" Text="立即备份" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="ButtonViewBackupFiles_OnClick">
+                            <ci:IconText Kind="FolderOutline" Text="查看备份文件…" />
+                        </Button>
+                        <materialDesign:PackIcon Kind="Check"
+                                                 VerticalAlignment="Stretch"
+                                                 ToolTip="备份成功。"
+                                                 Visibility="{Binding ViewModel.IsBackupFinished, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                     Visibility="{Binding ViewModel.IsBackingUp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

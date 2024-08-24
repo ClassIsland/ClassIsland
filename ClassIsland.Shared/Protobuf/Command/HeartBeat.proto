@@ -1,0 +1,7 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Command;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Command";
+
+message HeartBeat {
+    bool isOnline = 1;
+}

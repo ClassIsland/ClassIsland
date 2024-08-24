@@ -1,0 +1,41 @@
+﻿<controls:ComponentBase x:TypeArguments="componentSettings:CountDownComponentSettings" 
+                        x:Class="ClassIsland.Controls.Components.CountDownComponent"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                        xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+                        xmlns:classIsland="clr-namespace:ClassIsland"
+                        xmlns:converters="clr-namespace:ClassIsland.Converters"
+                        xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                        xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                        xmlns:models="clr-namespace:ClassIsland.Models"
+                        xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                        mc:Ignorable="d" 
+                        d:DesignHeight="450" d:DesignWidth="800"
+                        d:DataContext="{d:DesignInstance classIsland:MainWindow}">
+    <controls:ComponentBase.Resources>
+        <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+    </controls:ComponentBase.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CountDownComponent}}"
+          VerticalAlignment="Center" TextElement.FontSize="16">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="距离" Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
+                       VerticalAlignment="Center" Margin="0 0 2 0"/>
+            <TextBlock Text="{Binding Settings.CountDownName}"
+                       Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                       FontSize="{Binding Settings.FontSize}"
+                       VerticalAlignment="Center" Margin="0 0 2 0"
+                       FontWeight="Medium"/>
+            <TextBlock Text="还有" 
+                       VerticalAlignment="Center"
+                       Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}"/>
+            <TextBlock Text="{Binding DaysLeft, Mode=OneWay}" 
+                       Foreground="{Binding Settings.FontColor,Converter={StaticResource ColorToColorPickerBrushConverter}}"
+                       FontSize="{Binding Settings.FontSize}"
+                       VerticalAlignment="Center"
+                       FontWeight="Medium"
+                       Margin="2 0 0 0"/>
+        </StackPanel>
+    </Grid>
+</controls:ComponentBase>

@@ -1,0 +1,103 @@
+﻿<UserControl x:Class="ClassIsland.Controls.ClassPlanGroupItemControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:views="clr-namespace:ClassIsland.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <StackPanel x:Key="DisbandConfirmDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="解散课表群"/>
+            <TextBlock TextWrapping="Wrap" Margin="0 12 0 0">
+                <Run Text="你确定要解散这个课表群吗？解散后，课表群内的课表将被移动到默认课表群中。"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Grid HorizontalAlignment="Right">
+                    <Button Content="解散" 
+                            IsDefault="True"
+                            Style="{DynamicResource MaterialDesignFlatButton}" 
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                                True
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                    </Button>
+                </Grid>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel x:Key="DeleteConfirmDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="删除课表群"/>
+            <TextBlock TextWrapping="Wrap" Margin="0 12 0 0">
+                <Run Text="你确定要删除这个课表群吗？删除后，此课表群内的课表也将全部删除。这个操作无法撤销！"/>
+            </TextBlock>
+            <TextBlock TextWrapping="Wrap" Margin="0 4 0 0">
+                <Run Text="如果您只是想移除课表群而保留课表，请解散课表群。"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Grid HorizontalAlignment="Right">
+                    <Button Content="删除"
+                            Foreground="Red"
+                            materialDesign:RippleAssist.Feedback="Red"
+                            IsDefault="True"
+                            Style="{DynamicResource MaterialDesignFlatButton}" 
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                        <Button.CommandParameter>
+                            <system:Boolean xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                                True
+                            </system:Boolean>
+                        </Button.CommandParameter>
+                    </Button>
+                </Grid>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
+            </StackPanel>
+        </StackPanel>
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassPlanGroupItemControl}}">
+        <Grid.ContextMenu>
+            <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
+                <MenuItem Icon="{materialDesign:PackIcon FileDocumentMultipleOutline}" Header="临时启用" Click="MenuItemTemp_OnClick"/>
+                <Separator/>
+                <MenuItem Icon="{materialDesign:PackIcon RenameOutline}" Header="重命名" Click="MenuItemRename_OnClick" IsEnabled="{Binding IsProtected, Converter={StaticResource InvertBooleanConverter}}"/>
+                <!--<MenuItem Icon="{materialDesign:PackIcon FileExportOutline}" Header="导出"/>-->
+                <MenuItem Icon="{materialDesign:PackIcon Remove}" Header="解散" Click="MenuItemDisband_OnClick" IsEnabled="{Binding IsProtected, Converter={StaticResource InvertBooleanConverter}}"/>
+                <MenuItem Icon="{materialDesign:PackIcon DeleteOutline}" Header="删除" Click="MenuItemDelete_OnClick" IsEnabled="{Binding IsProtected, Converter={StaticResource InvertBooleanConverter}}"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0"
+                    Orientation="Horizontal" HorizontalAlignment="Stretch" Background="Transparent">
+            <StackPanel.Resources>
+                <ci:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+            </StackPanel.Resources>
+            <RadioButton GroupName="ProfileSelection" VerticalAlignment="Center">
+                <RadioButton.IsChecked>
+                    <MultiBinding Converter="{StaticResource StringToRadioButtonSelectionConverter}">
+                        <Binding Path="ProfileService.Profile.SelectedClassPlanGroupId" 
+                                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=views:ProfileSettingsWindow}"/>
+                        <Binding Path="Key" Mode="OneWay"/>
+                    </MultiBinding>
+                </RadioButton.IsChecked>
+            </RadioButton>
+            <TextBox Text="{Binding Item.Name}" 
+                     Padding="0"
+                     x:Name="MainTextBox"
+                     IsReadOnly="{Binding IsRenaming, Converter={StaticResource InvertBooleanConverter}}"
+                     VerticalAlignment="Center" Margin="6 0 0 0"
+                     LostFocus="TextBox_OnLostFocus"
+                     BorderThickness="0"
+                     Focusable="{Binding IsRenaming}"
+                     IsHitTestVisible="{Binding IsRenaming}"
+                     KeyDown="TextBox_OnKeyDown"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
@@ -6,9 +7,43 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland", "ClassIsland\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.UnitTests", "ClassIsland.UnitTests\ClassIsland.UnitTests.csproj", "{0513FA8E-72C8-4CCE-A7B9-9507EC0BFBBA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Core", "ClassIsland.Core\ClassIsland.Core.csproj", "{1A19A8AD-A401-445A-8C63-77EC5B7C103F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Shared", "ClassIsland.Shared\ClassIsland.Shared.csproj", "{1A19A8AD-A401-445A-8C63-77EC5B7C103F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Walterlv", "Walterlv\Walterlv.csproj", "{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Core", "ClassIsland.Core\ClassIsland.Core.csproj", "{DF9F0F39-65EE-411C-A982-FC5973AD7F46}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.DocsGenerator", "ClassIsland.DocsGenerator\ClassIsland.DocsGenerator.csproj", "{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.Shared.IPC", "ClassIsland.Shared.IPC\ClassIsland.Shared.IPC.csproj", "{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.PluginSdk", "ClassIsland.PluginSdk\ClassIsland.PluginSdk.csproj", "{3ADDAAA5-F261-4B8D-9A2A-CE7E27DEBA5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.ExamplePlugin", "ClassIsland.ExamplePlugin\ClassIsland.ExamplePlugin.csproj", "{4B7FC11A-616F-4E6A-8966-9E7E23665A5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{D97171AD-1C66-4A93-9D48-7BEC798ADAA6}"
+	ProjectSection(SolutionItems) = preProject
+		tools\appcenter-upload.ps1 = tools\appcenter-upload.ps1
+		tools\build-appveyor.ps1 = tools\build-appveyor.ps1
+		tools\generate-md5.ps1 = tools\generate-md5.ps1
+		tools\pre-appcenter-upload.ps1 = tools\pre-appcenter-upload.ps1
+		tools\pre-publish.ps1 = tools\pre-publish.ps1
+		tools\publish-nupkg.ps1 = tools\publish-nupkg.ps1
+		tools\publish.ps1 = tools\publish.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{C60E65AA-B5D2-49BD-B3B9-E3F69F33B77D}"
+	ProjectSection(SolutionItems) = preProject
+		GeneratePackage.props = GeneratePackage.props
+		Global.props = Global.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{E8120023-59D8-4112-90E7-D10A3A799A4C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build_release.yml = .github\workflows\build_release.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{006EDE57-B272-4893-AABA-4F91D431BC0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.IpcDemo", "Demos\ClassIsland.IpcDemo\ClassIsland.IpcDemo.csproj", "{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,13 +63,38 @@ Global
 		{1A19A8AD-A401-445A-8C63-77EC5B7C103F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A19A8AD-A401-445A-8C63-77EC5B7C103F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A19A8AD-A401-445A-8C63-77EC5B7C103F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BFE9F47D-B7E1-4C18-866A-4BE62DAC7C3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF9F0F39-65EE-411C-A982-FC5973AD7F46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF9F0F39-65EE-411C-A982-FC5973AD7F46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF9F0F39-65EE-411C-A982-FC5973AD7F46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF9F0F39-65EE-411C-A982-FC5973AD7F46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57BCC3A6-3015-4F1C-B258-9BB7ABA60FB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99BF6F83-504E-4FE7-99DA-7E0C45D6B64D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ADDAAA5-F261-4B8D-9A2A-CE7E27DEBA5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ADDAAA5-F261-4B8D-9A2A-CE7E27DEBA5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ADDAAA5-F261-4B8D-9A2A-CE7E27DEBA5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ADDAAA5-F261-4B8D-9A2A-CE7E27DEBA5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B7FC11A-616F-4E6A-8966-9E7E23665A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B7FC11A-616F-4E6A-8966-9E7E23665A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B7FC11A-616F-4E6A-8966-9E7E23665A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B7FC11A-616F-4E6A-8966-9E7E23665A5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D97171AD-1C66-4A93-9D48-7BEC798ADAA6} = {C60E65AA-B5D2-49BD-B3B9-E3F69F33B77D}
+		{E8120023-59D8-4112-90E7-D10A3A799A4C} = {C60E65AA-B5D2-49BD-B3B9-E3F69F33B77D}
+		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC} = {006EDE57-B272-4893-AABA-4F91D431BC0B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DE85CB48-0314-4D96-A0A2-0E3AC049E3A3}

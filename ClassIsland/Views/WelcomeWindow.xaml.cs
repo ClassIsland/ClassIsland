@@ -5,6 +5,10 @@ using System.IO;
 using System.Windows;
 
 using ClassIsland.Controls;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
+using ClassIsland.Helpers;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
@@ -31,7 +35,7 @@ public partial class WelcomeWindow : MyWindow
 
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
-    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+    public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 
     public WelcomeWindow()
     {
@@ -41,6 +45,14 @@ public partial class WelcomeWindow : MyWindow
             .Stream);
         ViewModel.License = reader.ReadToEnd();
         ViewModel.Settings = SettingsService.Settings;
+        SettingsService.Settings.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled))
+            {
+                ViewModel.RequiresRestarting = true;
+                ViewModel.SnackbarQueue.Enqueue("应用将在向导完成后自动重启，以应用部分更改。");
+            }
+        };
     }
 
     protected override async void OnContentRendered(EventArgs e)
@@ -49,7 +61,7 @@ public partial class WelcomeWindow : MyWindow
         ViewModel.MasterTabIndex = 1;
     }
 
-    private void ButtonClose_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonClose_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsExitConfirmed = true;
         DialogResult = true;
@@ -67,13 +79,21 @@ public partial class WelcomeWindow : MyWindow
                 shortcut.Save(startMenuPath);
             if (ViewModel.CreateDesktopShortcut)
                 shortcut.Save(desktopPath);
+            if (ViewModel.RegisterUrlScheme)
+                UriProtocolRegisterHelper.Register();
+            if (ViewModel is { CreateClassSwapShortcut: true, RegisterUrlScheme: true })
+                await ShortcutHelpers.CreateClassSwapShortcutAsync();
         }
         catch (Exception ex)
         {
             App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
         }
-        
+
         Close();
+        if (ViewModel.RequiresRestarting)
+        {
+            AppBase.Current.Restart();
+        }
     }
 
     private async void WelcomeWindow_OnClosing(object? sender, CancelEventArgs e)
@@ -96,16 +116,6 @@ public partial class WelcomeWindow : MyWindow
         }
     }
 
-    private void ButtonViewHelp_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.IsExitConfirmed = true;
-        DialogResult = true;
-        Close();
-
-        var mw = (MainWindow)Application.Current.MainWindow!;
-        mw.OpenHelpsWindow();
-    }
-
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
     {
         Process.Start(new ProcessStartInfo()
@@ -119,7 +129,7 @@ public partial class WelcomeWindow : MyWindow
     {
         ViewModel.FlipNextCount++;
         ViewModel.FlipIndex = ViewModel.FlipIndex + 1 >= 3 ? 0 : ViewModel.FlipIndex + 1;
-        if (ViewModel.FlipNextCount >= 2)
+        if (ViewModel.FlipIndex >= 2)
             ViewModel.IsFlipEnd = true;
     }
 
@@ -131,5 +141,34 @@ public partial class WelcomeWindow : MyWindow
     private async void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
     {
         
+    }
+
+    private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
+    {
+        new DocumentReaderWindow()
+        {
+            Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
+            Owner = this,
+            Title = "ClassIsland 隐私政策"
+        }.ShowDialog();
+    }
+
+    private void ButtonSkip_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.SlideIndex = 4;
+        ViewModel.SnackbarQueue.Enqueue("您稍后可以在【应用设置】中调整这些设置。");
+    }
+
+    private void ButtonCompleteFlipBack_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.FlipIndex > 0)
+        {
+            ViewModel.FlipIndex--;
+            ViewModel.IsFlipEnd = ViewModel.FlipIndex >= 2;
+        }
+        else
+        {
+            ViewModel.SlideIndex--;
+        }
     }
 }

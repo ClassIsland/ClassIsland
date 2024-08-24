@@ -1,0 +1,18 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ClassIsland.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+    xmlns:iconControl="clr-namespace:ClassIsland.Core.Controls.IconControl"
+    mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/LessonsControls/LessonsListBox.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/IconControl/IconControl.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Themes/MaterialProgressBar.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    
+</ResourceDictionary>

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Models.Notification;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
 
@@ -14,37 +14,25 @@ namespace ClassIsland.ViewModels;
 public class MainViewModel : ObservableRecipient
 {
     private Profile _profile = new();
-    private ClassPlan? _currentClassPlan = new();
-    private int? _currentSelectedIndex = null;
     private Settings _settings = new();
     private object? _currentMaskElement;
     private object? _currentOverlayElement = new object();
     private bool _isOverlayOpened = false;
-    private Subject _nextSubject = new();
-    private TimeLayoutItem _nextTimeLayoutItem = new();
-    private TimeSpan _onClassLeftTime = TimeSpan.Zero;
-    private DateTime _today = DateTime.Now;
     private bool _isMouseIn = false;
-    private TimeState _currentStatus = TimeState.None;
-    private TimeState _currentOverlayStatus = TimeState.None;
-    private TimeLayoutItem _currentTimeLayoutItem = new();
     private bool _isForegroundFullscreen = false;
     private bool _isForegroundMaxWindow = false;
     private string _currentProfilePath = "Profile.json";
     private double _gridRootLeft = 0;
     private double _gridRootTop = 0;
-    private TimeState _currentOverlayEventStatus = TimeState.None;
-    private TimeLayoutItem _nextBreakingLayoutItem = new();
     private double _overlayRemainTimePercents = 1;
     private NotificationRequest _currentNotificationRequest = new();
     private bool _isMainWindowVisible = true;
-    private Subject? _currentSubject = new();
     private bool _isClosing = false;
-    private bool _isClassPlanEnabled = true;
     private bool _isBusy = false;
     private DateTime _firstProcessNotifications = DateTime.MinValue;
     private DateTime _debugCurrentTime = DateTime.Now;
     private bool _isNotificationWindowExplicitShowed = false;
+    private bool _isHideRuleSatisfied = false;
 
     public Profile Profile
     {
@@ -53,28 +41,6 @@ public class MainViewModel : ObservableRecipient
         {
             if (Equals(value, _profile)) return;
             _profile = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ClassPlan? CurrentClassPlan
-    {
-        get => _currentClassPlan;
-        set
-        {
-            if (Equals(value, _currentClassPlan)) return;
-            _currentClassPlan = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int? CurrentSelectedIndex
-    {
-        get => _currentSelectedIndex;
-        set
-        {
-            if (value == _currentSelectedIndex) return;
-            _currentSelectedIndex = value;
             OnPropertyChanged();
         }
     }
@@ -123,61 +89,6 @@ public class MainViewModel : ObservableRecipient
         }
     }
 
-    public Subject NextSubject
-    {
-        get => _nextSubject;
-        set
-        {
-            if (Equals(value, _nextSubject)) return;
-            _nextSubject = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeLayoutItem NextTimeLayoutItem
-    {
-        get => _nextTimeLayoutItem;
-        set
-        {
-            if (Equals(value, _nextTimeLayoutItem)) return;
-            _nextTimeLayoutItem = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeLayoutItem NextBreakingLayoutItem
-    {
-        get => _nextBreakingLayoutItem;
-        set
-        {
-            if (Equals(value, _nextBreakingLayoutItem)) return;
-            _nextBreakingLayoutItem = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeSpan OnClassLeftTime
-    {
-        get => _onClassLeftTime;
-        set
-        {
-            if (value.Equals(_onClassLeftTime)) return;
-            _onClassLeftTime = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime Today
-    {
-        get => _today;
-        set
-        {
-            if (value.Equals(_today)) return;
-            _today = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool IsMouseIn
     {
         get => _isMouseIn;
@@ -185,39 +96,6 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isMouseIn) return;
             _isMouseIn = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeState CurrentStatus
-    {
-        get => _currentStatus;
-        set
-        {
-            if (value == _currentStatus) return;
-            _currentStatus = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeState CurrentOverlayStatus
-    {
-        get => _currentOverlayStatus;
-        set
-        {
-            if (value == _currentOverlayStatus) return;
-            _currentOverlayStatus = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public TimeLayoutItem CurrentTimeLayoutItem
-    {
-        get => _currentTimeLayoutItem;
-        set
-        {
-            if (Equals(value, _currentTimeLayoutItem)) return;
-            _currentTimeLayoutItem = value;
             OnPropertyChanged();
         }
     }
@@ -230,7 +108,7 @@ public class MainViewModel : ObservableRecipient
             if (value == _isForegroundFullscreen) return;
             _isForegroundFullscreen = value;
             OnPropertyChanged();
-            Settings.NotifyPropertyChanged(nameof(Settings.HideOnFullscreen));
+            //Settings.NotifyPropertyChanged(nameof(Settings.HideOnFullscreen));
         }
     }
 
@@ -242,17 +120,28 @@ public class MainViewModel : ObservableRecipient
             if (value == _isForegroundMaxWindow) return;
             _isForegroundMaxWindow = value;
             OnPropertyChanged();
-            Settings.NotifyPropertyChanged(nameof(Settings.HideOnMaxWindow));
+            //Settings.NotifyPropertyChanged(nameof(Settings.HideOnMaxWindow));
+        }
+    }
+
+    public bool IsHideRuleSatisfied
+    {
+        get => _isHideRuleSatisfied;
+        set
+        {
+            if (value == _isHideRuleSatisfied) return;
+            _isHideRuleSatisfied = value;
+            OnPropertyChanged();
         }
     }
 
     public string CurrentProfilePath
     {
-        get => App.GetService<ProfileService>().CurrentProfilePath;
+        get => App.GetService<IProfileService>().CurrentProfilePath;
         set
         {
             if (value == _currentProfilePath) return;
-            App.GetService<ProfileService>().CurrentProfilePath = value;
+            App.GetService<IProfileService>().CurrentProfilePath = value;
             OnPropertyChanged();
         }
     }
@@ -281,17 +170,6 @@ public class MainViewModel : ObservableRecipient
 
     public SettingsService SettingsService => App.GetService<SettingsService>();
 
-    public TimeState CurrentOverlayEventStatus
-    {
-        get => _currentOverlayEventStatus;
-        set
-        {
-            if (value == _currentOverlayEventStatus) return;
-            _currentOverlayEventStatus = value;
-            OnPropertyChanged();
-        }
-    }
-
     public double OverlayRemainTimePercents
     {
         get => _overlayRemainTimePercents;
@@ -316,28 +194,6 @@ public class MainViewModel : ObservableRecipient
         }
     }
 
-    public bool IsMainWindowVisible
-    {
-        get => _isMainWindowVisible;
-        set
-        {
-            if (value == _isMainWindowVisible) return;
-            _isMainWindowVisible = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Subject? CurrentSubject
-    {
-        get => _currentSubject;
-        set
-        {
-            if (Equals(value, _currentSubject)) return;
-            _currentSubject = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool IsClosing
     {
         get => _isClosing;
@@ -345,17 +201,6 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isClosing) return;
             _isClosing = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsClassPlanEnabled
-    {
-        get => _isClassPlanEnabled;
-        set
-        {
-            if (value == _isClassPlanEnabled) return;
-            _isClassPlanEnabled = value;
             OnPropertyChanged();
         }
     }

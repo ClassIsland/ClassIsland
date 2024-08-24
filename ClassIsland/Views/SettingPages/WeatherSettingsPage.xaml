@@ -1,0 +1,174 @@
+﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.WeatherSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:controls2="clr-namespace:ClassIsland.Controls"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+      xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:classIsland="clr-namespace:ClassIsland"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="天气"
+      d:DataContext="{d:DesignInstance local:WeatherSettingsPage}"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto">
+
+    <controls:SettingsPageBase.Resources>
+        <converters:CollectionToStringConverter x:Key="CollectionToStringConverter" />
+        <Grid Width="300" Margin="16" x:Key="CitySearcher">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="搜索城市" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Margin="0 0 0 8" />
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         TextChanged="TextBoxSearchCity_OnTextChanged"
+                         materialDesign:HintAssist.Hint="搜索城市或省份…"
+                         x:Name="TextBoxSearchCity">
+
+                </TextBox>
+            </StackPanel>
+            <!-- Main list box -->
+            <ListBox Grid.Row="1"
+                     Margin="0 8 0 0"
+                     SelectedValuePath="CityId"
+                     SelectedValue="{Binding SettingsService.Settings.CityId}"
+                     ItemsSource="{Binding ViewModel.CitySearchResults}"
+                     SelectionMode="Single"
+                     SelectionChanged="SelectorCity_OnSelectionChanged"
+                     VirtualizingPanel.IsVirtualizing="True"
+                     VirtualizingPanel.ScrollUnit="Pixel">
+                <b:Interaction.Behaviors>
+                    <classIsland:AutoScrollBehavior />
+                </b:Interaction.Behaviors>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <RadioButton Content="{Binding Name}"
+                                     IsChecked="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <!-- 无结果 -->
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0 50">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.CitySearchResults.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="Collapsed" />
+                    </Style>
+                </StackPanel.Style>
+                <materialDesign:PackIcon Kind="Search" Width="81" Height="81" HorizontalAlignment="Center" />
+                <TextBlock Text="找不到符合条件的城市。请更换搜索关键字，然后再试一次。因天气api不全，可能搜索不到您所在的城市。" TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           Margin="0 8 0 0" />
+            </StackPanel>
+        </Grid>
+    </controls:SettingsPageBase.Resources>
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
+            <controls1:IconText Kind="WeatherSunny" Text="天气预览" Margin="0 0 0 8" />
+            <StackPanel Orientation="Horizontal">
+                <controls2:WeatherPackIconControl Width="32" Height="32"
+                                                  Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
+                                                  VerticalAlignment="Center" />
+                <TextBlock VerticalAlignment="Center" FontSize="20" Margin="6 0 0 0">
+                    <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
+                    </Run>
+                    <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
+                </TextBlock>
+                <Button Content="刷新" Style="{StaticResource MaterialDesignFlatButton}"
+                        HorizontalAlignment="Left"
+                        Click="ButtonRefreshWeather_OnClick"
+                        Margin="6 0 0 0" />
+            </StackPanel>
+            <TextBlock
+                Text="{Binding SettingsService.Settings.LastWeatherInfo.UpdateTime, Mode=OneWay, ConverterCulture=zh-CN}">
+            </TextBlock>
+            <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}"
+                          Margin="0 3 0 0">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Expander materialDesign:ExpanderAssist.HorizontalHeaderPadding="0">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                    <Image Width="24" Height="24"
+                                           Margin="0 0 8 0"
+                                           VerticalAlignment="Center"
+                                           Source="{Binding Images[icon]}" />
+                                    <TextBlock VerticalAlignment="Center"
+                                               Foreground="{DynamicResource MaterialDesignBody}">
+                                        <Run Text="{Binding Title}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </Expander.Header>
+                            <TextBlock Text="{Binding Detail}" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                       FontSize="12"
+                                       Margin="32 0 24 0" />
+                        </Expander>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Separator Margin="0 16 0 8" />
+            <controls1:IconText Kind="CogOutline" Text="设置" Margin="0 0 0 8" />
+            <!-- 城市选择 -->
+            <controls1:SettingsCard IconGlyph="MapOutline" Header="城市选择"
+                                    Description="选择当前所在的城市，以用于天气查询。仅支持国内天气查询。">
+                <controls1:SettingsCard.Switcher>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding SettingsService.Settings.CityName}"
+                                   VerticalAlignment="Center" />
+                        <Button Content="{materialDesign:PackIcon EditOutline}" ToolTip="编辑"
+                                Margin="6 0 0 0"
+                                Style="{StaticResource MaterialDesignFlatButton}"
+                                Click="ButtonEditCurrentCity_OnClick" />
+                    </StackPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
+            <!-- 排除预警 -->
+            <materialDesign:Card Margin="0 0 0 8">
+                <Expander Background="Transparent"
+                          IsExpanded="True"
+                          TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="FilterOutline"
+                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                   Header="排除的气象预警"
+                                                   HasSwitcher="False"
+                                                   Description="包含以下字符串的预警将不会显示，一行一条排除项。"
+                                                   Margin="-12 0" />
+                    </Expander.Header>
+                    <Grid Margin="36 0 48 12">
+                        <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Padding="8"
+                                 MaxHeight="250"
+                                 VerticalScrollBarVisibility="Auto"
+                                 AcceptsReturn="True"
+                                 Text="{Binding SettingsService.Settings.ExcludedWeatherAlerts, Converter={StaticResource CollectionToStringConverter}}" />
+
+                    </Grid>
+                </Expander>
+            </materialDesign:Card>
+            <TextBlock TextWrapping="Wrap" FontWeight="Regular" Margin="0 8 0 0">
+                要调整天气提醒设置，请转到【提醒】选项卡。要调整主界面上的天气快速信息，请在【组件】中配置天气简报组件。
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</controls:SettingsPageBase>

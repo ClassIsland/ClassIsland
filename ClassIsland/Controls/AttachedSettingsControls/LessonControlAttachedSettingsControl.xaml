@@ -1,68 +1,71 @@
-﻿<UserControl x:Class="ClassIsland.Controls.AttachedSettingsControls.LessonControlAttachedSettingsControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ClassIsland.Controls.AttachedSettingsControls"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:controls="clr-namespace:ClassIsland.Controls"
-             xmlns:converters="clr-namespace:ClassIsland.Converters"
-             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:LessonControlAttachedSettings"
+                                x:Class="ClassIsland.Controls.AttachedSettingsControls.LessonControlAttachedSettingsControl"
+                                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                                xmlns:local="clr-namespace:ClassIsland.Controls.AttachedSettingsControls"
+                                xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                                xmlns:controls="clr-namespace:ClassIsland.Controls"
+                                xmlns:converters="clr-namespace:ClassIsland.Converters"
+                                xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+                                xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                                xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                                xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                                xmlns:attachedSettings="clr-namespace:ClassIsland.Core.Models.AttachedSettings;assembly=ClassIsland.Core"
+                                mc:Ignorable="d" 
+                                d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters1:IntToStringConverter x:Key="IntToStringConverter" />
     </UserControl.Resources>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlAttachedSettingsControl}}">
-        <!-- 启用特定课程显示设置 -->
-        <CheckBox IsChecked="{Binding Settings.IsAttachSettingsEnabled}" 
-                  Content="启用特定课程显示设置。"
-                  Margin="0 0 0 6"/>
-        <StackPanel Visibility="{Binding Settings.IsAttachSettingsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-            <WrapPanel>
-                <!-- 显示时间点附加信息 -->
-                <CheckBox IsChecked="{Binding Settings.ShowExtraInfoOnTimePoint}"
-                          Content="显示时间点附加信息"
-                          Margin="0 0 0 6" />
-                <!-- 要显示的附加信息 -->
-                <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                          SelectedIndex="{Binding Settings.ExtraInfoType}"
-                          HorizontalContentAlignment="Stretch"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          Visibility="{Binding Settings.ShowExtraInfoOnTimePoint, Converter={StaticResource BooleanToVisibilityConverter}}"
-                          materialDesign:HintAssist.Hint="要显示的附加信息"
-                          Margin="0 0 0 6">
-                    <ComboBoxItem HorizontalContentAlignment="Left">
-                        <TextBlock Text="时间点持续时间" />
-                    </ComboBoxItem>
-                    <ComboBoxItem HorizontalContentAlignment="Left">
-                        <TextBlock Text="已过时间/持续时间" />
-                    </ComboBoxItem>
-                    <ComboBoxItem HorizontalContentAlignment="Left">
-                        <TextBlock Text="剩余时间/持续时间" />
-                    </ComboBoxItem>
-                    <ComboBoxItem HorizontalContentAlignment="Left">
-                        <TextBlock Text="已过时间百分比" />
-                    </ComboBoxItem>
-                    <ComboBoxItem HorizontalContentAlignment="Left">
-                        <TextBlock Text="剩余时间" />
-                    </ComboBoxItem>
-                </ComboBox>
+        <WrapPanel>
+            <!-- 显示时间点附加信息 -->
+            <CheckBox IsChecked="{Binding Settings.ShowExtraInfoOnTimePoint}"
+                      Content="显示时间点附加信息"
+                      Margin="0 0 0 6" />
+            <!-- 要显示的附加信息 -->
+            <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                      SelectedIndex="{Binding Settings.ExtraInfoType}"
+                      HorizontalContentAlignment="Stretch"
+                      Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                      Visibility="{Binding Settings.ShowExtraInfoOnTimePoint, Converter={StaticResource BooleanToVisibilityConverter}}"
+                      materialDesign:HintAssist.Hint="要显示的附加信息"
+                      Margin="0 0 0 6">
+                <ComboBoxItem HorizontalContentAlignment="Left">
+                    <TextBlock Text="时间点持续时间" />
+                </ComboBoxItem>
+                <ComboBoxItem HorizontalContentAlignment="Left">
+                    <TextBlock Text="已过时间/持续时间" />
+                </ComboBoxItem>
+                <ComboBoxItem HorizontalContentAlignment="Left">
+                    <TextBlock Text="剩余时间/持续时间" />
+                </ComboBoxItem>
+                <ComboBoxItem HorizontalContentAlignment="Left">
+                    <TextBlock Text="已过时间百分比" />
+                </ComboBoxItem>
+                <ComboBoxItem HorizontalContentAlignment="Left">
+                    <TextBlock Text="剩余时间" />
+                </ComboBoxItem>
+                <ComboBoxItem HorizontalContentAlignment="Left">
+                    <TextBlock Text="倒计时" />
+                </ComboBoxItem>
+            </ComboBox>
+        </WrapPanel>
+        <WrapPanel>
+            <!-- 时间点结束倒计时 -->
+            <CheckBox IsChecked="{Binding Settings.IsCountdownEnabled}"
+                      Content="时间点结束倒计时"
+                      Margin="0 0 0 6" />
+            <!-- 时间点结束倒计时时长 -->
+            <controls1:NumbericTextBox MaxValue="36000" MinValue="0"
+                                      MinWidth="100"
+                                      materialDesign:TextFieldAssist.SuffixText="秒"
+                                      Visibility="{Binding Settings.IsCountdownEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                      Style="{StaticResource MaterialDesignTextBoxBase}"
+                                      Text="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
             </WrapPanel>
-            <WrapPanel>
-                <!-- 时间点结束倒计时 -->
-                <CheckBox IsChecked="{Binding Settings.IsCountdownEnabled}"
-                          Content="时间点结束倒计时"
-                          Margin="0 0 0 6" />
-                <!-- 时间点结束倒计时时长 -->
-                <controls:NumbericTextBox MaxValue="36000" MinValue="0"
-                                          MinWidth="100"
-                                          materialDesign:TextFieldAssist.SuffixText="秒"
-                                          Visibility="{Binding Settings.IsCountdownEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                          Style="{StaticResource MaterialDesignTextBoxBase}"
-                                          Text="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
-                </WrapPanel>
-        </StackPanel>
     </StackPanel>
-</UserControl>
+
+</ci:AttachedSettingsControlBase>

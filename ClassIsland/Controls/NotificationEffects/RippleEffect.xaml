@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls.NotificationEffects"
              xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
              mc:Ignorable="d" 
              IsHitTestVisible="False"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:RippleEffectTranslationConverter x:Key="RippleEffectTranslationConverter" />
+        <converters1:RippleEffectTranslationConverter x:Key="RippleEffectTranslationConverter" />
     </UserControl.Resources>
     <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RippleEffect}}">
         <Ellipse StrokeThickness="200"

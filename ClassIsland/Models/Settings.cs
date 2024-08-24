@@ -3,22 +3,24 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
-
-using ClassIsland.Core;
-using ClassIsland.Core.Abstraction.Models;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Core.Models.Ruleset;
+using ClassIsland.Core.Models.Weather;
+using ClassIsland.Helpers;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AllContributors;
-using ClassIsland.Models.Weather;
 using ClassIsland.Services;
-
+using ClassIsland.Services.AppUpdating;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.Extensions.Logging;
-
-using Newtonsoft.Json;
 
 using Octokit;
 
@@ -51,11 +53,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     {
         "explorer"
     };
+    private ObservableCollection<int> _multiWeekRotationOffset = [-1, -1, 0, 0, 0];
 
     private bool _hideOnMaxWindow = false;
     private double _opacity = 0.5;
     private bool _isDebugEnabled = false;
     private string _selectedProfile = "Default.json";
+    private bool _isMainWindowVisible = true;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
@@ -84,7 +88,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = true;
-    private string _mainWindowFont = "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
+    private string _mainWindowFont = App.IsAssetsTrimmedInternal ? "Microsoft YaHei UI" : "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
@@ -148,6 +152,46 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _allowNotificationTopmost = true;
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
+    private string _currentComponentConfig = "Default";
+    private Version _lastAppVersion = new Version("0.0.0.0");
+    private bool _showComponentsMigrateTip = false;
+    private bool _expAllowEditingActivatedTimeLayout = false;
+    private string _directoryIsDesktopShowed = "";
+    private ObservableDictionary<string, string> _pluginIndexSelectedMirrors = new();
+    private ObservableCollection<string> _userPluginIndexes = new();
+    private ObservableDictionary<string, string> _additionalPluginIndexes = new();
+    private ObservableCollection<PluginIndexInfo> _pluginIndexes = new();
+    private string _officialSelectedMirror = "github";
+    private ObservableDictionary<string, string> _officialIndexMirrors = new()
+    {
+        { "github", "https://github.com" },
+        { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
+        { "moeyy", "https://github.moeyy.xyz/https://github.com" }
+    };
+
+    private bool _isMigratedFromv14 = false;
+    private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
+    private bool _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = true;
+    private double _notificationSoundVolume = 1.0;
+    private double _radiusX = 0.0;
+    private double _radiusY = 0.0;
+    private int _hideMode = 0;
+    private Ruleset _hiedRules = new();
+    private bool _isAutoBackupEnabled = true;
+    private DateTime _lastAutoBackupTime = DateTime.Now;
+    private int _autoBackupLimit = 16;
+    private int _autoBackupIntervalDays = 7;
+    private bool _useRawInput = true;
+    private bool _isMouseInFadingEnabled = true;
+    private double _touchInFadingDurationMs = 0;
+    private bool _isCompatibleWindowTransparentEnabled = false;
+    private double _mainWindowSecondaryFontSize = 14;
+    private double _mainWindowBodyFontSize = 16;
+    private double _mainWindowEmphasizedFontSize = 18;
+    private double _mainWindowLargeFontSize = 20;
+    private bool _isErrorLoadingRawInput = false;
+    private bool _isCustomForegroundColorEnabled = false;
+    private Color _customForegroundColor = Colors.DodgerBlue;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -165,6 +209,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool IsMainWindowVisible
+    {
+        get => _isMainWindowVisible;
+        set
+        {
+            if (value == _isMainWindowVisible) return;
+            _isMainWindowVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsWelcomeWindowShowed
     {
         get => _isWelcomeWindowShowed;
@@ -172,6 +227,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isWelcomeWindowShowed) return;
             _isWelcomeWindowShowed = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string DirectoryIsDesktopShowed
+    {
+        get => _directoryIsDesktopShowed;
+        set
+        {
+            if (value == _directoryIsDesktopShowed) return;
+            _directoryIsDesktopShowed = value;
             OnPropertyChanged();
         }
     }
@@ -185,6 +251,30 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_singleWeekStartTime)) return;
             _singleWeekStartTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 以 2022/4/18 为基准周的多周轮换周数。
+    /// </summary>
+    /// <remarks>
+    /// 第 2 位 - 双周轮换<br/>
+    /// 第 3 位 - 三周轮换<br/>
+    /// ……<br/>
+    /// <br/>
+    /// 0 - 基准周是单周<br/>
+    /// 1 - 基准周是双周<br/>
+    /// 2 - 基准周是 3/x 周<br/>
+    /// ……<br/>
+    /// </remarks>
+    public ObservableCollection<int> MultiWeekRotationOffset
+    {
+        get => _multiWeekRotationOffset;
+        set
+        {
+            if (value.Equals(_multiWeekRotationOffset)) return;
+            _multiWeekRotationOffset = value;
             OnPropertyChanged();
         }
     }
@@ -277,6 +367,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public int HideMode
+    {
+        get => _hideMode;
+        set
+        {
+            if (value == _hideMode) return;
+            _hideMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Ruleset HiedRules
+    {
+        get => _hiedRules;
+        set
+        {
+            if (Equals(value, _hiedRules)) return;
+            _hiedRules = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool HideOnFullscreen
     {
         get => _hideOnFullscreen;
@@ -310,6 +422,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [JsonIgnore]
     public bool IsAutoStartEnabled
     {
         get => File.Exists(
@@ -352,6 +465,42 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [JsonIgnore]
+    public bool IsSentryEnabled
+    {
+        get => Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null;
+        set
+        {
+            try
+            {
+                Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", value ? "1" : "0");
+                OnPropertyChanged();
+            }
+            catch (Exception ex)
+            {
+                IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 Sentry 启用状态。");
+            }
+
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsUrlProtocolRegistered
+    {
+        get => UriProtocolRegisterHelper.IsRegistered();
+        set
+        {
+            if (value)
+            {
+                UriProtocolRegisterHelper.Register();
+            }
+            else
+            {
+                UriProtocolRegisterHelper.UnRegister();
+            }
+        }
+    }
+
     /// <summary>
     /// TaskBarIcon点击行为
     /// </summary>
@@ -360,6 +509,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     ///     <item>0 - 打开主菜单</item>
     ///     <item>1 - 打开档案编辑窗口</item>
     ///     <item>2 - 显示/隐藏主界面</item>
+    ///     <item>3 - 打开换课窗口</item>
     /// </list>
     /// </value>
     public int TaskBarIconClickBehavior
@@ -712,6 +862,109 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public double RadiusX
+    {
+        get => _radiusX;
+        set
+        {
+            if (value.Equals(_radiusX)) return;
+            _radiusX = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double RadiusY
+    {
+        get => _radiusY;
+        set
+        {
+            if (value.Equals(_radiusY)) return;
+            _radiusY = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowSecondaryFontSize
+    {
+        get => _mainWindowSecondaryFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowSecondaryFontSize)) return;
+            _mainWindowSecondaryFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowBodyFontSize
+    {
+        get => _mainWindowBodyFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowBodyFontSize)) return;
+            _mainWindowBodyFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowEmphasizedFontSize
+    {
+        get => _mainWindowEmphasizedFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowEmphasizedFontSize)) return;
+            _mainWindowEmphasizedFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowLargeFontSize
+    {
+        get => _mainWindowLargeFontSize;
+        set
+        {
+            if (value.Equals(_mainWindowLargeFontSize)) return;
+            _mainWindowLargeFontSize = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCustomForegroundColorEnabled
+    {
+        get => _isCustomForegroundColorEnabled;
+        set
+        {
+            if (value == _isCustomForegroundColorEnabled) return;
+            _isCustomForegroundColorEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Color CustomForegroundColor
+    {
+        get => _customForegroundColor;
+        set
+        {
+            if (value.Equals(_customForegroundColor)) return;
+            _customForegroundColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Components
+
+    public string CurrentComponentConfig
+    {
+        get => _currentComponentConfig;
+        set
+        {
+            if (value == _currentComponentConfig) return;
+            _currentComponentConfig = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Notifications
@@ -973,6 +1226,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _allowNotificationTopmost) return;
             _allowNotificationTopmost = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double NotificationSoundVolume
+    {
+        get => _notificationSoundVolume;
+        set
+        {
+            if (value.Equals(_notificationSoundVolume)) return;
+            _notificationSoundVolume = value;
             OnPropertyChanged();
         }
     }
@@ -1262,6 +1526,62 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool UseRawInput
+    {
+        get => _useRawInput;
+        set
+        {
+            if (value == _useRawInput) return;
+            _useRawInput = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMouseInFadingEnabled
+    {
+        get => _isMouseInFadingEnabled;
+        set
+        {
+            if (value == _isMouseInFadingEnabled) return;
+            _isMouseInFadingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double TouchInFadingDurationMs
+    {
+        get => _touchInFadingDurationMs;
+        set
+        {
+            if (value.Equals(_touchInFadingDurationMs)) return;
+            _touchInFadingDurationMs = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCompatibleWindowTransparentEnabled
+    {
+        get => _isCompatibleWindowTransparentEnabled;
+        set
+        {
+            if (value == _isCompatibleWindowTransparentEnabled) return;
+            _isCompatibleWindowTransparentEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsErrorLoadingRawInput
+    {
+        get => _isErrorLoadingRawInput;
+        set
+        {
+            if (value == _isErrorLoadingRawInput) return;
+            _isErrorLoadingRawInput = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Weather
@@ -1322,6 +1642,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _expIsExcelImportEnabled) return;
             _expIsExcelImportEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ExpAllowEditingActivatedTimeLayout
+    {
+        get => _expAllowEditingActivatedTimeLayout;
+        set
+        {
+            if (value == _expAllowEditingActivatedTimeLayout) return;
+            _expAllowEditingActivatedTimeLayout = value;
             OnPropertyChanged();
         }
     }
@@ -1411,6 +1742,102 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         : (DiagnosticLastMemoryKillTime - DiagnosticFirstLaunchTime).TotalSeconds / 86400.0 * 1.0 / DiagnosticMemoryKillCount;
 
     #endregion
+
+    #region Storage
+
+    public bool IsAutoBackupEnabled
+    {
+        get => _isAutoBackupEnabled;
+        set
+        {
+            if (value == _isAutoBackupEnabled) return;
+            _isAutoBackupEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastAutoBackupTime
+    {
+        get => _lastAutoBackupTime;
+        set
+        {
+            if (value.Equals(_lastAutoBackupTime)) return;
+            _lastAutoBackupTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AutoBackupLimit
+    {
+        get => _autoBackupLimit;
+        set
+        {
+            if (value == _autoBackupLimit) return;
+            _autoBackupLimit = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AutoBackupIntervalDays
+    {
+        get => _autoBackupIntervalDays;
+        set
+        {
+            if (value == _autoBackupIntervalDays) return;
+            _autoBackupIntervalDays = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Plugins
+
+    public ObservableDictionary<string, string> OfficialIndexMirrors
+    {
+        get => _officialIndexMirrors;
+        set
+        {
+            if (Equals(value, _officialIndexMirrors)) return;
+            _officialIndexMirrors = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OfficialSelectedMirror
+    {
+        get => _officialSelectedMirror;
+        set
+        {
+            if (value == _officialSelectedMirror) return;
+            _officialSelectedMirror = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<PluginIndexInfo> PluginIndexes
+    {
+        get => _pluginIndexes;
+        set
+        {
+            if (Equals(value, _pluginIndexes)) return;
+            _pluginIndexes = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime LastRefreshPluginSourceTime
+    {
+        get => _lastRefreshPluginSourceTime;
+        set
+        {
+            if (value.Equals(_lastRefreshPluginSourceTime)) return;
+            _lastRefreshPluginSourceTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
     public bool IsDebugEnabled
     {
         get => _isDebugEnabled;
@@ -1495,6 +1922,50 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _contributorsCache)) return;
             _contributorsCache = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Version LastAppVersion
+    {
+        get => _lastAppVersion;
+        set
+        {
+            if (Equals(value, _lastAppVersion)) return;
+            _lastAppVersion = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowComponentsMigrateTip
+    {
+        get => _showComponentsMigrateTip;
+        set
+        {
+            if (value == _showComponentsMigrateTip) return;
+            _showComponentsMigrateTip = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMigratedFromv1_4
+    {
+        get => _isMigratedFromv14;
+        set
+        {
+            if (value == _isMigratedFromv14) return;
+            _isMigratedFromv14 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsProfileEditorClassInfoSubjectAutoMoveNextEnabled
+    {
+        get => _isProfileEditorClassInfoSubjectAutoMoveNextEnabled;
+        set
+        {
+            if (value == _isProfileEditorClassInfoSubjectAutoMoveNextEnabled) return;
+            _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = value;
             OnPropertyChanged();
         }
     }

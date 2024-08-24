@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services;
 
 namespace ClassIsland.Controls;
@@ -42,7 +42,7 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
         if (e.Property == CodeProperty)
         {
             var c = (string)e.NewValue;
-            WeatherName = App.GetService<WeatherService>().GetWeatherTextByCode(c);
+            WeatherName = App.GetService<IWeatherService>().GetWeatherTextByCode(c);
         }
         base.OnPropertyChanged(e);
     }

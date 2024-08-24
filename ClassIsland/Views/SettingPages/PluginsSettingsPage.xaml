@@ -1,0 +1,605 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.PluginsSettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
+      xmlns:controls1="clr-namespace:ClassIsland.Controls"
+      xmlns:plugin="clr-namespace:ClassIsland.Core.Models.Plugin;assembly=ClassIsland.Core"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:mdxaml="clr-namespace:MdXaml;assembly=MdXaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:views="clr-namespace:ClassIsland.Views"
+      xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="插件"
+      d:DataContext="{d:DesignInstance local:PluginsSettingsPage}"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto">
+
+    <ci:SettingsPageBase.Resources>
+        <CollectionViewSource x:Key="PluginSource" 
+                              Source="{Binding PluginMarketService.MergedPlugins}"
+                              Filter="PluginSource_OnFilter"/>
+        <DataTemplate x:Key="BlankPluginDetailDataTemplate">
+            <Grid>
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                    <materialDesign:PackIcon Kind="Plugin"
+                                             HorizontalAlignment="Center"
+                                             Width="72"
+                                             Height="72"
+                                             Margin="0 0 0 8"/>
+                    <TextBlock Text="在左侧选择一个插件以查看详细。"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+        <ci:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
+        <DataTemplate DataType="{x:Type plugin:PluginInfo}" x:Key="PluginDetailDataTemplate">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="4 8 4 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ci:IconControl Grid.Column="0" Grid.Row="0"
+                                                    Width="60" Height="60"
+                                                    VerticalAlignment="Top"
+                                                    ClipToBounds="True"
+                                                    Margin="0 0 8 0 "
+                                                    FallbackPackIconKind="Plugin"
+                                                    IconKind="Image"
+                                                    ImageSource="{Binding RealIconPath, FallbackValue={x:Null}}"/>
+                    <StackPanel Grid.Column="1" >
+                        <TextBlock Text="{Binding Manifest.Name}"
+                                                   FontSize="24" 
+                                                   TextTrimming="CharacterEllipsis"
+                                                   FontWeight="Medium"
+                                                   Margin="0 0 0 4"/>
+                        <TextBlock Margin="0 0 0 2">
+                            <Run Text="{Binding Manifest.Version}"/>
+                            <Run Text=" "/>
+                            <ci:NavHyperlink CommandParameter="{Binding Manifest.Url}">
+                                <Run Text="项目主页"/>
+                            </ci:NavHyperlink>
+                            <Run Text=" "/>
+                            <Run Text="{Binding Manifest.Author}"/>
+                        </TextBlock>
+                        <!-- Local Operations -->
+                        <WrapPanel Orientation="Horizontal" 
+                                   Margin="0 0 0 4"
+                                   Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <CheckBox Content="已启用" Margin="0 0 6  0"
+                                                      VerticalAlignment="Center"
+                                                      IsChecked="{Binding IsEnabled}"/>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                                                    VerticalAlignment="Center"
+                                                    Margin="0 0 6  0"
+                                                    Click="ButtonUninstall_OnClick"
+                                                    Visibility="{Binding IsUninstalling, Converter={StaticResource InverseBoolToVisConverter}}">
+                                <ci:IconText Kind="Remove" Text="卸载"/>
+                            </Button>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                                                    VerticalAlignment="Center"
+                                                    Margin="0 0 6  0"
+                                                    Click="ButtonUndoUninstall_OnClick"
+                                                    Visibility="{Binding IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <ci:IconText Kind="Undo" Text="撤销卸载"/>
+                            </Button>
+                            <TextBlock Opacity="0.8"
+                                       VerticalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding LoadStatus}" Value="NotLoaded">
+                                                <Setter Property="Text" Value="未加载"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding LoadStatus}" Value="Loaded">
+                                                <Setter Property="Text" Value="已加载"/>
+                                                <Setter Property="Foreground" Value="LawnGreen"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding LoadStatus}" Value="Disabled">
+                                                <Setter Property="Text" Value="已禁用"/>
+                                                <Setter Property="FontStyle" Value="Italic"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding LoadStatus}" Value="Error">
+                                                <Setter Property="Text" Value="错误"/>
+                                                <Setter Property="Foreground" Value="Red"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </WrapPanel>
+                        <!-- Market Operations -->
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                   Margin="0 0 0 4">
+                            <WrapPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                    <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
+                                    <Binding Path="IsAvailableOnMarket"/>
+                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
+                                </MultiBinding>
+                            </WrapPanel.Visibility>
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="MonitorDownload" Text="安装"/>
+                            </Button>
+                        </WrapPanel>
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                   Margin="0 0 0 4">
+                            <WrapPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                    <Binding Path="IsLocal" />
+                                    <Binding Path="IsUpdateAvailable" />
+                                    <Binding Path="IsAvailableOnMarket"/>
+                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
+                                </MultiBinding>
+                            </WrapPanel.Visibility>
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="Upload" Text="更新"/>
+                            </Button>
+                        </WrapPanel>
+                        <WrapPanel Orientation="Horizontal" Margin="0 0 0 4"
+                                   Visibility="{Binding RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Button Click="ButtonRestart_OnClick">
+                                <ci:IconText Kind="Restart" Text="重启以应用更改"/>
+                            </Button>
+                        </WrapPanel>
+                        <!-- Download Progresses -->
+                        <DockPanel Margin="0 4 0 0" Visibility="{Binding DownloadProgress.IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                            <ProgressBar Value="{Binding DownloadProgress.Progress}"/>
+                        </DockPanel>
+                        <materialDesign:ColorZone Background="#10FF0000" Margin="0 2 0 0">
+                            <materialDesign:ColorZone.Style>
+                                <Style TargetType="materialDesign:ColorZone">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DownloadProgress.Exception, Mode=OneWay}"
+                                                     Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:ColorZone.Style>
+                            <Grid>
+                                <DockPanel Margin="8 4">
+                                    <materialDesign:PackIcon Kind="ErrorOutline"
+                                                             Height="20" Width="20"/>
+                                    <TextBlock TextWrapping="Wrap"
+                                               VerticalAlignment="Center"
+                                               Margin="4 0 0 0" >
+                                        <Run Text="无法安装插件，请检查您的网络连接："/>
+                                        <Run Text="{Binding DownloadProgress.Exception.Message, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DockPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
+                    </StackPanel>
+                    <materialDesign:PopupBox Grid.Column="1" VerticalAlignment="Top"
+                                             HorizontalAlignment="Right"
+                                             ToolTip="更多选项…"
+                                             Visibility="{Binding IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                             IsPopupOpen="{Binding ViewModel.IsPluginOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=TwoWay}">
+                        <StackPanel ButtonBase.Click="ButtonBase_OnClick">
+                            <MenuItem Icon="{materialDesign:PackIcon PackageOutline}" Header="打包插件" Click="MenuItemPackPlugin_OnClick"/>
+                            <Separator/>
+                            <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开插件文件夹…" Click="MenuItemOpenPluginFolder_OnClick"/>
+                            <MenuItem Icon="{materialDesign:PackIcon DatabaseOutline}" Header="打开配置文件夹…" Click="MenuItemOpenPluginConfigFolder_OnClick"/>
+                        </StackPanel>
+                    </materialDesign:PopupBox>
+                </Grid>
+                <TabControl Grid.Row="1" HorizontalContentAlignment="Left">
+                    <TabItem Header="概览">
+                        <ScrollViewer>
+                            <Grid>
+                                <mdxaml:MarkdownScrollViewer
+                                    Document="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}"
+                                    FontFamily="{StaticResource HarmonyOsSans}"
+                                    FontWeight="Normal"
+                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsSelectionEnabled="False"
+                                    ScrollViewer.CanContentScroll="True"
+                                    IsToolBarVisible="False"
+                                    Zoom="90"
+                                    Padding="0"
+                                    ScrollViewer.PanningMode="None"
+                                    ToolTipService.Placement="MousePoint">
+                                    <mdxaml:MarkdownScrollViewer.Resources>
+                                        <Style TargetType="ScrollViewer"
+                                               BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                            <Setter Property="CanContentScroll" Value="True" />
+                                            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                                        </Style>
+                                        <Style TargetType="Hyperlink">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Foreground"
+                                                            Value="{DynamicResource PrimaryHueLightBrush}">
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource PrimaryHueMidBrush}" />
+                                            <Setter Property="ToolTipService.Placement" Value="Mouse" />
+                                        </Style>
+                                    </mdxaml:MarkdownScrollViewer.Resources>
+                                    <mdxaml:MarkdownScrollViewer.Style>
+                                        <Style TargetType="mdxaml:MarkdownScrollViewer">
+                                            <Style.Resources>
+
+                                            </Style.Resources>
+                                        </Style>
+                                    </mdxaml:MarkdownScrollViewer.Style>
+                                </mdxaml:MarkdownScrollViewer>
+                                <ProgressBar Visibility="{Binding ViewModel.IsLoadingDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                             VerticalAlignment="Top"
+                                             Height="3"
+                                             materialDesign:TransitionAssist.DisableTransitions="True"
+                                             IsIndeterminate="True"/>
+                            </Grid>
+                        </ScrollViewer>
+                    </TabItem>
+                    <TabItem Header="错误信息">
+                        <TabItem.Style>
+                            <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Exception}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TabItem.Style>
+                        <TextBox VerticalContentAlignment="Top"
+                                                 AcceptsReturn="True"
+                                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                 BorderThickness="0"
+                                                 materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
+                                                 IsReadOnly="True"
+                                                 IsReadOnlyCaretVisible="True"
+                                                 TextAlignment="Left" TextWrapping="Wrap"
+                                                 Text="{Binding Exception, Mode=OneWay}"/>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </DataTemplate>
+
+        <Grid x:Key="PluginSourceManageDrawer" Width="500"
+              HorizontalAlignment="Stretch"
+              Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="管理插件源" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                
+                <ci:IconText Kind="SourceRepository" Text="内置插件源" Margin="0 12 0 8"/>
+                <ComboBox materialDesign:HintAssist.Hint="内置插件源镜像"
+                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          SelectedValue="{Binding SettingsService.Settings.OfficialSelectedMirror, Mode=TwoWay}"
+                          SelectedValuePath="Key"
+                          Margin="0 -4"
+                          ItemsSource="{Binding SettingsService.Settings.OfficialIndexMirrors}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Key}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Separator Margin="0 16 0 8"/>
+                <ci:IconText Kind="SourceRepositoryMultiple" Text="自定义插件源" Margin="0 0 0 8"/>
+                <WrapPanel Margin="0 0 0 0">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonAddPluginSource_OnClick">
+                        <ci:IconText Kind="Add" Text="添加"/>
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonRemovePluginSource_OnClick">
+                        <ci:IconText Kind="Remove" Text="删除"/>
+                    </Button>
+                </WrapPanel>
+            </StackPanel>
+            <DataGrid Grid.Row="1"
+                      CanUserSortColumns="False"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="True"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow"
+                      ItemsSource="{Binding SettingsService.Settings.PluginIndexes}"
+                      VirtualizingPanel.ScrollUnit="Pixel"
+                      SelectedItem="{Binding ViewModel.SelectedPluginIndexInfo}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Url" Binding="{Binding Url, Mode=TwoWay}"
+                                        Width="4*"/>
+                    <DataGridTemplateColumn Header="镜像"
+                                            Width="*">
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <ComboBox SelectedValue="{Binding SelectedMirror, Mode=TwoWay}"
+                                          SelectedValuePath="Key"
+                                          Margin="0 -4"
+                                          ItemsSource="{Binding Mirrors}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Key}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SelectedMirror}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </ci:SettingsPageBase.Resources>
+    <Grid>
+        <controls1:ListDetailView>
+            <controls1:ListDetailView.LeftContent>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0">
+                        <TextBox materialDesign:HintAssist.Hint="搜索插件…"
+                                 materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                                 materialDesign:TextFieldAssist.LeadingIcon="Search"
+                                 Text="{Binding ViewModel.PluginFilterText, UpdateSourceTrigger=PropertyChanged}"
+                                 KeyDown="TextBoxFilter_OnKeyDown"
+                                 Padding="4 4"
+                                 Margin="4 0"/>
+                        <DockPanel Dock="Left" LastChildFill="False">
+                            <ListBox
+                                DockPanel.Dock="Left"
+                                Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                HorizontalAlignment="Left"
+                                materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                ScrollViewer.CanContentScroll="True"
+                                HorizontalContentAlignment="Center"
+                                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                SelectedIndex="{Binding ViewModel.PluginCategoryIndex}"
+                                SelectionChanged="ListBoxCategory_OnSelectionChanged">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                        <Setter Property="Padding" Value="0 0" />
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <RadioButton Content="{Binding}"
+                                                     Style="{StaticResource MaterialDesignTabRadioButton}"
+                                                     Height="36"
+                                                     IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                        </RadioButton>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                                <system:String>市场</system:String>
+                                <system:String>已安装</system:String>
+                            </ListBox>
+
+                            <materialDesign:PopupBox VerticalAlignment="Center"
+                                                     HorizontalAlignment="Right"
+                                                     DockPanel.Dock="Right"
+                                                     ToolTip="更多选项…"
+                                                     IsPopupOpen="{Binding ViewModel.IsPluginMarketOperationsPopupOpened, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Mode=TwoWay}">
+                                <StackPanel ButtonBase.Click="ButtonBase2_OnClick">
+                                    <MenuItem Icon="{materialDesign:PackIcon Reload}" Header="从缓存重载插件源" 
+                                              Click="MenuItemReloadFromCache_OnClick"
+                                              IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
+                                    <MenuItem Icon="{materialDesign:PackIcon SourceRepositoryMultiple}" Header="管理插件源…"
+                                              Click="MenuItemManagePluginSources_OnClick"
+                                              IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
+                                    <Separator/>
+                                    <MenuItem Icon="{materialDesign:PackIcon PackageDown}" Header="从本地安装…"
+                                              Click="ButtonInstallFromLocal_OnClick"/>
+                                    <Separator/>
+                                    <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开插件文件夹…"
+                                              Click="MenuItemOpenPluginsFolder_OnClick"/>
+                                </StackPanel>
+                            </materialDesign:PopupBox>
+                            <Button DockPanel.Dock="Right" 
+                                    Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonBaseRefreshPlugins_OnClick"
+                                    IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
+                                <ci:IconText Kind="Refresh" Text="刷新"/>
+                            </Button>
+                            
+                        </DockPanel>
+                        <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                                  Visibility="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid>
+                                <ProgressBar VerticalAlignment="Stretch"
+                                             Height="28"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             Opacity="0.1"
+                                             Value="{Binding PluginMarketService.PluginSourceDownloadProgress}"/>
+                                <StackPanel Orientation="Horizontal" Margin="8 4">
+                                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                 IsIndeterminate="True" />
+                                    <TextBlock Text="正在刷新插件…" VerticalAlignment="Center"
+                                               Margin="4 0 0 0" />
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
+                        <materialDesign:ColorZone Background="#10FF0000">
+                            <materialDesign:ColorZone.Style>
+                                <Style TargetType="materialDesign:ColorZone">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding PluginMarketService.Exception, Mode=OneWay}"
+                                                     Value="{x:Null}">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:ColorZone.Style>
+                            <Grid>
+                                <DockPanel Margin="8 4">
+                                    <materialDesign:PackIcon Kind="ErrorOutline"
+                                                             Height="20" Width="20"/>
+                                    <TextBlock TextWrapping="Wrap"
+                                               VerticalAlignment="Center"
+                                               Margin="4 0 0 0" >
+                                        <Run Text="刷新插件失败："/>
+                                        <Run Text="{Binding PluginMarketService.Exception.Message, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </DockPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
+                    </StackPanel>
+                    <ListBox Grid.Row="1"
+                             ItemsSource="{Binding Source={StaticResource PluginSource}}"
+                             SelectedValue="{Binding ViewModel.SelectedPluginInfo}"
+                             SelectedValuePath="Value"
+                             HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Background="Transparent">
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Value.LoadStatus}" Value="Loaded">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Value.IsLocal}" Value="False">
+                                                    <Setter Property="Opacity" Value="1"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Opacity" Value="0.75"/>
+                                        </Style>
+                                    </Grid.Style>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 图标 -->
+                                    <ci:IconControl Grid.Column="0" Grid.Row="0"
+                                                            Grid.RowSpan="2"
+                                                            Width="48" Height="48"
+                                                            VerticalAlignment="Center"
+                                                            ClipToBounds="True"
+                                                            Margin="0 0 6 0 "
+                                                            FallbackPackIconKind="Plugin"
+                                                            IconKind="Image"
+                                                            ImageSource="{Binding Value.RealIconPath, FallbackValue={x:Null}}"/>
+                                    <!-- 标题 -->
+                                    <TextBlock Grid.Column="1" Grid.Row="0"
+                                                   TextWrapping="Wrap"
+                                                   Text="{Binding Value.Manifest.Name}"
+                                                   FontSize="16" FontWeight="Medium">
+                                    </TextBlock>
+                                    <!-- 描述 -->
+                                    <TextBlock Grid.Column="1" Grid.Row="1"
+                                                   TextWrapping="Wrap"
+                                                   FontWeight="Regular"
+                                                   Text="{Binding Value.Manifest.Description}"
+                                                   FontSize="12" />
+                                    <!-- 错误标志 -->
+                                    <WrapPanel Grid.Column="2"
+                                                       Grid.Row="0"
+                                                       Grid.RowSpan="2" 
+                                                       Orientation="Horizontal"
+                                                       VerticalAlignment="Center">
+                                        <materialDesign:PackIcon ToolTip="此插件将在重启后被卸载。"
+                                                                 Foreground="Orange"
+                                                                         Width="20" Height="20"
+                                                                         VerticalAlignment="Center"
+                                                                         Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                         Margin="2 0 0 0"
+                                                                         Kind="Delete"/>
+                                        <materialDesign:PackIcon ToolTip="插件需要重启以应用更改。"
+                                                                 Foreground="Orange"
+                                                                 Width="20" Height="20"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="2 0 0 0"
+                                                                 Kind="Restart"/>
+                                        <materialDesign:PackIcon Foreground="Red"
+                                                                         ToolTip="加载此插件时出现错误。"
+                                                                         Width="20" Height="20"
+                                                                         Margin="2 0 0 0"
+                                                                         VerticalAlignment="Center"
+                                                                         Kind="Alert">
+                                            <materialDesign:PackIcon.Style>
+                                                <Style TargetType="materialDesign:PackIcon">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Value.Exception}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </materialDesign:PackIcon.Style>
+                                        </materialDesign:PackIcon>
+                                        <materialDesign:PackIcon ToolTip="更新可用。"
+                                                                 Width="20" Height="20"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="2 0 0 0"
+                                                                 Kind="Upload"/>
+                                        <materialDesign:PackIcon ToolTip="此插件已安装。"
+                                                                 Width="20" Height="20"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="2 0 0 0"
+                                                                 Kind="CheckUnderline"/>
+                                    </WrapPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </controls1:ListDetailView.LeftContent>
+            <controls1:ListDetailView.RightContent>
+                <ContentPresenter Content="{Binding ViewModel.SelectedPluginInfo}">
+                    <ContentPresenter.Style>
+                        <Style TargetType="ContentPresenter">
+                            <Style.Triggers>
+                                <Trigger Property="Content" Value="{x:Null}">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource BlankPluginDetailDataTemplate}"/>
+                                </Trigger>
+                            </Style.Triggers>
+                            <Setter Property="ContentTemplate" Value="{StaticResource PluginDetailDataTemplate}"/>
+                        </Style>
+                    </ContentPresenter.Style>
+                </ContentPresenter>
+            </controls1:ListDetailView.RightContent>
+        </controls1:ListDetailView>
+    </Grid>
+</ci:SettingsPageBase>

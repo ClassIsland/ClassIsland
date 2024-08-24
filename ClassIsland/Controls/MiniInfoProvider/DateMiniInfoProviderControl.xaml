@@ -10,6 +10,6 @@
              d:DataContext="{d:DesignInstance classIsland:MainWindow}">
     <Grid>
         <TextBlock FontSize="16"
-                   Text="{Binding ViewModel.Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
+                   Text="{Binding LessonsService.Today, ConverterCulture=zh-cn, StringFormat=\{0:ddd MM/dd\}}" />
     </Grid>
 </UserControl>

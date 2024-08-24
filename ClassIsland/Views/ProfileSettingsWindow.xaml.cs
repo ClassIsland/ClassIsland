@@ -14,15 +14,20 @@ using System.Windows.Interop;
 
 using ClassIsland.Controls;
 using ClassIsland.Converters;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Converters;
+using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;
 
-using Microsoft.AppCenter.Analytics;
-
+using Sentry;
 using Application = System.Windows.Application;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -40,9 +45,11 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public static RoutedUICommand RemoveSelectedTimeLayoutItemCommand = new RoutedUICommand();
 
-    public HangService HangService { get; } = App.GetService<HangService>();
+    public IHangService HangService { get; } = App.GetService<IHangService>();
 
-    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+    public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
+
+    public IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
 
     public MainViewModel MainViewModel
     {
@@ -60,6 +67,7 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         InitializeComponent();
         DataContext = this;
+
     }
 
     public bool IsOpened
@@ -68,23 +76,20 @@ public partial class ProfileSettingsWindow : MyWindow
         set;
     } = false;
 
-    public AttachedSettingsHostService AttachedSettingsHostService { get; } =
-        App.GetService<AttachedSettingsHostService>();
+    public IAttachedSettingsHostService AttachedSettingsHostService { get; } =
+        App.GetService<IAttachedSettingsHostService>();
 
-    public ProfileService ProfileService { get; } = App.GetService<ProfileService>();
+    public ILessonsService LessonsService { get; } = App.GetService<ILessonsService>();
+
+    public IProfileService ProfileService { get; } = App.GetService<IProfileService>();
 
     public void OpenDrawer(string key)
     {
         ViewModel.DrawerContent = FindResource(key);
-        var r = key switch
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.drawers.open", tags: new Dictionary<string, string>
         {
-            "TemporaryClassPlan" => "档案设置 · 打开临时课表设置",
-            _ => null
-        };
-        if (r != null)
-        {
-            Analytics.TrackEvent(r);
-        }
+            {"key", key}
+        });
         DrawerHost.OpenDrawerCommand.Execute(null, MyDrawerHost);
     }
 
@@ -101,7 +106,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     protected override void OnContentRendered(EventArgs e)
     {
-        var d = (DictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
+        var d = (SubjectsDictionaryValueAccessConverter)FindResource("DictionaryValueAccessConverter");
         d.SourceDictionary = MainViewModel.Profile.Subjects;
         var d2 = (ClassPlanDictionaryValueAccessConverter)FindResource("ClassPlanDictionaryValueAccessConverter");
         d2.SourceDictionary = MainViewModel.Profile.TimeLayouts;
@@ -159,7 +164,7 @@ public partial class ProfileSettingsWindow : MyWindow
         //MainViewModel.Profile.NotifyPropertyChanged(nameof(MainViewModel.Profile.TimeLayouts));
         ViewModel.DrawerContent = FindResource("TimeLayoutInfoEditor");
         ListViewTimeLayouts.SelectedIndex = MainViewModel.Profile.TimeLayouts.Count - 1;
-        Analytics.TrackEvent("档案设置 · 创建新时间表");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.create");
     }
 
     private void ButtonAddClassTime_OnClick(object sender, RoutedEventArgs e)
@@ -170,10 +175,10 @@ public partial class ProfileSettingsWindow : MyWindow
     private void AddTimeLayoutItem(int timeType)
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
-        var selected = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
-        var baseSec = selected?.EndSecond ?? DateTime.Now;
-        var settings = App.GetService<SettingsService>().Settings;
-        var lastTime = TimeSpan.FromMinutes(timeType switch
+        var selected   = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
+        var baseSec    = selected?.EndSecond ?? DateTime.Today + new TimeSpan(7, 30, 0);
+        var settings   = App.GetService<SettingsService>().Settings;
+        var lastTime   = TimeSpan.FromMinutes(timeType switch
         {
             0 => settings.DefaultOnClassTimePointMinutes,
             1 => settings.DefaultBreakingTimePointMinutes,
@@ -183,12 +188,12 @@ public partial class ProfileSettingsWindow : MyWindow
         if (selected != null)
         {
             var index = timeLayout.Layouts.IndexOf(selected);
-            if (selected.TimeType == 2)
+            /*if (selected.TimeType == 2)
             {
-                var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
+                // 向前的非线时间段集合
+                // var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
                 selected = l.Count > 0 ? l.Last() : selected;
-                baseSec = selected.EndSecond;
-            }
+            }*/
             if (timeType != 2 && index < timeLayout.Layouts.Count - 1)
             {
                 var nexts = (from i 
@@ -201,10 +206,15 @@ public partial class ProfileSettingsWindow : MyWindow
                     var next = nexts[0];
                     if (next.StartSecond.TimeOfDay <= baseSec.TimeOfDay)
                     {
-                        ViewModel.MessageQueue.Enqueue("没有合适的位置来插入新的时间点。");
-                        return;
+                        if (index != 0)
+                        {
+                            ViewModel.MessageQueue.Enqueue("没有合适的位置来插入新的时间点。");
+                            return;
+                        }
+                        baseSec = selected.StartSecond - lastTime; // 向前插入时间点的简易实现，未考虑分割线
+                        ViewModel.MessageQueue.Enqueue("已向前插入了新的时间点。");
                     }
-                    if (next.StartSecond.TimeOfDay <= baseSec.TimeOfDay + lastTime)
+                    if (next.StartSecond.TimeOfDay < baseSec.TimeOfDay + lastTime)
                     {
                         ViewModel.MessageQueue.Enqueue("没有足够的空间完全插入该时间点，已缩短时间点长度。");
                         lastTime = next.StartSecond.TimeOfDay - baseSec.TimeOfDay;
@@ -214,7 +224,12 @@ public partial class ProfileSettingsWindow : MyWindow
 
             if (timeType == 2)
             {
-                baseSec = selected.EndSecond - (selected.EndSecond - selected.StartSecond) / 2;
+                baseSec = selected.EndSecond;
+                if ((from i in timeLayout.Layouts where i.TimeType == 2 select i.StartSecond).ToList().Contains(baseSec))
+                {
+                    ViewModel.MessageQueue.Enqueue("这里已经存在一条分割线。");
+                    return;
+                }
             }
         }
         var newItem = new TimeLayoutItem()
@@ -223,17 +238,34 @@ public partial class ProfileSettingsWindow : MyWindow
             StartSecond = baseSec,
             EndSecond = baseSec + lastTime,
         };
-        timeLayout.Layouts.Add(newItem);
-        ReSortTimeLayout(newItem);
+        AddTimePoint(newItem);
+        // ReSortTimeLayout(newItem);
         ListViewTimePoints.SelectedValue = newItem;
         //OpenDrawer("TimePointEditor");
-        Analytics.TrackEvent("档案设置 · 创建时间点", new Dictionary<string, string>
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.create", tags: new Dictionary<string, string>()
         {
-            {"Type", timeType.ToString()}
+            {"Type", timeType.ToString()},
+            {"Auto", "False"}
         });
     }
 
-    private void UpdateTimeLayout()
+    public void AddTimeLayoutItem(int timeType, DateTime startTime, DateTime endTime)
+    {
+        var newItem = new TimeLayoutItem
+        {
+            TimeType    = timeType,
+            StartSecond = startTime,
+            EndSecond   = endTime,
+        };
+        AddTimePoint(newItem);
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.create", tags: new Dictionary<string, string>()
+        {
+            {"Type", timeType.ToString()},
+            {"Auto", "True"}
+        });
+    }
+
+    public void UpdateTimeLayout()
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var l = timeLayout.Layouts.ToList();
@@ -250,13 +282,13 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonEditTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("TimePointEditor");
-        Analytics.TrackEvent("档案设置 · 编辑时间点");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.edit");
     }
 
     private void ButtonEditTimeLayoutInfo_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("TimeLayoutInfoEditor");
-        Analytics.TrackEvent("档案设置 · 编辑时间表信息");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.edit");
     }
 
     private void ButtonRemoveTimePoint_OnClick(object sender, RoutedEventArgs e)
@@ -269,7 +301,7 @@ public partial class ProfileSettingsWindow : MyWindow
         UpdateTimeLayout();
         if (i > 0)
             ViewModel.SelectedTimePoint = timeLayout.Layouts[i - 1];
-        Analytics.TrackEvent("档案设置 · 删除时间点");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.remove");
 
     }
 
@@ -278,11 +310,11 @@ public partial class ProfileSettingsWindow : MyWindow
         var c = (from i in MainViewModel.Profile.ClassPlans
             where i.Value.TimeLayoutId == ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Key
             select i.Value).Count();
-        var eventName = "档案设置 · 删除时间表";
+        var eventName = "views.ProfileSettingsWindow.timeLayout.remove";
         if (c > 0)
         {
             ViewModel.MessageQueue.Enqueue("仍有课表在使用该时间表。删除时间表前需要删除所有使用该时间表的课表。");
-            Analytics.TrackEvent(eventName, new Dictionary<string, string>
+            SentrySdk.Metrics.Increment(eventName, tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "false"},
                 {"Reason", "仍有课表在使用该时间表。"}
@@ -293,7 +325,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var r = (bool?)await DialogHost.Show(FindResource("DeleteTimeLayoutConfirm"), dialogIdentifier: ViewModel.DialogHostId);
         if (r == true)
         {
-            Analytics.TrackEvent(eventName, new Dictionary<string, string>
+            SentrySdk.Metrics.Increment(eventName, tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "true"}
             });
@@ -301,7 +333,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         else
         {
-            Analytics.TrackEvent(eventName, new Dictionary<string, string>
+            SentrySdk.Metrics.Increment(eventName, tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "false"},
                 {"Reason", "用户取消操作。"}
@@ -321,7 +353,19 @@ public partial class ProfileSettingsWindow : MyWindow
         DataGridSubjects.IsReadOnly = false;
         DataGridSubjects.SelectedIndex = MainViewModel.Profile.Subjects.Count - 1;
         //TextBoxSubjectName.Focus();
-        Analytics.TrackEvent("档案设置 · 添加科目");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.create");
+    }
+
+    private void Subject_OnPaste(object? sender, ExecutedRoutedEventArgs e)
+    {
+        foreach (var i in Clipboard.GetText().Split("\n").Select(i => i.Replace("\r", "")).Where(i => !string.IsNullOrWhiteSpace(i)))
+        {
+            if (DataGridSubjects.SelectedIndex == MainViewModel.Profile.EditingSubjects.Count)
+                MainViewModel.Profile.EditingSubjects.Add(new Subject { Name = i });
+            else
+                MainViewModel.Profile.EditingSubjects.Insert(DataGridSubjects.SelectedIndex + 1, new Subject { Name = i });
+            DataGridSubjects.SelectedIndex += 1;
+        }
     }
 
     private async void ButtonSubject_OnClick(object sender, RoutedEventArgs e)
@@ -329,10 +373,11 @@ public partial class ProfileSettingsWindow : MyWindow
         var r = (bool?)await DialogHost.Show(FindResource("DeleteSubjectConfirm"),dialogIdentifier: ViewModel.DialogHostId);
         if (r == true)
         {
-            Analytics.TrackEvent("档案设置 · 删除科目", new Dictionary<string, string>
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.remove", tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "true"},
             });
+
             DataGridSubjects.CancelEdit();
             DataGridSubjects.IsReadOnly = true;
             var rm = new List<Subject>();
@@ -352,7 +397,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         else
         {
-            Analytics.TrackEvent("档案设置 · 删除科目", new Dictionary<string, string>
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.remove", tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "false"},
                 {"Reason", "用户取消操作。"}
@@ -362,10 +407,20 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonAddClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案设置 · 添加课表");
-        MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), new ClassPlan());
-        ListViewClassPlans.SelectedIndex = MainViewModel.Profile.ClassPlans.Count - 1;
-        ViewModel.DrawerContent = FindResource("ClassPlansInfoEditor");
+        CreateClassPlan();
+    }
+
+    private void CreateClassPlan()
+    {
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.create");
+        var newClassPlan = new ClassPlan()
+        {
+            AssociatedGroup = ProfileService.Profile.SelectedClassPlanGroupId
+        };
+        MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), newClassPlan);
+        ViewModel.SelectedClassPlan = newClassPlan;
+        ViewModel.IsClassPlanEditComplete = false;
+        OpenDrawer("ClassPlansInfoEditor");
     }
 
     private void ButtonDebugAddNewClass_OnClick(object sender, RoutedEventArgs e)
@@ -377,7 +432,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonClassPlanInfoEdit_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.DrawerContent = FindResource("ClassPlansInfoEditor");
-        Analytics.TrackEvent("档案设置 · 编辑课表信息");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.edit");
     }
 
     private void ListViewClassPlans_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -393,7 +448,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var r = (bool?)await DialogHost.Show(FindResource("DeleteClassPlanConfirm"), dialogIdentifier: ViewModel.DialogHostId);
         if (r == true)
         {
-            Analytics.TrackEvent("档案设置 · 删除课表", new Dictionary<string, string>
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.remove", tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "true"}
             });
@@ -410,7 +465,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         else
         {
-            Analytics.TrackEvent("档案设置 · 删除课表", new Dictionary<string, string>
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.remove", tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "false"},
                 {"Reason", "用户取消操作"}
@@ -428,38 +483,22 @@ public partial class ProfileSettingsWindow : MyWindow
         var timeLayoutItemEdit = FindResource("TimePointEditor");
         if (ViewModel.DrawerContent == timeLayoutItemEdit && ViewModel.SelectedTimePoint != null)
         {
-            ReSortTimeLayout(ViewModel.SelectedTimePoint);
+            // ReSortTimeLayout(ViewModel.SelectedTimePoint);
         }
     }
 
-    private void ReSortTimeLayout(TimeLayoutItem item)
+    private void AddTimePoint(TimeLayoutItem item)
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var l = timeLayout.Layouts;
-        l.Remove(item);
-        var c = l.Count;
-        var p = c;
-        for (var i = 0; i < c; i++)
+        for (var i = 0; i < l.Count - 1; i++)
         {
-            if (l[i].StartSecond.TimeOfDay <= item.StartSecond.TimeOfDay) 
+            if (l[i].StartSecond.TimeOfDay < item.StartSecond.TimeOfDay)
                 continue;
-            p = i;
-            break;
+            timeLayout.InsertTimePoint(i, item);
+            return;
         }
-        timeLayout.InsertTimePoint(p, item);
-
-        // 验证
-        for (int i = 0; i < l.Count - 1; i++)
-        {
-            if (l[i].StartSecond.TimeOfDay > l[i + 1].StartSecond.TimeOfDay)
-            {
-                UpdateTimeLayout();
-                break;
-            }
-        }
-
-        ViewModel.SelectedTimePoint = item;
-        timeLayout.SortCompleted();
+        timeLayout.InsertTimePoint(l.Count, item);
     }
 
     private void DataGridClassPlans_OnUnloadingRow(object? sender, DataGridRowEventArgs e)
@@ -483,7 +522,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.DrawerContent = FindResource("ClassPlansInfoEditor");
         MainViewModel.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), s);
         ListViewClassPlans.SelectedItem = MainViewModel.Profile.ClassPlans.Last();
-        Analytics.TrackEvent("档案设置 · 复制课表");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.classPlan.duplicate");
     }
 
     private T? CopyObject<T>(T o) => JsonSerializer.Deserialize<T>(JsonSerializer.Serialize<T>(o));
@@ -499,7 +538,7 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.DrawerContent = FindResource("TimeLayoutInfoEditor");
         MainViewModel.Profile.TimeLayouts.Add(Guid.NewGuid().ToString(), s);
         ListViewTimeLayouts.SelectedItem = MainViewModel.Profile.TimeLayouts.Last();
-        Analytics.TrackEvent("档案设置 · 复制时间表");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timeLayout.duplicate");
     }
 
     private void ButtonDuplicateSubject_OnClick(object sender, RoutedEventArgs e)
@@ -519,7 +558,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         DataGridSubjects.SelectedItem = MainViewModel.Profile.EditingSubjects.Last();
         DataGridSubjects.IsReadOnly = false;
-        Analytics.TrackEvent("档案设置 · 复制科目");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.subject.duplicate");
     }
 
     private void DataGridClassPlans_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
@@ -542,6 +581,7 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         e.Cancel = true;
         App.GetService<SettingsService>().Settings.TimeLayoutEditorIndex = TabTimeLayoutEditors.SelectedIndex;
+        ProfileService.SaveProfile();
         if (!ViewModel.IsClassPlansEditing)
         {
             Hide();
@@ -552,7 +592,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.DrawerContent = FindResource("TemporaryClassPlan");
-        Analytics.TrackEvent("档案设置 · 打开临时课表设置");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.drawers.tempClassPlan.open");
     }
 
     private void ButtonClearTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
@@ -562,41 +602,32 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        //MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
-        ProfileService.Profile.TempClassPlanSetupTime = DateTime.Now;
+        //MainViewModel.TemporaryClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
+        ProfileService.Profile.TempClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
     }
 
     private void TabControlSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (e.OriginalSource.GetType() != typeof(TabControl))
             return;
-        var c = (KeyValuePair<string, ClassPlan>?)ListViewClassPlans.SelectedValue;
-        c?.Value.RefreshClassesList();
+        var c = ViewModel.SelectedClassPlan;
+        c?.RefreshClassesList();
     }
 
     private void ButtonProfileManage_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案设置 · 打开档案管理");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.drawers.profileMgmt.open");
         OpenDrawer("ProfileManager");
     }
 
     private void SnackbarRestartMessage_OnActionClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("重启应用", new Dictionary<string, string>()
-        {
-            {"Source", "档案管理重启"}
-        });
-        var mw = (MainWindow)Application.Current.MainWindow!;
-        mw.SaveProfile();
-        mw.SaveSettings();
-        App.ReleaseLock();
-        Application.Current.Shutdown();
-        System.Windows.Forms.Application.Restart();
+        AppBase.Current.Restart();
     }
 
     private async void ButtonCreateProfile_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案管理 · 创建档案");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.create");
         ViewModel.CreateProfileName = "";
         var r = await DialogHost.Show(FindResource("CreateProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
@@ -617,7 +648,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonOpenProfileFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案管理 · 打开档案文件夹");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.openFolder");
         Process.Start(new ProcessStartInfo()
         {
             FileName = Path.GetFullPath("./Profiles/"),
@@ -627,13 +658,13 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonRefreshProfiles_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案管理 · 刷新档案");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.refresh");
         RefreshProfiles();
     }
 
     private async void MenuItemRenameProfile_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案管理 · 重命名档案");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.rename");
         ViewModel.RenameProfileName = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile);
         var r = await DialogHost.Show(FindResource("RenameProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
@@ -661,7 +692,7 @@ public partial class ProfileSettingsWindow : MyWindow
         if (ViewModel.SelectedProfile == MainViewModel.CurrentProfilePath ||
             ViewModel.SelectedProfile == MainViewModel.Settings.SelectedProfile)
         {
-            Analytics.TrackEvent("档案管理 · 删除档案", new Dictionary<string, string>
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.remove", tags: new Dictionary<string, string>
             {
                 {"Reason", "正在删除已加载或将要加载的档案。"},
                 {"IsSuccess", "false"}
@@ -674,7 +705,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
         if ((bool?)r == true)
         {
-            Analytics.TrackEvent("档案管理 · 删除档案", new Dictionary<string, string>
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.remove", tags: new Dictionary<string, string>
             {
                 {"IsSuccess", "true"}
             });
@@ -682,7 +713,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         else
         {
-            Analytics.TrackEvent("档案管理 · 删除档案", new Dictionary<string, string>
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.remove", tags: new Dictionary<string, string>
             {
                 {"Reason", "用户取消操作。"},
                 {"IsSuccess", "false"}
@@ -693,7 +724,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void MenuItemProfileDuplicate_OnClick(object sender, RoutedEventArgs e)
     {
-        Analytics.TrackEvent("档案管理 · 复制档案");
+        SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.duplicate");
         var raw = $"./Profiles/{ViewModel.SelectedProfile}";
         var d = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile) + " - 副本.json";
         var d1 = $"./Profiles/{d}";
@@ -703,7 +734,6 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public static async void OpenFromFile(string path)
     {
-        Analytics.TrackEvent("档案设置 · 从离线文件读取档案");
         var o = JsonSerializer.Deserialize<Profile>(await File.ReadAllTextAsync(path));
         if (o == null)
         {
@@ -726,30 +756,6 @@ public partial class ProfileSettingsWindow : MyWindow
         GC.Collect();
     }
 
-    private void MenuItemProfileEdit_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.SelectedProfile == MainViewModel.CurrentProfilePath)
-        {
-            Analytics.TrackEvent("档案管理 · 编辑档案", new Dictionary<string, string>
-            {
-                {"Reason", "无法编辑已加载的档案。"},
-                {"IsSuccess", "false"}
-            });
-            ViewModel.MessageQueue.Enqueue("无法编辑已加载的档案。");
-            return;
-        }
-        Analytics.TrackEvent("档案管理 · 编辑档案", new Dictionary<string, string>
-        {
-            {"IsSuccess", "true"}
-        });
-        OpenFromFile($"./Profiles/{ViewModel.SelectedProfile}");
-    }
-
-    private void TimePointDoubleClick_OnHandler(object sender, MouseButtonEventArgs e)
-    {
-        OpenDrawer("TimePointEditor");
-        Analytics.TrackEvent("档案设置 · 编辑时间点");
-    }
 
     private void ButtonZoomOut_OnClick(object sender, RoutedEventArgs e)
     {
@@ -907,13 +913,6 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.IsDragEntering = false;
     }
 
-    private void ButtonHelp_OnClick(object sender, RoutedEventArgs e)
-    {
-        App.GetService<MainWindow>().OpenHelpsWindow();
-        App.GetService<HelpsWindow>().InitDocumentName = "档案设置";
-        App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "档案设置";
-    }
-
     private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
     {
         ProfileService.SaveProfile();
@@ -931,5 +930,114 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.TempOverlayClassPlanTimeLayoutId =
             ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeLayoutId;
         PopupCreateTempOverlayClassPlan.IsOpen = true;
+    }
+
+    private void ComboBoxClassPlanGroup_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        var source = FindResource("ClassPlansViewSource") as CollectionViewSource;
+        if (source == null)
+        {
+            return;
+        }
+    }
+
+    private void ButtonClassPlansGroup_OnClick(object sender, RoutedEventArgs e)
+    {
+        OpenDrawer("ClassPlanGroups");
+    }
+
+    private void ClassPlanGroupsSource_OnFilter(object sender, FilterEventArgs e)
+    {
+
+    }
+
+    private void ButtonNewClassPlanGroups_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.Profile.ClassPlanGroups.Add(Guid.NewGuid().ToString(), new());
+    }
+
+    private void ButtonRefreshClassPlans_OnClick(object sender, RoutedEventArgs e)
+    {
+        var source = FindResource("ClassPlansViewSource") as CollectionViewSource;
+        source?.View?.Refresh();
+    }
+
+    private void ButtonClearTempClassPlanGroup_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProfileService.ClearTempClassPlanGroup();
+    }
+
+    public void Open()
+    {
+        if (!IsOpened)
+        {
+            SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.open");
+            IsOpened = true;
+            Show();
+        }
+        else
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                WindowState = WindowState.Normal;
+            }
+            Activate();
+        }
+    }
+
+    private void EventSetterSubjectSelector_OnClick(object sender, object args)
+    {
+        if (!MainViewModel.Settings.IsProfileEditorClassInfoSubjectAutoMoveNextEnabled)
+            return;
+        if (ViewModel.SelectedClassIndex + 1 >= ViewModel.SelectedClassPlan.Classes.Count)
+        {
+            ViewModel.IsClassPlanEditComplete = true;
+            return;
+        }
+        ViewModel.SelectedClassIndex++;
+        ViewModel.IsClassPlanEditComplete = false;
+        DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem);
+    }
+
+    private void ButtonCloseCompleteTip_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsClassPlanEditComplete = false;
+    }
+
+    private void ButtonAddClassPlanFromCompletedTip_OnClick(object sender, RoutedEventArgs e)
+    {
+        CreateClassPlan();
+    }
+
+    private void ButtonClassPlanDetails_OnClick(object sender, RoutedEventArgs e)
+    {
+        var details = App.GetService<ClassPlanDetailsWindow>();
+        details.ViewModel.ClassPlan = ViewModel.SelectedClassPlan;
+        details.Owner = this;
+        details.ShowDialog();
+    }
+
+    private void MultiWeekRotation_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // LessonsService.RefreshMultiWeekRotation();
+    }
+
+    private void MultiWeekRotation_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        
+    }
+
+    private void ButtonOpenWeekOffsetSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsWeekOffsetSettingsOpen = true;
+    }
+
+    private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is not Button)
+        {
+            return;
+        }
+        ViewModel.IsWeekOffsetSettingsOpen = false;
     }
 }

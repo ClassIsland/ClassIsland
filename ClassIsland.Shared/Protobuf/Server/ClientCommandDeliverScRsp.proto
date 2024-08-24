@@ -1,0 +1,12 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Server;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Server";
+
+import "Protobuf/Enum/CommandTypes.proto";
+import "Protobuf/Enum/Retcode.proto";
+
+message ClientCommandDeliverScRsp {
+    Enum.Retcode RetCode = 1;
+    Enum.CommandTypes Type = 2;
+    bytes Payload = 3;
+}

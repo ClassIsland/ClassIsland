@@ -2,7 +2,7 @@
 
 namespace ClassIsland.Models.NotificationProviderSettings;
 
-public class ClassNotificationSettings : ObservableRecipient
+public class ClassNotificationSettings : ObservableRecipient, IClassNotificationSettings
 {
     private bool _isClassOnNotificationEnabled = true;
     private bool _isClassOnPreparingNotificationEnabled = true;
@@ -14,6 +14,9 @@ public class ClassNotificationSettings : ObservableRecipient
     private bool _isSpeechEnabledOnClassOn = true;
     private bool _isSpeechEnabledOnClassOff = true;
     private bool _showTeacherName = false;
+    private string _classOnPreparingMaskText = "即将上课";
+    private string _classOnMaskText = "上课";
+    private string _classOffMaskText = "课间休息";
 
     public bool IsClassOnNotificationEnabled
     {
@@ -77,6 +80,39 @@ public class ClassNotificationSettings : ObservableRecipient
         {
             if (value == _classOnPreparingText) return;
             _classOnPreparingText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOnPreparingMaskText
+    {
+        get => _classOnPreparingMaskText;
+        set
+        {
+            if (value == _classOnPreparingMaskText) return;
+            _classOnPreparingMaskText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOnMaskText
+    {
+        get => _classOnMaskText;
+        set
+        {
+            if (value == _classOnMaskText) return;
+            _classOnMaskText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOffMaskText
+    {
+        get => _classOffMaskText;
+        set
+        {
+            if (value == _classOffMaskText) return;
+            _classOffMaskText = value;
             OnPropertyChanged();
         }
     }

@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
-
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -54,11 +55,6 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
             Process.Start(startInfo);
         }
         //Process.Start(startInfo);
-        Application.Current.Dispatcher.Invoke(() =>
-        {
-            App.GetService<SettingsService>().SaveSettings();
-            App.GetService<ProfileService>().SaveProfile();
-            Application.Current.Shutdown(0);
-        });
+        AppBase.Current.Stop();
     }
 }

@@ -1,8 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
-
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Theming;
 using ClassIsland.Models;
 
 using MaterialDesignThemes.Wpf;
@@ -13,7 +15,7 @@ using Microsoft.Win32;
 
 namespace ClassIsland.Services;
 
-public class ThemeService : IHostedService
+public class ThemeService : IHostedService, IThemeService
 {
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -23,7 +25,7 @@ public class ThemeService : IHostedService
     {
     }
 
-    public ITheme? CurrentTheme { get; private set; } 
+    public ITheme? CurrentTheme { get; set; } 
 
     public ILogger<ThemeService> Logger { get; }
 
@@ -34,7 +36,7 @@ public class ThemeService : IHostedService
         Logger = logger;
     }
 
-    public int CurrentRealThemeMode { get; private set; } = 0;
+    public int CurrentRealThemeMode { get; set; } = 0;
 
     public void SetTheme(int themeMode, Color primary, Color secondary)
     {
@@ -99,6 +101,7 @@ public class ThemeService : IHostedService
         paletteHelper.SetTheme(theme);
         CurrentTheme = theme;
         Logger.LogInformation("设置主题：{}", theme);
+        CurrentRealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1;
         ThemeUpdated?.Invoke(this, new ThemeUpdatedEventArgs
         {
             ThemeMode = themeMode,
@@ -106,6 +109,13 @@ public class ThemeService : IHostedService
             Secondary = secondary,
             RealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1
         });
-        CurrentRealThemeMode = theme.GetBaseTheme() == BaseTheme.Light ? 0 : 1;
+
+        var resource = new ResourceDictionary
+        {
+            Source = CurrentRealThemeMode == 0 ?
+                new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.xaml") :
+                new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.xaml")
+        };
+        Application.Current.Resources.MergedDictionaries[0] = resource;
     }
 }

@@ -4,7 +4,10 @@ using System.Windows;
 using System.Windows.Controls;
 
 using ClassIsland.Controls;
-using ClassIsland.Core.Models.Profile;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
+using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
@@ -20,9 +23,9 @@ public partial class ClassChangingWindow : MyWindow
 {
     public ClassChangingViewModel ViewModel { get; } = new();
 
-    public ProfileService ProfileService { get; } = App.GetService<ProfileService>();
+    public IProfileService ProfileService { get; } = App.GetService<IProfileService>();
 
-    public ManagementService ManagementService { get; } = App.GetService<ManagementService>();
+    public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 
     public static readonly DependencyProperty ClassPlanProperty = DependencyProperty.Register(
         nameof(ClassPlan), typeof(ClassPlan), typeof(ClassChangingWindow), new PropertyMetadata(default(ClassPlan)));
@@ -97,10 +100,10 @@ public partial class ClassChangingWindow : MyWindow
         if (ViewModel.IsSwapMode)
         {
             var bI = GetSubjectIndex(ViewModel.SwapModeTargetIndex);
-            var a = cp.Classes[aI];
-            var b = cp.Classes[bI];
-            cp.Classes[aI] = b;
-            cp.Classes[bI] = a;
+            var a = cp.Classes[aI].SubjectId;
+            var b = cp.Classes[bI].SubjectId;
+            cp.Classes[aI].SubjectId = b;
+            cp.Classes[bI].SubjectId = a;
         }
         else
         {
@@ -108,10 +111,8 @@ public partial class ClassChangingWindow : MyWindow
             {
                 return;
             }
-            cp.Classes[aI] = new ClassInfo()
-            {
-                SubjectId = ViewModel.TargetSubjectIndex
-            };
+
+            cp.Classes[aI].SubjectId = ViewModel.TargetSubjectIndex;
         }
 
         ProfileService.SaveProfile();

@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
-using ClassIsland.Core.Abstraction.Models;
-using ClassIsland.Core.Enums;
-using ClassIsland.Core.Interfaces;
-using ClassIsland.Core.Models.Notification;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Interfaces;
+using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 
@@ -19,7 +21,7 @@ namespace ClassIsland.Services.NotificationProviders;
 
 public class AfterSchoolNotificationProvider : INotificationProvider, IHostedService
 {
-    public NotificationHostService NotificationHostService { get; }
+    public INotificationHostService NotificationHostService { get; }
     public string Name { get; set; } = "放学提醒";
     public string Description { get; set; } = "在当天的课程结束后发出提醒。";
     public Guid ProviderGuid { get; set; } = new Guid("8FBC3A26-6D20-44DD-B895-B9411E3DDC51");
@@ -43,26 +45,29 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
         get;
     }
 
-    public AfterSchoolNotificationProvider(NotificationHostService notificationHostService, AttachedSettingsHostService attachedSettingsHostService)
+    private ILessonsService LessonsService { get; }
+
+    private IExactTimeService ExactTimeService { get; }
+
+    public AfterSchoolNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService, ILessonsService lessonsService, IExactTimeService exactTimeService)
     {
         NotificationHostService = notificationHostService;
+        LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
+
         NotificationHostService.RegisterNotificationProvider(this);
         Settings =
-            NotificationHostService.GetNotificationProviderSettings<AfterSchoolNotificationProviderSettings>(ProviderGuid) ??
-            new AfterSchoolNotificationProviderSettings();
-        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
-        NotificationHostService.CurrentStateChanged += NotificationHostServiceOnCurrentStateChanged;
+            NotificationHostService.GetNotificationProviderSettings<AfterSchoolNotificationProviderSettings>(ProviderGuid);
+        LessonsService.CurrentTimeStateChanged += NotificationHostServiceOnCurrentStateChanged;
         SettingsElement = new AfterSchoolNotificationProviderSettingsControl(Settings);
-
-        var item = typeof(AfterSchoolNotificationAttachedSettingsControl);
-        attachedSettingsHostService.ClassPlanSettingsAttachedSettingsControls.Add(item);
-        attachedSettingsHostService.TimeLayoutSettingsAttachedSettingsControls.Add(item);
     }
 
     private void NotificationHostServiceOnCurrentStateChanged(object? sender, EventArgs e)
     {
         var settings = (IAfterSchoolNotificationProviderSettingsBase?)GetAttachedSettings() ?? Settings;
-        if (!settings.IsEnabled || NotificationHostService.CurrentState != TimeState.None || !NotificationHostService.IsClassPlanLoaded)
+        if (!settings.IsEnabled || LessonsService.CurrentState != TimeState.None || !LessonsService.IsClassPlanLoaded ||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentClassPlan?.TimeLayout.Layouts.LastOrDefault()?.EndSecond.TimeOfDay > TimeSpan.FromSeconds(5)||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay < LessonsService.CurrentClassPlan?.TimeLayout.Layouts.LastOrDefault()?.EndSecond.TimeOfDay)
         {
             return;
         }
@@ -79,13 +84,12 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
 
     private AfterSchoolNotificationAttachedSettings? GetAttachedSettings()
     {
-        var mvm = App.GetService<MainWindow>().ViewModel;
-        var settings = AttachedSettingsHostService
+        var settings = IAttachedSettingsHostService
             .GetAttachedSettingsByPriority<
                 AfterSchoolNotificationAttachedSettings>(
                 ProviderGuid,
-                classPlan: mvm.CurrentClassPlan,
-                timeLayout: mvm.CurrentClassPlan?.TimeLayout
+                classPlan: LessonsService.CurrentClassPlan,
+                timeLayout: LessonsService.CurrentClassPlan?.TimeLayout
             );
         return settings;
     }

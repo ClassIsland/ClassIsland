@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using ClassIsland.Core.Abstraction.Services;
-using ClassIsland.Core.Models.Management;
+using ClassIsland.Shared.Abstraction.Services;
+using ClassIsland.Shared.Models.Management;
 using ClassIsland.Helpers;
 
 using Microsoft.Extensions.Logging;

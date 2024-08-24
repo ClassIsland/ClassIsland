@@ -5,8 +5,9 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
-
-using ClassIsland.Core.Interfaces.Controls;
+using ClassIsland.Core;
+using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Shared.Interfaces.Controls;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
 
@@ -34,8 +35,11 @@ public partial class TopmostEffectWindow : Window
         InitializeComponent();
         DataContext = this;
         ViewModel.EffectControls.CollectionChanged += EffectControlsOnCollectionChanged;
-        Show();
-        Hide();
+        if (!SettingsService.Settings.IsCompatibleWindowTransparentEnabled)
+        {
+            Show();
+            Hide();
+        }
     }
 
     private void EffectControlsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

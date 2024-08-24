@@ -3,10 +3,10 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
-using ClassIsland.Core;
-using ClassIsland.Core.Helpers;
-using ClassIsland.Core.Models.Management;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Helpers;
+using ClassIsland.Shared.Models.Management;
 using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 
@@ -19,7 +19,7 @@ public partial class JoinManagementDialog : UserControl
 {
     public JoinManagementViewModel ViewModel { get; } = new();
 
-    public ManagementService ManagementService { get; } = IAppHost.GetService<ManagementService>();
+    public IManagementService ManagementService { get; } = IAppHost.GetService<IManagementService>();
 
     public JoinManagementDialog()
     {
@@ -29,9 +29,9 @@ public partial class JoinManagementDialog : UserControl
 
     protected override void OnInitialized(EventArgs e)
     {
-        if (File.Exists(ManagementService.ManagementPresetPath))
+        if (File.Exists(Services.Management.ManagementService.ManagementPresetPath))
         {
-            ViewModel.ConfigFilePath = ManagementService.ManagementPresetPath;
+            ViewModel.ConfigFilePath = Services.Management.ManagementService.ManagementPresetPath;
             LoadManagementSettings();
         }
         base.OnInitialized(e);

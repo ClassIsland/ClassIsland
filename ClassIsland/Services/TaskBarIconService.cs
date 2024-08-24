@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-
+using ClassIsland.Core.Abstractions.Services;
 using H.NotifyIcon;
 using H.NotifyIcon.Core;
 
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services;
 
-public class TaskBarIconService : IHostedService
+public class TaskBarIconService : IHostedService, ITaskBarIconService
 {
     private SettingsService SettingsService { get; }
 
@@ -24,8 +24,9 @@ public class TaskBarIconService : IHostedService
 
     private void UpdateMenuAction()
     {
-        MainTaskBarIcon.MenuActivation = SettingsService.Settings.TaskBarIconClickBehavior == 0 ? 
-            PopupActivationMode.LeftOrRightClick : PopupActivationMode.RightClick;
+        // 由于 ClassIsland 现在会自行处理左键抬起事件来显示菜单，
+        // 所以只保留默认的右键打开菜单方式。
+        MainTaskBarIcon.MenuActivation = PopupActivationMode.RightClick;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -42,7 +43,7 @@ public class TaskBarIconService : IHostedService
         {
             BackgroundSource = new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png", UriKind.Absolute)),
         },
-        MenuActivation = PopupActivationMode.LeftOrRightClick,
+        MenuActivation = PopupActivationMode.RightClick,
         ToolTipText = "ClassIsland"
     };
 

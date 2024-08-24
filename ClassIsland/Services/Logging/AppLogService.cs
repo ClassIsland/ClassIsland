@@ -1,11 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
-
-using ClassIsland.Models.Logging;
+using ClassIsland.Core.Abstractions.Services.Logging;
+using ClassIsland.Core.Models.Logging;
 
 namespace ClassIsland.Services.Logging;
 
-public class AppLogService
+public class AppLogService : IAppLogService
 {
     public static readonly int MaxLogEntries = 1000;
 
@@ -13,8 +13,8 @@ public class AppLogService
 
     public void AddLog(LogEntry log)
     {
-        var dispatcher = Application.Current.Dispatcher;
-        _ = dispatcher.InvokeAsync(() =>
+        var dispatcher = Application.Current?.Dispatcher;
+        _ = dispatcher?.InvokeAsync(() =>
         {
             Logs.Add(log);
             while (Logs.Count > MaxLogEntries)

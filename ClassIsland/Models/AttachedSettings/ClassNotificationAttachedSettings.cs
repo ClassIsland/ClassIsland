@@ -1,10 +1,10 @@
-﻿using ClassIsland.Core.Interfaces;
+﻿using ClassIsland.Shared.Interfaces;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AttachedSettings;
 
-public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedSettings
+public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedSettings, IClassNotificationSettings
 {
     private bool _isClassOnNotificationEnabled = true;
     private bool _isClassOnPreparingNotificationEnabled = true;
@@ -12,6 +12,9 @@ public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedS
     private int _classPreparingDeltaTime = 60;
     private string _classOnPreparingText = "准备上课，请回到座位并保持安静，做好上课准备。";
     private bool _isAttachSettingsEnabled;
+    private string _classOnPreparingMaskText = "即将上课";
+    private string _classOnMaskText = "上课";
+    private string _classOffMaskText = "课间休息";
 
     public bool IsClassOnNotificationEnabled
     {
@@ -64,6 +67,39 @@ public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedS
         {
             if (value == _classOnPreparingText) return;
             _classOnPreparingText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOnPreparingMaskText
+    {
+        get => _classOnPreparingMaskText;
+        set
+        {
+            if (value == _classOnPreparingMaskText) return;
+            _classOnPreparingMaskText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOnMaskText
+    {
+        get => _classOnMaskText;
+        set
+        {
+            if (value == _classOnMaskText) return;
+            _classOnMaskText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOffMaskText
+    {
+        get => _classOffMaskText;
+        set
+        {
+            if (value == _classOffMaskText) return;
+            _classOffMaskText = value;
             OnPropertyChanged();
         }
     }

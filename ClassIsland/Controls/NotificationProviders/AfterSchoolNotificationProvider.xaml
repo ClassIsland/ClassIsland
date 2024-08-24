@@ -15,7 +15,7 @@
                     VerticalAlignment="Center" HorizontalAlignment="Center">
             <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
-            <TextBlock Text="放学" FontSize="18" Margin="8 0" FontWeight="Bold"/>
+            <TextBlock Text="放学" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <materialDesign:PackIcon Kind="ExitRun" VerticalAlignment="Center"
                                      Height="20" Width="20"/>
         </StackPanel>
@@ -24,7 +24,6 @@
         <Grid x:Key="AfterSchoolOverlay">
             <Grid>
                 <TextBlock Text="{Binding Message, Mode=OneWay}"
-                           FontSize="16" 
                            Margin="24 0"
                            VerticalAlignment="Center" 
                            HorizontalAlignment="Center"

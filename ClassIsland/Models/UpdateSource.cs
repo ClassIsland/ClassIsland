@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using ClassIsland.Core.Enums;
+using ClassIsland.Shared.Enums;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
