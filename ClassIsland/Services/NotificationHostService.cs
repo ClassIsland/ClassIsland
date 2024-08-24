@@ -218,16 +218,18 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     /// <typeparam name="T">提醒服务类型</typeparam>
     /// <param name="id">提醒服务id</param>
     /// <returns>对应提醒服务实例。若不存在，则返回null。</returns>
-    public T? GetNotificationProviderSettings<T>(Guid id)
+    public T GetNotificationProviderSettings<T>(Guid id) where T : class
     {
         Logger.LogInformation("获取提醒提供方设置：{}", id);
         var o = Settings.NotificationProvidersSettings[id.ToString()];
-        if (o is JsonElement)
+        var settings = o switch
         {
-            var o1 = (JsonElement)o;
-            return o1.Deserialize<T>();
-        }
-        return (T?)Settings.NotificationProvidersSettings[id.ToString()];
+            JsonElement json => json.Deserialize<T>() ?? Activator.CreateInstance<T>(),
+            T s => s,
+            _ => Activator.CreateInstance<T>()
+        };
+        Settings.NotificationProvidersSettings[id.ToString()] = settings;
+        return settings;
     }
 
     public void WriteNotificationProviderSettings<T>(Guid id, T settings)

@@ -4,18 +4,21 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
+using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
 /// <summary>
-/// 提醒主机服务
+/// 提醒主机服务，用于管理提醒提供方和发布提醒。
 /// </summary>
-public interface INotificationHostService
+public interface INotificationHostService : IHostedService, INotifyPropertyChanged
 {
-    PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; }
-    ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
-    NotificationRequest? CurrentRequest { get; set; }
-    NotificationRequest GetRequest();
+    internal PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; }
+    internal ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
+    
+    internal NotificationRequest? CurrentRequest { get; set; }
+    
+    internal NotificationRequest GetRequest();
 
     /// <summary>
     /// 注册提醒服务。
@@ -28,19 +31,33 @@ public interface INotificationHostService
     /// </example>
     void RegisterNotificationProvider(INotificationProvider provider);
 
+    /// <summary>
+    /// 显示提醒。
+    /// </summary>
+    /// <param name="request">提醒请求</param>
+    /// <remarks>注意：此方法必须由提醒主机调用。</remarks>
     void ShowNotification(NotificationRequest request);
-    Task ShowNotificationAsync(NotificationRequest request);
-    Task StartAsync(CancellationToken cancellationToken);
-    Task StopAsync(CancellationToken cancellationToken);
 
     /// <summary>
-    /// 获取提醒服务实例。
+    /// 显示提醒，并等待提醒显示完成。
     /// </summary>
-    /// <typeparam name="T">提醒服务类型</typeparam>
-    /// <param name="id">提醒服务id</param>
-    /// <returns>对应提醒服务实例。若不存在，则返回null。</returns>
-    T? GetNotificationProviderSettings<T>(Guid id);
+    /// <param name="request">提醒请求</param>
+    /// <remarks>注意：此方法必须由提醒主机调用。</remarks>
+    Task ShowNotificationAsync(NotificationRequest request);
 
+    /// <summary>
+    /// 获取提醒服务设置实例。如果此提醒提供方设置不存在，则会新建并保存一个实例指定的设置实例。
+    /// </summary>
+    /// <typeparam name="T">提醒提供方设置类型</typeparam>
+    /// <param name="id">提醒服务id</param>
+    /// <returns>对应提醒服务设置实例。若不存在，则返回默认值。</returns>
+    T GetNotificationProviderSettings<T>(Guid id) where T : class;
+
+    /// <summary>
+    /// 保存提醒提供方设置。
+    /// </summary>
+    /// <typeparam name="T">提醒提供方设置类型</typeparam>
+    /// <param name="id">提醒提供方 ID</param>
+    /// <param name="settings">要保存的设置</param>
     void WriteNotificationProviderSettings<T>(Guid id, T settings);
-    event PropertyChangedEventHandler? PropertyChanged;
 }

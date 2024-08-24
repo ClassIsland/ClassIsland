@@ -57,9 +57,7 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
 
         NotificationHostService.RegisterNotificationProvider(this);
         Settings =
-            NotificationHostService.GetNotificationProviderSettings<AfterSchoolNotificationProviderSettings>(ProviderGuid) ??
-            new AfterSchoolNotificationProviderSettings();
-        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
+            NotificationHostService.GetNotificationProviderSettings<AfterSchoolNotificationProviderSettings>(ProviderGuid);
         LessonsService.CurrentTimeStateChanged += NotificationHostServiceOnCurrentStateChanged;
         SettingsElement = new AfterSchoolNotificationProviderSettingsControl(Settings);
     }

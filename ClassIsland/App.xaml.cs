@@ -352,10 +352,6 @@ public partial class App : AppBase, IAppHost
                 services.AddHostedService<AfterSchoolNotificationProvider>();
                 services.AddHostedService<WeatherNotificationProvider>();
                 services.AddHostedService<ManagementNotificationProvider>();
-                // 简略信息提供方
-                services.AddHostedService<DateMiniInfoProvider>();
-                services.AddHostedService<WeatherMiniInfoProvider>();
-                services.AddHostedService<CountDownMiniInfoProvider>();
                 // Transients
                 services.AddTransient<ExcelImportWindow>();
                 services.AddTransient<WallpaperPreviewWindow>();
