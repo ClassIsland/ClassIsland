@@ -125,8 +125,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 本项目目前开发状态：
 
-- 正在 [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) 分支上开发版本 [1.5 - Griseo](https://github.com/ClassIsland/ClassIsland/milestone/6)。
-- 正在 [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) 分支上维护版本 [1.4 - Firefly](https://github.com/ClassIsland/ClassIsland/milestone/5)。
+- 正在 [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) 分支上维护版本 [1.5 - Griseo](https://github.com/ClassIsland/ClassIsland/milestone/6)。
 
 要在本地编译应用，您需要安装以下负载和工具：
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
@@ -178,21 +177,38 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 本项目使用到的第三方库和框架：
-- [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/)
-- [ReoGrid](https://github.com/unvell/ReoGrid)
-- [EPPlus](https://epplussoftware.com/)
-- [NAudio](https://github.com/naudio/NAudio)
-- [Grpc.Tools](https://github.com/grpc/grpc)
-- [MahApps.Metro](https://github.com/MahApps/MahApps.Metro)
-- [FluentWpf](https://github.com/sourcechord/FluentWPF)
-- [gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)
-- [MdXaml](https://github.com/whistyun/MdXaml)
-- [Microsoft.AppCenter](https://aka.ms/telgml)
-- [Downloader](https://github.com/bezzad/Downloader)
-- [HarmonyOS Sans](https://developer.harmonyos.com/cn/design/resource)
-- [MVVM Toolkit](https://github.com/CommunityToolkit/dotnet)
-- [WPF](https://github.com/dotnet/Wpf)
 - [.NET](https://github.com/microsoft/dotnet)
+- [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet)
+- [dotnetCampus.Ipc](https://github.com/dotnet-campus/dotnetCampus.Ipc)
+- [Downloader](https://github.com/bezzad/Downloader)
+- [EPPlus](https://github.com/EPPlusSoftware/EPPlus)
+- [Edge_tts_sharp](https://github.com/Entity-Now/Edge_tts_sharp)
+- [FluentWPF](https://github.com/sourcechord/FluentWPF)
+- [gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)
+- [Google.Protobuf](https://github.com/protocolbuffers/protobuf)
+- [Grpc](https://github.com/grpc/grpc-dotnet)
+- [Grpc.Net.Client](https://github.com/grpc/grpc-dotnet)
+- [Grpc.Tools](https://github.com/grpc/grpc)
+- [GuerrillaNtp](https://github.com/robertvazan/guerrillantp)
+- [H.NotifyIcon](https://github.com/HavenDV/H.NotifyIcon)
+- [HarmonyOS Sans](https://developer.harmonyos.com/cn/design/resource)
+- [MahApps.Metro](https://mahapps.com/)
+- [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit)
+- [MdXaml](https://github.com/whistyun/MdXaml)
+- [Microsoft.Data.Sqlite](https://github.com/dotnet/efcore)
+- [Microsoft.Extensions.Hosting](https://github.com/dotnet/runtime)
+- [Microsoft.Windows.CsWin32](https://github.com/microsoft/CsWin32)
+- [NAudio](https://github.com/naudio/NAudio)
+- [Octokit](https://github.com/octokit/octokit.net)
+- [Pastel](https://github.com/silkfire/Pastel)
+- [RawInput.Sharp](https://github.com/mfakane/rawinput-sharp)
+- [Sentry](https://github.com/getsentry/sentry-dotnet)
+- [unvell.ReoGridWPF](https://github.com/unvell/ReoGrid)
+- [VirtualizingWrapPanel](https://github.com/sbaeumlisberger/VirtualizingWrapPanel)
+- [WPF](https://github.com/dotnet/Wpf)
+- [WindowsShortcutFactory](https://github.com/gdivis/WindowsShortcutFactory)
+- [WinowsCommunityToolkit](https://github.com/CommunityToolkit/WindowsCommunityToolkit)
+- [YamlDotNet](https://github.com/aaubry/YamlDotNet)
 
 详细的致谢信息请前往【应用设置】->【关于 ClassIsland】界面中查看。
 
