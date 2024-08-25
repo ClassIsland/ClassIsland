@@ -132,6 +132,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "user111192",
+      "name": "user111192",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67212831?v=4",
+      "profile": "https://github.com/user111192",
+      "contributions": [
+        "example"
+      ]
     }
   ],
   "contributorsPerLine": 7,
