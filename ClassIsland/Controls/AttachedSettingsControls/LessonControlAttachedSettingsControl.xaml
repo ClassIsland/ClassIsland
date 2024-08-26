@@ -65,7 +65,9 @@
                                       Foreground="{DynamicResource MaterialDesignBody}"
                                       Style="{StaticResource MaterialDesignTextBoxBase}"
                                       Text="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
-            </WrapPanel>
+        </WrapPanel>
+        <CheckBox Content="上课时仅显示当前课程"
+                  IsChecked="{Binding Settings.ShowCurrentLessonOnlyOnClass}"/>
     </StackPanel>
 
 </ci:AttachedSettingsControlBase>

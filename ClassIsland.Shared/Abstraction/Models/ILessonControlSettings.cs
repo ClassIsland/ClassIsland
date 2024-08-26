@@ -45,4 +45,13 @@ public interface ILessonControlSettings : INotifyPropertyChanged
         get;
         set;
     }
+
+    /// <summary>
+    /// 是否在上课时仅显示当前课程
+    /// </summary>
+    public bool ShowCurrentLessonOnlyOnClass
+    {
+        get;
+        set;
+    }
 }

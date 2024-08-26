@@ -11,7 +11,9 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
     private int _extraInfoType = 0;
     private bool _isCountdownEnabled = true;
     private int _countdownSeconds = 60;
+    private bool _showCurrentLessonOnlyOnClass = false;
 
+    /// <inheritdoc />
     public bool IsAttachSettingsEnabled
     {
         get => _isAttachSettingsEnabled;
@@ -23,6 +25,7 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         }
     }
 
+    /// <inheritdoc />
     public bool ShowExtraInfoOnTimePoint
     {
         get => _showExtraInfoOnTimePoint;
@@ -34,6 +37,7 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         }
     }
 
+    /// <inheritdoc />
     public int ExtraInfoType
     {
         get => _extraInfoType;
@@ -45,6 +49,7 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         }
     }
 
+    /// <inheritdoc />
     public bool IsCountdownEnabled
     {
         get => _isCountdownEnabled;
@@ -56,6 +61,7 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         }
     }
 
+    /// <inheritdoc />
     public int CountdownSeconds
     {
         get => _countdownSeconds;
@@ -63,6 +69,18 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         {
             if (value == _countdownSeconds) return;
             _countdownSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public bool ShowCurrentLessonOnlyOnClass
+    {
+        get => _showCurrentLessonOnlyOnClass;
+        set
+        {
+            if (value == _showCurrentLessonOnlyOnClass) return;
+            _showCurrentLessonOnlyOnClass = value;
             OnPropertyChanged();
         }
     }

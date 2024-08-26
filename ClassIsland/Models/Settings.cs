@@ -195,6 +195,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isPluginMarketWarningVisible = true;
     private bool _isTransientDisabled = false;
     private bool _isWaitForTransientDisabled = false;
+    private bool _showCurrentLessonOnlyOnClass = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -568,6 +569,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _countdownSeconds) return;
             _countdownSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowCurrentLessonOnlyOnClass
+    {
+        get => _showCurrentLessonOnlyOnClass;
+        set
+        {
+            if (value == _showCurrentLessonOnlyOnClass) return;
+            _showCurrentLessonOnlyOnClass = value;
             OnPropertyChanged();
         }
     }

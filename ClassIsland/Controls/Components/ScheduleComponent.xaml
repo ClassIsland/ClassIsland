@@ -16,7 +16,7 @@
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
                            IsLiveUpdatingEnabled="True"
-                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=OneWay}"/>
+                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"/>
         <Grid>
             <Grid.Style>
                 <Style TargetType="Grid">
