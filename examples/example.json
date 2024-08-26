@@ -9,7 +9,7 @@
                 { // 上课类型
                     "StartSecond": "2024-05-25T08:00:00", // 开始时间（日期保持前后一致即可，不必特定）
                     "EndSecond": "2024-05-25T08:45:00", // 结束时间 同上
-                    "TimeType": 0, // 0上课 1可见 2分割
+                    "TimeType": 0, // 0上课 1课间 2分割
                     "IsHideDefault": false, // 默认隐藏
                     "DefaultClassId": "", // 默认课程的UUID
                     "AttachedObjects": { // 课程额外设置
