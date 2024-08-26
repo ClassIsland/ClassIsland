@@ -238,7 +238,7 @@
                         </materialDesign:Ripple>
                         <Grid HorizontalAlignment="Stretch" Margin="12">
                             <!-- about -->
-                            <StackPanel Margin="10 0 0 0">
+                            <StackPanel Margin="12 0 0 0">
                                 <TextBlock>
                                     <Run Text="ClassIsland" FontSize="24" />
                                     <Run Text="{x:Static ci:App.AppVersion}" />

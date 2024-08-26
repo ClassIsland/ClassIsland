@@ -74,15 +74,9 @@
                     <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
                                                       SelectedIndex="{Binding SettingsService.Settings.Theme}"
                                                       HorizontalContentAlignment="Left">
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="ThemeLightDark" Text="跟随系统" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="WhiteBalanceSunny" Text="明亮" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="WeatherNight" Text="黑暗" />
-                        </ComboBoxItem>
+                        <controls1:IconText Kind="ThemeLightDark" Text="跟随系统" />
+                        <controls1:IconText Kind="WhiteBalanceSunny" Text="明亮" />
+                        <controls1:IconText Kind="WeatherNight" Text="黑暗" />
                     </ComboBox>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
@@ -94,18 +88,10 @@
                                                       SelectionChanged="ButtonUpdateWallpaper_OnClick"
                                                       HorizontalContentAlignment="Left"
                                                       SelectedIndex="{Binding SettingsService.Settings.ColorSource}">
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="UserOutline" Text="自定义" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="Wallpaper" Text="系统壁纸" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="MicrosoftWindows" Text="系统" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="PanoramaVariantOutline" Text="屏幕主题色" />
-                        </ComboBoxItem>
+                        <controls1:IconText Kind="UserOutline" Text="自定义" />
+                        <controls1:IconText Kind="Wallpaper" Text="系统壁纸" />
+                        <controls1:IconText Kind="MicrosoftWindows" Text="系统" />
+                        <controls1:IconText Kind="PanoramaVariantOutline" Text="屏幕主题色" />
                     </ComboBox>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
