@@ -1159,9 +1159,9 @@
                                                         </StackPanel>
                                                     </Grid>
                                                 </TabItem>
-                                                <TabItem Header="附加设置结果">
-
-                                                </TabItem>
+                                                <!--<TabItem Header="附加设置结果">
+                                                    未实现
+                                                </TabItem>-->
                                             </TabControl>
 
                                             <StackPanel Grid.Column="2" 

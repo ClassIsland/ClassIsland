@@ -38,7 +38,7 @@
             </StackPanel>
             <controls1:SettingsCard IconGlyph="ReportLine"
                                     Header="启用匿名使用情况分析"
-                                    IsOn="{Binding SettingsService.Settings.IsSentryEnabled, Mode=TwoWay}"
+                                    IsOn="{Binding SettingsService.Settings.IsSentryEnabled, Mode=TwoWay, IsAsync=True}"
                                     Description="启用后，应用将收集应用的使用情况与错误信息并上传，以改进此应用。上传的信息不包含您的个人信息。" />
         </StackPanel>
     </ScrollViewer>

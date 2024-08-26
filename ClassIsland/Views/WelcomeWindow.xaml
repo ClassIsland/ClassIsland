@@ -273,7 +273,7 @@
                                     <controls1:SettingsCard Grid.Row="1" Margin="0 6 0 0"
                                                            IconGlyph="ReportLine"
                                                            Header="启用匿名使用情况分析"
-                                                           IsOn="{Binding ViewModel.Settings.IsSentryEnabled, Mode=TwoWay}"
+                                                           IsOn="{Binding ViewModel.Settings.IsSentryEnabled, Mode=TwoWay, IsAsync=True}"
                                                            Description="启用后，应用将收集并上传应用的使用情况与错误信息，以帮助改进此应用。上传的信息不包含您的个人信息。" />
                                 </StackPanel>
                                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
