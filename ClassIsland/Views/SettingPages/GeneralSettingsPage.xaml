@@ -330,6 +330,20 @@
                             Click="ButtonCloseMigrationTip_OnClick"/>
                 </Grid>
             </Border>
+            <Separator Margin="0 16 0 8" />
+            <controls1:IconText Kind="CogOutline" Text="高级" Margin="0 0 0 8" />
+            <!-- 禁用过渡动画 -->
+            <controls1:SettingsCard IconGlyph="AnimationPlayOutline"
+                                   Header="禁用过渡动画"
+                                   Description="此选项将禁用部分控件的过渡动画，以提升性能和操作效率。"
+                                   IsOn="{Binding SettingsService.Settings.IsTransientDisabled, Mode=TwoWay}"
+                                   Margin="0 0 0 6" />
+            <!-- 禁用动画等待 -->
+            <controls1:SettingsCard IconGlyph="TimerAlertOutline"
+                                    Header="禁用动画等待"
+                                    Description="默认情况下 ClassIsland 在进行阻塞 UI 线程的操作时，会确保动画播放完成。启用此选项后将不会等待动画播放完成，可以一定程度上地提升加载速度。"
+                                    IsOn="{Binding SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"
+                                    Margin="0 0 0 6" />
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

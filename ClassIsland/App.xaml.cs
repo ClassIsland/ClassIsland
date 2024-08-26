@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using System.Windows.Diagnostics;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -419,13 +420,16 @@ public partial class App : AppBase, IAppHost
         //OverrideFocusVisualStyle();
         Logger.LogInformation("初始化应用。");
 
+        TransitionAssist.DisableTransitionsProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(Settings.IsTransientDisabled));
+        IThemeService.IsTransientDisabled = Settings.IsTransientDisabled;
+        IThemeService.IsWaitForTransientDisabled = Settings.IsWaitForTransientDisabled;
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             var spanShowSplash = spanLaunching.StartChild("startup-show-splash");
             GetService<SplashWindow>().Show();
             GetService<ISplashService>().CurrentProgress = 25;
             var b = false;
-            while (!b)
+            while (!b && !IThemeService.IsWaitForTransientDisabled)
             {
                 Dispatcher.Invoke(DispatcherPriority.Background, () =>
                 {

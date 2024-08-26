@@ -38,4 +38,14 @@ public interface IThemeService
     /// <param name="primary">第一主题色</param>
     /// <param name="secondary">第二主题色</param>
     public void SetTheme(int themeMode, Color primary, Color secondary);
+
+    /// <summary>
+    /// 是否禁用过渡动画
+    /// </summary>
+    public static bool IsTransientDisabled { get; internal set; } = false;
+
+    /// <summary>
+    /// 是否禁用动画等待。默认情况下 ClassIsland 在进行阻塞 UI 线程的操作时，会确保动画播放完成。启用此选项后将不会等待动画播放完成，可以一定程度上地提升加载速度。
+    /// </summary>
+    public static bool IsWaitForTransientDisabled { get; internal set; } = false;
 }

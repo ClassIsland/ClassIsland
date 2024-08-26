@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,6 +47,16 @@ public partial class GeneralSettingsPage : SettingsPageBase
         ManagementService = managementService;
         ExactTimeService = exactTimeService;
         MiniInfoProviderHostService = miniInfoProviderHostService;
+
+        SettingsService.Settings.PropertyChanged+= SettingsOnPropertyChanged;
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(SettingsService.Settings.IsTransientDisabled) or nameof(SettingsService.Settings.IsWaitForTransientDisabled))
+        {
+            RequestRestart();
+        }
     }
 
     private void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)

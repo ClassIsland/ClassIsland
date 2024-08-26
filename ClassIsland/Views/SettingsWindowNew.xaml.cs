@@ -127,7 +127,10 @@ public partial class SettingsWindowNew : MyWindow
         BeginStoryboard(key, out var complete);
         if (!complete.IsCancellationRequested)
             await Task.Run(() => complete.WaitHandle.WaitOne(), complete);
-        await Dispatcher.Yield();
+        if (!IThemeService.IsWaitForTransientDisabled)
+        {
+            await Dispatcher.Yield();
+        }
     }
 
     private void BeginStoryboard(string key, out CancellationToken cancellationToken)
@@ -156,9 +159,15 @@ public partial class SettingsWindowNew : MyWindow
         {
             // 如果是从设置导航栏导航的，那么就要清除掉返回项目
             NavigationService.RemoveBackEntry();
-            await Dispatcher.Yield();
+            if (!IThemeService.IsWaitForTransientDisabled)
+            {
+                await Dispatcher.Yield();
+            }
             ViewModel.IsNavigating = false;
-            await BeginStoryboardAsync("NavigationEntering");
+            if (!IThemeService.IsTransientDisabled)
+            {
+                await BeginStoryboardAsync("NavigationEntering");
+            }
         }
         ViewModel.IsNavigating = false;
         ViewModel.CanGoBack = NavigationService.CanGoBack;
@@ -188,7 +197,11 @@ public partial class SettingsWindowNew : MyWindow
         {
             ViewModel.IsNavigationDrawerOpened = false;
         }
-        await BeginStoryboardAsync("NavigationLeaving");
+
+        if (!IThemeService.IsTransientDisabled)
+        {
+            await BeginStoryboardAsync("NavigationLeaving");
+        }
         HangService.AssumeHang();
         // 从ioc容器获取页面
         var page = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(ViewModel.SelectedPageInfo?.Id);

@@ -193,6 +193,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isCustomForegroundColorEnabled = false;
     private Color _customForegroundColor = Colors.DodgerBlue;
     private bool _isPluginMarketWarningVisible = true;
+    private bool _isTransientDisabled = false;
+    private bool _isWaitForTransientDisabled = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -687,6 +689,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_lastTimeAdjustDateTime)) return;
             _lastTimeAdjustDateTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTransientDisabled
+    {
+        get => _isTransientDisabled;
+        set
+        {
+            if (value == _isTransientDisabled) return;
+            _isTransientDisabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsWaitForTransientDisabled
+    {
+        get => _isWaitForTransientDisabled;
+        set
+        {
+            if (value == _isWaitForTransientDisabled) return;
+            _isWaitForTransientDisabled = value;
             OnPropertyChanged();
         }
     }
