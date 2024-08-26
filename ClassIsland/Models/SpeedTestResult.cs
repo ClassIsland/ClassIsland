@@ -8,6 +8,7 @@ public class SpeedTestResult : ObservableRecipient
     private bool _canConnect = false;
     private bool _isTested = false;
     private bool _isTesting = false;
+    private bool _isDelayUnclear = false;
 
     public long Delay
     {
@@ -49,6 +50,17 @@ public class SpeedTestResult : ObservableRecipient
         {
             if (value == _isTesting) return;
             _isTesting = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsDelayUnclear
+    {
+        get => _isDelayUnclear;
+        set
+        {
+            if (value == _isDelayUnclear) return;
+            _isDelayUnclear = value;
             OnPropertyChanged();
         }
     }

@@ -40,23 +40,22 @@ public class UpdateNodeSpeedTestingService
                 try
                 {
                     var canConnect = false;
-                    await Task.Run(() =>
-                    {
-                        var pr = ping.Send(k, 2048);
-                        if (pr.Status != IPStatus.Success)
-                            return;
-                        Logger.LogInformation("Ping {}, {}ms", k, pr.RoundtripTime);
-                        delays.Add(pr.RoundtripTime);
-                        canConnect = true;
-                    });
-                    if (!canConnect)
-                    {
-                        i.Value.SpeedTestResult.CanConnect = false;
-                        break;
-                    }
                     var r = await client.GetAsync(new Uri($"https://{k}", UriKind.RelativeOrAbsolute));
                     //Logger.LogInformation("Https get {}, {}ms", k, sw.ElapsedMilliseconds);
                     i.Value.SpeedTestResult.CanConnect = true;
+                    await Task.Run(() =>
+                    {
+                        var pr = ping.Send(k, 4096);
+                        if (pr.Status != IPStatus.Success)
+                        {
+                            i.Value.SpeedTestResult.IsDelayUnclear = true;
+                            i.Value.SpeedTestResult.Delay = 9999;
+                            return;
+                        }
+                        Logger.LogInformation("Ping {}, {}ms", k, pr.RoundtripTime);
+                        delays.Add(pr.RoundtripTime);
+                        
+                    });
                 }
                 catch (Exception e)
                 {
@@ -66,7 +65,7 @@ public class UpdateNodeSpeedTestingService
                 }
             }
 
-            if (i.Value.SpeedTestResult.CanConnect)
+            if (i.Value.SpeedTestResult.CanConnect && delays.Count > 0)
             {
                 var sum = delays.Sum();
                 i.Value.SpeedTestResult.Delay = sum / delays.Count;

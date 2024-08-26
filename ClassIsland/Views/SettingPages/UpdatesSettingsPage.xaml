@@ -694,11 +694,26 @@
                                                                 </Style.Triggers>
                                                             </Style>
                                                         </StackPanel.Style>
-                                                        <TextBlock
-                                                            Visibility="{Binding Value.SpeedTestResult.CanConnect, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                        <TextBlock>
+                                                            <TextBlock.Visibility>
+                                                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                                                    <Binding Path="Value.SpeedTestResult.CanConnect"/>
+                                                                    <Binding Path="Value.SpeedTestResult.IsDelayUnclear" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                                </MultiBinding>
+                                                            </TextBlock.Visibility>
                                                             <Run
                                                                 Text="{Binding Value.SpeedTestResult.Delay}" />
                                                             <Run Text="ms" />
+                                                        </TextBlock>
+                                                        <TextBlock Foreground="OrangeRed">
+                                                            <TextBlock.Visibility>
+                                                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                                                    <Binding Path="Value.SpeedTestResult.CanConnect"/>
+                                                                    <Binding Path="Value.SpeedTestResult.IsDelayUnclear"/>
+                                                                </MultiBinding>
+                                                            </TextBlock.Visibility>
+                                                            <Run
+                                                                Text="可连接，延迟未知" />
                                                         </TextBlock>
                                                         <TextBlock
                                                             Visibility="{Binding Value.SpeedTestResult.CanConnect, Converter={StaticResource InverseBoolToVisConverter}}">
@@ -709,7 +724,7 @@
                                                     <ProgressBar
                                                         Style="{StaticResource MaterialDesignCircularProgressBar}"
                                                         IsIndeterminate="True"
-                                                        Margin="8 0 0 0"
+                                                        Margin="8 -4 0 -4"
                                                         Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                         Visibility="{Binding Value.SpeedTestResult.IsTesting, Converter={StaticResource BooleanToVisibilityConverter}}" />
                                                 </StackPanel>
