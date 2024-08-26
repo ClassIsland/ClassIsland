@@ -9,6 +9,7 @@
     <UserSecretsId>d3a133e8-8208-4210-818a-e5c3335f8cbf</UserSecretsId>
     <Description>ClassIsland 应用核心依赖库，包括 ClassIsland 封装的一些常用控件和方法。</Description>
     <PackageTags>classisland;wpf;material design</PackageTags>
+	  
   </PropertyGroup>
 
   <!-- <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -40,10 +41,8 @@
     <PackageReference Include="MdXaml.AnimatedGif" Version="1.21.0" />
     <PackageReference Include="MdXaml.Html" Version="1.21.0" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.131" />
-    <PackageReference Include="MahApps.Metro" Version="2.4.10" />
     <PackageReference Include="MaterialDesignThemes" Version="4.8.0" />
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.2.8" />
-    <PackageReference Include="FluentWPF" Version="0.10.2" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
 
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />

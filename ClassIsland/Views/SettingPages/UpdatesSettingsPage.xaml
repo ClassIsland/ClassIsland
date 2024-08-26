@@ -9,7 +9,6 @@
       xmlns:appUpdating="clr-namespace:ClassIsland.Services.AppUpdating"
       xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
       xmlns:mdXaml="clr-namespace:MdXaml;assembly=MdXaml"
-      xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
       xmlns:converters="clr-namespace:ClassIsland.Converters"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
       mc:Ignorable="d" 
@@ -460,12 +459,12 @@
                 </WrapPanel>
 
                 <!-- 加载中 -->
-                <ProgressBar Grid.Column="0" Grid.Row="3"
+                <!--<ProgressBar Grid.Column="0" Grid.Row="3"
                              HorizontalAlignment="Left"
                              Visibility="Collapsed"
                              Style="{StaticResource MaterialDesignCircularProgressBar}"
                              IsIndeterminate="True"
-                             Value="0" Margin="0,9,0,9" />
+                             Value="0" Margin="0,9,0,9" />-->
 
                 <!-- 重启更新 -->
                 <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2"
@@ -707,8 +706,9 @@
                                                                  Foreground="IndianRed" />
                                                         </TextBlock>
                                                     </StackPanel>
-                                                    <mah:MetroProgressBar
-                                                        IsIndeterminate="True" Width="100"
+                                                    <ProgressBar
+                                                        Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                                        IsIndeterminate="True"
                                                         Margin="8 0 0 0"
                                                         Foreground="{DynamicResource PrimaryHueMidBrush}"
                                                         Visibility="{Binding Value.SpeedTestResult.IsTesting, Converter={StaticResource BooleanToVisibilityConverter}}" />
