@@ -5,7 +5,9 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
@@ -37,10 +39,13 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     {
         var settings = SettingsService.Settings;
         DwmIsCompositionEnabled(out BOOL isCompositionEnabled);
+        GetDeviceInfo(out var name, out var vendor);
         var list = new Dictionary<string, string>
         {
             {"SystemOsVersion",  RuntimeInformation.OSDescription},
             {"SystemIsCompositionEnabled", isCompositionEnabled.ToString()},
+            {"SystemDeviceName", name},
+            {"SystemDeviceVendor", vendor},
             {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
             {"AppStartupDurationMs", StartupDurationMs.ToString()},
             {"AppVersion", App.AppVersionLong},
@@ -114,5 +119,24 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             throw;
         }
         
+    }
+
+    public static void GetDeviceInfo(out string name, out string vendor)
+    {
+        name = "???";
+        vendor = "???";
+        try
+        {
+            var moc = new ManagementClass("Win32_ComputerSystemProduct").GetInstances();
+            foreach (var mo in moc)
+            {
+                name = mo.GetPropertyValue("Name") as string ?? "???";
+                vendor = mo.GetPropertyValue("Vendor") as string ?? "???";
+            }
+        }
+        catch
+        {
+            // ignored
+        }
     }
 }

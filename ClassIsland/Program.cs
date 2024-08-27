@@ -7,10 +7,12 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland;
+using ClassIsland.Services;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
+using NAudio;
 
 Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
 Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
@@ -84,16 +86,18 @@ void ConfigureSentry(SentryOptions options)
 
     options.AutoSessionTracking = true;
     options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
-    options.SetBeforeSend(@event =>
-    {
-        @event.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
-        return @event;
-    });
 }
 
 if (Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null )
 {
     SentrySdk.Init(ConfigureSentry);
+    DiagnosticService.GetDeviceInfo(out var name, out var vendor);
+    SentrySdk.ConfigureScope(s =>
+    {
+        s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
+        s.SetTag("device.model", name);
+        s.SetTag("device.brand", vendor);
+    });
 }
 var app = new App()
 {
