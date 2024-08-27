@@ -479,8 +479,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             {
                 var envVar = value ? "1" : "0";
                 Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", envVar);
-                Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", envVar, EnvironmentVariableTarget.User);
                 OnPropertyChanged();
+                Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", envVar, EnvironmentVariableTarget.User);
             }
             catch (Exception ex)
             {

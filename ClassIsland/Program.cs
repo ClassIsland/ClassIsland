@@ -95,8 +95,8 @@ if (Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or 
     SentrySdk.ConfigureScope(s =>
     {
         s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
-        s.SetTag("device.model", name);
-        s.SetTag("device.brand", vendor);
+        s.SetTag("deviceDesktop.name", name);
+        s.SetTag("deviceDesktop.vendor", vendor);
     });
 }
 var app = new App()
