@@ -283,6 +283,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         // Update cached platte
         if (SettingsService.Settings.WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
             WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
+            SettingsService.Settings.SelectedPlatteIndex < 0 ||
             SettingsService.Settings.WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex] !=
             WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex])
         {
@@ -293,7 +294,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
             }
             SettingsService.Settings.SelectedPlatteIndex = 0;
         }
-
+        
         IsWorking = false;
         GC.Collect();
     }
