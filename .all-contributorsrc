@@ -141,6 +141,15 @@
       "contributions": [
         "example"
       ]
+    },
+    {
+      "login": "LyCecilion",
+      "name": "一般路过绫音酱_Cecilion",
+      "avatar_url": "https://avatars.githubusercontent.com/u/141834038?v=4",
+      "profile": "https://blog.kagureion.top/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
