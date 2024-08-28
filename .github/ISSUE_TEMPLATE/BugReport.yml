@@ -67,7 +67,7 @@ body:
     id: app_version
     attributes:
       label: 应用版本
-      description: 您当前使用的ClassIsland版本号，可以在【应用设置】->【关于】中查看。
+      description: 您当前使用的 ClassIsland 版本号，可以在【应用设置】->【关于 ClassIsland】中查看。
       placeholder: 如：1.3.2.0-Firefly-e921904(dev)
     validations:
       required: true
