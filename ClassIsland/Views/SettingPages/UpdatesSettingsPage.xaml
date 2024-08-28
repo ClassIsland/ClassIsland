@@ -11,6 +11,7 @@
       xmlns:mdXaml="clr-namespace:MdXaml;assembly=MdXaml"
       xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
       xmlns:converters="clr-namespace:ClassIsland.Converters"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="更新"
@@ -59,6 +60,44 @@
             </Style.Triggers>
             <Setter Property="IsEnabled" Value="False" />
         </Style>
+
+        <Grid x:Key="ChangeLogsDrawer" Width="500"
+              HorizontalAlignment="Stretch">
+            <ScrollViewer>
+                <Grid>
+                    <mdXaml:MarkdownScrollViewer
+                                    Document="{Binding ViewModel.ChangeLogs}"
+                                    FontFamily="{StaticResource HarmonyOsSans}"
+                                    FontWeight="Normal"
+                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsSelectionEnabled="False"
+                                    ScrollViewer.CanContentScroll="True"
+                                    IsToolBarVisible="False"
+                                    Zoom="90"
+                                    Padding="0"
+                                    ScrollViewer.PanningMode="None"
+                                    ToolTipService.Placement="MousePoint">
+                        <mdXaml:MarkdownScrollViewer.Resources>
+                            <system:Double x:Key="MarkdownImageMaxWidth">500</system:Double>
+                            <Style TargetType="Hyperlink">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground"
+                                                Value="{DynamicResource PrimaryHueLightBrush}">
+                                        </Setter>
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource PrimaryHueMidBrush}" />
+                                <Setter Property="ToolTipService.Placement" Value="Mouse" />
+                            </Style>
+                        </mdXaml:MarkdownScrollViewer.Resources>
+                    </mdXaml:MarkdownScrollViewer>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">

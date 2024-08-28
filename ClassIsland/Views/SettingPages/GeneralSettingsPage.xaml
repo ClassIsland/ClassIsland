@@ -44,11 +44,35 @@
                                     IsOn="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}" />
             <!-- 学期开始时间 -->
             <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
-                                                           Description="此时间将作为学期的第一周，用于应用对单双周的计算。">
+                                    Description="此时间将作为学期的第一天，用于应用对多周轮换课表的计算，应设为一周的第一天。">
                 <controls1:SettingsCard.Switcher>
-                    <DatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
-                                                        Width="120"
-                                                        Foreground="{DynamicResource MaterialDesignBody}" />
+                    <StackPanel Orientation="Horizontal">
+                        <DatePicker SelectedDate="{Binding SettingsService.Settings.SingleWeekStartTime}"
+                                    Width="120"
+                                    Foreground="{DynamicResource MaterialDesignBody}" />
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                Content="{materialDesign:PackIcon CalendarMultiple}"
+                                Click="ButtonWeekOffsetSettingsOpen_OnClick"
+                                ToolTip="调整偏移…"/>
+                        <materialDesign:PopupEx Grid.Row="2"
+                                                AllowsTransparency="True"
+                                                StaysOpen="False"
+                                                Placement="Mouse"
+                                                IsOpen="{Binding ViewModel.IsWeekOffsetSettingsOpen}"
+                                                PopupAnimation="Fade">
+                            <Border Background="{DynamicResource MaterialDesignPaper}"
+                                    Margin="8"
+                                    Button.Click="ButtonWeekOffsetSettingsButtons_OnClick">
+                                <Border.Effect>
+                                    <DropShadowEffect Direction="0"
+                                                      ShadowDepth="0"
+                                                      BlurRadius="8"
+                                                      Opacity="0.5"/>
+                                </Border.Effect>
+                                <controls2:WeekOffsetSettingsControl/>
+                            </Border>
+                        </materialDesign:PopupEx>
+                    </StackPanel>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
             <!-- 隐藏窗口 -->
@@ -61,10 +85,10 @@
                                                                           Description="将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。"
                                                                           Margin="-12 0" />
                     </Expander.Header>
-                    <TabControl Margin="36 0 64 12" HorizontalContentAlignment="Left"
+                    <TabControl Margin="36 -16 64 12" HorizontalContentAlignment="Left"
                                 SelectedIndex="{Binding SettingsService.Settings.HideMode}">
                         <TabItem Header="基础模式">
-                            <StackPanel >
+                            <StackPanel Margin="6 6 0 0">
                                 <StackPanel.Resources>
                                     <Style TargetType="CheckBox"
                                            BasedOn="{StaticResource MaterialDesignCheckBox}">
@@ -285,7 +309,7 @@
                                                  Height="24" Width="24"
                                                  Foreground="{DynamicResource PrimaryHueMidBrush}" />
                         <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
-                            抱歉，【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
+                            【快速信息】功能已被【组件】取代，您在先前版本中的快速信息和课表显示设置已经转移到【组件】中，请前往【组件】页面调整相关设置。
                             利用组件功能，您可以更自由地定制 ClassIsland 主界面上显示的内容。
                         </TextBlock>
                         <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -306,30 +330,6 @@
                             Click="ButtonCloseMigrationTip_OnClick"/>
                 </Grid>
             </Border>
-            <Separator Margin="0 16 0 8" />
-            <controls1:IconText Kind="EditOutline" Text="档案编辑" Margin="0 0 0 8" />
-            <!-- 默认上课时间点时长 -->
-            <controls1:SettingsCard IconGlyph="FileClockOutline" Header="默认上课时间点时长"
-                                                           Description="在创建上课类型的时间点时默认时长。">
-                <controls1:SettingsCard.Switcher>
-                    <controls1:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
-                                                                      materialDesign:TextFieldAssist.SuffixText="分钟"
-                                                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Style="{StaticResource MaterialDesignTextBox}"
-                                                                      Text="{Binding SettingsService.Settings.DefaultOnClassTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
-                </controls1:SettingsCard.Switcher>
-            </controls1:SettingsCard>
-            <!-- 默认课间时间点时长 -->
-            <controls1:SettingsCard IconGlyph="ClockOutline" Header="默认课间时间点时长"
-                                                           Description="在创建课间休息类型的时间点时默认时长">
-                <controls1:SettingsCard.Switcher>
-                    <controls1:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
-                                                                      materialDesign:TextFieldAssist.SuffixText="分钟"
-                                                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                                                      Style="{StaticResource MaterialDesignTextBox}"
-                                                                      Text="{Binding SettingsService.Settings.DefaultBreakingTimePointMinutes, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
-                </controls1:SettingsCard.Switcher>
-            </controls1:SettingsCard>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

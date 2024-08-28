@@ -32,7 +32,6 @@ using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using ClassIsland.Views;
 using ControlzEx.Windows.Shell;
-using GrpcDotNetNamedPipes;
 using H.NotifyIcon;
 
 using Microsoft.Extensions.Logging;
@@ -68,11 +67,6 @@ public partial class MainWindow : Window
     }
 
     private Storyboard NotificationProgressBar { get; set; } = new Storyboard();
-
-    private HelpsWindow HelpsWindow
-    {
-        get;
-    }
 
     private SettingsService SettingsService
     {
@@ -176,7 +170,6 @@ public partial class MainWindow : Window
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel = new MainViewModel();
-        HelpsWindow = App.GetService<HelpsWindow>();
         //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
@@ -376,7 +369,7 @@ public partial class MainWindow : Window
                 }
                 // 播放提醒特效
                 if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationEffect &&
-                    GridRoot.IsVisible && ViewModel.IsMainWindowVisible && !IsRunningCompatibleMode)
+                    GridRoot.IsVisible && ViewModel.Settings.IsMainWindowVisible && !IsRunningCompatibleMode)
                 {
                     TopmostEffectWindow.PlayEffect(new RippleEffect()
                     {
@@ -486,15 +479,16 @@ public partial class MainWindow : Window
 
         if (SettingsService.Settings.UseRawInput)
         {
-            var handle = new WindowInteropHelper(this).Handle;
-            RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
-                RawInputDeviceFlags.InputSink, handle);
-            RawInputDevice.RegisterDevice(HidUsageAndPage.TouchScreen,
-                RawInputDeviceFlags.InputSink, handle);
-
-            RawInputUpdateStopWatch.Start();
-            var hWndSource = HwndSource.FromHwnd(handle);
-            hWndSource?.AddHook(ProcWnd);
+            try
+            {
+                InitializeRawInputHandler();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "无法初始化 RawInput，已回退到兼容模式。");
+                LessonsService.PreMainTimerTicked += ProcessMousePos;
+                ViewModel.Settings.IsErrorLoadingRawInput = true;
+            }
         }
         else
         {
@@ -519,6 +513,19 @@ public partial class MainWindow : Window
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
+    }
+
+    private void InitializeRawInputHandler()
+    {
+        var handle = new WindowInteropHelper(this).Handle;
+        RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse,
+            RawInputDeviceFlags.InputSink, handle);
+        RawInputDevice.RegisterDevice(HidUsageAndPage.TouchScreen,
+            RawInputDeviceFlags.InputSink, handle);
+
+        RawInputUpdateStopWatch.Start();
+        var hWndSource = HwndSource.FromHwnd(handle);
+        hWndSource?.AddHook(ProcWnd);
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
@@ -612,7 +619,7 @@ public partial class MainWindow : Window
                 OpenProfileSettingsWindow();
                 break;
             case 2:
-                ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
+                ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
                 break;
             case 3:
                 OpenClassSwapWindow();
@@ -641,7 +648,7 @@ public partial class MainWindow : Window
     public void SaveSettings()
     {
         UpdateTheme();
-        SettingsService.SaveSettings();
+        SettingsService.SaveSettings(ToString() + " 的 SaveSettings()");
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -751,6 +758,23 @@ public partial class MainWindow : Window
             SettingsService.Settings.MainWindowEmphasizedFontSize;
         ResourceLoaderBorder.Resources[nameof(SettingsService.Settings.MainWindowLargeFontSize)] =
             SettingsService.Settings.MainWindowLargeFontSize;
+
+        if (ViewModel.Settings.IsCustomForegroundColorEnabled)
+        {
+            var brush = new SolidColorBrush(ViewModel.Settings.CustomForegroundColor);
+            ResourceLoaderBorder.SetValue(ForegroundProperty, brush);
+            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, brush);
+            ResourceLoaderBorder.Resources["MaterialDesignBody"] = brush;
+        }
+        else
+        {
+            if (ResourceLoaderBorder.Resources.Contains("MaterialDesignBody"))
+            {
+                ResourceLoaderBorder.Resources.Remove("MaterialDesignBody");
+            }
+            ResourceLoaderBorder.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
+            ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, DependencyProperty.UnsetValue);
+        }
     }
 
     private void ButtonSettings_OnClick(object sender, RoutedEventArgs e)
@@ -950,27 +974,7 @@ public partial class MainWindow : Window
 
     private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenHelpsWindow();
-    }
-
-    public void OpenHelpsWindow()
-    {
-        SentrySdk.Metrics.Increment("views.HelpWindow.open");
-        if (AppBase.Current.IsAssetsTrimmed())
-        {
-            UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/"));
-            return;
-        }
-        if (HelpsWindow.ViewModel.IsOpened)
-        {
-            HelpsWindow.WindowState = HelpsWindow.WindowState == WindowState.Minimized ? WindowState.Normal : HelpsWindow.WindowState;
-            HelpsWindow.Activate();
-        }
-        else
-        {
-            HelpsWindow.ViewModel.IsOpened = true;
-            HelpsWindow.Show();
-        }
+        UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/zh-cn/latest/app/"));
     }
 
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
@@ -1006,7 +1010,7 @@ public partial class MainWindow : Window
 
     private void MenuItemSwitchMainWindowVisibility_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.IsMainWindowVisible = !ViewModel.IsMainWindowVisible;
+        ViewModel.Settings.IsMainWindowVisible = !ViewModel.Settings.IsMainWindowVisible;
     }
 
     private void MenuItemClassSwap_OnClick(object sender, RoutedEventArgs e)

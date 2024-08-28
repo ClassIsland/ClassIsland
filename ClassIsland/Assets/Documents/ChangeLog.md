@@ -2,23 +2,24 @@
 
 1.5-Griseo 的新增功能。
 
+
 ## 插件系统
 
-![1722823221695](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1722823221695.png)
+![1722823221695](https://github.com/user-attachments/assets/7464a90d-ef66-47e1-8083-3edbdea603aa)
 
 您可以通过插件扩展 ClassIsland 的功能，比如获取新的组件、提醒提供方等等。您可以在[插件市场](classisland://app/settings/classisland.plugins)浏览插件。如果您对开发 ClassIsland 插件感兴趣，不妨看看[开发文档](https://docs.classisland.tech/zh-cn/latest/dev)来了解如何开发插件。
 
 ## 规则集
 
-![1723953554739](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953554739.png)
+![1723953554739](https://github.com/user-attachments/assets/6491fc26-202d-4d0e-a91a-2dbd7d0f4cf4)
 
 目前 ClassIsland 支持通过【规则集】功能，更详细地设定规则，并支持插件注册自定义的规则。
 
 ## 附加设置分析
 
-![1723953043655](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953043655.png)
+![1723953043655](https://github.com/user-attachments/assets/ae1985e0-1997-4a1d-ba4a-928579eebb26)
 
-![1723953105695](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1723953105695.png)
+![1723953105695](https://github.com/user-attachments/assets/377341c2-9379-413e-a766-cc4da72f7b74)
 
 目前档案编辑器支持对各个节点的附加设置覆盖/继承情况进行分析，并支持查看某一课表中各个时间点的附加设置启用情况。
 
@@ -44,7 +45,7 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 [(#136)](https://github.com/ClassIsland/ClassIsland/issues/136)
 
-![1721193302305](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1721193302305.png)
+![1721193302305](https://github.com/user-attachments/assets/400e3aa8-4a97-456a-9a1e-e45496eefca4)
 
 ## Url 导航
 
@@ -54,7 +55,7 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ## 组件
 
-![1718443026319](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1718443026319.png)
+![1718443026319](https://github.com/user-attachments/assets/a7b1a888-33a5-4163-9ae9-b23726c9eca0)
 
 新增的【组件】功能目前取代了原有的【快速信息】功能。您可以在主界面上任意排列、添加或删除组件。
 
@@ -62,12 +63,65 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ## 设置窗口更新
 
-![1718443093077](pack://application:,,,/ClassIsland;component/Assets/Documents/image/ChangeLog/1718443093077.png)
+![1718443093077](https://github.com/user-attachments/assets/9cdf6e9a-0c47-42d6-b76b-a4789f2136e1)
 
 应用设置窗口目前经过了重构，并且加入了导航动画。此外，在重构设置界面之后，应用的启动速度也得到了一定的提升。
 
 
 ***
+
+# 1.4.5.0
+
+> 1.5 - Griseo 测试版，可能包含未完善和不稳定的功能。
+
+🎉 本版本是 1.5 的最后一个 Beta 版，将在确认稳定并修复在这个版本收到的问题后，在下一个版本发布 1.5 的正式版。
+
+## 新增功能与优化
+
+- **【课表服务】多周轮换**：课表支持设置多周轮换，手动设置轮换偏移
+- 【档案编辑】添加课表群描述文本
+- 【档案编辑】将默认时间点时长挪到档案编辑
+- 【组件/课表】高亮显示换课课程
+- 【主界面】记忆隐藏主界面状态
+- 【插件市场】插件市场从插件源显示在线信息
+- 【插件市场】插件更新功能
+- 【组件】为天气图标赋予颜色
+- 【组件】支持设置组件隐藏规则
+- 【组件】自定义全局/组件字体大小和颜色 ([#80](https://github.com/ClassIsland/ClassIsland/issues/80))
+- 【备份】在启动时如果备份文件夹不存在，自动创建备份文件夹
+- 【应用设置】调整【调试】选项卡，为【调试】标签页添加集控选项
+- 【应用设置】优化提醒音效音量调节边距大小
+- 【IPC】跨进程获取 ClassIsland 应用信息，接收 ClassIsland 事件广播
+- 【IPC】为跨进程库加入 .NET Frameworks 支持
+- 【UI】使用本地化日期选择控件
+- 【UI】优化精简模式字体串
+- 【API/提醒】优化提醒提供方 API
+
+## 移除功能
+
+- 【应用帮助】删除应用内置的帮助文档，现改为提供[在线文档](https://docs.classisland.tech)。
+- 【IPC】移除 Grpc 支持，现使用新的跨进程通信方式。
+
+## Bug 修复
+
+- 【档案分析】修复查询到不存在的继承情况时 NullReferenceException 的问题 ([#282](https://github.com/ClassIsland/ClassIsland/issues/282))
+- 【组件/课表】修复下课倒计时大小不正确的问题
+- 【组件/课表】修复在永久换课时课表不更新课程信息的问题 ([#265](https://github.com/ClassIsland/ClassIsland/issues/265))
+- 【UI】修复 Slider 在滚动视图中无法正常滑动修改数值的问题
+- 【UI】修复选择主题色拦截鼠标滚轮事件的问题
+- 【插件市场】修复在一定情况下无法加载插件源的问题
+- 【更新】修复更新完成后无法删除更新临时文件的问题 ([#269](https://github.com/ClassIsland/ClassIsland/issues/269))
+- 【应用】修复文件占用判断不支持中文的问题
+- 【备份】当手动备份文件不存在时报错
+- 【备份】修复在要备份的文件/文件夹不存在时，无法继续备份的问题
+- 【系统】修复 RawInput 初始化失败时导致应用无法启动的问题
+
+
+## Merge
+
+- Merge pull request #268 from LiuYan-xwx/dev
+- Merge pull request #266 from DryIce-cc/dev
+- Merge pull request #274 from DryIce-cc/dev
 
 # 1.4.4.0
 

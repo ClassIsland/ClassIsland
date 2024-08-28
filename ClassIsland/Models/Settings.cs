@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -52,11 +53,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     {
         "explorer"
     };
+    private ObservableCollection<int> _multiWeekRotationOffset = [-1, -1, 0, 0, 0];
 
     private bool _hideOnMaxWindow = false;
     private double _opacity = 0.5;
     private bool _isDebugEnabled = false;
     private string _selectedProfile = "Default.json";
+    private bool _isMainWindowVisible = true;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
     private Dictionary<string, string> _releaseChannels = new()
@@ -186,6 +189,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _mainWindowBodyFontSize = 16;
     private double _mainWindowEmphasizedFontSize = 18;
     private double _mainWindowLargeFontSize = 20;
+    private bool _isErrorLoadingRawInput = false;
+    private bool _isCustomForegroundColorEnabled = false;
+    private Color _customForegroundColor = Colors.DodgerBlue;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -199,6 +205,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _selectedProfile) return;
             _selectedProfile = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMainWindowVisible
+    {
+        get => _isMainWindowVisible;
+        set
+        {
+            if (value == _isMainWindowVisible) return;
+            _isMainWindowVisible = value;
             OnPropertyChanged();
         }
     }
@@ -234,6 +251,30 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_singleWeekStartTime)) return;
             _singleWeekStartTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 以 2022/4/18 为基准周的多周轮换周数。
+    /// </summary>
+    /// <remarks>
+    /// 第 2 位 - 双周轮换<br/>
+    /// 第 3 位 - 三周轮换<br/>
+    /// ……<br/>
+    /// <br/>
+    /// 0 - 基准周是单周<br/>
+    /// 1 - 基准周是双周<br/>
+    /// 2 - 基准周是 3/x 周<br/>
+    /// ……<br/>
+    /// </remarks>
+    public ObservableCollection<int> MultiWeekRotationOffset
+    {
+        get => _multiWeekRotationOffset;
+        set
+        {
+            if (value.Equals(_multiWeekRotationOffset)) return;
+            _multiWeekRotationOffset = value;
             OnPropertyChanged();
         }
     }
@@ -887,6 +928,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool IsCustomForegroundColorEnabled
+    {
+        get => _isCustomForegroundColorEnabled;
+        set
+        {
+            if (value == _isCustomForegroundColorEnabled) return;
+            _isCustomForegroundColorEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Color CustomForegroundColor
+    {
+        get => _customForegroundColor;
+        set
+        {
+            if (value.Equals(_customForegroundColor)) return;
+            _customForegroundColor = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Components
@@ -1503,6 +1566,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isCompatibleWindowTransparentEnabled) return;
             _isCompatibleWindowTransparentEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public bool IsErrorLoadingRawInput
+    {
+        get => _isErrorLoadingRawInput;
+        set
+        {
+            if (value == _isErrorLoadingRawInput) return;
+            _isErrorLoadingRawInput = value;
             OnPropertyChanged();
         }
     }

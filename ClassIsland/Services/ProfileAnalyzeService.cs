@@ -158,8 +158,12 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         return mermaid.ToString();
     }
 
-    public void Walk(AttachableObjectNode node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit=false)
+    public void Walk(AttachableObjectNode? node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit=false)
     {
+        if (node == null)
+        {
+            return;
+        }
         if (!foundNodes.Contains(node) && !isInit)
         {
             foundNodes.Add(node);
@@ -182,7 +186,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
         return [.. results.Where(x =>
             {
-                if (x.Object.AttachedObjects.TryGetValue(id, out var obj))
+                if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
                 {
                     return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
                 }
@@ -199,7 +203,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
         return [.. results.Where(x =>
             {
-                if (x.Object.AttachedObjects.TryGetValue(id, out var obj))
+                if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
                 {
                     return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
                 }

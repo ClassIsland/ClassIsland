@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿#if !NETFRAMEWORK
+using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Shared;
+
 
 /// <summary>
 /// 应用主机接口
@@ -44,3 +46,5 @@ public interface IAppHost
         return (T?)Host?.Services.GetService(typeof(T));
     }
 }
+
+#endif

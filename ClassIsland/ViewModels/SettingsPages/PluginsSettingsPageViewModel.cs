@@ -13,6 +13,7 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
     private PluginIndexInfo? _selectedPluginIndexInfo;
     private int _pluginCategoryIndex = 1;
     private string _pluginFilterText = "";
+    private bool _isLoadingDocument = false;
 
     public PluginInfo? SelectedPluginInfo
     {
@@ -87,6 +88,17 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
         {
             if (value == _pluginFilterText) return;
             _pluginFilterText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsLoadingDocument
+    {
+        get => _isLoadingDocument;
+        set
+        {
+            if (value == _isLoadingDocument) return;
+            _isLoadingDocument = value;
             OnPropertyChanged();
         }
     }

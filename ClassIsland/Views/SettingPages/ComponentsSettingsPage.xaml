@@ -11,6 +11,8 @@
       xmlns:dd="urn:gong-wpf-dragdrop"
       xmlns:controls2="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
       xmlns:controls3="clr-namespace:ClassIsland.Controls"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ComponentsSettingsPage"
@@ -40,6 +42,9 @@
                 <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0" CommandParameter="{x:Null}"/>
             </StackPanel>
         </StackPanel>
+
+        <ci:RulesetControl x:Key="RulesetControl" />
+
     </controls:SettingsPageBase.Resources>
     <Grid Margin="8 0">
         <Grid.RowDefinitions>
@@ -232,7 +237,113 @@
                                                   IsPresentingSettings="True"/>
                 </TabItem>
                 <TabItem Header="高级设置" Visibility="{Binding ViewModel.IsComponentAdvancedSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <ContentPresenter Content="{Binding ViewModel.SelectedComponentSettings}">
+                        <ContentPresenter.ContentTemplate>
+                            <DataTemplate DataType="{x:Type components:ComponentSettings}">
+                                <ScrollViewer>
+                                    <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                                        <!-- 按规则隐藏 -->
+                                        <controls2:SettingsCard IconGlyph="HideOutline"
+                                                                Header="按规则隐藏"
+                                                                Description="在指定规则满足时，自动隐藏此组件。注意此处的隐藏不会释放组件资源。"
+                                                                Margin="0 0 0 6">
+                                            <controls2:SettingsCard.Switcher>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button HorizontalAlignment="Left"
+                                                            Style="{StaticResource MaterialDesignFlatButton}"
+                                                            Click="ButtonOpenRuleset_OnClick"
+                                                            Visibility="{Binding HideOnRule, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                        <controls2:IconText Kind="TagMultipleOutline" Text="编辑规则集…" />
+                                                    </Button>
+                                                    <ToggleButton VerticalAlignment="Center"
+                                                                  IsChecked="{Binding HideOnRule}" />
+                                                </StackPanel>
+                                            </controls2:SettingsCard.Switcher>
+                                        </controls2:SettingsCard>
 
+                                        <Separator Margin="0 16 0 8" />
+                                        <controls2:IconText Kind="FormatFont" Text="字体" Margin="0 0 0 8" />
+                                        <!-- 字体大小 -->
+                                        <materialDesign:Card Margin="0 0 0 6">
+                                            <Expander Background="Transparent"
+                                                      IsExpanded="{Binding IsResourceOverridingEnabled, Mode=OneWay}"
+                                                      TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                <Expander.Header>
+                                                    <controls2:SettingsControl IconGlyph="FontSize"
+                                                                               Foreground="{DynamicResource MaterialDesignBody}"
+                                                                               Header="字体大小"
+                                                                               Description="调整组件上各类字体的大小，将覆盖在【外观】中的设置。"
+                                                                               IsOn="{Binding IsResourceOverridingEnabled, Mode=TwoWay}"
+                                                                               Margin="-12 0" />
+                                                </Expander.Header>
+                                                <Grid Margin="36 0 48 12" IsEnabled="{Binding IsResourceOverridingEnabled, Mode=OneWay}">
+                                                    <Grid.Resources>
+                                                        <Style TargetType="controls2:NumbericTextBox"
+                                                               BasedOn="{StaticResource MaterialDesignTextBoxBase}">
+                                                            <Setter Property="Width" Value="100" />
+                                                            <Setter
+                                                                Property="materialDesign:TextFieldAssist.SuffixText"
+                                                                Value="px" />
+                                                            <Setter Property="MinValue" Value="1" />
+                                                            <Setter Property="MaxValue" Value="40" />
+                                                        </Style>
+                                                    </Grid.Resources>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                        <RowDefinition />
+                                                    </Grid.RowDefinitions>
+                                                    <TextBlock Grid.Column="0" Grid.Row="0" Text="次级字体大小（时间点附加信息）"
+                                                               Margin="0 0 0 6" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="0" Grid.Row="1" Text="正文字体大小（主界面）"
+                                                               Margin="0 0 0 6" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="0" Grid.Row="2"
+                                                               Text="强调字体大小（课程表、时钟、提醒标题、天气预报）" Margin="0 0 0 6"
+                                                               VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="0" Grid.Row="3" Text="大号字体大小（课程预报）"
+                                                               Margin="0 0 0 6" VerticalAlignment="Center" />
+
+                                                    <controls2:NumbericTextBox
+                                                        Grid.Column="1" Grid.Row="0"
+                                                        Text="{Binding MainWindowSecondaryFontSize, Converter={StaticResource IntToStringConverter}}" />
+                                                    <controls2:NumbericTextBox
+                                                        Grid.Column="1" Grid.Row="1"
+                                                        Text="{Binding MainWindowBodyFontSize, Converter={StaticResource IntToStringConverter}}" />
+                                                    <controls2:NumbericTextBox
+                                                        Grid.Column="1" Grid.Row="2"
+                                                        Text="{Binding MainWindowEmphasizedFontSize, Converter={StaticResource IntToStringConverter}}" />
+                                                    <controls2:NumbericTextBox
+                                                        Grid.Column="1" Grid.Row="3"
+                                                        Text="{Binding MainWindowLargeFontSize, Converter={StaticResource IntToStringConverter}}" />
+                                                </Grid>
+                                            </Expander>
+                                        </materialDesign:Card>
+                                        <!-- 字体颜色 -->
+                                        <controls2:SettingsCard IconGlyph="FormatColorFill"
+                                                                Header="字体颜色"
+                                                                Description="调整字体颜色，将覆盖在【外观】中的设置。"
+                                                                Margin="0 0 0 6">
+                                            <controls2:SettingsCard.Switcher>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ci:ColorPicker VerticalAlignment="Center"
+                                                                    Margin="0 0 6 0"
+                                                                    Color="{Binding ForegroundColor, Mode=TwoWay}"
+                                                                    Visibility="{Binding IsCustomForegroundColorEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                                    <ToggleButton VerticalAlignment="Center"
+                                                                  IsChecked="{Binding IsCustomForegroundColorEnabled}" />
+                                                </StackPanel>
+                                            </controls2:SettingsCard.Switcher>
+                                        </controls2:SettingsCard>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </DataTemplate>
+                        </ContentPresenter.ContentTemplate>
+                    </ContentPresenter>
                 </TabItem>
             </TabControl>
         </Grid>

@@ -1,0 +1,49 @@
+<UserControl x:Class="ClassIsland.Core.Controls.TimeRuleEditControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300"
+             Loaded="TimeRuleEditControl_OnLoaded">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TimeRuleEditControl}}">
+        <StackPanel DataContext="{Binding TimeRule}">
+            <Separator Margin="0 20 0 8" />
+            <local:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
+            <!--<TextBlock Text="{Binding}"/>-->
+            <TextBlock Text="课表只有在规则全部满足时才会生效。" TextWrapping="Wrap" />
+
+            <TextBlock Text="当今天是：" Margin="0 8 0 0" />
+            <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                     SelectedIndex="{Binding WeekDay}"
+                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                <ListBoxItem Content="周日" />
+                <ListBoxItem Content="周一" />
+                <ListBoxItem Content="周二" />
+                <ListBoxItem Content="周三" />
+                <ListBoxItem Content="周四" />
+                <ListBoxItem Content="周五" />
+                <ListBoxItem Content="周六" />
+            </ListBox>
+
+            <TextBlock Text="当本周是：" Margin="0 8 0 0" />
+            <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                     ItemsSource="{Binding WeekCountDivs}"
+                     SelectedIndex="{Binding WeekCountDiv}"
+                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel"/>
+
+            <TextBlock Text="每轮周数：" Margin="0 8 0 0"/>
+            <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                     SelectedIndex="{Binding WeekCountDivTotal}"
+                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                <ListBoxItem Visibility="Collapsed"/>
+                <ListBoxItem Visibility="Collapsed" />
+                <ListBoxItem Content="两周" />
+                <ListBoxItem Content="三周" />
+                <ListBoxItem Content="四周" />
+            </ListBox>
+
+        </StackPanel>
+    </StackPanel>
+</UserControl>

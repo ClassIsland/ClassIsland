@@ -49,6 +49,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
 
+    public IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
+
     public MainViewModel MainViewModel
     {
         get;
@@ -600,8 +602,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        //MainViewModel.TemporaryClassPlanSetupTime = DateTime.Now;
-        ProfileService.Profile.TempClassPlanSetupTime = DateTime.Now;
+        //MainViewModel.TemporaryClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
+        ProfileService.Profile.TempClassPlanSetupTime = ExactTimeService.GetCurrentLocalDateTime();
     }
 
     private void TabControlSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -911,13 +913,6 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.IsDragEntering = false;
     }
 
-    private void ButtonHelp_OnClick(object sender, RoutedEventArgs e)
-    {
-        App.GetService<MainWindow>().OpenHelpsWindow();
-        App.GetService<HelpsWindow>().InitDocumentName = "档案设置";
-        App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "档案设置";
-    }
-
     private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
     {
         ProfileService.SaveProfile();
@@ -1020,5 +1015,29 @@ public partial class ProfileSettingsWindow : MyWindow
         details.ViewModel.ClassPlan = ViewModel.SelectedClassPlan;
         details.Owner = this;
         details.ShowDialog();
+    }
+
+    private void MultiWeekRotation_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        // LessonsService.RefreshMultiWeekRotation();
+    }
+
+    private void MultiWeekRotation_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        
+    }
+
+    private void ButtonOpenWeekOffsetSettings_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsWeekOffsetSettingsOpen = true;
+    }
+
+    private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is not Button)
+        {
+            return;
+        }
+        ViewModel.IsWeekOffsetSettingsOpen = false;
     }
 }

@@ -100,10 +100,10 @@ public partial class ClassChangingWindow : MyWindow
         if (ViewModel.IsSwapMode)
         {
             var bI = GetSubjectIndex(ViewModel.SwapModeTargetIndex);
-            var a = cp.Classes[aI];
-            var b = cp.Classes[bI];
-            cp.Classes[aI] = b;
-            cp.Classes[bI] = a;
+            var a = cp.Classes[aI].SubjectId;
+            var b = cp.Classes[bI].SubjectId;
+            cp.Classes[aI].SubjectId = b;
+            cp.Classes[bI].SubjectId = a;
         }
         else
         {
@@ -111,10 +111,8 @@ public partial class ClassChangingWindow : MyWindow
             {
                 return;
             }
-            cp.Classes[aI] = new ClassInfo()
-            {
-                SubjectId = ViewModel.TargetSubjectIndex
-            };
+
+            cp.Classes[aI].SubjectId = ViewModel.TargetSubjectIndex;
         }
 
         ProfileService.SaveProfile();

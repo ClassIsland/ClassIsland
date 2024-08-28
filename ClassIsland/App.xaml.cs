@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -55,14 +56,13 @@ using System.Xml.Linq;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Models.Ruleset;
-using ClassIsland.Services.Grpc;
 using ClassIsland.Shared.IPC;
-using ClassIsland.Shared.IPC.Protobuf.Client;
-using GrpcDotNetNamedPipes;
 using Sentry;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Models.Rules;
 using ClassIsland.Controls.RuleSettingsControls;
+using ClassIsland.Shared.IPC.Abstractions.Services;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 
 namespace ClassIsland;
 /// <summary>
@@ -164,12 +164,16 @@ public partial class App : AppBase, IAppHost
         System.Windows.Forms.Application.EnableVisualStyles();
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
-        if (IsAssetsTrimmed())
-        {
-            Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
-        }
+        //if (IsAssetsTrimmed())
+        //{
+        //    Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");
+        //}
 
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
+
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-Hans-CN");
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-Hans-CN");
+        FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag)));
 
         // 检测Mutex
         if (!IsMutexCreateNew)
@@ -229,7 +233,7 @@ public partial class App : AppBase, IAppHost
                 FileName = ApplicationCommand.UpdateReplaceTarget,
                 ArgumentList = { "-udt", Environment.ProcessPath!, "-m", "true" }
             });
-            Restart();
+            Stop();
             return;
         }
         if (ApplicationCommand.UpdateDeleteTarget != null)
@@ -273,7 +277,6 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILessonsService, LessonsService>();
                 services.AddSingleton<IUriNavigationService, UriNavigationService>();
                 services.AddHostedService<MemoryWatchDogService>();
-                services.AddSingleton(new NamedPipeServer(IpcClient.PipeName));
                 services.AddSingleton<IPluginService, PluginService>();
                 services.AddSingleton<IPluginMarketService, PluginMarketService>();
                 services.AddSingleton<IRulesetService, RulesetService>();
@@ -307,10 +310,10 @@ public partial class App : AppBase, IAppHost
                 }));
                 services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
+                services.AddSingleton<IIpcService, IpcService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
-                services.AddSingleton<HelpsWindow>();
                 services.AddTransient<FeatureDebugWindow>();
                 services.AddSingleton<TopmostEffectWindow>();
                 services.AddSingleton<AppLogsWindow>();
@@ -349,10 +352,6 @@ public partial class App : AppBase, IAppHost
                 services.AddHostedService<AfterSchoolNotificationProvider>();
                 services.AddHostedService<WeatherNotificationProvider>();
                 services.AddHostedService<ManagementNotificationProvider>();
-                // 简略信息提供方
-                services.AddHostedService<DateMiniInfoProvider>();
-                services.AddHostedService<WeatherMiniInfoProvider>();
-                services.AddHostedService<CountDownMiniInfoProvider>();
                 // Transients
                 services.AddTransient<ExcelImportWindow>();
                 services.AddTransient<WallpaperPreviewWindow>();
@@ -370,8 +369,6 @@ public partial class App : AppBase, IAppHost
                     builder.SetMinimumLevel(LogLevel.Trace);
 #endif
                 });
-                // Grpc
-                services.AddGrpcService<RemoteUriNavigationService>();
                 // AttachedSettings
                 services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
@@ -493,6 +490,8 @@ public partial class App : AppBase, IAppHost
         mw.StartupCompleted += (o, args) =>
         {
             AppStarted?.Invoke(this, EventArgs.Empty);
+            GetService<IIpcService>().IpcProvider.StartServer();
+            GetService<IIpcService>().JsonRoutedProvider.StartServer();
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);
@@ -509,11 +508,10 @@ public partial class App : AppBase, IAppHost
         uriNavigationService.HandleAppNavigation("test", args => CommonDialog.ShowInfo($"测试导航：{args.Uri}"));
         uriNavigationService.HandleAppNavigation("settings", args => GetService<SettingsWindowNew>().OpenUri(args.Uri));
         uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
-        uriNavigationService.HandleAppNavigation("helps", args => GetService<MainWindow>().OpenHelpsWindow());
+        uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/zh-cn/latest/app/")));
         uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
 
-        IAppHost.Host.BindGrpcServices();
-        GetService<NamedPipeServer>().Start();
+        GetService<IIpcService>().IpcProvider.CreateIpcJoint<IFooService>(new FooService());
         try
         {
             await App.GetService<FileFolderService>().ProcessAutoBackupAsync();
@@ -613,10 +611,7 @@ public partial class App : AppBase, IAppHost
             try
             {
                 IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
-                IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
                 IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
-                IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
-                IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
                 ReleaseLock();
                 var args = new List<string> {"-m", "-udt", Environment.ProcessPath!.Replace(".dll", ".exe")};
                 foreach (var i in new[]
@@ -738,9 +733,8 @@ public partial class App : AppBase, IAppHost
         {
             AppStopping?.Invoke(this, EventArgs.Empty);
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
-            IAppHost.Host?.Services.GetService<NamedPipeServer>()?.Kill();
             IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
-            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings();
+            IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
             Current.Shutdown();
             try

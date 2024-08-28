@@ -28,7 +28,8 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         PluginService.PluginsPkgRootPath,
         PluginService.PluginsRootPath,
         PluginService.PluginConfigsFolderPath,
-        PluginService.PluginsIndexPath
+        PluginService.PluginsIndexPath,
+        "./Backups"
     };
 
     public static void CreateFolders()
@@ -187,11 +188,19 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         {
             foreach (var i in backupFiles)
             {
+                if (!Path.Exists(Path.Combine(rootPath, i)))
+                {
+                    continue;
+                }
                 File.Copy(Path.Combine(rootPath, i), Path.Combine(backupTarget, i));
             }
 
             foreach (var i in backupFolders)
             {
+                if (!Path.Exists(Path.Combine(rootPath, i)))
+                {
+                    continue;
+                }
                 CopyFolder(Path.Combine(rootPath, i), Path.Combine(backupTarget, i));
             }
         });

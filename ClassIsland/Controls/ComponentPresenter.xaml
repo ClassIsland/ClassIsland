@@ -6,5 +6,6 @@
              xmlns:local="clr-namespace:ClassIsland.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <ContentPresenter Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+    <ContentPresenter x:Name="MainContentPresenter"
+                      Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
 </UserControl>

@@ -80,8 +80,8 @@
             <materialDesign:Card Padding="12 10 16 10">
                 <StackPanel>
                     <ci:SettingsControl IconGlyph="BackupRestore"
-                                        Header="备份"
-                                        Description="立即进行备份。备份的内容包括 Config/ 文件夹内的配置文件、 Profiles/ 文件夹内的档案文件和 Settings.json 设置文件。手动备份产生的备份文件不会被自动清除。"
+                                        Header="手动备份"
+                                        Description="进行手动备份。备份的内容包括 Config/ 文件夹内的配置文件、 Profiles/ 文件夹内的档案文件和 Settings.json 设置文件。手动备份产生的备份文件不会被自动清除。"
                                         Margin="0 0 0 6"
                                         HasSwitcher="False"/>
                     <WrapPanel>

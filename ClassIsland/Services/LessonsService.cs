@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -6,8 +7,11 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
 using ClassIsland.Models.Rules;
 using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.IPC;
+using ClassIsland.Shared.IPC.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Microsoft.Extensions.Logging;
 using Sentry;
 
@@ -31,6 +35,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private bool _isLessonConfirmed = false;
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
     private TimeLayoutItem _nextClassTimeLayoutItem = new();
+    private ObservableCollection<int> _multiWeekRotation = [-1, -1, 1, 1, 1];
 
     private DispatcherTimer MainTimer
     {
@@ -133,6 +138,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
         get => _onBreakingTimeLeftTime;
         set => SetProperty(ref _onBreakingTimeLeftTime, value);
     }
+    public ObservableCollection<int> MultiWeekRotation
+    {
+        get => _multiWeekRotation;
+        set => SetProperty(ref _multiWeekRotation, value);
+    }
 
     public event EventHandler? OnClass;
     public event EventHandler? OnBreakingTime;
@@ -165,13 +175,15 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private ILogger<LessonsService> Logger { get; }
 
     private IExactTimeService ExactTimeService { get; }
+
     public IRulesetService RulesetService { get; }
+    public IIpcService IpcService { get; }
 
     private Profile Profile => ProfileService.Profile;
 
     private Settings Settings => SettingsService.Settings;
 
-    public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService)
+    public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService, IIpcService ipcService)
     {
         MainTimer.Tick += MainTimerOnTick;
         SettingsService = settingsService;
@@ -179,7 +191,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
         Logger = logger;
         ExactTimeService = exactTimeService;
         RulesetService = rulesetService;
+        IpcService = ipcService;
 
+        IpcService.IpcProvider.CreateIpcJoint<IPublicLessonsService>(this);
         RulesetService.RegisterRuleHandler("classisland.lessons.timeState", TimeStateHandler);
         RulesetService.RegisterRuleHandler("classisland.lessons.currentSubject", CurrentSubjectHandler);
         CurrentTimeStateChanged += (sender, args) => RulesetService.NotifyStatusChanged();
@@ -190,6 +204,17 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 RulesetService.NotifyStatusChanged();
             }
         };
+
+
+        CurrentTimeStateChanged += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.CurrentTimeStateChangedNotifyId);
+        OnClass += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnClassNotifyId);
+        OnBreakingTime += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnBreakingTimeNotifyId);
+        OnAfterSchool += async (_, _) =>
+            await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnAfterSchoolNotifyId);
+
         StartMainTimer();
     }
 
@@ -371,6 +396,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void LoadCurrentClassPlan()
     {
         ProfileService.Profile.RefreshTimeLayouts();
+        RefreshMultiWeekRotation();
         if (Profile.TempClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
         {
             Profile.TempClassPlanId = null;
@@ -450,17 +476,25 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        var dd = ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date;
-        var dw = Math.Floor(dd.TotalDays / 7) + 1;
-        var w = (int)dw % 2;
-        switch (plan.TimeRule.WeekCountDiv)
+        if (plan.TimeRule.WeekCountDiv == 0)
+            return true;
+
+        // RefreshMultiWeekRotation();
+        return plan.TimeRule.WeekCountDiv == MultiWeekRotation[plan.TimeRule.WeekCountDivTotal];
+    }
+
+    public void RefreshMultiWeekRotation()
+    {
+        var deltaDays = (ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date).TotalDays;
+        var deltaWeeks = (int)Math.Floor(deltaDays / 7);
+        for (var i = 2; i <= 4; i++)
         {
-            case 1 when w != 1:
-                return false;
-            case 2 when w != 0:
-                return false;
-            default:
-                return true;
+            var w = (deltaWeeks - Settings.MultiWeekRotationOffset[i] + i) % i;
+            if (w < 0)
+            {
+                w += i;
+            }
+            MultiWeekRotation[i] = w + 1;
         }
     }
 

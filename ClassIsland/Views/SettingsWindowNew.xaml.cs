@@ -265,7 +265,7 @@ public partial class SettingsWindowNew : MyWindow
         e.Cancel = true;
         IsOpened = false;
         Hide();
-        SettingsService.SaveSettings();
+        SettingsService.SaveSettings(sender.ToString() + "关闭");
         ComponentsService.SaveConfig();
         GC.Collect();
     }

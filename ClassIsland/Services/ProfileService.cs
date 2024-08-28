@@ -17,6 +17,8 @@ using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
 using System.Windows.Input;
+using ClassIsland.Shared.IPC.Abstractions.Services;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
 
 namespace ClassIsland.Services;
@@ -47,14 +49,17 @@ public class ProfileService : IProfileService
     private ILogger<ProfileService> Logger { get; }
 
     private IManagementService ManagementService { get; }
+    public IIpcService IpcService { get; }
 
     private bool _isProfileLoaded = false;
 
-    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService)
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
     {
         Logger = logger;
         ManagementService = managementService;
+        IpcService = ipcService;
         SettingsService = settingsService;
+        IpcService.IpcProvider.CreateIpcJoint<IPublicProfileService>(this);
         if (!Directory.Exists("./Profiles"))
         {
             Directory.CreateDirectory("./Profiles");
@@ -236,26 +241,10 @@ public class ProfileService : IProfileService
         }
     }
 
-    public bool CheckClassPlan(ClassPlan plan)
-    {
-        if (plan.TimeRule.WeekDay != (int)DateTime.Now.DayOfWeek)
-        {
-            return false;
-        }
-
-        var dd = DateTime.Now.Date - SettingsService.Settings.SingleWeekStartTime.Date;
-        var dw = Math.Floor(dd.TotalDays / 7) + 1;
-        var w = (int)dw % 2;
-        switch (plan.TimeRule.WeekCountDiv)
-        {
-            case 1 when w != 1:
-                return false;
-            case 2 when w != 0:
-                return false;
-            default:
-                return true;
-        }
-    }
+    //[Obsolete]
+    //public bool CheckClassPlan(ClassPlan plan)
+    //{
+    //}
 
     public void ConvertToStdClassPlan()
     {
@@ -272,7 +261,6 @@ public class ProfileService : IProfileService
 
     public void SetupTempClassPlanGroup(string key, DateTime? expireTime = null)
     {
-        // TODO: 判断自定义轮换周期
         var classPlans = Profile.ClassPlans
             .Where(x => x.Value.AssociatedGroup == key)
             .Select(x => x.Value);
@@ -281,11 +269,11 @@ public class ProfileService : IProfileService
         var dayOffset = 0;
         var dd = today.Date - SettingsService.Settings.SingleWeekStartTime.Date;
         var dw = Math.Floor(dd.TotalDays / 7) + 1;
-        var w = (int)dw % 2;
         foreach (var classPlan in classPlans)
         {
+            var w = (int)dw % classPlan.TimeRule.WeekCountDivTotal;
             var baseOffset = (int)(classPlan.TimeRule.WeekDay - dow);
-            var divOffset = (classPlan.TimeRule.WeekCountDiv + 2 - w) % 2;
+            var divOffset = (classPlan.TimeRule.WeekCountDiv + classPlan.TimeRule.WeekCountDivTotal - w) % classPlan.TimeRule.WeekCountDivTotal;
             var finalOffset = baseOffset + divOffset * 7;
             if (finalOffset < 0)
             {
@@ -294,7 +282,7 @@ public class ProfileService : IProfileService
 
             dayOffset = Math.Max(finalOffset, dayOffset);
         }
-        expireTime ??= DateTime.Now + TimeSpan.FromDays(dayOffset);
+        expireTime ??= App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date + TimeSpan.FromDays(dayOffset);
 
         Profile.TempClassPlanGroupExpireTime = expireTime.Value;
         Profile.TempClassPlanGroupId = key;

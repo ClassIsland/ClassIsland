@@ -8,6 +8,7 @@ public class UpdateSettingsViewModel : ObservableRecipient
 {
     private FlowDocument _currentMarkdownDocument = new();
     private UpdateChannel _selectedChannelModel = new();
+    private FlowDocument _changeLogs = new();
 
     public FlowDocument CurrentMarkdownDocument
     {
@@ -26,6 +27,17 @@ public class UpdateSettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _selectedChannelModel)) return;
             _selectedChannelModel = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public FlowDocument ChangeLogs
+    {
+        get => _changeLogs;
+        set
+        {
+            if (Equals(value, _changeLogs)) return;
+            _changeLogs = value;
             OnPropertyChanged();
         }
     }

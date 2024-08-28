@@ -1,33 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+	  <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageTags>classisland;ipc;grpc;addin;plugin</PackageTags>
     <Description>用于的客户端与 ClassIsland 应用进行跨进程通信库。</Description>
+	  <LangVersion>12</LangVersion>
+
+	  <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+
+	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GrpcDotNetNamedPipes" Version="3.0.0" />
-    <PackageReference Include="Grpc" Version="2.46.6" />
-    <PackageReference Include="Grpc.Tools" Version="2.62.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="dotnetCampus.Ipc" Version="2.0.0-alpha410" />
+    <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha410" OutputItemType="Analyzer" ReferenceOutputAssembly="false">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>analyzers</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
+    <!--<ProjectReference Include="..\analyzers\dotnetCampus.Ipc.SourceGenerators\dotnetCampus.Ipc.SourceGenerators.csproj" />-->
     <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="Protobuf\Service\*.proto" />
-    <Protobuf Include="Protobuf\Server\*.proto" />
-    <Protobuf Include="Protobuf\Client\*.proto" />
-    <Protobuf Include="Protobuf\Command\*.proto" />
-    <Protobuf Include="Protobuf\Enum\*.proto" />
-    <Protobuf Include="Protobuf\Management\*.proto" />
   </ItemGroup>
 
   <Import Project="..\GeneratePackage.props" />

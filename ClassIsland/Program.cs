@@ -5,9 +5,11 @@ using System.CommandLine.NamingConventionBinder;
 using System.CommandLine;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using ClassIsland;
-using ClassIsland.Shared.IPC.Protobuf.Client;
 using ClassIsland.Shared.IPC;
+using ClassIsland.Shared.IPC.Abstractions.Services;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
 
 Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
@@ -47,7 +49,7 @@ if (!createNew)
     {
         if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
         {
-            ProcessUriNavigation();
+            await ProcessUriNavigationAsync();
         }
     }
 }
@@ -102,18 +104,14 @@ app.InitializeComponent();
 app.Run();
 return;
 
-static void ProcessUriNavigation()
+static async Task ProcessUriNavigationAsync()
 {
     try
     {
         var client = new IpcClient();
-        var uriSc =
-            new ClassIsland.Shared.IPC.Protobuf.Service.UriNavigationService.UriNavigationServiceClient(
-                client.Channel);
-        uriSc.Navigate(new UriNavigationScReq()
-        {
-            Uri = App.ApplicationCommand.Uri
-        });
+        await client.Connect();
+        var uriSc = client.Provider.CreateIpcProxy<IPublicUriNavigationService>(client.PeerProxy!);
+        uriSc.Navigate(new Uri(App.ApplicationCommand.Uri));
         Environment.Exit(0);
     }
     catch

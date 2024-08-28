@@ -82,20 +82,6 @@
                             <Run Text=" "/>
                             <Run Text="{Binding Manifest.Author}"/>
                         </TextBlock>
-                        <!-- Market Operations -->
-                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
-                                   Margin="0 0 0 4">
-                            <WrapPanel.Visibility>
-                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
-                                    <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
-                                    <Binding Path="IsAvailableOnMarket"/>
-                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
-                                </MultiBinding>
-                            </WrapPanel.Visibility>
-                            <Button Click="ButtonInstallPlugin_OnClick">
-                                <ci:IconText Kind="MonitorDownload" Text="安装"/>
-                            </Button>
-                        </WrapPanel>
                         <!-- Local Operations -->
                         <WrapPanel Orientation="Horizontal" 
                                    Margin="0 0 0 4"
@@ -142,6 +128,34 @@
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
+                        </WrapPanel>
+                        <!-- Market Operations -->
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                   Margin="0 0 0 4">
+                            <WrapPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                    <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
+                                    <Binding Path="IsAvailableOnMarket"/>
+                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
+                                </MultiBinding>
+                            </WrapPanel.Visibility>
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="MonitorDownload" Text="安装"/>
+                            </Button>
+                        </WrapPanel>
+                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                   Margin="0 0 0 4">
+                            <WrapPanel.Visibility>
+                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                    <Binding Path="IsLocal" />
+                                    <Binding Path="IsUpdateAvailable" />
+                                    <Binding Path="IsAvailableOnMarket"/>
+                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
+                                </MultiBinding>
+                            </WrapPanel.Visibility>
+                            <Button Click="ButtonInstallPlugin_OnClick">
+                                <ci:IconText Kind="Upload" Text="更新"/>
+                            </Button>
                         </WrapPanel>
                         <WrapPanel Orientation="Horizontal" Margin="0 0 0 4"
                                    Visibility="{Binding RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -194,48 +208,56 @@
                 <TabControl Grid.Row="1" HorizontalContentAlignment="Left">
                     <TabItem Header="概览">
                         <ScrollViewer>
-                            <mdxaml:MarkdownScrollViewer Document="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}"
-                                                                         FontFamily="{StaticResource HarmonyOsSans}"
-                                                                         FontWeight="Normal"
-                                                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                                                         ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                                                         HorizontalContentAlignment="Stretch"
-                                                                         IsSelectionEnabled="False"
-                                                                         ScrollViewer.CanContentScroll="True"
-                                                                         IsToolBarVisible="False"
-                                                                         Zoom="90"
-                                                                         Padding="0"
-                                                                         ScrollViewer.PanningMode="None"
-                                                                         ToolTipService.Placement="MousePoint">
-                                <mdxaml:MarkdownScrollViewer.Resources>
-                                    <Style TargetType="ScrollViewer"
-                                                           BasedOn="{StaticResource MaterialDesignScrollViewer}">
-                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
-                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
-                                        <Setter Property="CanContentScroll" Value="True" />
-                                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-                                    </Style>
-                                    <Style TargetType="Hyperlink">
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Foreground"
-                                                                        Value="{DynamicResource PrimaryHueLightBrush}">
-                                                </Setter>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Foreground"
-                                                                Value="{DynamicResource PrimaryHueMidBrush}" />
-                                        <Setter Property="ToolTipService.Placement" Value="Mouse" />
-                                    </Style>
-                                </mdxaml:MarkdownScrollViewer.Resources>
-                                <mdxaml:MarkdownScrollViewer.Style>
-                                    <Style TargetType="mdxaml:MarkdownScrollViewer">
-                                        <Style.Resources>
+                            <Grid>
+                                <mdxaml:MarkdownScrollViewer
+                                    Document="{Binding ViewModel.ReadmeDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}}"
+                                    FontFamily="{StaticResource HarmonyOsSans}"
+                                    FontWeight="Normal"
+                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsSelectionEnabled="False"
+                                    ScrollViewer.CanContentScroll="True"
+                                    IsToolBarVisible="False"
+                                    Zoom="90"
+                                    Padding="0"
+                                    ScrollViewer.PanningMode="None"
+                                    ToolTipService.Placement="MousePoint">
+                                    <mdxaml:MarkdownScrollViewer.Resources>
+                                        <Style TargetType="ScrollViewer"
+                                               BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                            <Setter Property="CanContentScroll" Value="True" />
+                                            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                                        </Style>
+                                        <Style TargetType="Hyperlink">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Foreground"
+                                                            Value="{DynamicResource PrimaryHueLightBrush}">
+                                                    </Setter>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                            <Setter Property="Foreground"
+                                                    Value="{DynamicResource PrimaryHueMidBrush}" />
+                                            <Setter Property="ToolTipService.Placement" Value="Mouse" />
+                                        </Style>
+                                    </mdxaml:MarkdownScrollViewer.Resources>
+                                    <mdxaml:MarkdownScrollViewer.Style>
+                                        <Style TargetType="mdxaml:MarkdownScrollViewer">
+                                            <Style.Resources>
 
-                                        </Style.Resources>
-                                    </Style>
-                                </mdxaml:MarkdownScrollViewer.Style>
-                            </mdxaml:MarkdownScrollViewer>
+                                            </Style.Resources>
+                                        </Style>
+                                    </mdxaml:MarkdownScrollViewer.Style>
+                                </mdxaml:MarkdownScrollViewer>
+                                <ProgressBar Visibility="{Binding ViewModel.IsLoadingDocument, RelativeSource={RelativeSource FindAncestor, AncestorType=local:PluginsSettingsPage}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                             VerticalAlignment="Top"
+                                             Height="3"
+                                             materialDesign:TransitionAssist.DisableTransitions="True"
+                                             IsIndeterminate="True"/>
+                            </Grid>
                         </ScrollViewer>
                     </TabItem>
                     <TabItem Header="错误信息">
@@ -545,6 +567,12 @@
                                                 </Style>
                                             </materialDesign:PackIcon.Style>
                                         </materialDesign:PackIcon>
+                                        <materialDesign:PackIcon ToolTip="更新可用。"
+                                                                 Width="20" Height="20"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="2 0 0 0"
+                                                                 Kind="Upload"/>
                                         <materialDesign:PackIcon ToolTip="此插件已安装。"
                                                                  Width="20" Height="20"
                                                                  VerticalAlignment="Center"

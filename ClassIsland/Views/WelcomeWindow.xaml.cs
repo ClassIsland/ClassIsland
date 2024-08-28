@@ -88,7 +88,7 @@ public partial class WelcomeWindow : MyWindow
         {
             App.GetService<ILogger<WelcomeWindow>>().LogError(ex, "无法创建快捷方式。");
         }
-        
+
         Close();
         if (ViewModel.RequiresRestarting)
         {
@@ -114,16 +114,6 @@ public partial class WelcomeWindow : MyWindow
             ViewModel.IsExitConfirmed = true;
             Close();
         }
-    }
-
-    private void ButtonViewHelp_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.IsExitConfirmed = true;
-        DialogResult = true;
-        Close();
-
-        var mw = (MainWindow)Application.Current.MainWindow!;
-        mw.OpenHelpsWindow();
     }
 
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)

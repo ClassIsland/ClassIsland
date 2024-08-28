@@ -3,7 +3,8 @@
                     xmlns:gif="http://wpfanimatedgif.codeplex.com"
                     xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
                     xmlns:extensions="clr-namespace:ClassIsland.Core.Extensions;assembly=ClassIsland.Core"
-                    xmlns:navHyperlink="clr-namespace:ClassIsland.Core.Controls.NavHyperlink">
+                    xmlns:navHyperlink="clr-namespace:ClassIsland.Core.Controls.NavHyperlink"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Style x:Key="MarkdownParagraphBaseStyle" TargetType="Paragraph">
         <Setter Property="LineHeight" Value="24"/>
         <Setter Property="FontWeight" Value="Regular"/>
@@ -22,12 +23,13 @@
         <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}"/>
     </Style>
 
+    <system:Double x:Key="MarkdownImageMaxWidth">700</system:Double>
     <Style x:Key="MarkdownImageStyle" TargetType="Image">
         <Setter Property="Stretch" Value="UniformToFill"/>
         
         <Setter Property="Margin" Value="0 0"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="MaxWidth" Value="700"/>
+        <Setter Property="MaxWidth" Value="{DynamicResource MarkdownImageMaxWidth}"/>
         <Setter Property="gif:ImageBehavior.AutoStart" Value="True"/>
         <Setter Property="gif:ImageBehavior.AnimationSpeedRatio" Value="1"/>
     </Style>

@@ -12,6 +12,7 @@ public class ClassInfo : AttachableSettingsObject
     private string _subjectId = "";
     private int _index = 0;
     private TimeLayout _currentTimeLayout = new();
+    private bool _isChangedClass = false;
 
     /// <summary>
     /// 课程在课程表中的位置
@@ -61,6 +62,21 @@ public class ClassInfo : AttachableSettingsObject
         {
             if (value == _subjectId) return;
             _subjectId = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 课程是否是临时换课课程
+    /// </summary>
+    [JsonIgnore]
+    public bool IsChangedClass
+    {
+        get => _isChangedClass;
+        set
+        {
+            if (value == _isChangedClass) return;
+            _isChangedClass = value;
             OnPropertyChanged();
         }
     }

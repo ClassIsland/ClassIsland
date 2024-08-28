@@ -65,10 +65,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         LessonsService.OnBreakingTime += OnBreakingTime;
         LessonsService.PostMainTimerTicked += UpdateTimerTick;
         Settings = NotificationHostService.GetNotificationProviderSettings
-                       <ClassNotificationSettings>(ProviderGuid)
-                   ?? new ClassNotificationSettings();
+                       <ClassNotificationSettings>(ProviderGuid);
         SettingsElement = new ClassNotificationProviderSettingsControl(Settings);
-        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
 
         var item = typeof(ClassNotificationAttachedSettingsControl);
     }

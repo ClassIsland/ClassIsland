@@ -21,7 +21,7 @@ namespace ClassIsland.Controls;
 /// <summary>
 /// LessonControl.xaml 的交互逻辑
 /// </summary>
-[Obsolete("LessonControl is obsolete. Use LessonControlExpanded instead.")]
+[Obsolete("LessonControl is obsolete. Use LessonListBox instead.")]
 public partial class LessonControl : UserControl, INotifyPropertyChanged
 {
     public static Subject BreakingSubject

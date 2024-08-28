@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿#if !NETFRAMEWORK
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Notification;
 
@@ -199,3 +200,4 @@ public class NotificationRequest : ObservableRecipient
 
     internal int PriorityOverride { get; set; } = -1;
 }
+#endif

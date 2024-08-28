@@ -63,9 +63,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         NotificationHostService.RegisterNotificationProvider(this);
 
         Settings = NotificationHostService.GetNotificationProviderSettings
-                       <WeatherNotificationProviderSettings>(ProviderGuid)
-                   ?? new WeatherNotificationProviderSettings();
-        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, Settings);
+                       <WeatherNotificationProviderSettings>(ProviderGuid);
         SettingsElement = new WeatherNotificationProviderSettingsControl(Settings);
 
         LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;

@@ -181,6 +181,20 @@
                     <StackPanel Margin="36 0 48 12"
                                 IsEnabled="{Binding SettingsService.Settings.IsMouseInFadingEnabled}">
                         <StackPanel>
+                            <materialDesign:ColorZone Background="#22FF0000"
+                                                      Visibility="{Binding SettingsService.Settings.IsErrorLoadingRawInput, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                      Margin="0 0 0 4">
+                                <Grid>
+                                    <DockPanel Margin="8 4 4 4">
+                                        <materialDesign:PackIcon Kind="ErrorOutline"
+                                                                 Margin="0 0 4 0"
+                                                                 VerticalAlignment="Center"/>
+                                        <TextBlock Text="初始化 RawInput 失败，将使用兼容模式判断光标位置。详细请查看日志。"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Grid>
+                            </materialDesign:ColorZone>
                             <!-- 使用原始输入 -->
                             <ci:SettingsControl IconGlyph="Input"
                                                     IsCompact="True"

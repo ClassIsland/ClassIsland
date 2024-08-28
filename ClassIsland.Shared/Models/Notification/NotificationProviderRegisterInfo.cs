@@ -1,4 +1,5 @@
-﻿using ClassIsland.Shared.Interfaces;
+﻿#if !NETFRAMEWORK
+using ClassIsland.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Notification;
@@ -32,3 +33,4 @@ public class NotificationProviderRegisterInfo(INotificationProvider providerInst
     /// </summary>
     public NotificationSettings ProviderSettings { get; set; } = new();
 }
+#endif

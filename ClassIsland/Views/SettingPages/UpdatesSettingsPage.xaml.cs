@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.AppUpdating;
@@ -25,6 +26,7 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
+using Sentry;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -162,11 +164,18 @@ public partial class UpdatesSettingsPage : SettingsPageBase
         }
     }
 
-    private void ButtonChangelogs_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonChangelogs_OnClick(object sender, RoutedEventArgs e)
     {
-        App.GetService<MainWindow>().OpenHelpsWindow();
-        App.GetService<HelpsWindow>().InitDocumentName = "新增功能";
-        App.GetService<HelpsWindow>().ViewModel.SelectedDocumentName = "新增功能";
+        var stream = Application
+            .GetResourceStream(new Uri("/Assets/Documents/ChangeLog.md", UriKind.RelativeOrAbsolute))?.Stream;
+        if (stream == null)
+        {
+            return;
+        }
+
+        SentrySdk.Metrics.Increment("views.update.changelog.open");
+        ViewModel.ChangeLogs = MarkdownConvertHelper.ConvertMarkdown(await new StreamReader(stream).ReadToEndAsync());
+        OpenDrawer("ChangeLogsDrawer");
     }
 
     private async void MenuItemTestUpdateMirrors_OnClick(object sender, RoutedEventArgs e)

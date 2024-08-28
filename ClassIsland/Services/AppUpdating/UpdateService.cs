@@ -20,6 +20,7 @@ using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Shared.Enums;
+using ClassIsland.Views;
 using Downloader;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -247,6 +248,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public static async Task ReplaceApplicationFile(string target)
     {
+        var progressWindow = new UpdateProgressWindow();
+        progressWindow.Show();
         if (!File.Exists(target))
         {
             return;
@@ -255,26 +258,31 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         var t = target;
         Console.WriteLine(Path.GetFullPath(t));
         Console.WriteLine(Path.GetDirectoryName(Path.GetFullPath(t)));
+        progressWindow.ProgressText = "正在备份应用数据……";
         await FileFolderService.CreateBackupAsync(filename: $"Update_Backup_{App.AppVersion}_{DateTime.Now:yy-MMM-dd_HH-mm-ss}", rootPath: Path.GetDirectoryName(Path.GetFullPath(t)) ?? ".");
-        NativeWindowHelper.WaitForFile(t);
-        File.Move(s, t, true);
+        progressWindow.ProgressText = "正在等待应用退出……";
+        await Task.Run(() => NativeWindowHelper.WaitForFile(t));
+        progressWindow.ProgressText = "正在覆盖应用文件……";
+        await Task.Run(() => File.Copy(s, t, true));
+        progressWindow.CanClose = true;
+        progressWindow.Close();
     }
 
     public static void RemoveUpdateTemporary(string target)
     {
-        if (!File.Exists(target))
+        if (File.Exists(target))
         {
-            return;
+            NativeWindowHelper.WaitForFile(target);
+            File.Delete(target);
         }
-        NativeWindowHelper.WaitForFile(target);
-        File.Delete(target);
         try
         {
             Directory.Delete("./UpdateTemp", true);
         }
-        catch (Exception)
+        catch (Exception e)
         {
             // ignored
+            Console.WriteLine(e);
         }
     }
 

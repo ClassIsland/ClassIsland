@@ -8,14 +8,25 @@ using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Models.UriNavigation;
+using ClassIsland.Shared.IPC.Abstractions.Services;
+using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ClassIsland.Services;
 
-public class UriNavigationService(ILogger<UriNavigationService> logger) : IUriNavigationService
+public class UriNavigationService : IUriNavigationService
 {
-    private ILogger<UriNavigationService> Logger { get; } = logger;
+    public UriNavigationService(ILogger<UriNavigationService> logger, IIpcService ipcService)
+    {
+        Logger = logger;
+        IpcService = ipcService;
+
+        IpcService.IpcProvider.CreateIpcJoint<IPublicUriNavigationService>(this);
+    }
+
+    private ILogger<UriNavigationService> Logger { get; }
+    public IIpcService IpcService { get; }
 
     private UriNavigationNode NavigationHandlers { get; } = new("")
     {

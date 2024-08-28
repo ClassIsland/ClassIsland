@@ -22,7 +22,6 @@
     </PropertyGroup>
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
-        <None Remove="Assets\Documents\image\Welcome\1694925761903.png" />
         <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
@@ -59,6 +58,7 @@
         <Folder Include="Models\Logging\" />
         <Folder Include="Models\TimeRules\" />
         <Folder Include="Enums\" />
+        <Folder Include="Models\Ipc\" />
     </ItemGroup>
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig" />
@@ -68,8 +68,6 @@
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
         <Resource Remove="Assets\Fonts\*.ttf" />
-        <Resource Remove="Assets\Documents\**" />
-        <Resource Include="Assets\Documents\Privacy_.md" />
 	</ItemGroup>
     <PropertyGroup Condition="'$(TrimAssets)'=='true'">
         <DefineConstants>TrimAssets</DefineConstants>
@@ -77,6 +75,18 @@
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Page Update="Themes\LightTheme.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+      <Page Update="Themes\DarkTheme.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 
 	<Import Project="..\Global.props" />
