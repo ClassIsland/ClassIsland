@@ -189,10 +189,22 @@
                                                              VerticalAlignment="Center" />
                         </StackPanel>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
-                                                           Margin="0 6 0 0"
-                                                           Text="自定义启动界面功能已被您所在的组织禁用。" Foreground="IndianRed" TextWrapping="Wrap"
-                                                           Visibility="{Binding ManagementService.Policy.DisableSplashCustomize, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <materialDesign:ColorZone Grid.Row="2"
+                                                  Grid.Column="0" Grid.ColumnSpan="2"
+                                                  Background="#22FF0000"
+                                                  Margin="0 6 0 0"
+                                                  Visibility="{Binding ManagementService.Policy.DisableSplashCustomize, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid TextElement.FontSize="13">
+                                <DockPanel Margin="8 4 4 4">
+                                    <materialDesign:PackIcon Kind="Forbid"
+                                                             Margin="0 0 4 0"
+                                                             VerticalAlignment="Center"/>
+                                    <TextBlock Text="自定义启动界面功能已被您所在的组织禁用。"
+                                               TextWrapping="Wrap"
+                                               VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Grid>
+                        </materialDesign:ColorZone>
                     </Grid>
                 </Expander>
             </materialDesign:Card>
