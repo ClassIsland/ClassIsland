@@ -184,12 +184,26 @@
                             <materialDesign:ColorZone Background="#22FF0000"
                                                       Visibility="{Binding SettingsService.Settings.IsErrorLoadingRawInput, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                       Margin="0 0 0 4">
-                                <Grid>
+                                <Grid TextElement.FontSize="13">
                                     <DockPanel Margin="8 4 4 4">
                                         <materialDesign:PackIcon Kind="ErrorOutline"
                                                                  Margin="0 0 4 0"
                                                                  VerticalAlignment="Center"/>
                                         <TextBlock Text="初始化 RawInput 失败，将使用兼容模式判断光标位置。详细请查看日志。"
+                                                   TextWrapping="Wrap"
+                                                   VerticalAlignment="Center"/>
+                                    </DockPanel>
+                                </Grid>
+                            </materialDesign:ColorZone>
+                            <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                                      Visibility="{Binding SettingsService.Settings.UseRawInput, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                      Margin="0 0 0 4">
+                                <Grid TextElement.FontSize="13">
+                                    <DockPanel Margin="8 4 4 4">
+                                        <materialDesign:PackIcon Kind="InfoCircleOutline"
+                                                                 Margin="0 0 4 0"
+                                                                 VerticalAlignment="Center"/>
+                                        <TextBlock Text="使用原始输入判断鼠标位置时，如果前台窗口的进程以管理员身份运行，可能会出现无法判定鼠标位置的情况。以管理员身份运行 ClassIsland 可以解决此问题。"
                                                    TextWrapping="Wrap"
                                                    VerticalAlignment="Center"/>
                                     </DockPanel>
