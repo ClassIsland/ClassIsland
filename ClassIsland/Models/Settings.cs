@@ -161,7 +161,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Version _lastAppVersion = new Version("0.0.0.0");
     private bool _showComponentsMigrateTip = false;
     private bool _expAllowEditingActivatedTimeLayout = false;
-    private string _directoryIsDesktopShowed = "";
     private ObservableDictionary<string, string> _pluginIndexSelectedMirrors = new();
     private ObservableCollection<string> _userPluginIndexes = new();
     private ObservableDictionary<string, string> _additionalPluginIndexes = new();
@@ -237,17 +236,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isWelcomeWindowShowed) return;
             _isWelcomeWindowShowed = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string DirectoryIsDesktopShowed
-    {
-        get => _directoryIsDesktopShowed;
-        set
-        {
-            if (value == _directoryIsDesktopShowed) return;
-            _directoryIsDesktopShowed = value;
             OnPropertyChanged();
         }
     }

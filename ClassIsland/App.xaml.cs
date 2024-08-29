@@ -207,11 +207,8 @@ public partial class App : AppBase, IAppHost
         }
 
         // 检测桌面文件夹
-        if (!ApplicationCommand.Quiet &&
-            Settings.DirectoryIsDesktopShowed != Environment.UserName &&
-            Environment.CurrentDirectory == Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory))
+        if (!Settings.IsWelcomeWindowShowed && Environment.CurrentDirectory == Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory))
         {
-            Settings.DirectoryIsDesktopShowed = Environment.UserName;
             DirectoryIsDesktop();
         }
 
@@ -637,6 +634,7 @@ public partial class App : AppBase, IAppHost
                              "Settings.json.bak",
                              @".\Profiles",
                              @".\Config",
+                             @".\Backups",
                              @".\Temp",
                              @".\Cache"
                          })
