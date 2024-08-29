@@ -358,6 +358,8 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void Subject_OnPaste(object? sender, ExecutedRoutedEventArgs e)
     {
+        if (ManagementService.Policy.DisableProfileSubjectsEditing) return;
+
         foreach (var i in Clipboard.GetText().Split("\n").Select(i => i.Replace("\r", "")).Where(i => !string.IsNullOrWhiteSpace(i)))
         {
             if (DataGridSubjects.SelectedIndex == MainViewModel.Profile.EditingSubjects.Count)
