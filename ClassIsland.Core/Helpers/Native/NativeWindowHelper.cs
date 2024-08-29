@@ -25,6 +25,8 @@ public static class NativeWindowHelper
     public const int WS_EX_TOOLWINDOW = 0x00000080;
     public const int WS_EX_TRANSPARENT = 0x20;
     public const int WS_SYSMENU = 0x80000;
+
+    public const int HWND_BROADCAST = 0xffff;
     #endregion
 
     public static bool IsForegroundFullScreen(Screen screen)

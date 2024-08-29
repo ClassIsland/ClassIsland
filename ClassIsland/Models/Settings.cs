@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
+using Windows.Win32;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -21,12 +25,13 @@ using ClassIsland.Services.AppUpdating;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Win32;
 using Octokit;
 
 using WindowsShortcutFactory;
 
 using File = System.IO.File;
+using System.Runtime.InteropServices;
 
 namespace ClassIsland.Models;
 
@@ -479,8 +484,11 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             {
                 var envVar = value ? "1" : "0";
                 Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", envVar);
+                // 因为 Environment.SetEnvironmentVariable 有时会执行很长时间，所以这里要直接修改注册表。
+                using var reg = Registry.CurrentUser.OpenSubKey(
+                    @"Environment", true);
+                reg?.SetValue("ClassIsland_IsSentryEnabled", envVar, RegistryValueKind.String);
                 OnPropertyChanged();
-                Environment.SetEnvironmentVariable("ClassIsland_IsSentryEnabled", envVar, EnvironmentVariableTarget.User);
             }
             catch (Exception ex)
             {
