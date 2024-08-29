@@ -16,7 +16,7 @@ public class MainViewModel : ObservableRecipient
     private Profile _profile = new();
     private Settings _settings = new();
     private object? _currentMaskElement;
-    private object? _currentOverlayElement = new object();
+    private object? _currentOverlayElement;
     private bool _isOverlayOpened = false;
     private bool _isMouseIn = false;
     private bool _isForegroundFullscreen = false;
