@@ -123,24 +123,35 @@ public partial class App : AppBase, IAppHost
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
         e.Handled = true;
-        if (CrashWindow != null)
-        {
-            CrashWindow = null;
-            GC.Collect();
-        }
-        Logger?.LogCritical(e.Exception, "发生严重错误。");
-        //Settings.DiagnosticCrashCount++;
-        //Settings.DiagnosticLastCrashTime = DateTime.Now;
-        CrashWindow = new CrashWindow()
-        {
-            CrashInfo = e.Exception.ToString()
-        };
+
 #if DEBUG
         if (e.Exception.GetType() == typeof(ResourceReferenceKeyNotFoundException))
         {
             return;
         }
 #endif
+
+        if (Settings.IsCriticalSafeMode) // 教学安全模式
+        {
+            Logger?.LogCritical(e.Exception, "发生严重错误（应用被教学安全模式退出）");
+            // TODO: 保存错误日志
+            AppBase.Current.Stop();
+            return;
+        }
+
+        Logger?.LogCritical(e.Exception, "发生严重错误。");
+
+        if (CrashWindow != null)
+        {
+            CrashWindow = null;
+            GC.Collect();
+        }
+        //Settings.DiagnosticCrashCount++;
+        //Settings.DiagnosticLastCrashTime = DateTime.Now;
+        CrashWindow = new CrashWindow()
+        {
+            CrashInfo = e.Exception.ToString()
+        };
         SentrySdk.CaptureException(e.Exception, scope =>
         {
             scope.Level = SentryLevel.Fatal;    

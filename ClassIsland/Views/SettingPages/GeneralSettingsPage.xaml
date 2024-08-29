@@ -344,6 +344,12 @@
                                     Description="默认情况下 ClassIsland 在进行阻塞 UI 线程的操作时，会确保动画播放完成。启用此选项后将不会等待动画播放完成，可以一定程度上地提升加载速度。"
                                     IsOn="{Binding SettingsService.Settings.IsWaitForTransientDisabled, Mode=TwoWay}"
                                     Margin="0 0 0 6" />
+            <!-- 教学安全模式 -->
+            <controls1:SettingsCard IconGlyph="CarBrakeAlert"
+                                    Header="教学安全模式"
+                                    Description="启用后，如果 ClassIsland 发生严重错误，将会自动退出而不弹出错误窗口，以确保教学不受到影响。"
+                                    IsOn="{Binding SettingsService.Settings.IsCriticalSafeMode, Mode=TwoWay}"
+                                    Margin="0 0 0 6" />
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>
