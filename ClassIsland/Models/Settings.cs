@@ -201,6 +201,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isWaitForTransientDisabled = false;
     private bool _isCriticalSafeMode = false;
     private bool _showCurrentLessonOnlyOnClass = false;
+    private bool _isSwapMode = true;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -2027,4 +2028,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
+    public bool IsSwapMode
+    {
+        get => _isSwapMode;
+        set
+        {
+            if (value == _isSwapMode) return;
+            _isSwapMode = value;
+            OnPropertyChanged();
+        }
+    }
+
 }

@@ -10,7 +10,6 @@ public class ClassChangingViewModel : ObservableRecipient
 {
     private bool _writeToSourceClassPlan = false;
     private int _slideIndex = 0;
-    private bool _isSwapMode = true;
     private int _sourceIndex = -1;
     private int _swapModeTargetIndex = -1;
     private Subject? _targetSubject;
@@ -35,17 +34,6 @@ public class ClassChangingViewModel : ObservableRecipient
         {
             if (value == _slideIndex) return;
             _slideIndex = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsSwapMode
-    {
-        get => _isSwapMode;
-        set
-        {
-            if (value == _isSwapMode) return;
-            _isSwapMode = value;
             OnPropertyChanged();
         }
     }
