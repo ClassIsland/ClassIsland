@@ -126,4 +126,11 @@ public partial class ClassChangingWindow : MyWindow
         DataContext = this;
         base.OnContentRendered(e);
     }
+
+    private void ButtonTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
+        App.GetService<ProfileSettingsWindow>().Open();
+        Close();
+    }
 }
