@@ -184,7 +184,7 @@
                         <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal"
                                                             Margin="0 4 0 0" HorizontalAlignment="Right"
                                                             VerticalAlignment="Center">
-                            <TextBox MinWidth="200" MaxWidth="250"
+                            <TextBox MinWidth="200" MaxWidth="300"
                                                              Text="{Binding SettingsService.Settings.SplashCustomText}"
                                                              VerticalAlignment="Center" />
                         </StackPanel>
