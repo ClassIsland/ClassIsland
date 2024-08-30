@@ -54,7 +54,7 @@
             </controls1:SettingsCard>
             <!-- 圆角半径 -->
             <controls1:SettingsCard IconGlyph="BorderRoundCorners" Header="圆角半径"
-                                    Description="主界面圆角半径，数值为20时左右边缘为半圆。">
+                                    Description="主界面圆角半径，调至最大数值时左右边缘为半圆。">
                 <controls1:SettingsCard.Switcher>
                     <Slider Grid.Column="1" Grid.Row="0" Width="180" Minimum="0" Maximum="20"
                             Value="{Binding SettingsService.Settings.RadiusX}"
@@ -235,7 +235,7 @@
                             <!-- 自动提取主题色间隔 -->
                             <controls1:SettingsControl IconGlyph="ClockOutline"
                                                                               Header="自动提取主题色间隔"
-                                                                              Description="自动从壁纸提取主题色时间隔的时间，建议以动态壁纸更新速度按需设置，不宜低于10秒。">
+                                                                              Description="自动从壁纸提取主题色时间隔的时间，建议根据动态壁纸更新速度按需设置，不宜低于10秒。">
                                 <controls1:SettingsControl.Switcher>
                                     <controls1:NumbericTextBox MaxValue="36000" MinValue="0"
                                                                 Width="150"
@@ -251,7 +251,7 @@
 
                 <!-- 兼容模式 -->
                 <controls1:SettingsCard IconGlyph="CogOutline" Header="启用兼容模式"
-                                                               Description="若启用，将从注册表提取壁纸，而非桌面句柄，不兼容动态壁纸。可能可以解决一些壁纸提取中的玄学问题。"
+                                                               Description="若启用，将从注册表提取壁纸，而非桌面句柄。不兼容动态壁纸。可能会解决一些与壁纸提取相关的玄学问题。"
                                                                IsOn="{Binding SettingsService.Settings.IsFallbackModeEnabled, Mode=TwoWay}" />
                 <!-- 壁纸层窗口类名 -->
                 <controls1:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
@@ -495,8 +495,9 @@
                                              xml:space="preserve">送给你纯白色的花 塞西莉亚 塞西莉亚
 盛开在起风的地方 沐浴九月的骄阳
 语文 数学 英语 历史 物理 政治 化学 生物 地理
-The quick brown fox jumps over a lazy dog
-:1:234567890 +-*/:</TextBox>
+the quick brown fox jumps over a lazy dog
+THE QUICK BROWN FOX JUMPS OVER A LAZY DOG
+8:00-12:00 1234567890 +-*/</TextBox>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

@@ -199,7 +199,7 @@
                             <ci:SettingsControl IconGlyph="Input"
                                                     IsCompact="True"
                                                    Header="使用原始输入"
-                                                   Description="启用后，ClassIsland 使用 RawInput 接受鼠标/触屏事件，将可以辨别鼠标和触摸事件，做出更适合鼠标/触屏的响应。如果出现不兼容的问题，请尝试禁用此选项。禁用后将采用1.4及以前版本中轮询判断光标位置的行为。"
+                                                   Description="启用后，ClassIsland 将使用 RawInput 接收鼠标/触屏事件，可以辨别鼠标和触摸事件，并分别做出更适宜的响应。如果出现不兼容的问题，请尝试禁用此选项。"
                                                    IsOn="{Binding SettingsService.Settings.UseRawInput, Mode=TwoWay}"
                                                    Margin="0 0 0 6" />
                             <!-- 触屏点击后自动恢复 -->
