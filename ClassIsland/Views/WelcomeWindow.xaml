@@ -262,7 +262,7 @@
 
                                     <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
                                                            Margin="0 6 0 0"
-                                                           Description="此时间将作为学期的第一天，用于应用对多周轮换课表的计算。">
+                                                           Description="此时间将作为学期的第一天，用于多周轮换课表的计算。">
                                         <controls1:SettingsCard.Switcher>
                                             <DatePicker
                                                 SelectedDate="{Binding ViewModel.Settings.SingleWeekStartTime}"
@@ -442,15 +442,15 @@
                                                 <controls1:SettingsControl HasSwitcher="False"
                                                                            IconGlyph="Code"
                                                                            Header="注册 Url 协议"
-                                                                           Description="注册 Url 协议后，可以从外部通过 classisland:// 协议调用应用的功能。" />
+                                                                           Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。" />
                                             </CheckBox>
                                             <CheckBox Margin="22 0 0 0"
                                                       IsChecked="{Binding ViewModel.CreateClassSwapShortcut}"
                                                       IsEnabled="{Binding ViewModel.RegisterUrlScheme}">
                                                 <controls1:SettingsControl HasSwitcher="False"
                                                                            IconGlyph="SwapHorizontal"
-                                                                           Header="在桌面创建快捷换课快捷方式"
-                                                                           Description="创建快捷方式后，可以在桌面点击快捷方式一键开始换课。" />
+                                                                           Header="在桌面创建换课快捷方式"
+                                                                           Description="打开此快捷方式可以一键开始换课。" />
                                             </CheckBox>
                                         </StackPanel>
                                     </StackPanel>
@@ -516,13 +516,18 @@
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition/>
                                                             <ColumnDefinition/>
-                                                            <ColumnDefinition/>
                                                         </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition/>
+                                                        </Grid.RowDefinitions>
                                                         <controls1:InfoCard Grid.Column="0"
+                                                                            Grid.Row="0"
                                                                             IconKind="HelpCircleOutline"
                                                                             Margin="4 0"
                                                                             VerticalAlignment="Top"
-                                                                            Content="您可以阅读帮助文档来了解更多有关 ClassIsland 的信息。">
+                                                                            Title="阅读文档"
+                                                                            Content="阅读帮助文档来了解有关 ClassIsland 的更多信息和技术细节。">
                                                             <controls1:InfoCard.ActionButton>
                                                                 <WrapPanel>
                                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -534,10 +539,12 @@
                                                             </controls1:InfoCard.ActionButton>
                                                         </controls1:InfoCard>
                                                         <controls1:InfoCard Grid.Column="1"
+                                                                            Grid.Row="0"
                                                                             IconKind="Youtube"
                                                                             Margin="4 0"
                                                                             VerticalAlignment="Top"
-                                                                            Content="您可以观看入门教程视频快速上手 ClassIsland。">
+                                                                            Title="观看教程视频"
+                                                                            Content="只需十分钟，带您快速上手 ClassIsland。">
                                                             <controls1:InfoCard.ActionButton>
                                                                 <WrapPanel>
                                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -548,24 +555,43 @@
                                                                 </WrapPanel>
                                                             </controls1:InfoCard.ActionButton>
                                                         </controls1:InfoCard>
-                                                        <controls1:InfoCard Grid.Column="2"
+                                                        <controls1:InfoCard Grid.Column="0"
+                                                                            Grid.Row="1"
+                                                                            IconKind="BookEdit"
+                                                                            Margin="4 0"
+                                                                            VerticalAlignment="Top"
+                                                                            Title="创建档案"
+                                                                            Content="开始编辑您的第一份时间表和课表。">
+                                                            <controls1:InfoCard.ActionButton>
+                                                                <WrapPanel>
+                                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                                            CommandParameter="classisland://app/profile/">
+                                                                        <commands:IconText Kind="LeadPencil" Text="打开编辑档案界面…"/>
+                                                                    </Button>
+                                                                </WrapPanel>
+                                                            </controls1:InfoCard.ActionButton>
+                                                        </controls1:InfoCard>
+                                                        <controls1:InfoCard Grid.Column="1"
+                                                                            Grid.Row="1"
                                                                             IconKind="ApplicationImport"
                                                                             VerticalAlignment="Top"
                                                                             Margin="4 0"
-                                                                            Content="ClassIsland 也支持从其它课表显示软件导入课表信息。">
+                                                                            Title="从其他软件导入"
+                                                                            Content="从其他课表软件导入课表信息。">
                                                             <controls1:InfoCard.ActionButton>
                                                                 <WrapPanel>
                                                                     
                                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                                                             CommandParameter="https://migrate.classisland.tech/">
-                                                                        <commands:IconText Kind="ApplicationImport" Text="从其它课表软件导入…"/>
+                                                                        <commands:IconText Kind="Internet" Text="打开导入工具网页…"/>
                                                                     </Button>
                                                                 </WrapPanel>
                                                             </controls1:InfoCard.ActionButton>
                                                         </controls1:InfoCard>
                                                     </Grid>
-                                                    <TextBlock Text="点击【完成】即可完成设置向导。"/>
+                                                    <TextBlock Text="点击【完成】即可结束设置向导。"/>
                                                 </StackPanel>
                                             </materialDesign:TransitionerSlide>
                                         </materialDesign:Transitioner>

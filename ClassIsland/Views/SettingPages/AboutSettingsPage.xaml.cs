@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,7 @@ using ClassIsland.Services.Management;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
+using Sentry;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -160,5 +162,40 @@ public partial class AboutSettingsPage : SettingsPageBase
             Owner = Window.GetWindow(this),
             Title = "ClassIsland 隐私政策"
         }.ShowDialog();
+    }
+
+    private async void Sayings_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+
+        if (ViewModel.IsSayingBusy)
+        {
+            return;
+        }
+
+        if (ViewModel.SayingsCollection.Count <= 0)
+        {
+            var stream = Application.GetResourceStream(new Uri("/Assets/Tellings.txt", UriKind.Relative))?.Stream;
+            if (stream == null)
+            {
+                return;
+            }
+
+            var sayings = await new StreamReader(stream).ReadToEndAsync();
+            var collection = new ObservableCollection<string>(sayings.Split("\r\n"));
+            var countRaw = collection.Count;
+            for (var i = 0; i < countRaw; i++)
+            {
+                var randomIndex = ViewModel.Random.Next(0, collection.Count - 1);
+                ViewModel.SayingsCollection.Add(collection[randomIndex]);
+                collection.RemoveAt(randomIndex);
+            }
+        }
+        //Console.WriteLine(ViewModel.SayingsCollection.Count);
+        if (ViewModel.SayingsCollection.Count > 0)
+        {
+            ViewModel.Sayings = ViewModel.SayingsCollection[0];
+            ViewModel.SayingsCollection.RemoveAt(0);
+        }
+        SentrySdk.Metrics.Increment("views.settings.about.sayings.click");
     }
 }

@@ -10,6 +10,7 @@
       xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
       xmlns:models="clr-namespace:ClassIsland.Models"
       xmlns:commands="http://classisland.tech/schemas/xaml/core"
+      xmlns:controls2="clr-namespace:ClassIsland.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="关于"
@@ -303,6 +304,15 @@
                             <TextBlock Text="查看诊断信息" />
                         </Grid>
                     </Button>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Margin="0 12 0 0" ClipContent="True" MouseLeftButtonDown="Sayings_OnMouseLeftButtonDown">
+                <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
+                    <TextBlock Text="回声洞" FontWeight="Bold" Margin="16 12 16 6"/>
+
+                    <controls2:TypingControl Margin="24 8 16 12" Text="{Binding ViewModel.Sayings, Mode=OneWay}"
+                                             IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/>
                 </StackPanel>
             </materialDesign:Card>
 
