@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -91,7 +92,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         {
             Timer.Start();
         }
-        
+
     }
 
     private void TimerOnTick(object? sender, EventArgs e)
@@ -114,5 +115,19 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         field = value;
         OnPropertyChanged(propertyName);
         return true;
+    }
+
+    public string NextTimeLayoutDurationHumanized
+    {
+        get
+        {
+            TimeSpan span = LessonsService.CurrentTimeLayoutItem.Last;
+            if (span.TotalSeconds <= 0) return "0分钟";
+            StringBuilder sb = new();
+            if (span.Hours > 0) sb.Append($"{span.Hours}小时");
+            if (span.Minutes > 0) sb.Append($"{span.Minutes}分钟");
+            if (span.Seconds > 0) sb.Append($"{span.Seconds}秒");
+            return sb.ToString();
+        }
     }
 }
