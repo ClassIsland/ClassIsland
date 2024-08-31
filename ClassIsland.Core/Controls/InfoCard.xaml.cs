@@ -25,11 +25,19 @@ public partial class InfoCard : UserControl
 {
     public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(
         nameof(Content), typeof(string), typeof(InfoCard), new PropertyMetadata(default(string)));
+    public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
+        nameof(Title), typeof(string), typeof(InfoCard), new PropertyMetadata(default(string)));
 
     public string Content
     {
         get { return (string)GetValue(ContentProperty); }
         set { SetValue(ContentProperty, value); }
+    }
+
+    public string Title
+    {
+        get { return (string)GetValue(TitleProperty); }
+        set { SetValue(TitleProperty, value); }
     }
 
     public static readonly DependencyProperty IconKindProperty = DependencyProperty.Register(

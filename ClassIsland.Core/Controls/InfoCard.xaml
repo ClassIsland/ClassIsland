@@ -16,9 +16,12 @@
             >
         <Grid>
             <StackPanel>
-                <materialDesign:PackIcon Kind="{Binding IconKind}"
-                                         Height="24" Width="24"
-                                         Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="{Binding IconKind}"
+                                            Height="24" Width="24"
+                                            Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                    <TextBlock Margin="4 2 0 0" Text="{Binding Title}" FontWeight="Bold"/>
+                </StackPanel>
                 <TextBlock TextWrapping="Wrap" Margin="0 6 0 0"
                            Text="{Binding Content}"/>
                 <ContentPresenter 
