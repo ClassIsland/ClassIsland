@@ -22,11 +22,13 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Services.AppUpdating;
+using ClassIsland.Services.Logging;
 using ClassIsland.Shared.Enums;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using MdXaml;
 using Sentry;
+using WebSocketSharp;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -41,6 +43,16 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     public UpdateService UpdateService { get; }
 
     public UpdateSettingsViewModel ViewModel { get; } = new();
+
+    public static readonly DependencyProperty IsEasterEggTriggeredProperty =
+    DependencyProperty.Register(nameof(IsEasterEggTriggered), typeof(bool), typeof(UpdatesSettingsPage),
+        new PropertyMetadata(false));
+
+    public bool IsEasterEggTriggered
+    {
+        get => (bool)GetValue(IsEasterEggTriggeredProperty);
+        set => SetValue(IsEasterEggTriggeredProperty, value);
+    }
 
     public UpdatesSettingsPage(SettingsService settingsService, UpdateService updateService)
     {
@@ -192,5 +204,10 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     {
         CloseDrawer();
         await UpdateService.CheckUpdateAsync(isForce: true);
+    }
+
+    private void IconUpdateStatus_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        IsEasterEggTriggered = true;
     }
 }

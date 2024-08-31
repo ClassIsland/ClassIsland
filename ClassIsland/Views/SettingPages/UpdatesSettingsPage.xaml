@@ -118,7 +118,8 @@
                 <!-- 更新状态图标 -->
                 <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
                                          Width="48" Height="48"
-                                         Margin="0 0 8 0">
+                                         Margin="0 0 8 0"
+                                         MouseDoubleClick="IconUpdateStatus_OnMouseDoubleClick">
                     <materialDesign:PackIcon.Style>
                         <Style TargetType="materialDesign:PackIcon">
                             <Style.Triggers>
@@ -146,11 +147,32 @@
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
-                                    <DataTrigger
-                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
-                                        Value="UpToDate">
-                                        <Setter Property="Text" Value="您已是最新。" />
-                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition 
+                                                Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}" 
+                                                Value="UpToDate"/>
+                                            <Condition
+                                                Binding="{Binding IsEasterEggTriggered}" 
+                                                Value="false"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Text" Value="您已更新到最新版本。" />
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition 
+                                                Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}" 
+                                                Value="UpToDate"/>
+                                            <Condition
+                                                Binding="{Binding IsEasterEggTriggered}" 
+                                                Value="true"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Text" Value="您已是最新。" />
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
                                         Value="UpdateAvailable">
@@ -159,7 +181,7 @@
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
                                         Value="UpdateDownloaded">
-                                        <Setter Property="Text" Value="您已准备好安装更新。" />
+                                        <Setter Property="Text" Value="已准备好安装更新。" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -232,7 +254,7 @@
                                     <DataTrigger
                                         Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
                                         Value="NetworkError">
-                                        <Setter Property="Text" Value="网络错误。请检查网络连接，然后再试一遍。" />
+                                        <Setter Property="Text" Value="网络错误，请检查网络连接后重试。" />
                                     </DataTrigger>
                                     <DataTrigger
                                         Binding="{Binding UpdateService.CurrentWorkingStatus, Mode=OneWay}"
@@ -322,7 +344,7 @@
                     </materialDesign:Snackbar.Style>
                     <materialDesign:Snackbar.Message>
                         <materialDesign:SnackbarMessage ActionContent="确定"
-                                                        Content="网络错误，请检查网络连接，然后再试一遍。"
+                                                        Content="网络错误，请检查网络连接后重试。"
                                                         ActionClick="UpdateErrorMessage_OnActionClick" />
                     </materialDesign:Snackbar.Message>
                 </materialDesign:Snackbar>
@@ -419,7 +441,7 @@
                                 <Setter Property="Visibility" Value="Collapsed" />
                             </Style>
                         </Button.Style>
-                        <controls1:IconText Kind="MonitorDownload" Text="重启并安装更新" />
+                        <controls1:IconText Kind="MonitorDownload" Text="重启应用并安装更新" />
                     </Button>
                     <!-- 取消更新  -->
                     <Button Margin="0 0 6 0" Click="ButtonCancelUpdate_OnClick">
@@ -528,8 +550,38 @@
                             <Image Source="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
                                    Height="81"
                                    ToolTip="光辉矢愿_遨游" />
-                            <TextBlock Text="你已是最新，真棒，夸夸你哦♪" TextWrapping="Wrap"
-                                       Margin="0 8 0 0" />
+
+                            <TextBlock Text="已经是最新版啦，真棒，夸夸你哦♪" TextWrapping="Wrap"
+                                       Margin="0 8 0 0" >
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsEasterEggTriggered}"
+                                                Value="false">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="头抬起，请坐和放宽，好东西就要来了" TextWrapping="Wrap"
+                                       Margin="0 8 0 0" >
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsEasterEggTriggered}"
+                                                Value="true">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
                             <Button HorizontalAlignment="Center" Margin="0 8 0 0"
                                     Style="{StaticResource MaterialDesignFlatButton}"
                                     Click="ButtonChangelogs_OnClick">
@@ -586,7 +638,7 @@
                                                     Value="1">
                                                     <Setter Property="Kind" Value="RefreshAuto" />
                                                     <Setter Property="Text"
-                                                            Value="自动检查更新，并在有更新时提醒我。" />
+                                                            Value="自动检查更新，并在有更新时发出提醒。" />
                                                 </DataTrigger>
                                                 <DataTrigger
                                                     Binding="{Binding SettingsService.Settings.UpdateMode, Mode=OneWay}"
@@ -617,7 +669,7 @@
                             <StackPanel Margin="12">
                                 <controls1:SettingsControl IconGlyph="DownloadOutline"
                                                            Header="更新通道"
-                                                           Description="控制应用从何处获取更新。">
+                                                           Description="控制应用的更新目标版本。">
                                     <controls1:SettingsControl.Switcher>
                                         <ComboBox Width="150"
                                                   Foreground="{DynamicResource MaterialDesignBody}"

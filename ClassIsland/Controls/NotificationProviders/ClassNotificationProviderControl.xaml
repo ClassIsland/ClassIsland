@@ -84,7 +84,7 @@
             <!-- 课间时间 -->
             <TextBlock Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12 0">
                 <Run Text="{Binding LessonsService.CurrentTimeLayoutItem.BreakNameText, StringFormat=本节{0}长, Mode=OneWay}"/>
-                <Run Text="{Binding LessonsService.CurrentTimeLayoutItem.Last, ConverterCulture=zh-cn, Mode=OneWay}" FontWeight="Bold"/>
+                <Run Text="{Binding NextTimeLayoutDurationHumanized, Mode=OneWay}" FontWeight="Bold"/>
             </TextBlock>
 
             <!-- 科目信息 -->
