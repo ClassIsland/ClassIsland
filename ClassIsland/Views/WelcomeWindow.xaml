@@ -442,7 +442,7 @@
                                                 <controls1:SettingsControl HasSwitcher="False"
                                                                            IconGlyph="Code"
                                                                            Header="注册 Url 协议"
-                                                                           Description="允许第三方应用或网页通过 Url 协议调用本应用的部分功能，详见帮助文档。" />
+                                                                           Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。" />
                                             </CheckBox>
                                             <CheckBox Margin="22 0 0 0"
                                                       IsChecked="{Binding ViewModel.CreateClassSwapShortcut}"
@@ -527,7 +527,7 @@
                                                                             Margin="4 0"
                                                                             VerticalAlignment="Top"
                                                                             Title="阅读文档"
-                                                                            Content="阅读帮助文档来了解有关 ClassIsland 的更多信息。">
+                                                                            Content="阅读帮助文档来了解有关 ClassIsland 的更多信息和技术细节。">
                                                             <controls1:InfoCard.ActionButton>
                                                                 <WrapPanel>
                                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -544,7 +544,7 @@
                                                                             Margin="4 0"
                                                                             VerticalAlignment="Top"
                                                                             Title="观看教程视频"
-                                                                            Content="通过视频，10 分钟快速上手 ClassIsland。">
+                                                                            Content="只需十分钟，带您快速上手 ClassIsland。">
                                                             <controls1:InfoCard.ActionButton>
                                                                 <WrapPanel>
                                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -578,7 +578,7 @@
                                                                             VerticalAlignment="Top"
                                                                             Margin="4 0"
                                                                             Title="从其他软件导入"
-                                                                            Content="从其他课表显示软件导入课表信息。">
+                                                                            Content="从其他课表软件导入课表信息。">
                                                             <controls1:InfoCard.ActionButton>
                                                                 <WrapPanel>
                                                                     

@@ -296,7 +296,7 @@
                                 </StackPanel.Resources>
                                 <materialDesign:Chip
                                     Visibility="{Binding ViewModel.IsRequestedRestart, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    ToolTip="部分设置需要重启以应用"
+                                    ToolTip="部分设置需要重启应用后生效。"
                                     Click="ButtonRestartApp_OnClick"
                                     Icon="{materialDesign:PackIcon Restart}">
                                     <TextBlock>

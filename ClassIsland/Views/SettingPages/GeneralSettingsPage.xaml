@@ -40,7 +40,7 @@
                                                            IsOn="{Binding SettingsService.Settings.IsAutoStartEnabled, Mode=TwoWay}" />
             <!-- 注册 Url 协议 -->
             <controls1:SettingsCard IconGlyph="Code" Header="注册 Url 协议"
-                                    Description="允许第三方应用或网页通过 Url 协议调用本应用的部分功能，详见帮助文档。"
+                                    Description="允许第三方应用或网页通过 Url 协议 classisland:// 调用本应用的部分功能，详见帮助文档。"
                                     IsOn="{Binding SettingsService.Settings.IsUrlProtocolRegistered, Mode=TwoWay}" />
             <!-- 学期开始时间 -->
             <controls1:SettingsCard IconGlyph="CalendarOutline" Header="学期开始时间"
@@ -359,7 +359,7 @@
             <!-- 教学安全模式 -->
             <controls1:SettingsCard IconGlyph="CarBrakeAlert"
                                     Header="教学安全模式"
-                                    Description="启用后，如果 ClassIsland 发生严重错误，将会自动退出而不弹出错误窗口，以确保教学不受到影响。"
+                                    Description="启用后，ClassIsland 会在崩溃时自动退出而不弹出崩溃窗口，以确保教学不受到影响。"
                                     IsOn="{Binding SettingsService.Settings.IsCriticalSafeMode, Mode=TwoWay}"
                                     Margin="0 0 0 6" />
         </StackPanel>

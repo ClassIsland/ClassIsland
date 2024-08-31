@@ -634,7 +634,7 @@
                                HorizontalAlignment="Center"
                                TextWrapping="Wrap"
                                Width="320">
-                        <Run Text="欢迎使用插件。您可以通过插件扩展 ClassIsland 的功能，比如添加一个组件，或者和其它软件联动，等等。" />
+                        <Run Text="欢迎使用插件！插件可以扩展 ClassIsland 的功能，比如添加一个组件，或者和其它软件联动，等等。" />
 
                     </TextBlock>
                     <Border Width="320"
@@ -648,7 +648,7 @@
                             <TextBlock TextAlignment="Center"
                                        HorizontalAlignment="Center"
                                        TextWrapping="Wrap"
-                                       Text="需要注意，插件可以以 ClassIsland 的身份进行各项活动，使用各项系统资源，并自由地访问此设备上的文件。出于安全考虑，不要安装来路不明的插件。即使是插件市场的插件，也无法完全保证安全。使用插件造成的一切后果，ClassIsland 开发团队概不负责。" />
+                                       Text="需要注意，插件可以以 ClassIsland 的身份使用各项系统资源并请求任意权限，还可以自由访问设备上的所有文件。请不要安装来路不明的插件，开发者也无法保证市场所提供的插件都是绝对安全的。ClassIsland 开发团队对使用插件造成的一切后果概不负责。" />
                         </StackPanel>
                     </Border>
 
