@@ -118,7 +118,8 @@
                 <!-- 更新状态图标 -->
                 <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
                                          Width="48" Height="48"
-                                         Margin="0 0 8 0">
+                                         Margin="0 0 8 0"
+                                         MouseDoubleClick="IconUpdateStatus_OnMouseDoubleClick">
                     <materialDesign:PackIcon.Style>
                         <Style TargetType="materialDesign:PackIcon">
                             <Style.Triggers>
@@ -146,11 +147,32 @@
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
-                                    <DataTrigger
-                                        Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
-                                        Value="UpToDate">
-                                        <Setter Property="Text" Value="您已更新到最新版本。" />
-                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition 
+                                                Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}" 
+                                                Value="UpToDate"/>
+                                            <Condition
+                                                Binding="{Binding IsEasterEggTriggered}" 
+                                                Value="false"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Text" Value="您已更新到最新版本。" />
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition 
+                                                Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}" 
+                                                Value="UpToDate"/>
+                                            <Condition
+                                                Binding="{Binding IsEasterEggTriggered}" 
+                                                Value="true"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Text" Value="您已是最新。" />
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
                                     <DataTrigger
                                         Binding="{Binding SettingsService.Settings.LastUpdateStatus, Mode=OneWay}"
                                         Value="UpdateAvailable">
@@ -528,8 +550,38 @@
                             <Image Source="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
                                    Height="81"
                                    ToolTip="光辉矢愿_遨游" />
+
                             <TextBlock Text="已经是最新版啦，真棒，夸夸你哦♪" TextWrapping="Wrap"
-                                       Margin="0 8 0 0" />
+                                       Margin="0 8 0 0" >
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsEasterEggTriggered}"
+                                                Value="false">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="头抬起，请坐和放宽，好东西就要来了" TextWrapping="Wrap"
+                                       Margin="0 8 0 0" >
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger
+                                                Binding="{Binding IsEasterEggTriggered}"
+                                                Value="true">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
                             <Button HorizontalAlignment="Center" Margin="0 8 0 0"
                                     Style="{StaticResource MaterialDesignFlatButton}"
                                     Click="ButtonChangelogs_OnClick">
