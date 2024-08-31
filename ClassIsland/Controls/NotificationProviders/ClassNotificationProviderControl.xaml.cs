@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -122,11 +122,11 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         get
         {
             TimeSpan span = LessonsService.CurrentTimeLayoutItem.Last;
-            if (span.TotalSeconds <= 0) return "0·ÖÖÓ";
+            if (span.TotalSeconds <= 0) return "0åˆ†é’Ÿ";
             StringBuilder sb = new();
-            if (span.Hours > 0) sb.Append($"{span.Hours}Ð¡Ê±");
-            if (span.Minutes > 0) sb.Append($"{span.Minutes}·ÖÖÓ");
-            if (span.Seconds > 0) sb.Append($"{span.Seconds}Ãë");
+            if (span.Hours > 0) sb.Append($"{span.Hours}å°æ—¶");
+            if (span.Minutes > 0) sb.Append($"{span.Minutes}åˆ†é’Ÿ");
+            if (span.Seconds > 0) sb.Append($"{span.Seconds}ç§’");
             return sb.ToString();
         }
     }
