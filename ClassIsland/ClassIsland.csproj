@@ -23,6 +23,7 @@
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
         <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
+        <None Remove="assets\Tellings.txt" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6" />
