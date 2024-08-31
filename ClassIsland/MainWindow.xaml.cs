@@ -1020,7 +1020,14 @@ public partial class MainWindow : Window
 
     private void OpenClassSwapWindow()
     {
-        if (LessonsService.CurrentClassPlan == null || ClassChangingWindow != null)
+        if (LessonsService.CurrentClassPlan == null) // （仅换课快捷方式）如果今天没有课程，则选择临时课表
+        {
+            App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
+            OpenProfileSettingsWindow();
+            return;
+        }
+
+        if (ClassChangingWindow != null)
         {
             return;
         }

@@ -136,7 +136,7 @@
                             Grid.Column="1"
                             materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon SwapHorizontal}"
                             Content="{materialDesign:PackIcon ArrowRight}"
-                            IsChecked="{Binding ViewModel.IsSwapMode}">
+                            IsChecked="{Binding SettingsService.Settings.IsSwapMode}">
                             <ToggleButton.Style>
                                 <Style TargetType="ToggleButton"
                                        BasedOn="{StaticResource MaterialDesignActionToggleButton}">
@@ -157,10 +157,10 @@
                             <materialDesign:Transitioner.Style>
                                 <Style TargetType="materialDesign:Transitioner">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ViewModel.IsSwapMode}" Value="True">
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.IsSwapMode}" Value="True">
                                             <Setter Property="SelectedIndex" Value="0" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ViewModel.IsSwapMode}" Value="False">
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.IsSwapMode}" Value="False">
                                             <Setter Property="SelectedIndex" Value="1" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -266,14 +266,14 @@
                                 </DataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding ViewModel.IsSwapMode}" Value="True" />
+                                        <Condition Binding="{Binding SettingsService.Settings.IsSwapMode}" Value="True" />
                                         <Condition Binding="{Binding ViewModel.SwapModeTargetIndex}" Value="-1" />
                                     </MultiDataTrigger.Conditions>
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding ViewModel.IsSwapMode}" Value="False" />
+                                        <Condition Binding="{Binding SettingsService.Settings.IsSwapMode}" Value="False" />
                                         <Condition Binding="{Binding ViewModel.TargetSubjectIndex}" Value="{x:Null}" />
                                     </MultiDataTrigger.Conditions>
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -321,7 +321,8 @@
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center" Margin="0,0,16,0" />
                     <materialDesign:Chip
-                        ToolTip="要换课的课表">
+                        ToolTip="要换课的课表"
+                        Click="ButtonTemporaryClassPlan_OnClick">
                         <materialDesign:Chip.Style>
                             <Style TargetType="materialDesign:Chip"
                                    BasedOn="{StaticResource MaterialDesignOutlineChip}">

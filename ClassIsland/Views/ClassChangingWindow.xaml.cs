@@ -23,6 +23,8 @@ public partial class ClassChangingWindow : MyWindow
 {
     public ClassChangingViewModel ViewModel { get; } = new();
 
+    public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
+
     public IProfileService ProfileService { get; } = App.GetService<IProfileService>();
 
     public IManagementService ManagementService { get; } = App.GetService<IManagementService>();
@@ -97,7 +99,7 @@ public partial class ClassChangingWindow : MyWindow
         var cp = ProfileService.Profile.ClassPlans[key];
         var aI = GetSubjectIndex(ViewModel.SourceIndex);
 
-        if (ViewModel.IsSwapMode)
+        if (SettingsService.Settings.IsSwapMode)
         {
             var bI = GetSubjectIndex(ViewModel.SwapModeTargetIndex);
             var a = cp.Classes[aI].SubjectId;
@@ -123,5 +125,12 @@ public partial class ClassChangingWindow : MyWindow
     {
         DataContext = this;
         base.OnContentRendered(e);
+    }
+
+    private void ButtonTemporaryClassPlan_OnClick(object sender, RoutedEventArgs e)
+    {
+        App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
+        App.GetService<ProfileSettingsWindow>().Open();
+        Close();
     }
 }
