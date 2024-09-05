@@ -43,13 +43,13 @@
                                                      Value="1">
                                             <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakNameText, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" Value="True">
+                                        <!--<DataTrigger Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" Value="True">
                                             <Setter Property="Effect">
                                                 <Setter.Value>
                                                     <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="{DynamicResource LuminousClass}"/>
                                                 </Setter.Value>
                                             </Setter>
-                                        </DataTrigger>
+                                        </DataTrigger>-->
                                     </Style.Triggers>
                                     <Setter Property="Text" Value="{Binding Name}"/>
                                 </Style>

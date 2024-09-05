@@ -19,7 +19,7 @@
                     <Grid>
                         <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" x:Name="Text"
                                Text="{Binding Initial}">
-                            <TextBlock.Style>
+                            <!--<TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}" Value="True">
@@ -31,7 +31,7 @@
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </TextBlock.Style>
+                            </TextBlock.Style>-->
                         </TextBlock>
                     </Grid>
                 </DataTemplate>
