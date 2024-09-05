@@ -183,8 +183,8 @@ public partial class App : AppBase, IAppHost
 
         BindingDiagnostics.BindingFailed += BindingDiagnosticsOnBindingFailed;
 
-        Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-Hans-CN");
-        Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-Hans-CN");
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo("zh-CN");
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("zh-CN");
         FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag)));
 
         // 检测Mutex
