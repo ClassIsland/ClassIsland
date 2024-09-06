@@ -294,7 +294,8 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IWindowRuleService, WindowRuleService>();
                 try // 检测SystemSpeechService是否存在
                 {
-                    _ = new SpeechSynthesizer();
+                    var s = new SpeechSynthesizer();
+                    s.SetOutputToDefaultAudioDevice();
                     isSystemSpeechSystemExist = true;
                 }
                 catch(Exception e)
