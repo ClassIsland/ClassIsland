@@ -64,6 +64,7 @@ using ClassIsland.Models.Rules;
 using ClassIsland.Controls.RuleSettingsControls;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
+using ControlzEx.Native;
 
 namespace ClassIsland;
 /// <summary>
@@ -95,6 +96,7 @@ public partial class App : AppBase, IAppHost
 
     public App()
     {
+        AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
     }
 
     static App()
