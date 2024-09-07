@@ -7,7 +7,7 @@
 
 ![1722823221695](https://github.com/user-attachments/assets/7464a90d-ef66-47e1-8083-3edbdea603aa)
 
-您可以通过插件扩展 ClassIsland 的功能，比如获取新的组件、提醒提供方等等。您可以在[插件市场](classisland://app/settings/classisland.plugins)浏览插件。如果您对开发 ClassIsland 插件感兴趣，不妨看看[开发文档](https://docs.classisland.tech/zh-cn/latest/dev)来了解如何开发插件。
+您可以通过插件扩展 ClassIsland 的功能，比如获取新的组件、提醒提供方等等。您可以在[插件市场](classisland://app/settings/classisland.plugins)浏览插件。如果您对开发 ClassIsland 插件感兴趣，不妨看看[开发文档](https://docs.classisland.tech/dev)来了解如何开发插件。
 
 ## 规则集
 
@@ -33,7 +33,7 @@
 
 ## 精简模式
 
-ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁剪了不必要的资源文件，大幅减小了应用体积。详细请见[文档](https://docs.classisland.tech/zh-cn/latest/app/setup/)。
+ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁剪了不必要的资源文件，大幅减小了应用体积。详细请见[文档](https://docs.classisland.tech/app/setup/)。
 
 ## 课表群
 

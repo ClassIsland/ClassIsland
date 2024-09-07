@@ -980,7 +980,7 @@ public partial class MainWindow : Window
 
     private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
     {
-        UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/zh-cn/latest/app/"));
+        UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/"));
     }
 
     private void MenuItemUpdates_OnClick(object sender, RoutedEventArgs e)
