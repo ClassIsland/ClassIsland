@@ -1348,6 +1348,11 @@
                                             </Button.Style>
                                             <controls1:IconText Kind="Remove" Text="删除"/>
                                         </Button>
+                                        <Button Click="ButtonRefreshTimeLayout_OnClick"
+                                                ToolTip="刷新该时间表的时间点顺序。"
+                                                IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                            <controls1:IconText Kind="Refresh" Text="刷新"/>
+                                        </Button>
                                         <!--<Button  Click="ButtonEditTimePoint_OnClick"
                                                  ToolTip="编辑选中的时间点。">
                                             <Button.Style>
