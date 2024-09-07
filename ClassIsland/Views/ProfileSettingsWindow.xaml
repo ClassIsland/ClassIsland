@@ -644,6 +644,12 @@
                                 ToolTip="创建一个新的课表群。"
                                 Margin="2"
                                 Click="ButtonNewClassPlanGroups_OnClick">
+                            <Button.IsEnabled>
+                                <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
+                                    <Binding Path="ManagementService.Policy.DisableProfileClassPlanEditing" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}"/>
+                                    <Binding Path="ManagementService.Policy.DisableProfileEditing" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}"/>
+                                </MultiBinding>
+                            </Button.IsEnabled>
                             <controls1:IconText Kind="Add" Text="新建课表群"/>
                         </Button>
                     </WrapPanel>
@@ -2079,7 +2085,6 @@
                                     </TextBlock>
                                 </materialDesign:Chip>
                                 <materialDesign:Chip
-                                    Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
                                     ToolTip="课表群"
                                     Icon="{materialDesign:PackIcon Group}"
                                     Click="ButtonClassPlansGroup_OnClick"
