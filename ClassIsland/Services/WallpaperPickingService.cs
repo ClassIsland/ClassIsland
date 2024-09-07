@@ -155,13 +155,20 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         }
     }
 
-    private Bitmap? GetFullScreenShot(Screen screen)
+    private Bitmap? GetFullScreenShot()
     {
         try
         {
-            var baseImage = new Bitmap(screen.Bounds.Width, screen.Bounds.Height);
+            var screen = SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ?
+                Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] :
+                Screen.PrimaryScreen;
+            ArgumentNullException.ThrowIfNull(screen);
+            var baseImage = new Bitmap(screen.Bounds.Width, screen.Bounds.Height / 3);
             var g = Graphics.FromImage(baseImage);
-            g.CopyFromScreen(new(0, 0), new(0, 0), screen.Bounds.Size);
+            if (SettingsService.Settings.WindowDockingLocation is 3 or 4 or 5)
+                g.CopyFromScreen(new(0, screen.Bounds.Height * 2/3), new(), screen.Bounds.Size with {Height = screen.Bounds.Height / 3});
+            else
+                g.CopyFromScreen(new(0, 0), new(), screen.Bounds.Size with {Height = screen.Bounds.Height / 3});
             g.Dispose();
             return baseImage;
         } catch (Exception ex)
@@ -238,7 +245,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
         await Task.Run(() =>
         {
-            var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
+            var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot()
                 : SettingsService.Settings.IsFallbackModeEnabled ?
                 (GetFallbackWallpaper())
                 :
