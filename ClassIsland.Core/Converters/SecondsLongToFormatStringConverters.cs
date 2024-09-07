@@ -3,41 +3,40 @@ using System.Windows.Data;
 
 namespace ClassIsland.Core.Converters;
 
-public class SecondsLongToFormatHoursMinutesStringConverter : IValueConverter
+/// <summary>
+/// 将秒数转换为格式化时长
+/// </summary>
+/// <param name="withSeconds">
+/// 转换后是否显示秒数
+/// </param>
+/// <returns>
+/// 显示秒数形似：1:02:34，12:34，34s<br/>
+/// 不显示秒数形似：1h02m，12min
+/// </returns>
+public class SecondsToFormatTimeConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        var useFloor = parameter as bool? ?? false;
-        var v = TimeSpan.FromMinutes(Round(TimeSpan.FromSeconds(value as long? ?? 0).TotalMinutes));
-        return v.TotalSeconds switch
-        {
-            >= 3600 => $@"{Math.Floor(v.TotalHours)}h{v.Minutes}m",
-            >= 0 => $"{v.Minutes}m",
-            _ => ""
-        };
+        var withSeconds = parameter as bool? ?? false;
+        var v = TimeSpan.FromSeconds(value as long? ?? 0);
 
-        double Round(double x) => useFloor ? Math.Floor(x) : Math.Ceiling(x);
+        if (withSeconds) {
+            return v.TotalSeconds switch // 显示秒数
+            {
+                >= 3600 => $"{Math.Floor(v.TotalHours)}:{v.Minutes:00}:{v.Seconds:00}",
+                >= 60 => $"{v.Minutes}:{v.Seconds:00}",
+                >= 0 => $"{v.Seconds}s",
+                _ => ""
+            };
+        } else {
+            return v.TotalSeconds switch // 不显示秒数
+            {
+                >= 3600 => $"{Math.Floor(v.TotalHours)}h{v.Minutes:00}m",
+                >= 0 => $"{v.Minutes}min",
+                _ => ""
+            };
+        }
     }
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        return null;
-    }
-}
-public class SecondsLongToFormatHoursMinutesSecondsStringConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        var v = new TimeSpan(0, 0, System.Convert.ToInt32(value));
-        return v.TotalSeconds switch
-        {
-            >= 3600 => v.ToString(@"h\:mm\:ss"),
-            >= 60 => v.ToString(@"m\:ss"),
-            >= 0 => v.ToString(@"s\s"),
-            _ => (object)null
-        };
-    }
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return null;
-    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => null;
 }
