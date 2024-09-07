@@ -90,8 +90,8 @@ public class WindowRuleService : IWindowRuleService
         {
             0 => !(fullscreen || maximize || minimize),
             1 => maximize,
-            2 => fullscreen,
-            3 => minimize,
+            2 => minimize,
+            3 => fullscreen,
             _ => false
         };
     }
