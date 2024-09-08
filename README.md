@@ -13,33 +13,33 @@
 ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具，可以在 Windows 屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
-#### [ClassIsland 网站](https://classisland.tech/)｜[ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/)｜[QQ 群: 958840932](https://qm.qq.com/q/4NsDQKiAuQ)
+#### [ClassIsland 网站](https://classisland.tech/)｜[ClassIsland 文档](https://docs.classisland.tech/)｜[QQ 群: 958840932](https://qm.qq.com/q/4NsDQKiAuQ)
 
 ###### [观看介绍视频，快速了解突破创新 →](https://bilibili.com/video/BV1Lt421n7op/)
 </div>
 
 ## 功能
-💡 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/) 了解更多。
+💡 您可以点击下方链接或查看 [ClassIsland 文档](https://docs.classisland.tech) 了解更多。
 
 ### 课表显示
 - [X] 显示当天的课表、当前进行课程的信息
-- [X] 在上下课等重要时间点发出[提醒](https://docs.classisland.tech/zh-cn/latest/app/notifications/)，自选搭配音效、强调特效和语音[增强提醒](https://docs.classisland.tech/zh-cn/latest/app/notifications/#强调提醒)
+- [X] 在上下课等重要时间点发出[提醒](https://docs.classisland.tech/app/notifications/)，自选搭配音效、强调特效和语音[增强提醒](https://docs.classisland.tech/app/notifications/#强调提醒)
 - [X] 自选课表隐藏条件、临时隐藏与鼠标穿透，不影响授课
 
 ### 课表编辑与管理
-- [X] 简洁直观的[课表编辑工具](https://docs.classisland.tech/zh-cn/latest/app/classplan/)
-- [X] 从 Excel 或其他软件[导入课表](https://docs.classisland.tech/zh-cn/latest/app/profile-settings-page/#从表格导入)
+- [X] 简洁直观的[课表编辑工具](https://docs.classisland.tech/app/classplan/)
+- [X] 从 Excel 或其他软件[导入课表](https://docs.classisland.tech/app/profile-settings-page/#从表格导入)
 - [X] 多周轮换、快速录入时间表、自定义设置
 - [X] 临时换课、临时启用某个课表
 
 ### 其它功能
 - [X] 自动同步软件时间、手动对齐铃声
-- [X] [天气](https://docs.classisland.tech/zh-cn/latest/app/advanced/#天气)、极端天气预警
-- [X] 通过[组件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)（日期、时间、天气简报、倒计日等）和[插件](https://docs.classisland.tech/zh-cn/latest/app/basic/#组件)高度自定义 ClassIsland
+- [X] [天气](https://docs.classisland.tech/app/advanced/#天气)、极端天气预警
+- [X] 通过[组件](https://docs.classisland.tech/app/basic/#组件)（日期、时间、天气简报、倒计日等）和[插件](https://docs.classisland.tech/app/basic/#组件)高度自定义 ClassIsland
 - [X] 丝滑、流畅的过渡动画
 - [X] 自动获取与系统配色搭配的主题色
 - [X] 自动软件更新
-- [ ] [集控管理](https://docs.classisland.tech/zh-cn/latest/management/)_（即将发布）_
+- [ ] [集控管理](https://docs.classisland.tech/management/)_（即将发布）_
 - [ ] ……
 
 ## 软件截图
@@ -89,9 +89,9 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 - 安装 [.NET 8.0 桌面运行时](https://dotnet.microsoft.com/zh-cn/download/dotnet/thank-you/runtime-desktop-8.0.7-windows-x64-installer)
 
 > [!important]
-> **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/zh-cn/latest/app/setup/)。**
+> **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/app/setup/)。**
 > 
-> 不建议在 Windows 10 以下的系统运行本应用。 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅[在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/zh-cn/latest/app/setup/#检查系统需求)。
+> 不建议在 Windows 10 以下的系统运行本应用。 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅[在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/app/setup/#检查系统需求)。
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
@@ -102,7 +102,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 | GitHub | [**GitHub下载**](https://github.com/ClassIsland/ClassIsland/releases/latest) | [GitHub下载](https://github.com/ClassIsland/ClassIsland/releases) |
 | AppCenter | [**AppCenter下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest) | [AppCenter下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest) |
 
-如果以上链接无法使用，可以从[镜像链接](https://docs.classisland.tech/zh-cn/latest/app/setup/#%E4%B8%8B%E8%BD%BD%E5%BA%94%E7%94%A8%E6%9C%AC%E4%BD%93)下载。
+如果以上链接无法使用，可以从[镜像链接](https://docs.classisland.tech/app/setup/#%E4%B8%8B%E8%BD%BD%E5%BA%94%E7%94%A8%E6%9C%AC%E4%BD%93)下载。
 
 下载完成后，将软件压缩包解压到一个**独立的文件夹（运行路径不能有中文）**，运行软件即可开始使用。解压时请不要解压到网盘同步文件夹、【下载】文件夹中，否则可能会出现**文件无法读写、文件丢失**等问题。
 
@@ -110,14 +110,13 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 您可以访问以下页面来**获取帮助**：
 
-- 应用内置的帮助文档
-- [ClassIsland 帮助文档](https://docs.classisland.tech/zh-cn/latest/app/)
+- [ClassIsland 帮助文档](https://docs.classisland.tech/app/)
 
 您也可以加入这些社区**寻求帮助**：
 
 [![GitHub Issues](https://img.shields.io/github/issues-search/ClassIsland/ClassIsland?query=is%3Aopen&style=flat-square&logo=github&label=Issues&color=%233fb950)]()
 [![GitHub Discussions](https://img.shields.io/github/discussions/ClassIsland/ClassIsland?style=flat-square&logo=Github&label=Discussions)](https://github.com/ClassIsland/ClassIsland/discussions)
-[![加入 QQ 群](https://img.shields.io/badge/QQ%E7%BE%A4-958840932-%230066cc?style=flat-square&logo=TencentQQ)](https://qm.qq.com/q/4NsDQKiAuQ)
+[![加入 QQ 频道](https://img.shields.io/badge/QQ%E9%A2%91%E9%81%93-%230066cc?style=flat-square&logo=TencentQQ)](https://pd.qq.com/s/scb3wzia)
 
 如果您确定您遇到的问题是一个 **Bug**，或者您要提出一项**新的功能**，请[提交 Issue](https://github.com/ClassIsland/ClassIsland/issues/new/choose)。
 
@@ -187,7 +186,6 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 - [Downloader](https://github.com/bezzad/Downloader)
 - [EPPlus](https://github.com/EPPlusSoftware/EPPlus)
 - [Edge_tts_sharp](https://github.com/Entity-Now/Edge_tts_sharp)
-- [FluentWPF](https://github.com/sourcechord/FluentWPF)
 - [gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)
 - [Google.Protobuf](https://github.com/protocolbuffers/protobuf)
 - [Grpc](https://github.com/grpc/grpc-dotnet)
@@ -196,7 +194,6 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 - [GuerrillaNtp](https://github.com/robertvazan/guerrillantp)
 - [H.NotifyIcon](https://github.com/HavenDV/H.NotifyIcon)
 - [HarmonyOS Sans](https://developer.harmonyos.com/cn/design/resource)
-- [MahApps.Metro](https://mahapps.com/)
 - [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit)
 - [MdXaml](https://github.com/whistyun/MdXaml)
 - [Microsoft.Data.Sqlite](https://github.com/dotnet/efcore)
