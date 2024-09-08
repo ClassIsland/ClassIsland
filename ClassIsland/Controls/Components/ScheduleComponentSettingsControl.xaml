@@ -151,6 +151,17 @@
                                        Description="在处于上课类型的时间点时，只显示当前时间点。"
                                        IsOn="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"
                                        Margin="0 0 0 6" />
+                <!-- 课程表文本间距 -->
+                <ci:SettingsCard IconGlyph="ArrowExpandHorizontal"
+                                 Header="课程表文本间距"
+                                 Description="使课程表显示更紧凑或宽松。"
+                                 Margin="0 0 0 6">
+                    <ci:SettingsCard.Switcher>
+                        <Slider Width="150" Minimum="5" Maximum="10"
+                                Value="{Binding Settings.LessonNameSpacing}"
+                                AutoToolTipPlacement="BottomRight"/>
+                    </ci:SettingsCard.Switcher>
+                </ci:SettingsCard>
                 <!-- 无课程时显示占位符 -->
                 <materialDesign:Card Margin="0 0 0 6">
                     <Expander Background="Transparent"

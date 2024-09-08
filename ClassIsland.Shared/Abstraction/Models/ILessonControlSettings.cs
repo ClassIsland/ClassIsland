@@ -47,6 +47,15 @@ public interface ILessonControlSettings : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// 课程表文字间距
+    /// </summary>
+    public int LessonNameSpacing
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
     /// 是否在上课时仅显示当前课程
     /// </summary>
     public bool ShowCurrentLessonOnlyOnClass

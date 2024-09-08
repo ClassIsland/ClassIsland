@@ -11,6 +11,7 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
     private int _extraInfoType = 0;
     private bool _isCountdownEnabled = true;
     private int _countdownSeconds = 60;
+    private int _lessonNameSpacing = 10;
     private bool _showCurrentLessonOnlyOnClass = false;
 
     /// <inheritdoc />
@@ -69,6 +70,18 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         {
             if (value == _countdownSeconds) return;
             _countdownSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public int LessonNameSpacing
+    {
+        get => _lessonNameSpacing;
+        set
+        {
+            if (value == _lessonNameSpacing) ;
+            _lessonNameSpacing = value;
             OnPropertyChanged();
         }
     }

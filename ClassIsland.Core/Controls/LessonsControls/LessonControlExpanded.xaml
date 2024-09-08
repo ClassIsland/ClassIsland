@@ -17,7 +17,8 @@
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
-        <StackPanel Orientation="Horizontal" Margin="16 0" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Margin="6 0" VerticalAlignment="Center">
+            <Border Width="{Binding DefaultLessonControlSettings.LessonNameSpacing, FallbackValue=10}" Visibility="Hidden"/>
             <ContentPresenter>
                 <ContentPresenter.Style>
                     <Style TargetType="ContentPresenter">
@@ -167,6 +168,7 @@
                 </TabControl>
 
             </StackPanel>
+            <Border Width="{Binding DefaultLessonControlSettings.LessonNameSpacing, FallbackValue=10}" Visibility="Hidden"/>
         </StackPanel>
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                  materialDesign:TransitionAssist.DisableTransitions="True">

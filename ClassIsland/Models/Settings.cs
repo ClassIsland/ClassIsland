@@ -200,6 +200,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isTransientDisabled = false;
     private bool _isWaitForTransientDisabled = false;
     private bool _isCriticalSafeMode = false;
+    private int _lessonNameSpacing = 10;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
 
@@ -567,6 +568,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _countdownSeconds) return;
             _countdownSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int LessonNameSpacing
+    {
+        get => _lessonNameSpacing;
+        set
+        {
+            if (value == _lessonNameSpacing) return;
+            _lessonNameSpacing = value;
             OnPropertyChanged();
         }
     }

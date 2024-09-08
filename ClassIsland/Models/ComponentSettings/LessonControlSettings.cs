@@ -9,6 +9,7 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private int _extraInfoType = 0;
     private bool _isCountdownEnabled = true;
     private int _countdownSeconds = 60;
+    private int _lessonNameSpacing = 10;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _showPlaceholderOnEmptyClassPlan = true;
     private string _placeholderText = "今天没有课程。";
@@ -53,6 +54,17 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _countdownSeconds) return;
             _countdownSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int LessonNameSpacing
+    {
+        get => _lessonNameSpacing;
+        set
+        {
+            if (value == _lessonNameSpacing) return;
+            _lessonNameSpacing = value;
             OnPropertyChanged();
         }
     }

@@ -12,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Shared.Abstraction.Models;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
 
@@ -24,5 +27,14 @@ public partial class LessonControlMinimized : LessonControlBase
     public LessonControlMinimized()
     {
         InitializeComponent();
+    }
+
+    public static readonly DependencyProperty DefaultLessonControlSettingsProperty = DependencyProperty.Register(
+        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlMinimized), new PropertyMetadata(default(ILessonControlSettings)));
+
+    public ILessonControlSettings? DefaultLessonControlSettings
+    {
+        get { return (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty); }
+        set { SetValue(DefaultLessonControlSettingsProperty, value); }
     }
 }

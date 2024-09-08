@@ -11,8 +11,9 @@
     <local:LessonControlBase.Resources>
         <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
     </local:LessonControlBase.Resources>
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
-          Margin="10 8">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
+                Orientation="Horizontal">
+        <Border Width="{Binding DefaultLessonControlSettings.LessonNameSpacing, FallbackValue=10}" Visibility="Hidden"/>
         <ContentPresenter>
             <ContentPresenter.ContentTemplate>
                 <DataTemplate DataType="{x:Type profile:Subject}">
@@ -43,5 +44,6 @@
                 </MultiBinding>
             </ContentPresenter.Content>
         </ContentPresenter>
-    </Grid>
+        <Border Width="{Binding DefaultLessonControlSettings.LessonNameSpacing, FallbackValue=10}" Visibility="Hidden"/>
+    </StackPanel>
 </local:LessonControlBase>
