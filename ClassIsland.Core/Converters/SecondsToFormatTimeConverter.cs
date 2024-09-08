@@ -31,7 +31,8 @@ public class SecondsToFormatTimeConverter : IValueConverter
         } else {
             return v.TotalSeconds switch // 不显示秒数
             {
-                >= 3600 => $"{Math.Floor(v.TotalHours)}h{v.Minutes:00}m",
+                >= 3660 => $"{Math.Floor(v.TotalHours)}h{v.Minutes:00}m",
+                >= 3600 => "60min", // 1小时整样式
                 >= 0 => $"{v.Minutes}min",
                 _ => ""
             };

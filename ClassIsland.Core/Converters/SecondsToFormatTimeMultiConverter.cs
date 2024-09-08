@@ -16,9 +16,11 @@ public class SecondsToFormatTimeMultiConverter : IMultiValueConverter
         var v0 = TimeSpan.FromSeconds(value[0] as long? ?? 0); // 已过时长或剩余时长
         var v1 = TimeSpan.FromSeconds(value[1] as long? ?? 0); // 总时长
 
-        if (v1 <= TimeSpan.FromHours(1)) {
+        if (v1 < TimeSpan.FromHours(1))
             return $"{v0.Minutes}/{v1.Minutes}min"; // 传统样式
-        } else {
+        if (v1 < TimeSpan.FromMinutes(61))
+            return $"{v0.Minutes}/60min"; // 1小时整样式
+        else {
             var t0 = v0.TotalHours >= 1 ? // 0h03m -> 3m
                 $"{Math.Floor(v0.TotalHours)}h{v0.Minutes:00}m" :
                 $"{v0.Minutes}m";
