@@ -85,6 +85,7 @@ public class ProfileService : IProfileService
                 var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
                 var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
                 MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
+                MergeDictionary(Profile.ClassPlanGroups, cpOld.ClassPlanGroups, cpNew.ClassPlanGroups);
                 spanDownload?.Finish();
             }
             if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))

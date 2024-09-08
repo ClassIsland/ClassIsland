@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;

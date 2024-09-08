@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.ProfileAnalyzing;
@@ -23,6 +24,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 {
     public IProfileAnalyzeService? ProfileAnalyzeService { get; }
     public IProfileService ProfileService { get; }
+    public IManagementService ManagementService { get; }
 
     public static readonly DependencyProperty ControlInfoProperty = DependencyProperty.Register(
         nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(AttachedSettingsControlInfo)));
@@ -166,13 +168,14 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         set { SetValue(StateProperty, value); }
     }
 
-    public AttachedSettingsControlPresenter(IProfileAnalyzeService profileAnalyzeService, IProfileService profileService)
+    public AttachedSettingsControlPresenter(IProfileAnalyzeService profileAnalyzeService, IProfileService profileService, IManagementService managementService)
     {
         ProfileAnalyzeService = profileAnalyzeService;
         ProfileService = profileService;
+        ManagementService = managementService;
     }
 
-    public AttachedSettingsControlPresenter() : this(IAppHost.GetService<IProfileAnalyzeService>(), IAppHost.GetService<IProfileService>())
+    public AttachedSettingsControlPresenter() : this(IAppHost.GetService<IProfileAnalyzeService>(), IAppHost.GetService<IProfileService>(), IAppHost.GetService<IManagementService>())
     {
         InitializeComponent();
         UpdateContent();
@@ -257,6 +260,8 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
             AttachedSettingsTargets.TimeLayout => PackIconKind.TableClock,
             _ => PackIconKind.CogOutline
         };
+        var policy = ManagementService.Policy;
+        IsEnabled = !policy.DisableProfileEditing;
         switch (node.Target)
         {
             case AttachedSettingsTargets.Lesson:
@@ -264,17 +269,30 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
                 {
                     DependencyItemTitle = $"课表 {classPlan.Name}，第{ContentIndex}节";
                 }
+
+                if (policy.DisableProfileClassPlanEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
             case AttachedSettingsTargets.ClassPlan:
                 if (ProfileService.Profile.ClassPlans.TryGetValue(ContentId, out var classPlan2))
                 {
                     DependencyItemTitle = $"课表 {classPlan2.Name}";
                 }
+                if (policy.DisableProfileClassPlanEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
             case AttachedSettingsTargets.TimePoint:
                 if (ProfileService.Profile.TimeLayouts.TryGetValue(ContentId, out var timeLayout) && node.Object is TimeLayoutItem item)
                 {
                     DependencyItemTitle = $"时间表 {timeLayout.Name}，{item.StartSecond:t}-{item.EndSecond:t}";
+                }
+                if (policy.DisableProfileTimeLayoutEditing)
+                {
+                    IsEnabled = false;
                 }
                 break;
 
@@ -283,11 +301,19 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
                 {
                     DependencyItemTitle = $"科目 {subject.Name}";
                 }
+                if (policy.DisableProfileSubjectsEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
             case AttachedSettingsTargets.TimeLayout:
                 if (node.Object is TimeLayout item2)
                 {
                     DependencyItemTitle = $"时间表 {item2.Name}";
+                }
+                if (policy.DisableProfileTimeLayoutEditing)
+                {
+                    IsEnabled = false;
                 }
                 break;
             case AttachedSettingsTargets.None:

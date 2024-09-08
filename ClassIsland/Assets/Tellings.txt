@@ -183,3 +183,9 @@ ClssIsland真好用
 天地人间完全放电⚡
 “所有在我出生之前发明出来的东西都是理所当然的；所有在我15–35岁之间发明的东西注定是要改变世界的；所有在我35岁之后的发明都是反人类的”。
 Oops! Something went wrong. It looks like you've hit an issue in our server API. Don't worry though! We use Sentry to monitor Sentry and it's likely we're already looking into this!
+你干麻，哈哈，哎哟
+愿母神三度为你阖眼，令你的血脉永远鼓动，旅途永远坦然，诡计永不败露
+干你想干的吧，即使你孤立无援；做你想做的吧，即使你只身一人。
+干冰——永远的神！
+你从来都不是孤独的，因为仍有用户通过回声洞与你凝视这句发言。
+你说的对，但是《ClassIsland》是由HelloWRC自主研发的一款全新开放课表冒险游戏。游戏发生在一个被称作「Visual Studio」的幻想世界，在这里，被神选中的人将被授予「.NET Framework」，导引C#之力。你将扮演一位名为「贡献者」的神秘角色，在自由的旅行中邂逅性格各异、能力独特的Pull Requests们，和他们一起击败Issues，找回失散的Features——同时，逐步发掘「ClassIsland」的真相。

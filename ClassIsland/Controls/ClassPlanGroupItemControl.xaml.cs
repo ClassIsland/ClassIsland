@@ -15,7 +15,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
 using MaterialDesignThemes.Wpf;
@@ -42,8 +44,11 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
             if (o is not ClassPlanGroupItemControl control) 
                 return;
             var key = control.Key;
+            var policy = IAppHost.GetService<IManagementService>().Policy;
             control.IsProtected = key == ClassPlanGroup.DefaultGroupGuid.ToString() ||
-                                  key == ClassPlanGroup.GlobalGroupGuid.ToString();
+                                  key == ClassPlanGroup.GlobalGroupGuid.ToString() ||
+                                  policy.DisableProfileEditing ||
+                                  policy.DisableProfileClassPlanEditing;
         }));
 
     private bool _isRenaming = false;
