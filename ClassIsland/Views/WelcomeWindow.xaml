@@ -532,7 +532,7 @@
                                                                 <WrapPanel>
                                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
                                                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                                                            CommandParameter="https://docs.classisland.tech/zh-cn/latest/">
+                                                                            CommandParameter="https://docs.classisland.tech/">
                                                                         <commands:IconText Kind="Internet" Text="在线阅读…"/>
                                                                     </Button>
                                                                 </WrapPanel>
