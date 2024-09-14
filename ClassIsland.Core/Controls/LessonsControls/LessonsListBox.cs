@@ -66,7 +66,7 @@ public class LessonsListBox : ListBox
     public static readonly DependencyProperty LessonControlSettingsProperty = DependencyProperty.Register(
         nameof(LessonControlSettings), typeof(ILessonControlSettings), typeof(LessonsListBox), new PropertyMetadata(default(ILessonControlSettings)));
 
-    public ILessonControlSettings? LessonControlSettings
+    public ILessonControlSettings LessonControlSettings
     {
         get { return (ILessonControlSettings)GetValue(LessonControlSettingsProperty); }
         set { SetValue(LessonControlSettingsProperty, value); }

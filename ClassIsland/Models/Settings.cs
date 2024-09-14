@@ -105,9 +105,11 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _extraInfoType = 0;
     private bool _isCountdownEnabled = true;
     private int _countdownSeconds = 60;
+    private int _extraInfo4ShowSecondsSeconds = 300;
     private int _defaultOnClassTimePointMinutes = 40;
     private int _defaultBreakingTimePointMinutes = 10;
     private double _debugAnimationScale = 1.0;
+    private double _debugTimeSpeed = 1.0;
     private bool _expIsExcelImportEnabled = false;
     private int _timeLayoutEditorIndex = 1;
     private bool _isSplashEnabled = true;
@@ -200,6 +202,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isTransientDisabled = false;
     private bool _isWaitForTransientDisabled = false;
     private bool _isCriticalSafeMode = false;
+    private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
 
@@ -567,6 +570,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _countdownSeconds) return;
             _countdownSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int ExtraInfo4ShowSecondsSeconds
+    {
+        get => _extraInfo4ShowSecondsSeconds;
+        set
+        {
+            if (value == _extraInfo4ShowSecondsSeconds) return;
+            _extraInfo4ShowSecondsSeconds = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double ScheduleSpacing
+    {
+        get => _scheduleSpacing;
+        set
+        {
+            if (value.Equals(_scheduleSpacing)) return;
+            _scheduleSpacing = value;
             OnPropertyChanged();
         }
     }
@@ -1937,6 +1962,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_debugAnimationScale)) return;
             _debugAnimationScale = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double DebugTimeSpeed
+    {
+        get => _debugTimeSpeed;
+        set
+        {
+            if (value.Equals(_debugTimeSpeed)) return;
+            _debugTimeSpeed = value;
             OnPropertyChanged();
         }
     }

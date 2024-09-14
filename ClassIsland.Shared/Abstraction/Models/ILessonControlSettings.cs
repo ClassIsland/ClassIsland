@@ -19,9 +19,6 @@ public interface ILessonControlSettings : INotifyPropertyChanged
     /// <summary>
     /// 时间点附加信息类型
     /// </summary>
-    /// <value>
-    /// 0
-    /// </value>
     public int ExtraInfoType
     {
         get;
@@ -41,6 +38,24 @@ public interface ILessonControlSettings : INotifyPropertyChanged
     /// 时间点结束倒计时时长
     /// </summary>
     public int CountdownSeconds
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// 时间点剩余时间精确到秒时长
+    /// </summary>
+    public int ExtraInfo4ShowSecondsSeconds
+    {
+        get;
+        set;
+    }
+
+    /// <summary>
+    /// 课程表文字间距
+    /// </summary>
+    public double ScheduleSpacing
     {
         get;
         set;

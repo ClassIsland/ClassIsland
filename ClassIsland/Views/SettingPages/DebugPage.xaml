@@ -131,7 +131,31 @@
                 <controls2:SettingsControl.Switcher>
                     <TextBox
                                                 Text="{Binding SettingsService.Settings.DebugAnimationScale, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
-                                                MinWidth="150" />
+                                                MinWidth="150"
+                                                Foreground="{DynamicResource MaterialDesignBody}"/>
+                </controls2:SettingsControl.Switcher>
+            </controls2:SettingsControl>
+
+            <!-- 时间流速 -->
+            <controls2:SettingsControl IconGlyph="ClockFast" Header="时间流速" Margin="0 13 0 0"
+                                                             Description="持续调整时间偏移，以控制时间流速。">
+                <controls2:SettingsControl.Switcher>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <!--<Slider Grid.Column="0"
+                                Value="{Binding SettingsService.Settings.DebugTimeSpeed, Mode=TwoWay}"
+                                MinWidth="200"
+                                TickFrequency="10" Minimum="-100" Maximum="500" IsSnapToTickEnabled="True"/>-->
+                        <TextBox Grid.Column="1"
+                                 Text="{Binding SettingsService.Settings.DebugTimeSpeed, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+                                 MinWidth="102"/>
+                        <Button Grid.Column="2" Click="ButtonResetTimeSpeed_OnClick" ToolTip="重置时间流速" Style="{StaticResource MaterialDesignFlatButton}"
+                                Content="{materialDesign:PackIcon ClockRemoveOutline}"/>
+                    </Grid>
                 </controls2:SettingsControl.Switcher>
             </controls2:SettingsControl>
 

@@ -14,10 +14,23 @@
             <lessonsControls:LessonsListBoxItemTemplateMultiConverter
                 x:Key="LessonsListBoxItemTemplateMultiConverter">
                 <lessonsControls:LessonsListBoxItemTemplateMultiConverter.SeparatorDataTemplate>
-                    <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
-                        <Line VerticalAlignment="Center" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="2"
-                              HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="25" Opacity="0.8"
-                              Margin="10 0"/>
+                    <DataTemplate DataType="{x:Type lessonsControls:LessonsListBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="10">
+                                <Border.LayoutTransform>
+                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}"/>
+                                </Border.LayoutTransform>
+                            </Border>
+
+                            <Line VerticalAlignment="Center" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="2"
+                                  HorizontalAlignment="Center" X1="0" X2="0" Y1="0" Y2="25" Opacity="0.8"/>
+
+                            <Border Width="10">
+                                <Border.LayoutTransform>
+                                    <ScaleTransform ScaleX="{Binding LessonControlSettings.ScheduleSpacing, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}, Mode=OneWay}"/>
+                                </Border.LayoutTransform>
+                            </Border>
+                        </StackPanel>
                     </DataTemplate>
                 </lessonsControls:LessonsListBoxItemTemplateMultiConverter.SeparatorDataTemplate>
                 <lessonsControls:LessonsListBoxItemTemplateMultiConverter.ExpandedDataTemplate>
@@ -41,7 +54,8 @@
                 <lessonsControls:LessonsListBoxItemTemplateMultiConverter.MinimizedDataTemplate>
                     <DataTemplate DataType="{x:Type profile:TimeLayoutItem}">
                         <lessonsControls:LessonControlMinimized
-                            Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}">
+                            Subjects="{Binding Subjects, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}"
+                            DefaultLessonControlSettings="{Binding LessonControlSettings, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}}">
                             <lessonsControls:LessonControlMinimized.ClassInfo>
                                 <MultiBinding Converter="{StaticResource ClassInfoMultiConverter}">
                                     <Binding Mode="OneWay"/>
