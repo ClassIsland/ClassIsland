@@ -14,7 +14,7 @@ public interface IManagementServerConnection
     public Task<ManagementManifest> GetManifest();
 
     /// <summary>
-    /// 从集控服务器获取Json信息。url中的模板将被替换，关于url模板，请见<a href="https://docs.classisland.tech/management/client-identify/#url-template">集控文档</a>。
+    /// 从集控服务器获取Json信息。url中的模板将被替换，关于url模板，请见<a href="https://docs.classisland.tech/management/client-identify#url-template">集控文档</a>。
     /// </summary>
     /// <typeparam name="T">信息类型</typeparam>
     /// <param name="url">要获取的url</param>
@@ -22,7 +22,7 @@ public interface IManagementServerConnection
     public Task<T> GetJsonAsync<T>(string url);
 
     /// <summary>
-    /// 从集控服务器获取Json信息，并写入到本地文件。url中的模板将被替换，关于url模板，请见<a href="https://docs.classisland.tech/management/client-identify/#url-template">集控文档</a>。
+    /// 从集控服务器获取Json信息，并写入到本地文件。url中的模板将被替换，关于url模板，请见<a href="https://docs.classisland.tech/management/client-identify#url-template">集控文档</a>。
     /// </summary>
     /// <typeparam name="T">信息类型</typeparam>
     /// <param name="url">要获取的url</param>

@@ -137,7 +137,7 @@
                                             ToolTip="附加设置帮助…"
                                             Margin="4 0 0 0"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                            CommandParameter="https://docs.classisland.tech/app/advanced/#%E9%99%84%E5%8A%A0%E8%AE%BE%E7%BD%AE"
+                                            CommandParameter="https://docs.classisland.tech/app/advanced#%E9%99%84%E5%8A%A0%E8%AE%BE%E7%BD%AE"
                                             Style="{StaticResource MaterialDesignToolForegroundButton}" />
                                     <Button HorizontalAlignment="Left"
                                             Content="{materialDesign:PackIcon Refresh}"
