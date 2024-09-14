@@ -272,6 +272,7 @@ public partial class ProfileSettingsWindow : MyWindow
         l.Sort();
         l.Reverse();
         timeLayout.Layouts = new ObservableCollection<TimeLayoutItem>(l);
+        timeLayout.SortCompleted();
     }
 
     private void ButtonAddBreakTime_OnClick(object sender, RoutedEventArgs e)
@@ -339,6 +340,11 @@ public partial class ProfileSettingsWindow : MyWindow
                 {"Reason", "用户取消操作。"}
             });
         }
+    }
+
+    private void ButtonRefreshTimeLayout_OnClick(object sender, RoutedEventArgs e)
+    {
+        UpdateTimeLayout();
     }
 
     private void ButtonAddSubject_OnClick(object sender, RoutedEventArgs e)
