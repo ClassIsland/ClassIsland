@@ -88,21 +88,20 @@ void ConfigureSentry(SentryOptions options)
     options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
 }
 
-if (Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null )
+var sentryEnabled = Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null;
+if (sentryEnabled )
 {
     SentrySdk.Init(ConfigureSentry);
-    DiagnosticService.GetDeviceInfo(out var name, out var vendor);
     SentrySdk.ConfigureScope(s =>
     {
         s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
-        s.SetTag("deviceDesktop.name", name);
-        s.SetTag("deviceDesktop.vendor", vendor);
     });
 }
 var app = new App()
 {
     Mutex = mutex,
-    IsMutexCreateNew = createNew
+    IsMutexCreateNew = createNew,
+    IsSentryEnabled = sentryEnabled
 };
 app.InitializeComponent();
 app.Run();

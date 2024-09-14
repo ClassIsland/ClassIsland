@@ -94,9 +94,11 @@ public partial class App : AppBase, IAppHost
 
     public static T GetService<T>() => IAppHost.GetService<T>();
 
+    public bool IsSentryEnabled { get; set; } = false;
+
     public App()
     {
-        AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
+        //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
     }
 
     static App()
@@ -505,6 +507,17 @@ public partial class App : AppBase, IAppHost
         MainWindow = mw;
         mw.StartupCompleted += (o, args) =>
         {
+            // 由于在应用启动时调用 WMI 会导致无法使用触摸，故在应用启动完成后再获取设备统计信息。
+            // https://github.com/dotnet/wpf/issues/9752
+            if (IsSentryEnabled)
+            {
+                DiagnosticService.GetDeviceInfo(out var name, out var vendor);
+                SentrySdk.ConfigureScope(s =>
+                {
+                    s.SetTag("deviceDesktop.name", name);
+                    s.SetTag("deviceDesktop.vendor", vendor);
+                });
+            }
             AppStarted?.Invoke(this, EventArgs.Empty);
             GetService<IIpcService>().IpcProvider.StartServer();
             GetService<IIpcService>().JsonRoutedProvider.StartServer();
