@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -438,24 +439,30 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 .WithFileName("update.zip")
                 .Build();
             Downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
-            await Downloader.StartAsync();
-            DownloadStatusUpdateStopwatch.Stop();
-            DownloadStatusUpdateStopwatch.Reset();
-            if (IsCanceled)
+            Downloader.DownloadFileCompleted += (sender, args) =>
             {
-                IsCanceled = false;
-                return;
-            }
+                DownloadStatusUpdateStopwatch.Stop();
+                DownloadStatusUpdateStopwatch.Reset();
+                if (IsCanceled)
+                {
+                    IsCanceled = false;
+                    return;
+                }
 
-            if (!File.Exists(@".\UpdateTemp\update.zip"))
-            {
-                //await RemoveDownloadedFiles();
-                throw new Exception("更新下载失败。");
-            }
-            else
-            {
-                Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
-            }
+                if (!File.Exists(@".\UpdateTemp\update.zip") || args.Error != null)
+                {
+                    //await RemoveDownloadedFiles();
+                    throw new Exception("更新下载失败。", args.Error);
+                }
+                else
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
+                    });
+                }
+            };
+            await Downloader.StartAsync();
 
         }
         catch (Exception ex)
