@@ -70,6 +70,38 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ***
 
+# 1.5.0.1
+
+1.5 - Griseo
+
+本版本包含了对 1.5 的一些重要 Bug 的修复，请尽快更新。
+
+## 新增功能与优化
+- 【组件/课表】支持修改课程表文字间距
+- 【组件/课表】 时间点附加信息「剩余时间」支持在结束时显示精确倒计时 
+- 【组件/课表】 优化「时间点结束倒计时」显示样式
+- 【档案编辑】手动刷新时间表
+- 【表格导入向导】从表格导入向导无法打开文件对话框添加权限提示  ([#327](https://github.com/ClassIsland/ClassIsland/issues/327))
+- 【调试】 调试选项添加「时间流速」功能  
+
+## 移除的功能
+
+- 【应用】删除 ClassIsland 移动向导
+
+### Bug 修复
+
+- 【系统】修复触摸冻结问题，并替换无法使用触摸问题的修复实现 ([#326](https://github.com/ClassIsland/ClassIsland/issues/326))
+- 【UI/UX】修复文档坏链的问题
+- 【UI/UX】修复部分 SettingsControl 中的 Switcher 控件出现绑定错误的问题
+- 【更新】修复在更新下载错误后显示更新下载完成的问题
+- 【组件/课表】修复临时层时间表与源时间表不对应导致应用崩溃的错误 ([#328](https://github.com/ClassIsland/ClassIsland/issues/328))
+- 【组件】修复倒计日组件不能自定义全局字体大小的问题 ([#335](https://github.com/ClassIsland/ClassIsland/issues/335))
+- 【组件】修复在组件加载时不判断是否满足隐藏规则的问题
+- 【提醒】修复放学前的课间提醒中，下节课显示为过去课程的问题 ([#322](https://github.com/ClassIsland/ClassIsland/issues/322))
+
+
+## 新增功能与优化
+
 # 1.5.0.0
 
 1.5 - Griseo
