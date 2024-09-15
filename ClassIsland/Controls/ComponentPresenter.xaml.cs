@@ -55,7 +55,14 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     }
 
     public static readonly DependencyProperty HidingRulesProperty = DependencyProperty.Register(
-        nameof(HidingRules), typeof(Ruleset), typeof(ComponentPresenter), new PropertyMetadata(default(Ruleset)));
+        nameof(HidingRules), typeof(Ruleset), typeof(ComponentPresenter), new PropertyMetadata(default(Ruleset),
+            (o, args) =>
+            {
+                if (o is ComponentPresenter control)
+                {
+                    control.CheckHideRule();
+                }
+            }));
 
     public Ruleset? HidingRules
     {
@@ -186,6 +193,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     {
         if (HideOnRule)
         {
+            CheckHideRule();
             RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         }
         else
@@ -197,6 +205,15 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
     {
+        CheckHideRule();
+    }
+
+    private void CheckHideRule()
+    {
+        if (!HideOnRule)
+        {
+            return;
+        }
         if (HidingRules != null && RulesetService.IsRulesetSatisfied(HidingRules))
         {
             Visibility = Visibility.Collapsed;

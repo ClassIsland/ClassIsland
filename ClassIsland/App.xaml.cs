@@ -526,6 +526,7 @@ public partial class App : AppBase, IAppHost
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);
+            GetService<IRulesetService>().NotifyStatusChanged();
         };
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow show");
