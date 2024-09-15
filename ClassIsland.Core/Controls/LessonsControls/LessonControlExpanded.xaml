@@ -11,14 +11,19 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <local:LessonControlBase.Resources>
         <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
-        <converters:SecondsLongToFormatHoursMinutesStringConverter x:Key="SecondsLongToFormatHoursMinutesStringConverter" />
+        <converters:SecondsToFormatTimeConverter x:Key="SecondsToFormatTimeConverter" />
+        <converters:SecondsToFormatTimeMultiConverter x:Key="SecondsToFormatTimeMultiConverter" />
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
-        <converters:SecondsLongToFormatHoursMinutesSecondsStringConverter
-            x:Key="SecondsLongToFormatHoursMinutesSecondsStringConverter" />
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
-        <StackPanel Orientation="Horizontal" Margin="16 0" VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal" Margin="4 0" VerticalAlignment="Center">
+            <Border Width="12">
+                <Border.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                </Border.LayoutTransform>
+            </Border>
+
             <ContentPresenter>
                 <ContentPresenter.Style>
                     <Style TargetType="ContentPresenter">
@@ -68,12 +73,15 @@
                         </Style>
                     </TabControl.Resources>
                     <TabItem>
-                        <TabControl VerticalAlignment="Bottom">
+                        <TabControl VerticalAlignment="Bottom" FontSize="{DynamicResource MainWindowSecondaryFontSize}">
                             <TabControl.Style>
                                 <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsLiveUpdatingEnabled, Mode=OneWay}" Value="False">
                                             <Setter Property="SelectedIndex" Value="0" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ExtraInfo4ShowSeconds, Mode=OneWay}" Value="True">
+                                            <Setter Property="SelectedIndex" Value="5" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                     <Setter Property="SelectedIndex"
@@ -81,7 +89,7 @@
                                 </Style>
                             </TabControl.Style>
                             <TabItem>
-                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
+                                <TextBlock VerticalAlignment="Bottom">
                                     <Run
                                         Text="{Binding CurrentTimeLayoutItem.StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm}}">
                                     </Run><Run Text="-">
@@ -91,28 +99,27 @@
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
-                                    <Run
-                                        Text="{Binding Seconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}, ConverterParameter={StaticResource TrueValue}}">
-                                    </Run><Run Text="/">
-                                    </Run><Run
-                                              Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
+                                <TextBlock VerticalAlignment="Bottom">
+                                    <Run>
+                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
+                                            <Binding Path="Seconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                        </MultiBinding>
                                     </Run>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
-                                    <Run Text="-">
-                                    </Run><Run
-                                              Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
-                                    </Run><Run Text="/">
-                                    </Run><Run
-                                              Text="{Binding TotalSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
+                                <TextBlock VerticalAlignment="Bottom">
+                                    <Run Text="-"/><Run>
+                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
+                                            <Binding Path="LeftSeconds" Mode="OneWay" />
+                                            <Binding Path="TotalSeconds" Mode="OneWay" />
+                                        </MultiBinding>
                                     </Run>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
+                                <TextBlock VerticalAlignment="Bottom">
                                     <Run>
                                         <MultiBinding Converter="{StaticResource TimeLongToPercentMultiConverter}"
                                                       Mode="OneWay">
@@ -123,19 +130,16 @@
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
-                                    <Run Text="-">
-                                    </Run><Run
-                                              Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesStringConverter}}">
-                                    </Run>
+                                <TextBlock VerticalAlignment="Bottom">
+                                    <Run Text="-"/><Run Text="{Binding LeftSeconds,
+                                                        Converter={StaticResource SecondsToFormatTimeConverter}}"/>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
-                                <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}" VerticalAlignment="Bottom">
-                                    <Run Text="-">
-                                    </Run><Run
-                                              Text="{Binding LeftSeconds, Converter={StaticResource SecondsLongToFormatHoursMinutesSecondsStringConverter}}">
-                                    </Run>
+                                <TextBlock VerticalAlignment="Bottom">
+                                    <Run Text="-"/><Run Text="{Binding LeftSeconds,
+                                                        Converter={StaticResource SecondsToFormatTimeConverter},
+                                                        ConverterParameter={StaticResource TrueValue}}"/>
                                 </TextBlock>
                             </TabItem>
                         </TabControl>
@@ -160,7 +164,10 @@
                                     CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                                 <Grid>
                                     <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center">
-                                        <Run Text="-" FontSize="{DynamicResource MainWindowSecondaryFontSize}"/><Run Text="{Binding LeftSeconds}"/><Run Text="s"/>
+                                        <Run Text="-" FontSize="{DynamicResource MainWindowSecondaryFontSize}">
+                                        </Run><Run Text="{Binding LeftSeconds,
+                                                   Converter={StaticResource SecondsToFormatTimeConverter},
+                                                   ConverterParameter={StaticResource TrueValue}}"/>
                                     </TextBlock>
                                 </Grid>
                             </Border>
@@ -169,6 +176,12 @@
                 </TabControl>
 
             </StackPanel>
+
+            <Border Width="12">
+                <Border.LayoutTransform>
+                    <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
+                </Border.LayoutTransform>
+            </Border>
         </StackPanel>
         <ProgressBar HorizontalAlignment="Stretch" VerticalAlignment="Bottom"
                  materialDesign:TransitionAssist.DisableTransitions="True">

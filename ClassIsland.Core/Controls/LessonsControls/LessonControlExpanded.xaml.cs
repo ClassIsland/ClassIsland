@@ -39,6 +39,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     private long _totalSeconds = 0;
     private long _seconds = 0;
     private int _masterTabIndex = 0;
+    private bool _extraInfo4ShowSeconds = false;
     private ILessonControlSettings? _settingsSource;
 
     public bool IsLiveUpdatingEnabled
@@ -59,7 +60,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     public static readonly DependencyProperty DefaultLessonControlSettingsProperty = DependencyProperty.Register(
         nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlExpanded), new PropertyMetadata(default(ILessonControlSettings)));
 
-    public ILessonControlSettings? DefaultLessonControlSettings
+    public ILessonControlSettings DefaultLessonControlSettings
     {
         get { return (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty); }
         set { SetValue(DefaultLessonControlSettingsProperty, value); }
@@ -98,6 +99,12 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
     {
         get => _masterTabIndex;
         set => SetField(ref _masterTabIndex, value);
+    }
+
+    public bool ExtraInfo4ShowSeconds
+    {
+        get => _extraInfo4ShowSeconds;
+        set => SetField(ref _extraInfo4ShowSeconds, value);
     }
 
     private void OnIsLiveUpdatePropertyChanged()
@@ -161,9 +168,11 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
         if (SettingsSource != null)
         {
-            MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
+            MasterTabIndex = LeftSeconds < SettingsSource.CountdownSeconds &&
                              SettingsSource.IsCountdownEnabled &&
                              IsLiveUpdatingEnabled ? 1 : 0;
+            ExtraInfo4ShowSeconds = SettingsSource.ExtraInfoType == 4 &&
+                                    LeftSeconds < SettingsSource.ExtraInfo4ShowSecondsSeconds;
         }
 
     }

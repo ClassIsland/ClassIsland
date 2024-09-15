@@ -233,6 +233,7 @@ public partial class MainWindow : Window
         }
         //NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
 
+        SettingsService.Settings.TimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
     }
 
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
@@ -971,11 +972,6 @@ public partial class MainWindow : Window
     {
         ViewModel.Settings.IsWelcomeWindowShowed = false;
         SaveSettings();
-    }
-
-    private void MenuItemDebugMoveClassIslandDirectory_OnClick(object sender, RoutedEventArgs e)
-    {
-        App.DirectoryIsDesktop(true);
     }
 
     private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)

@@ -92,6 +92,11 @@ public partial class DebugPage : SettingsPageBase
         LessonsService.DebugTriggerOnClass();
     }
 
+    private void ButtonResetTimeSpeed_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.DebugTimeSpeed = 1;
+    }
+
     private void ButtonReset_OnClick(object sender, RoutedEventArgs e)
     {
         SettingsService.Settings.TimeOffsetSeconds = 0;

@@ -102,7 +102,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 {
                     MaskMessage = settingsSource.ClassOnPreparingMaskText
                 },
-                MaskDuration = TimeSpan.FromSeconds(5),
+                MaskDuration = TimeSpan.FromSeconds(3),
                 OverlaySpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
                 OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
                 {
@@ -129,22 +129,39 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
-        NotificationHostService.ShowNotification(new NotificationRequest()
+
+        if (LessonsService.NextClassSubject != Subject.Empty)
         {
-            MaskContent = new ClassNotificationProviderControl("ClassOffNotification")
+            NotificationHostService.ShowNotification(new NotificationRequest()
             {
-                ShowTeacherName = Settings.ShowTeacherName
-            },
-            MaskDuration = TimeSpan.FromSeconds(2),
-            MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
-            OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay")
+                MaskContent = new ClassNotificationProviderControl("ClassOffNotification")
+                {
+                    ShowTeacherName = Settings.ShowTeacherName
+                },
+                MaskDuration = TimeSpan.FromSeconds(2),
+                MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
+                OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay")
+                {
+                    ShowTeacherName = Settings.ShowTeacherName
+                },
+                OverlayDuration = TimeSpan.FromSeconds(10),
+                OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
+            });
+        }
+        else
+        {
+            NotificationHostService.ShowNotification(new NotificationRequest()
             {
-                ShowTeacherName = Settings.ShowTeacherName
-            },
-            OverlayDuration = TimeSpan.FromSeconds(10),
-            OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
-            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
-        });
+                MaskContent = new ClassNotificationProviderControl("ClassOffNotification")
+                {
+                    ShowTeacherName = Settings.ShowTeacherName
+                },
+                MaskDuration = TimeSpan.FromSeconds(5),
+                MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
+            });
+        }
     }
 
     private void OnClass(object? sender, EventArgs e)

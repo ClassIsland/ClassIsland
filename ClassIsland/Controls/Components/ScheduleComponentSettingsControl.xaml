@@ -83,13 +83,15 @@
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition />
+                                <RowDefinition />
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Column="0" Text="要显示的附加信息" VerticalAlignment="Center" />
                             <ComboBox Grid.Row="0" Grid.Column="1"
                                       VerticalAlignment="Center"
                                       Foreground="{DynamicResource MaterialDesignBody}"
                                       SelectedIndex="{Binding Settings.ExtraInfoType}"
-                                      HorizontalContentAlignment="Left">
+                                      HorizontalContentAlignment="Left"
+                                      HorizontalAlignment="Right">
                                 <ComboBoxItem HorizontalContentAlignment="Left">
                                     <TextBlock Text="时间点持续时间" />
                                 </ComboBoxItem>
@@ -109,6 +111,41 @@
                                     <TextBlock Text="倒计时" />
                                 </ComboBoxItem>
                             </ComboBox>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 5 0 -3"
+                                       Text="显示精确倒计时" VerticalAlignment="Center"
+                                           Opacity="0.75">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Settings.ExtraInfoType}" Value="4">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 -3" HorizontalAlignment="Right">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Settings.ExtraInfoType}" Value="4">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </Style>
+                                </StackPanel.Style>
+                                
+                                <TextBlock Text="当剩余时间不足" VerticalAlignment="Center"
+                                           Opacity="0.75"/>
+                                <TextBox Foreground="{DynamicResource MaterialDesignBody}"
+                                         Text="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Converter={StaticResource IntToStringConverter}}"
+                                         MinWidth="75" Margin="3 0 0 0" TextAlignment="Center"
+                                         materialDesign:TextFieldAssist.SuffixText="秒"/>
+                            </StackPanel>
                         </Grid>
                     </Expander>
                 </materialDesign:Card>
@@ -151,6 +188,18 @@
                                        Description="在处于上课类型的时间点时，只显示当前时间点。"
                                        IsOn="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"
                                        Margin="0 0 0 6" />
+                <!-- 课程表文本间距 -->
+                <ci:SettingsCard IconGlyph="ArrowExpandHorizontal"
+                                 Header="课程表文本间距"
+                                 Description="使课程表显示更紧凑或宽松。"
+                                 Margin="0 0 0 6">
+                    <ci:SettingsCard.Switcher>
+                        <Slider Width="150" Minimum="0.2" Maximum="1"
+                                Value="{Binding Settings.ScheduleSpacing}"
+                                TickFrequency="0.1" AutoToolTipPrecision="1"
+                                AutoToolTipPlacement="BottomRight"/>
+                    </ci:SettingsCard.Switcher>
+                </ci:SettingsCard>
                 <!-- 无课程时显示占位符 -->
                 <materialDesign:Card Margin="0 0 0 6">
                     <Expander Background="Transparent"

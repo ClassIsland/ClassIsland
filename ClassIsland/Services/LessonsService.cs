@@ -331,6 +331,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 NextBreakingTimeLayoutItem = NextBreakingTimeLayoutItem = nextBreakingTimeLayoutItem;
             }
         }
+        else
+        {
+            NextClassSubject = Subject.Empty;
+        }
 
         var tClassDelta = NextClassTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         OnClassLeftTime = tClassDelta;

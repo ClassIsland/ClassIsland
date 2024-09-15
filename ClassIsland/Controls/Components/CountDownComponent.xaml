@@ -18,7 +18,7 @@
         <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:CountDownComponent}}"
-          VerticalAlignment="Center" TextElement.FontSize="16">
+          VerticalAlignment="Center" TextElement.FontSize="{DynamicResource MainWindowBodyFontSize}">
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="距离" Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
                        VerticalAlignment="Center" Margin="0 0 2 0"/>
