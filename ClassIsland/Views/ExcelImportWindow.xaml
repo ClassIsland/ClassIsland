@@ -88,7 +88,7 @@
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
                 <Run Text="无法打开文件“"/>
                 <Run Text="{Binding ViewModel.OpenFileName, Mode=OneWay}"/>
-                <Run Text="”，请检查该文件是否被其它程序占用，是否被移动或删除。"/>
+                <Run Text="”，请检查该文件是否被其它程序占用，是否被移动或删除，或者您不具有读写此文件的权限。"/>
                 <LineBreak/>
                 <LineBreak/>
                 <Run Text="错误详细信息："/>
