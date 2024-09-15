@@ -68,12 +68,14 @@
                                                       IsCompact="True"
                                                       Margin="0 0 0 6">
                                 <controls1:SettingsControl.Switcher>
-                                    <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
-                                                              Text="{Binding Settings.InDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
-                                                              Width="120"
-                                                              Foreground="{DynamicResource MaterialDesignBody}"
-                                                              Style="{StaticResource MaterialDesignTextBoxBase}"
-                                                              materialDesign:TextFieldAssist.SuffixText="秒" />
+                                    <Grid>
+                                        <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
+                                                                   Text="{Binding Settings.InDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
+                                                                   Width="120"
+                                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                                   Style="{StaticResource MaterialDesignTextBoxBase}"
+                                                                   materialDesign:TextFieldAssist.SuffixText="秒" />
+                                    </Grid>
                                 </controls1:SettingsControl.Switcher>
                             </controls1:SettingsControl>
                             <!-- 室外课程课前提醒时间 -->
@@ -82,12 +84,14 @@
                                                       IsCompact="True"
                                                       Margin="0 0 0 6">
                                 <controls1:SettingsControl.Switcher>
-                                    <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
-                                                              Text="{Binding Settings.OutDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
-                                                              Width="120"
-                                                              Foreground="{DynamicResource MaterialDesignBody}"
-                                                              Style="{StaticResource MaterialDesignTextBoxBase}"
-                                                              materialDesign:TextFieldAssist.SuffixText="秒" />
+                                    <Grid>
+                                        <controls1:NumbericTextBox MaxValue="3600" MinValue="0"
+                                                                   Text="{Binding Settings.OutDoorClassPreparingDeltaTime, Converter={StaticResource IntToStringConverter}}"
+                                                                   Width="120"
+                                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                                   Style="{StaticResource MaterialDesignTextBoxBase}"
+                                                                   materialDesign:TextFieldAssist.SuffixText="秒" />
+                                    </Grid>
                                 </controls1:SettingsControl.Switcher>
                             </controls1:SettingsControl>
                             <!-- 准备上课提醒文字 -->

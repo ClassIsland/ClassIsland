@@ -121,22 +121,24 @@
                                                            Description="鼠标左键点击/触屏单击本应用托盘图标时进行的操作。无论此设置处于何种选项，鼠标右键点击/触屏长按托盘图标总是会打开主菜单。"
                                                            IsOn="{Binding SettingsService.Settings.ShowExtraInfoOnTimePoint, Mode=TwoWay}">
                 <controls1:SettingsCard.Switcher>
-                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                      SelectedIndex="{Binding SettingsService.Settings.TaskBarIconClickBehavior}"
-                                                      HorizontalContentAlignment="Left">
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="Menu" Text="打开主菜单" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="FileDocumentEdit" Text="打开档案编辑窗口" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="Visibility" Text="显示/隐藏主界面" />
-                        </ComboBoxItem>
-                        <ComboBoxItem HorizontalContentAlignment="Left">
-                            <controls1:IconText Kind="SwapHorizontal" Text="打开换课窗口" />
-                        </ComboBoxItem>
-                    </ComboBox>
+                    <Grid>
+                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                  SelectedIndex="{Binding SettingsService.Settings.TaskBarIconClickBehavior}"
+                                  HorizontalContentAlignment="Left">
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <controls1:IconText Kind="Menu" Text="打开主菜单" />
+                            </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <controls1:IconText Kind="FileDocumentEdit" Text="打开档案编辑窗口" />
+                            </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <controls1:IconText Kind="Visibility" Text="显示/隐藏主界面" />
+                            </ComboBoxItem>
+                            <ComboBoxItem HorizontalContentAlignment="Left">
+                                <controls1:IconText Kind="SwapHorizontal" Text="打开换课窗口" />
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
             <!-- 显示启动加载界面 -->

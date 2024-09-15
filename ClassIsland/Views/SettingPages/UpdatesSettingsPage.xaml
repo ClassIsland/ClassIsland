@@ -671,17 +671,19 @@
                                                            Header="更新通道"
                                                            Description="控制应用的更新目标版本。">
                                     <controls1:SettingsControl.Switcher>
-                                        <ComboBox Width="150"
-                                                  Foreground="{DynamicResource MaterialDesignBody}"
-                                                  ItemsSource="{x:Static appUpdating:UpdateService.UpdateChannels}"
-                                                  SelectedValue="{Binding SettingsService.Settings.SelectedChannel}"
-                                                  SelectedValuePath="RootUrl">
-                                            <ComboBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <TextBlock Text="{Binding Name}" />
-                                                </DataTemplate>
-                                            </ComboBox.ItemTemplate>
-                                        </ComboBox>
+                                        <Grid>
+                                            <ComboBox Width="150"
+                                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                                      ItemsSource="{x:Static appUpdating:UpdateService.UpdateChannels}"
+                                                      SelectedValue="{Binding SettingsService.Settings.SelectedChannel}"
+                                                      SelectedValuePath="RootUrl">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </Grid>
                                     </controls1:SettingsControl.Switcher>
                                 </controls1:SettingsControl>
                                 <TextBlock Margin="0 8 0 0"

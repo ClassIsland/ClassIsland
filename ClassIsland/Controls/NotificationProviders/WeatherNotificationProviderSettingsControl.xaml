@@ -31,11 +31,13 @@
                                        Visibility="{Binding Settings.IsForecastEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                                        Description="天气预报的默认显示模式，可以在各个时间点覆盖该设置。">
                     <controls1:SettingsCard.Switcher>
-                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                  SelectedIndex="{Binding Settings.ForecastShowMode, Converter={StaticResource ShowModeToIntConverter}}">
-                            <system:String>默认禁用</system:String>
-                            <system:String>默认启用</system:String>
-                        </ComboBox>
+                        <Grid>
+                            <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                      SelectedIndex="{Binding Settings.ForecastShowMode, Converter={StaticResource ShowModeToIntConverter}}">
+                                <system:String>默认禁用</system:String>
+                                <system:String>默认启用</system:String>
+                            </ComboBox>
+                        </Grid>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
                 <!-- 默认极端天气提醒显示模式 -->
@@ -43,11 +45,13 @@
                                        Visibility="{Binding Settings.IsAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                                        Description="极端天气提醒的默认显示模式，可以在各个时间点覆盖该设置。">
                     <controls1:SettingsCard.Switcher>
-                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                  SelectedIndex="{Binding Settings.AlertShowMode, Converter={StaticResource ShowModeToIntConverter}}">
-                            <system:String>默认禁用</system:String>
-                            <system:String>默认启用</system:String>
-                        </ComboBox>
+                        <Grid>
+                            <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                      SelectedIndex="{Binding Settings.AlertShowMode, Converter={StaticResource ShowModeToIntConverter}}">
+                                <system:String>默认禁用</system:String>
+                                <system:String>默认启用</system:String>
+                            </ComboBox>
+                        </Grid>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
                 <!-- 极端天气文本滚动速度 -->

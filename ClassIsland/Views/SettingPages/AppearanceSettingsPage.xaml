@@ -71,28 +71,32 @@
             <controls1:SettingsCard IconGlyph="ThemeLightDark" Header="应用主题"
                                                            Description="控制应用的明暗主题。">
                 <controls1:SettingsCard.Switcher>
-                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                      SelectedIndex="{Binding SettingsService.Settings.Theme}"
-                                                      HorizontalContentAlignment="Left">
-                        <controls1:IconText Kind="ThemeLightDark" Text="跟随系统" />
-                        <controls1:IconText Kind="WhiteBalanceSunny" Text="明亮" />
-                        <controls1:IconText Kind="WeatherNight" Text="黑暗" />
-                    </ComboBox>
+                    <Grid>
+                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                  SelectedIndex="{Binding SettingsService.Settings.Theme}"
+                                  HorizontalContentAlignment="Left">
+                            <controls1:IconText Kind="ThemeLightDark" Text="跟随系统" />
+                            <controls1:IconText Kind="WhiteBalanceSunny" Text="明亮" />
+                            <controls1:IconText Kind="WeatherNight" Text="黑暗" />
+                        </ComboBox>
+                    </Grid>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
             <!-- 主题色来源 -->
             <controls1:SettingsCard IconGlyph="PaletteSwatchOutline" Header="主题色来源"
                                                            Description="控制应用选取主题色的途径。">
                 <controls1:SettingsCard.Switcher>
-                    <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
-                                                      SelectionChanged="ButtonUpdateWallpaper_OnClick"
-                                                      HorizontalContentAlignment="Left"
-                                                      SelectedIndex="{Binding SettingsService.Settings.ColorSource}">
-                        <controls1:IconText Kind="UserOutline" Text="自定义" />
-                        <controls1:IconText Kind="Wallpaper" Text="系统壁纸" />
-                        <controls1:IconText Kind="MicrosoftWindows" Text="系统" />
-                        <controls1:IconText Kind="PanoramaVariantOutline" Text="屏幕主题色" />
-                    </ComboBox>
+                    <Grid>
+                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                  SelectionChanged="ButtonUpdateWallpaper_OnClick"
+                                  HorizontalContentAlignment="Left"
+                                  SelectedIndex="{Binding SettingsService.Settings.ColorSource}">
+                            <controls1:IconText Kind="UserOutline" Text="自定义" />
+                            <controls1:IconText Kind="Wallpaper" Text="系统壁纸" />
+                            <controls1:IconText Kind="MicrosoftWindows" Text="系统" />
+                            <controls1:IconText Kind="PanoramaVariantOutline" Text="屏幕主题色" />
+                        </ComboBox>
+                    </Grid>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
             <StackPanel>
@@ -223,12 +227,14 @@
                                                                               Header="自动提取主题色间隔"
                                                                               Description="自动从壁纸提取主题色时间隔的时间，建议根据动态壁纸更新速度按需设置，不宜低于10秒。">
                                 <controls1:SettingsControl.Switcher>
-                                    <controls1:NumbericTextBox MaxValue="36000" MinValue="0"
-                                                                Width="150"
-                                                                materialDesign:TextFieldAssist.SuffixText="秒"
-                                                                Foreground="{DynamicResource MaterialDesignBody}"
-                                                                Style="{StaticResource MaterialDesignTextBox}"
-                                                                Text="{Binding SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+                                    <Grid>
+                                        <controls1:NumbericTextBox MaxValue="36000" MinValue="0"
+                                                                   Width="150"
+                                                                   materialDesign:TextFieldAssist.SuffixText="秒"
+                                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                                   Style="{StaticResource MaterialDesignTextBox}"
+                                                                   Text="{Binding SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+                                    </Grid>
                                 </controls1:SettingsControl.Switcher>
                             </controls1:SettingsControl>
                         </Grid>
@@ -259,10 +265,12 @@
                 <controls1:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
                                                                Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
                     <controls1:SettingsCard.Switcher>
-                        <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Style="{StaticResource MaterialDesignTextBox}"
-                                                                          Text="{Binding SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+                        <Grid>
+                            <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="150"
+                                                       Foreground="{DynamicResource MaterialDesignBody}"
+                                                       Style="{StaticResource MaterialDesignTextBox}"
+                                                       Text="{Binding SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+                        </Grid>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
             </StackPanel>
@@ -326,15 +334,19 @@
                 <!-- 自动提取主题色 -->
                 <controls1:SettingsCard Margin="0 6" IconGlyph="ClockOutline" Header="自动提取主题色间隔" Description="自动从屏幕上提取主题色时间隔的时间，建议设为10秒左右。">
                     <controls1:SettingsCard.Switcher>
-                        <controls1:NumbericTextBox MaxValue="300" MinValue="0" Width="100" materialDesign:TextFieldAssist.SuffixText="秒" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}"
-                                                   Text="{Binding SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                        <Grid>
+                            <controls1:NumbericTextBox MaxValue="300" MinValue="0" Width="100" materialDesign:TextFieldAssist.SuffixText="秒" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}"
+                                                       Text="{Binding SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"/>
+                        </Grid>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
                 <!-- 取色亮度波峰 -->
                 <controls1:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰" Description="取色时为亮度更接近此值的颜色赋予更高的权重。（默认值：0.6）">
                     <controls1:SettingsCard.Switcher>
-                        <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="100" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}"
-                                                   Text="{Binding SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+                        <Grid>
+                            <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="100" Foreground="{DynamicResource MaterialDesignBody}" Style="{StaticResource MaterialDesignTextBox}"
+                                                       Text="{Binding SettingsService.Settings.TargetLightValue, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+                        </Grid>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
             </StackPanel>
@@ -344,60 +356,64 @@
             <controls1:SettingsCard IconGlyph="FormatFont" Header="自定义字体"
                                                            Description="自定义主界面显示课表的字体。">
                 <controls1:SettingsCard.Switcher>
-                    <ComboBox ItemsSource="{Binding ViewModel.FontFamilies}"
-                                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                                      SelectedItem="{Binding SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock FontFamily="{Binding}" FontWeight="Normal"
-                                                                   ToolTip="{Binding Source}">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Source}"
-                                                                            Value="/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC">
-                                                    <Setter Property="Text"
-                                                                                Value="（默认）HarmonyOS Sans SC" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                            <Setter Property="Text" Value="{Binding Source}" />
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+                    <Grid>
+                        <ComboBox ItemsSource="{Binding ViewModel.FontFamilies}"
+                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                  SelectedItem="{Binding SettingsService.Settings.MainWindowFont, Converter={StaticResource StringToFontFamilyConverter}}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontFamily="{Binding}" FontWeight="Normal"
+                                               ToolTip="{Binding Source}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Source}"
+                                                                 Value="/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC">
+                                                        <Setter Property="Text"
+                                                                Value="（默认）HarmonyOS Sans SC" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Text" Value="{Binding Source}" />
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
             <controls1:SettingsCard IconGlyph="FormatLineWeight" Header="自定义字重"
                                                            Description="自定义主界面显示的字体的字重，需要对应字体支持。">
                 <controls1:SettingsCard.Switcher>
-                    <ComboBox
-                                                SelectedItem="{Binding SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
-                                                Foreground="{DynamicResource MaterialDesignBody}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding}" FontWeight="{Binding}"
-                                                                   ToolTip="{Binding}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                        <x:Static Member="FontWeights.Thin" />
-                        <!--<x:Static Member="FontWeights.UltraLight"/>-->
-                        <x:Static Member="FontWeights.ExtraLight" />
-                        <x:Static Member="FontWeights.Light" />
-                        <x:Static Member="FontWeights.Normal" />
-                        <!--<x:Static Member="FontWeights.Regular"/>-->
-                        <x:Static Member="FontWeights.Medium" />
-                        <!--<x:Static Member="FontWeights.DemiBold"/>-->
-                        <x:Static Member="FontWeights.SemiBold" />
-                        <x:Static Member="FontWeights.Bold" />
-                        <x:Static Member="FontWeights.ExtraBold" />
-                        <!--<x:Static Member="FontWeights.UltraBold"/>-->
-                        <x:Static Member="FontWeights.Black" />
-                        <!--<x:Static Member="FontWeights.Heavy"/>-->
-                        <x:Static Member="FontWeights.ExtraBlack" />
-                        <!--<x:Static Member="FontWeights.UltraBlack"/>-->
-                    </ComboBox>
+                    <Grid>
+                        <ComboBox
+                            SelectedItem="{Binding SettingsService.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
+                            Foreground="{DynamicResource MaterialDesignBody}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}" FontWeight="{Binding}"
+                                               ToolTip="{Binding}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                            <x:Static Member="FontWeights.Thin" />
+                            <!--<x:Static Member="FontWeights.UltraLight"/>-->
+                            <x:Static Member="FontWeights.ExtraLight" />
+                            <x:Static Member="FontWeights.Light" />
+                            <x:Static Member="FontWeights.Normal" />
+                            <!--<x:Static Member="FontWeights.Regular"/>-->
+                            <x:Static Member="FontWeights.Medium" />
+                            <!--<x:Static Member="FontWeights.DemiBold"/>-->
+                            <x:Static Member="FontWeights.SemiBold" />
+                            <x:Static Member="FontWeights.Bold" />
+                            <x:Static Member="FontWeights.ExtraBold" />
+                            <!--<x:Static Member="FontWeights.UltraBold"/>-->
+                            <x:Static Member="FontWeights.Black" />
+                            <!--<x:Static Member="FontWeights.Heavy"/>-->
+                            <x:Static Member="FontWeights.ExtraBlack" />
+                            <!--<x:Static Member="FontWeights.UltraBlack"/>-->
+                        </ComboBox>
+                    </Grid>
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
             <!-- 字体大小 -->
