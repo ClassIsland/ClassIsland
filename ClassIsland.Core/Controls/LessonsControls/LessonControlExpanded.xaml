@@ -12,6 +12,7 @@
     <local:LessonControlBase.Resources>
         <converters:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
         <converters:SecondsToFormatTimeConverter x:Key="SecondsToFormatTimeConverter" />
+        <converters:SecondsToFormatTimeConverter x:Key="SecondsToFormatTimeConverterCeiling" Ceiling="True"/>
         <converters:SecondsToFormatTimeMultiConverter x:Key="SecondsToFormatTimeMultiConverter" />
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
@@ -111,7 +112,8 @@
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run Text="-"/><Run>
-                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay">
+                                        <MultiBinding Converter="{StaticResource SecondsToFormatTimeMultiConverter}" Mode="OneWay"
+                                                      ConverterParameter="1">
                                             <Binding Path="LeftSeconds" Mode="OneWay" />
                                             <Binding Path="TotalSeconds" Mode="OneWay" />
                                         </MultiBinding>
@@ -132,7 +134,7 @@
                             <TabItem>
                                 <TextBlock VerticalAlignment="Bottom">
                                     <Run Text="-"/><Run Text="{Binding LeftSeconds,
-                                                        Converter={StaticResource SecondsToFormatTimeConverter}}"/>
+                                                        Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
                                 </TextBlock>
                             </TabItem>
                             <TabItem>
