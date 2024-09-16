@@ -328,4 +328,15 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         SettingsService.Settings.IsPluginMarketWarningVisible = false;
     }
+
+    private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ViewModel.SelectedPluginInfo == null)
+        {
+            ViewModel.IsDetailsShown = false;
+            return;
+        }
+
+        ViewModel.IsDetailsShown = true;
+    }
 }

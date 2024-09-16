@@ -14,6 +14,7 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
     private int _pluginCategoryIndex = 1;
     private string _pluginFilterText = "";
     private bool _isLoadingDocument = false;
+    private bool _isDetailsShown = false;
 
     public PluginInfo? SelectedPluginInfo
     {
@@ -99,6 +100,17 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
         {
             if (value == _isLoadingDocument) return;
             _isLoadingDocument = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsDetailsShown
+    {
+        get => _isDetailsShown;
+        set
+        {
+            if (value == _isDetailsShown) return;
+            _isDetailsShown = value;
             OnPropertyChanged();
         }
     }

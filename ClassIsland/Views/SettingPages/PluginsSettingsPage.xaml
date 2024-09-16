@@ -358,7 +358,12 @@
         </Grid>
     </ci:SettingsPageBase.Resources>
     <Grid>
-        <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}">
+        <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
+                                  IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}">
+            <controls1:ListDetailView.TitleElement>
+                <TextBlock Text="插件详细" VerticalAlignment="Center"
+                           Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            </controls1:ListDetailView.TitleElement>
             <controls1:ListDetailView.LeftContent>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -482,6 +487,7 @@
                              ItemsSource="{Binding Source={StaticResource PluginSource}}"
                              SelectedValue="{Binding ViewModel.SelectedPluginInfo}"
                              SelectedValuePath="Value"
+                             SelectionChanged="Selector_OnSelectionChanged"
                              HorizontalContentAlignment="Stretch">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
