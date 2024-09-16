@@ -105,23 +105,6 @@
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:ContributionLabel}">
                         <Grid>
-                            <Grid.ToolTip>
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="License"
-                                                                 Margin="0 0 3 0" />
-                                        <TextBlock Text="{Binding License}"
-                                                   Margin="0 0 12 0" TextWrapping="Wrap" />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Web"
-                                                                 Margin="0 0 3 0" />
-                                        <TextBlock Text="{Binding Website}"
-                                                   Margin="0 0 12 0" TextWrapping="Wrap" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </Grid.ToolTip>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
@@ -138,52 +121,79 @@
                                        Text="{Binding Title}"
                                        VerticalAlignment="Center" FontSize="14"
                                        FontWeight="Bold" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       VerticalAlignment="Center" FontSize="14"
+                                       TextWrapping="Wrap" 
+                                       Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <commands:NavHyperlink CommandParameter="{Binding Website}"
+                                                       ToolTip="{Binding Website}">
+                                    网站…
+                                </commands:NavHyperlink>
+                            </TextBlock>
                             <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
-                                          License="MIT License"
-                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/" />
-                <models:ContributionLabel Title="FluentWpf"
-                                          License="MIT License"
-                                          Website="https://github.com/sourcechord/FluentWPF" />
-                <models:ContributionLabel Title="ReoGrid"
-                                          License="MIT license"
-                                          Website="https://github.com/unvell/ReoGrid" />
-                <models:ContributionLabel Title="EPPlus"
-                                          License="Polyform Noncommercial 1.0.0"
-                                          Website="https://epplussoftware.com/" />
-                <models:ContributionLabel Title="Walterlv"
-                                          License="&quot;Anti 996&quot; License Version 1.0"
-                                          Website="https://github.com/walterlv/walterlv.demo" />
-                <models:ContributionLabel Title="MahApps.Metro"
-                                          License="MIT license"
-                                          Website="https://github.com/MahApps/MahApps.Metro" />
-                <models:ContributionLabel Title="gong-mdWpf-dragdrop"
-                                          License="BSD 3-Clause"
-                                          Website="https://github.com/punker76/gong-mdWpf-dragdrop" />
-                <models:ContributionLabel Title="H.NotifyIcon.Wpf"
-                                          License="MIT License"
-                                          Website="https://github.com/HavenDV/H.NotifyIcon" />
-                <models:ContributionLabel Title="MdXaml"
-                                          License="MIT License"
-                                          Website="https://github.com/whistyun/MdXaml" />
-                <models:ContributionLabel Title="Microsoft.AppCenter"
-                                          License="MIT License"
-                                          Website="https://aka.ms/telgml" />
-                <models:ContributionLabel Title="Downloader"
-                                          License="MIT License"
-                                          Website="https://github.com/bezzad/Downloader" />
-                <models:ContributionLabel Title="HarmonyOS Sans" License="-"
-                                          Website="https://developer.harmonyos.com/cn/design/resource" />
-                <models:ContributionLabel Title="MVVM Toolkit"
-                                          Website="https://github.com/CommunityToolkit/dotnet"
-                                          License="MIT License" />
-                <models:ContributionLabel Title="WPF" License="MIT License"
-                                          Website="https://github.com/dotnet/Wpf" />
-                <models:ContributionLabel Title=".NET" License="MIT License"
+                <models:ContributionLabel Title=".NET"
                                           Website="https://github.com/microsoft/dotnet" />
+                <models:ContributionLabel Title="CommunityToolkit.Mvvm"
+                                          Website="https://github.com/CommunityToolkit/dotnet" />
+                <models:ContributionLabel Title="dotnetCampus.Ipc"
+                                          Website="https://github.com/dotnet-campus/dotnetCampus.Ipc" />
+                <models:ContributionLabel Title="Downloader"
+                                          Website="https://github.com/bezzad/Downloader" />
+                <models:ContributionLabel Title="EPPlus"
+                                          Website="https://github.com/EPPlusSoftware/EPPlus" />
+                <models:ContributionLabel Title="Edge_tts_sharp"
+                                          Website="https://github.com/Entity-Now/Edge_tts_sharp" />
+                <models:ContributionLabel Title="gong-wpf-dragdrop"
+                                          Website="https://github.com/punker76/gong-wpf-dragdrop" />
+                <models:ContributionLabel Title="Google.Protobuf"
+                                          Website="https://github.com/protocolbuffers/protobuf" />
+                <models:ContributionLabel Title="Grpc"
+                                          Website="https://github.com/grpc/grpc-dotnet" />
+                <models:ContributionLabel Title="Grpc.Net.Client"
+                                          Website="https://github.com/grpc/grpc-dotnet" />
+                <models:ContributionLabel Title="Grpc.Tools"
+                                          Website="https://github.com/grpc/grpc" />
+                <models:ContributionLabel Title="GuerrillaNtp"
+                                          Website="https://github.com/robertvazan/guerrillantp" />
+                <models:ContributionLabel Title="H.NotifyIcon"
+                                          Website="https://github.com/HavenDV/H.NotifyIcon" />
+                <models:ContributionLabel Title="HarmonyOS Sans"
+                                          Website="https://developer.harmonyos.com/cn/design/resource" />
+                <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
+                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit" />
+                <models:ContributionLabel Title="MdXaml"
+                                          Website="https://github.com/whistyun/MdXaml" />
+                <models:ContributionLabel Title="Microsoft.Data.Sqlite"
+                                          Website="https://github.com/dotnet/efcore" />
+                <models:ContributionLabel Title="Microsoft.Extensions.Hosting"
+                                          Website="https://github.com/dotnet/runtime" />
+                <models:ContributionLabel Title="Microsoft.Windows.CsWin32"
+                                          Website="https://github.com/microsoft/CsWin32" />
+                <models:ContributionLabel Title="NAudio"
+                                          Website="https://github.com/naudio/NAudio" />
+                <models:ContributionLabel Title="Octokit"
+                                          Website="https://github.com/octokit/octokit.net" />
+                <models:ContributionLabel Title="Pastel"
+                                          Website="https://github.com/silkfire/Pastel" />
+                <models:ContributionLabel Title="RawInput.Sharp"
+                                          Website="https://github.com/mfakane/rawinput-sharp" />
+                <models:ContributionLabel Title="Sentry"
+                                          Website="https://github.com/getsentry/sentry-dotnet" />
+                <models:ContributionLabel Title="unvell.ReoGridWPF"
+                                          Website="https://github.com/unvell/ReoGrid" />
+                <models:ContributionLabel Title="VirtualizingWrapPanel"
+                                          Website="https://github.com/sbaeumlisberger/VirtualizingWrapPanel" />
+                <models:ContributionLabel Title="WPF"
+                                          Website="https://github.com/dotnet/Wpf" />
+                <models:ContributionLabel Title="WindowsShortcutFactory"
+                                          Website="https://github.com/gdivis/WindowsShortcutFactory" />
+                <models:ContributionLabel Title="WinowsCommunityToolkit"
+                                          Website="https://github.com/CommunityToolkit/WindowsCommunityToolkit" />
+                <models:ContributionLabel Title="YamlDotNet"
+                                          Website="https://github.com/aaubry/YamlDotNet" />
             </ListView>
         </Grid>
 
@@ -297,6 +307,15 @@
                         </Grid>
                     </Button>
                     <Separator Margin="0 -0.5" Opacity="0.5"/>
+                    <Button Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                            CommandParameter="https://github.com/ClassIsland/ClassIsland/discussions/categories/%E5%8A%9F%E8%83%BD%E6%8A%95%E7%A5%A8">
+                        <Grid>
+                            <TextBlock Text="功能投票" />
+                            <materialDesign:PackIcon Kind="ExternalLink" HorizontalAlignment="Right"
+                                                     VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+                    <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Click="ButtonDiagnosticInfo_OnClick"
                             Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                             CommandParameter="{StaticResource DiagnosticInfoDialog}">
@@ -330,7 +349,8 @@
                             <TextBlock Text="第三方库" />
                         </Grid>
                     </Button>
-                    <TextBlock LineHeight="30" Margin="24 8 0 0" FontSize="14">
+                    <Separator Margin="0 -0.5" Opacity="0.5"/>
+                    <TextBlock LineHeight="30" Margin="24 12 0 0" FontSize="14">
                         本项目受到
                         <Hyperlink Click="Hyperlink2_OnClick">DuguSand/class_form</Hyperlink>
                         的启发而开发。<LineBreak/>
