@@ -93,6 +93,7 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 - 【系统】修复触摸冻结问题，并替换无法使用触摸问题的修复实现 ([#326](https://github.com/ClassIsland/ClassIsland/issues/326))
 - 【UI/UX】修复文档坏链的问题
 - 【UI/UX】修复部分 SettingsControl 中的 Switcher 控件出现绑定错误的问题
+- 【应用设置】修复插件管理 ListDetailView 在紧凑视图中无法展开详细的问题
 - 【更新】修复在更新下载错误后显示更新下载完成的问题
 - 【组件/课表】修复临时层时间表与源时间表不对应导致应用崩溃的错误 ([#328](https://github.com/ClassIsland/ClassIsland/issues/328))
 - 【组件】修复倒计日组件不能自定义全局字体大小的问题 ([#335](https://github.com/ClassIsland/ClassIsland/issues/335))
