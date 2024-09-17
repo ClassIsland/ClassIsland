@@ -24,7 +24,10 @@ public class SecondsToFormatTimeMultiConverter : IMultiValueConverter
         var t0 = v0.TotalHours >= 1 ? // 0h03m -> 3m
             $"{Math.Floor(v0.TotalHours)}h{v0.Minutes:00}m" :
             $"{v0.TotalMinutes}m";
-        return $"{t0}/{Math.Floor(v1.TotalHours)}h{v1.Minutes:00}m"; // 时分样式
+        var t1 = v1.TotalHours >= 1 ? // 0h03m -> 3m
+            $"{Math.Floor(v1.TotalHours)}h{v1.Minutes:00}m" :
+            $"{v1.TotalMinutes}m";
+        return $"{t0}/{t1}"; // 时分样式
 
         double Round(double x) => ceiling ? Math.Ceiling(x) : Math.Floor(x);
     }
