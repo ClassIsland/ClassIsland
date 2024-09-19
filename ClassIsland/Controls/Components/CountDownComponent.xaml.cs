@@ -43,7 +43,7 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
-        DaysLeft = $"{Math.Max((Settings.OverTime.Date - ExactTimerService.GetCurrentLocalDateTime().Date).Days, 0)}天";
+        DaysLeft = $"{Math.Max((Settings.OverTime.Date - ExactTimerService.GetCurrentLocalDateTime().Date).Days, 0)} 天";
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
