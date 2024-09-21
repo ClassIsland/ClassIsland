@@ -13,9 +13,9 @@
 ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具，可以在 Windows 屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
-### [点我进入 Classlsland 官方频道](https://classisland.tech/)
+#### [点我进入 Classlsland 官方频道](https://classisland.tech/)
 
-#### [ClassIsland 官方网站](https://classisland.tech/)｜[ClassIsland 官方文档](https://docs.classisland.tech)｜[Classlsland 功能投票](https://github.com/ClassIsland/voting/discussions)
+#### [ClassIsland 官方网站](https://classisland.tech/)｜[ClassIsland 官方文档](https://docs.classisland.tech)｜[Classlsland 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop))
 
 ###### [观看介绍视频，快速了解突破创新 →](https://bilibili.com/video/BV1Lt421n7op/)
 </div>
