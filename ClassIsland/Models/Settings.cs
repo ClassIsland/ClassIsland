@@ -183,6 +183,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _radiusY = 0.0;
     private int _hideMode = 0;
     private Ruleset _hiedRules = new();
+    private ObservableCollection<Ruleset> _rules = new();
     private bool _isAutoBackupEnabled = true;
     private DateTime _lastAutoBackupTime = DateTime.Now;
     private int _autoBackupLimit = 16;
@@ -205,12 +206,23 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
+    private Dictionary<string, Dictionary<string, dynamic>> _settingsOverlay = [];
 
     public void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
     }
- 
+
+    public Dictionary<string, Dictionary<string, dynamic>> SettingsOverlay
+    {
+        get => _settingsOverlay;
+        set
+        {
+            if (value == _settingsOverlay) return;
+            _settingsOverlay = value;
+            OnPropertyChanged();
+        }
+    }
     public string SelectedProfile
     {
         get => _selectedProfile;
@@ -387,6 +399,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (Equals(value, _hiedRules)) return;
             _hiedRules = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<Ruleset> Rules
+    {
+        get => _rules;
+        set
+        {
+            if (Equals(value, _rules)) return;
+            _rules = value;
             OnPropertyChanged();
         }
     }
@@ -2064,6 +2087,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
+
     public bool IsSwapMode
     {
         get => _isSwapMode;
@@ -2074,5 +2098,4 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-
 }

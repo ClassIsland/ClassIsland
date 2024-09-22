@@ -57,14 +57,17 @@ using System.Xml.Linq;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Models.Ruleset;
+using ClassIsland.Core.Models.Action;
 using ClassIsland.Shared.IPC;
 using Sentry;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Models.Rules;
+using ClassIsland.Models.Actions;
 using ClassIsland.Controls.RuleSettingsControls;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ControlzEx.Native;
+using ClassIsland.Controls.ActionSettingsControls;
 
 namespace ClassIsland;
 /// <summary>
@@ -296,6 +299,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IPluginMarketService, PluginMarketService>();
                 services.AddSingleton<IRulesetService, RulesetService>();
                 services.AddSingleton<IWindowRuleService, WindowRuleService>();
+                services.AddSingleton<IActionService, ActionService>();
                 try // 检测SystemSpeechService是否存在
                 {
                     var s = new SpeechSynthesizer();
@@ -348,6 +352,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<WindowSettingsPage>();
                 services.AddSettingsPage<WeatherSettingsPage>();
                 services.AddSettingsPage<UpdatesSettingsPage>();
+                services.AddSettingsPage<RuleSettingsPage>();
                 services.AddSettingsPage<StorageSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
@@ -402,6 +407,15 @@ public partial class App : AppBase, IAppHost
                 services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.processName", "前台窗口进程", PackIconKind.ApplicationCogOutline);
                 services.AddRule<CurrentSubjectRuleSettings, CurrentSubjectRuleSettingsControl>("classisland.lessons.currentSubject", "科目是", PackIconKind.BookOutline);
                 services.AddRule<TimeStateRuleSettings, TimeStateRuleSettingsControl>("classisland.lessons.timeState", "当前时间状态是", PackIconKind.ClockOutline);
+                // 行动
+                services.AddAction<CurrentComponentConfigActionSettings, CurrentComponentConfigActionSettingsControl>("classisland.settings.currentComponentConfig", "组件配置方案", PackIconKind.WidgetsOutline);
+                services.AddAction<ThemeActionSettings, ThemeActionSettingsControl>("classisland.settings.theme", "应用主题", PackIconKind.ThemeLightDark);
+                services.AddAction<WindowDockingLocationActionSettings, WindowDockingLocationActionSettingsControl>("classisland.settings.windowDockingLocation", "窗口停靠位置", PackIconKind.Monitor);
+                //services.AddAction<AppSettingsActionSettings, AppSettingsActionSettingsControl>("classisland.os.run", "运行", PackIconKind.OpenInApp);
+                //services.AddAction<AppSettingsActionSettings, AppSettingsActionSettingsControl>("classisland.action.sleep", "等待时长", PackIconKind.TimerSand);
+                //services.AddAction("classisland.app.quit", "退出 ClassIsland", PackIconKind.ExitToApp);
+                // services.AddAction<, >("classisland.windows.minimize", "最小化窗口", PackIconKind.WindowMinimize);
+                // services.AddAction<, >("classisland.windows.close", "关闭窗口", PackIconKind.WindowClose);
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();

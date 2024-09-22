@@ -21,6 +21,10 @@
     "ClassIsland (禁用集控) Sentry dbg": {
       "commandName": "Project",
       "commandLineArgs": "-dm -esd"
+    },
+    "ClassIsland (Uri 启动)": {
+      "commandName": "Project",
+      "commandLineArgs": "--uri classisland://app/settings/rules"
     }
   }
 }

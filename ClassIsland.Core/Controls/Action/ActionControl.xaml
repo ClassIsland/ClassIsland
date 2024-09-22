@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="ClassIsland.Core.Controls.Action.ActionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Core.Controls.Action"
+             xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
+             xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.CommandBindings>
+        <CommandBinding Command="{x:Static local:ActionControl.RemoveActionCommand}" Executed="CommandRemoveActionCommand_OnExecuted"/>
+    </UserControl.CommandBindings>
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ActionControl}}">
+        <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonAddAction_OnClick" HorizontalAlignment="Left">
+            <controls:IconText Kind="Plus" Text="添加行动"/>
+        </Button>
+        <ItemsControl ItemsSource="{Binding Actions}"
+                 HorizontalContentAlignment="Stretch">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource MaterialDesignToolBarBackground}"
+                            CornerRadius="2"
+                            Margin="3">
+                        <StackPanel Margin="0 10" Orientation="Horizontal">
+                            <Button Grid.Column="2"
+                                    Content="{materialDesign:PackIcon Remove}"
+                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                    ToolTip="删除"
+                                    Command="{x:Static local:ActionControl.RemoveActionCommand}"
+                                    CommandParameter="{Binding}"/>
+                            <WrapPanel>
+                                <ComboBox SelectedValue="{Binding Id}"
+                                          SelectedValuePath="Key"
+                                          ItemsSource="{x:Static services:IActionService.Actions}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <controls:IconText Kind="{Binding Value.IconKind}"
+                                                               Text="{Binding Value.Name}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <local:ActionSettingsControlPresenter
+                                    Action="{Binding Mode=OneWay}"
+                                    ActionId="{Binding Id, Mode=OneWay}"/>
+                            </WrapPanel>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

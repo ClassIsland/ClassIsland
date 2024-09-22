@@ -1,0 +1,51 @@
+﻿<ci:ActionSettingsControlBase
+    x:Class="ClassIsland.Controls.ActionSettingsControls.WindowDockingLocationActionSettingsControl"
+    x:TypeArguments="actions:WindowDockingLocationActionSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+    xmlns:actions="clr-namespace:ClassIsland.Models.Actions"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ClassIsland.Controls.ActionSettingsControls"
+    mc:Ignorable="d" 
+    d:DesignHeight="450" d:DesignWidth="800">
+    <ci:ActionSettingsControlBase.Resources>
+        <ci:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+    </ci:ActionSettingsControlBase.Resources>
+    <StackPanel Orientation="Horizontal"
+                DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WindowDockingLocationActionSettingsControl}}">
+        <TextBlock Text="临时移动到屏幕" VerticalAlignment="Center" Margin="6 0 4 0"/>
+        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                  SelectedIndex="{Binding Settings.Value}"
+                  HorizontalContentAlignment="Left">
+            <ci:IconText Kind="ArrowTopLeft" Text="左上角" />
+            <ci:IconText Kind="FormatVerticalAlignTop" Text="中上侧" />
+            <ci:IconText Kind="ArrowTopRight" Text="右上角" />
+            <ci:IconText Kind="ArrowBottomLeft" Text="左下角" />
+            <ci:IconText Kind="FormatVerticalAlignBottom" Text="中下侧" />
+            <ci:IconText Kind="ArrowBottomRight" Text="右下角" />
+        </ComboBox>
+        <!--<materialDesign:ColorZone
+                        BorderBrush="{DynamicResource MaterialDesignBody}"
+                        BorderThickness="6" CornerRadius="4"
+                        VerticalAlignment="Center"
+                        Width="100" Height="70">
+            <Grid>
+                <RadioButton VerticalAlignment="Top" HorizontalAlignment="Left"
+                         IsChecked="{Binding Settings.Value, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}" />
+                <RadioButton VerticalAlignment="Top" HorizontalAlignment="Center"
+                         IsChecked="{Binding Settings.Value, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}" />
+                <RadioButton VerticalAlignment="Top" HorizontalAlignment="Right"
+                         IsChecked="{Binding Settings.Value, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=2}" />
+                <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                         IsChecked="{Binding Settings.Value, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=3}" />
+                <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                         IsChecked="{Binding Settings.Value, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=4}" />
+                <RadioButton VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                         IsChecked="{Binding Settings.Value, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=5}" />
+            </Grid>
+        </materialDesign:ColorZone>-->
+    </StackPanel>
+</ci:ActionSettingsControlBase>

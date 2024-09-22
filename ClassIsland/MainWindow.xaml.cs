@@ -685,7 +685,7 @@ public partial class MainWindow : Window
     public void SaveSettings()
     {
         UpdateTheme();
-        SettingsService.SaveSettings(ToString() + " 的 SaveSettings()");
+        SettingsService.SaveSettings(ToString() + ".SaveSettings()");
     }
 
     protected override void OnInitialized(EventArgs e)

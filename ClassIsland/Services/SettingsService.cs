@@ -18,10 +18,12 @@ using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using ClassIsland.Models.Actions;
 
 namespace ClassIsland.Services;
 
-public class SettingsService(ILogger<SettingsService> logger, IManagementService managementService) : INotifyPropertyChanged
+public class SettingsService : INotifyPropertyChanged
 {
     private Settings _settings = new();
 
@@ -33,9 +35,9 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         set => SetField(ref _settings, value);
     }
 
-    private ILogger<SettingsService> Logger { get; } = logger;
+    private ILogger<SettingsService> Logger { get; }
 
-    private IManagementService ManagementService { get; } = managementService;
+    private IManagementService ManagementService { get; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -52,6 +54,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
         Settings = settings;
         Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+        Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName);
         Logger.LogTrace("拉取集控默认设置成功！");
     }
 
@@ -70,6 +73,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
                 var r = ConfigureFileHelper.LoadConfig<Settings>("./Settings.json");
                 Settings = r;
                 Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+                Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName);
             }
 
             // 当还没有初始化应用且启用集控时，从集控拉取设置。
@@ -188,16 +192,82 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
 
     }
 
-    public void SaveSettings(string? note = "-")
+    public void SaveSettings(string note = "-")
     {
         Logger.LogInformation("写入配置文件：" + note);
         ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
+    }
+
+    /// <summary>
+    /// 添加设置叠层。
+    /// </summary>
+    /// <param name="id">叠层Guid</param>
+    /// <param name="name">设置变量名</param>
+    public void AddSettingsOverlay(string id, string name, dynamic value)
+    {
+        var property = typeof(Settings).GetProperty(name);
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+
+        if (!Settings.SettingsOverlay.TryGetValue(name, out Dictionary<string, dynamic>? overlay))
+            overlay = [];
+        if (!overlay.ContainsKey("@"))
+            overlay.Add("@", property.GetValue(Settings)!);
+        property.SetValue(Settings, value);
+        overlay[id] = value;
+        Settings.SettingsOverlay[name] = overlay;
+    }
+
+    /// <summary>
+    /// 删除设置叠层。
+    /// </summary>
+    /// <param name="id">叠层Guid</param>
+    /// <param name="name">设置变量名</param>
+    public void RemoveSettingsOverlay(string id, string name)
+    {
+        var property = typeof(Settings).GetProperty(name);
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+
+        if (!Settings.SettingsOverlay.TryGetValue(name, out Dictionary<string, dynamic>? overlay))
+            return;
+        overlay.Remove(id);
+        var last = overlay.Last();
+        var value = last.Value;
+        if (value is JsonElement json)
+        {
+            value = json.Deserialize(property.GetValue(Settings).GetType());
+        }
+        property.SetValue(Settings, value);
+        Settings.SettingsOverlay[name] = overlay;
+
+        if (last.Key is "@")
+            Settings.SettingsOverlay.Remove(name);
+    }
+
+    public SettingsService(ILogger<SettingsService> logger, IManagementService managementService)
+    {
+        Logger = logger;
+        ManagementService = managementService;
+
+        var actionService = App.GetService<IActionService>();
+        actionService.RegisterActionHandler("classisland.settings.currentComponentConfig", s => AddSettingsOverlay("classisland.settings.currentComponentConfig", "CurrentComponentConfig", ((CurrentComponentConfigActionSettings)s!).Value));
+        actionService.RegisterActionBackHandler("classisland.settings.currentComponentConfig", s => RemoveSettingsOverlay("classisland.settings.currentComponentConfig", "CurrentComponentConfig"));
+        actionService.RegisterActionHandler("classisland.settings.theme", s => AddSettingsOverlay("classisland.settings.theme", "Theme", ((ThemeActionSettings)s!).Value));
+        actionService.RegisterActionBackHandler("classisland.settings.theme", s => RemoveSettingsOverlay("classisland.settings.theme", "Theme"));
+        actionService.RegisterActionHandler("classisland.settings.windowDockingLocation", s => AddSettingsOverlay("classisland.settings.windowDockingLocation", "WindowDockingLocation", ((WindowDockingLocationActionSettings)s!).Value));
+        actionService.RegisterActionBackHandler("classisland.settings.windowDockingLocation", s => RemoveSettingsOverlay("classisland.settings.windowDockingLocation", "WindowDockingLocation"));
+    }
+
+    private void SettingsChanged(string propertyName)
+    {
+        if (propertyName is "SettingsOverlay") return;
+        Settings.SettingsOverlay.Remove(propertyName);
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
 
     protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
