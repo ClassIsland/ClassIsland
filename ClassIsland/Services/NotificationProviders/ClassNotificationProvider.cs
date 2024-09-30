@@ -47,6 +47,8 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var name = subject.GetFirstName();
         return string.IsNullOrWhiteSpace(name) ? string.Empty : $"由{name}老师任教";
     }
+
+    private NotificationRequest? _onClassNotificationRequest;
     
     private INotificationHostService NotificationHostService { get; }
 
@@ -88,14 +90,19 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var settingsDeltaTime = LessonsService.NextClassSubject.IsOutDoor
             ? settingsOutDoorClassPreparingDeltaTime
             : settingsInDoorClassPreparingDeltaTime;
-        if (settingsIsClassOnPreparingNotificationEnabled &&
-            tClassDelta > TimeSpan.Zero &&
-              tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) &&
-            !IsClassPreparingNotified && LessonsService.CurrentState is TimeState.Breaking or TimeState.None)
+        if (!settingsIsClassOnPreparingNotificationEnabled ||
+            LessonsService.CurrentState is not (TimeState.Breaking or TimeState.None)) 
+            return;
+        if (tClassDelta > TimeSpan.Zero &&
+            tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime))
         {
+            if (IsClassPreparingNotified)
+            {
+                return;
+            }
             var deltaTime = TimeSpan.FromSeconds(settingsDeltaTime) - tClassDelta > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpan.FromSeconds(settingsDeltaTime);
             IsClassPreparingNotified = true;
-            var onClassPrepareRequest = new NotificationRequest
+            var onClassPrepareRequest = _onClassNotificationRequest = new NotificationRequest
             {
                 MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
                 MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask")
@@ -113,6 +120,15 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             };
             NotificationHostService.ShowNotification(onClassPrepareRequest);
+        }
+        else
+        {
+            if (!IsClassPreparingNotified)
+            {
+                return;
+            }
+            _onClassNotificationRequest?.CancellationTokenSource.Cancel();
+            IsClassPreparingNotified = false;
         }
     }
 

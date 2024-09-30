@@ -113,14 +113,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public NotificationRequest GetRequest()
     {
         CurrentRequest = RequestQueue.Dequeue();
-        CurrentRequest.CancellationTokenSource.Token.Register(() =>
-        {
-            while (RequestQueue.Count > 0)
-            {
-                var r = RequestQueue.Dequeue();
-                r.CompletedTokenSource.Cancel();
-            }
-        });
         return CurrentRequest;
     }
 
@@ -236,6 +228,16 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     {
         Logger.LogInformation("写入提醒提供方设置：{}", id);
         Settings.NotificationProvidersSettings[id.ToString()] = settings;
+    }
+
+    public void CancelAllNotifications()
+    {
+        CurrentRequest?.CancellationTokenSource.Cancel();
+        while (RequestQueue.Count > 0)
+        {
+            var r = RequestQueue.Dequeue();
+            r.CompletedTokenSource.Cancel();
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

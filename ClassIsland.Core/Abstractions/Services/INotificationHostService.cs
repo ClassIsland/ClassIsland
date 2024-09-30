@@ -60,4 +60,6 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     /// <param name="id">提醒提供方 ID</param>
     /// <param name="settings">要保存的设置</param>
     void WriteNotificationProviderSettings<T>(Guid id, T settings);
+
+    internal void CancelAllNotifications();
 }

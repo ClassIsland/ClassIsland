@@ -1002,7 +1002,7 @@ public partial class MainWindow : Window
 
     private void MenuItemClearAllNotifications_OnClick(object sender, RoutedEventArgs e)
     {
-        NotificationHostService.CurrentRequest?.CancellationTokenSource.Cancel();
+        NotificationHostService.CancelAllNotifications();
     }
 
     private void MenuItemNotificationSettings_OnClick(object sender, RoutedEventArgs e)
