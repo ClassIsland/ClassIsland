@@ -115,7 +115,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         Settings.PropertyChanged += SettingsOnPropertyChanged;
         var content = App.GetService<IComponentsService>().GetComponent(Settings, IsPresentingSettings);
         // 理论上展示的内容的数据上下文应为MainWindow，这里不便用前端xaml绑定，故在后台设置。
-        if (content != null)
+        if (content != null && IsOnMainWindow)
         {
             content.DataContext = Window.GetWindow(this);
         }
