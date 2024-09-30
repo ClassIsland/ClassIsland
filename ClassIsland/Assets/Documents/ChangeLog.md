@@ -70,6 +70,37 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ***
 
+# 1.5.0.2
+
+1.5 - Griseo
+
+本版本包含了对 1.5 的一些 Bug 修复和改进。
+
+## 新增功能和优化
+
+- 【组件/倒计时】修改倒计时数字与汉字之间的 margin
+- 【应用设置】更新功能投票链接
+- 【诊断】日志记录到文件
+- 【API/提醒】通过提醒请求取消提醒
+
+## 破坏性更改
+
+- 【API/提醒】优化提醒请求封装，将`NotificationRequest`的`CancellationTokenSource`和`CompletedTokenSource`属性的可见性修改为`internal`，并公开暴露其对应的`Token`和取消事件。
+
+## Bug 修复
+
+- 【组件】修复部分组件无法局部覆盖 MainWindowBodyFontSize 的问题 ([#343](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【组件/课表】修复时间点附加信息【XX/持续时间】中时间格式不统一的问题
+- 【主界面】修复当窗口宽度为 0 时回弹动画产生负值宽度导致崩溃的问题 ([#386](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【主界面】修复概率丢失置顶属性的问题 ([#358](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【档案编辑器】修复在课表编辑界面选中含有正在删除科目的课程时，使 SubjectId 为 null 导致主循环异常的问题 ([#376](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【档案编辑器】修复设置课表的同时设置科目，导致软件崩溃的问题 ([#375](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【档案】修复在时间表顶部变更一个“课间休息”为“上课”时，整个课程表会向前错位的问题 ([#387](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【组件/课表】修复在删除临时层课表的源课表后应用崩溃的问题
+- 【提醒】修复换课时如果下节课是户外课程换成室内课程倒计时显示时间不正常的问题 ([#385](https://github.com/ClassIsland/ClassIsland/issues/3))
+
+***
+
 # 1.5.0.1
 
 1.5 - Griseo
@@ -77,12 +108,13 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 本版本包含了对 1.5 的一些重要 Bug 的修复，请尽快更新。
 
 ## 新增功能与优化
+
 - 【组件/课表】支持修改课程表文字间距
-- 【组件/课表】 时间点附加信息「剩余时间」支持在结束时显示精确倒计时 
-- 【组件/课表】 优化「时间点结束倒计时」显示样式
+- 【组件/课表】时间点附加信息「剩余时间」支持在结束时显示精确倒计时
+- 【组件/课表】优化「时间点结束倒计时」显示样式
 - 【档案编辑】手动刷新时间表
 - 【表格导入向导】从表格导入向导无法打开文件对话框添加权限提示  ([#327](https://github.com/ClassIsland/ClassIsland/issues/327))
-- 【调试】 调试选项添加「时间流速」功能  
+- 【调试】调试选项添加「时间流速」功能  
 
 ## 移除的功能
 
