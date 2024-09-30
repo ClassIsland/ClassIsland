@@ -36,10 +36,12 @@ public class ClassInfoMultiConverter : IMultiValueConverter
             return null;
         }
 
+        // FIXME: 这些代码应该迁移到其它地方，不适合在此处此课程标记是否属于换课课程
         if (classPlan.OverlaySourceId != null)
         {
-            var overlaySource = IAppHost.GetService<IProfileService>().Profile.ClassPlans[classPlan.OverlaySourceId];
-            if (overlaySource.TimeLayout == classPlan.TimeLayout)
+            if (IAppHost.GetService<IProfileService>().Profile.ClassPlans
+                    .TryGetValue(classPlan.OverlaySourceId, out var overlaySource) 
+                && overlaySource.TimeLayout == classPlan.TimeLayout)
             {
                 classPlan.Classes[subjectIndex].IsChangedClass =
                     overlaySource.Classes[subjectIndex].SubjectId != classPlan.Classes[subjectIndex].SubjectId;
