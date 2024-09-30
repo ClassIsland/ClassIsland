@@ -406,6 +406,7 @@ public partial class App : AppBase, IAppHost
                 PluginService.InitializePlugins(context, services);
             }).Build();
         Logger = GetService<ILogger<App>>();
+        Logger.LogInformation("ClassIsland {}", AppVersionLong);
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
         lifetime.ApplicationStopping.Register(() => Logger.LogInformation("App stopping."));
