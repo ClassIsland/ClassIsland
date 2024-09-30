@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -20,9 +21,9 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        var w = (double)values[0];
-        var gw = (double)values[1];
-        var gh = (double)values[2];
+        var w = Math.Max(0, (double)values[0]);
+        var gw = Math.Max(0, (double)values[1]);
+        var gh = Math.Max(0, (double)values[2]);
         var l = (int)values[3];
         var rX = (double)values[4];
         var rY = (double)values[5];
@@ -44,7 +45,7 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
                 break;
         }
 
-        //Debug.WriteLine(gw);
+        Debug.WriteLine(w);
         return new RectangleGeometry(new Rect(new Point(px, 0), new Size(w, gh)), rX, rY);
     }
 
