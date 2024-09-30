@@ -679,13 +679,13 @@ public partial class MainWindow : Window
     {
         var r = SettingsService.Settings;
         ViewModel.Settings = r;
-        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
+        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
     }
 
-    public void SaveSettings()
+    public void SaveSettings(string note = "")
     {
         UpdateTheme();
-        SettingsService.SaveSettings(ToString() + ".SaveSettings()");
+        SettingsService.SaveSettings($"{note} (MainWindow)");
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -695,7 +695,7 @@ public partial class MainWindow : Window
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
-        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings();
+        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
         LoadSettings();
         //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();

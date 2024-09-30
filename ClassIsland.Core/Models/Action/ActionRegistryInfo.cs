@@ -35,7 +35,7 @@ public class ActionRegistryInfo(string id, string name = "", PackIconKind iconKi
     /// </summary>
     public Type? SettingsType { get; internal set; }
 
-    public delegate void HandleDelegate(object? settings);
+    public delegate void HandleDelegate(object? settings, string guid);
 
     public HandleDelegate? Handle;
 

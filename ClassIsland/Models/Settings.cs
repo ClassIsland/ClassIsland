@@ -32,6 +32,7 @@ using WindowsShortcutFactory;
 
 using File = System.IO.File;
 using System.Runtime.InteropServices;
+using ClassIsland.Core.Models;
 
 namespace ClassIsland.Models;
 
@@ -183,7 +184,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _radiusY = 0.0;
     private int _hideMode = 0;
     private Ruleset _hiedRules = new();
-    private ObservableCollection<Ruleset> _rules = new();
+    private ObservableCollection<RuleActionPair> _ruleActionPairs = new();
     private bool _isAutoBackupEnabled = true;
     private DateTime _lastAutoBackupTime = DateTime.Now;
     private int _autoBackupLimit = 16;
@@ -403,13 +404,13 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public ObservableCollection<Ruleset> Rules
+    public ObservableCollection<RuleActionPair> RuleActionPairs
     {
-        get => _rules;
+        get => _ruleActionPairs;
         set
         {
-            if (Equals(value, _rules)) return;
-            _rules = value;
+            if (Equals(value, _ruleActionPairs)) return;
+            _ruleActionPairs = value;
             OnPropertyChanged();
         }
     }

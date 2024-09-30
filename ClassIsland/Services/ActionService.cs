@@ -8,9 +8,34 @@ using Action = ClassIsland.Core.Models.Action.Action;
 
 namespace ClassIsland.Services;
 
-public class ActionService(ILogger<ActionService> logger) : IActionService
+public class ActionService : IActionService
 {
-    public ILogger<ActionService> Logger { get; } = logger;
+    public ActionService(ILogger<ActionService> logger, IRulesetService rulesetService, SettingsService settingsService)
+    {
+        Logger = logger;
+        RulesetService = rulesetService;
+        SettingsService = settingsService;
+        RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
+    }
+
+    private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
+    {
+        foreach (var p in SettingsService.Settings.RuleActionPairs)
+        {
+            if (RulesetService.IsRulesetSatisfied(p.Ruleset))
+            {
+                InvokeActionList(p.ActionList);
+            }
+            else
+            {
+                InvokeBackActionList(p.ActionList);
+            }
+        }
+    }
+
+    public ILogger<ActionService> Logger { get; }
+    public IRulesetService RulesetService { get; }
+    public SettingsService SettingsService { get; }
 
     public void RegisterActionHandler(string id, ActionRegistryInfo.HandleDelegate handler)
     {
@@ -28,23 +53,23 @@ public class ActionService(ILogger<ActionService> logger) : IActionService
         actionRegistryInfo.BackHandle += handler;
     }
 
-    public void InvokeAction(List<Action> actions)
+    public void InvokeActionList(ActionList actionList)
     {
-        foreach (var action in actions)
+        foreach (var action in actionList.Actions)
         {
-            InvokeAction(action, isBack: false);
+            InvokeAction(action, actionList.Guid, isBack: false);
         }
     }
 
-    public void InvokeBackAction(List<Action> actions)
+    public void InvokeBackActionList(ActionList actionList)
     {
-        foreach (var action in actions)
+        foreach (var action in actionList.Actions)
         {
-            InvokeAction(action, isBack: true);
+            InvokeAction(action, actionList.Guid, isBack: true);
         }
     }
 
-    private void InvokeAction(Action action, bool isBack = false)
+    void InvokeAction(Action action, string guid, bool isBack = false)
     {
         if (!IActionService.Actions.TryGetValue(action.Id, out var actionRegistryInfo))
         {
@@ -64,13 +89,13 @@ public class ActionService(ILogger<ActionService> logger) : IActionService
         }
         if (isBack)
         {
-            actionRegistryInfo.BackHandle?.Invoke(settings);
+            actionRegistryInfo.BackHandle?.Invoke(settings, guid);
         }
         else
         {
             if (actionRegistryInfo.Handle != null)
             {
-                actionRegistryInfo.Handle(settings);
+                actionRegistryInfo.Handle(settings, guid);
             }
             else
             {

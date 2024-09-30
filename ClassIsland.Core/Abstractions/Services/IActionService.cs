@@ -1,6 +1,5 @@
 ﻿using ClassIsland.Shared;
 using ClassIsland.Core.Models.Action;
-using Action = ClassIsland.Core.Models.Action.Action;
 namespace ClassIsland.Core.Abstractions.Services;
 
 /// <summary>
@@ -26,10 +25,10 @@ public interface IActionService
     /// <summary>
     /// 触发行动。
     /// </summary>
-    void InvokeAction(List<Action> actions);
+    void InvokeActionList(ActionList actionList);
 
     /// <summary>
     /// 触发恢复行动。
     /// </summary>
-    void InvokeBackAction(List<Action> actions);
+    void InvokeBackActionList(ActionList actionList);
 }

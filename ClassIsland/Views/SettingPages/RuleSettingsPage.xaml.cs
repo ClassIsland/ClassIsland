@@ -12,6 +12,7 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using System.Collections.ObjectModel;
 using System.Linq;
+using ClassIsland.Core.Models;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -36,67 +37,47 @@ public partial class RuleSettingsPage
         InitializeComponent();
     }
 
-    public static readonly ICommand AddRuleCommand = new RoutedUICommand();
-    public static readonly ICommand RemoveRuleCommand = new RoutedUICommand();
-    public static readonly ICommand RemoveRulesetCommand = new RoutedUICommand();
-    public static readonly ICommand DuplicateRulesetCommand = new RoutedUICommand();
+    public static readonly ICommand RemoveCommand = new RoutedUICommand();
+    public static readonly ICommand DuplicateCommand = new RoutedUICommand();
     public static readonly ICommand DebugInvokeActionCommand = new RoutedUICommand();
     public static readonly ICommand DebugInvokeBackActionCommand = new RoutedUICommand();
 
-    public ObservableCollection<Ruleset> Rulesets
+    public ObservableCollection<RuleActionPair> RuleActionPairs
     {
-        get => SettingsService.Settings.Rules;
-        set => SettingsService.Settings.Rules = value;
+        get => SettingsService.Settings.RuleActionPairs;
+        set => SettingsService.Settings.RuleActionPairs = value;
     }
 
-    private void ButtonAddRule_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)
     {
-        Rulesets.Add(new() { Groups = [new() { Rules = new() { new() } }] });
+        RuleActionPairs.Add(new());
     }
 
-    private void CommandAddRule_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    private void CommandRemoveCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Ruleset ruleset) return;
+        if (e.Parameter is not RuleActionPair ruleActionPair) return;
 
-        ruleset.Groups[0].Rules.Add(new Rule());
+        RuleActionPairs.Remove(ruleActionPair);
     }
 
-    private void CommandRemoveRuleCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    private void CommandDuplicate_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Rule rule) return;
+        if (e.Parameter is not RuleActionPair ruleActionPair) return;
 
-        foreach (var ruleset in Rulesets)
-        {
-            var isRemoved = ruleset.Groups[0].Rules.Remove(rule);
-            if (isRemoved) return;
-        }
-    }
-
-    private void CommandRemoveRulesetCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-    {
-        if (e.Parameter is not Ruleset ruleset) return;
-
-        Rulesets.Remove(ruleset);
-    }
-
-    private void CommandDuplicateRuleset_OnExecuted(object sender, ExecutedRoutedEventArgs e)
-    {
-        if (e.Parameter is not Ruleset ruleset) return;
-
-        Rulesets.Add(ConfigureFileHelper.CopyObject(ruleset));
+        RuleActionPairs.Add(ConfigureFileHelper.CopyObject(ruleActionPair));
     }
 
     private void CommandDebugInvokeAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Ruleset ruleset) return;
+        if (e.Parameter is not RuleActionPair ruleActionPair) return;
 
-        App.GetService<IActionService>().InvokeAction([.. ruleset.Actions]);
+        App.GetService<IActionService>().InvokeActionList(ruleActionPair.ActionList);
     }
 
     private void CommandDebugInvokeBackAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Ruleset ruleset) return;
+        if (e.Parameter is not RuleActionPair ruleActionPair) return;
 
-        App.GetService<IActionService>().InvokeBackAction([.. ruleset.Actions]);
+        App.GetService<IActionService>().InvokeBackActionList(ruleActionPair.ActionList);
     }
 }

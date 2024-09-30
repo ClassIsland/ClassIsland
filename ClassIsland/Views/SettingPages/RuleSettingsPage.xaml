@@ -9,6 +9,7 @@
       xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters;assembly=ClassIsland.Core"
       xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
       xmlns:actions="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
+      xmlns:models="clr-namespace:ClassIsland.Core.Models;assembly=ClassIsland.Core"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -21,10 +22,8 @@
       d:DataContext="{d:DesignInstance local:RuleSettingsPage}"
       Title="RuleSettingsPage">
     <ci:SettingsPageBase.CommandBindings>
-        <CommandBinding Command="{x:Static local:RuleSettingsPage.AddRuleCommand}" Executed="CommandAddRule_OnExecuted"/>
-        <CommandBinding Command="{x:Static local:RuleSettingsPage.RemoveRuleCommand}" Executed="CommandRemoveRuleCommand_OnExecuted"/>
-        <CommandBinding Command="{x:Static local:RuleSettingsPage.RemoveRulesetCommand}" Executed="CommandRemoveRulesetCommand_OnExecuted"/>
-        <CommandBinding Command="{x:Static local:RuleSettingsPage.DuplicateRulesetCommand}" Executed="CommandDuplicateRuleset_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:RuleSettingsPage.RemoveCommand}" Executed="CommandRemoveCommand_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:RuleSettingsPage.DuplicateCommand}" Executed="CommandDuplicate_OnExecuted"/>
         <CommandBinding Command="{x:Static local:RuleSettingsPage.DebugInvokeActionCommand}" Executed="CommandDebugInvokeAction_OnExecuted"/>
         <CommandBinding Command="{x:Static local:RuleSettingsPage.DebugInvokeBackActionCommand}" Executed="CommandDebugInvokeBackAction_OnExecuted"/>
     </ci:SettingsPageBase.CommandBindings>
@@ -40,7 +39,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <!-- 规则编辑 -->
-                <ItemsControl Grid.Row="0" ItemsSource="{Binding Rulesets}"
+                <ItemsControl Grid.Row="0" ItemsSource="{Binding RuleActionPairs}"
                          HorizontalContentAlignment="Stretch">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
@@ -55,183 +54,41 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
+
+                                    <Grid.Style>
+                                        <Style TargetType="Grid">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                    <Setter Property="Opacity" Value="0.56"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Grid.Style>
+                                        
+                                        
                                     <!--规则编辑-->
-                                    <!--<DockPanel  Grid.Column="0" VerticalAlignment="Stretch" LastChildFill="False">
-                                        <StackPanel DockPanel.Dock="Top">
-                                            <StackPanel Orientation="Horizontal" Grid.Row="0" x:Name="OpacityBindingPanel">
-                                                <StackPanel.Style>
-                                                    <Style TargetType="StackPanel">
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Groups[0].IsEnabled}" Value="False">
-                                                                <Setter Property="Opacity" Value="0.56"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Groups[0].Rules.Count}" Value="1">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </DataTrigger>
-                                                            <DataTrigger Binding="{Binding Groups[0].Rules.Count}" Value="0">
-                                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </StackPanel.Style>
+                                    <ci:RulesetControl Ruleset="{Binding Ruleset}" Grid.Row="1"/>
 
-
-                                                --><!--<ToggleButton
-                                                    Margin="8 0"
-                                                    HorizontalAlignment="Center"
-                                                    VerticalAlignment="Center"
-                                                    Content="{materialDesign:PackIcon SelectMultiple}"
-                                                    materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon SelectGroup}"
-                                                    IsChecked="{Binding Groups[0].Mode, Converter={StaticResource RuleLogicalModeToBooleanConverter}}">
-                                                    <ToggleButton.Style>
-                                                        <Style TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignActionToggleButton}">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsChecked" Value="False">
-                                                                    <Setter Property="ToolTip" Value="任一条件满足。" />
-                                                                    <Setter Property="Foreground" Value="White" />
-                                                                    <Setter Property="Background" Value="Gray" />
-                                                                </Trigger>
-                                                                <Trigger Property="IsChecked" Value="True">
-                                                                    <Setter Property="ToolTip" Value="所有条件满足。" />
-                                                                    <Setter Property="Background" Value="Black" />
-                                                                    <Setter Property="Foreground" Value="White" />
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </ToggleButton.Style>
-                                                </ToggleButton>-->
-
-                                                <!--<CheckBox Content="反转" IsChecked="{Binding Groups[0].IsReversed}"/>--><!--
-
-
-                                                <ToggleButton
-                                                                        HorizontalAlignment="Center"
-                                                                        VerticalAlignment="Center"
-                                                                        Content="{materialDesign:PackIcon ArrowRight}"
-                                                                        materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon CompareHorizontal}"
-                                                                        IsChecked="{Binding Groups[0].IsReversed}">
-                                                    <ToggleButton.Style>
-                                                        <Style TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignActionToggleButton}">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsChecked" Value="True">
-                                                                    <Setter Property="ToolTip" Value="反转此规则判断结果。" />
-                                                                    <Setter Property="Background" Value="Black"/>
-                                                                    <Setter Property="Foreground" Value="White"/>
-                                                                </Trigger>
-                                                                <Trigger Property="IsChecked" Value="False">
-                                                                    <Setter Property="ToolTip" Value="判断此规则。" />
-                                                                    <Setter Property="Foreground" Value="{DynamicResource SecondaryHueMidBrush}" />
-                                                                    <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </ToggleButton.Style>
-                                                </ToggleButton>
-
-                                                <ComboBox SelectedIndex="{Binding Groups[0].Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
-                                                            Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                                            materialDesign:HintAssist.Hint="模式" Margin="4 0 10 0">
-                                                    <ComboBoxItem>
-                                                        <ci:IconText Kind="SelectMultiple" Text="任意条件满足时"/>
-                                                    </ComboBoxItem>
-                                                    <ComboBoxItem>
-                                                        <ci:IconText Kind="SelectGroup" Text="所有条件满足时"/>
-                                                    </ComboBoxItem>
-                                                </ComboBox>
-                                                
-                                            </StackPanel>
-                                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Groups[0].Rules}" Opacity="{Binding Opacity, ElementName=OpacityBindingPanel}"
-                                                 HorizontalContentAlignment="Stretch">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Grid Margin="0 5">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <StackPanel Margin="0 4">
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <ToggleButton
-                                                                        Margin="0 0 8 0"
-                                                                        HorizontalAlignment="Center"
-                                                                        VerticalAlignment="Center"
-                                                                        Content="{materialDesign:PackIcon ArrowRight}"
-                                                                        materialDesign:ToggleButtonAssist.OnContent="{materialDesign:PackIcon CompareHorizontal}"
-                                                                        IsChecked="{Binding IsReversed}">
-                                                                        <ToggleButton.Style>
-                                                                            <Style TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignActionToggleButton}">
-                                                                                <Style.Triggers>
-                                                                                    <Trigger Property="IsChecked" Value="True">
-                                                                                        <Setter Property="ToolTip" Value="反转此规则判断结果。" />
-                                                                                        <Setter Property="Background" Value="Black"/>
-                                                                                        <Setter Property="Foreground" Value="White"/>
-                                                                                    </Trigger>
-                                                                                    <Trigger Property="IsChecked" Value="False">
-                                                                                        <Setter Property="ToolTip" Value="正常判断此规则。" />
-                                                                                        <Setter Property="Foreground" Value="{DynamicResource SecondaryHueMidBrush}" />
-                                                                                        <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
-                                                                                    </Trigger>
-                                                                                </Style.Triggers>
-                                                                            </Style>
-                                                                        </ToggleButton.Style>
-                                                                    </ToggleButton>
-                                                                    <ComboBox Grid.Column="2"
-                                                                        SelectedValue="{Binding Id}"
-                                                                        SelectedValuePath="Key"
-                                                                        ItemsSource="{x:Static services:IRulesetService.Rules}">
-                                                                        <ComboBox.ItemTemplate>
-                                                                            <DataTemplate>
-                                                                                <ci:IconText Kind="{Binding Value.IconKind}" Text="{Binding Value.Name}"/>
-                                                                            </DataTemplate>
-                                                                        </ComboBox.ItemTemplate>
-                                                                    </ComboBox>
-                                                                    --><!--<CheckBox Grid.Column="1"
-                                                                        Content="反转" IsChecked="{Binding IsReversed}"
-                                                                        Margin="0 0 5 0"/>--><!--
-                                                                </StackPanel>
-                                                                <ci:RulesetSettingsControlPresenter Rule="{Binding Mode=OneWay}"
-                                                                                            RuleId="{Binding Id, Mode=OneWay}"
-                                                                                            HorizontalAlignment="Left" MinWidth="200"
-                                                                                                Margin="22 0 0 0"/>
-                                                            </StackPanel>
-                                                            <Button Grid.Column="1"
-                                                                        Content="{materialDesign:PackIcon Remove}" ToolTip="删除"
-                                                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                        Command="{x:Static local:RuleSettingsPage.RemoveRuleCommand}" CommandParameter="{Binding}"/>
-                                                        </Grid>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-                                        </StackPanel>
-
-                                        <Button Style="{StaticResource MaterialDesignFlatButton}" Padding="8 0"
-                                                DockPanel.Dock="Bottom"
-                                                    Command="{x:Static local:RuleSettingsPage.AddRuleCommand}" CommandParameter="{Binding}"
-                                                    VerticalAlignment="Top"
-                                                Opacity="{Binding Opacity, ElementName=OpacityBindingPanel}">
-                                            <ci:IconText Kind="TagPlusOutline" Text="添加规则"/>
-                                        </Button>
-                                    </DockPanel>-->
-                                    <ci:RulesetControl Ruleset="{Binding}"/>
-
-                                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5" Margin="4 0"
-                                                Opacity="{Binding Opacity, ElementName=OpacityBindingPanel}"/>
+                                    <!--分栏-->
+                                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5" Margin="4 0" Grid.Row="1"/>
 
                                     <!--行动编辑-->
-                                    <actions:ActionControl Actions="{Binding Actions}" Opacity="{Binding Opacity, ElementName=OpacityBindingPanel}"
-                                                           Grid.Column="2"/>
+                                    <actions:ActionControl ActionList="{Binding ActionList}"
+                                                           Grid.Column="2" Grid.Row="1"/>
 
 
                                     <!--规则组操作-->
-                                    <WrapPanel Orientation="Horizontal" Grid.Column="2" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                    <WrapPanel Orientation="Horizontal" Grid.ColumnSpan="3">
+                                        <TextBox Text="{Binding Name}" MinWidth="150"/>
+
                                         <Button Content="{materialDesign:PackIcon Kind=Close}" ToolTip="删除"
                                                                 Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                Command="{x:Static local:RuleSettingsPage.RemoveRulesetCommand}" CommandParameter="{Binding}"
+                                                                Command="{x:Static local:RuleSettingsPage.RemoveCommand}" CommandParameter="{Binding}"
                                                                 Margin="0 0 4 0"/>
 
                                         <Button Content="{materialDesign:PackIcon Kind=ContentCopy}" ToolTip="复制"
                                                                 Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                Command="{x:Static local:RuleSettingsPage.DuplicateRulesetCommand}" CommandParameter="{Binding}"
+                                                                Command="{x:Static local:RuleSettingsPage.DuplicateCommand}" CommandParameter="{Binding}"
                                                                 Margin="0 0 4 0"/>
 
                                         <Button Content="(Debug)触发"
@@ -244,7 +101,7 @@
                                                 Command="{x:Static local:RuleSettingsPage.DebugInvokeBackActionCommand}" CommandParameter="{Binding}"
                                                 Margin="0 0 4 0"/>
 
-                                        <ToggleButton ToolTip="启用" IsChecked="{Binding Groups[0].IsEnabled}" Margin="0 0 4 0"/>
+                                        <ToggleButton ToolTip="启用" IsChecked="{Binding IsEnabled}" Margin="0 0 4 0"/>
                                     </WrapPanel>
                                 </Grid>
                             </materialDesign:Card>
@@ -253,8 +110,8 @@
                 </ItemsControl>
                 <StackPanel Grid.Row="1">
                     <WrapPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonAddRule_OnClick">
-                            <ci:IconText Kind="Add" Text="添加条件触发"/>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonAdd_OnClick">
+                            <ci:IconText Kind="Add" Text="添加条件"/>
                         </Button>
                     </WrapPanel>
                 </StackPanel>

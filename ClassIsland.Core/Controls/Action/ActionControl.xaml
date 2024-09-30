@@ -17,7 +17,7 @@
         <Button Style="{StaticResource MaterialDesignFlatButton}" Click="ButtonAddAction_OnClick" HorizontalAlignment="Left">
             <controls:IconText Kind="Plus" Text="添加行动"/>
         </Button>
-        <ItemsControl ItemsSource="{Binding Actions}"
+        <ItemsControl ItemsSource="{Binding ActionList.Actions}"
                  HorizontalContentAlignment="Stretch">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>

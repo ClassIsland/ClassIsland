@@ -16,7 +16,7 @@
     </ci:ActionSettingsControlBase.Resources>
     <StackPanel Orientation="Horizontal"
                 DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WindowDockingLocationActionSettingsControl}}">
-        <TextBlock Text="临时移动到屏幕" VerticalAlignment="Center" Margin="6 0 4 0"/>
+        <TextBlock Text="临时移动到" VerticalAlignment="Center" Margin="6 0 4 0"/>
         <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
                   SelectedIndex="{Binding Settings.Value}"
                   HorizontalContentAlignment="Left">

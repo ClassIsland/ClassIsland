@@ -192,44 +192,44 @@ public class SettingsService : INotifyPropertyChanged
 
     }
 
-    public void SaveSettings(string note = "-")
+    public void SaveSettings(string note = "")
     {
-        Logger.LogInformation("写入配置文件：" + note);
+        Logger.LogInformation(note == "" ? "写入配置文件。" : $"写入配置文件：{note}");
         ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
     }
 
     /// <summary>
     /// 添加设置叠层。
     /// </summary>
-    /// <param name="id">叠层Guid</param>
-    /// <param name="name">设置变量名</param>
-    public void AddSettingsOverlay(string id, string name, dynamic value)
+    /// <param name="guid">叠层Guid</param>
+    /// <param name="binding">设置变量名</param>
+    public void AddSettingsOverlay(string guid, string binding, dynamic value)
     {
-        var property = typeof(Settings).GetProperty(name);
+        var property = typeof(Settings).GetProperty(binding);
         if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
 
-        if (!Settings.SettingsOverlay.TryGetValue(name, out Dictionary<string, dynamic>? overlay))
+        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic>? overlay))
             overlay = [];
         if (!overlay.ContainsKey("@"))
             overlay.Add("@", property.GetValue(Settings)!);
         property.SetValue(Settings, value);
-        overlay[id] = value;
-        Settings.SettingsOverlay[name] = overlay;
+        overlay[guid] = value;
+        Settings.SettingsOverlay[binding] = overlay;
     }
 
     /// <summary>
     /// 删除设置叠层。
     /// </summary>
-    /// <param name="id">叠层Guid</param>
-    /// <param name="name">设置变量名</param>
-    public void RemoveSettingsOverlay(string id, string name)
+    /// <param name="guid">叠层Guid</param>
+    /// <param name="binding">设置变量名</param>
+    public void RemoveSettingsOverlay(string guid, string binding)
     {
-        var property = typeof(Settings).GetProperty(name);
+        var property = typeof(Settings).GetProperty(binding);
         if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
 
-        if (!Settings.SettingsOverlay.TryGetValue(name, out Dictionary<string, dynamic>? overlay))
+        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic>? overlay))
             return;
-        overlay.Remove(id);
+        overlay.Remove(guid);
         var last = overlay.Last();
         var value = last.Value;
         if (value is JsonElement json)
@@ -237,24 +237,29 @@ public class SettingsService : INotifyPropertyChanged
             value = json.Deserialize(property.GetValue(Settings).GetType());
         }
         property.SetValue(Settings, value);
-        Settings.SettingsOverlay[name] = overlay;
+        Settings.SettingsOverlay[binding] = overlay;
 
         if (last.Key is "@")
-            Settings.SettingsOverlay.Remove(name);
+            Settings.SettingsOverlay.Remove(binding);
     }
 
     public SettingsService(ILogger<SettingsService> logger, IManagementService managementService)
     {
         Logger = logger;
         ManagementService = managementService;
+        AppBase.Current.AppStarted += Current_AppStarted;
+    }
 
-        var actionService = App.GetService<IActionService>();
-        actionService.RegisterActionHandler("classisland.settings.currentComponentConfig", s => AddSettingsOverlay("classisland.settings.currentComponentConfig", "CurrentComponentConfig", ((CurrentComponentConfigActionSettings)s!).Value));
-        actionService.RegisterActionBackHandler("classisland.settings.currentComponentConfig", s => RemoveSettingsOverlay("classisland.settings.currentComponentConfig", "CurrentComponentConfig"));
-        actionService.RegisterActionHandler("classisland.settings.theme", s => AddSettingsOverlay("classisland.settings.theme", "Theme", ((ThemeActionSettings)s!).Value));
-        actionService.RegisterActionBackHandler("classisland.settings.theme", s => RemoveSettingsOverlay("classisland.settings.theme", "Theme"));
-        actionService.RegisterActionHandler("classisland.settings.windowDockingLocation", s => AddSettingsOverlay("classisland.settings.windowDockingLocation", "WindowDockingLocation", ((WindowDockingLocationActionSettings)s!).Value));
-        actionService.RegisterActionBackHandler("classisland.settings.windowDockingLocation", s => RemoveSettingsOverlay("classisland.settings.windowDockingLocation", "WindowDockingLocation"));
+    private void Current_AppStarted(object? sender, EventArgs e)
+    {
+        var ActionService = App.GetService<IActionService>();
+
+        ActionService.RegisterActionHandler("classisland.settings.currentComponentConfig", (s, g) => AddSettingsOverlay(g, "CurrentComponentConfig", ((CurrentComponentConfigActionSettings)s!).Value));
+        ActionService.RegisterActionBackHandler("classisland.settings.currentComponentConfig", (s, g) => RemoveSettingsOverlay(g, "CurrentComponentConfig"));
+        ActionService.RegisterActionHandler("classisland.settings.theme", (s, g) => AddSettingsOverlay(g, "Theme", ((ThemeActionSettings)s!).Value));
+        ActionService.RegisterActionBackHandler("classisland.settings.theme", (s, g) => RemoveSettingsOverlay(g, "Theme"));
+        ActionService.RegisterActionHandler("classisland.settings.windowDockingLocation", (s, g) => AddSettingsOverlay(g, "WindowDockingLocation", ((WindowDockingLocationActionSettings)s!).Value));
+        ActionService.RegisterActionBackHandler("classisland.settings.windowDockingLocation", (s, g) => RemoveSettingsOverlay(g, "WindowDockingLocation"));
     }
 
     private void SettingsChanged(string propertyName)

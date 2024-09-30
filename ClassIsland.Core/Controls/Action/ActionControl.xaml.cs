@@ -1,7 +1,8 @@
-﻿using System.Collections.ObjectModel;
+﻿using ClassIsland.Core.Models.Action;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using A = ClassIsland.Core.Models.Action;
 namespace ClassIsland.Core.Controls.Action;
 
@@ -10,34 +11,28 @@ namespace ClassIsland.Core.Controls.Action;
 /// </summary>
 public partial class ActionControl : UserControl
 {
-    /// <summary>
-    /// 删除行动命令。
-    /// </summary>
-    public static readonly ICommand RemoveActionCommand = new RoutedUICommand();
-
-    public static readonly DependencyProperty ActionsProperty = DependencyProperty.Register(nameof(Actions), typeof(ObservableCollection<A.Action>), typeof(ActionControl), new PropertyMetadata(default(ObservableCollection<A.Action>)));
-    /// <summary>
-    /// 该规则集绑定的行动集合。
-    /// </summary>
-    public ObservableCollection<A.Action> Actions
-    {
-        get { return (ObservableCollection<A.Action>)GetValue(ActionsProperty); }
-        set { SetValue(ActionsProperty, value); }
-    }
-
     public ActionControl()
     {
         InitializeComponent();
     }
 
+    public static readonly ICommand RemoveActionCommand = new RoutedUICommand();
+
+    public static readonly DependencyProperty ActionListProperty = DependencyProperty.Register(nameof(ActionList), typeof(ActionList), typeof(ActionControl), new PropertyMetadata(default(ActionList)));
+    public ActionList ActionList
+    {
+        get { return (ActionList)GetValue(ActionListProperty); }
+        set { SetValue(ActionListProperty, value); }
+    }
+
     private void ButtonAddAction_OnClick(object sender, RoutedEventArgs e)
     {
-        Actions.Add(new());
+        ActionList.Actions.Add(new());
     }
 
     private void CommandRemoveActionCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         if (e.Parameter is not A.Action action) return;
-        Actions.Remove(action);
+        ActionList.Actions.Remove(action);
     }
 }
