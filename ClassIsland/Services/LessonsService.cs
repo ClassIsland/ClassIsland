@@ -321,7 +321,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             {
                 NextClassTimeLayoutItem = nextClassTimeLayoutItem;
                 var i0 = GetSubjectIndex(currentLayout.IndexOf(nextClassTimeLayoutItem));
-                var index = CurrentClassPlan.Classes[i0].SubjectId;
+                var index = CurrentClassPlan.Classes[i0].SubjectId ?? "";
                 Profile.Subjects.TryGetValue(index, out var subject);
                 NextClassSubject = subject ?? Subject.Empty;
             }

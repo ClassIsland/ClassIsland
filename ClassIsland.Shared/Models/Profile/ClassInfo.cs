@@ -61,7 +61,7 @@ public class ClassInfo : AttachableSettingsObject
         set
         {
             if (value == _subjectId) return;
-            _subjectId = value;
+            _subjectId = value ?? "";
             OnPropertyChanged();
         }
     }
