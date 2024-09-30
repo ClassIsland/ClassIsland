@@ -15,6 +15,7 @@
         xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         xmlns:converters1="clr-namespace:ClassIsland.Converters"
         xmlns:services="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
+        xmlns:commands="http://classisland.tech/schemas/xaml/core"
         d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
@@ -345,6 +346,14 @@
                                             <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
                                                   Header="导出诊断数据"
                                                   Click="MenuItemExportDiagnosticInfo_OnClick"/>
+                                            <Separator/>
+                                            <MenuItem Icon="{materialDesign:PackIcon FolderTextOutline}"
+                                                      Header="打开日志目录…"
+                                                      Click="MenuItemOpenLogFolder_OnClick"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon FolderOutline}"
+                                                      Header="打开应用目录…"
+                                                      Click="MenuItemOpenAppFolder_OnClick"/>
+                                            
                                         </StackPanel>
 
                                     </StackPanel>

@@ -29,7 +29,8 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         PluginService.PluginsRootPath,
         PluginService.PluginConfigsFolderPath,
         PluginService.PluginsIndexPath,
-        "./Backups"
+        "./Backups",
+        App.AppLogFolderPath
     };
 
     public static void CreateFolders()

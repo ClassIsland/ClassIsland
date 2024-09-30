@@ -88,6 +88,8 @@ public partial class App : AppBase, IAppHost
     public static readonly string AppDataFolderPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
 
+    public static readonly string AppLogFolderPath = "./Logs";
+
     public static readonly string AppConfigPath = "./Config";
 
     public static readonly string AppCacheFolderPath = "./Cache";
@@ -286,8 +288,6 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<DiagnosticService>();
                 services.AddSingleton<IManagementService, ManagementService>();
                 services.AddSingleton<AppLogService>();
-                services.AddSingleton<ILoggerProvider, SentryLoggerProvider>();
-                services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
                 services.AddSingleton<IComponentsService, ComponentsService>();
                 services.AddSingleton<ILessonsService, LessonsService>();
                 services.AddSingleton<IUriNavigationService, UriNavigationService>();
@@ -381,11 +381,13 @@ public partial class App : AppBase, IAppHost
                         o.InitializeSdk = false;
                         o.MinimumBreadcrumbLevel = LogLevel.Information;
                     });
-                    // TODO: 添加写入本地log文件
 #if DEBUG
                     builder.SetMinimumLevel(LogLevel.Trace);
 #endif
                 });
+                services.AddSingleton<ILoggerProvider, SentryLoggerProvider>();
+                services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
+                services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
                 // AttachedSettings
                 services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();

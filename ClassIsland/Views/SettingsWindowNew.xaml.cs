@@ -36,6 +36,8 @@ using Microsoft.Extensions.Logging;
 using ClassIsland.Services;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Sentry;
+using System.IO;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
 
@@ -405,5 +407,23 @@ public partial class SettingsWindowNew : MyWindow
             e.Accepted = false;
             return;
         }
+    }
+
+    private void MenuItemOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Path.GetFullPath(App.AppLogFolderPath) ?? "",
+            UseShellExecute = true
+        });
+    }
+
+    private void MenuItemOpenAppFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Path.GetFullPath(".") ?? "",
+            UseShellExecute = true
+        });
     }
 }
