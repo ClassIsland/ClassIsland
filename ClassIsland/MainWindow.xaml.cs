@@ -16,7 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-
+using Windows.Win32.UI.Accessibility;
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
@@ -123,6 +123,7 @@ public partial class MainWindow : Window
     
     private IUriNavigationService UriNavigationService { get; }
     public IRulesetService RulesetService { get; }
+    public IWindowRuleService WindowRuleService { get; }
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
@@ -145,7 +146,8 @@ public partial class MainWindow : Window
         IComponentsService componentsService,
         ILessonsService lessonsService,
         IUriNavigationService uriNavigationService,
-        IRulesetService rulesetService)
+        IRulesetService rulesetService,
+        IWindowRuleService windowRuleService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -160,6 +162,7 @@ public partial class MainWindow : Window
         LessonsService = lessonsService;
         UriNavigationService = uriNavigationService;
         RulesetService = rulesetService;
+        WindowRuleService = windowRuleService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -445,6 +448,7 @@ public partial class MainWindow : Window
         TaskBarIconService.MainTaskBarIcon.LeftClickCommand = TrayIconLeftClickedCommand;
         TaskBarIconService.MainTaskBarIcon.TrayLeftMouseUp += MainTaskBarIconOnTrayLeftMouseUp;
         ViewModel.OverlayRemainTimePercents = 0.5;
+        WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         DiagnosticService.EndStartup();
         if (ViewModel.Settings.IsSplashEnabled)
         {
@@ -517,6 +521,30 @@ public partial class MainWindow : Window
 #endif
     }
 
+    private void WindowRuleServiceOnForegroundWindowChanged(HWINEVENTHOOK hwineventhook, uint @event, HWND hwnd, int idobject, int idchild, uint ideventthread, uint dwmseventtime)
+    {
+        //if (@event is not (EVENT_SYSTEM_FOREGROUND))
+        //{
+        //    return;
+        //}
+
+        //ReCheckTopmostState();
+    }
+
+    private void ReCheckTopmostState()
+    {
+        var handle = new WindowInteropHelper(this).Handle;
+        if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.Settings.WindowLayer == 1)
+        {
+
+            SetWindowPos((HWND)handle, NativeWindowHelper.HWND_TOPMOST, 0, 0, 0, 0,
+                SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING);
+            //Topmost = true;
+            
+        }
+
+    }
+
     private void InitializeRawInputHandler()
     {
         var handle = new WindowInteropHelper(this).Handle;
@@ -528,6 +556,7 @@ public partial class MainWindow : Window
         RawInputUpdateStopWatch.Start();
         var hWndSource = HwndSource.FromHwnd(handle);
         hWndSource?.AddHook(ProcWnd);
+        
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
@@ -537,7 +566,7 @@ public partial class MainWindow : Window
 
     private IntPtr ProcWnd(IntPtr hwnd, int msg, IntPtr param, IntPtr lParam, ref bool handled)
     {
-        if (msg == 0x00FF)
+        if (msg == 0x00FF) // WM_INPUT
         {
             if (RawInputUpdateStopWatch.ElapsedMilliseconds < 20)
             {
@@ -576,6 +605,12 @@ public partial class MainWindow : Window
                     break;
             }
 
+        }
+
+        if (msg == 0x0047) // WM_WINDOWPOSCHANGED
+        {
+            Logger.LogTrace("ZORDER changed");
+            ReCheckTopmostState();
         }
 
         return nint.Zero;

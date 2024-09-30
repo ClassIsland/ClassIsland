@@ -13,8 +13,10 @@ namespace ClassIsland.Core.Helpers.Native;
 
 public static class NativeWindowHelper
 {
+
     #region 常量
     public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
+    public static readonly HWND HWND_TOPMOST = new(-1);
     public static readonly HWND HWND_BOTTOM = (HWND)new IntPtr(1);
 
     public const int OF_READWRITE = 2;
