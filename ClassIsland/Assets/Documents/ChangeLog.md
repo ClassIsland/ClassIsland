@@ -89,15 +89,15 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ## Bug 修复
 
-- 【组件】修复部分组件无法局部覆盖 MainWindowBodyFontSize 的问题 ([#343](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【组件】修复部分组件无法局部覆盖 MainWindowBodyFontSize 的问题 ([#343](https://github.com/ClassIsland/ClassIsland/issues/343))
 - 【组件/课表】修复时间点附加信息【XX/持续时间】中时间格式不统一的问题
-- 【主界面】修复当窗口宽度为 0 时回弹动画产生负值宽度导致崩溃的问题 ([#386](https://github.com/ClassIsland/ClassIsland/issues/3))
-- 【主界面】修复概率丢失置顶属性的问题 ([#358](https://github.com/ClassIsland/ClassIsland/issues/3))
-- 【档案编辑器】修复在课表编辑界面选中含有正在删除科目的课程时，使 SubjectId 为 null 导致主循环异常的问题 ([#376](https://github.com/ClassIsland/ClassIsland/issues/3))
-- 【档案编辑器】修复设置课表的同时设置科目，导致软件崩溃的问题 ([#375](https://github.com/ClassIsland/ClassIsland/issues/3))
-- 【档案】修复在时间表顶部变更一个“课间休息”为“上课”时，整个课程表会向前错位的问题 ([#387](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【主界面】修复当窗口宽度为 0 时回弹动画产生负值宽度导致崩溃的问题 ([#386](https://github.com/ClassIsland/ClassIsland/issues/386))
+- 【主界面】修复概率丢失置顶属性的问题 ([#358](https://github.com/ClassIsland/ClassIsland/issues/358))
+- 【档案编辑器】修复在课表编辑界面选中含有正在删除科目的课程时，使 SubjectId 为 null 导致主循环异常的问题 ([#376](https://github.com/ClassIsland/ClassIsland/issues/376))
+- 【档案编辑器】修复设置课表的同时设置科目，导致软件崩溃的问题 ([#375](https://github.com/ClassIsland/ClassIsland/issues/375))
+- 【档案】修复在时间表顶部变更一个“课间休息”为“上课”时，整个课程表会向前错位的问题 ([#387](https://github.com/ClassIsland/ClassIsland/issues/387))
 - 【组件/课表】修复在删除临时层课表的源课表后应用崩溃的问题
-- 【提醒】修复换课时如果下节课是户外课程换成室内课程倒计时显示时间不正常的问题 ([#385](https://github.com/ClassIsland/ClassIsland/issues/3))
+- 【提醒】修复换课时如果下节课是户外课程换成室内课程倒计时显示时间不正常的问题 ([#385](https://github.com/ClassIsland/ClassIsland/issues/385))
 
 ***
 
