@@ -89,17 +89,21 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         {
             var temp = Directory.CreateTempSubdirectory("ClassIslandDiagnosticExport").FullName;
             var logs = string.Join('\n', AppLogService.Logs);
-            await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
+            //await File.WriteAllTextAsync(Path.Combine(temp, "Logs.log"), logs);
             await File.WriteAllTextAsync(Path.Combine(temp, "DiagnosticInfo.txt"), GetDiagnosticInfo());
             File.Copy("./Settings.json", Path.Combine(temp, "Settings.json"));
             var profile = App.GetService<IProfileService>().CurrentProfilePath;
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
             Directory.CreateDirectory(Path.Combine(temp, "Management/"));
+            Directory.CreateDirectory(Path.Combine(temp, "Config/"));
+            Directory.CreateDirectory(Path.Combine(temp, "Logs/"));
             foreach (var file in Directory.GetFiles(ManagementService.ManagementConfigureFolderPath))
             {
                 File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
             }
             File.Copy(Path.Combine("./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
+            FileFolderService.CopyFolder(Path.Combine(App.AppConfigPath), Path.Combine(temp, "Config/"));
+            FileFolderService.CopyFolder(Path.Combine(App.AppLogFolderPath), Path.Combine(temp, "Logs/"));
 
             File.Delete(path);
             await Task.Run(() =>
