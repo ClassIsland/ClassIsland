@@ -22,6 +22,21 @@ public class NotificationRequest : ObservableRecipient
     private CancellationTokenSource _completedTokenSource = new();
 
     /// <summary>
+    /// 初始化一个 <see cref="NotificationRequest"/> 实例。
+    /// </summary>
+    public NotificationRequest()
+    {
+        CancellationTokenSource.Token.Register(() =>
+        {
+            Canceled?.Invoke(this, EventArgs.Empty);
+        });
+        CompletedTokenSource.Token.Register(() =>
+        {
+            Completed?.Invoke(this, EventArgs.Empty);
+        });
+    }
+
+    /// <summary>
     /// 提醒时要显示的内容
     /// </summary>
     public object? OverlayContent
@@ -108,7 +123,7 @@ public class NotificationRequest : ObservableRecipient
     /// <summary>
     /// 代表提醒取消的取消令牌源。
     /// </summary>
-    public CancellationTokenSource CancellationTokenSource
+    internal CancellationTokenSource CancellationTokenSource
     {
         get => _cancellationTokenSource;
         set
@@ -178,7 +193,7 @@ public class NotificationRequest : ObservableRecipient
     /// <summary>
     /// 代表提醒显示完毕的取消令牌源。
     /// </summary>
-    public CancellationTokenSource CompletedTokenSource
+    internal CancellationTokenSource CompletedTokenSource
     {
         get => _completedTokenSource;
         set
@@ -189,6 +204,15 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
+    /// <summary>
+    /// 代表提醒被取消的取消令牌。
+    /// </summary>
+    public CancellationToken CancellationToken => CancellationTokenSource.Token;
+
+    /// <summary>
+    /// 代表提醒显示完成的取消令牌。
+    /// </summary>
+    public CancellationToken CompletedToken => CompletedTokenSource.Token;
 
     internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
 
@@ -199,5 +223,23 @@ public class NotificationRequest : ObservableRecipient
     internal bool IsPriorityOverride { get; set; } = false;
 
     internal int PriorityOverride { get; set; } = -1;
+
+    /// <summary>
+    /// 取消当前提醒。
+    /// </summary>
+    public void Cancel()
+    {
+        CancellationTokenSource.Cancel();
+    }
+
+    /// <summary>
+    /// 当当前提醒被取消时触发。
+    /// </summary>
+    public event EventHandler? Canceled;
+
+    /// <summary>
+    /// 当当前提醒显示完成时触发。
+    /// </summary>
+    public event EventHandler? Completed;
 }
 #endif
