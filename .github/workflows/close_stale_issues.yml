@@ -1,0 +1,26 @@
+name: Close inactive issues
+on:
+  workflow_dispatch: 
+    
+  schedule:
+    - cron: "30 1 * * *"
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          any-of-labels: '需要更多信息,待沟通'
+          days-before-issue-stale: 14
+          days-before-issue-close: 7
+          days-before-pr-stale: 14
+          days-before-pr-close: 7
+          stale-issue-label: "陈旧"
+          stale-pr-label: "陈旧"
+          stale-issue-message: "由于此 Issue 在 14 天内没有活动，已被标记为陈旧。请移除【陈旧】标签或在此 Issue 下评论，否则此 Issue 将在 7 天后被关闭。"
+          stale-pr-message: "由于此 Pull Request 在 14 天内没有活动，已被标记为陈旧。请移除【陈旧】标签或在此 Pull Request 下评论，否则此 Pull Request 将在 7 天后被关闭。"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
