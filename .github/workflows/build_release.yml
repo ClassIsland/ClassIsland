@@ -135,13 +135,14 @@ jobs:
           bodyFile: ./out/checksums.md
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Upload Nuget packages to NuGet Gallery
-      #   if: ${{ github.event_name != 'pull_request' }}
-      #   env:
-      #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
-      #   run: |
-      #     ls
-      #     dotnet nuget push ./out/*.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Upload Nuget packages to NuGet Gallery
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        run: |
+          ls
+          cd out
+          dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
           
       - name: Upload to AppCenter
         env:
