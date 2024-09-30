@@ -45,7 +45,7 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
                 break;
         }
 
-        Debug.WriteLine(w);
+        //Debug.WriteLine(w);
         return new RectangleGeometry(new Rect(new Point(px, 0), new Size(w, gh)), rX, rY);
     }
 
