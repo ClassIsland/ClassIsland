@@ -308,7 +308,7 @@
                     </Button>
                     <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="https://github.com/ClassIsland/ClassIsland/discussions/categories/%E5%8A%9F%E8%83%BD%E6%8A%95%E7%A5%A8">
+                            CommandParameter="https://github.com/ClassIsland/voting/discussions/categories/classisland?discussions_q=is%3Aopen+category%3AClassIsland+sort%3Atop">
                         <Grid>
                             <TextBlock Text="功能投票" />
                             <materialDesign:PackIcon Kind="ExternalLink" HorizontalAlignment="Right"
