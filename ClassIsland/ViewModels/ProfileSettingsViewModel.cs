@@ -33,6 +33,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isUpdatingClassInfoIndexInBackend = false;
     private bool _isClassPlanEditComplete = false;
     private bool _isWeekOffsetSettingsOpen = false;
+    private TimeLayoutItem? _previousTrackedTimeLayoutItem;
 
     public object DrawerContent
     {
@@ -277,6 +278,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (value == _isWeekOffsetSettingsOpen) return;
             _isWeekOffsetSettingsOpen = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public TimeLayoutItem? PreviousTrackedTimeLayoutItem
+    {
+        get => _previousTrackedTimeLayoutItem;
+        set
+        {
+            if (Equals(value, _previousTrackedTimeLayoutItem)) return;
+            _previousTrackedTimeLayoutItem = value;
             OnPropertyChanged();
         }
     }

@@ -59,6 +59,11 @@ public class TimeLayout : AttachableSettingsObject
     public void InsertTimePoint(int index, TimeLayoutItem item)
     {
         Layouts.Insert(index, item);
+        NotifyTimeLayoutItemAdded(index, item);
+    }
+
+    internal void NotifyTimeLayoutItemAdded(int index, TimeLayoutItem item)
+    {
         var ci = -1;
         if (item.TimeType == 0)
         {
@@ -80,12 +85,17 @@ public class TimeLayout : AttachableSettingsObject
     public void RemoveTimePoint(TimeLayoutItem item)
     {
         var index = Layouts.IndexOf(item);
+        NotifyTimeLayoutItemRemoved(index, item);
+        Layouts.Remove(item);
+    }
+
+    internal void NotifyTimeLayoutItemRemoved(int index, TimeLayoutItem item)
+    {
         var ci = -1;
         if (item.TimeType == 0)
         {
             ci = (from i in Layouts where i.TimeType==0 select i).ToList().IndexOf(item);
         }
-        Layouts.Remove(item);
         LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs()
         {
             Action = NotifyCollectionChangedAction.Remove,

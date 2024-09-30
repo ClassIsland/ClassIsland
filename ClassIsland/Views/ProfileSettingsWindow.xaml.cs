@@ -67,7 +67,61 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         InitializeComponent();
         DataContext = this;
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        ViewModel.PropertyChanging += ViewModelOnPropertyChanging;
+    }
 
+    private void ViewModelOnPropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+
+    }
+
+    private void SelectedTimePointOnPropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+        if (e.PropertyName != nameof(ViewModel.SelectedTimePoint.TimeType)) 
+            return;
+        NotifyTimePointChanged(true);
+    }
+
+    private void NotifyTimePointChanged(bool isRemove)
+    {
+        if (ViewModel.SelectedTimePoint == null)
+            return;
+        var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
+        var index = timeLayout.Layouts.IndexOf(ViewModel.SelectedTimePoint);
+        if (index == -1)
+            return;
+        if (!isRemove){
+            timeLayout.NotifyTimeLayoutItemAdded(index, ViewModel.SelectedTimePoint);
+        }
+        else
+        {
+            timeLayout.NotifyTimeLayoutItemRemoved(index, ViewModel.SelectedTimePoint);
+        }
+    }
+
+    private void SelectedTimePointOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(ViewModel.SelectedTimePoint.TimeType)) 
+            return;
+        NotifyTimePointChanged(false);
+    }
+
+    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(ViewModel.SelectedTimePoint)) 
+            return;
+        if (ViewModel.PreviousTrackedTimeLayoutItem != null)
+        {
+            ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanged -= SelectedTimePointOnPropertyChanged;
+            ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanging -= SelectedTimePointOnPropertyChanging;
+        }
+        if (ViewModel.SelectedTimePoint != null)
+        {
+            ViewModel.SelectedTimePoint.PropertyChanged += SelectedTimePointOnPropertyChanged;
+            ViewModel.SelectedTimePoint.PropertyChanging += SelectedTimePointOnPropertyChanging;
+            ViewModel.PreviousTrackedTimeLayoutItem = ViewModel.SelectedTimePoint;
+        }
     }
 
     public bool IsOpened

@@ -25,6 +25,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         {
             if (value == _startSecond) return;
             //EnsureTime(value, EndSecond);
+            OnPropertyChanging();
             _startSecond = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
@@ -40,6 +41,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         set
         {
             if (value == _endSecond) return;
+            OnPropertyChanging();
             //EnsureTime(StartSecond, value);
             _endSecond = value;
             OnPropertyChanged();
@@ -72,6 +74,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         set
         {
             if (value == _timeType) return;
+            OnPropertyChanging();
             _timeType = value;
             OnPropertyChanged();
         }
@@ -86,6 +89,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         set
         {
             if (value == _isHideDefault) return;
+            OnPropertyChanging();
             _isHideDefault = value;
             OnPropertyChanged();
         }
@@ -100,6 +104,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         set
         {
             if (value == _defaultClassId) return;
+            OnPropertyChanging();
             _defaultClassId = value;
             OnPropertyChanged();
         }
@@ -120,6 +125,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         set
         {
             if (_breakName == value) return;
+            OnPropertyChanging();
             _breakName = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(BreakNameText));
