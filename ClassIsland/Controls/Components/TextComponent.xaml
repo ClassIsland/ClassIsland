@@ -7,17 +7,10 @@
                         xmlns:local="clr-namespace:ClassIsland.Controls.Components"
                         xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
-                        xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
-    <controls:ComponentBase.Resources>
-        <converters:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
-    </controls:ComponentBase.Resources>
     <Grid VerticalAlignment="Center" 
           DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponent}}">
-        <TextBlock 
-                   Text="{Binding Settings.TextContent}"
-                   FontSize="{Binding Settings.FontSize}"
-                   Foreground="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+        <TextBlock Text="{Binding Settings.TextContent}"/>
     </Grid>
 </controls:ComponentBase>
