@@ -8,7 +8,8 @@
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters;assembly=ClassIsland.Core"
       xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
-      xmlns:actions="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
+      xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
+      xmlns:ruleset="clr-namespace:ClassIsland.Core.Controls.Ruleset;assembly=ClassIsland.Core"
       xmlns:models="clr-namespace:ClassIsland.Core.Models;assembly=ClassIsland.Core"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
@@ -25,6 +26,7 @@
         <CommandBinding Command="{x:Static local:RuleSettingsPage.RemoveCommand}" Executed="CommandRemoveCommand_OnExecuted"/>
         <CommandBinding Command="{x:Static local:RuleSettingsPage.DuplicateCommand}" Executed="CommandDuplicate_OnExecuted"/>
         <CommandBinding Command="{x:Static local:RuleSettingsPage.DebugInvokeActionCommand}" Executed="CommandDebugInvokeAction_OnExecuted"/>
+        <CommandBinding Command="{x:Static local:RuleSettingsPage.DebugInvokeActionSyncCommand}" Executed="CommandDebugInvokeActionSync_OnExecuted"/>
         <CommandBinding Command="{x:Static local:RuleSettingsPage.DebugInvokeBackActionCommand}" Executed="CommandDebugInvokeBackAction_OnExecuted"/>
     </ci:SettingsPageBase.CommandBindings>
     <ci:SettingsPageBase.Resources>
@@ -39,11 +41,14 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <!-- 规则编辑 -->
-                <ItemsControl Grid.Row="0" ItemsSource="{Binding RuleActionPairs}"
-                         HorizontalContentAlignment="Stretch">
+                <ItemsControl Grid.Row="0" ItemsSource="{Binding RuleActionPairs}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <materialDesign:Card Padding="5" Margin="5">
+                            <Border BorderThickness="2"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                    CornerRadius="6"
+                                    HorizontalAlignment="Stretch"
+                                    Margin="0 0 0 10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -64,47 +69,56 @@
                                             </Style.Triggers>
                                         </Style>
                                     </Grid.Style>
-                                        
-                                        
-                                    <!--规则编辑-->
-                                    <ci:RulesetControl Ruleset="{Binding Ruleset}" Grid.Row="1"/>
-
-                                    <!--分栏-->
-                                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="5" Margin="4 0" Grid.Row="1"/>
-
-                                    <!--行动编辑-->
-                                    <actions:ActionControl ActionList="{Binding ActionList}"
-                                                           Grid.Column="2" Grid.Row="1"/>
-
-
+                                    
                                     <!--规则组操作-->
-                                    <WrapPanel Orientation="Horizontal" Grid.ColumnSpan="3">
-                                        <TextBox Text="{Binding Name}" MinWidth="150"/>
+                                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left" Panel.ZIndex="1">
+                                        <TextBox Text="{Binding Name}" MinWidth="200" Padding="8 5"
+                                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                                 materialDesign:HintAssist.Hint="备注"
+                                                 materialDesign:HintAssist.IsFloating="False"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Right" Panel.ZIndex="1"
+                                                Background="{DynamicResource MaterialDesignPaper}">
 
-                                        <Button Content="{materialDesign:PackIcon Kind=Close}" ToolTip="删除"
-                                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                                Command="{x:Static local:RuleSettingsPage.RemoveCommand}" CommandParameter="{Binding}"
-                                                                Margin="0 0 4 0"/>
+                                        <Button Content="(Debug)触发" Foreground="Blue"
+                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Command="{x:Static local:RuleSettingsPage.DebugInvokeActionCommand}" CommandParameter="{Binding}"
+                                                Margin="0 0 4 0"/>
+
+                                        <Button Content="(Debug)恢复" Foreground="Blue"
+                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Command="{x:Static local:RuleSettingsPage.DebugInvokeBackActionCommand}" CommandParameter="{Binding}"
+                                                Margin="0 0 4 0"/>
+
+                                        <Button Content="(dbg)触发2" Foreground="Blue"
+                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Command="{x:Static local:RuleSettingsPage.DebugInvokeActionSyncCommand}" CommandParameter="{Binding}"
+                                                Margin="0 0 4 0"/>
+
+                                        <ToggleButton ToolTip="启用" IsChecked="{Binding IsEnabled}" Margin="0 0 4 0"/>
 
                                         <Button Content="{materialDesign:PackIcon Kind=ContentCopy}" ToolTip="复制"
                                                                 Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                                 Command="{x:Static local:RuleSettingsPage.DuplicateCommand}" CommandParameter="{Binding}"
                                                                 Margin="0 0 4 0"/>
 
-                                        <Button Content="(Debug)触发"
-                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                Command="{x:Static local:RuleSettingsPage.DebugInvokeActionCommand}" CommandParameter="{Binding}"
-                                                Margin="0 0 4 0"/>
+                                        <Button Content="{materialDesign:PackIcon Kind=Close}" ToolTip="删除"
+                                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                Command="{x:Static local:RuleSettingsPage.RemoveCommand}" CommandParameter="{Binding}"
+                                                                Margin="0 0 4 0"/>
+                                    </StackPanel>
 
-                                        <Button Content="(Debug)恢复"
-                                                Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                Command="{x:Static local:RuleSettingsPage.DebugInvokeBackActionCommand}" CommandParameter="{Binding}"
-                                                Margin="0 0 4 0"/>
+                                    <!--规则编辑-->
+                                    <ruleset:RulesetControl Ruleset="{Binding Ruleset}" ShowTitle="False" Grid.Column="0" Grid.Row="1"/>
 
-                                        <ToggleButton ToolTip="启用" IsChecked="{Binding IsEnabled}" Margin="0 0 4 0"/>
-                                    </WrapPanel>
+                                    <!--分栏-->
+                                    <GridSplitter HorizontalAlignment="Stretch" Width="5" Margin="4 0" Grid.Column="1" Grid.RowSpan="2" Panel.ZIndex="0"/>
+
+                                    <!--行动编辑-->
+                                    <action:ActionControl ActionList="{Binding ActionList}" Grid.Column="2" Grid.Row="1"/>
+                                    
                                 </Grid>
-                            </materialDesign:Card>
+                            </Border>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>

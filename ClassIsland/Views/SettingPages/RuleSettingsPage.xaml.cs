@@ -41,6 +41,7 @@ public partial class RuleSettingsPage
     public static readonly ICommand DuplicateCommand = new RoutedUICommand();
     public static readonly ICommand DebugInvokeActionCommand = new RoutedUICommand();
     public static readonly ICommand DebugInvokeBackActionCommand = new RoutedUICommand();
+    public static readonly ICommand DebugInvokeActionSyncCommand = new RoutedUICommand();
 
     public ObservableCollection<RuleActionPair> RuleActionPairs
     {
@@ -79,5 +80,12 @@ public partial class RuleSettingsPage
         if (e.Parameter is not RuleActionPair ruleActionPair) return;
 
         App.GetService<IActionService>().InvokeBackActionList(ruleActionPair.ActionList);
+    }
+
+    private void CommandDebugInvokeActionSync_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (e.Parameter is not RuleActionPair ruleActionPair) return;
+
+        App.GetService<IActionService>().DebugInvokeActionListSync(ruleActionPair.ActionList);
     }
 }

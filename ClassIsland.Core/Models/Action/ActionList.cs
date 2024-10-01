@@ -33,4 +33,19 @@ public class ActionList : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    private bool _isOn = false;
+    /// <summary>
+    /// 行动列表已被激活、还未恢复。
+    /// </summary>
+    public bool IsOn
+    {
+        get => _isOn;
+        set
+        {
+            if (value == _isOn) return;
+            _isOn = value;
+            OnPropertyChanged();
+        }
+    }
 }

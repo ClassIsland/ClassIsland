@@ -28,7 +28,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <TextBlock Text="规则集" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                           Margin="0 0 0 8" />
+                           Margin="0 0 0 8" Visibility="{Binding ShowTitle, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <WrapPanel Orientation="Horizontal">
                 <ComboBox SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"

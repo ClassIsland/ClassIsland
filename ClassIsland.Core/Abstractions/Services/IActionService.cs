@@ -23,12 +23,14 @@ public interface IActionService
     void RegisterActionBackHandler(string id, ActionRegistryInfo.HandleDelegate handler);
 
     /// <summary>
-    /// 触发行动。
+    /// 触发行动列表。
     /// </summary>
     void InvokeActionList(ActionList actionList);
 
     /// <summary>
-    /// 触发恢复行动。
+    /// 触发恢复行动列表。
     /// </summary>
     void InvokeBackActionList(ActionList actionList);
+
+    internal void DebugInvokeActionListSync(ActionList actionList);
 }

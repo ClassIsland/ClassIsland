@@ -68,6 +68,7 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ControlzEx.Native;
 using ClassIsland.Controls.ActionSettingsControls;
+using ClassIsland.Services.ActionHandlers;
 
 namespace ClassIsland;
 /// <summary>
@@ -411,11 +412,14 @@ public partial class App : AppBase, IAppHost
                 services.AddAction<CurrentComponentConfigActionSettings, CurrentComponentConfigActionSettingsControl>("classisland.settings.currentComponentConfig", "组件配置方案", PackIconKind.WidgetsOutline);
                 services.AddAction<ThemeActionSettings, ThemeActionSettingsControl>("classisland.settings.theme", "应用主题", PackIconKind.ThemeLightDark);
                 services.AddAction<WindowDockingLocationActionSettings, WindowDockingLocationActionSettingsControl>("classisland.settings.windowDockingLocation", "窗口停靠位置", PackIconKind.Monitor);
-                //services.AddAction<AppSettingsActionSettings, AppSettingsActionSettingsControl>("classisland.os.run", "运行", PackIconKind.OpenInApp);
-                //services.AddAction<AppSettingsActionSettings, AppSettingsActionSettingsControl>("classisland.action.sleep", "等待时长", PackIconKind.TimerSand);
-                //services.AddAction("classisland.app.quit", "退出 ClassIsland", PackIconKind.ExitToApp);
-                // services.AddAction<, >("classisland.windows.minimize", "最小化窗口", PackIconKind.WindowMinimize);
-                // services.AddAction<, >("classisland.windows.close", "关闭窗口", PackIconKind.WindowClose);
+                services.AddAction<RunActionSettings, RunActionSettingsControl>("classisland.os.run", "运行", PackIconKind.OpenInApp);
+                services.AddAction<SleepActionSettings, SleepActionSettingsControl>("classisland.action.sleep", "等待时长", PackIconKind.TimerSand);
+                services.AddAction("classisland.app.quit", "退出 ClassIsland", PackIconKind.ExitToApp, onHandle: (_, _) => Current.Stop());
+                // services.AddAction<, >("classisland.window.minimize", "最小化窗口", PackIconKind.WindowMinimize);
+                // services.AddAction<, >("classisland.window.close", "关闭窗口", PackIconKind.WindowClose);
+                // 行动处理
+                //services.AddSingleton<RunActionHandler>();
+                //services.AddSingleton<AppSettingsActionHandler>();
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();

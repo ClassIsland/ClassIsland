@@ -5,6 +5,8 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Action;
 using System.Text.Json;
 using Action = ClassIsland.Core.Models.Action.Action;
+using ClassIsland.Services.ActionHandlers;
+using System.Threading.Tasks;
 
 namespace ClassIsland.Services;
 
@@ -15,6 +17,12 @@ public class ActionService : IActionService
         Logger = logger;
         RulesetService = rulesetService;
         SettingsService = settingsService;
+
+        // TODO: 改为在 App.xaml.cs 中注册 Handler。
+        new AppSettingsActionHandler(settingsService, this);
+        new SleepActionHandler(this);
+        new RunActionHandler(this, App.GetService<ILogger<RunActionHandler>>());
+
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
     }
 
@@ -22,13 +30,18 @@ public class ActionService : IActionService
     {
         foreach (var p in SettingsService.Settings.RuleActionPairs)
         {
+            if (!p.IsEnabled) continue;
             if (RulesetService.IsRulesetSatisfied(p.Ruleset))
             {
+                if (p.ActionList.IsOn) continue;
                 InvokeActionList(p.ActionList);
+                p.ActionList.IsOn = true;
             }
             else
             {
+                if (!p.ActionList.IsOn) continue;
                 InvokeBackActionList(p.ActionList);
+                p.ActionList.IsOn = false;
             }
         }
     }
@@ -53,20 +66,34 @@ public class ActionService : IActionService
         actionRegistryInfo.BackHandle += handler;
     }
 
+    public void DebugInvokeActionListSync(ActionList actionList)
+    {
+            foreach (var action in actionList.Actions)
+            {
+                InvokeAction(action, actionList.Guid);
+            }
+    }
+
     public void InvokeActionList(ActionList actionList)
     {
-        foreach (var action in actionList.Actions)
+        Task.Run(() =>
         {
-            InvokeAction(action, actionList.Guid, isBack: false);
-        }
+            foreach (var action in actionList.Actions)
+            {
+                InvokeAction(action, actionList.Guid);
+            }
+        });
     }
 
     public void InvokeBackActionList(ActionList actionList)
     {
-        foreach (var action in actionList.Actions)
+        Task.Run(() =>
         {
-            InvokeAction(action, actionList.Guid, isBack: true);
-        }
+            foreach (var action in actionList.Actions)
+            {
+                InvokeAction(action, actionList.Guid, isBack: true);
+            }
+        });
     }
 
     void InvokeAction(Action action, string guid, bool isBack = false)
@@ -90,11 +117,13 @@ public class ActionService : IActionService
         if (isBack)
         {
             actionRegistryInfo.BackHandle?.Invoke(settings, guid);
+            Logger.LogTrace($"触发恢复行动 {action.Id}（{IActionService.Actions[action.Id].Name}）。");
         }
         else
         {
             if (actionRegistryInfo.Handle != null)
             {
+                Logger.LogTrace($"触发行动 {action.Id}（{IActionService.Actions[action.Id].Name}）。");
                 actionRegistryInfo.Handle(settings, guid);
             }
             else

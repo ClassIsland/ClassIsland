@@ -22,7 +22,7 @@
       "commandName": "Project",
       "commandLineArgs": "-dm -esd"
     },
-    "ClassIsland (Uri 启动)": {
+    "ClassIsland (启动指定 Uri)": {
       "commandName": "Project",
       "commandLineArgs": "--uri classisland://app/settings/rules"
     }

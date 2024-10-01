@@ -52,6 +52,15 @@ public partial class RulesetControl : UserControl
         set { SetValue(RulesetProperty, value); }
     }
 
+    public static readonly DependencyProperty ShowTitleProperty = DependencyProperty.Register(
+        nameof(ShowTitle), typeof(bool), typeof(RulesetControl), new PropertyMetadata(true));
+
+    public bool ShowTitle
+    {
+        get { return (bool)GetValue(ShowTitleProperty); }
+        set { SetValue(ShowTitleProperty, value); }
+    }
+
     /// <inheritdoc />
     public RulesetControl()
     {

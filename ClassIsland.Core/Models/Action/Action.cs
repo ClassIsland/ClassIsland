@@ -2,7 +2,7 @@
 namespace ClassIsland.Core.Models.Action;
 
 /// <summary>
-/// 代表一个行动条目。
+/// 代表一个行动。
 /// </summary>
 public class Action : ObservableRecipient
 {

@@ -8,6 +8,7 @@
              xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.CommandBindings>
@@ -18,23 +19,40 @@
             <controls:IconText Kind="Plus" Text="添加行动"/>
         </Button>
         <ItemsControl ItemsSource="{Binding ActionList.Actions}"
-                 HorizontalContentAlignment="Stretch">
+                      MinHeight="10"
+                      HorizontalContentAlignment="Stretch"
+                      dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True"
+                      dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
+                      HorizontalAlignment="Stretch">
+            <dd:DragDrop.EffectMoveAdornerTemplate>
+                <DataTemplate>
+                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24" CornerRadius="12">
+                        <controls:IconText Kind="ArrowUpDown" Text="调整行动顺序"
+                                     Margin="4 0"
+                                     IconMargin="2"
+                                     TextElement.FontWeight="Medium"
+                                     VerticalAlignment="Center"/>
+                    </materialDesign:ColorZone>
+                </DataTemplate>
+            </dd:DragDrop.EffectMoveAdornerTemplate>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="{DynamicResource MaterialDesignToolBarBackground}"
-                            CornerRadius="2"
-                            Margin="3">
-                        <StackPanel Margin="0 10" Orientation="Horizontal">
+                    <Border BorderThickness="1"
+                            BorderBrush="{DynamicResource MaterialDesignDivider}"
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Margin="0 8" Orientation="Horizontal">
                             <Button Grid.Column="2"
                                     Content="{materialDesign:PackIcon Remove}"
                                     Style="{StaticResource MaterialDesignToolForegroundButton}"
                                     ToolTip="删除"
                                     Command="{x:Static local:ActionControl.RemoveActionCommand}"
                                     CommandParameter="{Binding}"/>
-                            <WrapPanel>
+                            <WrapPanel VerticalAlignment="Center">
                                 <ComboBox SelectedValue="{Binding Id}"
                                           SelectedValuePath="Key"
-                                          ItemsSource="{x:Static services:IActionService.Actions}">
+                                          ItemsSource="{x:Static services:IActionService.Actions}"
+                                          MinWidth="100">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <controls:IconText Kind="{Binding Value.IconKind}"
@@ -44,7 +62,8 @@
                                 </ComboBox>
                                 <local:ActionSettingsControlPresenter
                                     Action="{Binding Mode=OneWay}"
-                                    ActionId="{Binding Id, Mode=OneWay}"/>
+                                    ActionId="{Binding Id, Mode=OneWay}"
+                                    Margin="6 0"/>
                             </WrapPanel>
                         </StackPanel>
                     </Border>
