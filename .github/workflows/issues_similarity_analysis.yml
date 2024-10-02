@@ -1,0 +1,21 @@
+name: Issues Similarity Analysis
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  similarity-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: analysis
+        uses: actions-cool/issues-similarity-analysis@v1
+        with:
+          filter-threshold: 0.5
+          comment-title: |
+            ### 相似 Issues
+          comment-body: '${index}. ${similarity} #${number}'
+          title-excludes: "（在这里输入你的标题）,bug"
+          since-days: 365
+          show-footer: false
+          show-mentioned: true
