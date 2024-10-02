@@ -187,7 +187,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _lastAutoBackupTime = DateTime.Now;
     private int _autoBackupLimit = 16;
     private int _autoBackupIntervalDays = 7;
-    private bool _useRawInput = true;
+    private bool _useRawInput = false;
     private bool _isMouseInFadingEnabled = true;
     private double _touchInFadingDurationMs = 0;
     private bool _isCompatibleWindowTransparentEnabled = false;
