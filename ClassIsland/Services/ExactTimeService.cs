@@ -70,11 +70,11 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         if (SettingsService.Settings.IsTimeAutoAdjustEnabled)
         {
             SettingsService.Settings.TimeOffsetSeconds += SettingsService.Settings.TimeAutoAdjustSeconds *
-                                                          Math.Floor((DateTime.Now - SettingsService.Settings
-                                                              .LastTimeAdjustDateTime).TotalDays);
+                                                          Math.Floor((DateTime.Now.Date - SettingsService.Settings
+                                                              .LastTimeAdjustDateTime.Date).TotalDays);
             SettingsService.Settings.TimeOffsetSeconds = Math.Round(SettingsService.Settings.TimeOffsetSeconds, 3);
         }
-        SettingsService.Settings.LastTimeAdjustDateTime = DateTime.Now;
+        SettingsService.Settings.LastTimeAdjustDateTime = DateTime.Now.Date;
     }
 
     private void SystemEventsOnTimeChanged(object? sender, EventArgs e)
