@@ -473,7 +473,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         if (plan.IsOverlay || !plan.IsEnabled)
             return false;
 
-        if (plan.TimeRule.WeekDay != (int)ExactTimeService.GetCurrentLocalDateTime().DayOfWeek)
+        if (plan.TimeRule.WeekDay != (int)time.DayOfWeek)
         {
             return false;
         }

@@ -237,6 +237,12 @@
                         </Grid>
                     </Expander>
                 </materialDesign:Card>
+                <!-- 放学后显示明天课表 -->
+                <ci:SettingsCard IconGlyph="HideOutline"
+                                 Header="放学后显示明天课表"
+                                 Description="在放学后显示第二天的课表。"
+                                 IsOn="{Binding Settings.ShowTomorrowSchedules, Mode=TwoWay}"
+                                 Margin="0 0 0 6" />
                 <Button Margin="0 0 0 6" HorizontalAlignment="Left"
                         Style="{StaticResource MaterialDesignFlatButton}"
                         Click="ButtonImportLegacySettings_OnClick"

@@ -22,6 +22,8 @@ using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
 using ClassIsland.Core.Models.AttachedSettings;
 using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls.Components;
 
@@ -32,11 +34,26 @@ namespace ClassIsland.Controls.Components;
 public partial class ScheduleComponent : INotifyPropertyChanged
 {
     private bool _showCurrentLessonOnlyOnClass = false;
+    private bool _isAfterSchool = false;
+    private ClassPlan? _tomorrowClassPlan;
+    private ClassPlan? _tomorrowClassPlan1;
     public ILessonsService LessonsService { get; }
 
     public SettingsService SettingsService { get; }
 
     public IProfileService ProfileService { get; }
+    public IExactTimeService ExactTimeService { get; }
+
+    public bool IsAfterSchool
+    {
+        get => _isAfterSchool;
+        set
+        {
+            if (value == _isAfterSchool) return;
+            _isAfterSchool = value;
+            OnPropertyChanged();
+        }
+    }
 
     public bool ShowCurrentLessonOnlyOnClass
     {
@@ -49,14 +66,55 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         }
     }
 
+    public ClassPlan? TomorrowClassPlan
+    {
+        get => _tomorrowClassPlan1;
+        set
+        {
+            if (Equals(value, _tomorrowClassPlan1)) return;
+            _tomorrowClassPlan1 = value;
+            OnPropertyChanged();
+        }
+    }
 
-    public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService, IProfileService profileService)
+
+    private bool CheckIsAfterSchool()
+    {
+        if (LessonsService.CurrentState != TimeState.None)
+        {
+            return false;
+        }
+
+        return LessonsService is { IsClassPlanLoaded: true, CurrentClassPlan: not null } &&
+               ExactTimeService.GetCurrentLocalDateTime().TimeOfDay >= LessonsService.CurrentClassPlan?.TimeLayout
+                   .Layouts.LastOrDefault()?.EndSecond.TimeOfDay;
+    }
+
+    public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService, IProfileService profileService, IExactTimeService exactTimeService)
     {
         LessonsService = lessonsService;
         SettingsService = settingsService;
         ProfileService = profileService;
+        ExactTimeService = exactTimeService;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        LessonsService.CurrentTimeStateChanged += LessonsServiceOnCurrentTimeStateChanged;
+        LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
+        IsAfterSchool = CheckIsAfterSchool();
         InitializeComponent();
+    }
+
+    private void LessonsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(LessonsService.CurrentClassPlan) or nameof(LessonsService.IsClassPlanLoaded))
+        {
+            IsAfterSchool = CheckIsAfterSchool();
+        }
+    }
+
+
+    private void LessonsServiceOnCurrentTimeStateChanged(object? sender, EventArgs e)
+    {
+        IsAfterSchool = CheckIsAfterSchool();
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
@@ -70,6 +128,8 @@ public partial class ScheduleComponent : INotifyPropertyChanged
                 LessonsService.CurrentClassPlan?.TimeLayout) ??
             Settings;
         ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
+        //IsAfterSchool = CheckIsAfterSchool();
+        TomorrowClassPlan = IsAfterSchool ? LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1)) : null;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -14,6 +14,7 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _showPlaceholderOnEmptyClassPlan = true;
     private string _placeholderText = "今天没有课程。";
+    private bool _showTomorrowSchedules = false;
 
     public bool ShowExtraInfoOnTimePoint
     {
@@ -110,6 +111,17 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _placeholderText) return;
             _placeholderText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowTomorrowSchedules
+    {
+        get => _showTomorrowSchedules;
+        set
+        {
+            if (value == _showTomorrowSchedules) return;
+            _showTomorrowSchedules = value;
             OnPropertyChanged();
         }
     }

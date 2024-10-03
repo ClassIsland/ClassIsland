@@ -12,7 +12,7 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
-
+using ClassIsland.Shared.Models.Profile;
 using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Hosting;
