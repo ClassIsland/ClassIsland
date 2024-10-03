@@ -128,7 +128,16 @@ public partial class SettingsWindowNew : MyWindow
     {
         BeginStoryboard(key, out var complete);
         if (!complete.IsCancellationRequested)
-            await Task.Run(() => complete.WaitHandle.WaitOne(), complete);
+        {
+            try
+            {
+                await Task.Run(() => complete.WaitHandle.WaitOne(), complete);
+            }
+            catch (TaskCanceledException)
+            {
+                // ignored
+            }
+        }
         if (!IThemeService.IsWaitForTransientDisabled)
         {
             await Dispatcher.Yield();
