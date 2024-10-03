@@ -154,6 +154,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 本项目目前开发状态：
 
+- 正在 [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) 分支上开发版本 [1.6 - Himeko](https://github.com/ClassIsland/ClassIsland/milestone/7)。
 - 正在 [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) 分支上维护版本 [1.5 - Griseo](https://github.com/ClassIsland/ClassIsland/milestone/6)。
 
 要在本地编译应用，您需要安装以下负载和工具：
