@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Microsoft.Extensions.Logging;
 using Sentry;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ClassIsland.Services;
 
@@ -36,6 +38,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
     private TimeLayoutItem _nextClassTimeLayoutItem = new();
     private ObservableCollection<int> _multiWeekRotation = [-1, -1, 1, 1, 1];
+
+    private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [-1, -1, 1, 1, 1];
 
     private DispatcherTimer MainTimer
     {
@@ -142,6 +146,50 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         get => _multiWeekRotation;
         set => SetProperty(ref _multiWeekRotation, value);
+    }
+
+    public ClassPlan? GetClassPlanByDate(DateTime date)
+    {
+        // 加载临时层
+        if (Profile is { IsOverlayClassPlanEnabled: true, OverlayClassPlanId: not null } &&
+            Profile.ClassPlans.TryGetValue(Profile.OverlayClassPlanId, out var overlay))
+        {
+            return overlay;
+        }
+        // 加载临时课表
+        if (Profile.TempClassPlanId != null &&
+            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan))
+        {
+            return tempClassPlan;
+        }
+        // 加载课表
+        var a = Profile.ClassPlans
+            .Where(x =>
+            {
+                var group = x.Value.AssociatedGroup;
+                var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid.ToString();
+                var matchDefault = group == Profile.SelectedClassPlanGroupId;
+                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null })
+                    return matchDefault || matchGlobal;
+                var matchTemp = group == Profile.TempClassPlanGroupId;
+                return Profile.TempClassPlanGroupType switch
+                {
+                    TempClassPlanGroupType.Inherit => matchDefault || matchTemp || matchGlobal,
+                    TempClassPlanGroupType.Override => matchTemp || matchGlobal,
+                    _ => matchDefault || matchGlobal
+                };
+            })
+            .OrderByDescending(x =>
+            {
+                var group = x.Value.AssociatedGroup;
+                if (group == Profile.TempClassPlanGroupId) return 3;
+                if (group == Profile.SelectedClassPlanGroupId) return 2;
+                if (group == ClassPlanGroup.GlobalGroupGuid.ToString()) return 1;
+                return 0;
+            })
+            .Where(p => CheckClassPlan(p.Value, date))
+            .Select(p => p.Value);
+        return a.FirstOrDefault();
     }
 
     public event EventHandler? OnClass;
@@ -416,54 +464,11 @@ public class LessonsService : ObservableRecipient, ILessonsService
             CurrentClassPlan = null;
             return;
         }
-        // 加载临时层
-        if (Profile.IsOverlayClassPlanEnabled &&
-            Profile.OverlayClassPlanId != null &&
-            Profile.ClassPlans.TryGetValue(Profile.OverlayClassPlanId, out var overlay))
-        {
-            CurrentClassPlan = overlay;
-            return;
-        }
-        // 加载临时课表
-        if (Profile.TempClassPlanId != null &&
-            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan))
-        {
-            CurrentClassPlan = tempClassPlan;
-            return;
-        }
-        // 加载课表
-        var a = Profile.ClassPlans
-            .Where(x =>
-            {
-                var group = x.Value.AssociatedGroup;
-                var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid.ToString();
-                var matchDefault = group == Profile.SelectedClassPlanGroupId;
-                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null })
-                    return matchDefault || matchGlobal;
-                var matchTemp = group == Profile.TempClassPlanGroupId;
-                return Profile.TempClassPlanGroupType switch
-                {
-                    TempClassPlanGroupType.Inherit => matchDefault || matchTemp || matchGlobal,
-                    TempClassPlanGroupType.Override => matchTemp || matchGlobal,
-                    _ => matchDefault || matchGlobal
-                };
-            })
-            .OrderByDescending(x =>
-            {
-                var group = x.Value.AssociatedGroup;
-                if (group == Profile.TempClassPlanGroupId) return 3;
-                if (group == Profile.SelectedClassPlanGroupId) return 2;
-                if (group == ClassPlanGroup.GlobalGroupGuid.ToString()) return 1;
-                return 0;
-            })
-            .Where(p => CheckClassPlan(p.Value))
-            .Select(p => p.Value);
-        CurrentClassPlan = a.FirstOrDefault();
 
-
+        CurrentClassPlan = GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime());
     }
 
-    public bool CheckClassPlan(ClassPlan plan)
+    private bool CheckClassPlan(ClassPlan plan, DateTime time)
     {
         if (plan.IsOverlay || !plan.IsEnabled)
             return false;
@@ -484,12 +489,19 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return true;
 
         // RefreshMultiWeekRotation();
-        return plan.TimeRule.WeekCountDiv == MultiWeekRotation[plan.TimeRule.WeekCountDivTotal];
+        var rotation = GetMultiWeekRotationByTime(time);
+        return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
     }
 
     public void RefreshMultiWeekRotation()
     {
-        var deltaDays = (ExactTimeService.GetCurrentLocalDateTime().Date - Settings.SingleWeekStartTime.Date).TotalDays;
+        MultiWeekRotation = GetMultiWeekRotationByTime(ExactTimeService.GetCurrentLocalDateTime());
+    }
+
+    private ObservableCollection<int> GetMultiWeekRotationByTime(DateTime time)
+    {
+        var rotation = new ObservableCollection<int>(DefaultMultiWeekRotation);
+        var deltaDays = (time.Date - Settings.SingleWeekStartTime.Date).TotalDays;
         var deltaWeeks = (int)Math.Floor(deltaDays / 7);
         for (var i = 2; i <= 4; i++)
         {
@@ -498,8 +510,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
             {
                 w += i;
             }
-            MultiWeekRotation[i] = w + 1;
+            rotation[i] = w + 1;
         }
+
+        return rotation;
     }
 
     public void StartMainTimer()

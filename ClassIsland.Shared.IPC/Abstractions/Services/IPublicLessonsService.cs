@@ -95,4 +95,11 @@ public interface IPublicLessonsService
     /// ……<br/>
     /// </remarks>
     ObservableCollection<int> MultiWeekRotation { get; set; }
+
+    /// <summary>
+    /// 根据日期获取当天的课表<see cref="ClassPlan"/>。如果那天没有课表安排，则返回 null
+    /// </summary>
+    /// <param name="date">要获取课表的日期</param>
+    /// <returns>获取到的课表</returns>
+    ClassPlan? GetClassPlanByDate(DateTime date);
 }
