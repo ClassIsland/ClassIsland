@@ -80,15 +80,21 @@ public partial class PluginsSettingsPage : SettingsPageBase
         string document;
         try
         {
+            ViewModel.ReadmeDocument = MarkdownConvertHelper.ConvertMarkdown("> Loading...");
             await DocumentLoadingCancellationTokenSource.CancelAsync();
             DocumentLoadingCancellationTokenSource = new();
             ViewModel.IsLoadingDocument = true;
             document = uri.Scheme switch
             {
-                "https" or "http" => await new HttpClient().GetStringAsync(uri, DocumentLoadingCancellationTokenSource.Token),
+                "https" or "http" => await new HttpClient().GetStringAsync(uri,
+                    DocumentLoadingCancellationTokenSource.Token),
                 "file" => await File.ReadAllTextAsync(path, DocumentLoadingCancellationTokenSource.Token),
                 _ => ""
             };
+        }
+        catch (TaskCanceledException)
+        {
+            return;
         }
         catch (Exception e)
         {
