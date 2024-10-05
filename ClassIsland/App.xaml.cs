@@ -121,7 +121,8 @@ public partial class App : AppBase, IAppHost
 
     public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
 
-    public static string AppCodeName => "Griseo";
+    // ReSharper disable once StringLiteralTypo
+    public static string AppCodeName => "Himeko";
 
     public static string AppVersionLong =>
         $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
