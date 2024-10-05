@@ -300,6 +300,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IRulesetService, RulesetService>();
                 services.AddSingleton<IActionService, ActionService>();
                 services.AddSingleton<IWindowRuleService, WindowRuleService>();
+                services.AddSingleton<IAutomationService, AutomationService>();
                 try // 检测SystemSpeechService是否存在
                 {
                     var s = new SpeechSynthesizer();
@@ -352,6 +353,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<WindowSettingsPage>();
                 services.AddSettingsPage<WeatherSettingsPage>();
                 services.AddSettingsPage<UpdatesSettingsPage>();
+                services.AddSettingsPage<AutomationSettingsPage>();
                 services.AddSettingsPage<StorageSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
@@ -544,6 +546,7 @@ public partial class App : AppBase, IAppHost
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);
+            GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
         };
 #if DEBUG
@@ -714,6 +717,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
             IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
+            IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
             Current.Shutdown();
             try

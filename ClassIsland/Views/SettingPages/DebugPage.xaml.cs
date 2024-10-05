@@ -156,6 +156,11 @@ public partial class DebugPage : SettingsPageBase
         SettingsService.Settings.IsPluginMarketWarningVisible = true;
     }
 
+    private void MenuItemShowAutomationWarning_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.IsAutomationWarningVisible = true;
+    }
+
     private void MenuItemOverwriteSettingsVersion_OnClick(object sender, RoutedEventArgs e)
     {
         var r = new CommonDialogBuilder()

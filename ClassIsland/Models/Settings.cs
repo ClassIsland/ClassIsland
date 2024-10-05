@@ -160,6 +160,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
     private string _currentComponentConfig = "Default";
+    private bool _isAutomationEnabled = false;
+    private bool _isAutomationWarningVisible = true;
+    private string _currentAutomationConfig = "Default";
     private Version _lastAppVersion = new Version("0.0.0.0");
     private bool _showComponentsMigrateTip = false;
     private bool _expAllowEditingActivatedTimeLayout = false;
@@ -211,7 +214,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     {
         OnPropertyChanged(propertyName);
     }
- 
+
     public string SelectedProfile
     {
         get => _selectedProfile;
@@ -1315,6 +1318,44 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #endregion
 
+    #region Automations
+
+    public bool IsAutomationEnabled
+    {
+        get => _isAutomationEnabled;
+        set
+        {
+            if (value == _isAutomationEnabled) return;
+            _isAutomationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CurrentAutomationConfig
+    {
+        get => _currentAutomationConfig;
+        set
+        {
+            if (value == _currentAutomationConfig) return;
+            App.GetService<IAutomationService>().SaveConfig();
+            _currentAutomationConfig = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAutomationWarningVisible
+    {
+        get => _isAutomationWarningVisible;
+        set
+        {
+            if (value == _isAutomationWarningVisible) return;
+            _isAutomationWarningVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
     #region AppUpgrades
 
     /// <summary>
@@ -2063,6 +2104,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
+
     public bool IsSwapMode
     {
         get => _isSwapMode;
@@ -2073,5 +2115,4 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-
 }
