@@ -43,6 +43,7 @@
     </Window.CommandBindings>
     <Window.Resources>
         <converters1:IndexConverter x:Key="IndexConverter" />
+        <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
         <profile:ClassPlan x:Key="FallbackClassPlan"/>
         <Style TargetType="FrameworkElement" x:Key="DockingStyle">
             <Style.Triggers>
@@ -69,6 +70,14 @@
                 <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
                                              Value="5">
                     <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Border" x:Key="BackgroundBorderStyle" BasedOn="{StaticResource DockingStyle}">
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}" Value="True">
+                    <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -546,9 +555,8 @@
                     <!-- Background -->
                     <Border x:Name="BackgroundBorder"
                             Width="{Binding BackgroundWidth, Mode=OneWay}"
-                            Background="{DynamicResource MaterialDesignPaper}"
                             Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}"
-                            Style="{StaticResource DockingStyle}"
+                            Style="{StaticResource BackgroundBorderStyle}"
                             SnapsToDevicePixels="True"
                             Height="40" d:IsHidden="True" />
                     <Border x:Name="BackgroundBorderOverlay"
