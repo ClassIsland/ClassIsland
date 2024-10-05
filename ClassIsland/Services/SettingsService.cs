@@ -18,10 +18,11 @@ using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace ClassIsland.Services;
 
-public class SettingsService(ILogger<SettingsService> logger, IManagementService managementService) : INotifyPropertyChanged
+public class SettingsService(ILogger<SettingsService> Logger, IManagementService ManagementService) : INotifyPropertyChanged
 {
     private Settings _settings = new();
 
@@ -32,10 +33,6 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         get => _settings;
         set => SetField(ref _settings, value);
     }
-
-    private ILogger<SettingsService> Logger { get; } = logger;
-
-    private IManagementService ManagementService { get; } = managementService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -52,6 +49,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
         Settings = settings;
         Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+        Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName);
         Logger.LogTrace("拉取集控默认设置成功！");
     }
 
@@ -70,6 +68,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
                 var r = ConfigureFileHelper.LoadConfig<Settings>("./Settings.json");
                 Settings = r;
                 Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+                Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName);
             }
 
             // 当还没有初始化应用且启用集控时，从集控拉取设置。
@@ -188,9 +187,9 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
 
     }
 
-    public void SaveSettings(string? note = "-")
+    public void SaveSettings(string note = "")
     {
-        Logger.LogInformation("写入配置文件：" + note);
+        Logger.LogInformation(note == "" ? "写入配置文件。" : $"写入配置文件：{note}");
         ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
     }
 
