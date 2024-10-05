@@ -152,13 +152,15 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         // 加载临时层
         if (Profile is { IsOverlayClassPlanEnabled: true, OverlayClassPlanId: not null } &&
-            Profile.ClassPlans.TryGetValue(Profile.OverlayClassPlanId, out var overlay))
+            Profile.ClassPlans.TryGetValue(Profile.OverlayClassPlanId, out var overlay) &&
+            overlay.OverlaySetupTime.Date >= date.Date)
         {
             return overlay;
         }
         // 加载临时课表
         if (Profile.TempClassPlanId != null &&
-            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan))
+            Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan) &&
+            Profile.TempClassPlanSetupTime.Date >= date.Date)
         {
             return tempClassPlan;
         }
@@ -169,7 +171,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 var group = x.Value.AssociatedGroup;
                 var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid.ToString();
                 var matchDefault = group == Profile.SelectedClassPlanGroupId;
-                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null })
+                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null } 
+                    || Profile.TempClassPlanGroupExpireTime.Date < date.Date)
                     return matchDefault || matchGlobal;
                 var matchTemp = group == Profile.TempClassPlanGroupId;
                 return Profile.TempClassPlanGroupType switch
