@@ -193,6 +193,58 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
     }
 
+    /// <summary>
+    /// 添加设置叠层。
+    /// </summary>
+    /// <param name="guid">叠层Guid</param>
+    /// <param name="binding">设置变量名</param>
+    public void AddSettingsOverlay(string guid, string binding, dynamic? value)
+    {
+        var property = typeof(Settings).GetProperty(binding);
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+
+        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay))
+        {
+            overlay = [];
+            var original = property.GetValue(Settings);
+            if (value.ToString() == original.ToString()) return;
+            overlay["@"] = original;
+        }
+        property.SetValue(Settings, value);
+        overlay[guid] = value;
+        Settings.SettingsOverlay[binding] = overlay;
+    }
+
+    /// <summary>
+    /// 删除设置叠层。
+    /// </summary>
+    /// <param name="guid">叠层Guid</param>
+    /// <param name="binding">设置变量名</param>
+    public void RemoveSettingsOverlay(string guid, string binding)
+    {
+        var property = typeof(Settings).GetProperty(binding);
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay)) return;
+
+        overlay.Remove(guid);
+        var last = overlay.Last().Value;
+        if (last is JsonElement json)
+            last = json.Deserialize(property.GetValue(Settings).GetType());
+
+        property.SetValue(Settings, last);
+
+        if (overlay.Count > 1)
+            Settings.SettingsOverlay[binding] = overlay;
+        else
+            Settings.SettingsOverlay.Remove(binding);
+    }
+
+    private void SettingsChanged(string propertyName)
+    {
+        if (propertyName != nameof(Settings.SettingsOverlay))
+            Settings.SettingsOverlay.Remove(propertyName);
+    }
+
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

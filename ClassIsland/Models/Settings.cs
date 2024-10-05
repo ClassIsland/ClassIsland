@@ -205,6 +205,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
+    private Dictionary<string, Dictionary<string, dynamic?>> _settingsOverlay = [];
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -244,6 +245,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public Dictionary<string, Dictionary<string, dynamic?>> SettingsOverlay
+    {
+        get => _settingsOverlay;
+        set
+        {
+            if (value == _settingsOverlay) return;
+            _settingsOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
     #region Gerneral
 
     public DateTime SingleWeekStartTime
@@ -257,19 +269,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    /// <summary>
-    /// 以 2022/4/18 为基准周的多周轮换周数。
-    /// </summary>
-    /// <remarks>
-    /// 第 2 位 - 双周轮换<br/>
-    /// 第 3 位 - 三周轮换<br/>
-    /// ……<br/>
-    /// <br/>
-    /// 0 - 基准周是单周<br/>
-    /// 1 - 基准周是双周<br/>
-    /// 2 - 基准周是 3/x 周<br/>
-    /// ……<br/>
-    /// </remarks>
     public ObservableCollection<int> MultiWeekRotationOffset
     {
         get => _multiWeekRotationOffset;
