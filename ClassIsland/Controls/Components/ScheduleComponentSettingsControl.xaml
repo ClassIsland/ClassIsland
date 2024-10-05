@@ -238,11 +238,20 @@
                     </Expander>
                 </materialDesign:Card>
                 <!-- 放学后显示明天课表 -->
-                <ci:SettingsCard IconGlyph="HideOutline"
-                                 Header="放学后显示明天课表"
-                                 Description="在放学后显示第二天的课表。"
-                                 IsOn="{Binding Settings.ShowTomorrowSchedules, Mode=TwoWay}"
-                                 Margin="0 0 0 6" />
+                <ci:SettingsCard IconGlyph="CalendarOutline"
+                                 Header="显示明天课表"
+                                 Description="设置什么时候显示明天课表"
+                                 Margin="0 0 0 6">
+                    <ci:SettingsCard.Switcher>
+                        <Grid>
+                            <ComboBox SelectedIndex="{Binding Settings.TomorrowScheduleShowMode}">
+                                <ComboBoxItem>不显示</ComboBoxItem>
+                                <ComboBoxItem>放学后显示</ComboBoxItem>
+                                <ComboBoxItem>总是显示</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+                    </ci:SettingsCard.Switcher>
+                </ci:SettingsCard>
                 <Button Margin="0 0 0 6" HorizontalAlignment="Left"
                         Style="{StaticResource MaterialDesignFlatButton}"
                         Click="ButtonImportLegacySettings_OnClick"

@@ -26,13 +26,17 @@
             <materialDesign:ColorZone.Style>
                 <Style TargetType="materialDesign:ColorZone">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsAfterSchool}" Value="False">
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="False"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                            </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
+                        </MultiDataTrigger>
                         <DataTrigger Binding="{Binding TomorrowClassPlan}" Value="{x:Null}">
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Settings.ShowTomorrowSchedules}" Value="False">
+                        <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0">
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -41,7 +45,6 @@
             <TextBlock Text="明天"/>
         </materialDesign:ColorZone>
         <ci:LessonsListBox Grid.Column="1" 
-                           SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
                            IsLiveUpdatingEnabled="True"
@@ -50,14 +53,26 @@
             <ci:LessonsListBox.Style>
                 <Style TargetType="ci:LessonsListBox" BasedOn="{StaticResource ClassIsland.LessonsListBox}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsAfterSchool}" Value="False">
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="False"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                            </MultiDataTrigger.Conditions>
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
-                        </DataTrigger>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                        </MultiDataTrigger>
                         <DataTrigger Binding="{Binding TomorrowClassPlan}" Value="{x:Null}">
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Settings.ShowTomorrowSchedules}" Value="False">
+                        <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0">
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="2">
+                            <Setter Property="ClassPlan" Value="{Binding TomorrowClassPlan, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="-1"/>
                         </DataTrigger>
                     </Style.Triggers>
                     <Setter Property="ClassPlan" Value="{Binding TomorrowClassPlan, Mode=OneWay}"/>
@@ -72,9 +87,16 @@
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
-                                <Condition Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}"/>
                                 <Condition Binding="{Binding TomorrowClassPlan}" Value="{x:Null}"/>
-                                <Condition Binding="{Binding Settings.ShowCurrentLessonOnlyOnClass}" Value="True"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="2"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
+                                <Condition Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Visible"/>
                         </MultiDataTrigger>
@@ -82,7 +104,7 @@
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
                                 <Condition Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}"/>
-                                <Condition Binding="{Binding Settings.ShowCurrentLessonOnlyOnClass}" Value="False"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Visible"/>
                         </MultiDataTrigger>

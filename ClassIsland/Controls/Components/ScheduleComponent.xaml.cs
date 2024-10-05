@@ -129,7 +129,7 @@ public partial class ScheduleComponent : INotifyPropertyChanged
             Settings;
         ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
         //IsAfterSchool = CheckIsAfterSchool();
-        TomorrowClassPlan = IsAfterSchool ? LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1)) : null;
+        TomorrowClassPlan = LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
