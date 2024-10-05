@@ -137,11 +137,11 @@ public partial class App : AppBase, IAppHost
         }
 #endif
 
-        if (Settings.IsCriticalSafeMode) // 教学安全模式
+        if (Settings.IsCriticalSafeMode && // 教学安全模式
+            (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false)))
         {
             Logger?.LogCritical(e.Exception, "发生严重错误（应用被教学安全模式退出）");
-            // TODO: 保存错误日志
-            AppBase.Current.Stop();
+            Current.Stop();
             return;
         }
 

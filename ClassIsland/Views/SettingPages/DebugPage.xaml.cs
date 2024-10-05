@@ -82,6 +82,12 @@ public partial class DebugPage : SettingsPageBase
         throw new Exception("Crash test.");
     }
 
+    private async void ButtonDelayCrash_OnClick(object sender, RoutedEventArgs e)
+    {
+        await Task.Delay(3000);
+        throw new Exception("Crash test.");
+    }
+
     private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)
     {
         LessonsService.DebugTriggerOnBreakingTime();
