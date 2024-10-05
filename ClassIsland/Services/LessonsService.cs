@@ -364,10 +364,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 获取下节课信息
         if (CurrentSelectedIndex + 1 < currentLayout.Count)
         {
+            var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
             var nextClassTimeLayoutItem = currentLayout.FirstOrDefault(i =>
-                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 0);
+                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 0 &&
+                    i.StartSecond.TimeOfDay > now);
             var nextBreakingTimeLayoutItem = currentLayout.FirstOrDefault(i =>
-                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 1);
+                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 1 &&
+                    i.StartSecond.TimeOfDay > now);
             if (nextClassTimeLayoutItem != null)
             {
                 NextClassTimeLayoutItem = nextClassTimeLayoutItem;
