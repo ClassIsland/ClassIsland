@@ -63,6 +63,15 @@ public class LessonsListBox : ListBox
         set { SetValue(IsLiveUpdatingEnabledProperty, value); }
     }
 
+    public static readonly DependencyProperty HighlightChangedClassProperty = DependencyProperty.Register(
+        nameof(HighlightChangedClass), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)));
+
+    public bool HighlightChangedClass
+    {
+        get { return (bool)GetValue(HighlightChangedClassProperty); }
+        set { SetValue(HighlightChangedClassProperty, value); }
+    }
+
     public static readonly DependencyProperty LessonControlSettingsProperty = DependencyProperty.Register(
         nameof(LessonControlSettings), typeof(ILessonControlSettings), typeof(LessonsListBox), new PropertyMetadata(default(ILessonControlSettings)));
 

@@ -254,6 +254,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
             {
                 RulesetService.NotifyStatusChanged();
             }
+            if (args.PropertyName == nameof(CurrentClassPlan))
+            {
+                CurrentClassPlan?.RefreshIsChangedClass();
+            }
         };
 
 

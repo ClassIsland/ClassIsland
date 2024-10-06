@@ -271,6 +271,7 @@ public class Profile : ObservableRecipient
         foreach (var i in _classPlans)
         {
             i.Value.TimeLayouts = TimeLayouts;
+            i.Value.ClassPlans = ClassPlans;
         }
     }
 

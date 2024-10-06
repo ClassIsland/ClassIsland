@@ -48,7 +48,8 @@
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
                            IsLiveUpdatingEnabled="True"
-                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}">
+                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
+                           HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}">
 
             <ci:LessonsListBox.Style>
                 <Style TargetType="ci:LessonsListBox" BasedOn="{StaticResource ClassIsland.LessonsListBox}">

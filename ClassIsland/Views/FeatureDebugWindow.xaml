@@ -48,10 +48,19 @@
                 </Grid>
             </TabItem>
             <TabItem Header="LessonsListBox">
-                <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
-                                   SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"
-                                   Subjects="{Binding ProfileService.Profile.Subjects}"
-                                   IsLiveUpdatingEnabled="False"/>
+                <StackPanel>
+                    <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
+                                       SelectedIndex="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWayToSource}"
+                                       Subjects="{Binding ProfileService.Profile.Subjects}"
+                                       IsLiveUpdatingEnabled="False"/>
+
+                    <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
+                                       SelectedIndex="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWayToSource}"
+                                       Subjects="{Binding ProfileService.Profile.Subjects}"
+                                       IsLiveUpdatingEnabled="False"
+                                       HighlightChangedClass="True"
+                                       DiscardHidingDefault="True" />
+                </StackPanel>
             </TabItem>
             <TabItem Header="水波纹提醒">
                 <DockPanel >
