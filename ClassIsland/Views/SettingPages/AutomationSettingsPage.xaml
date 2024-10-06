@@ -299,7 +299,8 @@
                                         </DataTemplate>
                                     </GroupBox.HeaderTemplate>
                                     <ruleset:RulesetControl Ruleset="{Binding Ruleset}"
-                                                            ShowTitle="False" />
+                                                            ShowTitle="False" 
+                                                            />
                                 </GroupBox>
 
                                 <!--行动编辑-->

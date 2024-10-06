@@ -20,8 +20,16 @@
         <converters:RuleLogicalModeToIntConverter x:Key="RuleLogicalModeToIntConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RulesetControl}}"
-          Margin="16"
           MinWidth="450">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ShowTitle}" Value="True">
+                        <Setter Property="Margin" Value="16"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
