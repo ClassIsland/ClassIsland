@@ -1,5 +1,9 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
@@ -16,11 +20,72 @@ public partial class LoadingMask : UserControl
     private IThemeService ThemeService { get; } = App.GetService<IThemeService>();
     public IHangService HangService { get; } = App.GetService<IHangService>();
 
+    public static readonly DependencyProperty IsFakeLoadingProperty = DependencyProperty.Register(
+        nameof(IsFakeLoading), typeof(bool), typeof(LoadingMask), new PropertyMetadata(default(bool)));
+
+    public bool IsFakeLoading
+    {
+        get { return (bool)GetValue(IsFakeLoadingProperty); }
+        set { SetValue(IsFakeLoadingProperty, value); }
+    }
+
     public LoadingMask()
     {
         InitializeComponent();
         UpdateForeground();
         ThemeService.ThemeUpdated += ThemeServiceOnThemeUpdated;
+    }
+
+    private Storyboard BeginStoryboard(string key)
+    {
+        var sb = FindResource(key) as Storyboard ?? throw new InvalidOperationException();
+        BeginStoryboard(sb);
+        return sb;
+    }
+
+    private Storyboard? _fakeLoadingStoryboard;
+
+    public void StartFakeLoading()
+    {
+        Dispatcher.Invoke(() =>
+        {
+            IsFakeLoading = true;
+            _fakeLoadingStoryboard = BeginStoryboard("FakeLoading");
+        });
+    }
+
+    public void FinishFakeLoading()
+    {
+        Dispatcher.Invoke(() =>
+        {
+            _fakeLoadingStoryboard?.Stop();
+            var daValue = new DoubleAnimation(MetroProgressBar.Value, 100, TimeSpan.FromSeconds(0.2))
+            {
+                EasingFunction = new SineEase()
+            };
+            var daOpacity = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.2))
+            {
+                EasingFunction = new SineEase()
+            };
+            var stopSb = new Storyboard()
+            {
+                FillBehavior = FillBehavior.Stop,
+            };
+            Storyboard.SetTarget(daValue, MetroProgressBar);
+            Storyboard.SetTargetProperty(daValue, new PropertyPath(RangeBase.ValueProperty));
+            Storyboard.SetTarget(daOpacity, MetroProgressBar);
+            Storyboard.SetTargetProperty(daOpacity, new PropertyPath(OpacityProperty));
+            stopSb.Children.Add(daValue);
+            stopSb.Children.Add(daOpacity);
+            stopSb.Completed += (sender, args) =>
+            {
+                stopSb.Remove();
+                MetroProgressBar.Opacity = 1;
+                MetroProgressBar.Value = 0;
+                IsFakeLoading = false;
+            };
+            stopSb.Begin();
+        });
     }
 
     private void UpdateForeground()

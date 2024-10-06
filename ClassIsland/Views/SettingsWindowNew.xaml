@@ -234,7 +234,7 @@
                                     </Page>
                                 </d:Frame.Content>
                             </Frame>
-                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask"/>
+                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask" x:Name="LoadingAsyncBox"/>
                         </Grid>
                     </materialDesign:DrawerHost>
                     <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Padding="16"

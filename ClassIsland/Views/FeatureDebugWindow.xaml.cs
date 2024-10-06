@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
 
 using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services;
@@ -26,5 +28,13 @@ public partial class FeatureDebugWindow : MyWindow
     private void ButtonPlayEffect_OnClick(object sender, RoutedEventArgs e)
     {
         RippleEffect.Play();
+    }
+
+    private async void ButtonTestFakeLoading_OnClick(object sender, RoutedEventArgs e)
+    {
+        LoadingMask.StartFakeLoading();
+        await Task.Delay(TimeSpan.FromSeconds(5));
+        LoadingMask.FinishFakeLoading();
+
     }
 }

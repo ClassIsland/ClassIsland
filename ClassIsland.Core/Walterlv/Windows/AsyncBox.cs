@@ -29,6 +29,8 @@ public class AsyncBox : FrameworkElement
 
     private UIElement _loadingView;
 
+    public UIElement LoadingView => _loadingView;
+
     private readonly ContentPresenter _contentPresenter;
 
     private bool _isChildReadyToLoad;

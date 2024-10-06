@@ -37,6 +37,7 @@ using ClassIsland.Services;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Sentry;
 using System.IO;
+using ClassIsland.Controls;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
@@ -175,6 +176,8 @@ public partial class SettingsWindowNew : MyWindow
                 await Dispatcher.Yield();
             }
             ViewModel.IsNavigating = false;
+            var child = LoadingAsyncBox.LoadingView as LoadingMask;
+            child?.FinishFakeLoading();
             if (!IThemeService.IsTransientDisabled)
             {
                 await BeginStoryboardAsync("NavigationEntering");
@@ -209,6 +212,8 @@ public partial class SettingsWindowNew : MyWindow
             ViewModel.IsNavigationDrawerOpened = false;
         }
 
+        var child = LoadingAsyncBox.LoadingView as LoadingMask;
+        child?.StartFakeLoading();
         if (!IThemeService.IsTransientDisabled)
         {
             await BeginStoryboardAsync("NavigationLeaving");

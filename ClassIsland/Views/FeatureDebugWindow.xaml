@@ -21,6 +21,16 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="FakeLoading">
+                <StackPanel>
+                    <controls:LoadingMask x:Name="LoadingMask"
+                                          HorizontalAlignment="Stretch"
+                                          Height="6"/>
+                    <Button Content="Test fake loading"
+                            Margin="0 8 0 0"
+                            Click="ButtonTestFakeLoading_OnClick"/>
+                </StackPanel> 
+            </TabItem>
             <TabItem Header="RulesetControl">
                 <Grid Background="#99000000">
                     <ci:RulesetControl Background="{DynamicResource MaterialDesignPaper}"
