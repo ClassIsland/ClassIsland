@@ -1,4 +1,5 @@
-﻿using ClassIsland.Core.Attributes;
+﻿using System.Collections.Generic;
+using ClassIsland.Core.Attributes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignThemes.Wpf;
 
@@ -18,6 +19,9 @@ public class SettingsNewViewModel : ObservableRecipient
     private bool _isNavigating = false;
     private bool _isPopupOpen = false;
     private bool _isRendered = false;
+    private string _currentEchoCaveText = "";
+    private List<string> _echoCaveTexts = [];
+    private List<string> _echoCaveTextsAll = [];
 
     public object? FrameContent
     {
@@ -147,6 +151,39 @@ public class SettingsNewViewModel : ObservableRecipient
         {
             if (value == _isRendered) return;
             _isRendered = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CurrentEchoCaveText
+    {
+        get => _currentEchoCaveText;
+        set
+        {
+            if (value == _currentEchoCaveText) return;
+            _currentEchoCaveText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public List<string> EchoCaveTexts
+    {
+        get => _echoCaveTexts;
+        set
+        {
+            if (Equals(value, _echoCaveTexts)) return;
+            _echoCaveTexts = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public List<string> EchoCaveTextsAll
+    {
+        get => _echoCaveTextsAll;
+        set
+        {
+            if (Equals(value, _echoCaveTextsAll)) return;
+            _echoCaveTextsAll = value;
             OnPropertyChanged();
         }
     }

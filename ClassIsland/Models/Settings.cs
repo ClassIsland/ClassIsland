@@ -207,6 +207,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
+    private bool _showEchoCaveWhenSettingsPageLoading = false;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -2099,4 +2100,14 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool ShowEchoCaveWhenSettingsPageLoading
+    {
+        get => _showEchoCaveWhenSettingsPageLoading;
+        set
+        {
+            if (value == _showEchoCaveWhenSettingsPageLoading) return;
+            _showEchoCaveWhenSettingsPageLoading = value;
+            OnPropertyChanged();
+        }
+    }
 }
