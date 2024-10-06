@@ -28,7 +28,7 @@
             <controls1:IconText Kind="CogOutline" Text="基本" Margin="0 0 0 8" />
             <!-- 界面缩放 -->
             <controls1:SettingsCard IconGlyph="ZoomInOutline" Header="界面缩放"
-                                                           Description="课表主界面的缩放大小。">
+                                                           Description="主界面的缩放大小。">
                 <controls1:SettingsCard.Switcher>
                     <Slider Width="180" Minimum="0.75" Maximum="2.5"
                                                     VerticalAlignment="Center"
@@ -40,9 +40,25 @@
                                                     AutoToolTipPrecision="2" />
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
-            <!-- 背景透明度 -->
+            <!--背景颜色-->
+            <controls1:SettingsCard IconGlyph="FormatColorFill"
+                                    Header="背景颜色"
+                                    Description="主界面背景颜色，禁用时将根据应用主题自动选择颜色。"
+                                    Margin="0 0 0 6">
+                <controls1:SettingsCard.Switcher>
+                    <StackPanel Orientation="Horizontal">
+                        <controls1:ColorPicker VerticalAlignment="Center"
+                                        Margin="0 0 6 0"
+                                        Color="{Binding SettingsService.Settings.BackgroundColor, Mode=TwoWay}"
+                                        Visibility="{Binding SettingsService.Settings.IsCustomBackgroundColorEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <ToggleButton VerticalAlignment="Center"
+                                      IsChecked="{Binding SettingsService.Settings.IsCustomBackgroundColorEnabled}" />
+                    </StackPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
+            <!-- 背景不透明度 -->
             <controls1:SettingsCard IconGlyph="SquareTransparent" Header="背景不透明度"
-                                                           Description="课表背景颜色的不透明度。">
+                                                           Description="主界面背景的不透明度。">
                 <controls1:SettingsCard.Switcher>
                     <Slider Width="180" Minimum="0" Maximum="1"
                                                     Value="{Binding SettingsService.Settings.Opacity}"

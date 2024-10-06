@@ -38,6 +38,8 @@ namespace ClassIsland.Models;
 public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings
 {
     private int _theme = 2;
+    private bool _iscustomBackgroundColorEnabled = false;
+    private Color _backgroundColor = Colors.Black;
     private Color _primaryColor = Colors.DeepSkyBlue;
     private Color _secondaryColor = Colors.Aquamarine;
     private DateTime _singleWeekStartTime = DateTime.Now;
@@ -887,6 +889,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_targetLightValue)) return;
             _targetLightValue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsCustomBackgroundColorEnabled
+    {
+        get => _iscustomBackgroundColorEnabled;
+        set
+        {
+            if (value == _iscustomBackgroundColorEnabled) return;
+            _iscustomBackgroundColorEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Color BackgroundColor
+    {
+        get => _backgroundColor;
+        set
+        {
+            if (value.Equals(_backgroundColor)) return;
+            _backgroundColor = value;
             OnPropertyChanged();
         }
     }
