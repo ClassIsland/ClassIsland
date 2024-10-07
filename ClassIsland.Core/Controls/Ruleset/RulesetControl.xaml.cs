@@ -52,6 +52,15 @@ public partial class RulesetControl : UserControl
         set { SetValue(RulesetProperty, value); }
     }
 
+    public static readonly DependencyProperty ShowTitleProperty = DependencyProperty.Register(
+        nameof(ShowTitle), typeof(bool), typeof(RulesetControl), new PropertyMetadata(true));
+
+    public bool ShowTitle
+    {
+        get { return (bool)GetValue(ShowTitleProperty); }
+        set { SetValue(ShowTitleProperty, value); }
+    }
+
     /// <inheritdoc />
     public RulesetControl()
     {
@@ -103,5 +112,24 @@ public partial class RulesetControl : UserControl
         }
 
         Ruleset.Groups.Add(ConfigureFileHelper.CopyObject(group));
+    }
+
+    private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (!e.Handled)
+        {
+            // ListView拦截鼠标滚轮事件
+            e.Handled = true;
+
+            // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.Source = sender;
+            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
+        }
     }
 }

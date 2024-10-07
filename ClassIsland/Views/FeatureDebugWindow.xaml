@@ -9,6 +9,8 @@
         xmlns:notificationEffects="clr-namespace:ClassIsland.Controls.NotificationEffects"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:ruleset="clr-namespace:ClassIsland.Core.Models.Ruleset;assembly=ClassIsland.Core"
+        xmlns:actionControls="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
+        xmlns:action="clr-namespace:ClassIsland.Core.Models.Action;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -21,6 +23,17 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="ActionControl">
+                <Grid Background="#99000000">
+                    <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
+                                          HorizontalAlignment="Right">
+                        <actionControls:ActionControl.Actionset>
+                            <action:Actionset />
+                        </actionControls:ActionControl.Actionset>
+                    </actionControls:ActionControl>
+
+                </Grid>
+            </TabItem>
             <TabItem Header="RulesetControl">
                 <Grid Background="#99000000">
                     <ci:RulesetControl Background="{DynamicResource MaterialDesignPaper}"

@@ -1,0 +1,6 @@
+<UserControl 
+    x:Class="ClassIsland.Core.Controls.Action.ActionSettingsControlPresenter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ContentPresenter x:Name="RootContentPresenter"/>
+</UserControl>

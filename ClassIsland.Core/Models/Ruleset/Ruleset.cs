@@ -12,8 +12,7 @@ public class Ruleset : ObservableRecipient
 {
     private RulesetLogicalMode _mode = RulesetLogicalMode.Or;
     private bool _isReversed = false;
-    private ObservableCollection<Rule> _rules = new ObservableCollection<Rule>();
-    private ObservableCollection<RuleGroup> _groups = new();
+    private ObservableCollection<RuleGroup> _groups = [new() { Rules = [new()] }];
 
     /// <summary>
     /// 逻辑模式。

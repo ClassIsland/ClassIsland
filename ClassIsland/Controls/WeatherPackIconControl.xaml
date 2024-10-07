@@ -15,6 +15,10 @@
             <materialDesign:PackIcon.Style>
                 <Style TargetType="materialDesign:PackIcon" >
                     <Style.Triggers>
+                        <DataTrigger Binding="{Binding WeatherColor, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                                     Value="Rainy">
+                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
+                        </DataTrigger>
                         <!-- 晴 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="0">
@@ -34,19 +38,16 @@
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="3">
                             <Setter Property="Kind" Value="WeatherPartlyRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 雷阵雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="4">
                             <Setter Property="Kind" Value="WeatherLightningRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 雷阵雨并伴有冰雹 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="5">
                             <Setter Property="Kind" Value="WeatherLightningRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 雨夹雪 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
@@ -57,37 +58,31 @@
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="7">
                             <Setter Property="Kind" Value="WeatherRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 中雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="8">
                             <Setter Property="Kind" Value="WeatherRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 大雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="9">
                             <Setter Property="Kind" Value="WeatherPouring"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="10">
                             <Setter Property="Kind" Value="WeatherPouring"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 大暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="11">
                             <Setter Property="Kind" Value="WeatherPouring"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 特大暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="12">
                             <Setter Property="Kind" Value="WeatherPouring"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 阵雪 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
@@ -123,7 +118,6 @@
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="19">
                             <Setter Property="Kind" Value="WeatherSnowyRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 沙尘暴 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
@@ -134,31 +128,26 @@
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="21">
                             <Setter Property="Kind" Value="WeatherRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 中雨-大雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="22">
                             <Setter Property="Kind" Value="WeatherRainy"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 大雨-暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="23">
                             <Setter Property="Kind" Value="WeatherPouring"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 暴雨-大暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="24">
                             <Setter Property="Kind" Value="WeatherPouring"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 大暴雨-特大暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="25">
                             <Setter Property="Kind" Value="WeatherPouring"/>
-                            <Setter Property="Foreground" Value="{DynamicResource Rainy}"/>
                         </DataTrigger>
                         <!-- 小雪-中雪 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
