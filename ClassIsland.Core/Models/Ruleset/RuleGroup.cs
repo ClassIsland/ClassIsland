@@ -10,7 +10,7 @@ namespace ClassIsland.Core.Models.Ruleset;
 public class RuleGroup : ObservableRecipient
 {
     private ObservableCollection<Rule> _rules = new();
-    private RulesetLogicalMode _mode = RulesetLogicalMode.Or;
+    private RulesetLogicalMode _mode = RulesetLogicalMode.And;
     private bool _isReversed = false;
     private bool _isEnabled = true;
 

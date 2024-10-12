@@ -18,10 +18,11 @@ using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace ClassIsland.Services;
 
-public class SettingsService(ILogger<SettingsService> logger, IManagementService managementService) : INotifyPropertyChanged
+public class SettingsService(ILogger<SettingsService> Logger, IManagementService ManagementService) : INotifyPropertyChanged
 {
     private Settings _settings = new();
 
@@ -32,10 +33,6 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         get => _settings;
         set => SetField(ref _settings, value);
     }
-
-    private ILogger<SettingsService> Logger { get; } = logger;
-
-    private IManagementService ManagementService { get; } = managementService;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -52,6 +49,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
         var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
         Settings = settings;
         Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+        Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName);
         Logger.LogTrace("拉取集控默认设置成功！");
     }
 
@@ -70,6 +68,7 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
                 var r = ConfigureFileHelper.LoadConfig<Settings>("./Settings.json");
                 Settings = r;
                 Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+                Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName);
             }
 
             // 当还没有初始化应用且启用集控时，从集控拉取设置。
@@ -188,10 +187,62 @@ public class SettingsService(ILogger<SettingsService> logger, IManagementService
 
     }
 
-    public void SaveSettings(string? note = "-")
+    public void SaveSettings(string note = "")
     {
-        Logger.LogInformation("写入配置文件：" + note);
+        Logger.LogInformation(note == "" ? "写入配置文件。" : $"写入配置文件：{note}");
         ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
+    }
+
+    /// <summary>
+    /// 添加设置叠层。
+    /// </summary>
+    /// <param name="guid">叠层Guid</param>
+    /// <param name="binding">设置变量名</param>
+    public void AddSettingsOverlay(string guid, string binding, dynamic? value)
+    {
+        var property = typeof(Settings).GetProperty(binding);
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+
+        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay))
+        {
+            overlay = [];
+            var original = property.GetValue(Settings);
+            if (value.ToString() == original.ToString()) return;
+            overlay["@"] = original;
+        }
+        property.SetValue(Settings, value);
+        overlay[guid] = value;
+        Settings.SettingsOverlay[binding] = overlay;
+    }
+
+    /// <summary>
+    /// 删除设置叠层。
+    /// </summary>
+    /// <param name="guid">叠层Guid</param>
+    /// <param name="binding">设置变量名</param>
+    public void RemoveSettingsOverlay(string guid, string binding)
+    {
+        var property = typeof(Settings).GetProperty(binding);
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+        if (!Settings.SettingsOverlay.TryGetValue(binding, out Dictionary<string, dynamic?>? overlay)) return;
+
+        overlay.Remove(guid);
+        var last = overlay.Last().Value;
+        if (last is JsonElement json)
+            last = json.Deserialize(property.GetValue(Settings).GetType());
+
+        property.SetValue(Settings, last);
+
+        if (overlay.Count > 1)
+            Settings.SettingsOverlay[binding] = overlay;
+        else
+            Settings.SettingsOverlay.Remove(binding);
+    }
+
+    private void SettingsChanged(string propertyName)
+    {
+        if (propertyName != nameof(Settings.SettingsOverlay))
+            Settings.SettingsOverlay.Remove(propertyName);
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

@@ -16,4 +16,9 @@ public interface IWindowRuleService
     /// 焦点窗口的 HWND。
     /// </summary>
     HWND ForegroundHwnd { get; set; }
+
+    /// <summary>
+    /// 判断前台窗口是否属于 ClassIsland。
+    /// </summary>
+    bool IsForegroundWindowClassIsland();
 }

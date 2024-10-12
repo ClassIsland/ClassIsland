@@ -280,8 +280,9 @@ public partial class SettingsWindowNew : MyWindow
         e.Cancel = true;
         IsOpened = false;
         Hide();
-        SettingsService.SaveSettings(sender.ToString() + "关闭");
+        SettingsService.SaveSettings("关闭应用设置窗口");
         ComponentsService.SaveConfig();
+        App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
         GC.Collect();
     }
 

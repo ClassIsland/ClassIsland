@@ -61,10 +61,13 @@ using ClassIsland.Shared.IPC;
 using Sentry;
 using ClassIsland.Core.Controls.Ruleset;
 using ClassIsland.Models.Rules;
+using ClassIsland.Models.Actions;
 using ClassIsland.Controls.RuleSettingsControls;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ControlzEx.Native;
+using ClassIsland.Controls.ActionSettingsControls;
+using ClassIsland.Services.ActionHandlers;
 
 namespace ClassIsland;
 /// <summary>
@@ -138,11 +141,11 @@ public partial class App : AppBase, IAppHost
         }
 #endif
 
-        if (Settings.IsCriticalSafeMode) // 教学安全模式
+        if (Settings.IsCriticalSafeMode && // 教学安全模式
+            (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false)))
         {
             Logger?.LogCritical(e.Exception, "发生严重错误（应用被教学安全模式退出）");
-            // TODO: 保存错误日志
-            AppBase.Current.Stop();
+            Current.Stop();
             return;
         }
 
@@ -296,7 +299,9 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IPluginService, PluginService>();
                 services.AddSingleton<IPluginMarketService, PluginMarketService>();
                 services.AddSingleton<IRulesetService, RulesetService>();
+                services.AddSingleton<IActionService, ActionService>();
                 services.AddSingleton<IWindowRuleService, WindowRuleService>();
+                services.AddSingleton<IAutomationService, AutomationService>();
                 try // 检测SystemSpeechService是否存在
                 {
                     var s = new SpeechSynthesizer();
@@ -349,6 +354,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<WindowSettingsPage>();
                 services.AddSettingsPage<WeatherSettingsPage>();
                 services.AddSettingsPage<UpdatesSettingsPage>();
+                services.AddSettingsPage<AutomationSettingsPage>();
                 services.AddSettingsPage<StorageSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
@@ -403,6 +409,17 @@ public partial class App : AppBase, IAppHost
                 services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.processName", "前台窗口进程", PackIconKind.ApplicationCogOutline);
                 services.AddRule<CurrentSubjectRuleSettings, CurrentSubjectRuleSettingsControl>("classisland.lessons.currentSubject", "科目是", PackIconKind.BookOutline);
                 services.AddRule<TimeStateRuleSettings, TimeStateRuleSettingsControl>("classisland.lessons.timeState", "当前时间状态是", PackIconKind.ClockOutline);
+                // 行动
+                services.AddAction<CurrentComponentConfigActionSettings, CurrentComponentConfigActionSettingsControl>("classisland.settings.currentComponentConfig", "组件配置方案", PackIconKind.WidgetsOutline);
+                services.AddAction<ThemeActionSettings, ThemeActionSettingsControl>("classisland.settings.theme", "应用主题", PackIconKind.ThemeLightDark);
+                services.AddAction<WindowDockingLocationActionSettings, WindowDockingLocationActionSettingsControl>("classisland.settings.windowDockingLocation", "窗口停靠位置", PackIconKind.Monitor);
+                services.AddAction<RunActionSettings, RunActionSettingsControl>("classisland.os.run", "运行", PackIconKind.OpenInApp);
+                services.AddAction<SleepActionSettings, SleepActionSettingsControl>("classisland.action.sleep", "等待时长", PackIconKind.TimerSand);
+                services.AddAction("classisland.app.quit", "退出 ClassIsland", PackIconKind.ExitToApp, (_, _) => Current.Stop());
+                // 行动处理
+                services.AddHostedService<RunActionHandler>();
+                services.AddHostedService<AppSettingsActionHandler>();
+                services.AddHostedService<SleepActionHandler>();
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();
@@ -530,6 +547,7 @@ public partial class App : AppBase, IAppHost
             spanLoadMainWindow.Finish();
             transaction.Finish();
             SentrySdk.ConfigureScope(s => s.Transaction = null);
+            GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
         };
 #if DEBUG
@@ -700,6 +718,7 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
             IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));
             IAppHost.Host?.Services.GetService<SettingsService>()?.SaveSettings("停止当前应用程序。");
+            IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
             Current.Shutdown();
             try

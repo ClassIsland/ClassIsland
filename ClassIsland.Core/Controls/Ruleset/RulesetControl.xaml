@@ -20,15 +20,23 @@
         <converters:RuleLogicalModeToIntConverter x:Key="RuleLogicalModeToIntConverter" />
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RulesetControl}}"
-          Margin="16"
-          Width="500">
+          MinWidth="450">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ShowTitle}" Value="True">
+                        <Setter Property="Margin" Value="16"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <TextBlock Text="规则集" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                           Margin="0 0 0 8" />
+                           Margin="0 0 0 8" Visibility="{Binding ShowTitle, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <WrapPanel Orientation="Horizontal">
                 <ComboBox SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
@@ -51,7 +59,8 @@
         <!-- Main list box -->
         <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}"
                  HorizontalContentAlignment="Stretch"
-                 materialDesign:ListBoxItemAssist.ShowSelection="False">
+                 materialDesign:ListBoxItemAssist.ShowSelection="False"
+                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
 
             <ListBox.ItemTemplate>
                 <DataTemplate>

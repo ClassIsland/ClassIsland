@@ -112,15 +112,17 @@
             </UniformGrid>
             <Separator />
 
-            <MenuItem Icon="{materialDesign:PackIcon CogOutline}" Header="覆盖设置版本" Width="1000"
-                      Click="MenuItemOverwriteSettingsVersion_OnClick"/>
             <UniformGrid Columns="2">
                 <MenuItem Icon="{materialDesign:PackIcon ArrowLeftRight}" Header="显示快速信息迁移提示" Width="1000"
                           Click="MenuItemShowComponentsMigrateTips_OnClick"/>
-                <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="转储课表关系图" Width="1000"
-                          Click="MenuItemDumpProfileRelations_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon CogOutline}" Header="覆盖设置版本" Width="1000"
+                          Click="MenuItemOverwriteSettingsVersion_OnClick" />
                 <MenuItem Icon="{materialDesign:PackIcon ToyBrickOutline}" Header="显示插件使用须知" Width="1000"
                           Click="MenuItemShowPluginMarketWarning_OnClick"/>
+                <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="转储课表关系图" Width="1000"
+                          Click="MenuItemDumpProfileRelations_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon Kind=ScriptTextOutline}" Header="显示自动化使用须知" Width="1000"
+                          Click="MenuItemShowAutomationWarning_OnClick"/>
                 <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="测试课表找下级" Width="1000"
                           Click="MenuItemFindNext_OnClick" />
             </UniformGrid>
@@ -186,6 +188,9 @@
                     <MenuItem Icon="{materialDesign:PackIcon Bomb}"
                               Header="崩溃测试"
                               Click="ButtonCrash_OnClick" />
+                    <MenuItem Icon="{materialDesign:PackIcon Bomb}"
+                              Header="崩溃测试（延迟3秒）"
+                              Click="ButtonDelayCrash_OnClick"/>
                     <MenuItem Header="集控：禁用调试菜单" Width="1000" IsCheckable="True"
                               IsChecked="{Binding ManagementService.Policy.DisableDebugMenu}"
                               IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}"/>

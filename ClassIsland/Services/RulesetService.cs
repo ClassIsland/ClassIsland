@@ -38,6 +38,7 @@ public class RulesetService : IRulesetService
         }
         foreach (var i in ruleset.Rules)
         {
+            if (i.Id == string.Empty) continue;
             if (!IRulesetService.Rules.TryGetValue(i.Id, out var rule))
             {
                 Logger.LogWarning("找不到规则 {} 的注册信息。", i.Id);
