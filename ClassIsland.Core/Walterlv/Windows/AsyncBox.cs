@@ -131,6 +131,10 @@ public class AsyncBox : FrameworkElement
         }
 
         var dispatcher = await GetAsyncDispatcherAsync();
+        if (VisualTreeHelper.GetParent(_contentPresenter) != null || VisualTreeHelper.GetParent(_hostVisual) != null)
+        {
+            return;
+        }
         _loadingView = await dispatcher.InvokeAsync(() =>
         {
             var loadingView = CreateLoadingView();
