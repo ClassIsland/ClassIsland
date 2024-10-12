@@ -20,6 +20,8 @@ public partial class LoadingMask : UserControl
     private IThemeService ThemeService { get; } = App.GetService<IThemeService>();
     public IHangService HangService { get; } = App.GetService<IHangService>();
 
+    private bool _isMainLoadingPlaying = false;
+
     public static readonly DependencyProperty IsFakeLoadingProperty = DependencyProperty.Register(
         nameof(IsFakeLoading), typeof(bool), typeof(LoadingMask), new PropertyMetadata(default(bool)));
 
@@ -39,17 +41,21 @@ public partial class LoadingMask : UserControl
     private Storyboard BeginStoryboard(string key)
     {
         var sb = FindResource(key) as Storyboard ?? throw new InvalidOperationException();
-        BeginStoryboard(sb);
+        MetroProgressBar.BeginStoryboard(sb, HandoffBehavior.SnapshotAndReplace, true);
+        //BeginStoryboard(sb, HandoffBehavior.SnapshotAndReplace, true);
         return sb;
     }
 
     private Storyboard? _fakeLoadingStoryboard;
+
+    private Storyboard? _fakeLoadingStoppingStoryboard;
 
     public void StartFakeLoading()
     {
         Dispatcher.Invoke(() =>
         {
             IsFakeLoading = true;
+            _isMainLoadingPlaying = true;
             _fakeLoadingStoryboard = BeginStoryboard("FakeLoading");
         });
     }
@@ -59,6 +65,7 @@ public partial class LoadingMask : UserControl
         Dispatcher.Invoke(() =>
         {
             _fakeLoadingStoryboard?.Stop();
+            _isMainLoadingPlaying = false;
             var daValue = new DoubleAnimation(MetroProgressBar.Value, 100, TimeSpan.FromSeconds(0.2))
             {
                 EasingFunction = new SineEase()
@@ -67,7 +74,7 @@ public partial class LoadingMask : UserControl
             {
                 EasingFunction = new SineEase()
             };
-            var stopSb = new Storyboard()
+            var stopSb = _fakeLoadingStoppingStoryboard = new Storyboard()
             {
                 FillBehavior = FillBehavior.Stop,
             };
@@ -82,7 +89,10 @@ public partial class LoadingMask : UserControl
                 stopSb.Remove();
                 MetroProgressBar.Opacity = 1;
                 MetroProgressBar.Value = 0;
-                IsFakeLoading = false;
+                if (!_isMainLoadingPlaying)
+                {
+                    IsFakeLoading = false;
+                }
             };
             stopSb.Begin();
         });

@@ -61,29 +61,38 @@
         </Storyboard>
     </UserControl.Resources>
     <Grid>
+        <Grid >
 
-        <Grid.Style>
-            <Style TargetType="Grid">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}" Value="True">
-                        <Setter Property="Visibility" Value="Visible"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding HangService.IsHang, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}" Value="True">
-                        <Setter Property="Visibility" Value="Visible"/>
-                    </DataTrigger>
-                </Style.Triggers>
-                <Setter Property="Visibility" Value="Collapsed"/>
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding HangService.IsHang, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="Visibility" Value="Collapsed"/>
 
-            </Style>
-        </Grid.Style>
-        <ProgressBar IsIndeterminate="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}, Converter={StaticResource InvertBooleanConverter}}" VerticalAlignment="Top"
-                     Height="6"
-                     Opacity="1"
-                     Background="{x:Null}"
-                     BorderThickness="0"
-                     materialDesign:TransitionAssist.DisableTransitions="True"
-                     x:Name="MetroProgressBar">
-        </ProgressBar>
+                </Style>
+            </Grid.Style>
+            <ProgressBar IsIndeterminate="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}, Converter={StaticResource InvertBooleanConverter}}" VerticalAlignment="Top"
+                         Height="6"
+                         Opacity="1"
+                         Background="{x:Null}"
+                         BorderThickness="0"
+                         materialDesign:TransitionAssist.DisableTransitions="True"
+                         x:Name="MetroProgressBar">
+            </ProgressBar>
 
+        </Grid>
+        <!--<TextBlock Foreground="Red" >
+            <Run Text="{Binding Value, ElementName=MetroProgressBar}"/>
+            <LineBreak/>
+            <Run Text="{Binding Opacity, ElementName=MetroProgressBar}"/>
+            <LineBreak/>
+            <Run Text="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}"/>
+        </TextBlock>-->
     </Grid>
 </UserControl>
