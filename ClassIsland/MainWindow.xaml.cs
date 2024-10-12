@@ -340,7 +340,7 @@ public partial class MainWindow : Window
             if (ViewModel.IsNotificationWindowExplicitShowed && ViewModel.Settings.WindowLayer == 0)  // 如果处于置底状态，还需要激活窗口来强制显示窗口。
             {
                 UpdateWindowLayer();
-                Activate();
+                ReCheckTopmostState();
             }
 
             if (request.MaskDuration > TimeSpan.Zero &&
