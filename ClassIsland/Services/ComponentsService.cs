@@ -92,7 +92,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         {
             if (!ComponentRegistryService.MigrationPairs.TryGetValue(new Guid(i.Id), out var targetGuid))
             {
-                return;
+                continue;
             }
             
             Logger.LogInformation("迁移组件 {} -> {}", i.Id, targetGuid);
