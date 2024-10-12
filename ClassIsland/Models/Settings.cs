@@ -208,6 +208,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
     private bool _showEchoCaveWhenSettingsPageLoading = false;
+    private int _settingsPagesCachePolicy = 0;
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -2107,6 +2108,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _showEchoCaveWhenSettingsPageLoading) return;
             _showEchoCaveWhenSettingsPageLoading = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int SettingsPagesCachePolicy
+    {
+        get => _settingsPagesCachePolicy;
+        set
+        {
+            if (value == _settingsPagesCachePolicy) return;
+            _settingsPagesCachePolicy = value;
             OnPropertyChanged();
         }
     }

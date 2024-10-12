@@ -72,6 +72,8 @@ public partial class SettingsWindowNew : MyWindow
 
     private string LaunchSettingsPage { get; set; } = StartupSettingsPage;
 
+    private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
+
 
     public SettingsWindowNew(IManagementService managementService, IHangService hangService,
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
@@ -258,7 +260,7 @@ public partial class SettingsWindowNew : MyWindow
         }
         HangService.AssumeHang();
         // 从ioc容器获取页面
-        var page = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(ViewModel.SelectedPageInfo?.Id);
+        var page = GetPage(ViewModel.SelectedPageInfo?.Id);
         // 清空抽屉
         ViewModel.IsDrawerOpen = false;
         ViewModel.DrawerContent = null;
@@ -267,6 +269,21 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.Navigate(page, SettingsWindowNavigationExtraData.NavigateFromNavigationView);
         //ViewModel.FrameContent;
         NavigationService.RemoveBackEntry();
+    }
+
+    private SettingsPageBase? GetPage(string? id)
+    {
+        if (_cachedPages.TryGetValue(id ?? "", out var page))
+        {
+            return page;
+        }
+        var pageNew = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(id);
+        if (SettingsService.Settings.SettingsPagesCachePolicy >= 1)
+        {
+            _cachedPages[id ?? ""] = pageNew;
+        }
+
+        return pageNew;
     }
 
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -332,8 +349,12 @@ public partial class SettingsWindowNew : MyWindow
         e.Cancel = true;
         IsOpened = false;
         Hide();
-        SettingsService.SaveSettings(sender.ToString() + "关闭");
+        SettingsService.SaveSettings(sender?.ToString() + "关闭");
         ComponentsService.SaveConfig();
+        if (SettingsService.Settings.SettingsPagesCachePolicy <= 1)
+        {
+            _cachedPages.Clear();
+        }
         GC.Collect();
     }
 

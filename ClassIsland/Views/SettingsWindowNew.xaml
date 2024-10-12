@@ -70,7 +70,8 @@
                            FontStyle="Italic"
                            Margin="0 0 0 16"
                            Text="警告！此功能与组件“课程表（旧）”不兼容。在使用时请务必移除所有“课程表（旧）”组件，改用“课程表（实验）”组件，否则可能会出现一些奇怪的问题。"/>
-                <CheckBox IsChecked="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading}">
+                <CheckBox IsChecked="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading}"
+                          Margin="0 0 0 6">
                     <TextBlock TextWrapping="Wrap">
                         在加载设置页面时显示回声洞
                         <Run TextDecorations="{x:Static TextDecorations.Strikethrough}">
@@ -78,6 +79,17 @@
                         </Run>
                     </TextBlock>
                 </CheckBox>
+
+                <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          materialDesign:HintAssist.Hint="设置页面缓存策略"
+                          Margin="0 0 0 2"
+                          SelectedIndex="{Binding SettingsService.Settings.SettingsPagesCachePolicy}">
+                    <ComboBoxItem>不缓存</ComboBoxItem>
+                    <ComboBoxItem>保留页面缓存到窗口关闭（可能会内存泄漏）</ComboBoxItem>
+                    <ComboBoxItem>一直保留页面缓存</ComboBoxItem>
+                </ComboBox>
+                <TextBlock Text="设置页面缓存可以提升之前打开过的设置页面的加载速度，但会增加一定的内存占用。" TextWrapping="Wrap"
+                           Opacity="0.75"/>  
             </StackPanel>
         </ScrollViewer>
 
