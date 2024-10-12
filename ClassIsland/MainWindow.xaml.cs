@@ -272,6 +272,10 @@ public partial class MainWindow : Window
 
     private bool GetMouseStatusByPos(System.Drawing.Point ptr)
     {
+        if (PresentationSource.FromVisual(GridWrapper) == null)
+        {
+            return false;
+        }
         GetCurrentDpi(out var dpiX, out var dpiY);
         var scale = ViewModel.Settings.Scale;
         //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
