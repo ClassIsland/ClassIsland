@@ -109,14 +109,14 @@
         </Storyboard>
         <Storyboard x:Key="NavigationEntering">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="300">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="200">
                     <EasingDoubleKeyFrame.EasingFunction>
-                        <ExponentialEase EasingMode="EaseOut"/>
+                        <SineEase EasingMode="EaseOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
                     <EasingDoubleKeyFrame.EasingFunction>
-                        <ExponentialEase EasingMode="EaseOut"/>
+                        <SineEase EasingMode="EaseOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
