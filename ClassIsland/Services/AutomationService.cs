@@ -44,6 +44,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
 
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
     {
+        if (!SettingsService.Settings.IsAutomationEnabled) return;
         foreach (var a in Automations)
         {
             if (!a.Actionset.IsEnabled) continue;

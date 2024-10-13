@@ -37,36 +37,37 @@
 
 
     <ci:SettingsPageBase.Resources>
-    <StackPanel x:Key="CreateProfileDialog"
-                VerticalAlignment="Stretch"
-                Margin="16"
-                MaxWidth="400">
-        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                   Text="新建配置" />
-        <TextBox Margin="0 6 0 0"
-                 TextWrapping="Wrap"
-                 x:Name="TextBoxProfileName"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                 Text="{Binding ViewModel.CreateProfileName, UpdateSourceTrigger=PropertyChanged}"
-                 materialDesign:HintAssist.Hint="配置名"
-                 materialDesign:TextFieldAssist.SuffixText=".json" />
-        <StackPanel Orientation="Horizontal"
-                    Margin="0 8 0 0"
-                    HorizontalAlignment="Right">
-            <Button Content="新建"
-                    IsDefault="True"
-                    HorizontalAlignment="Right"
-                    Style="{DynamicResource MaterialDesignFlatButton}"
-                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                    CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}" />
-            <Button Content="取消"
-                    HorizontalAlignment="Right"
-                    Style="{DynamicResource MaterialDesignFlatButton}"
-                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                    Margin="6 0 0 0"
-                    CommandParameter="{x:Null}" />
+        <!--「新建配置」对话框-->
+        <StackPanel x:Key="CreateProfileDialog"
+                    VerticalAlignment="Stretch"
+                    Margin="16"
+                    MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Text="新建配置" />
+            <TextBox Margin="0 6 0 0"
+                     TextWrapping="Wrap"
+                     x:Name="TextBoxProfileName"
+                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                     Text="{Binding ViewModel.CreateProfileName, UpdateSourceTrigger=PropertyChanged}"
+                     materialDesign:HintAssist.Hint="配置名"
+                     materialDesign:TextFieldAssist.SuffixText=".json" />
+            <StackPanel Orientation="Horizontal"
+                        Margin="0 8 0 0"
+                        HorizontalAlignment="Right">
+                <Button Content="新建"
+                        IsDefault="True"
+                        HorizontalAlignment="Right"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                        CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}" />
+                <Button Content="取消"
+                        HorizontalAlignment="Right"
+                        Style="{DynamicResource MaterialDesignFlatButton}"
+                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                        Margin="6 0 0 0"
+                        CommandParameter="{x:Null}" />
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
     </ci:SettingsPageBase.Resources>
     <Grid>
         <controls1:ListDetailView ShowTitleWhenNotCompressed="True"
@@ -80,6 +81,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
+                    
                     <!-- 自动化开关 -->
                     <ci:SettingsCard IconGlyph="ScriptTextOutline"
                                      Header="启用自动化"
@@ -95,6 +97,8 @@
                             Style="{StaticResource MaterialDesignToolForegroundButton}" />
 
                     <Grid Grid.Row="1">
+
+                        <!-- 添加自动化 -->
                         <Button Style="{StaticResource MaterialDesignFlatButton}"
                                 Click="ButtonAdd_OnClick"
                                 HorizontalAlignment="Left"
@@ -104,6 +108,7 @@
                                          Text="添加自动化" />
                         </Button>
 
+                        <!-- 自动化配置方案 -->
                         <StackPanel Grid.Column="1"
                                     Grid.Row="0"
                                     Orientation="Horizontal"
@@ -122,7 +127,7 @@
                                     Margin="2 0"
                                     Click="ButtonRefresh_OnClick"
                                     Style="{StaticResource MaterialDesignToolForegroundButton}" />
-                            <Button Content="{materialDesign:PackIcon Add}"
+                            <Button Content="{materialDesign:PackIcon FileDocumentPlusOutline}"
                                     ToolTip="新建配置方案…"
                                     VerticalAlignment="Center"
                                     Margin="2 0"
@@ -137,7 +142,7 @@
                         </StackPanel>
                     </Grid>
 
-
+                    <!-- 左：自动化导航栏 -->
                     <ScrollViewer Grid.Row="2">
                         <ListBox ItemsSource="{Binding AutomationService.Automations}"
                                  Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
@@ -218,6 +223,7 @@
                 </Grid>
             </controls1:ListDetailView.LeftContent>
 
+            <!-- 右上：自动化重命名 -->
             <controls1:ListDetailView.TitleElement>
                 <Grid>
                     <Grid.Style>
@@ -333,6 +339,8 @@
                             </StackPanel>
                         </Grid>
                     </ScrollViewer>
+
+                    <!-- 右：未选择自动化时，显示占位符 -->
                     <StackPanel VerticalAlignment="Center"
                                 HorizontalAlignment="Center">
                         <StackPanel.Style>
@@ -359,6 +367,8 @@
                 </Grid>
             </controls1:ListDetailView.RightContent>
         </controls1:ListDetailView>
+
+        <!-- 自动化使用前须知 -->
         <Border Background="{DynamicResource MaterialDesignPaper}"
                 Visibility="{Binding SettingsService.Settings.IsAutomationWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <ScrollViewer>
@@ -441,5 +451,6 @@
                 </StackPanel>
             </ScrollViewer>
         </Border>
+        
     </Grid>
 </ci:SettingsPageBase>
