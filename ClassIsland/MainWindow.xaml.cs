@@ -639,19 +639,6 @@ public partial class MainWindow : Window
     {
         switch (ViewModel.Settings.TaskBarIconClickBehavior)
         {
-            case 0:
-                if (TaskBarIconService.MainTaskBarIcon.ContextMenu != null)
-                {
-                    GetCursorPos(out var ptr);
-                    if (PresentationSource.FromVisual(this) == null)
-                    {
-                        break;
-                    }
-                    GetCurrentDpi(out var dpiX, out var dpiY, TaskBarIconService.MainTaskBarIcon.ContextMenu);
-                    TaskBarIconService.MainTaskBarIcon.ShowContextMenu(new System.Drawing.Point((int)(ptr.X / dpiX), (int)
-                        (ptr.Y / dpiY)));
-                }
-                break;
             case 1:
                 OpenProfileSettingsWindow();
                 break;
@@ -1057,7 +1044,7 @@ public partial class MainWindow : Window
 
     private void OpenClassSwapWindow()
     {
-        if (LessonsService.CurrentClassPlan == null) // （仅换课快捷方式）如果今天没有课程，则选择临时课表
+        if (LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
         {
             App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
             OpenProfileSettingsWindow();
