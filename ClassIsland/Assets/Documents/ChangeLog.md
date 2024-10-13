@@ -67,6 +67,41 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 应用设置窗口目前经过了重构，并且加入了导航动画。此外，在重构设置界面之后，应用的启动速度也得到了一定的提升。
 
+***
+
+
+# 1.5.0.3
+
+> [!important]
+> 目前已知通过 RawInput 检测光标位置在部分设备兼容性不好，现已默认禁用此模式。如果在您的设备上课表无法在鼠标移入/触屏点击时正常隐藏，请尝试在[【应用设置】->【窗口】](classisland://app/settings/window)禁用此功能。
+
+## 新增功能和优化
+
+- 【主界面】默认禁用通过 RawInput 检测光标位置
+- 【主界面】自定义背景颜色 ([#404](https://github.com/ClassIsland/ClassIsland/issues/404)) (by @LiuYan-xwx)
+- 【主界面】优化置顶检测逻辑
+- 【档案编辑】允许编辑已启用的时间表
+- 【组件】组件迁移
+- 【组件/课表】附加设置添加显示精确倒计时剩余时长字段，修改附加设置显示精确倒计时剩余时长的默认值为 0
+- 【应用设置】优化设置页面加载动画
+- 【应用设置】_在设置加载界面显示回声洞_（实验性功能，默认禁用） ([#406](https://github.com/ClassIsland/ClassIsland/issues/406))
+- 【应用设置】_设置页面缓存_（实验性功能，默认禁用）
+- 【应用设置/插件】在插件下载/插件源刷新失败时显示真正的错误原因
+- 【应用设置/插件】优化插件概览文档加载流程
+- 【应用设置/关于】修正关于页面链接
+- 【日志】改进文件日志模块稳定性 ([#418](https://github.com/ClassIsland/ClassIsland/issues/418))
+
+## 移除的功能
+
+- 【组件】移除“课程表（旧）”组件，如果您还在使用此组件，会自动迁移到新的课程表组件上
+
+### Bug 修复
+
+- 【精确时间服务】修复概率性无法自动调整时间偏移的问题 ([#397](https://github.com/ClassIsland/ClassIsland/issues/397))
+- 【应用设置】修复在设置页面导航时出现 TaskCanceledException 的问题
+- 【主界面】修复在置底时显示置顶提醒抢夺焦点的问题 ([#417](https://github.com/ClassIsland/ClassIsland/issues/417))
+- 【主界面】修复获取鼠标位置时可能造成 PointFromScreen 方法因 Visual 没有连接到 PresentationSource 导致异常的问题
+- 【UI】修复在一些特定情况下出现 `在指定子级连接到新的父 Visual 之前必须断开与当前父 Visual 的连接。` 错误的问题 ([#413](https://github.com/ClassIsland/ClassIsland/issues/413))
 
 ***
 
