@@ -613,8 +613,13 @@ public partial class MainWindow : Window
 
         if (msg == 0x0047) // WM_WINDOWPOSCHANGED
         {
-            Logger.LogTrace("ZORDER changed");
-            ReCheckTopmostState();
+            var pos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+            Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
+            if ((pos.flags & SET_WINDOW_POS_FLAGS.SWP_NOZORDER) == 0) // SWP_NOZORDER
+            {
+                Logger.LogTrace("Z order changed");
+                ReCheckTopmostState();
+            }
         }
 
         return nint.Zero;

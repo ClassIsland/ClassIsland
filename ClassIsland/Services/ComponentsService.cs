@@ -88,6 +88,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
         CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
 
+        var migrated = false;
         foreach (var i in CurrentComponents)
         {
             if (!ComponentRegistryService.MigrationPairs.TryGetValue(new Guid(i.Id), out var targetGuid))
@@ -99,6 +100,12 @@ public class ComponentsService : ObservableRecipient, IComponentsService
             i.IsMigrated = true;
             i.MigrationSource = new Guid(i.Id);
             i.Id = targetGuid.ToString();
+            migrated = true;
+        }
+
+        if (migrated)
+        {
+            SaveConfig();
         }
     }
 
@@ -162,7 +169,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                 component.SettingsInternal = componentSettings;
             }
             component.OnMigrated(settings.MigrationSource, settings.Settings);
-        }
+        } 
         if (baseType?.GetGenericArguments().Length > 0 && !migrated)
         {
             var settingsType = baseType.GetGenericArguments().First();
