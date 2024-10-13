@@ -275,10 +275,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         IsClassPlanLoaded = true;
         // Activate selected item
         CurrentClassPlan.IsActivated = true;
-        if (!Settings.ExpAllowEditingActivatedTimeLayout)
-        {
-            CurrentClassPlan.TimeLayout.IsActivated = true;
-        }
+        //if (!Settings.ExpAllowEditingActivatedTimeLayout)
+        //{
+        //    CurrentClassPlan.TimeLayout.IsActivated = true;
+        //}
 
         var isLessonConfirmed = false;
         // 更新选择

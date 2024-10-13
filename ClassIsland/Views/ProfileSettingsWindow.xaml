@@ -232,12 +232,6 @@
                           materialDesign:HintAssist.Hint="时间表"
                           SelectedItem="{Binding TimeLayoutId, Converter={StaticResource ClassPlanDictionaryValueAccessConverter}}"
                           ItemsSource="{Binding MainViewModel.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
-                    <ComboBox.IsEnabled>
-                        <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
-                            <Binding Path="IsActivated" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
-                            <Binding Path="MainViewModel.Settings.ExpAllowEditingActivatedTimeLayout" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}" />
-                        </MultiBinding>
-                    </ComboBox.IsEnabled>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value.Name}"
@@ -252,12 +246,6 @@
                           SelectedValuePath="Key"
                           SelectionChanged="ComboBoxClassPlanGroup_OnSelectionChanged"
                           ItemsSource="{Binding ProfileService.Profile.ClassPlanGroups, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ProfileSettingsWindow}}}">
-                    <ComboBox.IsEnabled>
-                        <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}">
-                            <Binding Path="IsActivated" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
-                            <Binding Path="MainViewModel.Settings.ExpAllowEditingActivatedTimeLayout" RelativeSource="{RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}" />
-                        </MultiBinding>
-                    </ComboBox.IsEnabled>
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Value.Name}"
@@ -265,7 +253,6 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <TextBlock Text="部分设置在课表处于活动状态下无法修改。" Margin="0 16 0 0" Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 <CheckBox IsEnabled="{Binding IsOverlay, Converter={StaticResource InvertBooleanConverter}}" Margin="0 8 0 0" Content="自动启用" IsChecked="{Binding IsEnabled}"/>
                 <TextBlock Text="临时层课表将忽略触发规则强制启用。" 
                            Margin="0 0 0 4"
