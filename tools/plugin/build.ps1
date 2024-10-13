@@ -7,13 +7,11 @@ $classIslandRoot = "$([System.IO.Path]::GetDirectoryName($scriptPath))\..\..\Cla
 
 function SetEnvironmentVariable {
     param (
-        $Name,
-        $Value,
-        $Scope="User"
+        $Name, $Value
     )
     $out = "$Name = $Value"
     Write-Host $out -ForegroundColor DarkGray
-    [Environment]::SetEnvironmentVariable($Name, $Value, $Scope)
+    [Environment]::SetEnvironmentVariable($Name, $Value, 1)
 }
 
 Set-Location $classIslandRoot
@@ -39,7 +37,7 @@ catch {
 
 Write-Host "🔧 正在设置开发环境变量…" -ForegroundColor Cyan
 
-SetEnvironmentVariable("ClassIsland_DebugBinaryFile", [System.IO.Path]::GetFullPath("${classIslandRoot}\bin\Debug\net8.0-windows\ClassIsland.exe"))
-SetEnvironmentVariable("ClassIsland_DebugBinaryDirectory", [System.IO.Path]::GetFullPath("${classIslandRoot}/bin\Debug\net8.0-windows\"))
+[Environment]::SetEnvironmentVariable("ClassIsland_DebugBinaryFile", [System.IO.Path]::GetFullPath("${classIslandRoot}\bin\Debug\net8.0-windows\ClassIsland.exe"), 1)
+[Environment]::SetEnvironmentVariable("ClassIsland_DebugBinaryDirectory", [System.IO.Path]::GetFullPath("${classIslandRoot}/bin\Debug\net8.0-windows\"), 1)
 
 Write-Host "构建完成" -ForegroundColor Green
