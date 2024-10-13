@@ -92,11 +92,11 @@
                                 <StackPanel.Resources>
                                     <Style TargetType="CheckBox"
                                            BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                        <Setter Property="Margin" Value="0 3" />
+                                        <Setter Property="Margin" Value="0 2" />
                                     </Style>
                                 </StackPanel.Resources>
-                                <CheckBox Content="上课时" IsChecked="{Binding SettingsService.Settings.HideOnClass}"
-                                          Style="{StaticResource MaterialDesignCheckBox}" />
+                                <CheckBox Content="上课时"
+                                          IsChecked="{Binding SettingsService.Settings.HideOnClass}"/>
                                 <CheckBox Content="前台是最大化窗口时"
                                           IsChecked="{Binding SettingsService.Settings.HideOnMaxWindow}" />
                                 <CheckBox Content="前台是全屏窗口时"
