@@ -28,6 +28,11 @@
                     <Button Click="ButtonBase_OnClick">test desktop</Button>
                 </StackPanel>
             </TabItem>
+            <TabItem Header="AuthorizeWindow">
+                <StackPanel>
+                    <Button Content="Show auth window" Click="ButtonShowAuthWindow_OnClick"/>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="ActionControl">
                 <Grid Background="#99000000">
                     <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"

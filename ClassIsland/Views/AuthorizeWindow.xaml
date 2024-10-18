@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ClassIsland.Views"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         mc:Ignorable="d"
-        Height="450" Width="800"
+        Height="500" Width="500"
         d:DataContext="{d:DesignInstance local:AuthorizeWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"

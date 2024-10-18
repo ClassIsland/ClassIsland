@@ -33,7 +33,7 @@ public partial class FeatureDebugWindow : MyWindow
 
     private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
-        await SecureWindowHelper.ShowWindowInSecureDesktopAsync<Window>(x => { });
+        
     }
 
     private async void ButtonTestFakeLoading_OnClick(object sender, RoutedEventArgs e)
@@ -42,5 +42,11 @@ public partial class FeatureDebugWindow : MyWindow
         await Task.Delay(TimeSpan.FromSeconds(5));
         LoadingMask.FinishFakeLoading();
 
+    }
+
+    private void ButtonShowAuthWindow_OnClick(object sender, RoutedEventArgs e)
+    {
+        var window = new AuthorizeWindow();
+        window.ShowDialog();
     }
 }
