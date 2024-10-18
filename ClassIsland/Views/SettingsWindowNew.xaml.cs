@@ -37,7 +37,10 @@ using ClassIsland.Services;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Sentry;
 using System.IO;
+using ClassIsland.Controls;
 using Path = System.IO.Path;
+using System.Collections.ObjectModel;
+using Application = System.Windows.Application;
 
 namespace ClassIsland.Views;
 
@@ -68,6 +71,8 @@ public partial class SettingsWindowNew : MyWindow
     private IComponentsService ComponentsService { get; }
 
     private string LaunchSettingsPage { get; set; } = StartupSettingsPage;
+
+    private readonly Dictionary<string, SettingsPageBase?> _cachedPages = new();
 
 
     public SettingsWindowNew(IManagementService managementService, IHangService hangService,
@@ -128,7 +133,16 @@ public partial class SettingsWindowNew : MyWindow
     {
         BeginStoryboard(key, out var complete);
         if (!complete.IsCancellationRequested)
-            await Task.Run(() => complete.WaitHandle.WaitOne(), complete);
+        {
+            try
+            {
+                await Task.Run(() => complete.WaitHandle.WaitOne(), complete);
+            }
+            catch (TaskCanceledException)
+            {
+                // ignored
+            }
+        }
         if (!IThemeService.IsWaitForTransientDisabled)
         {
             await Dispatcher.Yield();
@@ -155,6 +169,38 @@ public partial class SettingsWindowNew : MyWindow
         ViewModel.IsNavigating = true;
     }
 
+    private async Task UpdateEchoCaveAsync()
+    {
+        if (ViewModel.EchoCaveTextsAll.Count <= 0)
+        {
+            var stream = Application.GetResourceStream(new Uri("/Assets/Tellings.txt", UriKind.Relative))?.Stream;
+            if (stream == null)
+            {
+                return;
+            }
+
+            var sayings = await new StreamReader(stream).ReadToEndAsync();
+            ViewModel.EchoCaveTextsAll = [..sayings.Split("\r\n")];
+        }
+        if (ViewModel.EchoCaveTexts.Count <= 0)
+        {
+            var collection = ViewModel.EchoCaveTextsAll.ToList();
+            var countRaw = collection.Count;
+            for (var i = 0; i < countRaw; i++)
+            {
+                var randomIndex = Random.Shared.Next(0, collection.Count - 1);
+                ViewModel.EchoCaveTexts.Add(collection[randomIndex]);
+                collection.RemoveAt(randomIndex);
+            }
+        }
+        //Console.WriteLine(ViewModel.SayingsCollection.Count);
+        if (ViewModel.EchoCaveTexts.Count > 0)
+        {
+            ViewModel.CurrentEchoCaveText = ViewModel.EchoCaveTexts[0];
+            ViewModel.EchoCaveTexts.RemoveAt(0);
+        }
+    }
+
     private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
     {
         if (e.ExtraData as SettingsWindowNavigationExtraData? == SettingsWindowNavigationExtraData.NavigateFromNavigationView)  
@@ -166,6 +212,8 @@ public partial class SettingsWindowNew : MyWindow
                 await Dispatcher.Yield();
             }
             ViewModel.IsNavigating = false;
+            var child = LoadingAsyncBox.LoadingView as LoadingMask;
+            child?.FinishFakeLoading();
             if (!IThemeService.IsTransientDisabled)
             {
                 await BeginStoryboardAsync("NavigationEntering");
@@ -200,13 +248,19 @@ public partial class SettingsWindowNew : MyWindow
             ViewModel.IsNavigationDrawerOpened = false;
         }
 
+        var child = LoadingAsyncBox.LoadingView as LoadingMask;
+        child?.StartFakeLoading();
+        if (SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading)
+        {
+            await UpdateEchoCaveAsync();
+        }
         if (!IThemeService.IsTransientDisabled)
         {
             await BeginStoryboardAsync("NavigationLeaving");
         }
         HangService.AssumeHang();
         // 从ioc容器获取页面
-        var page = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(ViewModel.SelectedPageInfo?.Id);
+        var page = GetPage(ViewModel.SelectedPageInfo?.Id);
         // 清空抽屉
         ViewModel.IsDrawerOpen = false;
         ViewModel.DrawerContent = null;
@@ -215,6 +269,21 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.Navigate(page, SettingsWindowNavigationExtraData.NavigateFromNavigationView);
         //ViewModel.FrameContent;
         NavigationService.RemoveBackEntry();
+    }
+
+    private SettingsPageBase? GetPage(string? id)
+    {
+        if (_cachedPages.TryGetValue(id ?? "", out var page))
+        {
+            return page;
+        }
+        var pageNew = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(id);
+        if (SettingsService.Settings.SettingsPagesCachePolicy >= 1)
+        {
+            _cachedPages[id ?? ""] = pageNew;
+        }
+
+        return pageNew;
     }
 
     private void SettingsWindowNew_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -283,6 +352,10 @@ public partial class SettingsWindowNew : MyWindow
         SettingsService.SaveSettings("关闭应用设置窗口");
         ComponentsService.SaveConfig();
         App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
+        if (SettingsService.Settings.SettingsPagesCachePolicy <= 1)
+        {
+            _cachedPages.Clear();
+        }
         GC.Collect();
     }
 

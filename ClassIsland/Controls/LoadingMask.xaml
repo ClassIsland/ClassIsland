@@ -16,14 +16,83 @@
                 <SplineDoubleKeyFrame KeyTime="00:00:.35" Value="20" />
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+        <Storyboard x:Key="FakeLoading" >
+            <BooleanAnimationUsingKeyFrames Storyboard.TargetName="MetroProgressBar" Storyboard.TargetProperty="(ProgressBar.IsIndeterminate)">
+                <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"/>
+            </BooleanAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MetroProgressBar" Storyboard.TargetProperty="(RangeBase.Value)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="10">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.7000000" Value="25">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:01" Value="40">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:02" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:04" Value="80">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:06" Value="90">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:08" Value="95">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
     </UserControl.Resources>
-    <Grid Visibility="{Binding HangService.IsHang, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}, Converter={StaticResource BooleanToVisibilityConverter}}">
-        <ProgressBar IsIndeterminate="True" VerticalAlignment="Top"
-                      Height="6"
-                      Background="{x:Null}"
-                      BorderThickness="0"
-                      materialDesign:TransitionAssist.DisableTransitions="True"
-                      x:Name="MetroProgressBar"/>
-        
+    <Grid>
+        <Grid >
+
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding HangService.IsHang, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="Visibility" Value="Collapsed"/>
+
+                </Style>
+            </Grid.Style>
+            <ProgressBar IsIndeterminate="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}, Converter={StaticResource InvertBooleanConverter}}" VerticalAlignment="Top"
+                         Height="6"
+                         Opacity="1"
+                         Background="{x:Null}"
+                         BorderThickness="0"
+                         materialDesign:TransitionAssist.DisableTransitions="True"
+                         x:Name="MetroProgressBar">
+            </ProgressBar>
+
+        </Grid>
+        <!--<TextBlock Foreground="Red" >
+            <Run Text="{Binding Value, ElementName=MetroProgressBar}"/>
+            <LineBreak/>
+            <Run Text="{Binding Opacity, ElementName=MetroProgressBar}"/>
+            <LineBreak/>
+            <Run Text="{Binding IsFakeLoading, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LoadingMask}}"/>
+        </TextBlock>-->
     </Grid>
 </UserControl>

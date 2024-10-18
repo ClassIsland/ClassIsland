@@ -111,18 +111,25 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
                 download.DownloadProgressChanged +=
                     (sender, args) =>
                         PluginSourceDownloadProgress = args.ProgressPercentage / total + i1 / total * 100.0;
+                download.DownloadFileCompleted += (sender, args) =>
+                {
+                    if (args.Error != null)
+                    {
+                        throw new Exception($"无法加载插件源：{args.Error.Message}", args.Error);
+                    } 
+                    var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, indexInfo.Id);
+                    if (Directory.Exists(indexFolderPath))
+                    {
+                        Directory.Delete(indexFolderPath, true);
+                    }
+
+                    Directory.CreateDirectory(indexFolderPath);
+                    ZipFile.ExtractToDirectory(archive, indexFolderPath);
+                };
                 await download.StartAsync();
 
-                var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, indexInfo.Id);
-                if (Directory.Exists(indexFolderPath))
-                {
-                    Directory.Delete(indexFolderPath, true);
-                }
-
-                Directory.CreateDirectory(indexFolderPath);
-
-                await Task.Run(() => { ZipFile.ExtractToDirectory(archive, indexFolderPath); });
                 i++;
+                
             }
 
             LoadPluginSource();
@@ -192,6 +199,10 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             .Build();
         download.DownloadFileCompleted += (sender, args) =>
         {
+            if (args.Error != null)
+            {
+                throw new Exception($"无法下载插件 {id}：{args.Error.Message}", args.Error);
+            }
             ChecksumHelper.VerifyChecksum(archive, md5);
             File.Move(archive, Path.Combine(Services.PluginService.PluginsPkgRootPath, id + ".cipx"), true);
         };

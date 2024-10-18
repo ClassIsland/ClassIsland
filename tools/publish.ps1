@@ -17,7 +17,7 @@ Write-Host "Successfully published to $PUBLISH_TARGET" -ForegroundColor Green
 
 Write-Host "Packaging..." -ForegroundColor Cyan
 
-rm ./out/ClassIsland/*.xml
+rm ./out/ClassIsland/*.xml -ErrorAction Continue
 
 7z a ./out/ClassIsland.zip ./out/ClassIsland/* -r -mx=9
 

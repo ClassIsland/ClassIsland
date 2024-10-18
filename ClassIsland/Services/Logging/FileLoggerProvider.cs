@@ -37,6 +37,8 @@ public class FileLoggerProvider : ILoggerProvider
         return filename;
     }
 
+    private bool _canWrite = true;
+
     public FileLoggerProvider()
     {
         try
@@ -95,7 +97,19 @@ public class FileLoggerProvider : ILoggerProvider
     {
         lock (_lock)
         {
-            _logWriter?.WriteLine(log);
+            try
+            {
+                if (!_canWrite)
+                {
+                    return;
+                }
+                _logWriter?.WriteLine(log);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                _canWrite = false;
+            }
         }
     }
 

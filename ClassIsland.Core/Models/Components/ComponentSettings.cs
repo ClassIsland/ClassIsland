@@ -95,6 +95,11 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
+    [JsonIgnore]
+    internal bool IsMigrated { get; set; } = false;
+
+    [JsonIgnore] internal Guid MigrationSource { get; set; } = Guid.Empty;
+
     /// <summary>
     /// 这个组件关联的组件注册信息。
     /// </summary>

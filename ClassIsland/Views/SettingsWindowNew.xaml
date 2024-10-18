@@ -63,12 +63,26 @@
                            Margin="0 0 0 4" />
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
                            Margin="0 0 0 16" />
-                <CheckBox Content="允许编辑已启用的时间表" IsChecked="{Binding SettingsService.Settings.ExpAllowEditingActivatedTimeLayout}"/>
-                <TextBlock TextWrapping="Wrap" 
-                           Foreground="IndianRed"
-                           FontWeight="Bold"
-                           FontStyle="Italic"
-                           Text="警告！此功能与组件“课程表（旧）”不兼容。在使用时请务必移除所有“课程表（旧）”组件，改用“课程表（实验）”组件，否则可能会出现一些奇怪的问题。"/>
+                <CheckBox IsChecked="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading}"
+                          Margin="0 0 0 6">
+                    <TextBlock TextWrapping="Wrap">
+                        在加载设置页面时显示回声洞
+                        <Run TextDecorations="{x:Static TextDecorations.Strikethrough}">
+                            （其实一般你还没看完就加载好了）
+                        </Run>
+                    </TextBlock>
+                </CheckBox>
+
+                <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          materialDesign:HintAssist.Hint="设置页面缓存策略"
+                          Margin="0 0 0 2"
+                          SelectedIndex="{Binding SettingsService.Settings.SettingsPagesCachePolicy}">
+                    <ComboBoxItem>不缓存</ComboBoxItem>
+                    <ComboBoxItem>保留页面缓存到窗口关闭（可能会内存泄漏）</ComboBoxItem>
+                    <ComboBoxItem>一直保留页面缓存</ComboBoxItem>
+                </ComboBox>
+                <TextBlock Text="设置页面缓存可以提升之前打开过的设置页面的加载速度，但会增加一定的内存占用。" TextWrapping="Wrap"
+                           Opacity="0.75"/>  
             </StackPanel>
         </ScrollViewer>
 
@@ -88,14 +102,14 @@
         </Storyboard>
         <Storyboard x:Key="NavigationEntering">
             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="300">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="200">
                     <EasingDoubleKeyFrame.EasingFunction>
-                        <ExponentialEase EasingMode="EaseOut"/>
+                        <SineEase EasingMode="EaseOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
                     <EasingDoubleKeyFrame.EasingFunction>
-                        <ExponentialEase EasingMode="EaseOut"/>
+                        <SineEase EasingMode="EaseOut"/>
                     </EasingDoubleKeyFrame.EasingFunction>
                 </EasingDoubleKeyFrame>
             </DoubleAnimationUsingKeyFrames>
@@ -216,7 +230,27 @@
                         </materialDesign:DrawerHost.LeftDrawerContent>
                         <!-- 页面内容 -->
                         <Grid>
+                            <Grid
+                                HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"
+                                        Visibility="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Margin="32 8 8 16"
+                                        Opacity="0.75">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <materialDesign:PackIcon Kind="BulbOnOutline" VerticalAlignment="Center"
+                                                         Grid.Column="0"/>
+                                <TextBlock Text="{Binding ViewModel.CurrentEchoCaveText}"
+                                           Grid.Column="1"
+                                           TextWrapping="Wrap"
+                                           FontWeight="Regular"
+                                           VerticalAlignment="Center"
+                                           Margin="4 0 0 0"/>
+                            </Grid>
                             <Frame Content="{Binding ViewModel.FrameContent}"
+                                   Background="{DynamicResource MaterialDesignPaper}"
                                    NavigationUIVisibility="Hidden"
                                    x:Name="NavigationFrame" RenderTransformOrigin="0.5,0.5">
                                 <Frame.RenderTransform>
@@ -234,7 +268,7 @@
                                     </Page>
                                 </d:Frame.Content>
                             </Frame>
-                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask"/>
+                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask" x:Name="LoadingAsyncBox"/>
                         </Grid>
                     </materialDesign:DrawerHost>
                     <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Padding="16"

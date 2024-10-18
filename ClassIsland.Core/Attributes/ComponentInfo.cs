@@ -54,7 +54,7 @@ public class ComponentInfo : Attribute
     /// </summary>
     public static ComponentInfo Empty { get; } = new(System.Guid.Empty.ToString(), "？？？");
 
-
+    internal List<string> MigrateSources { get; } = new();
 
     /// <inheritdoc />
     public ComponentInfo(string guid, string name, PackIconKind icon, string description="") : this(guid, name, description)

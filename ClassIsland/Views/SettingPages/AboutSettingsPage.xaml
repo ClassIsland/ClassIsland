@@ -357,7 +357,7 @@
                         界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。<LineBreak/>
                         应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak/>
                         协助本应用测试的同学。<LineBreak/>
-                        感谢<commands:NavHyperlink CommandParameter="https://github.com/jiangyin14">姜胤</commands:NavHyperlink>为本项目提供的服务器资源。<LineBreak/>
+                        感谢<commands:NavHyperlink CommandParameter="https://www.jiangyin14.top/">姜胤</commands:NavHyperlink>为本项目提供的服务器资源。<LineBreak/>
                         天气数据来源于小米天气。<LineBreak/>
                         部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak/>
                         其他使用的第三方库和贡献成员，详见贡献名单和第三方库。

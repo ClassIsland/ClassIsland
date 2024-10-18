@@ -10,9 +10,11 @@ using System.Text.Json.Nodes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Components;
+using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services;
 
@@ -44,12 +46,14 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         Path.GetFullPath(Path.Combine(ComponentSettingsPath, CurrentConfigName + ".json"));
 
     private SettingsService SettingsService { get; }
+    public ILogger<ComponentsService> Logger { get; }
 
     private string CurrentConfigName { get; set; } = "Default";
 
-    public ComponentsService(SettingsService settingsService)
+    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger)
     {
         SettingsService = settingsService;
+        Logger = logger;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
 
         if (!Directory.Exists(ComponentSettingsPath))
@@ -83,6 +87,26 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         }
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
         CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
+
+        var migrated = false;
+        foreach (var i in CurrentComponents)
+        {
+            if (!ComponentRegistryService.MigrationPairs.TryGetValue(new Guid(i.Id), out var targetGuid))
+            {
+                continue;
+            }
+            
+            Logger.LogInformation("迁移组件 {} -> {}", i.Id, targetGuid);
+            i.IsMigrated = true;
+            i.MigrationSource = new Guid(i.Id);
+            i.Id = targetGuid.ToString();
+            migrated = true;
+        }
+
+        if (migrated)
+        {
+            SaveConfig();
+        }
     }
 
     public void SaveConfig()
@@ -132,8 +156,21 @@ public class ComponentsService : ObservableRecipient, IComponentsService
             return null;
         }
 
+
         var baseType = type.BaseType;
-        if (baseType?.GetGenericArguments().Length > 0)
+        var migrated = settings.IsMigrated && !isSettings;
+        if (migrated)
+        {
+            if (baseType?.GetGenericArguments().Length > 0)
+            {
+                var settingsType = baseType.GetGenericArguments().First();
+                var componentSettings = Activator.CreateInstance(settingsType);
+                settings.Settings = componentSettings;
+                component.SettingsInternal = componentSettings;
+            }
+            component.OnMigrated(settings.MigrationSource, settings.Settings);
+        } 
+        if (baseType?.GetGenericArguments().Length > 0 && !migrated)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var componentSettings = settings.Settings ?? Activator.CreateInstance(settingsType);

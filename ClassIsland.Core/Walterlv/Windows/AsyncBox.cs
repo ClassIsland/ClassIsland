@@ -29,6 +29,8 @@ public class AsyncBox : FrameworkElement
 
     private UIElement _loadingView;
 
+    public UIElement LoadingView => _loadingView;
+
     private readonly ContentPresenter _contentPresenter;
 
     private bool _isChildReadyToLoad;
@@ -129,6 +131,10 @@ public class AsyncBox : FrameworkElement
         }
 
         var dispatcher = await GetAsyncDispatcherAsync();
+        if (VisualTreeHelper.GetParent(_contentPresenter) != null || VisualTreeHelper.GetParent(_hostVisual) != null)
+        {
+            return;
+        }
         _loadingView = await dispatcher.InvokeAsync(() =>
         {
             var loadingView = CreateLoadingView();

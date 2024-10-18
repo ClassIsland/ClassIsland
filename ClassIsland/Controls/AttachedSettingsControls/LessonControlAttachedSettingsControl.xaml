@@ -52,6 +52,16 @@
                 </ComboBoxItem>
             </ComboBox>
         </WrapPanel>
+        <!-- 显示精确倒计时时长 -->
+        <TextBox 
+           MinWidth="100"
+           Margin="0 0 0 6"
+           materialDesign:TextFieldAssist.PrefixText="剩余"
+           materialDesign:HintAssist.Hint="显示精确倒计时时长"
+           materialDesign:TextFieldAssist.SuffixText="秒时"
+           Foreground="{DynamicResource MaterialDesignBody}"
+           Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+           Text="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
         <WrapPanel>
             <!-- 时间点结束倒计时 -->
             <CheckBox IsChecked="{Binding Settings.IsCountdownEnabled}"

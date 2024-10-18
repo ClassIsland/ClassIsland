@@ -11,7 +11,7 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
     private int _extraInfoType = 0;
     private bool _isCountdownEnabled = true;
     private int _countdownSeconds = 60;
-    private int _extraInfo4ShowSecondsSeconds = 300;
+    private int _extraInfo4ShowSecondsSeconds = 0;
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
 

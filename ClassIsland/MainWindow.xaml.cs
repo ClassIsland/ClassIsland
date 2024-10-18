@@ -272,6 +272,10 @@ public partial class MainWindow : Window
 
     private bool GetMouseStatusByPos(System.Drawing.Point ptr)
     {
+        if (PresentationSource.FromVisual(GridWrapper) == null)
+        {
+            return false;
+        }
         GetCurrentDpi(out var dpiX, out var dpiY);
         var scale = ViewModel.Settings.Scale;
         //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
@@ -340,7 +344,7 @@ public partial class MainWindow : Window
             if (ViewModel.IsNotificationWindowExplicitShowed && ViewModel.Settings.WindowLayer == 0)  // 如果处于置底状态，还需要激活窗口来强制显示窗口。
             {
                 UpdateWindowLayer();
-                Activate();
+                ReCheckTopmostState();
             }
 
             if (request.MaskDuration > TimeSpan.Zero &&
@@ -609,8 +613,13 @@ public partial class MainWindow : Window
 
         if (msg == 0x0047) // WM_WINDOWPOSCHANGED
         {
-            Logger.LogTrace("ZORDER changed");
-            ReCheckTopmostState();
+            var pos = Marshal.PtrToStructure<WINDOWPOS>(lParam);
+            Logger.LogTrace("WM_WINDOWPOSCHANGED {}", pos.flags);
+            if ((pos.flags & SET_WINDOW_POS_FLAGS.SWP_NOZORDER) == 0) // SWP_NOZORDER
+            {
+                Logger.LogTrace("Z order changed");
+                ReCheckTopmostState();
+            }
         }
 
         return nint.Zero;

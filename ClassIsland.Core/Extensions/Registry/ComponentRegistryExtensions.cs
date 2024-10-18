@@ -47,8 +47,13 @@ public static class ComponentRegistryExtensions
         {
             throw new ArgumentException($"此组件id {info.Guid} 已经被占用。");
         }
+
         services.AddTransient(component);
         info.ComponentType = component;
+        foreach (var migrationSource in component.GetCustomAttributes(false).Where(x => x is MigrateFromAttribute).Cast<MigrateFromAttribute>())
+        {
+            ComponentRegistryService.MigrationPairs[new Guid(migrationSource.Id)] = info.Guid;
+        }
         if (settings != null)
         {
             services.AddTransient(settings);
