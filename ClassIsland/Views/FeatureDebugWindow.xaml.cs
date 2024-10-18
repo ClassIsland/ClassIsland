@@ -5,6 +5,7 @@ using System.Windows;
 using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Helpers;
 
 namespace ClassIsland.Views;
 
@@ -28,6 +29,11 @@ public partial class FeatureDebugWindow : MyWindow
     private void ButtonPlayEffect_OnClick(object sender, RoutedEventArgs e)
     {
         RippleEffect.Play();
+    }
+
+    private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+    {
+        await SecureWindowHelper.ShowWindowInSecureDesktopAsync<Window>(x => { });
     }
 
     private async void ButtonTestFakeLoading_OnClick(object sender, RoutedEventArgs e)

@@ -23,6 +23,11 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="SecureDesktop">
+                <StackPanel>
+                    <Button Click="ButtonBase_OnClick">test desktop</Button>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="ActionControl">
                 <Grid Background="#99000000">
                     <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
