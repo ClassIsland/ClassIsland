@@ -70,7 +70,30 @@
         </StackPanel>
     </ci:SettingsPageBase.Resources>
     <Grid>
-        <controls1:ListDetailView ShowTitleWhenNotCompressed="True"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <materialDesign:ColorZone Grid.Row="0" Background="#10FF0000">
+            <Grid>
+                <DockPanel Margin="8 4">
+                    <materialDesign:PackIcon Kind="ErrorOutline"
+                                             Height="20" Width="20"/>
+                    <TextBlock TextWrapping="Wrap"
+                               VerticalAlignment="Center"
+                               Margin="4 0 0 0" >
+                        <Run Text="你正在使用自动化的早期版本，此版本仅供尝鲜使用，不建议用于生产环境。此功能在未来可能会产生较大的变动，并且">
+                        </Run><Bold>可能无法保证配置文件完全向下兼容。
+                        </Bold><Run>欢迎在
+                        </Run><ci:NavHyperlink CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/119">ClassIsland/ClassIsland#119
+                        </ci:NavHyperlink><Run>讨论此功能。</Run>
+                    </TextBlock>
+                </DockPanel>
+            </Grid>
+        </materialDesign:ColorZone>
+
+        <controls1:ListDetailView Grid.Row="1"
+                                  ShowTitleWhenNotCompressed="True"
                                   IsPanelOpened="{Binding ViewModel.IsPanelOpened, Mode=TwoWay}"
                                   Margin="6 6 0 0"
                                   Visibility="{Binding SettingsService.Settings.IsAutomationWarningVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
