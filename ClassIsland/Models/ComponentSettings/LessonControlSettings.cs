@@ -15,7 +15,7 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private bool _showPlaceholderOnEmptyClassPlan = true;
     private string _placeholderText = "今天没有课程。";
     private bool _showTomorrowSchedules = false;
-    private int _tomorrowScheduleShowMode = 0;
+    private int _tomorrowScheduleShowMode = 1;
     private bool _highlightChangedClass = false;
 
     public bool ShowExtraInfoOnTimePoint
