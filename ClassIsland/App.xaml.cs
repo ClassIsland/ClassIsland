@@ -67,6 +67,7 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ControlzEx.Native;
 using ClassIsland.Controls.ActionSettingsControls;
+using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Services.ActionHandlers;
 
 namespace ClassIsland;
@@ -333,6 +334,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 services.AddSingleton<IIpcService, IpcService>();
+                services.AddSingleton<IAuthorizeService, AuthorizeService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
@@ -419,6 +421,8 @@ public partial class App : AppBase, IAppHost
                 services.AddHostedService<RunActionHandler>();
                 services.AddHostedService<AppSettingsActionHandler>();
                 services.AddHostedService<SleepActionHandler>();
+                // 认证提供方
+                services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();

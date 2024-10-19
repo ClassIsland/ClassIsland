@@ -12,6 +12,12 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Services.Registry;
+using ClassIsland.Models;
+using ClassIsland.Models.Authorize;
+using ClassIsland.ViewModels;
+using AuthorizeProviderDisplayingModel = ClassIsland.Models.Authorize.AuthorizeProviderDisplayingModel;
 
 namespace ClassIsland.Views;
 
@@ -20,10 +26,13 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class AuthorizeWindow
 {
+    public AuthorizeViewModel ViewModel { get; } = new();
 
-    public AuthorizeWindow()
+    public AuthorizeWindow(Credential credential, bool isEditingMode)
     {
-        
+        DataContext = this;
+        ViewModel.Credential = credential;
+        ViewModel.IsEditingMode = isEditingMode;
         InitializeComponent();
     }
 
@@ -33,10 +42,86 @@ public partial class AuthorizeWindow
         base.OnContentRendered(e);
     }
 
+    private AuthorizeProviderDisplayingModel? GetDisplayingModel(CredentialItem item)
+    {
+        var info = AuthorizeProviderRegistryService.RegisteredAuthorizeProviders.FirstOrDefault(x =>
+            x.Id == item.ProviderId);
+        var settings = item.ProviderSettings;
+        if (info == null)
+        {
+            return null;
+        }
+
+        var visual = AuthorizeProviderControlBase.GetInstance(info, ref settings, ViewModel.IsEditingMode);
+        item.ProviderSettings = settings;
+        if (visual == null)
+        {
+            return null;
+        }
+        return new AuthorizeProviderDisplayingModel(info, visual, item);
+    }
+
     protected override void OnInitialized(EventArgs e)
     {
-        
-
         base.OnInitialized(e);
+        foreach (var i in ViewModel.Credential.Items)
+        {
+            var model = GetDisplayingModel(i);
+            if (model != null)
+            {
+                ViewModel.Providers.Add(model);
+            }
+        }
+    }
+
+    private void ButtonAddAuthorizeMethod_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedAuthorizeProviderInfo == null)
+        {
+            return;
+        }
+
+        var item = new CredentialItem()
+        {
+            ProviderId = ViewModel.SelectedAuthorizeProviderInfo.Id
+        };
+        ViewModel.Credential.Items.Add(item);
+        var model = GetDisplayingModel(item);
+        if (model != null)
+        {
+            ViewModel.Providers.Add(model);
+        }
+    }
+
+    private void ButtonRemoveSelectedAuthProvider_OnClick(object sender, RoutedEventArgs e)
+    {
+        var item = ViewModel.SelectedDisplayingInfo;
+        if (item == null)
+        {
+            return;
+        }
+
+        ViewModel.Credential.Items.Remove(item.AssociatedCredentialItem);
+        ViewModel.Providers.Remove(item);
+    }
+
+    private void ButtonOk_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.IsEditingMode)
+        {
+            return;
+        }
+        DialogResult = true;
+        Close();
+    }
+
+    private void CommandBindingCompleteAuthorize_OnExecuted(object sender, ExecutedRoutedEventArgs e)
+    {
+        if (ViewModel.IsEditingMode)
+        {
+            return;
+        }
+        DialogResult = true;
+        Close();
     }
 }

@@ -10,9 +10,8 @@ public interface IAuthorizeService
     /// </summary>
     /// <remarks>你需要自行保管好凭据字符串。</remarks>
     /// <param name="credentialString">要修改的凭据字符串，留空以新建凭据字符串。</param>
-    /// <param name="requireSecureDesktop">是否在安全桌面中进行修改。</param>
     /// <returns>设置完成的凭据字符串</returns>
-    Task<string> SetupCredentialStringAsync(string? credentialString=null, bool requireSecureDesktop=true);
+    Task<string?> SetupCredentialStringAsync(string? credentialString=null);
 
     /// <summary>
     /// 进行访问认证。需要用户输入与原先创建凭据时相同的凭据。如果认证成功，则返回 true。

@@ -5,7 +5,9 @@ using System.Windows;
 using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
+using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Helpers;
+using ClassIsland.Models.Authorize;
 
 namespace ClassIsland.Views;
 
@@ -17,12 +19,14 @@ public partial class FeatureDebugWindow : MyWindow
     public ILessonsService LessonsService { get; }
 
     public IProfileService ProfileService { get; }
+    public IAuthorizeService AuthorizeService { get; }
 
-    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService)
+    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService, IAuthorizeService authorizeService)
     {
         DataContext = this;
         LessonsService = lessonsService;
         ProfileService = profileService;
+        AuthorizeService = authorizeService;
         InitializeComponent();
     }
 
@@ -46,7 +50,28 @@ public partial class FeatureDebugWindow : MyWindow
 
     private void ButtonShowAuthWindow_OnClick(object sender, RoutedEventArgs e)
     {
-        var window = new AuthorizeWindow();
+        var window = new AuthorizeWindow(new Credential(), true);
         window.ShowDialog();
+    }
+
+    private async void ButtonCreateCredential_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new CommonDialogBuilder().HasInput(true)
+            .AddConfirmAction()
+            .SetContent("输入原先的认证字符串")
+            .ShowDialog(out var credentialString, this);
+        credentialString = await AuthorizeService.SetupCredentialStringAsync(string.IsNullOrEmpty(credentialString) ? null : credentialString);
+        CommonDialog.ShowInfo(credentialString ?? "");
+        Clipboard.SetDataObject(credentialString ?? "", false);
+    }
+
+    private async void ButtonAuthorize_OnClick(object sender, RoutedEventArgs e)
+    {
+        var dialog = new CommonDialogBuilder().HasInput(true)
+            .AddConfirmAction()
+            .SetContent("输入认证字符串")
+            .ShowDialog(out var credentialString, this);
+        var result = await AuthorizeService.AuthorizeAsync(credentialString);
+        CommonDialog.ShowInfo(result.ToString());
     }
 }

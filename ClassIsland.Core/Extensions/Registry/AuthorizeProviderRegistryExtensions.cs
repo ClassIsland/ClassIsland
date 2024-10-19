@@ -32,6 +32,7 @@ public static class AuthorizeProviderRegistryExtensions
         }
 
         info.AuthorizeProviderType = provider;
+        services.AddKeyedTransient<AuthorizeProviderControlBase, TProvider>(info.Id);
         AuthorizeProviderRegistryService.RegisteredAuthorizeProviders.Add(info);
 
         return services;

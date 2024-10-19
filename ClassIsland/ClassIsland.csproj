@@ -62,6 +62,7 @@
         <Folder Include="Models\TimeRules\" />
         <Folder Include="Enums\" />
         <Folder Include="Models\Ipc\" />
+        <Folder Include="Models\AuthorizeProviderSettings\" />
     </ItemGroup>
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig" />
