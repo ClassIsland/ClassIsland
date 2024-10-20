@@ -618,7 +618,15 @@ public partial class MainWindow : Window
             if ((pos.flags & SET_WINDOW_POS_FLAGS.SWP_NOZORDER) == 0) // SWP_NOZORDER
             {
                 Logger.LogTrace("Z order changed");
-                ReCheckTopmostState();
+                if (pos.hwndInsertAfter != NativeWindowHelper.HWND_TOPMOST)
+                {
+                    ReCheckTopmostState();
+                }
+
+                if (pos.hwndInsertAfter != NativeWindowHelper.HWND_BOTTOM)
+                {
+                    SetBottom();
+                }
             }
         }
 
@@ -734,8 +742,8 @@ public partial class MainWindow : Window
         }
         if (ViewModel.IsNotificationWindowExplicitShowed)
         {
-            SetWindowPos(hWnd, default, 0, 0, 0, 0,
-                SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
+            //SetWindowPos(hWnd, NativeWindowHelper.HWND_TOPMOST, 0, 0, 0, 0,
+            //    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
             return;
         }
         SetWindowPos(hWnd, NativeWindowHelper.HWND_BOTTOM, 0, 0, 0, 0,
