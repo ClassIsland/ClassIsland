@@ -169,7 +169,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             .Where(x =>
             {
                 var group = x.Value.AssociatedGroup;
-                var matchGlobal = group == ClassPlanGroup.GlobalGroupGuid.ToString();
+                var matchGlobal = new Guid(group) == ClassPlanGroup.GlobalGroupGuid;
                 var matchDefault = group == Profile.SelectedClassPlanGroupId;
                 if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null } 
                     || Profile.TempClassPlanGroupExpireTime.Date < date.Date)
