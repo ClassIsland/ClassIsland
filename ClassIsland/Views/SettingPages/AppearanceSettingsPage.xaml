@@ -510,8 +510,7 @@
                                              FontFamily="{Binding SettingsService.Settings.MainWindowFont, Mode=OneWay}"
                                              Margin="0 4 0 0"
                                              TextAlignment="Center"
-                                             xml:space="preserve">送给你纯白色的花 塞西莉亚 塞西莉亚
-盛开在起风的地方 沐浴九月的骄阳
+                                             xml:space="preserve">悲剧并非终结，而是希望的起始。
 语文 数学 英语 历史 物理 政治 化学 生物 地理
 the quick brown fox jumps over a lazy dog
 THE QUICK BROWN FOX JUMPS OVER A LAZY DOG
