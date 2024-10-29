@@ -38,8 +38,13 @@ public class ComponentsSettingsPageDropHandler : IDropTarget
                 });
                 break;
             case ComponentSettings settings:
-                var newIndex = dropInfo.UnfilteredInsertIndex;
-                components.Move(components.IndexOf(settings), newIndex >= components.Count ? components.Count - 1 : newIndex);
+                var oldIndex = components.IndexOf(settings);
+                var newIndex = oldIndex < dropInfo.UnfilteredInsertIndex ? dropInfo.UnfilteredInsertIndex - 1 : dropInfo.UnfilteredInsertIndex;
+                var finalIndex = newIndex >= components.Count ? components.Count - 1 : newIndex;
+                if (oldIndex != finalIndex)
+                {
+                    components.Move(oldIndex, finalIndex);
+                }
                 break;
         }
     }
