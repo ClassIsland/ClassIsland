@@ -83,6 +83,7 @@
         </Style>
         <converters1:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter"/>
         <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu"
+                     StaysOpen="True"
                      IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InvertBooleanConverter}}">
             <ContextMenu.Resources>
                 <converters1:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
