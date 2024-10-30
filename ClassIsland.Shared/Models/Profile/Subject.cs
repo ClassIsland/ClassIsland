@@ -23,7 +23,7 @@ public class Subject : AttachableSettingsObject
             if (value == _name) return;
             _name = value;
             if (string.IsNullOrEmpty(Initial) && !string.IsNullOrWhiteSpace(Name))
-                Initial = Name.Substring(0, 1);
+                Initial = Name.First().ToString();
             OnPropertyChanged();
         }
     }

@@ -141,10 +141,10 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             : Settings.IsClassOffNotificationEnabled;
 
 
-        if (!settingsIsClassOffNotificationEnabled || ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
-        {
+        if (!settingsIsClassOffNotificationEnabled ||
+            LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
             return;
-        }
 
         if (LessonsService.NextClassSubject != Subject.Empty)
         {
@@ -189,18 +189,11 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             : Settings.IsClassOnNotificationEnabled;
         var settingsSource = (IClassNotificationSettings?)(settings?.IsAttachSettingsEnabled == true ? settings : Settings) ?? Settings;
 
-        if (!settingsIsClassOnNotificationEnabled)
-        {
+        if (!settingsIsClassOnNotificationEnabled ||
+            IsClassOnNotified ||
+            LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
             return;
-        }
-        if (IsClassOnNotified)
-        {
-            return;
-        }
-        if (ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
-        {
-            return;
-        }
 
         if (IsClassPreparingNotified)
         {
