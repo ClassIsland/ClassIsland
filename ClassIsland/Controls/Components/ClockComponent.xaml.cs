@@ -18,6 +18,8 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
+using ClassIsland.Services;
+
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
@@ -58,17 +60,29 @@ public partial class ClockComponent : ComponentBase<ClockComponentSettings>, INo
 
     public IExactTimeService ExactTimeService { get; }
 
-    public ClockComponent(ILessonsService lessonsService, IExactTimeService exactTimeService)
+    public SettingsService SettingsService { get; }
+
+    public ClockComponent(ILessonsService lessonsService, IExactTimeService exactTimeService, SettingsService settingsService)
     {
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
+        SettingsService = settingsService;
         InitializeComponent();
 
-        LessonsService.PostMainTimerTicked += (_, _) =>
-        {
-            CurrentTime = ExactTimeService.GetCurrentLocalDateTime();
-            IsTimeSeparatorShowing = CurrentTime.Second % 2 == 1 || Settings.ShowSeconds;
-        };
+        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+    }
+
+    ~ClockComponent()
+    {
+        if (LessonsService == null) return;
+        LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+    }
+
+    private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
+    {
+        CurrentTime = Settings.ShowRealTime ? DateTime.Now : ExactTimeService.GetCurrentLocalDateTime();
+
+        IsTimeSeparatorShowing = !Settings.FlashTimeSeparator || Settings.ShowSeconds || CurrentTime.Second % 2 == 1;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
