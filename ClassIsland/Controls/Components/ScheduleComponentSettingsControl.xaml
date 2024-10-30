@@ -200,9 +200,10 @@
                                  Description="使课程表显示更紧凑或宽松。"
                                  Margin="0 0 0 6">
                     <ci:SettingsCard.Switcher>
-                        <Slider Width="150" Minimum="0.2" Maximum="1"
+                        <Slider Width="150" Minimum="0.3" Maximum="1"
                                 Value="{Binding Settings.ScheduleSpacing}"
-                                TickFrequency="0.1" AutoToolTipPrecision="1"
+                                TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                AutoToolTipPrecision="2"
                                 AutoToolTipPlacement="BottomRight"/>
                     </ci:SettingsCard.Switcher>
                 </ci:SettingsCard>

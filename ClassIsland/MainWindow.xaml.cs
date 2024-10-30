@@ -236,7 +236,10 @@ public partial class MainWindow : Window
         }
         //NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
 
-        SettingsService.Settings.TimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
+        if (SettingsService.Settings.DebugTimeSpeed != 0)
+        {
+            SettingsService.Settings.TimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
+        }
     }
 
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)

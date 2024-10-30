@@ -2032,6 +2032,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [JsonIgnore]
     public double DebugTimeSpeed
     {
         get => _debugTimeSpeed;

@@ -161,15 +161,21 @@ public partial class App : AppBase, IAppHost
         }
 #endif
 
-        if (Settings.IsCriticalSafeMode && // 教学安全模式
-            (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false)))
+        var safe = _isCriticalSafeModeEnabled && (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false));
+        if (safe)
         {
             Logger?.LogCritical(e, "发生严重错误（应用被教学安全模式退出）");
-            Current.Stop();
-            return;
+            Task.Run(async () =>
+            {
+                await Task.Delay(4000);
+                AppBase.Current.Stop();
+                Application.Current.Shutdown();
+            });
         }
-
-        Logger?.LogCritical(e, "发生严重错误。");
+        else
+        {
+            Logger?.LogCritical(e, "发生严重错误。");
+        }
 
         // wtf ↓
         //if (CrashWindow != null)
@@ -187,9 +193,15 @@ public partial class App : AppBase, IAppHost
         };
         SentrySdk.CaptureException(e, scope =>
         {
-            scope.Level = SentryLevel.Fatal;    
+            scope.Level = SentryLevel.Fatal;
         });
-        CrashWindow.ShowDialog();
+        if (!safe)
+            CrashWindow.ShowDialog();
+        else
+        {
+            AppBase.Current.Stop();
+            Application.Current.Shutdown();
+        }
     }
 
     private async void App_OnStartup(object sender, StartupEventArgs e)

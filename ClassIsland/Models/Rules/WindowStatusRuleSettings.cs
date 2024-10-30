@@ -12,8 +12,8 @@ public class WindowStatusRuleSettings : ObservableRecipient
     /// <value>
     /// 0 - 正常
     /// 1 - 最大化
-    /// 2 - 全屏
-    /// 3 - 最小化
+    /// 2 - 最小化
+    /// 3 - 全屏
     /// </value>
     public int State
     {

@@ -18,8 +18,8 @@
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
-        <StackPanel Orientation="Horizontal" Margin="4 0" VerticalAlignment="Center">
-            <Border Width="12">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Border Width="16">
                 <Border.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
                 </Border.LayoutTransform>
@@ -168,7 +168,7 @@
                                     CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                                 <Grid>
                                     <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center">
-                                        <Run Text="-" FontSize="{DynamicResource MainWindowSecondaryFontSize}">
+                                        <Run Text="-">
                                         </Run><Run Text="{Binding LeftSeconds,
                                                    Converter={StaticResource SecondsToFormatTimeConverter},
                                                    ConverterParameter={StaticResource TrueValue}}"/>
@@ -181,7 +181,7 @@
 
             </StackPanel>
 
-            <Border Width="12">
+            <Border Width="16">
                 <Border.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
                 </Border.LayoutTransform>
