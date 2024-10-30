@@ -19,6 +19,8 @@
         xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:controls1="clr-namespace:ClassIsland.Controls;assembly=ClassIsland.Core"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         TextElement.FontSize="14"
@@ -607,7 +609,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Grid>
-                                            <controls:ComponentPresenter IsOnMainWindow="True" 
+                                            <ci:ComponentPresenter IsOnMainWindow="True" 
                                                                          Settings="{Binding}"
                                                                          HidingRules="{Binding HidingRules, Mode=OneWay}"
                                                                          HideOnRule="{Binding HideOnRule, Mode=OneWay}"

@@ -233,7 +233,7 @@
                     </ListBox>
                 </TabItem>
                 <TabItem Header="组件设置" Visibility="{Binding ViewModel.IsComponentSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <controls3:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
+                    <controls2:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
                                                   IsPresentingSettings="True"/>
                 </TabItem>
                 <TabItem Header="高级设置" Visibility="{Binding ViewModel.IsComponentAdvancedSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
