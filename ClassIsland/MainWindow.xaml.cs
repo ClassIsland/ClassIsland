@@ -173,7 +173,7 @@ public partial class MainWindow : Window
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel = new MainViewModel();
-        //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
@@ -684,7 +684,27 @@ public partial class MainWindow : Window
     public void SaveSettings(string note = "")
     {
         UpdateTheme();
-        SettingsService.SaveSettings($"{note} (MainWindow)");
+        if (note is nameof(ViewModel.Settings.IsMouseInFadingReversed)
+                 or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
+        {
+            UpdateFadeStatus();
+        }
+        //SettingsService.SaveSettings($"{note} (MainWindow)");
+    }
+
+    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ViewModel.IsMouseIn))
+        {
+            UpdateFadeStatus();
+        }
+    }
+
+    private void UpdateFadeStatus()
+    {
+        ViewModel.IsMainWindowFaded =
+            ViewModel.Settings.IsMouseInFadingEnabled &&
+           (ViewModel.IsMouseIn ^ ViewModel.Settings.IsMouseInFadingReversed);
     }
 
     protected override void OnInitialized(EventArgs e)

@@ -194,6 +194,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _autoBackupIntervalDays = 7;
     private bool _useRawInput = false;
     private bool _isMouseInFadingEnabled = true;
+    private bool _isMouseInFadingReversed = false;
     private double _touchInFadingDurationMs = 0;
     private bool _isCompatibleWindowTransparentEnabled = false;
     private double _mainWindowSecondaryFontSize = 14;
@@ -1683,6 +1684,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isMouseInFadingEnabled) return;
             _isMouseInFadingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMouseInFadingReversed
+    {
+        get => _isMouseInFadingReversed;
+        set
+        {
+            if (value == _isMouseInFadingReversed) return;
+            _isMouseInFadingReversed = value;
             OnPropertyChanged();
         }
     }
