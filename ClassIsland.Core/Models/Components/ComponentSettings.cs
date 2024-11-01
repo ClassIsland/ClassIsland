@@ -1,5 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using System.Windows.Media;
+using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Services.Registry;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -64,6 +66,7 @@ public class ComponentSettings : ObservableRecipient
             if (Equals(value, _settings)) return;
             _settings = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(Children));
         }
     }
 
@@ -106,6 +109,15 @@ public class ComponentSettings : ObservableRecipient
     [JsonIgnore]
     public ComponentInfo AssociatedComponentInfo =>
         ComponentRegistryService.Registered.FirstOrDefault(x => string.Equals(x.Guid.ToString(), Id, StringComparison.CurrentCultureIgnoreCase)) ?? ComponentInfo.Empty;
+
+    /// <summary>
+    /// 这个组件包含的组件
+    /// </summary>
+    /// <remarks>
+    /// 如果这个组件不是容器组件，或组件设置没有实现<see cref="IComponentContainerSettings"/>，那么此属性将为 null。
+    /// </remarks>
+    [JsonIgnore]
+    public ObservableCollection<ComponentSettings>? Children => (Settings as IComponentContainerSettings)?.Children;
 
     #region Resources
 

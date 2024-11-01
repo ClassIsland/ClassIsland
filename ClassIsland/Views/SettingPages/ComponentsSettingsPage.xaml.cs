@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls.Ruleset;
@@ -48,6 +49,12 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         ComponentsService = componentsService;
         InitializeComponent();
         DataContext = this;
+        var mainHandler = FindResource("MainComponentsSettingsPageDropHandler") as ComponentsSettingsPageDropHandler;
+        var childHandler = FindResource("ChildComponentsSettingsPageDropHandler") as ComponentsSettingsPageDropHandler;
+        if (mainHandler is not null)
+        {
+            mainHandler.Components = ComponentsService.CurrentComponents;
+        }
     }
 
     private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
@@ -55,8 +62,20 @@ public partial class ComponentsSettingsPage : SettingsPageBase
         var remove = ViewModel.SelectedComponentSettings;
         if (remove == null)
             return;
+        if (ViewModel.SelectedContainerComponent == ViewModel.SelectedComponentSettings)
+        {
+            ViewModel.IsComponentChildrenViewOpen = false;
+            ViewModel.SelectedComponentContainerChildren = [];
+        }
         ViewModel.SelectedComponentSettings = null;
-        ComponentsService.CurrentComponents.Remove(remove);
+        if (ViewModel.SelectedComponentSettingsMain != null)
+        {
+            ComponentsService.CurrentComponents.Remove(remove);
+        } else if (ViewModel.SelectedComponentSettingsChild != null)
+        {
+            ViewModel.SelectedComponentContainerChildren.Remove(remove);
+        }
+
     }
 
     private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
@@ -95,6 +114,16 @@ public partial class ComponentsSettingsPage : SettingsPageBase
 
     private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        if (ViewModel.SelectedComponentSettingsMain != null)
+        {
+            ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsMain;
+            ViewModel.SelectedComponentSettingsChild = null;
+        }
+        UpdateSettingsVisibility();
+    }
+
+    private void UpdateSettingsVisibility()
+    {
         if (ViewModel.SelectedComponentSettings == null)
         {
             ViewModel.IsComponentAdvancedSettingsVisible = false;
@@ -121,5 +150,59 @@ public partial class ComponentsSettingsPage : SettingsPageBase
             return;
         control.Ruleset = ViewModel.SelectedComponentSettings.HidingRules;
         OpenDrawer("RulesetControl");
+    }
+
+    private void ButtonShowChildrenComponents_OnClick(object sender, RoutedEventArgs e)
+    {
+        SetCurrentSelectedComponentContainer(ViewModel.SelectedComponentSettings);
+    }
+
+    private void SetCurrentSelectedComponentContainer(ComponentSettings? componentSettings, bool isBack=false)
+    {
+        if (componentSettings?.AssociatedComponentInfo?.IsComponentContainer != true)
+        {
+            return;
+        }
+
+        if (componentSettings.Settings is not IComponentContainerSettings settings)
+        {
+            return;
+        }
+        if (componentSettings == ViewModel.SelectedComponentSettingsMain)
+        {
+            ViewModel.ChildrenComponentSettingsNavigationStack.Clear();
+        } else if (ViewModel.SelectedContainerComponent != null && !isBack)
+        {
+            ViewModel.ChildrenComponentSettingsNavigationStack.Push(ViewModel.SelectedContainerComponent);
+        }
+        ViewModel.SelectedComponentContainerChildren = settings.Children;
+        ViewModel.SelectedContainerComponent = componentSettings;
+        ViewModel.IsComponentChildrenViewOpen = true;
+        ViewModel.CanChildrenNavigateBack = ViewModel.ChildrenComponentSettingsNavigationStack.Count >= 1;
+    }
+
+    private void SelectorComponentsChildren_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ViewModel.SelectedComponentSettingsChild != null)
+        {
+            
+            ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
+            ViewModel.SelectedComponentSettingsMain = null;
+        }
+        UpdateSettingsVisibility();
+    }
+
+    private void ButtonChildrenViewClose_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsComponentChildrenViewOpen = false;
+    }
+
+    private void ButtonNavigateUp_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.ChildrenComponentSettingsNavigationStack.TryPop(out var settings))
+        {
+            return;
+        }
+        SetCurrentSelectedComponentContainer(settings, true);
     }
 }
