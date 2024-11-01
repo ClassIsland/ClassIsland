@@ -678,18 +678,17 @@ public partial class MainWindow : Window
     {
         var r = SettingsService.Settings;
         ViewModel.Settings = r;
-        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+        ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
-    public void SaveSettings(string note = "")
+    public void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         UpdateTheme();
-        if (note is nameof(ViewModel.Settings.IsMouseInFadingReversed)
-                 or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
+        if (e.PropertyName is nameof(ViewModel.Settings.IsMouseInFadingReversed)
+                           or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
         {
             UpdateFadeStatus();
         }
-        //SettingsService.SaveSettings($"{note} (MainWindow)");
     }
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -714,7 +713,7 @@ public partial class MainWindow : Window
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
-        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+        ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
         LoadSettings();
         //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
@@ -1027,7 +1026,6 @@ public partial class MainWindow : Window
     private void MenuItemDebugWelcomeWindow2_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.Settings.IsWelcomeWindowShowed = false;
-        SaveSettings();
     }
 
     private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)
