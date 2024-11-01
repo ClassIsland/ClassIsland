@@ -20,8 +20,7 @@ public class RulesetService : IRulesetService
     public RulesetService(ILogger<RulesetService> logger)
     {
         Logger = logger;
-
-        
+        NotifyStatusChanged();
     }
 
     

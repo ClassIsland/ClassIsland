@@ -50,7 +50,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
             if (!a.Actionset.IsEnabled) continue;
             if (!a.Actionset.IsOn)
             {
-                if (WindowRuleService.IsForegroundWindowClassIsland()) continue;
+                //if (WindowRuleService.IsForegroundWindowClassIsland()) continue;
                 if (!RulesetService.IsRulesetSatisfied(a.Ruleset)) continue;
                 ActionService.Invoke(a.Actionset);
                 a.Actionset.IsOn = true;
