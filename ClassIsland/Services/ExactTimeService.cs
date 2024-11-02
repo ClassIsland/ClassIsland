@@ -63,9 +63,11 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
             Logger.LogError(ex, "初始化NtpClient失败。");
             SyncStatusMessage = ex.Message;
         }
-        Sync();
-        UpdateTimerStatus();
-        SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
+        Task.Run(() => {
+            Sync();
+            UpdateTimerStatus();
+            SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
+        });
 
         if (SettingsService.Settings.IsTimeAutoAdjustEnabled)
         {
