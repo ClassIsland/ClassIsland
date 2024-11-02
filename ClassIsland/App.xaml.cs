@@ -104,6 +104,8 @@ public partial class App : AppBase, IAppHost
 
     private bool _isStartedCompleted = false;
 
+    internal static bool _isCriticalSafeModeEnabled = false;
+
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);

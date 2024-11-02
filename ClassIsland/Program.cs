@@ -112,6 +112,10 @@ return;
 
 void OnCurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
 {
+    if (App._isCriticalSafeModeEnabled)  // 教学安全模式
+    {
+        return;
+    }
     var message = $"""
                    ClassIsland 遇到了无法解决的问题，即将退出。请查阅事件查看器和日志获取完整的错误信息，并反馈给开发者。点击【确定】将复制堆栈信息并退出应用，点击【取消】将启动调试器。
 

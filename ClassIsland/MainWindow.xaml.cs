@@ -800,6 +800,8 @@ public partial class MainWindow : Window
             ResourceLoaderBorder.SetValue(ForegroundProperty, DependencyProperty.UnsetValue);
             ResourceLoaderBorder.SetValue(TextElement.ForegroundProperty, DependencyProperty.UnsetValue);
         }
+
+        App._isCriticalSafeModeEnabled = ViewModel.Settings.IsCriticalSafeMode;
     }
 
     private void UpdateWindowLayer()
