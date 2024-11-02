@@ -6,6 +6,7 @@ using System.CommandLine;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using ClassIsland;
 using ClassIsland.Services;
 using ClassIsland.Shared.IPC;
@@ -16,6 +17,8 @@ using NAudio;
 
 Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
 Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
+
+AppDomain.CurrentDomain.UnhandledException += OnCurrentDomainOnUnhandledException;
 
 var command = new RootCommand
 {
@@ -106,6 +109,35 @@ var app = new App()
 app.InitializeComponent();
 app.Run();
 return;
+
+void OnCurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
+{
+    var message = $"""
+                   ClassIsland 遇到了无法解决的问题，即将退出。请查阅事件查看器和日志获取完整的错误信息，并反馈给开发者。点击【确定】将复制堆栈信息并退出应用，点击【取消】将启动调试器。
+
+                   错误信息：{(eventArgs.ExceptionObject as Exception)?.Message}
+                   """;
+    var r = MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+    switch (r)
+    {
+        case MessageBoxResult.OK:
+            try
+            {
+                Clipboard.SetDataObject(eventArgs.ExceptionObject?.ToString() ?? "");
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+
+            break;
+        case MessageBoxResult.Cancel:
+            Debugger.Launch();
+            break;
+        default:
+            break;
+    }
+}
 
 static async Task ProcessUriNavigationAsync()
 {

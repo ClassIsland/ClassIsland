@@ -20,6 +20,8 @@ public partial class CrashWindow : MyWindow
         set;
     } = "";
 
+    public bool AllowIgnore { get; set; } = true;
+
     public CrashWindow()
     {
         InitializeComponent();

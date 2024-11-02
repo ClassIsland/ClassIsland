@@ -96,6 +96,8 @@
                           Click="MenuItemDebugTriggerAfterClass_OnClick" />
                 <MenuItem Icon="{materialDesign:PackIcon Pause}" Header="停止主计时器"
                           Click="MenuItemStopMainTimer_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon RubbishBinOutline}" Header="垃圾回收"
+                          Click="MenuItemGcCollect_OnClick" />
             </UniformGrid>
             <Separator />
 
@@ -191,6 +193,9 @@
                     <MenuItem Icon="{materialDesign:PackIcon Bomb}"
                               Header="崩溃测试（延迟3秒）"
                               Click="ButtonDelayCrash_OnClick"/>
+                    <MenuItem Icon="{materialDesign:PackIcon Bomb}"
+                              Header="崩溃测试（Task）"
+                              Click="MenuItemCrashOnTask_OnClick" />
                     <MenuItem Header="集控：禁用调试菜单" Width="1000" IsCheckable="True"
                               IsChecked="{Binding ManagementService.Policy.DisableDebugMenu}"
                               IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}"/>

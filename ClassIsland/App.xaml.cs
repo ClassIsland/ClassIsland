@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Speech.Synthesis;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Diagnostics;
@@ -101,9 +102,12 @@ public partial class App : AppBase, IAppHost
 
     public bool IsSentryEnabled { get; set; } = false;
 
+    private bool _isStartedCompleted = false;
+
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
+        TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
     }
 
     static App()
@@ -112,6 +116,15 @@ public partial class App : AppBase, IAppHost
             0);
         DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(ShadowAssist.CacheModeProperty,
             null);
+    }
+
+    private void TaskSchedulerOnUnobservedTaskException(object? sender, UnobservedTaskExceptionEventArgs e)
+    {
+        e.SetObserved();
+        Dispatcher.Invoke(() =>
+        {
+            ProcessUnhandledException(e.Exception);
+        });
     }
 
     public static ApplicationCommand ApplicationCommand
@@ -134,8 +147,13 @@ public partial class App : AppBase, IAppHost
     {
         e.Handled = true;
 
+        ProcessUnhandledException(e.Exception);
+    }
+
+    private void ProcessUnhandledException(Exception e)
+    {
 #if DEBUG
-        if (e.Exception.GetType() == typeof(ResourceReferenceKeyNotFoundException))
+        if (e.GetType() == typeof(ResourceReferenceKeyNotFoundException))
         {
             return;
         }
@@ -144,25 +162,28 @@ public partial class App : AppBase, IAppHost
         if (Settings.IsCriticalSafeMode && // 教学安全模式
             (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false)))
         {
-            Logger?.LogCritical(e.Exception, "发生严重错误（应用被教学安全模式退出）");
+            Logger?.LogCritical(e, "发生严重错误（应用被教学安全模式退出）");
             Current.Stop();
             return;
         }
 
-        Logger?.LogCritical(e.Exception, "发生严重错误。");
+        Logger?.LogCritical(e, "发生严重错误。");
 
-        if (CrashWindow != null)
-        {
-            CrashWindow = null;
-            GC.Collect();
-        }
+        // wtf ↓
+        //if (CrashWindow != null)
+        //{
+        //    CrashWindow = null;
+        //    GC.Collect();
+        //}
+
         //Settings.DiagnosticCrashCount++;
         //Settings.DiagnosticLastCrashTime = DateTime.Now;
         CrashWindow = new CrashWindow()
         {
-            CrashInfo = e.Exception.ToString()
+            CrashInfo = e.ToString(),
+            AllowIgnore = _isStartedCompleted
         };
-        SentrySdk.CaptureException(e.Exception, scope =>
+        SentrySdk.CaptureException(e, scope =>
         {
             scope.Level = SentryLevel.Fatal;    
         });
@@ -548,6 +569,7 @@ public partial class App : AppBase, IAppHost
             SentrySdk.ConfigureScope(s => s.Transaction = null);
             GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
+            _isStartedCompleted = true;
         };
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow show");

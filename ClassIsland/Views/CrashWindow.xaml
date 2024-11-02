@@ -55,7 +55,9 @@
                  d:Text="123"/>
         <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Margin="-12 8"/>
         <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0" Click="ButtonIgnore_OnClick">
+            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
+                    Visibility="{Binding AllowIgnore, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="ButtonIgnore_OnClick">
                 <controls1:IconText Kind="Close" Text="忽略错误，强制继续运行" IconMargin="3 0 0 0"/>
             </Button>
             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0" Click="ButtonExit_OnClick">

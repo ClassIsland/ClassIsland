@@ -213,4 +213,14 @@ public partial class DebugPage : SettingsPageBase
             }
         }
     }
+
+    private void MenuItemCrashOnTask_OnClick(object sender, RoutedEventArgs e)
+    {
+        Task.Run(() => throw new Exception("Crash test."));
+    }
+
+    private void MenuItemGcCollect_OnClick(object sender, RoutedEventArgs e)
+    {
+        GC.Collect();
+    }
 }
