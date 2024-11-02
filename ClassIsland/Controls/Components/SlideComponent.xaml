@@ -8,8 +8,31 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
              mc:Ignorable="d" 
+                  Loaded="SlideComponent_OnLoaded"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}">
+        <TabControl Grid.Column="0"
+                      Margin="-6 0"
+                      SelectedIndex="{Binding SelectedIndex}"
+                      ItemsSource="{Binding Settings.Children}"
+                      VerticalContentAlignment="Stretch">
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </TabControl.ItemContainerStyle>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <ci:ComponentPresenter IsOnMainWindow="True" 
+                                               Settings="{Binding}"
+                                               HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                               HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                               Margin="6 0" />
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+        <!--<TextBlock Text="{Binding SelectedIndex}" Foreground="Red"/>-->
     </Grid>
 </ci:ComponentBase>
