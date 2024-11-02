@@ -371,6 +371,7 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<WeatherComponent, WeatherComponentSettingsControl>();
                 services.AddComponent<CountDownComponent, CountDownComponentSettingsControl>();
                 services.AddComponent<SlideComponent>();
+                services.AddComponent<GroupComponent>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
