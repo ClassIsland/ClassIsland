@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.Ipc;
@@ -43,10 +44,13 @@ public class IpcService : IIpcService
 
     public async Task BroadcastNotificationAsync(string id)
     {
-        foreach (var i in ConnectedPeers)
-        {
-            await i.JsonPeerProxy.NotifyAsync(id);
-        }
+        try {
+            foreach (var i in ConnectedPeers)
+            {
+                try { await i.JsonPeerProxy.NotifyAsync(id); }
+                catch (NullReferenceException e) { throw new NullReferenceException(e.Message, e); }
+            }}
+        catch (NullReferenceException e) { throw new NullReferenceException(e.Message, e); }
     }
 
     public async Task BroadcastNotificationAsync<T>(string id, T obj) where T : class
