@@ -78,19 +78,6 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         }
     }
 
-
-    private bool CheckIsAfterSchool()
-    {
-        if (LessonsService.CurrentState != TimeState.None)
-        {
-            return false;
-        }
-
-        return LessonsService is { IsClassPlanLoaded: true, CurrentClassPlan: not null } &&
-               ExactTimeService.GetCurrentLocalDateTime().TimeOfDay >= LessonsService.CurrentClassPlan?.TimeLayout
-                   .Layouts.LastOrDefault()?.EndSecond.TimeOfDay;
-    }
-
     public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService, IProfileService profileService, IExactTimeService exactTimeService)
     {
         LessonsService = lessonsService;
@@ -98,24 +85,15 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        LessonsService.CurrentTimeStateChanged += LessonsServiceOnCurrentTimeStateChanged;
-        LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
-        IsAfterSchool = CheckIsAfterSchool();
+        LessonsService.CurrentTimeStateChanged += CurrentTimeStateChanged;
         InitializeComponent();
     }
 
-    private void LessonsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void CurrentTimeStateChanged(object? sender, EventArgs e)
     {
-        if (e.PropertyName is nameof(LessonsService.CurrentClassPlan) or nameof(LessonsService.IsClassPlanLoaded))
-        {
-            IsAfterSchool = CheckIsAfterSchool();
-        }
-    }
-
-
-    private void LessonsServiceOnCurrentTimeStateChanged(object? sender, EventArgs e)
-    {
-        IsAfterSchool = CheckIsAfterSchool();
+        IsAfterSchool =
+            LessonsService.CurrentState == TimeState.AfterSchool ||
+            LessonsService.CurrentClassPlan == null;
     }
 
     public override void OnMigrated(Guid sourceId, object? settings)

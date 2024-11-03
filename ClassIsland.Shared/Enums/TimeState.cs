@@ -20,5 +20,9 @@ public enum TimeState
     /// <summary>
     /// 课间休息
     /// </summary>
-    Breaking
+    Breaking,
+    /// <summary>
+    /// 放学
+    /// </summary>
+    AfterSchool,
 }

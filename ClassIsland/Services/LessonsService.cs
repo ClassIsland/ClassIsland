@@ -31,7 +31,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private TimeLayoutItem _currentTimeLayoutItem = new();
     private Subject? _currentSubject;
     private bool _isClassPlanEnabled = true;
-    private TimeState _currentOverlayEventStatus = TimeState.None;
+    private TimeState? _currentOverlayEventStatus = null;
     private bool _isClassPlanLoaded = false;
     private bool _isLessonConfirmed = false;
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
@@ -242,13 +242,24 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
 
         CurrentTimeStateChanged += async (_, _) =>
+        {
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.CurrentTimeStateChangedNotifyId);
+        };
         OnClass += async (_, _) =>
+        {
+            Logger.LogInformation("发出上课事件。");
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnClassNotifyId);
+        };
         OnBreakingTime += async (_, _) =>
+        {
+            Logger.LogInformation("发出下课事件。");
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnBreakingTimeNotifyId);
+        };
         OnAfterSchool += async (_, _) =>
+        {
+            Logger.LogInformation("发出放学事件。");
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnAfterSchoolNotifyId);
+        };
 
         StartMainTimer();
     }
@@ -310,21 +321,20 @@ public class LessonsService : ObservableRecipient, ILessonsService
         TimeSpan? onBreakingTimeLeftTime = null;
         bool? isLessonConfirmed = null;
 
-        if (CurrentClassPlan?.TimeLayout is null)
+        var layout = CurrentClassPlan?.TimeLayout?.Layouts;
+        if (layout == null || layout.Count == 0)
         {
             CurrentOverlayStatus = TimeState.None;
-            CurrentOverlayEventStatus = TimeState.None;
+            CurrentOverlayEventStatus = null;
         }
         else
         {
             IsClassPlanLoaded = true;
             // Activate selected item
-            CurrentClassPlan.IsActivated = true;
+            CurrentClassPlan!.IsActivated = true;
             CurrentClassPlan.TimeLayout.IsActivated = true;
 
-            // 常用值
             var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-            var layout = CurrentClassPlan.TimeLayout.Layouts;
 
             // 获取当前时间点信息
             currentTimeLayoutItem = layout.FirstOrDefault(i =>
@@ -373,6 +383,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 onBreakingTimeLeftTime = nextBreakingTimeLayoutItem?.StartSecond.TimeOfDay - now;
             else
                 onClassLeftTime = nextClassTimeLayoutItem?.StartSecond.TimeOfDay - now;
+
+            if (nextClassTimeLayoutItem == null &&
+                nextBreakingTimeLayoutItem == null)
+                currentState = TimeState.AfterSchool;
         }
 
         // 统一更新信息
@@ -393,18 +407,20 @@ public class LessonsService : ObservableRecipient, ILessonsService
             CurrentTimeStateChanged?.Invoke(this, EventArgs.Empty);
             switch (CurrentState)
             {
-                // 下课事件
-                case TimeState.Breaking:
-                    Logger.LogInformation("发出下课事件。");
-                    OnBreakingTime?.Invoke(this, EventArgs.Empty);
-                    break;
                 // 上课事件
                 case TimeState.OnClass:
-                    Logger.LogInformation("发出上课事件。");
                     OnClass?.Invoke(this, EventArgs.Empty);
                     break;
-                case TimeState.PrepareOnClass:
+                // 下课事件
+                case TimeState.Breaking:
+                    OnBreakingTime?.Invoke(this, EventArgs.Empty);
+                    break;
+                // 放学事件
+                case TimeState.AfterSchool:
+                    OnAfterSchool?.Invoke(this, EventArgs.Empty);
+                    break;
                 case TimeState.None:
+                case TimeState.PrepareOnClass:
                 default:
                     break;
             }
@@ -422,7 +438,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         return i;
     }
 
-    public TimeState CurrentOverlayEventStatus
+    public TimeState? CurrentOverlayEventStatus
     {
         get => _currentOverlayEventStatus;
         set => SetProperty(ref _currentOverlayEventStatus, value);
