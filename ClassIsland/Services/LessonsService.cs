@@ -286,7 +286,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        return CurrentState == s.State;
+        return CurrentState == s.State ||
+               CurrentState == TimeState.AfterSchool && s.State == TimeState.None;
     }
 
     private void MainTimerOnTick(object? sender, EventArgs e)
