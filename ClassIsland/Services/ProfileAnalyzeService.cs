@@ -14,7 +14,6 @@ using ClassIsland.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using Sentry;
-using WebSocketSharp;
 
 namespace ClassIsland.Services;
 

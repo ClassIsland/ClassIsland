@@ -1,7 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Edge_tts_sharp.Model;
-using Edge_tts_sharp;
+﻿using System;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
+using System.Windows;
+using EdgeTTS;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
@@ -32,8 +35,7 @@ public class NotificationSettingsViewModel : ObservableRecipient
         }
     }
 
-    public List<eVoice> EdgeVoices { get; } =
-        Edge_tts.GetVoice().FindAll(i => i.Locale.Contains("zh-CN"));
+    public List<Voice> EdgeVoices { get; } = JsonSerializer.Deserialize<List<Voice>>(Application.GetResourceStream(new Uri("/Assets/EdgeTts/VoiceList.json", UriKind.RelativeOrAbsolute))?.Stream ?? Stream.Null)?.FindAll(i => i.Locale.Contains("zh-CN")) ?? new();
 
     public string TestSpeechText { get; set; } = "风带来了故事的种子，时间使之发芽。";
 }

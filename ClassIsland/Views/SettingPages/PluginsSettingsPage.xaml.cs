@@ -28,7 +28,6 @@ using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using Sentry;
-using WebSocketSharp;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Path = System.IO.Path;
