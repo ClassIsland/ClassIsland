@@ -26,8 +26,6 @@ public class EdgeTtsService : ISpeechService
 
     //private List<eVoice> Voices { get; } = Edge_tts.GetVoice();
 
-    private EdgeTTSClient TtsClient = new EdgeTTSClient();
-
     private Queue<EdgeTtsPlayInfo> PlayingQueue { get; } = new();
 
     //private AudioPlayer? CurrentPlayer { get; set; }
@@ -41,7 +39,6 @@ public class EdgeTtsService : ISpeechService
 
     public EdgeTtsService()
     {
-        TtsClient.Sec_MS_GEC_UpDate_Url = "http://123.207.46.66:8086/api/getGec";
         Logger.LogInformation("初始化了EdgeTTS服务。");
     }
 
@@ -82,7 +79,7 @@ public class EdgeTtsService : ISpeechService
                     Logger.LogDebug("开始下载语音");
                     var client = new EdgeTTSClient()
                     {
-                        Sec_MS_GEC_UpDate_Url = "https://edge-sec.myaitool.top/?key=edge"
+                        Sec_MS_GEC_UpDate_Url = string.IsNullOrWhiteSpace(SettingsService.Settings.NotificationSpeechCustomSmgTokenSource) ? "https://edge-sec.myaitool.top/?key=edge" : SettingsService.Settings.NotificationSpeechCustomSmgTokenSource
                     };
                     var result = await client.SynthesisAsync(text, SettingsService.Settings.EdgeTtsVoiceName);
                     if (result.Code != ResultCode.Success)

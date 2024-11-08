@@ -209,6 +209,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isSwapMode = true;
     private bool _showEchoCaveWhenSettingsPageLoading = false;
     private int _settingsPagesCachePolicy = 0;
+    private string _notificationSpeechCustomSmgTokenSource = "";
 
     public void NotifyPropertyChanged(string propertyName)
     {
@@ -1336,6 +1337,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_notificationSoundVolume)) return;
             _notificationSoundVolume = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string NotificationSpeechCustomSmgTokenSource
+    {
+        get => _notificationSpeechCustomSmgTokenSource;
+        set
+        {
+            if (value == _notificationSpeechCustomSmgTokenSource) return;
+            _notificationSpeechCustomSmgTokenSource = value;
             OnPropertyChanged();
         }
     }

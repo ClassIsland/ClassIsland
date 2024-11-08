@@ -199,6 +199,9 @@
                                                         </DataTemplate>
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
+                                                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                                                         materialDesign:HintAssist.Hint="Sec-MS-GEC 令牌 API 终结点（留空使用默认）"
+                                                         Text="{Binding SettingsService.Settings.NotificationSpeechCustomSmgTokenSource}"/>
                                             </StackPanel>
 
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="语音音量"
