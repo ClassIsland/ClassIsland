@@ -19,7 +19,7 @@ public class IpcService : IIpcService
     public IpcProvider IpcProvider { get; }
     public JsonIpcDirectRoutedProvider JsonRoutedProvider { get; }
 
-    private ObservableCollection<IpcPeer> ConnectedPeers { get; } = [];
+    private ObservableCollection<IpcPeer?> ConnectedPeers { get; } = [];
 
     public IpcService(ILogger<IpcService> logger)
     {
@@ -44,20 +44,21 @@ public class IpcService : IIpcService
 
     public async Task BroadcastNotificationAsync(string id)
     {
-        try {
-            foreach (var i in ConnectedPeers)
-            {
-                try { await i.JsonPeerProxy.NotifyAsync(id); }
-                catch (NullReferenceException e) { throw new NullReferenceException(e.Message, e); }
-            }}
-        catch (NullReferenceException e) { throw new NullReferenceException(e.Message, e); }
+        ConnectedPeers.Remove(null);
+        foreach (var i in ConnectedPeers)
+        {
+            if (i?.JsonPeerProxy != null) 
+                await i.JsonPeerProxy.NotifyAsync(id);
+        }
     }
 
     public async Task BroadcastNotificationAsync<T>(string id, T obj) where T : class
     {
+        ConnectedPeers.Remove(null);
         foreach (var i in ConnectedPeers)
         {
-            await i.JsonPeerProxy.NotifyAsync(id, obj);
+            if (i?.JsonPeerProxy != null) 
+                await i.JsonPeerProxy.NotifyAsync(id, obj);
         }
     }
 }
