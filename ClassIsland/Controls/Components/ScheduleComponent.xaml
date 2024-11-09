@@ -22,7 +22,8 @@
             VerticalAlignment="Center"
             Mode="PrimaryMid"
             Padding="8 2"
-            CornerRadius="16">
+            CornerRadius="16"
+            x:Name="Tomorrow">
             <materialDesign:ColorZone.Style>
                 <Style TargetType="materialDesign:ColorZone">
                     <Style.Triggers>
@@ -98,6 +99,7 @@
                                 <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
                                 <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
                                 <Condition Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}"/>
+                                <Condition Binding="{Binding Visibility, ElementName=Tomorrow}" Value="Collapsed"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Visible"/>
                         </MultiDataTrigger>
