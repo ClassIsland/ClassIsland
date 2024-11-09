@@ -40,11 +40,6 @@ public interface ILessonsService : INotifyPropertyChanged, INotifyPropertyChangi
 
     #region LessonsProperties
 
-    ///// <summary>
-    ///// 下一个时间点。
-    ///// </summary>
-    //TimeLayoutItem NextTimeLayoutItem { get; set; }
-
     internal TimeState CurrentOverlayStatus { get; set; }
 
     #endregion

@@ -36,7 +36,7 @@ public class TimeRule : ObservableRecipient
     /// 0 - 不轮换<br/>
     /// 1 - 第一周<br/>
     /// 2 - 第二周<br/>
-    /// n - 第n周
+    /// y - 第 y 周
     /// </value>
     public int WeekCountDiv
     {

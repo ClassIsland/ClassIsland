@@ -57,6 +57,16 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         }
     }
 
+
+    /// <summary>
+    /// 代表一个空时间点。
+    /// </summary>
+    public static readonly TimeLayoutItem Empty = new()
+    {
+        StartSecond = DateTime.MinValue,
+        EndSecond = DateTime.MinValue,
+    };
+
     [JsonIgnore]
     public TimeSpan Last => EndSecond.TimeOfDay - StartSecond.TimeOfDay;
 
@@ -114,10 +124,10 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// 课间名称。
     /// </summary>
     [JsonIgnore]
-    public string BreakNameText => string.IsNullOrEmpty(_breakName) ? "课间休息" : _breakName;
+    public string BreakNameText => string.IsNullOrEmpty(BreakName) ? "课间休息" : BreakName;
 
     /// <summary>
-    /// 自定义课间名称。
+    /// 自定义课间名称。应使用<see cref="BreakNameText"/>获取实际课间名称。
     /// </summary>
     public string BreakName
     {

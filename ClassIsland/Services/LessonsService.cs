@@ -22,24 +22,23 @@ namespace ClassIsland.Services;
 public class LessonsService : ObservableRecipient, ILessonsService
 {
     private ClassPlan? _currentClassPlan;
-    private int? _currentSelectedIndex;
+    private int _currentSelectedIndex = -1;
     private Subject _nextSubject = Subject.Empty;
-    private TimeLayoutItem _nextTimeLayoutItem = new();
-    private TimeLayoutItem _nextBreakingLayoutItem = new();
+    private TimeLayoutItem _nextBreakingLayoutItem = TimeLayoutItem.Empty;
     private TimeSpan _onClassLeftTime = TimeSpan.Zero;
     private TimeState _currentStatus = TimeState.None;
     private TimeState _currentOverlayStatus = TimeState.None;
-    private TimeLayoutItem _currentTimeLayoutItem = new();
+    private TimeLayoutItem _currentTimeLayoutItem = TimeLayoutItem.Empty;
     private Subject? _currentSubject;
     private bool _isClassPlanEnabled = true;
     private TimeState _currentOverlayEventStatus = TimeState.None;
     private bool _isClassPlanLoaded = false;
     private bool _isLessonConfirmed = false;
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
-    private TimeLayoutItem _nextClassTimeLayoutItem = new();
-    private ObservableCollection<int> _multiWeekRotation = [-1, -1, 1, 1, 1];
+    private TimeLayoutItem _nextClassTimeLayoutItem = TimeLayoutItem.Empty;
+    private ObservableCollection<int> _multiWeekRotation = [0, 0, 1, 1, 1];
 
-    private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [-1, -1, 1, 1, 1];
+    private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [0, 0, 1, 1, 1];
 
     private DispatcherTimer MainTimer
     {
@@ -59,7 +58,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         set => SetProperty(ref _currentClassPlan, value);
     }
 
-    public int? CurrentSelectedIndex
+    public int CurrentSelectedIndex
     {
         get => _currentSelectedIndex;
         set => SetProperty(ref _currentSelectedIndex, value);
@@ -199,39 +198,20 @@ public class LessonsService : ObservableRecipient, ILessonsService
     public event EventHandler? OnBreakingTime;
     public event EventHandler? OnAfterSchool;
     public event EventHandler? CurrentTimeStateChanged;
-    public void DebugTriggerOnClass()
-    {
-        OnClass?.Invoke(this, EventArgs.Empty);
-    }
 
-    public void DebugTriggerOnBreakingTime()
-    {
-        OnBreakingTime?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void DebugTriggerOnAfterSchool()
-    {
-        OnAfterSchool?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void DebugTriggerOnStateChanged()
-    {
-        CurrentTimeStateChanged?.Invoke(this, EventArgs.Empty);
-    }
+    public void DebugTriggerOnClass() => OnClass?.Invoke(this, EventArgs.Empty);
+    public void DebugTriggerOnBreakingTime() => OnBreakingTime?.Invoke(this, EventArgs.Empty);
+    public void DebugTriggerOnAfterSchool() => OnAfterSchool?.Invoke(this, EventArgs.Empty);
+    public void DebugTriggerOnStateChanged() => CurrentTimeStateChanged?.Invoke(this, EventArgs.Empty);
 
     private SettingsService SettingsService { get; }
-
     private IProfileService ProfileService { get; }
-
     private ILogger<LessonsService> Logger { get; }
-
     private IExactTimeService ExactTimeService { get; }
-
     public IRulesetService RulesetService { get; }
     public IIpcService IpcService { get; }
 
     private Profile Profile => ProfileService.Profile;
-
     private Settings Settings => SettingsService.Settings;
 
     public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService, IIpcService ipcService)
@@ -262,13 +242,25 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
 
         CurrentTimeStateChanged += async (_, _) =>
+        {
+            Logger.LogInformation("发出时间状态改变事件。");
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.CurrentTimeStateChangedNotifyId);
+        };
         OnClass += async (_, _) =>
+        {
+            Logger.LogInformation("发出上课事件。");
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnClassNotifyId);
+        };
         OnBreakingTime += async (_, _) =>
+        {
+            Logger.LogInformation("发出下课事件。");
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnBreakingTimeNotifyId);
+        };
         OnAfterSchool += async (_, _) =>
+        {
+            Logger.LogInformation("发出放学事件。");
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnAfterSchoolNotifyId);
+        };
 
         StartMainTimer();
     }
@@ -295,7 +287,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
 
-        return CurrentState == s.State;
+        return CurrentState == s.State ||
+               CurrentState == TimeState.AfterSchool && s.State == TimeState.None;
     }
 
     private void MainTimerOnTick(object? sender, EventArgs e)
@@ -318,130 +311,130 @@ public class LessonsService : ObservableRecipient, ILessonsService
             i.Value.IsActivated = false;
         }
 
-        if (CurrentClassPlan?.TimeLayout is null)
+        // 预定所有需要更新的信息
+        int? currentSelectedIndex = null;
+        TimeState? currentState = null;
+        Subject? currentSubject = null;
+        Subject? nextClassSubject = null;
+        TimeLayoutItem? currentTimeLayoutItem = null;
+        TimeLayoutItem? nextClassTimeLayoutItem = null;
+        TimeLayoutItem? nextBreakingTimeLayoutItem = null;
+        TimeSpan? onClassLeftTime = null;
+        TimeSpan? onBreakingTimeLeftTime = null;
+        bool? isLessonConfirmed = null;
+        bool? isClassPlanLoaded = null;
+
+        var layout = CurrentClassPlan?.TimeLayout?.Layouts;
+        if (layout == null) // 当前没有课表时，跳过获取信息
         {
-            CurrentState = TimeState.None;
-            CurrentOverlayStatus = TimeState.None;
-            CurrentOverlayEventStatus = TimeState.None;
-            IsClassPlanLoaded = false;
-            CurrentSelectedIndex = -1;
-            return;
+            goto final;
         }
-        IsClassPlanLoaded = true;
+
+        // 开始获取信息
+        isClassPlanLoaded = true;
         // Activate selected item
-        CurrentClassPlan.IsActivated = true;
-        //if (!Settings.ExpAllowEditingActivatedTimeLayout)
-        //{
-        //    CurrentClassPlan.TimeLayout.IsActivated = true;
-        //}
+        CurrentClassPlan!.IsActivated = true;
+        CurrentClassPlan.TimeLayout.IsActivated = true;
 
-        var isLessonConfirmed = false;
-        // 更新选择
-        var currentLayout = CurrentClassPlan.TimeLayout.Layouts;
-        var currentLayoutItem = currentLayout.FirstOrDefault(i =>
-            i.StartSecond.TimeOfDay <= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay &&
-            i.EndSecond.TimeOfDay >= ExactTimeService.GetCurrentLocalDateTime().TimeOfDay &&
-            i.TimeType != 2);
-        if (currentLayoutItem != null)
+        var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+
+        // 获取当前时间点信息
+        currentTimeLayoutItem = layout.FirstOrDefault(i =>
+            i.TimeType is 0 or 1 &&
+            i.StartSecond.TimeOfDay <= now &&
+            i.EndSecond.TimeOfDay >= now);
+        if (currentTimeLayoutItem != null)
         {
-            CurrentSelectedIndex = currentLayout.IndexOf(currentLayoutItem);
-            CurrentTimeLayoutItem = currentLayoutItem;
-            IsLessonConfirmed = isLessonConfirmed = true;
-            if (CurrentTimeLayoutItem.TimeType == 0)
+            currentSelectedIndex = layout.IndexOf(currentTimeLayoutItem);
+            if (currentTimeLayoutItem.TimeType == 0)
             {
-                var i0 = GetSubjectIndex(currentLayout.IndexOf(currentLayoutItem));
-                CurrentSubject = Profile.Subjects[CurrentClassPlan.Classes[i0].SubjectId];
+                var i0 = GetClassIndex((int)currentSelectedIndex);
+                if (CurrentClassPlan.Classes.Count > i0 &&
+                    Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
+                {
+                    currentSubject = subject;
+                    currentState = TimeState.OnClass;
+                }
             }
-            else
+            else if (currentTimeLayoutItem.TimeType == 1)
             {
-                CurrentSubject = null;
+                currentSubject = Subject.Breaking;
+                currentSubject.Name = currentTimeLayoutItem.BreakNameText;
+                currentState = TimeState.Breaking;
             }
+            isLessonConfirmed = true;
         }
 
-        //var isBreaking = false;
-        if (!isLessonConfirmed)
+        // 获取下节时间点信息
+        nextClassTimeLayoutItem = layout.FirstOrDefault(i =>
+            i.TimeType == 0 &&
+            i.EndSecond.TimeOfDay >= now);
+        if (nextClassTimeLayoutItem != null)
         {
-            CurrentSelectedIndex = -1;
-            CurrentState = TimeState.None;
-            IsLessonConfirmed = false;
+            var i0 = GetClassIndex(layout.IndexOf(nextClassTimeLayoutItem));
+            if (CurrentClassPlan.Classes.Count > i0 &&
+                Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
+                nextClassSubject = subject;
         }
-        // 获取下节课信息
-        if (CurrentSelectedIndex + 1 < currentLayout.Count)
-        {
-            var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-            var nextClassTimeLayoutItem = currentLayout.FirstOrDefault(i =>
-                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 0 &&
-                    i.StartSecond.TimeOfDay > now);
-            var nextBreakingTimeLayoutItem = currentLayout.FirstOrDefault(i =>
-                    currentLayout.IndexOf(i) >= CurrentSelectedIndex && i.TimeType == 1 &&
-                    i.StartSecond.TimeOfDay > now);
-            if (nextClassTimeLayoutItem != null)
-            {
-                NextClassTimeLayoutItem = nextClassTimeLayoutItem;
-                var i0 = GetSubjectIndex(currentLayout.IndexOf(nextClassTimeLayoutItem));
-                var index = CurrentClassPlan.Classes[i0].SubjectId ?? "";
-                Profile.Subjects.TryGetValue(index, out var subject);
-                NextClassSubject = subject ?? Subject.Empty;
-            }
+        nextBreakingTimeLayoutItem = layout.FirstOrDefault(i =>
+            i.TimeType == 1 &&
+            i.EndSecond.TimeOfDay >= now);
 
-            if (nextBreakingTimeLayoutItem != null)
-            {
-                NextBreakingTimeLayoutItem = NextBreakingTimeLayoutItem = nextBreakingTimeLayoutItem;
-            }
-        }
+        // 获取剩余时间信息
+        if (currentState == TimeState.OnClass)
+            onBreakingTimeLeftTime = nextBreakingTimeLayoutItem?.StartSecond.TimeOfDay - now;
         else
-        {
-            NextClassSubject = Subject.Empty;
-        }
+            onClassLeftTime = nextClassTimeLayoutItem?.StartSecond.TimeOfDay - now;
 
-        var tClassDelta = NextClassTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        OnClassLeftTime = tClassDelta;
-        OnBreakingTimeLeftTime = NextBreakingTimeLayoutItem.StartSecond.TimeOfDay - ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        // 获取状态信息
-        if (CurrentSelectedIndex == null || CurrentSelectedIndex == -1)
-        {
-            CurrentState = TimeState.None;
-        }
-        else if (CurrentTimeLayoutItem.TimeType == 0)
-        {
-            CurrentState = TimeState.OnClass;
-        }
-        else if (CurrentTimeLayoutItem.TimeType == 1)
-        {
-            CurrentState = TimeState.Breaking;
-        }
+        if (nextClassTimeLayoutItem == null &&
+            nextBreakingTimeLayoutItem == null)
+            currentState = TimeState.AfterSchool;
+
+    final:
+
+        // 统一更新信息
+        CurrentSelectedIndex = currentSelectedIndex ?? -1;
+        CurrentState = currentState ?? TimeState.None;
+        CurrentSubject = currentSubject ?? Subject.Empty;
+        NextClassSubject = nextClassSubject ?? Subject.Empty;
+        CurrentTimeLayoutItem = currentTimeLayoutItem ?? TimeLayoutItem.Empty;
+        NextClassTimeLayoutItem = nextClassTimeLayoutItem ?? TimeLayoutItem.Empty;
+        NextBreakingTimeLayoutItem = nextBreakingTimeLayoutItem ?? TimeLayoutItem.Empty;
+        OnClassLeftTime = AtLeastZero(onClassLeftTime) ?? TimeSpan.Zero;
+        OnBreakingTimeLeftTime = AtLeastZero(onBreakingTimeLeftTime) ?? TimeSpan.Zero;
+        IsLessonConfirmed = isLessonConfirmed ?? false;
+        IsClassPlanLoaded = isClassPlanLoaded ?? false;
 
         // 发出状态变更事件
         if (CurrentState != CurrentOverlayEventStatus)
         {
             CurrentTimeStateChanged?.Invoke(this, EventArgs.Empty);
+            switch (CurrentState)
+            {
+                // 上课事件
+                case TimeState.OnClass:
+                    OnClass?.Invoke(this, EventArgs.Empty);
+                    break;
+                // 下课事件
+                case TimeState.Breaking:
+                    OnBreakingTime?.Invoke(this, EventArgs.Empty);
+                    break;
+                // 放学事件
+                case TimeState.AfterSchool:
+                    OnAfterSchool?.Invoke(this, EventArgs.Empty);
+                    break;
+                case TimeState.None:
+                case TimeState.PrepareOnClass:
+                default:
+                    break;
+            }
+            CurrentOverlayEventStatus = CurrentState;
         }
-        switch (CurrentState)
-        {
-            // 下课事件
-            case TimeState.Breaking when CurrentOverlayEventStatus != TimeState.Breaking:
-                Logger.LogInformation("发出下课事件。");
-                OnBreakingTime?.Invoke(this, EventArgs.Empty);
-                CurrentOverlayEventStatus = TimeState.Breaking;
-                break;
-            // 上课事件
-            case TimeState.OnClass when CurrentOverlayEventStatus != TimeState.OnClass:
-                Logger.LogInformation("发出上课事件。");
-                OnClass?.Invoke(this, EventArgs.Empty);
-                CurrentOverlayEventStatus = TimeState.OnClass;
-                break;
-            case TimeState.None:
-                break;
-            case TimeState.PrepareOnClass:
-                break;
-            default:
-                break;
-        }
-
-        CurrentOverlayEventStatus = CurrentState;
     }
 
-    private int GetSubjectIndex(int index)
+    static TimeSpan? AtLeastZero(TimeSpan? a) => a < TimeSpan.Zero ? TimeSpan.Zero : a;
+
+    private int GetClassIndex(int index)
     {
         var k = CurrentClassPlan?.TimeLayout.Layouts[index];
         var l = (from t in CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
