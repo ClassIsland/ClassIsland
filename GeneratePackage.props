@@ -9,8 +9,16 @@
 		<RepositoryUrl>https://github.com/ClassIsland/ClassIsland</RepositoryUrl>
 	    <PackageReadmeFile>README.md</PackageReadmeFile>
 		<Copyright>Copyright (c) 2024 HelloWRC</Copyright>
+	    <DebugType>pdbonly</DebugType>
+	    <RepositoryType>git</RepositoryType>
 	</PropertyGroup>
     <ItemGroup>
 	    <None Include="README.md" Pack="true" PackagePath="\"/>
     </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+	</ItemGroup>
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
 </Project>
