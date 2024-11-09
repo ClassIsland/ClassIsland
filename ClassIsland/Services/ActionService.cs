@@ -32,6 +32,7 @@ public class ActionService(ILogger<ActionService> Logger) : IActionService
     {
         foreach (var action in actionset.Actions)
             action.Exception = null;
+        actionset.IsOn = true;
         Task.Run(() =>
         {
             foreach (var action in actionset.Actions)
@@ -45,6 +46,7 @@ public class ActionService(ILogger<ActionService> Logger) : IActionService
     {
         foreach (var action in actionset.Actions)
             action.Exception = null;
+        actionset.IsOn = false;
         Task.Run(() =>
         {
             foreach (var action in actionset.Actions)

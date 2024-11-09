@@ -25,14 +25,10 @@
                      d:DataContext="{d:DesignInstance local:AutomationSettingsPage}"
                      Title="AutomationSettingsPage">
     <ci:SettingsPageBase.CommandBindings>
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.RemoveCommand}"
-                        Executed="CommandRemove_OnExecuted" />
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DuplicateCommand}"
-                        Executed="CommandDuplicate_OnExecuted" />
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}"
-                        Executed="CommandDebugInvokeAction_OnExecuted" />
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeRevertActionCommand}"
-                        Executed="CommandDebugInvokeRevertAction_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.RemoveCommand}" Executed="CommandRemove_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DuplicateCommand}" Executed="CommandDuplicate_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}" Executed="CommandDebugInvokeAction_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeRevertActionCommand}" Executed="CommandDebugInvokeRevertAction_OnExecuted" />
     </ci:SettingsPageBase.CommandBindings>
 
 
@@ -70,326 +66,353 @@
         </StackPanel>
     </ci:SettingsPageBase.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <materialDesign:ColorZone Grid.Row="0" Background="#10FF0000">
-            <Grid>
-                <DockPanel Margin="8 4">
-                    <materialDesign:PackIcon Kind="ErrorOutline"
-                                             Height="20" Width="20"/>
-                    <TextBlock TextWrapping="Wrap"
-                               VerticalAlignment="Center"
-                               Margin="4 0 0 0" >
-                        <Run Text="你正在使用自动化的早期版本，此版本仅供尝鲜使用，不建议用于生产环境。此功能在未来可能会产生较大的变动，并且">
-                        </Run><Bold>可能无法保证配置文件完全向下兼容。
-                        </Bold><Run>欢迎在
-                        </Run><ci:NavHyperlink CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/119">ClassIsland/ClassIsland#119
-                        </ci:NavHyperlink><Run>讨论此功能。</Run>
-                    </TextBlock>
-                </DockPanel>
-            </Grid>
-        </materialDesign:ColorZone>
-
-        <controls1:ListDetailView Grid.Row="1"
-                                  ShowTitleWhenNotCompressed="True"
-                                  IsPanelOpened="{Binding ViewModel.IsPanelOpened, Mode=TwoWay}"
-                                  Margin="6 6 0 0"
-                                  Visibility="{Binding SettingsService.Settings.IsAutomationWarningVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-            <controls1:ListDetailView.LeftContent>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <!--自动化实验性警告--> 
+            <materialDesign:ColorZone Background="#10FF0000" Panel.ZIndex="1" Margin="0 0 0 0">
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    
-                    <!-- 自动化开关 -->
-                    <ci:SettingsCard IconGlyph="ScriptTextOutline"
-                                     Header="启用自动化"
-                                     IsOn="{Binding SettingsService.Settings.IsAutomationEnabled, Mode=TwoWay}"
-                                     Description="自动化是一种在自定义规则满足时作出行动的功能。"
-                                     Margin="6 12" />
-                    <Button HorizontalAlignment="Right"
-                            Content="{materialDesign:PackIcon HelpCircleOutline}"
-                            ToolTip="自动化帮助…"
-                            Margin="0 0 60 0"
-                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="https://docs.classisland.tech/app/automatic"
-                            Style="{StaticResource MaterialDesignToolForegroundButton}" />
-
-                    <Grid Grid.Row="1">
-
-                        <!-- 添加自动化 -->
-                        <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                Click="ButtonAdd_OnClick"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Bottom"
-                                Margin="6 6">
-                            <ci:IconText Kind="Add"
-                                         Text="添加自动化" />
-                        </Button>
-
-                        <!-- 自动化配置方案 -->
-                        <StackPanel Grid.Column="1"
-                                    Grid.Row="0"
-                                    Orientation="Horizontal"
-                                    HorizontalAlignment="Right"
+                    <DockPanel Margin="8 4">
+                        <materialDesign:PackIcon Kind="ErrorOutline"
+                                                    Height="20" Width="20"/>
+                        <TextBlock TextWrapping="Wrap"
                                     VerticalAlignment="Center"
-                                    Margin="0 0 4 0">
-                            <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                      ItemsSource="{Binding AutomationService.Configs}"
-                                      MinWidth="150"
-                                      MaxWidth="300"
-                                      SelectedItem="{Binding SettingsService.Settings.CurrentAutomationConfig}"
-                                      materialDesign:HintAssist.Hint="配置方案" />
-                            <Button Content="{materialDesign:PackIcon Refresh}"
-                                    ToolTip="刷新配置方案"
-                                    VerticalAlignment="Center"
-                                    Margin="2 0"
-                                    Click="ButtonRefresh_OnClick"
-                                    Style="{StaticResource MaterialDesignToolForegroundButton}" />
-                            <Button Content="{materialDesign:PackIcon FileDocumentPlusOutline}"
-                                    ToolTip="新建配置方案…"
-                                    VerticalAlignment="Center"
-                                    Margin="2 0"
-                                    Click="ButtonCreateConfig_OnClick"
-                                    Style="{StaticResource MaterialDesignToolForegroundButton}" />
-                            <Button Content="{materialDesign:PackIcon FolderOpenOutline}"
-                                    ToolTip="打开配置文件夹…"
-                                    VerticalAlignment="Center"
-                                    Click="ButtonOpenConfigFolder_OnClick"
-                                    Margin="2 0"
-                                    Style="{StaticResource MaterialDesignToolForegroundButton}" />
-                        </StackPanel>
-                    </Grid>
-
-                    <!-- 左：自动化导航栏 -->
-                    <ScrollViewer Grid.Row="2">
-                        <ListBox ItemsSource="{Binding AutomationService.Automations}"
-                                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
-                                 SelectionChanged="ListBox_SelectionChanged"
-                                 SelectedItem="{Binding ViewModel.SelectedAutomation, Mode=TwoWay}"
-                                 HorizontalContentAlignment="Stretch"
-                                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
-                                 dd:DragDrop.IsDragSource="True"
-                                 dd:DragDrop.IsDropTarget="True"
-                                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
-                            <dd:DragDrop.EffectMoveAdornerTemplate>
-                                <DataTemplate>
-                                    <materialDesign:ColorZone Mode="PrimaryMid"
-                                                              Height="24"
-                                                              CornerRadius="12">
-                                        <ci:IconText Kind="ArrowUpDown"
-                                                     Text="排序"
-                                                     Margin="4 0"
-                                                     IconMargin="2"
-                                                     TextElement.FontWeight="Medium"
-                                                     VerticalAlignment="Center" />
-                                    </materialDesign:ColorZone>
-                                </DataTemplate>
-                            </dd:DragDrop.EffectMoveAdornerTemplate>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel HorizontalAlignment="Stretch">
-
-                                        <StackPanel Orientation="Horizontal"
-                                                    HorizontalAlignment="Right"
-                                                    DockPanel.Dock="Right">
-                                            <ToggleButton ToolTip="启用"
-                                                          IsChecked="{Binding Actionset.IsEnabled}" />
-                                            <Button Content="{materialDesign:PackIcon Kind=ContentCopy}"
-                                                    ToolTip="复制"
-                                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                    Command="{x:Static local:AutomationSettingsPage.DuplicateCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    Padding="15 0 10 0" />
-
-                                            <Button Content="{materialDesign:PackIcon Kind=Close}"
-                                                    ToolTip="删除"
-                                                    Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                    Command="{x:Static local:AutomationSettingsPage.RemoveCommand}"
-                                                    CommandParameter="{Binding}"
-                                                    Padding="5 0 5 0" />
-                                        </StackPanel>
-                                        <materialDesign:PackIcon Kind="ScriptTextOutline"
-                                                                 VerticalAlignment="Center"
-                                                                 HorizontalAlignment="Left"
-                                                                 DockPanel.Dock="Left"
-                                                                 Margin="3 2 0 0">
-                                            <materialDesign:PackIcon.Style>
-                                                <Style TargetType="materialDesign:PackIcon">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Actionset.Name}"
-                                                                     Value="">
-                                                            <Setter Property="Visibility"
-                                                                    Value="Visible" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                    <Setter Property="Visibility"
-                                                            Value="Collapsed" />
-                                                </Style>
-                                            </materialDesign:PackIcon.Style>
-                                        </materialDesign:PackIcon>
-                                        <TextBlock Text="{Binding Actionset.Name}"
-                                                   TextTrimming="CharacterEllipsis"
-                                                   VerticalAlignment="Center"
-                                                   HorizontalAlignment="Left"
-                                                   DockPanel.Dock="Left"
-                                                   Margin="4 0 0 0" />
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
-                    </ScrollViewer>
+                                    Margin="4 0 0 0" >
+                                    <Run>你正在使用自动化的早期版本，此版本仅供尝鲜使用，不建议用于生产环境。此功能在未来可能会产生较大的变动，并且
+                                    </Run><Bold>可能无法保证配置文件完全向下兼容。
+                                    </Bold><Run>欢迎在
+                                    </Run><ci:NavHyperlink CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/119">ClassIsland/ClassIsland#119
+                                    </ci:NavHyperlink><Run>讨论此功能。</Run>
+                        </TextBlock>
+                    </DockPanel>
                 </Grid>
-            </controls1:ListDetailView.LeftContent>
+            </materialDesign:ColorZone>
 
-            <!-- 右上：自动化重命名 -->
-            <controls1:ListDetailView.TitleElement>
-                <Grid>
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ViewModel.SelectedAutomation}"
-                                             Value="{x:Null}">
-                                    <Setter Property="Visibility"
-                                            Value="Collapsed" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <TextBox materialDesign:HintAssist.Hint="名称"
-                             materialDesign:HintAssist.IsFloating="True"
-                             DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
-                             Text="{Binding Actionset.Name, UpdateSourceTrigger=PropertyChanged}"
-                             FontWeight="Medium"
-                             FontSize="15"
-                             VerticalAlignment="Center"
-                             Margin="0 12 12 12"
-                             MinWidth="200"
-                             HorizontalAlignment="Left" />
+            <!-- 自动化编辑 -->
+            <controls1:ListDetailView Grid.Row="1"
+                                      ShowTitleWhenNotCompressed="True"
+                                      IsPanelOpened="{Binding ViewModel.IsPanelOpened, Mode=TwoWay}"
+                                      Margin="4 0 0 0"
+                                      Visibility="{Binding SettingsService.Settings.IsAutomationWarningVisible, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <controls1:ListDetailView.LeftContent>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal"
-                                HorizontalAlignment="Right"
-                                Grid.Column="2"
-                                DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
-                                Visibility="{Binding SettingsService.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:AutomationSettingsPage}}">
-                        <Button Content="(Debug)触发"
-                                Style="{StaticResource MaterialDesignFlatSecondaryButton}"
-                                Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}"
-                                CommandParameter="{Binding}"
-                                Padding="12 0" />
+                        <!-- 自动化开关 -->
+                        <ci:SettingsCard IconGlyph="ScriptTextOutline"
+                                         Header="启用自动化"
+                                         Description="自动化是一种在自定义规则满足时做出行动的功能。"
+                                         Margin="6 12">
+                            <ci:SettingsCard.Switcher>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="{materialDesign:PackIcon HelpCircleOutline}"
+                                            ToolTip="自动化帮助文档…"
+                                            Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                            CommandParameter="https://docs.classisland.tech/app/automation"
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}"/>
+                                    <ToggleButton IsChecked="{Binding SettingsService.Settings.IsAutomationEnabled, Mode=TwoWay}"/>
+                                </StackPanel>
+                            </ci:SettingsCard.Switcher>
+                        </ci:SettingsCard>
 
-                        <Button Content="(Debug)恢复"
-                                Style="{StaticResource MaterialDesignFlatSecondaryButton}"
-                                Command="{x:Static local:AutomationSettingsPage.DebugInvokeRevertActionCommand}"
-                                CommandParameter="{Binding}"
-                                Padding="12 0" />
-                    </StackPanel>
-                </Grid>
-            </controls1:ListDetailView.TitleElement>
+                        <Grid Grid.Row="1">
 
-            <controls1:ListDetailView.RightContent>
-                <Grid>
-                    <ScrollViewer>
-                        <Grid>
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ViewModel.SelectedAutomation}" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Grid.Style>
-                            <StackPanel DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
-                                        Margin="0 0 6 0">
-                                <StackPanel.Style>
-                                    <Style TargetType="StackPanel">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Actionset.IsEnabled}"
-                                                         Value="False">
-                                                <Setter Property="Opacity"
-                                                        Value="0.56" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Style>
+                            <!-- 添加自动化 -->
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonAdd_OnClick"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Bottom"
+                                    Margin="6 6">
+                                <ci:IconText Kind="Add"
+                                             Text="添加自动化" />
+                            </Button>
 
-                                <!--规则编辑-->
-                                <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
-                                          Margin="2 2 2 10">
-                                    <GroupBox.HeaderTemplate>
-                                        <DataTemplate>
-                                            <ci:IconText Text="当以下规则满足时"
-                                                         Kind="TagMultipleOutline"/>
-                                        </DataTemplate>
-                                    </GroupBox.HeaderTemplate>
-                                    <ruleset:RulesetControl Ruleset="{Binding Ruleset}"
-                                                            ShowTitle="False" 
-                                                            />
-                                </GroupBox>
-
-                                <!--行动编辑-->
-                                <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
-                                          Margin="2 2 2 10">
-                                    <GroupBox.HeaderTemplate>
-                                        <DataTemplate>
-                                            <ci:IconText Text="触发行动"
-                                                         Kind="Airplane"/>
-                                        </DataTemplate>
-                                    </GroupBox.HeaderTemplate>
-                                    <action:ActionControl Actionset="{Binding Actionset}" />
-                                </GroupBox>
-
-                                <!--TODO: 恢复行动编辑-->
-                                <!--<GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
-                                          Margin="2">
-                                    <GroupBox.HeaderTemplate>
-                                        <DataTemplate>
-                                            <ci:IconText Text="当规则不再满足时，恢复行动。"
-                                                         Kind="AirplaneLanding" />
-                                        </DataTemplate>
-                                    </GroupBox.HeaderTemplate>
-                                    <TextBlock Text="Coming S∞n" />
-                                </GroupBox>-->
-
-                                <ci:IconText Text="当规则不再满足时，将自动恢复行动。"
-                                             Kind="AirplaneLanding"
-                                             Margin="10 2 0 10"/>
+                            <!-- 自动化配置方案 -->
+                            <StackPanel Grid.Column="1"
+                                        Grid.Row="0"
+                                        Orientation="Horizontal"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Margin="0 0 4 0">
+                                <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                          ItemsSource="{Binding AutomationService.Configs}"
+                                          MinWidth="150"
+                                          MaxWidth="300"
+                                          SelectedItem="{Binding SettingsService.Settings.CurrentAutomationConfig}"
+                                          materialDesign:HintAssist.Hint="配置方案" />
+                                <Button Content="{materialDesign:PackIcon Refresh}"
+                                        ToolTip="刷新配置方案"
+                                        VerticalAlignment="Center"
+                                        Margin="2 0"
+                                        Click="ButtonRefresh_OnClick"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}" />
+                                <Button Content="{materialDesign:PackIcon FileDocumentPlusOutline}"
+                                        ToolTip="新建配置方案…"
+                                        VerticalAlignment="Center"
+                                        Margin="2 0"
+                                        Click="ButtonCreateConfig_OnClick"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}" />
+                                <Button Content="{materialDesign:PackIcon FolderOpenOutline}"
+                                        ToolTip="打开配置文件夹…"
+                                        VerticalAlignment="Center"
+                                        Click="ButtonOpenConfigFolder_OnClick"
+                                        Margin="2 0"
+                                        Style="{StaticResource MaterialDesignToolForegroundButton}" />
                             </StackPanel>
                         </Grid>
-                    </ScrollViewer>
 
-                    <!-- 右：未选择自动化时，显示占位符 -->
-                    <StackPanel VerticalAlignment="Center"
-                                HorizontalAlignment="Center">
-                        <StackPanel.Style>
-                            <Style TargetType="StackPanel">
+                        <!-- 左：自动化导航栏 -->
+                        <ScrollViewer Grid.Row="2">
+                            <ListBox ItemsSource="{Binding AutomationService.Automations}"
+                                     Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
+                                     SelectionChanged="ListBox_SelectionChanged"
+                                     SelectedItem="{Binding ViewModel.SelectedAutomation, Mode=TwoWay}"
+                                     HorizontalContentAlignment="Stretch"
+                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                     dd:DragDrop.IsDragSource="True"
+                                     dd:DragDrop.IsDropTarget="True"
+                                     dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
+                                <dd:DragDrop.EffectMoveAdornerTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:ColorZone Mode="PrimaryMid"
+                                                                  Height="24"
+                                                                  CornerRadius="12">
+                                            <ci:IconText Kind="ArrowUpDown"
+                                                         Text="排序"
+                                                         Margin="4 0"
+                                                         IconMargin="2"
+                                                         TextElement.FontWeight="Medium"
+                                                         VerticalAlignment="Center" />
+                                        </materialDesign:ColorZone>
+                                    </DataTemplate>
+                                </dd:DragDrop.EffectMoveAdornerTemplate>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <DockPanel HorizontalAlignment="Stretch">
+
+                                            <StackPanel Orientation="Horizontal"
+                                                        HorizontalAlignment="Right"
+                                                        DockPanel.Dock="Right">
+                                                <ToggleButton ToolTip="启用"
+                                                              IsChecked="{Binding Actionset.IsEnabled}" />
+                                                <Button Content="{materialDesign:PackIcon Kind=ContentCopy}"
+                                                        ToolTip="复制"
+                                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                        Command="{x:Static local:AutomationSettingsPage.DuplicateCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Padding="15 0 10 0" />
+
+                                                <Button Content="{materialDesign:PackIcon Kind=Close}"
+                                                        ToolTip="删除"
+                                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                        Command="{x:Static local:AutomationSettingsPage.RemoveCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        Padding="5 0 5 0" />
+                                            </StackPanel>
+                                            <materialDesign:PackIcon Kind="ScriptTextOutline"
+                                                                     VerticalAlignment="Center"
+                                                                     HorizontalAlignment="Left"
+                                                                     DockPanel.Dock="Left"
+                                                                     Margin="3 2 0 0">
+                                                <materialDesign:PackIcon.Style>
+                                                    <Style TargetType="materialDesign:PackIcon">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Actionset.Name}"
+                                                                         Value="">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                        <Setter Property="Visibility"
+                                                                Value="Collapsed" />
+                                                    </Style>
+                                                </materialDesign:PackIcon.Style>
+                                            </materialDesign:PackIcon>
+                                            <TextBlock Text="{Binding Actionset.Name}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center"
+                                                       HorizontalAlignment="Left"
+                                                       DockPanel.Dock="Left"
+                                                       Margin="4 0 0 0" />
+                                        </DockPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ScrollViewer>
+                    </Grid>
+                </controls1:ListDetailView.LeftContent>
+
+                <!-- 右上：自动化重命名 -->
+                <controls1:ListDetailView.TitleElement>
+                    <Grid>
+                        <Grid.Style>
+                            <Style TargetType="Grid">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ViewModel.SelectedAutomation}"
                                                  Value="{x:Null}">
                                         <Setter Property="Visibility"
-                                                Value="Visible" />
+                                                Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
-                                <Setter Property="Visibility"
-                                        Value="Collapsed" />
                             </Style>
-                        </StackPanel.Style>
-                        <Image Source="/Assets/HoYoStickers/光辉矢愿_瞄准.png"
-                               Width="72"
-                               Height="72"
-                               ToolTip="光辉矢愿_瞄准" />
-                        <TextBlock Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
-                                   TextWrapping="Wrap"
-                                   Margin="0 4 0 0" />
-                    </StackPanel>
-                </Grid>
-            </controls1:ListDetailView.RightContent>
-        </controls1:ListDetailView>
+                        </Grid.Style>
+                        <TextBox materialDesign:HintAssist.Hint="名称"
+                                 materialDesign:HintAssist.IsFloating="True"
+                                 DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
+                                 Text="{Binding Actionset.Name, UpdateSourceTrigger=PropertyChanged}"
+                                 FontWeight="Medium"
+                                 FontSize="15"
+                                 VerticalAlignment="Center"
+                                 Margin="0 12 12 12"
+                                 MinWidth="200"
+                                 HorizontalAlignment="Left" />
+
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right"
+                                    Grid.Column="2"
+                                    DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}">
+                            <Button Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}"
+                                    CommandParameter="{Binding Actionset}"
+                                    Padding="12 0">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Actionset.IsOn}" Value="True">
+                                                <Setter Property="Opacity" Value="0.56" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <ci:IconText Kind="MotionPlayOutline" Text="触发" />
+                            </Button>
+
+                            <Button Command="{x:Static local:AutomationSettingsPage.DebugInvokeRevertActionCommand}"
+                                    CommandParameter="{Binding Actionset}"
+                                    Padding="12 0"
+                                    Margin="0 0 8 0">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Actionset.IsOn}" Value="False">
+                                                <Setter Property="Opacity" Value="0.56" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <ci:IconText Kind="UndoVariant" Text="恢复" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </controls1:ListDetailView.TitleElement>
+
+                <controls1:ListDetailView.RightContent>
+                    <Grid>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                            <Grid>
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ViewModel.SelectedAutomation}"
+                                                         Value="{x:Null}">
+                                                <Setter Property="Visibility"
+                                                        Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <StackPanel DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
+                                            Margin="0 0 6 0">
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Actionset.IsEnabled}"
+                                                             Value="False">
+                                                    <Setter Property="Opacity"
+                                                            Value="0.56" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+
+                                    <!--规则编辑-->
+                                    <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
+                                              Margin="2 2 2 10">
+                                        <GroupBox.HeaderTemplate>
+                                            <DataTemplate>
+                                                <ci:IconText Text="当以下规则满足时"
+                                                             Kind="TagMultipleOutline" />
+                                            </DataTemplate>
+                                        </GroupBox.HeaderTemplate>
+                                        <ruleset:RulesetControl Ruleset="{Binding Ruleset}"
+                                                                ShowTitle="False" />
+                                    </GroupBox>
+
+                                    <!--行动编辑-->
+                                    <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
+                                              Margin="2 2 2 10">
+                                        <GroupBox.HeaderTemplate>
+                                            <DataTemplate>
+                                                <ci:IconText Text="触发行动"
+                                                             Kind="Airplane" />
+                                            </DataTemplate>
+                                        </GroupBox.HeaderTemplate>
+                                        <action:ActionControl Actionset="{Binding Actionset}" />
+                                    </GroupBox>
+
+                                    <!--TODO: 恢复行动编辑-->
+                                    <!--<GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
+                                                          Margin="2">
+                                                    <GroupBox.HeaderTemplate>
+                                                        <DataTemplate>
+                                                            <ci:IconText Text="当规则不再满足时，恢复行动。"
+                                                                         Kind="AirplaneLanding" />
+                                                        </DataTemplate>
+                                                    </GroupBox.HeaderTemplate>
+                                                    <TextBlock Text="Coming S∞n" />
+                                                </GroupBox>-->
+
+                                    <ci:IconText Text="当规则不再满足时，将自动恢复行动。"
+                                                 Kind="AirplaneLanding"
+                                                 Margin="10 2 0 10" />
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+
+                        <!-- 右：未选择自动化时，显示占位符 -->
+                        <StackPanel VerticalAlignment="Center"
+                                    HorizontalAlignment="Center">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViewModel.SelectedAutomation}"
+                                                     Value="{x:Null}">
+                                            <Setter Property="Visibility"
+                                                    Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Visibility"
+                                            Value="Collapsed" />
+                                </Style>
+                            </StackPanel.Style>
+                            <Image Source="/Assets/HoYoStickers/光辉矢愿_瞄准.png"
+                                   Width="72"
+                                   Height="72"
+                                   ToolTip="光辉矢愿_瞄准" />
+                            <TextBlock Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
+                                       TextWrapping="Wrap"
+                                       Margin="0 4 0 0" />
+                        </StackPanel>
+                    </Grid>
+                </controls1:ListDetailView.RightContent>
+                </controls1:ListDetailView>
+        </Grid>
 
         <!-- 自动化使用前须知 -->
         <Border Background="{DynamicResource MaterialDesignPaper}"
@@ -426,22 +449,22 @@
                                TextAlignment="Center"
                                Margin="0 8 0 0"
                                Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
-                    
+
                     <TextBlock Margin="0 10 0 0"
                                TextAlignment="Center"
                                HorizontalAlignment="Center"
                                TextWrapping="Wrap">
-                        　欢迎使用自动化！<LineBreak />
-                        自动化是 ClassIsland 1.6 (Himeko) 的新增功能，旨在<LineBreak />
-                        　提供简单快捷的自动操作。
+                        　    欢迎使用自动化！<LineBreak />
+                            自动化是 ClassIsland 1.6 (Himeko) 的新增功能，旨在<LineBreak />
+                        　    提供简单快捷的自动操作。
                     </TextBlock>
 
                     <Button HorizontalAlignment="Center"
                             Margin="0 6 0 0"
                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="https://docs.classisland.tech/app/automatic"
+                            CommandParameter="https://docs.classisland.tech/app/automation"
                             Style="{StaticResource MaterialDesignFlatSecondaryButton}"
-                            ToolTip="docs.classisland.tech/app/automatic"
+                            ToolTip="docs.classisland.tech/app/automation"
                             ToolTipService.Placement="Right">
                         <ci:IconText Kind="ExternalLink"
                                      Text="阅读自动化帮助" />
@@ -453,14 +476,14 @@
                         <StackPanel>
                             <ci:IconText Kind="Warning"
                                          Text="警告"
-                                                     Margin="0 0 0 4"
-                                                     HorizontalAlignment="Center" />
+                                         Margin="0 0 0 4"
+                                         HorizontalAlignment="Center" />
                             <TextBlock TextAlignment="Center"
                                        HorizontalAlignment="Center"
                                        TextWrapping="Wrap">
-                                自动化允许自动修改 ClassIsland 的各项设置，并调用<LineBreak />
-                                　外部程序，可能有一定安全风险。<LineBreak />
-                                　不当的自动化编写可能对正常教学造成影响，请勿滥用。
+                                    自动化允许自动修改 ClassIsland 的各项设置，并调用<LineBreak />
+                                　    外部程序，可能有一定安全风险。<LineBreak />
+                                　    不当的自动化编写可能对正常教学造成影响，请勿滥用。
                             </TextBlock>
                         </StackPanel>
                     </Border>

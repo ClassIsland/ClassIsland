@@ -82,14 +82,14 @@ public class LessonsListBox : ListBox
     }
 
     public static readonly DependencyProperty DiscardHidingDefaultProperty = DependencyProperty.Register(
-        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool),
+        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)/*,
             (o, args) =>
             {
                 var control = o as LessonsListBox;
                 if (control?.FindResource("LessonsListBoxItemTemplateMultiConverter") is not LessonsListBoxItemTemplateMultiConverter cv)
                     return;
 
-            }));
+            }*/));
 
     public bool DiscardHidingDefault
     {

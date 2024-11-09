@@ -1242,8 +1242,8 @@
                                             <DataTemplate>
                                                 <Grid HorizontalAlignment="Stretch">
                                                     <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left"/>
-                                                    <materialDesign:PackIcon Kind="Lock" HorizontalAlignment="Right"
-                                                                             ToolTip="已锁定活动的时间表。"
+                                                    <materialDesign:PackIcon Kind="MapMarkerRadiusOutline" HorizontalAlignment="Right"
+                                                                             ToolTip="此时间表正在活动。"
                                                                              Visibility="{Binding Value.IsActivated, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                                 </Grid>
                                             </DataTemplate>
@@ -1307,13 +1307,13 @@
                                     <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" 
                                              IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                         <!--<TextBlock Text="{Binding Layouts}"/>-->
-                                        <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。">
                                             <controls1:IconText Kind="NotePlusOutline" Text="上课"/>
                                         </Button>
-                                        <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。">
                                             <controls1:IconText Kind="ClockPlusOutline" Text="课间"/>
                                         </Button>
-                                        <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
                                             <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                                         </Button>
                                         <Separator/>
@@ -1325,14 +1325,13 @@
                                                             <Setter Property="IsEnabled" Value="False"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
-                                                    <Setter Property="IsEnabled" Value="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                                                 </Style>
                                             </Button.Style>
                                             <controls1:IconText Kind="Remove" Text="删除"/>
                                         </Button>
                                         <Button Click="ButtonRefreshTimeLayout_OnClick"
                                                 ToolTip="重新排序该时间表中的时间点。"
-                                                IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                               >
                                             <controls1:IconText Kind="Refresh" Text="刷新"/>
                                         </Button>
                                         <!--<Button  Click="ButtonEditTimePoint_OnClick"
@@ -1361,8 +1360,7 @@
                                             <controls1:IconText Kind="InfoOutline" Text="时间表信息"/>
                                         </Button>
                                         <Button Click="ButtonDeleteTimeLayout_OnClick"
-                                                ToolTip="删除该时间表。"
-                                                IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                                ToolTip="删除该时间表。">
                                             <controls1:IconText Kind="Delete" Text="删除时间表"/>
                                         </Button>
                                     </ToolBar>
@@ -1458,10 +1456,7 @@
                                                                           IsPanningModeEnabled="True">
                                                 <!-- 回应我吧，爱莉希雅 -->
                                                 <controls:TimeLineListControl.IsReadOnly>
-                                                    <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}" Mode="OneWay">
-                                                        <Binding Path="IsActivated" Mode="OneWay"/>
-                                                        <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}" Mode="OneWay"/>
-                                                    </MultiBinding>
+                                                    <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}" Mode="OneWay"/>
                                                 </controls:TimeLineListControl.IsReadOnly>
                                             </controls:TimeLineListControl>
                                         </TabItem>
@@ -1571,15 +1566,6 @@
                                         <materialDesign:PackIcon Kind="TimelineOutline" ToolTip="时间线视图"/>
                                     </ListBox>
 
-                                    <!-- 编辑警告 -->
-                                    <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                                                              Mode="PrimaryLight"
-                                                              Background="LightYellow"
-                                                              Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <controls1:IconText Kind="Warning" Text="当前时间表处于活动状态，部分设置无法编辑。"
-                                                           Margin="4"/>
-                                    </materialDesign:ColorZone>
-
                                     <GridSplitter Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="2"/>
 
                                     <!-- 时间点编辑 -->
@@ -1587,7 +1573,7 @@
                                         <StackPanel Margin="16" 
                                                     IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}"
                                                     DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
-                                            <StackPanel IsEnabled="{Binding SelectedItem.Value.IsActivated, ElementName=ListViewTimeLayouts, Converter={StaticResource InvertBooleanConverter}}">
+                                            <StackPanel>
                                                 <TextBlock Text="编辑时间点"
                                                            Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                                                 <!--<TextBlock Text="{Binding}"/>-->
@@ -1662,7 +1648,8 @@
                                                 </ComboBox>
                                                 <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Click="ButtonOverwriteClasses_OnClick">
+                                                            Click="ButtonOverwriteClasses_OnClick"
+                                                            IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
                                                         <controls1:IconText Kind="Upload" Text="覆盖现有课程"/>
                                                     </Button>
                                                 </WrapPanel>
@@ -1682,7 +1669,7 @@
                                                 </StackPanel.Style>
                                                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                                     Margin="0 12 0 0"
-                                                    Text="{Binding ViewModel.SelectedTimePoint.BreakName}"
+                                                    Text="{Binding ViewModel.SelectedTimePoint.BreakName, UpdateSourceTrigger=PropertyChanged}"
                                                     materialDesign:HintAssist.Hint="课间名称" />
                                             </StackPanel>
                                             <Separator Margin="0 20 0 8" />

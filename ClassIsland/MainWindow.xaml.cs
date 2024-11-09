@@ -173,7 +173,7 @@ public partial class MainWindow : Window
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ViewModel = new MainViewModel();
-        //ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
         InitializeComponent();
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         TouchInFadingTimer.Tick += TouchInFadingTimerOnTick;
@@ -236,7 +236,10 @@ public partial class MainWindow : Window
         }
         //NotificationHostService.OnUpdateTimerTick(this, EventArgs.Empty);
 
-        SettingsService.Settings.TimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
+        if (SettingsService.Settings.DebugTimeSpeed != 0)
+        {
+            SettingsService.Settings.TimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
+        }
     }
 
     private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
@@ -675,13 +678,32 @@ public partial class MainWindow : Window
     {
         var r = SettingsService.Settings;
         ViewModel.Settings = r;
-        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+        ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
 
-    public void SaveSettings(string note = "")
+    public void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         UpdateTheme();
-        SettingsService.SaveSettings($"{note} (MainWindow)");
+        if (e.PropertyName is nameof(ViewModel.Settings.IsMouseInFadingReversed)
+                           or nameof(ViewModel.Settings.IsMouseInFadingEnabled))
+        {
+            UpdateFadeStatus();
+        }
+    }
+
+    private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ViewModel.IsMouseIn))
+        {
+            UpdateFadeStatus();
+        }
+    }
+
+    private void UpdateFadeStatus()
+    {
+        ViewModel.IsMainWindowFaded =
+            ViewModel.Settings.IsMouseInFadingEnabled &&
+           (ViewModel.IsMouseIn ^ ViewModel.Settings.IsMouseInFadingReversed);
     }
 
     protected override void OnInitialized(EventArgs e)
@@ -691,7 +713,7 @@ public partial class MainWindow : Window
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
-        ViewModel.Settings.PropertyChanged += (sender, args) => SaveSettings(args.PropertyName);
+        ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
         LoadSettings();
         //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
@@ -1004,7 +1026,6 @@ public partial class MainWindow : Window
     private void MenuItemDebugWelcomeWindow2_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.Settings.IsWelcomeWindowShowed = false;
-        SaveSettings();
     }
 
     private void MenuItemHelps_OnClick(object sender, RoutedEventArgs e)

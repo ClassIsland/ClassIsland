@@ -83,6 +83,7 @@
         </Style>
         <converters1:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter"/>
         <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu"
+                     StaysOpen="True"
                      IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InvertBooleanConverter}}">
             <ContextMenu.Resources>
                 <converters1:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
@@ -370,18 +371,14 @@
         <Style TargetType="Window">
             <Style.Triggers>
                 <!-- 鼠标移入 -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding ViewModel.IsMouseIn, Mode=OneWay}" Value="True"/>
-                        <Condition Binding="{Binding ViewModel.Settings.IsMouseInFadingEnabled, Mode=OneWay}" Value="True"/>
-                    </MultiDataTrigger.Conditions>
-                    <MultiDataTrigger.ExitActions>
-                        <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
-                    </MultiDataTrigger.ExitActions>
-                    <MultiDataTrigger.EnterActions>
+                <DataTrigger Binding="{Binding ViewModel.IsMainWindowFaded, Mode=OneWay}" Value="True">
+                    <DataTrigger.EnterActions>
                         <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
-                    </MultiDataTrigger.EnterActions>
-                </MultiDataTrigger>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
                 <!-- Debug -->
                 <DataTrigger Binding="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Mode=OneWay}" Value="True">
                     <Setter Property="Background" Value="#2FAA0000"/>

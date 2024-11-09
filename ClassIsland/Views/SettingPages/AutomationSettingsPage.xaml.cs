@@ -14,6 +14,7 @@ using ClassIsland.Core.Models;
 using System.Windows.Controls;
 using System.Diagnostics;
 using System.IO;
+using ClassIsland.Core.Models.Action;
 namespace ClassIsland.Views.SettingPages;
 
 /// <summary>
@@ -67,16 +68,16 @@ public partial class AutomationSettingsPage
 
     private void CommandDebugInvokeAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Automation automation) return;
+        if (e.Parameter is not Actionset actionset) return;
 
-        App.GetService<IActionService>().Invoke(automation.Actionset);
+        App.GetService<IActionService>().Invoke(actionset);
     }
 
     private void CommandDebugInvokeRevertAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Automation automation) return;
+        if (e.Parameter is not Actionset actionset) return;
 
-        App.GetService<IActionService>().Revert(automation.Actionset);
+        App.GetService<IActionService>().Revert(actionset);
     }
 
     private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

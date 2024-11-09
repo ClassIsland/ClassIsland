@@ -122,18 +122,21 @@ public partial class DebugPage : SettingsPageBase
     private void TargetDate_OnChanged(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
-        var offset = SettingsService.Settings.TimeOffsetSeconds % (60 * 60 * 24); // 原时间偏移的时间
-        SettingsService.Settings.TimeOffsetSeconds = 0; // 重置偏移以便获取网络精确时间
-        SettingsService.Settings.TimeOffsetSeconds = (ViewModel.TargetDate - ExactTimeService.GetCurrentLocalDateTime().Date).TotalSeconds // 目标日期
-                                                   +  offset;
+
+        DateTime now = ExactTimeService.GetCurrentLocalDateTime().Date;
+        DateTime tar = ViewModel.TargetDate.Date;
+
+        SettingsService.Settings.TimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
     }
 
     private void TargetTime_OnChanged(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
-        SettingsService.Settings.TimeOffsetSeconds = 0;
-        SettingsService.Settings.TimeOffsetSeconds = Math.Round(
-            (ViewModel.TargetDate + (ViewModel.TargetTime - ViewModel.TargetTime.Date) - ExactTimeService.GetCurrentLocalDateTime()).TotalSeconds);
+
+        DateTime now = ExactTimeService.GetCurrentLocalDateTime();
+        DateTime tar = new(DateOnly.FromDateTime(now), TimeOnly.FromDateTime(ViewModel.TargetTime));
+
+        SettingsService.Settings.TimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
     }
 
     private void MenuItemStartMainTimer_OnClick(object sender, RoutedEventArgs e)

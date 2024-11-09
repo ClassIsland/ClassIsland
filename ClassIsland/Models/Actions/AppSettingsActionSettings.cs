@@ -33,7 +33,7 @@ public class ThemeActionSettings : ObservableRecipient
 
 public class WindowDockingLocationActionSettings : ObservableRecipient
 {
-    int _value = 1;
+    int _value = 2;
     public int Value
     {
         get => _value;

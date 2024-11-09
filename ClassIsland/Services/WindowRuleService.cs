@@ -89,7 +89,7 @@ public class WindowRuleService : IWindowRuleService
         return s.State switch
         {
             0 => !(fullscreen || maximize || minimize),
-            1 => maximize,
+            1 => maximize && !fullscreen,
             2 => minimize,
             3 => fullscreen,
             _ => false
