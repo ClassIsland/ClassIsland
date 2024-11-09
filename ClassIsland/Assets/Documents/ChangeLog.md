@@ -69,6 +69,21 @@ ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁�
 
 ***
 
+# 1.5.0.4
+
+1.5 - Griseo
+
+本版本包含了对 1.5 的一些 Bug 修复和改进。
+
+## 新增功能和优化
+
+- 【构建】为 Nuget 包启用源代码链接
+
+### Bug 修复
+
+- 【提醒/语音】修复 EdgeTTS 无法使用的问题 ([#489](https://github.com/ClassIsland/ClassIsland/issues/489))
+- 【插件】修复插件无法加载依赖的问题
+
 
 # 1.5.0.3
 
