@@ -4,7 +4,7 @@ using System;
 
 namespace ClassIsland;
 
-class PluginLoadContext(string pluginPath) : AssemblyLoadContext
+class PluginLoadContext(string pluginPath) : AssemblyLoadContext("ClassIsland.PluginLoadContext")
 {
     private readonly AssemblyDependencyResolver _resolver = new(pluginPath);
 

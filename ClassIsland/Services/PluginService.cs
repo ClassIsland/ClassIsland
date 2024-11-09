@@ -122,9 +122,10 @@ public class PluginService : IPluginService
 
             try
             {
-                var loadContext = new PluginLoadContext(Path.GetFullPath(pluginDir));
-                var asm = loadContext.LoadFromAssemblyPath(
-                    Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly)));
+                var fullPath = Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly));
+                var loadContext = new PluginLoadContext(fullPath);
+                var asm = loadContext.LoadFromAssemblyName(
+                    new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
                 var entrance = asm.ExportedTypes.FirstOrDefault(x =>
                     x.BaseType == typeof(PluginBase) ||
                     x.GetCustomAttributes().FirstOrDefault(a => a.GetType() == typeof(PluginEntrance)) != null);
