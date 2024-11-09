@@ -8,7 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using ClassIsland.Shared.Abstraction.Services;
-using EdgeTTS;
+
+using Edge_tts_sharp;
+using Edge_tts_sharp.Model;
+
 using Microsoft.Extensions.Logging;
 
 using NAudio.Wave;
@@ -24,7 +27,7 @@ public class EdgeTtsService : ISpeechService
 
     private SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
-    //private List<eVoice> Voices { get; } = Edge_tts.GetVoice();
+    private List<eVoice> Voices { get; } = Edge_tts.GetVoice();
 
     private Queue<EdgeTtsPlayInfo> PlayingQueue { get; } = new();
 
@@ -57,7 +60,7 @@ public class EdgeTtsService : ISpeechService
         return path;
     }
 
-    public async void EnqueueSpeechQueue(string text)
+    public void EnqueueSpeechQueue(string text)
     {
         Logger.LogInformation("以{}朗读文本：{}", SettingsService.Settings.EdgeTtsVoiceName, text);
         var r = requestingCancellationTokenSource;
@@ -69,34 +72,29 @@ public class EdgeTtsService : ISpeechService
 
         var cache = GetCachePath(text);
         Logger.LogDebug("语音缓存：{}", cache);
+
         Task? task = null;
         if (!File.Exists(cache))
         {
-            task = Task.Run(async () =>
-            {
-                try
+            task = Task.Run(() =>
                 {
-                    Logger.LogDebug("开始下载语音");
-                    var client = new EdgeTTSClient()
+                    var completed = false;
+                    var voice = Voices.Find(voice => voice.ShortName == SettingsService.Settings.EdgeTtsVoiceName);
+                    var completeHandle = new CancellationTokenSource();
+                    Edge_tts.Invoke(text, voice, 0, (Action<List<byte>>)(binary =>
                     {
-                        Sec_MS_GEC_UpDate_Url = string.IsNullOrWhiteSpace(SettingsService.Settings.NotificationSpeechCustomSmgTokenSource) ? "https://edge-sec.myaitool.top/?key=edge" : SettingsService.Settings.NotificationSpeechCustomSmgTokenSource
-                    };
-                    var result = await client.SynthesisAsync(text, SettingsService.Settings.EdgeTtsVoiceName);
-                    if (result.Code != ResultCode.Success)
-                    {
-                        throw new Exception($"EdgeTTS 下载失败：{result.Code}");
-                    }
-                    await using var fs = new FileStream(cache, FileMode.OpenOrCreate);
-                    await fs.WriteAsync(result.Data.ToArray(), requestingCancellationTokenSource.Token);
-                    fs.Close();
-                    Logger.LogDebug("下载语音完成");
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError(ex, "加载 EdgeTts 时出现异常");
-                }
-            }, requestingCancellationTokenSource.Token);
+                        if (completeHandle.IsCancellationRequested)
+                            return;
+                        File.WriteAllBytes(cache, binary.ToArray());
+                        completed = true;
+                        completeHandle.Cancel();
+                    }));
+                    completeHandle.Token.WaitHandle.WaitOne(TimeSpan.FromSeconds(15));
+                    completeHandle.Cancel();
+                },
+                requestingCancellationTokenSource.Token);
         }
+        
         if (requestingCancellationTokenSource.IsCancellationRequested)
             return;
         PlayingQueue.Enqueue(new EdgeTtsPlayInfo(cache, new CancellationTokenSource(), task));

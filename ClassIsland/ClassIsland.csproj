@@ -22,7 +22,6 @@
     </PropertyGroup>
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
-        <None Remove="Assets\EdgeTts\VoiceList.json" />
         <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
         <None Remove="assets\Tellings.txt" />
     </ItemGroup>
@@ -32,7 +31,7 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
         <PackageReference Include="Downloader" Version="3.0.6" />
-        <PackageReference Include="EdgeTTS.Framework" Version="1.0.3" />
+        <PackageReference Include="Edge_tts_sharp" Version="1.0.4" />
         <PackageReference Include="EPPlus" Version="7.0.8" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
         <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
