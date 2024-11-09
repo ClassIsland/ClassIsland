@@ -1,6 +1,6 @@
 name: Bug 反馈
 description: 在使用 ClassIsland 的过程中遇到了 Bug。
-title: （在这里输入你的标题）
+title: （将此栏【替换】为你的标题）
 labels: ["Bug", "待查看"]
 body:
   - type: markdown
@@ -30,7 +30,7 @@ body:
       value: |
         ### Bug 信息
 
-        描述您遇到的 Bug。您可以附上截图、录屏、堆栈跟踪、日志等材料，便于开发者追踪问题。**您可以阅读[此处的文档](https://docs.classisland.tech/app/reporting-issue/)来了解如何收集跟踪错误需要的信息。**
+        描述您遇到的 Bug。您可以附上截图、录屏、堆栈跟踪、日志等材料，便于开发者追踪问题。**您可以阅读[此处的文档](https://docs.classisland.tech/app/reporting-issue)来了解如何收集跟踪错误需要的信息。**
   - type: textarea
     id: excepted
     attributes:

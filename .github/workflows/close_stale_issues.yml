@@ -21,6 +21,6 @@ jobs:
           days-before-pr-close: 7
           stale-issue-label: "陈旧"
           stale-pr-label: "陈旧"
-          stale-issue-message: "由于此 Issue 在 14 天内没有活动，已被标记为陈旧。请移除【陈旧】标签或在此 Issue 下评论，否则此 Issue 将在 7 天后被关闭。"
-          stale-pr-message: "由于此 Pull Request 在 14 天内没有活动，已被标记为陈旧。请移除【陈旧】标签或在此 Pull Request 下评论，否则此 Pull Request 将在 7 天后被关闭。"
+          stale-issue-message: "由于此 Issue 在 14 天内没有动态，已被标记为陈旧。如果此 Issue 没有更多动态（评论等），将在 7 天后被关闭。"
+          stale-pr-message: "由于此 Pull Request 在 14 天内没有动态，已被标记为陈旧。如果此 Pull Request 没有更多动态（评论等），将在 7 天后被关闭。"
           repo-token: ${{ secrets.GITHUB_TOKEN }}

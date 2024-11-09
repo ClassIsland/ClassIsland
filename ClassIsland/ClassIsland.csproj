@@ -31,7 +31,6 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
         <PackageReference Include="Downloader" Version="3.0.6" />
-        <PackageReference Include="Edge_tts_sharp" Version="1.0.4" />
         <PackageReference Include="EPPlus" Version="7.0.8" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
         <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
@@ -78,6 +77,7 @@
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+        <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Page Update="Themes\LightTheme.xaml">

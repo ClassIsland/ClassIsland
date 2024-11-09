@@ -33,7 +33,7 @@ public class NotificationSettingsViewModel : ObservableRecipient
     }
 
     public List<eVoice> EdgeVoices { get; } =
-        Edge_tts.GetVoice().FindAll(i => i.Locale.Contains("zh-CN"));
+        EdgeTts.GetVoice().FindAll(i => i.Locale.Contains("zh-CN"));
 
     public string TestSpeechText { get; set; } = "风带来了故事的种子，时间使之发芽。";
 }

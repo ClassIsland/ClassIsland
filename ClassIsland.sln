@@ -43,7 +43,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{006EDE57-B272-4893-AABA-4F91D431BC0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassIsland.IpcDemo", "Demos\ClassIsland.IpcDemo\ClassIsland.IpcDemo.csproj", "{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassIsland.IpcDemo", "Demos\ClassIsland.IpcDemo\ClassIsland.IpcDemo.csproj", "{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Edge_tts_sharp", "vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj", "{D490316C-8D92-41EF-AAF4-26E902E7FF4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -87,6 +89,10 @@ Global
 		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6721576-FBFF-4D60-B3CD-0ED70DBA78FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D490316C-8D92-41EF-AAF4-26E902E7FF4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D490316C-8D92-41EF-AAF4-26E902E7FF4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D490316C-8D92-41EF-AAF4-26E902E7FF4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D490316C-8D92-41EF-AAF4-26E902E7FF4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

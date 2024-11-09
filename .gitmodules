@@ -1,0 +1,3 @@
+[submodule "vendors/EdgeTtsSharp"]
+	path = vendors/EdgeTtsSharp
+	url = git@github.com:ClassIsland/EdgeTtsSharp.git
