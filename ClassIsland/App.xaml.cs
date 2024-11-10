@@ -424,9 +424,14 @@ public partial class App : AppBase, IAppHost
                         o.InitializeSdk = false;
                         o.MinimumBreadcrumbLevel = LogLevel.Information;
                     });
+                    var debug = false;
 #if DEBUG
-                    builder.SetMinimumLevel(LogLevel.Trace);
+                    debug = true;
 #endif
+                    if (ApplicationCommand.Verbose || debug)
+                    {
+                        builder.SetMinimumLevel(LogLevel.Trace);
+                    }
                 });
                 services.AddSingleton<ILoggerProvider, SentryLoggerProvider>();
                 services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
@@ -466,6 +471,11 @@ public partial class App : AppBase, IAppHost
         lifetime.ApplicationStopping.Register(() => Logger.LogInformation("App stopping."));
         lifetime.ApplicationStopped.Register(() => Logger.LogInformation("App stopped."));
         lifetime.ApplicationStopping.Register(Stop);
+        if (ApplicationCommand.Verbose)
+        {
+            AppDomain.CurrentDomain.FirstChanceException += (o, args) => Logger.LogTrace(args.Exception, "发生内部异常");
+            AppDomain.CurrentDomain.AssemblyLoad += (o, args) => Logger.LogTrace("加载程序集：{} ({})", args.LoadedAssembly.FullName, args.LoadedAssembly.Location);
+        }
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
 #endif

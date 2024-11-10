@@ -31,4 +31,6 @@ public class ApplicationCommand
     public string ExternalPluginPath { get; set; } = "";
 
     public bool EnableSentryDebug { get; set; } = false;
+
+    public bool Verbose { get; set; } = false;
 }
