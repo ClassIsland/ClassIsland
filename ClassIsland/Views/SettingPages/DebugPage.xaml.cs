@@ -226,4 +226,18 @@ public partial class DebugPage : SettingsPageBase
     {
         GC.Collect();
     }
+
+    private void MenuItemOpenMdDocs_OnClick(object sender, RoutedEventArgs e)
+    {
+        new CommonDialogBuilder()
+            .AddConfirmAction()
+            .SetContent("文档 Uri")
+            .HasInput(true)
+            .ShowDialog(out var result);
+        var reader = new DocumentReaderWindow()
+        {
+            Source = new Uri(result)
+        };
+        reader.Show();
+    }
 }

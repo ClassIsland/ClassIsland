@@ -117,6 +117,7 @@
                 <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="转储课表关系图" Click="MenuItemDumpProfileRelations_OnClick" />
                 <MenuItem Icon="{materialDesign:PackIcon ScriptTextOutline}" Header="显示自动化使用须知" Click="MenuItemShowAutomationWarning_OnClick" />
                 <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="测试课表找下级" Click="MenuItemFindNext_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon LanguageMarkdownOutline}" Header="打开 Markdown 文档" Click="MenuItemOpenMdDocs_OnClick" />
             </UniformGrid>
 
             <!-- 动画缩放 -->

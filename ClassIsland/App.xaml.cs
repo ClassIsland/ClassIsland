@@ -109,7 +109,7 @@ public partial class App : AppBase, IAppHost
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
-        TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+        //TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
     }
 
     static App()
