@@ -13,6 +13,7 @@
       xmlns:controls3="clr-namespace:ClassIsland.Controls"
       xmlns:ci="http://classisland.tech/schemas/xaml/core"
       xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
+      xmlns:converters="clr-namespace:ClassIsland.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ComponentsSettingsPage"
@@ -122,6 +123,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <converters:HorizontalAlignmentToIntConverter x:Key="HorizontalAlignmentToIntConverter" />
 
     </controls:SettingsPageBase.Resources>
     <Grid Margin="8 0">
@@ -400,6 +402,7 @@
                                         <!-- 字体颜色 -->
                                         <controls2:SettingsCard IconGlyph="FormatColorFill"
                                                                 Header="字体颜色"
+                                                                IsOn="True"
                                                                 Description="调整字体颜色，将覆盖在【外观】中的设置。"
                                                                 Margin="0 0 0 6">
                                             <controls2:SettingsCard.Switcher>
@@ -413,6 +416,108 @@
                                                 </StackPanel>
                                             </controls2:SettingsCard.Switcher>
                                         </controls2:SettingsCard>
+
+                                        <Separator Margin="0 16 0 8" />
+                                        <controls2:IconText Kind="Grid" Text="布局" Margin="0 0 0 8" />
+                                        <!-- 对齐方式 -->
+                                        <controls2:SettingsCard IconGlyph="AlignHorizontalCenter"
+                                                               Header="对齐方式"
+                                                               IsOn="True"
+                                                               Description="指定组件在显示容器中对齐的方式。"
+                                                               Margin="0 0 0 6">
+                                            <controls2:SettingsCard.Switcher>
+                                                <Grid>
+                                                    <ListBox SelectedIndex="{Binding HorizontalAlignment, Converter={StaticResource HorizontalAlignmentToIntConverter}}">
+                                                        <ListBox.ItemContainerStyle>
+                                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsSelected" Value="True">
+                                                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ListBox.ItemContainerStyle>
+                                                        <ListBox.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                                            </ItemsPanelTemplate>
+                                                        </ListBox.ItemsPanel>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalLeft}" ToolTip="左对齐"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalCenter}" ToolTip="居中"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalRight}" ToolTip="右对齐"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalDistribute}" ToolTip="拉伸"/>
+                                                    </ListBox>
+                                                </Grid>
+                                            </controls2:SettingsCard.Switcher>
+                                        </controls2:SettingsCard>
+                                        <!-- 固定宽度 -->
+                                        <controls2:SettingsCard IconGlyph="PinOutline"
+                                                               Header="固定宽度"
+                                                               IsOn="True"
+                                                               Description="启用后，组件将使用固定宽度，不会自动适应内容宽度。"
+                                                               Margin="0 0 0 6">
+                                            <controls2:SettingsCard.Switcher>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBox VerticalAlignment="Center"
+                                                             materialDesign:TextFieldAssist.SuffixText="px"
+                                                             Visibility="{Binding IsFixedWidthEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                             Margin="0 0 6 0"
+                                                             Width="100"
+                                                             Text="{Binding FixedWidth, Converter={StaticResource IntToStringConverter}}"/>
+                                                    <ToggleButton VerticalAlignment="Center"
+                                                                  IsChecked="{Binding IsFixedWidthEnabled}" />
+                                                </StackPanel>
+                                            </controls2:SettingsCard.Switcher>
+                                        </controls2:SettingsCard>
+                                        <!-- 宽度限制 -->
+                                        <materialDesign:Card Margin="0 0 0 6"
+                                                             Visibility="{Binding IsFixedWidthEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
+                                            <Expander Background="Transparent"
+                                                      IsExpanded="True"
+                                                      TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                <Expander.Header>
+                                                    <controls2:SettingsControl IconGlyph="Resize"
+                                                                              Foreground="{DynamicResource MaterialDesignBody}"
+                                                                              Header="宽度限制"
+                                                                              IsOn="True"
+                                                                              Description="限制控件的最大和最小宽度。"
+                                                                              HasSwitcher="False"
+                                                                              Margin="-12 0" />
+                                                </Expander.Header>
+                                                <Grid Margin="36 0 48 12">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition Width="100"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- 最小宽度 -->
+                                                    <ToggleButton Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"
+                                                                  Margin="0 0 4 0"
+                                                                  IsChecked="{Binding IsMinWidthEnabled}"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"
+                                                               Text="最小宽度"/>
+                                                    <TextBox Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"
+                                                             materialDesign:TextFieldAssist.SuffixText="px"
+                                                             IsEnabled="{Binding IsMinWidthEnabled}"
+                                                             Text="{Binding MinWidth, Converter={StaticResource IntToStringConverter}}"/>
+                                                    <!-- 最大宽度 -->
+                                                    <ToggleButton Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"
+                                                                  Margin="0 0 4 0"
+                                                                  IsChecked="{Binding IsMaxWidthEnabled}"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
+                                                               Text="最大宽度"/>
+                                                    <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
+                                                             materialDesign:TextFieldAssist.SuffixText="px"
+                                                             IsEnabled="{Binding IsMaxWidthEnabled}"
+                                                             Text="{Binding MaxWidth, Converter={StaticResource IntToStringConverter}}"/>
+                                                </Grid>
+                                            </Expander>
+                                        </materialDesign:Card>
                                     </StackPanel>
                                 </ScrollViewer>
                             </DataTemplate>

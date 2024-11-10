@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ClassIsland.Core.Controls"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border>
+    <Border >
         <Border.Style>
             <Style TargetType="Border">
                 <Style.Triggers>
@@ -14,10 +14,48 @@
                                  Value="True">
                         <Setter Property="TextElement.FontSize" Value="{DynamicResource MainWindowBodyFontSize}"/>
                     </DataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Settings.IsMaxWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                                       Value="True"/>
+                            <Condition Binding="{Binding IsOnMainWindow, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                                       Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="MaxWidth" Value="{Binding Settings.MaxWidth , RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Settings.IsMinWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                                       Value="True"/>
+                            <Condition Binding="{Binding IsOnMainWindow, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                                       Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="MinWidth" Value="{Binding Settings.MinWidth , RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+                    </MultiDataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Settings.IsFixedWidthEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                                       Value="True"/>
+                            <Condition Binding="{Binding IsOnMainWindow, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                                       Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="Width" Value="{Binding Settings.FixedWidth , RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+                    </MultiDataTrigger>
                 </Style.Triggers>
             </Style>
         </Border.Style>
         <ContentPresenter x:Name="MainContentPresenter"
-                          Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+                          Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}">
+            <ContentPresenter.Style>
+                <Style TargetType="ContentPresenter">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsOnMainWindow, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"
+                                     Value="True">
+                            <Setter Property="HorizontalAlignment" Value="{Binding Settings.HorizontalAlignment, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentPresenter.Style>
+        </ContentPresenter>
     </Border>
 </UserControl>
