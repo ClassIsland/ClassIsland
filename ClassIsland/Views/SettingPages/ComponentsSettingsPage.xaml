@@ -59,6 +59,7 @@
             <Setter Property="dd:DragDrop.UseDefaultEffectDataTemplate" Value="False"/>
             <Setter Property="dd:DragDrop.SelectDroppedItems" Value="True"/>
             <Setter Property="dd:DragDrop.DropTargetAdornerBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+            <Setter Property="dd:DragDrop.DropHandler" Value="{Binding}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="ScrollViewer.PanningMode" Value="HorizontalOnly"/>
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
@@ -179,8 +180,7 @@
                  ItemsSource="{Binding ComponentsService.CurrentComponents}"
                  SelectedItem="{Binding ViewModel.SelectedComponentSettingsMain}"
                  SelectionChanged="SelectorComponents_OnSelectionChanged"
-                 Style="{StaticResource ComponentListBoxStyle}"
-                 dd:DragDrop.DropHandler="{StaticResource MainComponentsSettingsPageDropHandler}">
+                 Style="{StaticResource ComponentListBoxStyle}">
         </ListBox>
         <!-- ROW 2 选中组件信息 -->
         <StackPanel Grid.Row="2" MaxWidth="750">
@@ -231,8 +231,7 @@
                          ItemsSource="{Binding ViewModel.SelectedComponentContainerChildren}"
                          SelectedItem="{Binding ViewModel.SelectedComponentSettingsChild}"
                          Style="{StaticResource ComponentListBoxStyle}"
-                         SelectionChanged="SelectorComponentsChildren_OnSelectionChanged"
-                         dd:DragDrop.DropHandler="{StaticResource ChildComponentsSettingsPageDropHandler}">
+                         SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
                 </ListBox>
             </StackPanel></GroupBox>
 

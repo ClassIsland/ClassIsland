@@ -20,6 +20,7 @@ public class ComponentsSettingsViewModel : ObservableRecipient
     private Stack<ComponentSettings> _childrenComponentSettingsNavigationStack = new();
     private ComponentSettings? _selectedContainerComponent;
     private bool _canChildrenNavigateBack = false;
+    private ComponentSettings? _selectedRootComponent;
 
     public ComponentSettings? SelectedComponentSettings
     {
@@ -160,6 +161,17 @@ public class ComponentsSettingsViewModel : ObservableRecipient
         {
             if (value == _canChildrenNavigateBack) return;
             _canChildrenNavigateBack = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ComponentSettings? SelectedRootComponent
+    {
+        get => _selectedRootComponent;
+        set
+        {
+            if (Equals(value, _selectedRootComponent)) return;
+            _selectedRootComponent = value;
             OnPropertyChanged();
         }
     }
