@@ -1,26 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Components;
-using ClassIsland.Core.Models.Ruleset;
-using YamlDotNet.Core.Tokens;
+using ClassIsland.Shared;
 
-namespace ClassIsland.Controls;
+namespace ClassIsland.Core.Controls;
 
 /// <summary>
 /// ComponentPresenter.xaml 的交互逻辑
@@ -55,7 +43,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
     }
 
     public static readonly DependencyProperty HidingRulesProperty = DependencyProperty.Register(
-        nameof(HidingRules), typeof(Ruleset), typeof(ComponentPresenter), new PropertyMetadata(default(Ruleset),
+        nameof(HidingRules), typeof(Models.Ruleset.Ruleset), typeof(ComponentPresenter), new PropertyMetadata(default(Models.Ruleset.Ruleset),
             (o, args) =>
             {
                 if (o is ComponentPresenter control)
@@ -64,9 +52,9 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
                 }
             }));
 
-    public Ruleset? HidingRules
+    public Models.Ruleset.Ruleset? HidingRules
     {
-        get { return (Ruleset)GetValue(HidingRulesProperty); }
+        get { return (Models.Ruleset.Ruleset)GetValue(HidingRulesProperty); }
         set { SetValue(HidingRulesProperty, value); }
     }
 
@@ -94,7 +82,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         }
     }
 
-    private IRulesetService RulesetService { get; } = App.GetService<IRulesetService>();
+    private IRulesetService RulesetService { get; } = IAppHost.GetService<IRulesetService>();
 
     private object? _presentingContent;
 
@@ -113,7 +101,7 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         if (Settings == null)
             return;
         Settings.PropertyChanged += SettingsOnPropertyChanged;
-        var content = App.GetService<IComponentsService>().GetComponent(Settings, IsPresentingSettings);
+        var content = IAppHost.GetService<IComponentsService>().GetComponent(Settings, IsPresentingSettings);
         // 理论上展示的内容的数据上下文应为MainWindow，这里不便用前端xaml绑定，故在后台设置。
         if (content != null && IsOnMainWindow)
         {

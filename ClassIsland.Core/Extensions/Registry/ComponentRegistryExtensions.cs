@@ -54,6 +54,9 @@ public static class ComponentRegistryExtensions
         {
             ComponentRegistryService.MigrationPairs[new Guid(migrationSource.Id)] = info.Guid;
         }
+
+        info.IsComponentContainer =
+            component.GetCustomAttributes(false).FirstOrDefault(x => x is ContainerComponent) != null;
         if (settings != null)
         {
             services.AddTransient(settings);

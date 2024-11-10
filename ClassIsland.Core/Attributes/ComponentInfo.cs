@@ -54,6 +54,11 @@ public class ComponentInfo : Attribute
     /// </summary>
     public static ComponentInfo Empty { get; } = new(System.Guid.Empty.ToString(), "？？？");
 
+    /// <summary>
+    /// 组件是否是组件容器
+    /// </summary>
+    public bool IsComponentContainer { get; internal set; } = false;
+
     internal List<string> MigrateSources { get; } = new();
 
     /// <inheritdoc />
