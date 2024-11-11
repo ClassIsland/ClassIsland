@@ -85,11 +85,12 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        LessonsService.CurrentTimeStateChanged += CurrentTimeStateChanged;
+        LessonsService.CurrentTimeStateChanged += (_, _) => CurrentTimeStateChanged();
         InitializeComponent();
+        CurrentTimeStateChanged();
     }
 
-    private void CurrentTimeStateChanged(object? sender, EventArgs e)
+    private void CurrentTimeStateChanged()
     {
         IsAfterSchool =
             LessonsService.CurrentState == TimeState.AfterSchool ||
