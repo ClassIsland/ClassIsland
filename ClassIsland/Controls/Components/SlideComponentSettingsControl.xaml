@@ -15,7 +15,8 @@
     </ci:ComponentBase.Resources>
     <ScrollViewer>
         <StackPanel
-            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponentSettingsControl}}">
+            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponentSettingsControl}}"
+            Style="">
             <StackPanel.Resources>
                 
             </StackPanel.Resources>
