@@ -13,28 +13,48 @@
                          xmlns:models="clr-namespace:ClassIsland.Models"
                          xmlns:components="clr-namespace:ClassIsland.Controls.Components"
                          xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
-                         mc:Ignorable="d" 
-                         d:DesignHeight="450" d:DesignWidth="800">
+                         mc:Ignorable="d">
     <ScrollViewer>
         <Grid
             DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=components:CountDownComponentSettingsControl}}">
-            <StackPanel>
-                <TextBlock Text="倒计时名称" />
-                <TextBox Text="{Binding Settings.CountDownName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="10 8 0 0" MinWidth="180" HorizontalAlignment="Left" />
-                <TextBlock Text="结束日期" Margin="0 8 0 0" />
-                <DatePicker SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
-                            Margin="10 8 0 0" HorizontalAlignment="Left"
-                            Width="120" />
-                <TextBlock Text="字体颜色" Margin="0 8 0 0" />
-                <controls1:ColorPicker Color="{Binding Settings.FontColor,Mode=TwoWay}"
-                                       Margin="10,8,0,0" HorizontalAlignment="Left" Width="auto" />
-                <TextBlock Text="字体大小" Margin="0 8 0 0" />
-                <Slider Width="180" Margin="10,8,0,0" HorizontalAlignment="Left"
-                        Maximum="30" Minimum="16" TickFrequency="1" TickPlacement="None" IsSnapToTickEnabled="True"
-                        AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2"
-                        Value="{Binding Settings.FontSize}" />
-                <CheckBox Content="紧凑模式" Margin="0 8 0 0" IsChecked="{Binding Settings.IsCompactModeEnabled}" />
+            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                <controls1:SettingsCard IconGlyph="Tag" Header="倒计时名称"
+                    Description="会作为设定日期事件名称显示">
+                    <controls1:SettingsCard.Switcher>
+                        <TextBox Text="{Binding Settings.CountDownName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Margin="10 8 0 0" MinWidth="180"/>
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
+
+                <controls1:SettingsCard IconGlyph="Calendar" Header="结束日期"
+                                        Description="倒计时为0天时的日期~">
+                    <controls1:SettingsCard.Switcher>
+                        <DatePicker SelectedDate="{Binding Settings.OverTime, Mode=TwoWay}"
+                                    Margin="10 8 0 0" Width="120" />
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
+
+                <controls1:SettingsCard IconGlyph="Color" Header="字体颜色"
+                                        Description="事件名称和倒计时的字体颜色">
+                    <controls1:SettingsCard.Switcher>
+                        <controls1:ColorPicker Color="{Binding Settings.FontColor,Mode=TwoWay}"
+                                               Margin="10,8,0,0" Width="auto" />
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
+                
+                <controls1:SettingsCard IconGlyph="FontSize" Header="字体大小"
+                                        Description="事件名称和倒计时的字体大小">
+                    <controls1:SettingsCard.Switcher>
+                        <Slider Width="180" Margin="10,8,0,0"
+                                Maximum="30" Minimum="16" TickFrequency="1" TickPlacement="None" IsSnapToTickEnabled="True"
+                                AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2"
+                                Value="{Binding Settings.FontSize}" />
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
+                
+                <controls1:SettingsCard IconGlyph="Ruler" Header="紧凑模式"
+                                        Description="启用后,将隐藏“距离”和“还有”二词"
+                                        IsOn="{Binding Settings.IsCompactModeEnabled, Mode=TwoWay}"/>
             </StackPanel>
         </Grid>
     </ScrollViewer>
