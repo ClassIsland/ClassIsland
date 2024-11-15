@@ -22,7 +22,7 @@
                 </ci:SettingsCard.Switcher>
             </ci:SettingsCard>
 
-            <ci:SettingsCard IconGlyph="Color"
+            <ci:SettingsCard IconGlyph="PaintBucket"
                              Header="字体颜色"
                              Description="选择要显示文本的颜色">
                 <ci:SettingsCard.Switcher>

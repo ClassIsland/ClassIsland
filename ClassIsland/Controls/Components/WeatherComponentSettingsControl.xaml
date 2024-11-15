@@ -14,7 +14,9 @@
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
         <ScrollViewer>
             <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
-                <materialDesign:ColorZone Background="RoyalBlue" Panel.ZIndex="1" Margin="0 0 0 5">
+                <materialDesign:ColorZone Background="#204169e1" 
+                                          Panel.ZIndex="1" 
+                                          Margin="0 0 0 5">
                     <Grid>
                         <DockPanel Margin="8 4">
                             <materialDesign:PackIcon Kind="Info"
@@ -32,7 +34,7 @@
                         </DockPanel>
                     </Grid>
                 </materialDesign:ColorZone>
-                <ci:SettingsCard IconGlyph="AlertCircleCheck" Header="显示预警信号"
+                <ci:SettingsCard IconGlyph="AlertCircleCheckOutline" Header="显示预警信号"
                                  Description="启用后,预警将以图标形式显示在天气组件上"
                                  IsOn="{Binding Settings.ShowAlerts, Mode=TwoWay}"/>
             </StackPanel>
