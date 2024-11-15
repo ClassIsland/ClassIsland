@@ -7,14 +7,36 @@
                         xmlns:local="clr-namespace:ClassIsland.Controls.Components"
                         xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+                        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                         mc:Ignorable="d" 
                         d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponentSettingsControl}}">
         <ScrollViewer>
-            <StackPanel>
-                <CheckBox IsChecked="{Binding Settings.ShowAlerts}" Content="显示预警信号。" />
-
-                <TextBlock Text="要调整显示天气的城市，请转到【天气】选项卡。" TextWrapping="Wrap" Margin="0 8 0 0" />
+            <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
+                <materialDesign:ColorZone Background="#204169e1" 
+                                          Panel.ZIndex="1" 
+                                          Margin="0 0 0 5">
+                    <Grid>
+                        <DockPanel Margin="8 4">
+                            <materialDesign:PackIcon Kind="Info"
+                                                     Height="20" Width="20"/>
+                            <TextBlock TextWrapping="Wrap"
+                                       VerticalAlignment="Center"
+                                       Margin="4 0 0 0" >
+                                <Run>本页面仅包含</Run><Bold>组件设置</Bold>
+                                <Run>要调整显示天气的城市，请转到</Run>
+                                <ci:NavHyperlink 
+                                    CommandParameter="classisland://app/settings/weather">
+                                    【天气】</ci:NavHyperlink>
+                                <Run>选项卡。</Run>
+                            </TextBlock>
+                        </DockPanel>
+                    </Grid>
+                </materialDesign:ColorZone>
+                <ci:SettingsCard IconGlyph="AlertCircleCheckOutline" Header="显示预警信号"
+                                 Description="启用后,预警将以图标形式显示在天气组件上"
+                                 IsOn="{Binding Settings.ShowAlerts, Mode=TwoWay}"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>
