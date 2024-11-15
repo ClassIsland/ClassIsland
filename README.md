@@ -172,9 +172,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-
-[![All Contributors](https://img.shields.io/badge/all_contributors-15-orange.svg?style=flat-square)](#contributors-)
-
+[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -206,6 +204,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://blog.kagureion.top/"><img src="https://avatars.githubusercontent.com/u/141834038?v=4?s=100" width="100px;" alt="一般路过绫音酱_Cecilion"/><br /><sub><b>一般路过绫音酱_Cecilion</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LyCecilion" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://lipoly.ink"><img src="https://avatars.githubusercontent.com/u/110595296?v=4?s=100" width="100px;" alt="LiPolymer"/><br /><sub><b>LiPolymer</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiPolymer" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
