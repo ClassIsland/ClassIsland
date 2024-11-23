@@ -14,25 +14,29 @@ public class SettingsPageInfo : Attribute
     public string SelectedBitmapUri { get; } = "";
     public bool UseBitmapIcon { get; } = false;
 
+    public bool HideDefault { get; } = false;
+
     public SettingsPageCategory Category { get; } = SettingsPageCategory.External;
     
-    public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External)
+    public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External, bool hideDefault = false)
     {
         Id = id;
         Name = name;
         Category = category;
+        HideDefault = hideDefault;
     }
     
-    public SettingsPageInfo(string id, string name, PackIconKind unSelectedIcon, PackIconKind selectedIcon, SettingsPageCategory category = SettingsPageCategory.External)
+    public SettingsPageInfo(string id, string name, PackIconKind unSelectedIcon, PackIconKind selectedIcon, SettingsPageCategory category = SettingsPageCategory.External, bool hideDefault = false)
     {
         Id = id;
         Name = name;
         UnSelectedPackIcon = unSelectedIcon;
         SelectedPackIcon = selectedIcon;
         Category = category;
+        HideDefault = hideDefault;
     }
     
-    public SettingsPageInfo(string id, string name, string unSelectedBitmapUri, string selectedBitmapUri, SettingsPageCategory category = SettingsPageCategory.External)
+    public SettingsPageInfo(string id, string name, string unSelectedBitmapUri, string selectedBitmapUri, SettingsPageCategory category = SettingsPageCategory.External, bool hideDefault=false)
     {
         Id = id;
         Name = name;
@@ -40,5 +44,6 @@ public class SettingsPageInfo : Attribute
         SelectedBitmapUri = selectedBitmapUri;
         UseBitmapIcon = true;
         Category = category;
+        HideDefault = hideDefault;
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Views.SettingPages;
 
-[SettingsPageInfo("test-settings-page", "测试页面", SettingsPageCategory.Debug)]
+[SettingsPageInfo("test-settings-page", "测试页面", SettingsPageCategory.Debug, true)]
 public partial class TestSettingsPage : SettingsPageBase
 {
     public TestSettingsPage()

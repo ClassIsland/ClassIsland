@@ -466,8 +466,14 @@ public partial class SettingsWindowNew : MyWindow
     {
         if (e.Item is not SettingsPageInfo item)
             return;
+        if (item.HideDefault)
+        {
+            e.Accepted = false;
+            return;
+        }
         if (item.Category is SettingsPageCategory.Internal or SettingsPageCategory.External && ManagementService.Policy.DisableSettingsEditing)
-        {e.Accepted = false;
+        {
+            e.Accepted = false;
             return;
         }
         if (item.Category == SettingsPageCategory.Debug && ManagementService.Policy.DisableDebugMenu)
