@@ -6,10 +6,22 @@
       xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
       xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
       mc:Ignorable="d"
+      d:DataContext="{d:DesignInstance local:TestSettingsPage}"
       Title="TestSettingsPage"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
       >
     <Grid>
-        <TextBlock>Hello world!</TextBlock>
+        <StackPanel>
+
+            <TextBlock>Hello world!</TextBlock>
+            <TextBlock Text="{Binding NavigationUri}"/>
+        </StackPanel>
         <Button Click="ButtonBase_OnClick">Test sub page</Button>
     </Grid>
 </controls:SettingsPageBase>

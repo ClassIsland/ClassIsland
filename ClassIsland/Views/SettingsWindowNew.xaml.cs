@@ -40,7 +40,9 @@ using System.IO;
 using ClassIsland.Controls;
 using Path = System.IO.Path;
 using System.Collections.ObjectModel;
+using ClassIsland.Core.Models.SettingsWindow;
 using Application = System.Windows.Application;
+using YamlDotNet.Core.Tokens;
 
 namespace ClassIsland.Views;
 
@@ -105,7 +107,7 @@ public partial class SettingsWindowNew : MyWindow
         {
             if (!IsLoaded || !ViewModel.IsRendered)
                 return;
-            await CoreNavigate();
+            await CoreNavigate(ViewModel.SelectedPageInfo);
         }
     }
 
@@ -123,10 +125,10 @@ public partial class SettingsWindowNew : MyWindow
     protected override async void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
-        ViewModel.SelectedPageInfo =
-            SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
+        var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
         ViewModel.IsRendered = true;
-        await CoreNavigate();
+        await CoreNavigate(page);
+        //await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 
     private async Task BeginStoryboardAsync(string key)
@@ -203,7 +205,7 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
     {
-        if (e.ExtraData as SettingsWindowNavigationExtraData? == SettingsWindowNavigationExtraData.NavigateFromNavigationView)  
+        if (e.ExtraData is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true })  
         {
             // 如果是从设置导航栏导航的，那么就要清除掉返回项目
             NavigationService.RemoveBackEntry();
@@ -229,10 +231,14 @@ public partial class SettingsWindowNew : MyWindow
         
     }
 
-    private async Task CoreNavigate()
+    private async Task CoreNavigate(SettingsPageInfo? info, Uri? uri = null)
     {
-        Logger.LogTrace("开始导航");
-        switch (ViewModel.SelectedPageInfo?.Category)
+        Logger.LogTrace("pre-开始导航");
+        if (info == null)
+        {
+            return;
+        }
+        switch (info.Category)
         {
             // 判断是否可以导航
             case SettingsPageCategory.Internal or SettingsPageCategory.External when
@@ -242,11 +248,17 @@ public partial class SettingsWindowNew : MyWindow
                 return;
         }
 
+        if (ViewModel.IsNavigating)
+        {
+            return;
+        }
+        Logger.LogTrace("开始导航");
         ViewModel.IsNavigating = true;
         if (ViewModel.IsViewCompressed)
         {
             ViewModel.IsNavigationDrawerOpened = false;
         }
+        ViewModel.SelectedPageInfo = info;
 
         var child = LoadingAsyncBox.LoadingView as LoadingMask;
         child?.StartFakeLoading();
@@ -260,13 +272,13 @@ public partial class SettingsWindowNew : MyWindow
         }
         HangService.AssumeHang();
         // 从ioc容器获取页面
-        var page = GetPage(ViewModel.SelectedPageInfo?.Id);
+        var page = GetPage(info.Id);
         // 清空抽屉
         ViewModel.IsDrawerOpen = false;
         ViewModel.DrawerContent = null;
         // 进行导航
         NavigationService.RemoveBackEntry();
-        NavigationService.Navigate(page, SettingsWindowNavigationExtraData.NavigateFromNavigationView);
+        NavigationService.Navigate(page, new SettingsWindowNavigationData(true, uri != null, uri));
         //ViewModel.FrameContent;
         NavigationService.RemoveBackEntry();
     }
@@ -326,10 +338,11 @@ public partial class SettingsWindowNew : MyWindow
         }
     }
 
-    public void Open(string key)
+    public async void Open(string key, Uri? uri = null)
     {
-        ViewModel.SelectedPageInfo = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key) ?? ViewModel.SelectedPageInfo;
+        var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key) ?? ViewModel.SelectedPageInfo;
         LaunchSettingsPage = key;
+        await CoreNavigate(page, uri);
         Open();
     }
 
@@ -338,7 +351,7 @@ public partial class SettingsWindowNew : MyWindow
         if (uri.Segments.Length > 2)
         {
             var uriSegment = uri.Segments[2].EndsWith('/') ? uri.Segments[2][..^1] : uri.Segments[2];
-            Open(uriSegment);
+            Open(uriSegment, uri);
         }
         else if (uri.Segments.Length == 2)
             Open();
