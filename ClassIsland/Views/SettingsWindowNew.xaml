@@ -173,7 +173,11 @@
                                          SelectionChanged="NavigationListBox_OnSelectionChanged"
                                          Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                                          IsEnabled="{Binding ViewModel.IsNavigating, Converter={StaticResource InvertBooleanConverter}}"
-                                         ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}">
+                                         ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}"
+                                         VirtualizingPanel.ScrollUnit="Pixel"
+                                         VirtualizingPanel.IsVirtualizing="True"
+                                         VirtualizingPanel.IsContainerVirtualizable="True"
+                                         VirtualizingPanel.IsVirtualizingWhenGrouping="True">
                                     <ListBox.GroupStyle>
                                         <GroupStyle>
                                             <GroupStyle.ContainerStyle>
@@ -225,6 +229,13 @@
                                             </StackPanel>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VirtualizingStackPanel IsVirtualizingWhenGrouping="True"
+                                                                    IsVirtualizing="True"
+                                                                    IsContainerVirtualizable="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
                                 </ListBox>
                             </Grid>
                         </materialDesign:DrawerHost.LeftDrawerContent>
