@@ -9,12 +9,17 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Interop;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
+using Clipboard = System.Windows.Forms.Clipboard;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace ClassIsland.Services;
 
@@ -141,6 +146,60 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         catch
         {
             // ignored
+        }
+    }
+
+    public static void ProcessDomainUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
+    {
+        if (App._isCriticalSafeModeEnabled)  // 教学安全模式
+        {
+            return;
+        }
+
+        CopyException();
+        var message = $"""
+                       很抱歉，ClassIsland 遇到了无法解决的问题，即将退出。堆栈跟踪信息已复制到剪贴板。点击【确定】将退出应用，点击【取消】将启动调试器。
+
+                       错误信息：{(eventArgs.ExceptionObject as Exception)?.Message}
+
+                       如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
+                       """;
+        try
+        {
+            var app = (App)AppBase.Current;
+            app.Dispatcher.Invoke(() =>
+            {
+                if (eventArgs.ExceptionObject is Exception exception)
+                {
+                    app?.ProcessUnhandledException(exception, eventArgs.IsTerminating);
+                }
+            });
+            
+        }
+        catch
+        {
+            if (!eventArgs.IsTerminating)
+            {
+                return;
+            }
+            var r = System.Windows.MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+            if (r == MessageBoxResult.Cancel)
+            {
+                Debugger.Launch();
+            }
+        }
+        return;
+
+        void CopyException()
+        {
+            try
+            {
+                Clipboard.SetDataObject(eventArgs.ExceptionObject?.ToString() ?? "");
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
         }
     }
 }

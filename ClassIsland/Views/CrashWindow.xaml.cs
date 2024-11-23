@@ -20,6 +20,8 @@ public partial class CrashWindow : MyWindow
         set;
     } = "";
 
+    public bool IsCritical { get; set; } = false;
+
     public bool AllowIgnore { get; set; } = true;
 
     public CrashWindow()
@@ -35,7 +37,14 @@ public partial class CrashWindow : MyWindow
 
     private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
     {
-        Application.Current.Shutdown();
+        if (IsCritical)
+        {
+            Environment.Exit(1);
+        }
+        else
+        {
+            Application.Current.Shutdown();
+        }
     }
 
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
@@ -62,5 +71,13 @@ public partial class CrashWindow : MyWindow
             UseShellExecute = true
         });
 
+    }
+
+    private void ButtonDebug_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (Debugger.Launch())
+        {
+            Close();
+        }
     }
 }

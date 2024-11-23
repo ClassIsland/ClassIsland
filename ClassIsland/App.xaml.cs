@@ -152,7 +152,7 @@ public partial class App : AppBase, IAppHost
         ProcessUnhandledException(e.Exception);
     }
 
-    private void ProcessUnhandledException(Exception e)
+    internal void ProcessUnhandledException(Exception e, bool critical=false)
     {
 #if DEBUG
         if (e.GetType() == typeof(ResourceReferenceKeyNotFoundException))
@@ -189,12 +189,17 @@ public partial class App : AppBase, IAppHost
         CrashWindow = new CrashWindow()
         {
             CrashInfo = e.ToString(),
-            AllowIgnore = _isStartedCompleted
+            AllowIgnore = _isStartedCompleted && !critical,
+            IsCritical = critical
         };
-        SentrySdk.CaptureException(e, scope =>
+        if (!critical)  // 全局未捕获的异常应该由 SentrySdk 自行捕获。
         {
-            scope.Level = SentryLevel.Fatal;
-        });
+            SentrySdk.CaptureException(e, scope =>
+            {
+                scope.Level = SentryLevel.Fatal;
+            });
+            
+        }
         if (!safe)
             CrashWindow.ShowDialog();
         else

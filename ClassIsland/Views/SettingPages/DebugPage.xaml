@@ -191,6 +191,12 @@
                     <MenuItem Icon="{materialDesign:PackIcon Bomb}"
                               Header="崩溃测试（Task）"
                               Click="MenuItemCrashOnTask_OnClick" />
+                    <MenuItem Icon="{materialDesign:PackIcon Dangerous}"
+                              Header="崩溃测试（扔到栈顶）"
+                              Click="MenuItemCrashTestGlobal_OnClick" />
+                    <MenuItem Icon="{materialDesign:PackIcon Dangerous}"
+                              Header="Environment.FailFast();"
+                              Click="MenuItemFailFast_OnClick" />
                     <MenuItem Header="集控：禁用调试菜单" IsCheckable="True"
                               IsChecked="{Binding ManagementService.Policy.DisableDebugMenu}"
                               IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}"/>

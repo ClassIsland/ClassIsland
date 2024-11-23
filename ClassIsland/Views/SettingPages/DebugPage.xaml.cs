@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -239,5 +240,16 @@ public partial class DebugPage : SettingsPageBase
             Source = new Uri(result)
         };
         reader.Show();
+    }
+
+    private void MenuItemFailFast_OnClick(object sender, RoutedEventArgs e)
+    {
+        Environment.FailFast("debug");
+    }
+
+    private void MenuItemCrashTestGlobal_OnClick(object sender, RoutedEventArgs e)
+    {
+        var thread = new Thread(() => throw new Exception());
+        thread.Start();
     }
 }
