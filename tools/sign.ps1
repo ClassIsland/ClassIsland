@@ -7,7 +7,7 @@ Submit-SigningRequest `
   -ApiToken $env:SIGNPATH_TOKEN  `
   -OrganizationId "74962648-db7a-4a10-bfdd-0637542e39df" `
   -ProjectSlug "ClassIsland" `
-  -SigningPolicySlug "test-signing" `
+  -SigningPolicySlug "release-signing" `
   -OutputArtifactPath "./out/ClassIsland/ClassIsland_signed.exe" `
   -WaitForCompletion
 
