@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-Install-Module -Name SignPath
+Install-Module -Force -AcceptLicense -Name SignPath
 # The user must be a submitter for the given signing policy!
 Submit-SigningRequest `
   -InputArtifactPath ./out/ClassIsland/ClassIsland.exe `
