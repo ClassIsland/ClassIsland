@@ -43,6 +43,21 @@ jobs:
           ls
           pwsh -ep Bypass -c ./tools/publish.ps1 $env:trim_assets
           
+      - name: Sign application
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        env:
+          SIGNPATH_TOKEN: ${{ secrets.SIGNPATH_TOKEN }}
+        run: |
+          pwsh -ep Bypass -c ./tools/sign.ps1
+          
+      
+      - name: Package application
+        run: |
+          Write-Host "Packaging..." -ForegroundColor Cyan
+          rm ./out/ClassIsland/*.xml -ErrorAction Continue
+          7z a ./out/ClassIsland.zip ./out/ClassIsland/* -r -mx=9
+          rm -Recurse -Force ./out/ClassIsland
+
       - name: Upload APP to artifacts
         uses: actions/upload-artifact@v4
         with:
