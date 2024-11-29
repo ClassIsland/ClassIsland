@@ -4,7 +4,7 @@
 
 # <image src="ClassIsland/Assets/AppLogo_AppLogo.svg" height="28"/> ClassIsland
 
-<!-- ![软件截图-主界面](https://github.com/ClassIsland/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3) -->
+<!-- ![软件截图 - 主界面](https://github.com/ClassIsland/ClassIsland/assets/55006226/65e2bdba-be83-444c-b42f-b893aaace9c3) -->
 
 ![Banner](https://github.com/user-attachments/assets/a815dd7d-8343-4da5-aee4-3f754aa297e4)
 
@@ -62,11 +62,11 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ##### 1. 软件效果
 
-![软件截图-整体效果](https://github.com/ClassIsland/ClassIsland/assets/55006226/784a2f8c-a9e2-4656-b66d-9f8105f0600c)
+![软件截图 - 整体效果](https://github.com/ClassIsland/ClassIsland/assets/55006226/784a2f8c-a9e2-4656-b66d-9f8105f0600c)
 
 ##### 2. 演示上课提醒视频
 
-<video src="https://github.com/ClassIsland/ClassIsland/assets/55006226/b797138a-84ef-4296-b69b-3989f331f289" loop label="软件截图-上课提醒" autoplay muted></video>
+<video src="https://github.com/ClassIsland/ClassIsland/assets/55006226/b797138a-84ef-4296-b69b-3989f331f289" loop label="软件截图 - 上课提醒" autoplay muted></video>
 
 <details>
 <summary>查看更多软件截图……</summary>
@@ -89,25 +89,25 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ##### 1. 课表编辑
 
-![软件截图-课表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/29d91bf2-4c8a-4cbd-a778-a9034e7d7420)
+![软件截图 - 课表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/29d91bf2-4c8a-4cbd-a778-a9034e7d7420)
 
 ##### 2. 时间表编辑
 
-![软件截图-时间表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/2b3b5c87-c8bb-46f0-8470-01edf3ca52a2)
+![软件截图 - 时间表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/2b3b5c87-c8bb-46f0-8470-01edf3ca52a2)
 
 ##### 3. 科目编辑
 
-![软件截图-科目编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/a2e64983-dfa0-4565-a45a-31c9f9c298a8)
+![软件截图 - 科目编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/a2e64983-dfa0-4565-a45a-31c9f9c298a8)
 
 ### 设置界面
 
 ##### 1. 基本设置
 
-![软件截图-应用设置](https://github.com/ClassIsland/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
+![软件截图 - 应用设置](https://github.com/ClassIsland/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
 
 ##### 2. 组件设置
 
-![软件截图-组件设置](https://github.com/user-attachments/assets/e6185858-ae21-4fc4-8e08-2dc253075f66)
+![软件截图 - 组件设置](https://github.com/user-attachments/assets/e6185858-ae21-4fc4-8e08-2dc253075f66)
 
 </details>
 
@@ -121,7 +121,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 > [!IMPORTANT]
 > **详细安装说明请参阅 [ClassIsland 文档](https://docs.classisland.tech/app/setup)。**
 >
-> 不建议在 Windows 10 以下的系统运行本应用。 在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅 [在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/app/setup#检查系统需求)。
+> 不建议在 Windows 10 以下的系统运行本应用。在 Windows 7 中，.NET 运行时会产生**严重的内存泄漏问题**。如果您执意要在 Windows 7 中使用 ClassIsland，请参阅 [在 Windows 7 中安装 ClassIsland](https://docs.classisland.tech/app/setup#检查系统需求)。
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
@@ -191,7 +191,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
       <td align="center" valign="top" width="14.28%"><a href="https://fossa.com/"><img src="https://avatars.githubusercontent.com/u/29791463?v=4?s=100" width="100px;" alt="fossabot"/><br /><sub><b>fossabot</b></sub></a><br /><a href="#infra-fossabot" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://allcontributors.org/"><img src="https://avatars.githubusercontent.com/u/46410174?v=4?s=100" width="100px;" alt="All Contributors"/><br /><sub><b>All Contributors</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=all-contributors" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TV-ZHU"><img src="https://avatars.githubusercontent.com/u/88492699?v=4?s=100" width="100px;" alt="DSZDev"/><br /><sub><b>DSZDev</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=TV-ZHU" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiuYan-xwx"><img src="https://avatars.githubusercontent.com/u/66517348?v=4?s=100" width="100px;" alt="流焰xwx"/><br /><sub><b>流焰xwx</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Documentation">📖</a> <a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiuYan-xwx"><img src="https://avatars.githubusercontent.com/u/66517348?v=4?s=100" width="100px;" alt="流焰 xwx"/><br /><sub><b>流焰 xwx</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Documentation">📖</a> <a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Code">💻</a></td>
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TuanZiGit"><img src="https://avatars.githubusercontent.com/u/46892455?v=4?s=100" width="100px;" alt="团子"/><br /><sub><b>团子</b></sub></a><br /><a href="#example-TuanZiGit" title="Examples">💡</a></td>
@@ -215,40 +215,24 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
 
-本项目使用到的第三方库和框架：
+本项目使用了[这些第三方库和框架](./doc/Dependencies.md)。
 
-- [.NET](https://github.com/microsoft/dotnet)
-- [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet)
-- [dotnetCampus.Ipc](https://github.com/dotnet-campus/dotnetCampus.Ipc)
-- [Downloader](https://github.com/bezzad/Downloader)
-- [EPPlus](https://github.com/EPPlusSoftware/EPPlus)
-- [Edge_tts_sharp](https://github.com/Entity-Now/Edge_tts_sharp)
-- [gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)
-- [Google.Protobuf](https://github.com/protocolbuffers/protobuf)
-- [Grpc](https://github.com/grpc/grpc-dotnet)
-- [Grpc.Net.Client](https://github.com/grpc/grpc-dotnet)
-- [Grpc.Tools](https://github.com/grpc/grpc)
-- [GuerrillaNtp](https://github.com/robertvazan/guerrillantp)
-- [H.NotifyIcon](https://github.com/HavenDV/H.NotifyIcon)
-- [HarmonyOS Sans](https://developer.harmonyos.com/cn/design/resource)
-- [MaterialDesignInXamlToolkit](https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit)
-- [MdXaml](https://github.com/whistyun/MdXaml)
-- [Microsoft.Data.Sqlite](https://github.com/dotnet/efcore)
-- [Microsoft.Extensions.Hosting](https://github.com/dotnet/runtime)
-- [Microsoft.Windows.CsWin32](https://github.com/microsoft/CsWin32)
-- [NAudio](https://github.com/naudio/NAudio)
-- [Octokit](https://github.com/octokit/octokit.net)
-- [Pastel](https://github.com/silkfire/Pastel)
-- [RawInput.Sharp](https://github.com/mfakane/rawinput-sharp)
-- [Sentry](https://github.com/getsentry/sentry-dotnet)
-- [unvell.ReoGridWPF](https://github.com/unvell/ReoGrid)
-- [VirtualizingWrapPanel](https://github.com/sbaeumlisberger/VirtualizingWrapPanel)
-- [WPF](https://github.com/dotnet/Wpf)
-- [WindowsShortcutFactory](https://github.com/gdivis/WindowsShortcutFactory)
-- [WinowsCommunityToolkit](https://github.com/CommunityToolkit/WindowsCommunityToolkit)
-- [YamlDotNet](https://github.com/aaubry/YamlDotNet)
+感谢 [SignPath.io](https://about.signpath.io/) 提供的免费代码签名和 [SignPath Foundation](https://signpath.org/) 提供的证书。
 
-详细的致谢信息请前往【应用设置】->【关于 ClassIsland】界面中查看。
+感谢 [JetBrains](https://www.jetbrains.com.cn/) 为本项目的开发人员提供的[开源开发许可证](https://www.jetbrains.com.cn/community/opensource/)。
+
+详细的致谢信息请前往[【应用设置】->【关于 ClassIsland】](classisland://app/settings/about)界面中查看。
+
+## 代码签名策略 Code signing policy
+
+- Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).<br/>
+  由 [SignPath.io](https://about.signpath.io/) 提供免费代码签名，由 [SignPath Foundation](https://signpath.org/) 提供证书。
+- Committers and reviewers: [Members team](https://github.com/orgs/ClassIsland/teams/members)<br/>
+  提交者和审阅者：[团队成员](https://github.com/orgs/ClassIsland/people)
+- Approvers: [Owners](https://github.com/orgs/ClassIsland/people?query=role%3Aowner)<br/>
+  审批人：[所有者](https://github.com/orgs/ClassIsland/people?query=role%3Aowner)
+- [Privacy policy](./doc/Privacy.md)<br/>
+ [隐私政策](./doc/Privacy.md)
 
 ## 许可证
 
