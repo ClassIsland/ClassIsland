@@ -45,6 +45,8 @@ public class AutomationService : ObservableRecipient, IAutomationService
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
     {
         if (!SettingsService.Settings.IsAutomationEnabled) return;
+
+        var isPropertyChanged = false; // 如果 Actionset.IsOn 改变，则触发保存。
         foreach (var a in Automations)
         {
             if (!a.Actionset.IsEnabled) continue;
@@ -61,7 +63,10 @@ public class AutomationService : ObservableRecipient, IAutomationService
                 ActionService.Revert(a.Actionset);
                 a.Actionset.IsOn = false;
             }
+            isPropertyChanged = true;
         }
+        if (isPropertyChanged)
+            SaveConfig();
     }
 
     private void LoadConfig()
