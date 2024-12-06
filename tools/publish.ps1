@@ -13,5 +13,7 @@ if ($(Test-Path ./out) -eq $false) {
 
 dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded -p:TrimAssets=$is_trim
 
+rm ./out/ClassIsland/*.xml -ErrorAction Continue
+
 Write-Host "Successfully published to $PUBLISH_TARGET" -ForegroundColor Green
 

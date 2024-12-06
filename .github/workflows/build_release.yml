@@ -49,20 +49,32 @@ jobs:
           SIGNPATH_TOKEN: ${{ secrets.SIGNPATH_TOKEN }}
         run: |
           pwsh -ep Bypass -c ./tools/sign.ps1
-          
-      
-      - name: Package application
-        run: |
-          Write-Host "Packaging..." -ForegroundColor Cyan
-          rm ./out/ClassIsland/*.xml -ErrorAction Continue
-          7z a ./out/ClassIsland.zip ./out/ClassIsland/* -r -mx=9
-          rm -Recurse -Force ./out/ClassIsland
 
-      - name: Upload APP to artifacts
+      - name: Upload Unsigned APP to artifacts
+        id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
+          name: out_app_assetsTrimmed_${{ matrix.trim_assets }}_unsigned
+          path: ./out/ClassIsland/*
+          
+      - name: Sign Application
+        uses: signpath/github-action-submit-signing-request@v1
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        with:
+          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
+          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
+          project-slug: 'ClassIsland'
+          signing-policy-slug: 'test-signing'
+          github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: '/out/ClassIsland_Signed'
+
+      - name: Upload signed APP to artifacts
+        uses: actions/upload-artifact@v4
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        with:
           name: out_app_assetsTrimmed_${{ matrix.trim_assets }}
-          path: ./out/*.zip
+          path: ./out/ClassIsland_Signed/*
           
   build_nupkg:
     runs-on: windows-latest  # For a list of available runner types, refer to
