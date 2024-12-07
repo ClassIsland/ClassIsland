@@ -57,6 +57,10 @@ jobs:
           name: out_app_assetsTrimmed_${{ matrix.trim_assets }}_unsigned
           path: ./out/*.zip
           
+      - uses: olegtarasov/get-tag@v2.1.4
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        id: tagName
+          
       - name: Sign Application
         uses: signpath/github-action-submit-signing-request@v1
         if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
@@ -69,6 +73,8 @@ jobs:
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: '/out_signed'
+          parameters: 
+            version: ${{ steps.tagName.outputs.tag }}
 
       - name: Upload signed APP to artifacts
         uses: actions/upload-artifact@v4
