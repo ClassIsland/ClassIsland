@@ -344,28 +344,25 @@ public class ClassPlan : AttachableSettingsObject
     }
 
     /// <summary>
-    /// 标记是否属于换课课程
+    /// 标记换课课程
     /// </summary>
     internal void RefreshIsChangedClass()
     {
-        if (OverlaySourceId != null &&
-            ClassPlans.TryGetValue(OverlaySourceId, out var overlaySource) &&
-            overlaySource.TimeLayout.Layouts.Count == TimeLayout.Layouts.Count)
+        if (OverlaySourceId == null ||
+            !ClassPlans.TryGetValue(OverlaySourceId, out var overlaySource) ||
+            Classes.Count != overlaySource.Classes.Count)
         {
             foreach (var classInfo in Classes)
-            {
-                classInfo.IsChangedClass =
-                    overlaySource.Classes[classInfo.Index].SubjectId != classInfo.SubjectId;
-            }
-        }
-        else
-        {
-            foreach (var classInfo in Classes)
-            {
                 classInfo.IsChangedClass = false;
-            }
+            return;
         }
-        //Console.WriteLine(Name);
+
+        foreach (var classInfo in Classes)
+        {
+            classInfo.IsChangedClass =
+                classInfo.Index >= overlaySource.Classes.Count ? false : // 兜底判断，理论上可以删去
+                classInfo.SubjectId != overlaySource.Classes[classInfo.Index].SubjectId;
+        }
     }
 
     internal void RemoveTimePointSafe(TimeLayoutItem timePoint)
