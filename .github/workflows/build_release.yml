@@ -74,7 +74,7 @@ jobs:
           wait-for-completion: true
           output-artifact-directory: '/out_signed'
           parameters: |
-            version: ${{ steps.tagName.outputs.tag }}
+            version: ${{ toJSON(steps.tagName.outputs.tag) }}
 
       - name: Upload signed APP to artifacts
         uses: actions/upload-artifact@v4
