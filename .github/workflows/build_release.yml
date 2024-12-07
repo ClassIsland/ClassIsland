@@ -73,7 +73,7 @@ jobs:
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: '/out_signed'
-          parameters: 
+          parameters: |
             version: ${{ steps.tagName.outputs.tag }}
 
       - name: Upload signed APP to artifacts
