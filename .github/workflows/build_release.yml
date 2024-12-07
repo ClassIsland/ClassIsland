@@ -43,19 +43,19 @@ jobs:
           ls
           pwsh -ep Bypass -c ./tools/publish.ps1 $env:trim_assets
           
-      - name: Sign application
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
-        env:
-          SIGNPATH_TOKEN: ${{ secrets.SIGNPATH_TOKEN }}
-        run: |
-          pwsh -ep Bypass -c ./tools/sign.ps1
+#      - name: Sign application
+#        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+#        env:
+#          SIGNPATH_TOKEN: ${{ secrets.SIGNPATH_TOKEN }}
+#        run: |
+#          pwsh -ep Bypass -c ./tools/sign.ps1
 
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
           name: out_app_assetsTrimmed_${{ matrix.trim_assets }}_unsigned
-          path: ./out/ClassIsland/*
+          path: ./out/*.zip
           
       - name: Sign Application
         uses: signpath/github-action-submit-signing-request@v1
@@ -64,17 +64,18 @@ jobs:
           api-token: '${{ secrets.SIGNPATH_TOKEN }}'
           organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
           project-slug: 'ClassIsland'
+          artifact-configuration-slug: 'zip-single-file'
           signing-policy-slug: 'test-signing'
           github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
           wait-for-completion: true
-          output-artifact-directory: '/out/ClassIsland_Signed'
+          output-artifact-directory: '/out_signed'
 
       - name: Upload signed APP to artifacts
         uses: actions/upload-artifact@v4
         if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
         with:
           name: out_app_assetsTrimmed_${{ matrix.trim_assets }}
-          path: ./out/ClassIsland_Signed/*
+          path: ./out_signed/*.zip
           
   build_nupkg:
     runs-on: windows-latest  # For a list of available runner types, refer to

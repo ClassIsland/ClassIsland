@@ -5,8 +5,8 @@ if ($(Test-Path ./out) -eq $false) {
 }
 
 
-7z a ./out/ClassIsland.zip ./out_artifacts/out_app_assetsTrimmed_false/* -r -mx=9
-7z a ./out/ClassIsland_AssetsTrimmed.zip ./out_artifacts/out_app_assetsTrimmed_true/* -r -mx=9
+cp ./out_artifacts/out_app_assetsTrimmed_false/ClassIsland.zip -Destination ./out/ClassIsland.zip
+cp ./out_artifacts/out_app_assetsTrimmed_true/ClassIsland.zip -Destination ./out/ClassIsland_AssetsTrimmed.zip
 cp ./out_artifacts/out_nupkgs/* -Destination ./out/
 
 ./tools/generate-md5.ps1 ./out/
