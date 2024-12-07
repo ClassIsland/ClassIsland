@@ -60,6 +60,13 @@ jobs:
       - uses: olegtarasov/get-tag@v2.1.4
         if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
         id: tagName
+
+      - name: Get commit hash
+        uses: prompt/actions-commit-hash@v3
+        id: commit
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        with:
+          prefix: "${{ steps.tagName.outputs.tag }}+"
           
       - name: Sign Application
         uses: signpath/github-action-submit-signing-request@v1
@@ -74,7 +81,7 @@ jobs:
           wait-for-completion: true
           output-artifact-directory: '/out_signed'
           parameters: |
-            version: ${{ toJSON(steps.tagName.outputs.tag) }}
+            version: ${{ toJSON(steps.commit.outputs.long) }}
 
       - name: Upload signed APP to artifacts
         uses: actions/upload-artifact@v4
