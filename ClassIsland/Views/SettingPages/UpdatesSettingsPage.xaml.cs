@@ -88,19 +88,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private void UpdateCache()
     {
-        var e = new Markdown()
-        {
-            Heading1Style = (Style)FindResource("MarkdownHeadline1Style"),
-            Heading2Style = (Style)FindResource("MarkdownHeadline2Style"),
-            Heading3Style = (Style)FindResource("MarkdownHeadline3Style"),
-            Heading4Style = (Style)FindResource("MarkdownHeadline4Style"),
-            //CodeBlockStyle = (Style)FindResource("MarkdownCodeBlockStyle"),
-            //NoteStyle = (Style)FindResource("MarkdownNoteStyle"),
-            ImageStyle = (Style)FindResource("MarkdownImageStyle"),
-        };
-        var fd = e.Transform(SettingsService.Settings.UpdateReleaseInfo);
-        fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
-        ViewModel.CurrentMarkdownDocument = fd;
+        ViewModel.CurrentMarkdownDocument = MarkdownConvertHelper.ConvertMarkdown(SettingsService.Settings.UpdateReleaseInfo);
     }
 
     private void RefreshDescription()

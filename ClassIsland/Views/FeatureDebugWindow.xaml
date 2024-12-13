@@ -11,6 +11,8 @@
         xmlns:ruleset="clr-namespace:ClassIsland.Core.Models.Ruleset;assembly=ClassIsland.Core"
         xmlns:actionControls="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
         xmlns:action="clr-namespace:ClassIsland.Core.Models.Action;assembly=ClassIsland.Core"
+        xmlns:mdXaml="https://github.com/whistyun/MdXaml"
+        xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -23,6 +25,66 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="MarkdownTest">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="TextBoxMarkdown" Grid.Column="0"
+                             AcceptsReturn="True"
+                             VerticalContentAlignment="Top"
+                             TextWrapping="Wrap"
+                             TextChanged="TextBoxMarkdown_OnTextChanged"/>
+                    <ScrollViewer Grid.Column="1">
+                        <Grid>
+                            <mdXaml:MarkdownScrollViewer
+                                    x:Name="MarkdownReader"
+                                    FontFamily="{StaticResource HarmonyOsSans}"
+                                    FontWeight="Normal"
+                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsSelectionEnabled="False"
+                                    ScrollViewer.CanContentScroll="True"
+                                    IsToolBarVisible="False"
+                                    Zoom="90"
+                                    Padding="0"
+                                    ScrollViewer.PanningMode="None"
+                                    ToolTipService.Placement="MousePoint">
+                                <mdXaml:MarkdownScrollViewer.Resources>
+                                    <Style TargetType="ScrollViewer"
+                                               BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="CanContentScroll" Value="True" />
+                                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                                    </Style>
+                                    <Style TargetType="Hyperlink">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground"
+                                                            Value="{DynamicResource PrimaryHueLightBrush}">
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Foreground"
+                                                    Value="{DynamicResource PrimaryHueMidBrush}" />
+                                        <Setter Property="ToolTipService.Placement" Value="Mouse" />
+                                    </Style>
+                                </mdXaml:MarkdownScrollViewer.Resources>
+                                <mdXaml:MarkdownScrollViewer.Style>
+                                    <Style TargetType="mdXaml:MarkdownScrollViewer">
+                                        <Style.Resources>
+
+                                        </Style.Resources>
+                                    </Style>
+                                </mdXaml:MarkdownScrollViewer.Style>
+                            </mdXaml:MarkdownScrollViewer>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
             <TabItem Header="ActionControl">
                 <Grid Background="#99000000">
                     <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
