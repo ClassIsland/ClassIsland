@@ -16,6 +16,7 @@ public class ManagementPolicy : ObservableRecipient
     private bool _disableSplashCustomize = false;
     private bool _disableDebugMenu = false;
     private bool _allowExitManagement = true;
+    private bool _disableEasterEggs = false;
 
     public bool DisableProfileClassPlanEditing
     {
@@ -63,5 +64,11 @@ public class ManagementPolicy : ObservableRecipient
     {
         get => _allowExitManagement;
         set => SetProperty(ref _allowExitManagement, value);
+    }
+
+    public bool DisableEasterEggs
+    {
+        get => _disableEasterEggs;
+        set => SetProperty(ref _disableEasterEggs, value);
     }
 }

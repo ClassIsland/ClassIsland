@@ -124,13 +124,17 @@
                 </Grid>
             </TabItem>
             <TabItem Header="IconControl">
-                <Grid>
+                <StackPanel HorizontalAlignment="Center">
                     <ci:IconControl PackIconKind="Github"
                                     FallbackPackIconKind="QuestionMarkCircleOutline"
                                     Width="64" Height="64"
                                     IconKind="Image"
                                     ImageSource="/Assets/HoYoStickers/光辉矢愿_想我了吗.png"/>
-                </Grid>
+                    <ci:StickerControl PackIconKind="Github"
+                                    FallbackPackIconKind="QuestionMarkCircleOutline"
+                                    Width="64" Height="64"
+                                    ImageSource="/Assets/HoYoStickers/帕姆_点赞.png"/>
+                </StackPanel>
             </TabItem>
             <TabItem Header="LessonsListBox">
                 <StackPanel>

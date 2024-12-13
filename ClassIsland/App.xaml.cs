@@ -402,6 +402,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<DebugPage>();
                 services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
+                services.AddSettingsPage<ManagementSettingsPage>();
                 // 主界面组件
                 services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 services.AddComponent<SeparatorComponent>();
