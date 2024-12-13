@@ -37,11 +37,21 @@ public partial class CountDownComponent : ComponentBase<CountDownComponentSettin
     {
         InitializeComponent();
         LessonsService = lessonsService;
-        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         ExactTimerService = exactTimeService;
+        Loaded += (_, _) =>
+        {
+            UpdateContent();
+            LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        };
+        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
+    {
+        UpdateContent();
+    }
+
+    private void UpdateContent()
     {
         DaysLeft = $"{Math.Max((Settings.OverTime.Date - ExactTimerService.GetCurrentLocalDateTime().Date).Days, 0)}";
     }

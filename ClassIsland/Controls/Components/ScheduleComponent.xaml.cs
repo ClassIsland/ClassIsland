@@ -84,9 +84,17 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         SettingsService = settingsService;
         ProfileService = profileService;
         ExactTimeService = exactTimeService;
-        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        LessonsService.CurrentTimeStateChanged += (_, _) => CurrentTimeStateChanged();
+
+        Loaded += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged; ;
+        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged; ;
         InitializeComponent();
+        CurrentTimeStateChanged();
+    }
+
+    private void OnLessonsServiceOnCurrentTimeStateChanged(object? o, EventArgs eventArgs)
+    {
         CurrentTimeStateChanged();
     }
 

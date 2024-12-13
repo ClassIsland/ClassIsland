@@ -68,17 +68,20 @@ public partial class ClockComponent : ComponentBase<ClockComponentSettings>, INo
         ExactTimeService = exactTimeService;
         SettingsService = settingsService;
         InitializeComponent();
-
-        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-    }
-
-    ~ClockComponent()
-    {
-        if (LessonsService == null) return;
-        LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        Loaded += (_, _) =>
+        {
+            UpdateContent();
+            LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        };
+        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
     }
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
+    {
+        UpdateContent();
+    }
+
+    private void UpdateContent()
     {
         CurrentTime = Settings.ShowRealTime ? DateTime.Now : ExactTimeService.GetCurrentLocalDateTime();
 
