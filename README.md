@@ -217,13 +217,26 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 本项目使用了[这些第三方库和框架](./doc/Dependencies.md)。
 
-感谢 [SignPath.io](https://about.signpath.io/) 提供的免费代码签名和 [SignPath Foundation](https://signpath.org/) 提供的证书。
-
 感谢 [JetBrains](https://www.jetbrains.com.cn/) 为本项目的开发人员提供的[开源开发许可证](https://www.jetbrains.com.cn/community/opensource/)。
 
 详细的致谢信息请前往[【应用设置】->【关于 ClassIsland】](classisland://app/settings/about)界面中查看。
 
-## 代码签名策略 Code signing policy
+## 赞助商 / Sponsors
+
+感谢以下赞助商对本项目的支持。
+
+<table>
+  <tr>
+    <td>
+      <img alt="SignPath" src="https://signpath.org/assets/favicon-50x50.png" />
+    </td>
+    <td>
+    Free code signing on Windows provided by <a href="https://signpath.io">SignPath.io</a>, certficate by <a href="https://signpath.org/">SignPath Foundation</a>
+    </td>
+  </tr>
+</table>
+
+## 代码签名策略 / Code signing policy
 
 - Free code signing provided by [SignPath.io](https://about.signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).<br/>
   由 [SignPath.io](https://about.signpath.io/) 提供免费代码签名，由 [SignPath Foundation](https://signpath.org/) 提供证书。
