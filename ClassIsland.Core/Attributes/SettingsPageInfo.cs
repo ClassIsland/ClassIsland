@@ -18,32 +18,42 @@ public class SettingsPageInfo : Attribute
 
     public SettingsPageCategory Category { get; } = SettingsPageCategory.External;
     
-    public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External, bool hideDefault = false)
+    public SettingsPageInfo(string id, string name, SettingsPageCategory category=SettingsPageCategory.External)
     {
         Id = id;
         Name = name;
         Category = category;
+    }
+
+    public SettingsPageInfo(string id, string name, SettingsPageCategory category = SettingsPageCategory.External, bool hideDefault = false) : this(id, name, category)
+    {
         HideDefault = hideDefault;
     }
-    
-    public SettingsPageInfo(string id, string name, PackIconKind unSelectedIcon, PackIconKind selectedIcon, SettingsPageCategory category = SettingsPageCategory.External, bool hideDefault = false)
+
+    public SettingsPageInfo(string id, string name, PackIconKind unSelectedIcon, PackIconKind selectedIcon, SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, category)
     {
-        Id = id;
-        Name = name;
         UnSelectedPackIcon = unSelectedIcon;
         SelectedPackIcon = selectedIcon;
-        Category = category;
+    }
+
+    public SettingsPageInfo(string id, string name, PackIconKind unSelectedIcon, PackIconKind selectedIcon, SettingsPageCategory category = SettingsPageCategory.External, bool hideDefault = false) : this(id, name, unSelectedIcon, selectedIcon, category)
+    {
         HideDefault = hideDefault;
     }
-    
-    public SettingsPageInfo(string id, string name, string unSelectedBitmapUri, string selectedBitmapUri, SettingsPageCategory category = SettingsPageCategory.External, bool hideDefault=false)
+
+    public SettingsPageInfo(string id, string name, string unSelectedBitmapUri, string selectedBitmapUri,
+        SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, category)
+
     {
-        Id = id;
-        Name = name;
         UnSelectedBitmapUri = unSelectedBitmapUri;
         SelectedBitmapUri = selectedBitmapUri;
         UseBitmapIcon = true;
-        Category = category;
+    }
+
+    public SettingsPageInfo(string id, string name, string unSelectedBitmapUri, string selectedBitmapUri,
+        SettingsPageCategory category = SettingsPageCategory.External, bool hideDefault = false) : this(id, name, unSelectedBitmapUri, selectedBitmapUri, category)
+
+    {
         HideDefault = hideDefault;
     }
 }
