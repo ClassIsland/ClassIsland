@@ -173,11 +173,7 @@
                                          SelectionChanged="NavigationListBox_OnSelectionChanged"
                                          Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                                          IsEnabled="{Binding ViewModel.IsNavigating, Converter={StaticResource InvertBooleanConverter}}"
-                                         ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}"
-                                         VirtualizingPanel.ScrollUnit="Pixel"
-                                         VirtualizingPanel.IsVirtualizing="True"
-                                         VirtualizingPanel.IsContainerVirtualizable="True"
-                                         VirtualizingPanel.IsVirtualizingWhenGrouping="True">
+                                         ItemContainerStyle="{StaticResource MaterialDesignYouPrimaryNavigationListBoxItemStyle}">
                                     <ListBox.GroupStyle>
                                         <GroupStyle>
                                             <GroupStyle.ContainerStyle>
