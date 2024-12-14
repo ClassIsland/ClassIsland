@@ -52,11 +52,9 @@ public class WeatherService : IHostedService, IWeatherService
     {
         var w = Application.GetResourceStream(new Uri("/Assets/XiaomiWeather/xiaomi_weather_status.json",
             UriKind.Relative));
-        if (w != null)
-        {
-            var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w.Stream);
-            WeatherStatusList = codes!.WeatherInfo;
-        }
+        if (w == null) return;
+        var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w.Stream);
+        WeatherStatusList = codes!.WeatherInfo;
     }
 
     public async Task QueryWeatherAsync()
