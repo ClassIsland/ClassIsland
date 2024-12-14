@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Views.SettingPages;
 
-[SettingsPageInfo("test-settings-page", "测试页面", SettingsPageCategory.Debug, true)]
+[SettingsPageInfo("test-settings-page", "测试页面", true, SettingsPageCategory.Debug)]
 public partial class TestSettingsPage : SettingsPageBase
 {
     public static readonly DependencyProperty NavigationUriProperty = DependencyProperty.Register(
