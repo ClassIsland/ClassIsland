@@ -262,6 +262,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnAfterSchoolNotifyId);
         };
 
+        ProcessLessons();  // 防止在课程服务初始化后因没有更新课表获取到错误的信息
         StartMainTimer();
     }
 
