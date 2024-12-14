@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -12,7 +11,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -66,7 +64,8 @@ public class WeatherService : IHostedService, IWeatherService
         try
         {
             using var http = new HttpClient();
-            var uri = $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
+            var uri =
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
             info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
@@ -82,9 +81,9 @@ public class WeatherService : IHostedService, IWeatherService
 
     public string GetWeatherTextByCode(string code)
     {
-        var c = (from i in WeatherStatusList 
-                    where i.Code.ToString() == code
-                    select i.Weather)
+        var c = (from i in WeatherStatusList
+                where i.Code.ToString() == code
+                select i.Weather)
             .ToList();
         return c.Count > 0 ? c[0] : "未知";
     }
@@ -124,7 +123,6 @@ public class WeatherService : IHostedService, IWeatherService
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)
