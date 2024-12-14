@@ -31,5 +31,5 @@ public interface IWeatherService
     /// </summary>
     /// <param name="name">搜索字符串</param>
     /// <returns>匹配搜索的城市列表</returns>
-    List<City> GetCitiesByName(string name);
+    Task<List<City>> GetCitiesByName(string name);
 }

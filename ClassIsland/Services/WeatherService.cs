@@ -89,36 +89,37 @@ public class WeatherService : IHostedService, IWeatherService
         return c.Count > 0 ? c[0] : "未知";
     }
 
-    public List<City> GetCitiesByName(string name)
+    public async Task<List<City>> GetCitiesByName(string name)
     {
-        if (!IsDatabaseLoaded)
-            return [];
-        var cmd = CitiesDatabaseConnection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT
-                citys.name,
-                citys.city_num,
-                citys.province_id,
-                provinces.name 
-            FROM
-                citys
-                JOIN provinces ON citys.province_id = provinces._id - 1 
-            WHERE
-                citys.name LIKE $name
-                OR provinces.name LIKE $name
-            ";
-        cmd.Parameters.AddWithValue("name", $"%{name}%");
-        using var reader = cmd.ExecuteReader();
-        var l = new List<City>();
-        while (reader.Read())
+        var uri = new Uri("https://weatherapi.market.xiaomi.com/wtr-v3/location/city/hots?locale=zh_cn");
+        var logText = "获取热门城市信息";
+
+        if (name != string.Empty)
         {
-            l.Add(new City()
-            {
-                Name = reader.GetString(0),
-                CityId = reader.GetString(1)
-            });
+            uri = new Uri(
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/search?name={Uri.EscapeDataString(name)}&locale=zh_cn");
+            logText = logText.Replace("热门", "");
         }
-        return l;
+
+        try
+        {
+            Logger.LogInformation("{}： {}", logText, uri);
+
+            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(uri);
+
+            var cities = cityInfoList?.Select(cityInfo => new City
+            {
+                Name = $"{cityInfo.Name} ({cityInfo.Affiliation})",
+                CityId = cityInfo.LocationKey.Split(':')[1]
+            }).ToList() ?? new List<City>();
+
+            return cities;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "{}失败。", logText);
+            return [];
+        }
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
