@@ -20,19 +20,13 @@ namespace ClassIsland.Services;
 
 public class WeatherService : IHostedService, IWeatherService
 {
-    public const string CitiesDatabasePath = "./Temp/xiaomi_weather.db";
-
     private SettingsService SettingsService { get; }
 
     private Settings Settings => SettingsService.Settings;
 
-    public SqliteConnection CitiesDatabaseConnection { get; } = new($"Data Source={CitiesDatabasePath}");
-
     public List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; } = new();
 
     private ILogger<WeatherService> Logger { get; }
-
-    public bool IsDatabaseLoaded { get; set; } = false;
 
     private DispatcherTimer UpdateTimer { get; } = new()
     {
@@ -41,11 +35,10 @@ public class WeatherService : IHostedService, IWeatherService
 
     public bool IsWeatherRefreshed { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, FileFolderService fileFolderService, IHostApplicationLifetime hostApplicationLifetime, ILogger<WeatherService> logger)
+    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger)
     {
         Logger = logger;
         SettingsService = settingsService;
-        hostApplicationLifetime.ApplicationStopping.Register(AppStopping);
         LoadData();
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Start();
@@ -57,26 +50,8 @@ public class WeatherService : IHostedService, IWeatherService
         await QueryWeatherAsync();
     }
 
-    private async void AppStopping()
-    {
-        if (!IsDatabaseLoaded)
-            return;
-        await CitiesDatabaseConnection.CloseAsync();
-    }
-
     private async void LoadData()
     {
-        var s = Application.GetResourceStream(new Uri("/Assets/XiaomiWeather/xiaomi_weather.db", UriKind.Relative));
-        if (s != null)
-        {
-            var bytes = new byte[s.Stream.Length];
-            var r = await s.Stream.ReadAsync(bytes);
-            await File.WriteAllBytesAsync(CitiesDatabasePath, bytes);
-            await CitiesDatabaseConnection.OpenAsync();
-            IsDatabaseLoaded = true;
-        }
-
-
         var w = Application.GetResourceStream(new Uri("/Assets/XiaomiWeather/xiaomi_weather_status.json",
             UriKind.Relative));
         if (w != null)

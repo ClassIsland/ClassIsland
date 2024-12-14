@@ -9,17 +9,9 @@ namespace ClassIsland.Core.Abstractions.Services;
 public interface IWeatherService
 {
     /// <summary>
-    /// 城市数据库sqlite连接
-    /// </summary>
-    SqliteConnection CitiesDatabaseConnection { get; }
-    /// <summary>
     /// 天气状态列表
     /// </summary>
     List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; }
-    /// <summary>
-    /// 城市数据库是否已经加载
-    /// </summary>
-    bool IsDatabaseLoaded { get; set; }
     /// <summary>
     /// 天气是否已经刷新
     /// </summary>
