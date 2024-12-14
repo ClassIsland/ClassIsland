@@ -100,7 +100,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
     private string _cityId = "101010100";
-    private string _cityName = "北京";
+    private string _cityName = "北京 (北京, 中国)";
     private int _mainWindowFontWeight2 = FontWeights.Medium.ToOpenTypeWeight();
     private int _taskBarIconClickBehavior = 0;
     private bool _showExtraInfoOnTimePoint = true;
