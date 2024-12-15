@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -15,14 +13,13 @@ using ClassIsland.Core.Models.Components;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.ComponentSettings;
-using ClassIsland.Services.Management;
-
 using Microsoft.Extensions.Logging;
 using System.Linq;
 
 namespace ClassIsland.Services;
 
-public class SettingsService(ILogger<SettingsService> Logger, IManagementService ManagementService) : INotifyPropertyChanged
+public class SettingsService(ILogger<SettingsService> Logger, IManagementService ManagementService)
+    : INotifyPropertyChanged
 {
     private Settings _settings = new();
 
@@ -38,12 +35,13 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     private async Task LoadManagementSettingsAsync()
     {
-        if (!ManagementService.Manifest.DefaultSettingsSource.IsNewerAndNotNull(ManagementService.Versions.DefaultSettingsVersion) ||
+        if (!ManagementService.Manifest.DefaultSettingsSource.IsNewerAndNotNull(ManagementService.Versions
+                .DefaultSettingsVersion) ||
             ManagementService.Connection == null)
         {
             return;
         }
-        
+
         Logger.LogInformation("拉取集控默认设置");
         var url = ManagementService.Manifest.DefaultSettingsSource.Value!;
         var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
@@ -59,7 +57,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         {
             if (!File.Exists("./Settings.json"))
             {
-                SkipMigration = true;  // 如果是新的配置文件，那么就需要跳过迁移。
+                SkipMigration = true; // 如果是新的配置文件，那么就需要跳过迁移。
                 Logger.LogInformation("配置文件不存在，跳过加载。");
             }
             else
@@ -77,12 +75,13 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
                 await LoadManagementSettingsAsync();
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             SkipMigration = true;
             Logger.LogError(ex, "配置文件加载失败。");
             // ignored
         }
+
         if (!Settings.IsSystemSpeechSystemExist)
         {
             Settings.SpeechSource = 1;
@@ -102,7 +101,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         }
     }
 
-    private T TryGetDictionaryValue<T>(IDictionary<string, object?> dictionary, string key, T? fallbackValue=null)
+    private T TryGetDictionaryValue<T>(IDictionary<string, object?> dictionary, string key, T? fallbackValue = null)
         where T : class
     {
         var fallback = fallbackValue ?? Activator.CreateInstance<T>();
@@ -111,13 +110,14 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         {
             return o1.Deserialize<T>() ?? fallback;
         }
+
         return (T?)Settings.MiniInfoProviderSettings[key.ToLower()] ?? fallback;
     }
 
     private void MigrateSettings(out bool requiresRestarting)
     {
         requiresRestarting = false;
-        if (Settings.LastAppVersion < Version.Parse("1.4.1.0"))  // 从 1.4.1.0 以前的版本升级
+        if (Settings.LastAppVersion < Version.Parse("1.4.1.0")) // 从 1.4.1.0 以前的版本升级
         {
             var componentsService = App.GetService<IComponentsService>();
             componentsService.CurrentComponents.Clear();
@@ -185,6 +185,14 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             Logger.LogInformation("成功迁移了 1.4.3.0 以前的设置。");
         }
 
+        if (Settings.LastAppVersion < Version.Parse("1.5.2.2"))
+        {
+            // 旧城市Id 迁移到 新城市Id
+            if (!int.TryParse(Settings.CityId, out var oldCityId)) return;
+            Settings.CityId = $"weathercn:{oldCityId}";
+            Logger.LogInformation("新格式城市Id转换完成！");
+            Logger.LogInformation("成功迁移了 1.5.2.2 以前的设置。");
+        }
     }
 
     public void SaveSettings(string note = "")
@@ -210,6 +218,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             if (value.ToString() == original.ToString()) return;
             overlay["@"] = original;
         }
+
         property.SetValue(Settings, value);
         overlay[guid] = value;
         Settings.SettingsOverlay[binding] = overlay;

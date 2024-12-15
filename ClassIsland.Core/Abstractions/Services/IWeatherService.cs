@@ -1,5 +1,4 @@
 using ClassIsland.Core.Models.Weather;
-using Microsoft.Data.Sqlite;
 
 namespace ClassIsland.Core.Abstractions.Services;
 

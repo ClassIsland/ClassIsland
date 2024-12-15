@@ -63,7 +63,7 @@ public class WeatherService : IHostedService, IWeatherService
         {
             using var http = new HttpClient();
             var uri =
-                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
             info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
@@ -104,10 +104,10 @@ public class WeatherService : IHostedService, IWeatherService
 
             var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(uri);
             
-            var cities = cityInfoList?.Where(x => x.LocationKey.StartsWith("weathercn:")).Select(cityInfo => new City
+            var cities = cityInfoList?.Select(cityInfo => new City
             {
                 Name = $"{cityInfo.Name} ({cityInfo.Affiliation})",
-                CityId = cityInfo.LocationKey.Split(':')[1]
+                CityId = cityInfo.LocationKey
             }).ToList() ?? new List<City>();
 
             return cities;
