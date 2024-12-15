@@ -38,7 +38,6 @@ public partial class WeatherSettingsPage : SettingsPageBase
         DataContext = this;
         WeatherService = weatherService;
         SettingsService = settingsService;
-        ViewModel.CitySearchResults = Task.Run(() => WeatherService.GetCitiesByName(string.Empty)).Result;
         // [搜索城市或地区] 初始化防抖定时器
         Loaded += WeatherSettingsPage_Loaded;
     }
@@ -58,12 +57,14 @@ public partial class WeatherSettingsPage : SettingsPageBase
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void WeatherSettingsPage_Loaded(object sender, RoutedEventArgs e)
+    private async void WeatherSettingsPage_Loaded(object sender, RoutedEventArgs e)
     {
         // 初始化防抖定时器，设置间隔时间为50毫秒
         SearchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
         SearchDebounceTimer.Tick += SearchDebounceTimer_Tick;
         SearchDebounceTimer.Stop();
+        
+        ViewModel.CitySearchResults = await WeatherService.GetCitiesByName(string.Empty);
     }
 
     /// <summary>
@@ -86,15 +87,17 @@ public partial class WeatherSettingsPage : SettingsPageBase
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void SearchDebounceTimer_Tick(object? sender, EventArgs e)
+    private async void SearchDebounceTimer_Tick(object? sender, EventArgs e)
     {
         // 停止定时器
         SearchDebounceTimer.Stop();
 
         // 更新搜索结果
+        ViewModel.IsSearchingWeather = true;
         var searchText = GlobalTextBoxSearchCity.Text;
         ViewModel.CitySearchResults =
             await WeatherService.GetCitiesByName(searchText);
+        ViewModel.IsSearchingWeather = false;
     }
 
     private async void SelectorCity_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

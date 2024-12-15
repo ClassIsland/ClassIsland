@@ -33,13 +33,19 @@
             <StackPanel Grid.Row="0">
                 <TextBlock Text="搜索城市" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                            Margin="0 0 0 8" />
-                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         materialDesign:TextFieldAssist.HasClearButton="True"
-                         TextChanged="TextBoxSearchCity_OnTextChanged"
-                         materialDesign:HintAssist.Hint="搜索城市或省份…"
-                         x:Name="TextBoxSearchCity">
-
-                </TextBox>
+                <Grid>
+                    <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             materialDesign:TextFieldAssist.HasClearButton="True"
+                             TextChanged="TextBoxSearchCity_OnTextChanged"
+                             materialDesign:HintAssist.Hint="搜索城市或省份…"
+                             x:Name="TextBoxSearchCity"/>
+                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                 IsIndeterminate="True"
+                                 HorizontalAlignment="Right"
+                                 Margin="0 0 18 0"
+                                 IsHitTestVisible="False"
+                                 Visibility="{Binding ViewModel.IsSearchingWeather, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
             </StackPanel>
             <!-- Main list box -->
             <ListBox Grid.Row="1"
