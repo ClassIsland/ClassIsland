@@ -104,7 +104,7 @@ public class WeatherService : IHostedService, IWeatherService
 
             var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(uri);
             
-            var cities = cityInfoList?.Where(x => x.LocationKey.StartsWith("weathercn:")).Select(cityInfo => new City
+            var cities = cityInfoList?.Select(cityInfo => new City
             {
                 Name = $"{cityInfo.Name} ({cityInfo.Affiliation})",
                 CityId = cityInfo.LocationKey.Split(':')[1]
