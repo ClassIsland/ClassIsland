@@ -136,7 +136,7 @@
             <controls1:IconText Kind="CogOutline" Text="设置" Margin="0 0 0 8" />
             <!-- 城市选择 -->
             <controls1:SettingsCard IconGlyph="MapOutline" Header="城市选择"
-                                    Description="选择当前所在的城市，以用于天气查询。仅支持国内天气查询。">
+                                    Description="选择当前所在的城市，以用于天气查询。仅支持中国内地的天气查询。">
                 <controls1:SettingsCard.Switcher>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding SettingsService.Settings.CityName}"
