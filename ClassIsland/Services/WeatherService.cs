@@ -107,7 +107,7 @@ public class WeatherService : IHostedService, IWeatherService
             var cities = cityInfoList?.Select(cityInfo => new City
             {
                 Name = $"{cityInfo.Name} ({cityInfo.Affiliation})",
-                CityId = cityInfo.LocationKey.Split(':')[1]
+                CityId = cityInfo.LocationKey
             }).ToList() ?? new List<City>();
 
             return cities;
