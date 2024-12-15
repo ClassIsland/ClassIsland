@@ -94,7 +94,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         // 更新搜索结果
         var searchText = GlobalTextBoxSearchCity.Text;
         ViewModel.CitySearchResults =
-            Task.Run(() => WeatherService.GetCitiesByName(searchText)).Result;
+            await WeatherService.GetCitiesByName(searchText);
     }
 
     private async void SelectorCity_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
