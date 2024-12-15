@@ -172,7 +172,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-16-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -191,7 +191,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
       <td align="center" valign="top" width="14.28%"><a href="https://fossa.com/"><img src="https://avatars.githubusercontent.com/u/29791463?v=4?s=100" width="100px;" alt="fossabot"/><br /><sub><b>fossabot</b></sub></a><br /><a href="#infra-fossabot" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://allcontributors.org/"><img src="https://avatars.githubusercontent.com/u/46410174?v=4?s=100" width="100px;" alt="All Contributors"/><br /><sub><b>All Contributors</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=all-contributors" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TV-ZHU"><img src="https://avatars.githubusercontent.com/u/88492699?v=4?s=100" width="100px;" alt="DSZDev"/><br /><sub><b>DSZDev</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=TV-ZHU" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiuYan-xwx"><img src="https://avatars.githubusercontent.com/u/66517348?v=4?s=100" width="100px;" alt="流焰 xwx"/><br /><sub><b>流焰 xwx</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Documentation">📖</a> <a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiuYan-xwx"><img src="https://avatars.githubusercontent.com/u/66517348?v=4?s=100" width="100px;" alt="流焰xwx"/><br /><sub><b>流焰xwx</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Documentation">📖</a> <a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Code">💻</a></td>
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TuanZiGit"><img src="https://avatars.githubusercontent.com/u/46892455?v=4?s=100" width="100px;" alt="团子"/><br /><sub><b>团子</b></sub></a><br /><a href="#example-TuanZiGit" title="Examples">💡</a></td>
@@ -205,6 +205,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://blog.kagureion.top/"><img src="https://avatars.githubusercontent.com/u/141834038?v=4?s=100" width="100px;" alt="一般路过绫音酱_Cecilion"/><br /><sub><b>一般路过绫音酱_Cecilion</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LyCecilion" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://lipoly.ink"><img src="https://avatars.githubusercontent.com/u/110595296?v=4?s=100" width="100px;" alt="LiPolymer"/><br /><sub><b>LiPolymer</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiPolymer" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.mczhiguang.icoc.me/"><img src="https://avatars.githubusercontent.com/u/53519310?v=4?s=100" width="100px;" alt="Amiya"/><br /><sub><b>Amiya</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=mcAmiya" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
