@@ -6,6 +6,9 @@ contact_links:
   - name: 讨论区
     url: https://github.com/ClassIsland/ClassIsland/discussions/
     about: 使用中若遇到问题或有新点子新需求，请先在这里求助和征求意见。
+  - name: 插件功能请求
+    url: https://github.com/ClassIsland/ClassIsland/discussions/categories/%E6%8F%92%E4%BB%B6%E5%8A%9F%E8%83%BD%E8%AF%B7%E6%B1%82
+    about: 如果您认为您想要的功能不太符合 ClassIsland 的主要开发目标，或者适合使用插件实现，可以在这里进行提交。如果您要向一个已开发的插件提交功能请求，请前往插件对应的仓库提交。
   - name: 加入 QQ 群
     url: https://qm.qq.com/q/4NsDQKiAuQ
     about: 在 QQ 群和开发者以及其它用户交流讨论。（群号：958840932）
