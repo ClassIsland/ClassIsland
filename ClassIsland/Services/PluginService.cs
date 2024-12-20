@@ -97,7 +97,11 @@ public class PluginService : IPluginService
             }
 
             var manifestYaml = File.ReadAllText(manifestPath);
-            var manifest = deserializer.Deserialize<PluginManifest>(manifestYaml);
+            var manifest = deserializer.Deserialize<PluginManifest?>(manifestYaml);
+            if (manifest == null)
+            {
+                continue;
+            }
             var info = new PluginInfo
             {
                 Manifest = manifest,
