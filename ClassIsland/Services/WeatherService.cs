@@ -59,11 +59,36 @@ public class WeatherService : IHostedService, IWeatherService
 
     public async Task QueryWeatherAsync()
     {
+        var cityLatitude = string.Empty;
+        var cityLongitude = string.Empty;
+        
+        // 获取城市信息
         try
         {
             using var http = new HttpClient();
             var uri =
-                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn";
+            Logger.LogInformation("获取城市信息： {}", uri);
+            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(new Uri(uri));
+            // 取第一个城市信息
+            var cityInfo = cityInfoList.FirstOrDefault();
+            if (cityInfo != null && cityInfo.LocationKey == Settings.CityId)
+            {
+                cityLatitude = cityInfo.Latitude;
+                cityLongitude = cityInfo.Longitude;       
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "获取城市信息失败。");
+        }
+        
+        // 请求天气信息
+        try
+        {
+            using var http = new HttpClient();
+            var uri =
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
             info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
