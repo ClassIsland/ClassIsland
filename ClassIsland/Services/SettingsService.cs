@@ -117,7 +117,11 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     private void MigrateSettings(out bool requiresRestarting)
     {
         requiresRestarting = false;
-        if (Settings.LastAppVersion < Version.Parse("1.4.1.0")) // 从 1.4.1.0 以前的版本升级
+        if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse("1.4.1.0"))
+        {
+            return;
+        }
+        if (Settings.LastAppVersion < Version.Parse("1.4.1.0"))  // 从 1.4.1.0 以前的版本升级
         {
             var componentsService = App.GetService<IComponentsService>();
             componentsService.CurrentComponents.Clear();
