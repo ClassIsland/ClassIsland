@@ -20,4 +20,15 @@ public class CityInfo
     /// LocationKey 城市或地区的唯一标识符。
     /// </summary>
     [JsonPropertyName("locationKey")] public string LocationKey { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Longitude 城市或地区的经度。
+    /// </summary>
+    [JsonPropertyName("latitude")] public string Latitude { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Latitude 城市或地区的纬度。
+    /// </summary>
+    [JsonPropertyName("longitude")] public string Longitude { get; set; } = string.Empty;
+    
 }
