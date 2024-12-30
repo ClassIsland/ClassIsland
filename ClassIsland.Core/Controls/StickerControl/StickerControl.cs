@@ -21,4 +21,13 @@ public class StickerControl : IconControl.IconControl
             return managementService?.Policy?.DisableEasterEggs ?? false;
         }
     }
+
+    public static readonly DependencyProperty StickerToolTipProperty = DependencyProperty.Register(
+        nameof(StickerToolTip), typeof(object), typeof(StickerControl), new PropertyMetadata(default(object)));
+
+    public object? StickerToolTip
+    {
+        get { return (object)GetValue(StickerToolTipProperty); }
+        set { SetValue(StickerToolTipProperty, value); }
+    }
 }

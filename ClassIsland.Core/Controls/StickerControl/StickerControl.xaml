@@ -10,11 +10,12 @@
 
     <Style TargetType="stickerControl:StickerControl" BasedOn="{StaticResource IconControlBaseStyle}">
         <Style.Triggers>
-            <DataTrigger Binding="{Binding IsEasterEggDisabled, RelativeSource={RelativeSource Self}}" Value="True">
-                <Setter Property="IconKind" Value="PackIcon"/>
+            <DataTrigger Binding="{Binding IsEasterEggDisabled, RelativeSource={RelativeSource Self}}" Value="False">
+                <Setter Property="IconKind" Value="Image"/>
+                <Setter Property="ToolTip" Value="{Binding StickerToolTip, RelativeSource={RelativeSource Self}}"/>
             </DataTrigger>
         </Style.Triggers>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="IconKind" Value="Image"/>
+        <Setter Property="IconKind" Value="PackIcon"/>
     </Style>
 </ResourceDictionary>
