@@ -41,6 +41,8 @@ public class ManagementService : IManagementService
     public static readonly string ManagementPresetPath = "./ManagementPreset.json";
     public static readonly string ManagementConfigureFolderPath =
         Path.Combine(App.AppDataFolderPath, "Management");
+    public static readonly string LocalManagementConfigureFolderPath =
+        Path.Combine(App.AppConfigPath, "Management");
 
     public static readonly string ManagementPersistConfigPath =
         Path.Combine(ManagementConfigureFolderPath, "Persist.json");
@@ -51,6 +53,11 @@ public class ManagementService : IManagementService
     public static readonly string ManagementSettingsPath = Path.Combine(ManagementConfigureFolderPath, "Settings.json");
     public static readonly string ManagementPolicyPath = Path.Combine(ManagementConfigureFolderPath, "Policy.json");
 
+    public static readonly string LocalManagementPolicyPath =
+        Path.Combine(LocalManagementConfigureFolderPath, "Policy.json");
+    public static readonly string LocalManagementCredentialsPath =
+        Path.Combine(LocalManagementConfigureFolderPath, "Credentials.json");
+
     public bool IsManagementEnabled { get; set; }
 
     public ManagementVersions Versions { get; set; } = new();
@@ -60,6 +67,7 @@ public class ManagementService : IManagementService
     public ManagementSettings Settings { get; }
 
     public ManagementPolicy Policy { get; set; } = new();
+    public ManagementCredentialConfig CredentialConfig { get; set; } = new();
 
     public ManagementClientPersistConfig Persist { get;}
 
@@ -114,10 +122,22 @@ public class ManagementService : IManagementService
         }
     }
 
+    private void SetupLocalManagement()
+    {
+        Policy = LoadConfig<ManagementPolicy>(LocalManagementPolicyPath);
+        CredentialConfig = LoadConfig<ManagementCredentialConfig>(LocalManagementCredentialsPath);
+
+        Policy.PropertyChanged += (sender, args) => SaveConfig(LocalManagementPolicyPath, Policy);
+        CredentialConfig.PropertyChanged += (sender, args) => SaveConfig(LocalManagementCredentialsPath, CredentialConfig);
+    }
+
     public async Task SetupManagement()
     {
         if (!IsManagementEnabled)
+        {
+            SetupLocalManagement();
             return;
+        }
         
         Logger.LogInformation("正在初始化集控");
         // 读取集控清单

@@ -32,7 +32,12 @@ public interface IManagementService
     /// 集控策略
     /// </summary>
     ManagementPolicy Policy { get; set; }
-    
+
+    /// <summary>
+    /// 集控授权设置
+    /// </summary>
+    ManagementCredentialConfig CredentialConfig { get; internal set; }
+
     /// <summary>
     /// 集控持久配置
     /// </summary>

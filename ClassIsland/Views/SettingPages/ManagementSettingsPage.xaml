@@ -83,7 +83,7 @@
 
                     <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="classisland://app/settings/management/password-protect">
+                            CommandParameter="classisland://app/settings/management.credentials">
                         <Grid>
                             <TextBlock Text="密码保护设置…" />
                         </Grid>
