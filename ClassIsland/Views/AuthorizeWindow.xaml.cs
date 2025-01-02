@@ -16,7 +16,9 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Models;
 using ClassIsland.Models.Authorize;
+using ClassIsland.Shared;
 using ClassIsland.ViewModels;
+using Microsoft.Extensions.Logging;
 using AuthorizeProviderDisplayingModel = ClassIsland.Models.Authorize.AuthorizeProviderDisplayingModel;
 
 namespace ClassIsland.Views;
@@ -27,6 +29,8 @@ namespace ClassIsland.Views;
 public partial class AuthorizeWindow
 {
     public AuthorizeViewModel ViewModel { get; } = new();
+
+    private ILogger<AuthorizeWindow> Logger { get; } = IAppHost.GetService<ILogger<AuthorizeWindow>>();
 
     public AuthorizeWindow(Credential credential, bool isEditingMode)
     {
@@ -86,23 +90,12 @@ public partial class AuthorizeWindow
             ProviderId = ViewModel.SelectedAuthorizeProviderInfo.Id
         };
         ViewModel.Credential.Items.Add(item);
-        var model = GetDisplayingModel(item);
-        if (model != null)
-        {
-            ViewModel.Providers.Add(model);
-        }
     }
 
     private void ButtonRemoveSelectedAuthProvider_OnClick(object sender, RoutedEventArgs e)
     {
-        var item = ViewModel.SelectedDisplayingInfo;
-        if (item == null)
-        {
-            return;
-        }
-
-        ViewModel.Credential.Items.Remove(item.AssociatedCredentialItem);
-        ViewModel.Providers.Remove(item);
+        if (ViewModel.SelectedCredentialItem != null)
+            ViewModel.Credential.Items.Remove(ViewModel.SelectedCredentialItem);
     }
 
     private void ButtonOk_OnClick(object sender, RoutedEventArgs e)
@@ -119,6 +112,7 @@ public partial class AuthorizeWindow
     {
         if (ViewModel.IsEditingMode)
         {
+            Logger.LogWarning("来自 {} 的命令 CommandBindingCompleteAuthorize 在编辑模式下没有效果，已忽略此调用。", sender.GetType());
             return;
         }
         DialogResult = true;

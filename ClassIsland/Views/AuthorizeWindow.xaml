@@ -7,6 +7,8 @@
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:registry="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:dd="urn:gong-wpf-dragdrop"
         mc:Ignorable="d"
         Height="500" Width="500"
         WindowStartupLocation="CenterScreen"
@@ -68,12 +70,27 @@
         </StackPanel>
 
         <ListBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
-                 ItemsSource="{Binding ViewModel.Providers}"
+                 ItemsSource="{Binding ViewModel.Credential.Items}"
                  HorizontalContentAlignment="Stretch"
                  Margin="0 0 0 0"
                  materialDesign:RippleAssist.IsDisabled="True"
-                 SelectedItem="{Binding ViewModel.SelectedDisplayingInfo}">
-
+                 SelectedItem="{Binding ViewModel.SelectedCredentialItem}"
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
+                 >
+            <dd:DragDrop.EffectMoveAdornerTemplate>
+                <DataTemplate>
+                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24"
+                                              CornerRadius="12">
+                        <ci:IconText Kind="ArrowUpDown" Text="调整顺序"
+                                            Margin="4 0"
+                                            IconMargin="2"
+                                            TextElement.FontWeight="Medium"
+                                            VerticalAlignment="Center"/>
+                    </materialDesign:ColorZone>
+                </DataTemplate>
+            </dd:DragDrop.EffectMoveAdornerTemplate>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="4" materialDesign:RippleAssist.IsDisabled="False">
@@ -88,7 +105,7 @@
 
                         <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
                                                  Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                                 Kind="{Binding Info.IconKind}"
+                                                 Kind="{Binding ProviderInfo.IconKind}"
                                                  VerticalAlignment="Center"
                                                  HorizontalAlignment="Center"
                                                  Margin="0 0 8 0"
@@ -98,7 +115,7 @@
                         <TextBlock Grid.Column="1" Grid.Row="0"
                                    VerticalAlignment="Center"
                                    FontSize="16">
-                            <Run Text="用"/><Run Text="{Binding Info.Name, Mode=OneWay}"/><Run Text="继续"/>
+                            <Run Text="用"/><Run Text="{Binding ProviderInfo.Name, Mode=OneWay}"/><Run Text="继续"/>
                         </TextBlock>
                         <StackPanel Grid.Column="1" Grid.Row="0" 
                                     VerticalAlignment="Center"
@@ -117,9 +134,11 @@
                                     Click="ButtonRemoveSelectedAuthProvider_OnClick"/>
                         </StackPanel>
 
-                        <ContentPresenter Grid.Column="1" Grid.Row="1"
-                                          Content="{Binding ProviderControl}"
-                                          Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <controls:AuthorizeProviderPresenter 
+                            Grid.Column="1" Grid.Row="1"
+                            CredentialItem="{Binding Mode=OneWay}"
+                            IsEditingMode="{Binding ViewModel.IsEditingMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AuthorizeWindow}}"
+                            Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         
                     </Grid>
                 </DataTemplate>

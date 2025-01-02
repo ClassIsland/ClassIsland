@@ -17,5 +17,5 @@ public partial class AuthorizeViewModel : ObservableObject
 
     [ObservableProperty] private AuthorizeProviderInfo? _selectedAuthorizeProviderInfo;
 
-    [ObservableProperty] private AuthorizeProviderDisplayingModel? _selectedDisplayingInfo;
+    [ObservableProperty] private CredentialItem? _selectedCredentialItem;
 }
