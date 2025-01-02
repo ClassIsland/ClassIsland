@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Shared.Abstraction.Services;
@@ -72,13 +73,15 @@ public class ManagementService : IManagementService
     public ManagementClientPersistConfig Persist { get;}
 
     private ILogger<ManagementService> Logger { get; }
+    public IAuthorizeService AuthorizeService { get; }
 
     public IManagementServerConnection? Connection { get; }
 
-    public ManagementService(ILogger<ManagementService> logger)
+    public ManagementService(ILogger<ManagementService> logger, IAuthorizeService authorizeService)
     {
         Instance = this;
         Logger = logger;
+        AuthorizeService = authorizeService;
         Persist = LoadConfig<ManagementClientPersistConfig>(ManagementPersistConfigPath);
         Settings = LoadConfig<ManagementSettings>(ManagementSettingsPath);
 #if DEBUG
@@ -253,5 +256,27 @@ public class ManagementService : IManagementService
         CommonDialog.ShowInfo($"已退出组织 {Manifest.OrganizationName} 的管理。应用将重启以应用更改。");
 
         AppBase.Current.Restart();
+    }
+
+    public async Task<bool> AuthorizeByLevel(AuthorizeLevel level)
+    {
+        if (string.IsNullOrWhiteSpace(CredentialConfig.AdminCredential) &&
+            string.IsNullOrWhiteSpace(CredentialConfig.UserCredential))  // 没有设置任何认证方式
+        {
+            return true;
+        }
+
+        var fallbackCredential =
+            new List<string>([CredentialConfig.AdminCredential, CredentialConfig.UserCredential]).First(x =>
+                !string.IsNullOrWhiteSpace(x));
+        return level switch
+        {
+            AuthorizeLevel.None => true,
+            AuthorizeLevel.User => await AuthorizeService.AuthorizeAsync(Fallback(CredentialConfig.UserCredential)),
+            AuthorizeLevel.Admin => await AuthorizeService.AuthorizeAsync(Fallback(CredentialConfig.AdminCredential)),
+            _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
+        };
+
+        string Fallback(string c) => string.IsNullOrWhiteSpace(c) ? fallbackCredential : c;
     }
 }

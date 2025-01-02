@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Models;
 using ClassIsland.Models.Authorize;
@@ -59,6 +60,7 @@ public partial class AuthorizeWindow
             ProviderId = ViewModel.SelectedAuthorizeProviderInfo.Id
         };
         ViewModel.Credential.Items.Add(item);
+        ViewModel.SelectedCredentialItem = item;
     }
 
     private void ButtonRemoveSelectedAuthProvider_OnClick(object sender, RoutedEventArgs e)
@@ -71,6 +73,12 @@ public partial class AuthorizeWindow
     {
         if (!ViewModel.IsEditingMode)
         {
+            return;
+        }
+
+        if (ViewModel.Credential.Items.Count <= 0)
+        {
+            CommonDialog.ShowError("请至少添加一个认证方式。");
             return;
         }
         DialogResult = true;

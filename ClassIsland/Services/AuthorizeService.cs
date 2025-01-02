@@ -45,6 +45,11 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
 
     public async Task<bool> AuthorizeAsync(string credentialString)
     {
+        if (string.IsNullOrWhiteSpace(credentialString))
+        {
+            logger.LogWarning("传入了空的认证字符串，默认为认证通过。");
+            return true;
+        }
         try
         {
             var credential = ConvertCredentialStringToModel(credentialString);

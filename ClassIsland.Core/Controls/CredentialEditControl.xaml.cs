@@ -50,4 +50,9 @@ public partial class CredentialEditControl : UserControl
         var authorizeService = IAppHost.GetService<IAuthorizeService>();
         CredentialString = await authorizeService.SetupCredentialStringAsync(string.IsNullOrWhiteSpace(CredentialString) ? null : CredentialString);
     }
+
+    private void ButtonClearCredentialString_OnClick(object sender, RoutedEventArgs e)
+    {
+        CredentialString = "";
+    }
 }

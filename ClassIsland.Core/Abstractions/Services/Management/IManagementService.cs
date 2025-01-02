@@ -1,4 +1,5 @@
 using ClassIsland.Shared.Abstraction.Services;
+using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
 
 namespace ClassIsland.Core.Abstractions.Services.Management;
@@ -60,4 +61,11 @@ public interface IManagementService
     /// 退出集控服务器。
     /// </summary>
     Task ExitManagementAsync();
+
+    /// <summary>
+    /// 根据授权等级进行授权。
+    /// </summary>
+    /// <param name="level">需要的授权等级</param>
+    /// <returns>是否通过授权</returns>
+    Task<bool> AuthorizeByLevel(AuthorizeLevel level);
 }
