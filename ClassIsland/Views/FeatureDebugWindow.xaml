@@ -95,6 +95,8 @@
                     <Button Content="Show auth window" Click="ButtonShowAuthWindow_OnClick"/>
                     <Button Content="Create credential" Click="ButtonCreateCredential_OnClick"/>
                     <Button Content="Authorize" Click="ButtonAuthorize_OnClick"/>
+                    <ci:CredentialEditControl CredentialString="{Binding Text, ElementName=CredentialStringTextBox, Mode=TwoWay}"/>
+                    <TextBox x:Name="CredentialStringTextBox"/>
                 </StackPanel>
             </TabItem>
             <TabItem Header="ActionControl">

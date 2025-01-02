@@ -28,7 +28,13 @@ public partial class AuthorizeProviderPresenter : UserControl
 
     
     public static readonly DependencyProperty CredentialItemProperty = DependencyProperty.Register(
-        nameof(CredentialItem), typeof(CredentialItem), typeof(AuthorizeProviderPresenter), new PropertyMetadata(default(CredentialItem)));
+        nameof(CredentialItem), typeof(CredentialItem), typeof(AuthorizeProviderPresenter), new PropertyMetadata(default(CredentialItem), (o, args) =>
+        {
+            if (o is AuthorizeProviderPresenter control)
+            {
+                control.UpdateContent();
+            }
+        }));
 
     public CredentialItem? CredentialItem
     {
@@ -46,7 +52,14 @@ public partial class AuthorizeProviderPresenter : UserControl
     }
 
     public static readonly DependencyProperty IsEditingModeProperty = DependencyProperty.Register(
-        nameof(IsEditingMode), typeof(bool), typeof(AuthorizeProviderPresenter), new PropertyMetadata(default(bool)));
+        nameof(IsEditingMode), typeof(bool), typeof(AuthorizeProviderPresenter), new PropertyMetadata(default(bool),
+            (o, args) =>
+            {
+                if (o is AuthorizeProviderPresenter control)
+                {
+                    control.UpdateContent();
+                }
+            }));
 
     public bool IsEditingMode
     {
@@ -84,6 +97,5 @@ public partial class AuthorizeProviderPresenter : UserControl
     public AuthorizeProviderPresenter()
     {
         InitializeComponent();
-        Loaded += (sender, args) => UpdateContent();
     }
 }

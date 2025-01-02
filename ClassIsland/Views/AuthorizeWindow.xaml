@@ -135,8 +135,8 @@
 
                         <controls:AuthorizeProviderPresenter 
                             Grid.Column="1" Grid.Row="1"
+                            IsEditingMode="{Binding ViewModel.IsEditingMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AuthorizeWindow}, Mode=OneWay}"
                             CredentialItem="{Binding Mode=OneWay}"
-                            IsEditingMode="{Binding ViewModel.IsEditingMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AuthorizeWindow}}"
                             Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         
                     </Grid>
