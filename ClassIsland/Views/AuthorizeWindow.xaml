@@ -77,8 +77,7 @@
                  SelectedItem="{Binding ViewModel.SelectedCredentialItem}"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
-                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
-                 >
+                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
             <dd:DragDrop.EffectMoveAdornerTemplate>
                 <DataTemplate>
                     <materialDesign:ColorZone Mode="PrimaryMid" Height="24"

@@ -103,10 +103,17 @@ public partial class PasswordAuthorizeProvider
         {
             ProtectPassword = true;
         }
+
+        var parentItem = VisualTreeUtils.FindParentVisuals<ListBoxItem>(this).FirstOrDefault();
+        if (parentItem?.IsSelected == true)
+        {
+            PasswordBox.Focus();
+        }
     }
 
     private void ButtonChangePassword_OnClick(object sender, RoutedEventArgs e)
     {
         ProtectPassword = false;
+        PasswordBox.Focus();
     }
 }

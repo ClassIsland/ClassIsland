@@ -38,44 +38,13 @@ public partial class AuthorizeWindow
         ViewModel.Credential = credential;
         ViewModel.IsEditingMode = isEditingMode;
         InitializeComponent();
+        Loaded += (sender, args) => ViewModel.SelectedCredentialItem = ViewModel.Credential.Items.FirstOrDefault();
     }
 
     protected override void OnContentRendered(EventArgs e)
     {
         var result = SetWindowDisplayAffinity((HWND)new WindowInteropHelper(this).Handle, WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE);
         base.OnContentRendered(e);
-    }
-
-    private AuthorizeProviderDisplayingModel? GetDisplayingModel(CredentialItem item)
-    {
-        var info = AuthorizeProviderRegistryService.RegisteredAuthorizeProviders.FirstOrDefault(x =>
-            x.Id == item.ProviderId);
-        var settings = item.ProviderSettings;
-        if (info == null)
-        {
-            return null;
-        }
-
-        var visual = AuthorizeProviderControlBase.GetInstance(info, ref settings, ViewModel.IsEditingMode);
-        item.ProviderSettings = settings;
-        if (visual == null)
-        {
-            return null;
-        }
-        return new AuthorizeProviderDisplayingModel(info, visual, item);
-    }
-
-    protected override void OnInitialized(EventArgs e)
-    {
-        base.OnInitialized(e);
-        foreach (var i in ViewModel.Credential.Items)
-        {
-            var model = GetDisplayingModel(i);
-            if (model != null)
-            {
-                ViewModel.Providers.Add(model);
-            }
-        }
     }
 
     private void ButtonAddAuthorizeMethod_OnClick(object sender, RoutedEventArgs e)
