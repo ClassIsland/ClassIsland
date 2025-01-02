@@ -75,8 +75,8 @@
                  Margin="0 0 0 0"
                  materialDesign:RippleAssist.IsDisabled="True"
                  SelectedItem="{Binding ViewModel.SelectedCredentialItem}"
-                 dd:DragDrop.IsDragSource="True"
-                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.IsDragSource="{Binding ViewModel.IsEditingMode}"
+                 dd:DragDrop.IsDropTarget="{Binding ViewModel.IsEditingMode}"
                  dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
             <dd:DragDrop.EffectMoveAdornerTemplate>
                 <DataTemplate>
