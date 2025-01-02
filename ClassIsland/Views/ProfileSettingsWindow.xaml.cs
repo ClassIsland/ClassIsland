@@ -1029,10 +1029,14 @@ public partial class ProfileSettingsWindow : MyWindow
         ProfileService.ClearTempClassPlanGroup();
     }
 
-    public void Open()
+    public async void Open()
     {
         if (!IsOpened)
         {
+            if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditProfileAuthorizeLevel))
+            {
+                return;
+            }
             SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.open");
             IsOpened = true;
             Show();

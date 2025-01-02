@@ -35,4 +35,15 @@ public partial class ManagementCredentialsSettingsPage
         DataContext = this;
         InitializeComponent();
     }
+
+    private async void ManagementCredentialsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        var result =
+            await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig
+                .EditAuthorizeSettingsAuthorizeLevel);
+        if (result)
+        {
+            ViewModel.IsLocked = false;
+        }
+    }
 }

@@ -319,10 +319,14 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.GoBack();
     }
 
-    public void Open()
+    public async void Open()
     {
         if (!IsOpened)
         {
+            if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+            {
+                return;
+            }
             SentrySdk.Metrics.Increment("views.SettingsWindow.open");
             IsOpened = true;
             Show();

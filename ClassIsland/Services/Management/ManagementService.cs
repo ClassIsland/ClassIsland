@@ -232,6 +232,11 @@ public class ManagementService : IManagementService
     {
         if (!IsManagementEnabled)
             throw new Exception("无法在没有加入集控的情况下退出集控。");
+        var authResult = await AuthorizeByLevel(CredentialConfig.ExitManagementAuthorizeLevel);
+        if (!authResult)
+        {
+            throw new Exception("认证失败。");
+        }
         if (!Policy.AllowExitManagement)
             throw new Exception("您的组织不允许您退出集控。");
 
