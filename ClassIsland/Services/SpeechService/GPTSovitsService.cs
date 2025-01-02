@@ -126,7 +126,7 @@ namespace ClassIsland.Services.SpeechService
                 { "text_split_method", settings.GPTSoVITSTextSplitMethod },
                 { "batch_size", settings.GPTSoVITSBatchSize.ToString() },
                 { "media_type", "wav" },
-                { "streaming_mode", "true" }
+                { "streaming_mode", "false" }
             };
 
             var queryString = string.Join("&", queryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"));

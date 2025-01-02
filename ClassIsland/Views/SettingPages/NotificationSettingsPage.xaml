@@ -589,7 +589,7 @@
                                             <StackPanel Margin="36 0 48 12"
                                                         IsEnabled="{Binding ProviderSettings.IsNotificationSoundEnabled}">
                                                 <!-- 自定义音效 -->
-                                                <ccontrols2:SettingsControl
+                                                <controls2:SettingsControl
                                                     IconGlyph="FileMusicOutline" Header="自定义音效"
                                                     Foreground="{DynamicResource MaterialDesignBody}"
                                                     Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
