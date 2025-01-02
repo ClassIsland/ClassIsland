@@ -85,6 +85,18 @@
                     </ScrollViewer>
                 </Grid>
             </TabItem>
+            <TabItem Header="SecureDesktop">
+                <StackPanel>
+                    <Button Click="ButtonBase_OnClick">test desktop</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="AuthorizeWindow">
+                <StackPanel>
+                    <Button Content="Show auth window" Click="ButtonShowAuthWindow_OnClick"/>
+                    <Button Content="Create credential" Click="ButtonCreateCredential_OnClick"/>
+                    <Button Content="Authorize" Click="ButtonAuthorize_OnClick"/>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="ActionControl">
                 <Grid Background="#99000000">
                     <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
