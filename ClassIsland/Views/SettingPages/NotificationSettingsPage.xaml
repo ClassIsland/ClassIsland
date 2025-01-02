@@ -29,16 +29,19 @@
         <CollectionViewSource Source="{Binding SettingsService.Settings.NotificationProvidersPriority}"
                               x:Key="CollectionViewSourceNotificationProviders"
                               Filter="CollectionViewSourceNotificationProviders_OnFilter"/>
+        <!-- 定义 BooleanToVisibilityConverter，如果尚未定义 -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </controls:SettingsPageBase.Resources>
+
     <controls1:ListDetailView Margin="12"
                               ShowTitleWhenNotCompressed="True"
                               IsEnabled="{Binding ManagementService.Policy.DisableSettingsEditing, Converter={StaticResource InvertBooleanConverter}}"
                               IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
+
         <controls1:ListDetailView.TitleElement>
             <Grid>
-                <Grid
-                    DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                    d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
+                <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                      d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
                     <TextBlock Text="{Binding Name}"
                                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                TextTrimming="CharacterEllipsis"
@@ -46,6 +49,7 @@
                 </Grid>
             </Grid>
         </controls1:ListDetailView.TitleElement>
+
         <controls1:ListDetailView.LeftContent>
             <!-- 提醒提供方 -->
             <Grid Margin="0 0 4 0">
@@ -53,26 +57,28 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
+
                 <!-- 提醒开关 -->
                 <controls2:SettingsCard Grid.Row="0" IconGlyph="BellNotificationOutline"
                                         Margin="0 0 0 6"
                                         Header="启用提醒"
                                         IsOn="{Binding SettingsService.Settings.IsNotificationEnabled, Mode=TwoWay}"
-                                        Description="启用提醒后，将会对重要事件发出醒目提醒。拖动提醒提供方以调整对应类型提醒的优先级。" />
+                                        Description="启用提醒后，将会在对重要事件发出醒目提醒。拖动提醒提供方以调整对应类型提醒的优先级。" />
+
                 <!-- 提醒提供方列表 -->
                 <TabControl Grid.Row="1">
                     <TabItem Header="提醒提供方">
-                        <ListBox
-                            ItemsSource="{Binding Source={StaticResource CollectionViewSourceNotificationProviders}}"
-                            SelectionMode="Single"
-                            dd:DragDrop.IsDragSource="True"
-                            dd:DragDrop.IsDropTarget="True"
-                            SelectionChanged="Selector_OnSelected"
-                            HorizontalContentAlignment="Stretch"
-                            dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
-                            SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
-                            ItemContainerStyle="{StaticResource MaterialDesignListBoxItem}"
-                            Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                        <ListBox ItemsSource="{Binding Source={StaticResource CollectionViewSourceNotificationProviders}}"
+                                 SelectionMode="Single"
+                                 dd:DragDrop.IsDragSource="True"
+                                 dd:DragDrop.IsDropTarget="True"
+                                 SelectionChanged="Selector_OnSelected"
+                                 HorizontalContentAlignment="Stretch"
+                                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
+                                 SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
+                                 ItemContainerStyle="{StaticResource MaterialDesignListBoxItem}"
+                                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+
                             <dd:DragDrop.EffectMoveAdornerTemplate>
                                 <DataTemplate>
                                     <materialDesign:ColorZone Mode="PrimaryMid" Height="24"
@@ -85,12 +91,12 @@
                                     </materialDesign:ColorZone>
                                 </DataTemplate>
                             </dd:DragDrop.EffectMoveAdornerTemplate>
+
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid
-                                        DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
-                                        d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
-                                        Background="Transparent">
+                                    <Grid DataContext="{Binding Converter={StaticResource GuidToNotificationProviderConverter}}"
+                                          d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}"
+                                          Background="Transparent">
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
                                             <RowDefinition />
@@ -107,11 +113,13 @@
                                                           VerticalAlignment="Center"
                                                           ClipToBounds="True" Margin="6"
                                                           Content="{Binding ProviderInstance.IconElement}" />
+                                        
                                         <!-- 标题 -->
                                         <TextBlock Grid.Column="1" Grid.Row="0"
                                                    TextWrapping="Wrap"
                                                    Text="{Binding Name}"
                                                    FontSize="16" FontWeight="Bold" />
+                                        
                                         <!-- 描述 -->
                                         <TextBlock Grid.Column="1" Grid.Row="1"
                                                    TextWrapping="Wrap"
@@ -121,11 +129,12 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-
                     </TabItem>
+
                     <TabItem Header="高级设置">
                         <ScrollViewer Background="{DynamicResource MaterialDesignPaper}">
                             <StackPanel Margin="0 0 0 8">
+                                
                                 <!-- 启用提醒语音 -->
                                 <materialDesign:Card>
                                     <Expander Background="Transparent"
@@ -155,36 +164,41 @@
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
+
+                                            <!-- 默认启用 -->
                                             <CheckBox Content="默认启用" IsChecked="{Binding SettingsService.Settings.IsSpeechEnabled}"
                                                       Margin="0 0 0 6" />
 
+                                            <!-- 语音引擎 -->
                                             <TextBlock Grid.Row="1" Grid.Column="0" Text="语音引擎"
                                                        VerticalAlignment="Center" />
                                             <StackPanel Grid.Row="1" Grid.Column="1"
                                                         Orientation="Horizontal"
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center">
-                                                <ListBox
-                                                    Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                                    SelectedIndex="{Binding SettingsService.Settings.SpeechSource}">
+                                                <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                                         SelectedIndex="{Binding SettingsService.Settings.SpeechSource}"
+                                                         Width="200">
                                                     <ListBoxItem Content="系统TTS"
                                                                  IsEnabled="{Binding SettingsService.Settings.IsSystemSpeechSystemExist}" />
                                                     <ListBoxItem Content="Edge TTS"
                                                                  IsEnabled="{Binding SettingsService.Settings.IsNetworkConnect, Mode=TwoWay}" />
+                                                    <ListBoxItem Content="GPTSoVITS" />
                                                 </ListBox>
                                             </StackPanel>
 
+                                            <!-- Edge TTS 相关设置，仅在选择 Edge TTS 时显示 -->
                                             <StackPanel Grid.Row="2" Grid.Column="0"
                                                         Grid.ColumnSpan="2" Margin="0 6 0 6">
                                                 <StackPanel.Style>
                                                     <Style TargetType="StackPanel">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}"
-                                                                         Value="1">
+                                                            <!-- 假设 Edge TTS 在 ListBox 中的索引为 1 -->
+                                                            <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}" Value="1">
                                                                 <Setter Property="Visibility" Value="Visible" />
                                                             </DataTrigger>
                                                         </Style.Triggers>
-                                                        <Setter Property="Visibility" Value="Collapsed" />
                                                     </Style>
                                                 </StackPanel.Style>
                                                 <TextBlock TextWrapping="Wrap" Text="注意：EdgeTTS需要联网工作，并且可能存在一定延迟。" />
@@ -192,7 +206,8 @@
                                                           materialDesign:HintAssist.Hint="EdgeTTS说话人"
                                                           SelectedValuePath="ShortName"
                                                           SelectedValue="{Binding SettingsService.Settings.EdgeTtsVoiceName}"
-                                                          ItemsSource="{Binding ViewModel.EdgeVoices}">
+                                                          ItemsSource="{Binding ViewModel.EdgeVoices}"
+                                                          Width="200">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding FriendlyName}" />
@@ -201,6 +216,112 @@
                                                 </ComboBox>
                                             </StackPanel>
 
+                                            <!-- GPTSoVITS 相关设置，仅在选择 GPTSoVITS 时显示 -->
+                                            <StackPanel Grid.Row="3" Grid.Column="0"
+                                                        Grid.ColumnSpan="2" Margin="0 6 0 6">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                        <Style.Triggers>
+                                                            <!-- 假设 GPTSoVITS 在 ListBox 中的索引为 2 -->
+                                                            <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}" Value="2">
+                                                                <Setter Property="Visibility" Value="Visible" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                
+                                                <!-- GPTSoVITS 设置 -->
+                                                <TextBlock Text="GPTSoVITS 设置" FontWeight="Bold" FontSize="16" Margin="0 0 0 4"/>
+
+                                                <!-- 服务器 IP -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="服务器 IP：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+
+                                                <!-- 服务器端口 -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="服务器端口：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+
+                                                <!-- 语音名称 -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="语音名称：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSVoiceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+
+                                                <!-- 文本语言 -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="文本语言：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSTextLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+
+                                                <!-- 参考音频路径 -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="参考音频路径：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSRefAudioPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+                                                    
+                                                <!-- 提示语言 -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="提示语言：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+
+                                                <!-- 提示文本 -->
+                                                <StackPanel Orientation="Vertical" Margin="0 2">
+                                                    <TextBlock Text="提示文本：" Width="150" VerticalAlignment="Top" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="350" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                                                </StackPanel>
+
+                                                <!-- 文本分割方法 -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="文本分割方法：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSTextSplitMethod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+
+                                                <!-- 批量大小 -->
+                                                <StackPanel Orientation="Horizontal" Margin="0 2">
+                                                    <TextBlock Text="批量大小：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="200" />
+                                                </StackPanel>
+
+                                                <!-- 测试朗读文本 -->
+                                                <StackPanel Orientation="Vertical" Margin="0 2">
+                                                    <TextBlock Text="测试朗读文本：" Width="150" VerticalAlignment="Top" />
+                                                    <TextBox Text="{Binding ViewModel.TestSpeechTextGPTSoVITS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                             Margin="0 4" Width="350" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                                                </StackPanel>
+
+                                                <!-- 测试语音和打开设置按钮 -->
+                                                <WrapPanel Margin="0 6 0 0">
+                                                    <Button Click="ButtonTestSpeechingGPTSoVITS_OnClick"
+                                                            HorizontalAlignment="Left"
+                                                            Style="{StaticResource MaterialDesignFlatButton}">
+                                                        <controls2:IconText Kind="Play"
+                                                                            Text="测试语音" />
+                                                    </Button>
+                                                    <Button Click="ButtonOpenSpeechSettingsGPTSoVITS_OnClick"
+                                                            HorizontalAlignment="Left"
+                                                            Style="{StaticResource MaterialDesignFlatButton}">
+                                                        <controls2:IconText Kind="ExternalLink"
+                                                                            Text="GPTSoVITS设置" />
+                                                    </Button>
+                                                </WrapPanel>
+                                            </StackPanel>
+
+                                            <!-- 语音音量 -->
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="语音音量"
                                                        VerticalAlignment="Center"
                                                        Margin="0 6 0 0" />
@@ -217,13 +338,14 @@
                                                         Width="150" />
                                             </StackPanel>
 
+                                            <!-- 测试朗读文本和测试语音功能 -->
                                             <TextBox Grid.Row="4" Grid.Column="0"
                                                      Grid.ColumnSpan="2"
                                                      Margin="0 6 0 0"
                                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                                      materialDesign:HintAssist.Hint="测试朗读文本"
                                                      Text="{Binding ViewModel.TestSpeechText}" />
-
+                                            
                                             <WrapPanel Grid.Row="5" Grid.Column="0"
                                                        Grid.ColumnSpan="2"
                                                        Margin="0 6 0 0">
@@ -243,10 +365,10 @@
                                         </Grid>
                                     </Expander>
                                 </materialDesign:Card>
+
                                 <!-- 启用提醒强调特效 -->
                                 <materialDesign:Card Margin="0 6 0 0">
                                     <Expander Background="Transparent"
-                                              IsEnabled="{Binding SettingsService.Settings.IsCompatibleWindowTransparentEnabled, Converter={StaticResource InvertBooleanConverter}}"
                                               IsExpanded="{Binding SettingsService.Settings.AllowNotificationEffect, Mode=OneWay}"
                                               TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                                         <Expander.Header>
@@ -263,11 +385,11 @@
                                             <CheckBox Content="默认启用"
                                                       IsChecked="{Binding SettingsService.Settings.IsNotificationEffectEnabled}"
                                                       Margin="0 0 0 6" />
+                                            
                                             <!-- 提醒特效渲染精度 -->
-                                            <controls2:SettingsControl
-                                                IconGlyph="LayersOutline" Header="提醒特效渲染精度"
-                                                Foreground="{DynamicResource MaterialDesignBody}"
-                                                Description="提醒特效渲染时的精度，使用较低的精度性能可以获得较好的性能。">
+                                            <controls2:SettingsControl IconGlyph="LayersOutline" Header="提醒特效渲染精度"
+                                                                       Foreground="{DynamicResource MaterialDesignBody}"
+                                                                       Description="提醒特效渲染时的精度，使用较低的精度性能可以获得较好的性能。">
                                                 <controls2:SettingsControl.Switcher>
                                                     <Slider Minimum="0.1" Maximum="1.5"
                                                             TickFrequency="0.05"
@@ -281,6 +403,7 @@
                                         </StackPanel>
                                     </Expander>
                                 </materialDesign:Card>
+
                                 <!-- 启用提醒音效 -->
                                 <materialDesign:Card Margin="0 6 0 0">
                                     <Expander Background="Transparent"
@@ -295,7 +418,7 @@
                                                                        Margin="-12 0" />
                                         </Expander.Header>
                                         <Grid Margin="36 0 48 12"
-                                                    IsEnabled="{Binding SettingsService.Settings.AllowNotificationSound}">
+                                              IsEnabled="{Binding SettingsService.Settings.AllowNotificationSound}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
                                                 <ColumnDefinition Width="Auto" />
@@ -305,11 +428,13 @@
                                                 <RowDefinition Height="Auto" />
                                                 <RowDefinition Height="Auto" />
                                             </Grid.RowDefinitions>
+
                                             <!-- 默认启用 -->
                                             <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                                                       Content="默认启用"
                                                       IsChecked="{Binding SettingsService.Settings.IsNotificationSoundEnabled}"
                                                       Margin="0 0 0 6" />
+
                                             <!-- 音效音量 -->
                                             <TextBlock Grid.Row="1" Grid.Column="0"
                                                        Text="音效音量"
@@ -324,6 +449,7 @@
                                                     AutoToolTipPrecision="2"
                                                     IsSnapToTickEnabled="True" 
                                                     />
+
                                             <!-- 自定义音效 -->
                                             <controls2:SettingsControl Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
                                                                        IconGlyph="FileMusicOutline" Header="自定义音效"
@@ -333,7 +459,8 @@
                                                     <StackPanel Orientation="Horizontal"
                                                                 HorizontalAlignment="Right"
                                                                 VerticalAlignment="Center">
-                                                        <TextBox MinWidth="150" MaxWidth="150"
+                                                        <TextBox MinWidth="150"
+                                                                 MaxWidth="150"
                                                                  materialDesign:HintAssist.Hint="（默认音效）"
                                                                  Text="{Binding SettingsService.Settings.NotificationSoundPath}"
                                                                  VerticalAlignment="Center"
@@ -348,6 +475,7 @@
                                         </Grid>
                                     </Expander>
                                 </materialDesign:Card>
+
                                 <!-- 置顶提醒 -->
                                 <materialDesign:Card Margin="0 6 0 0">
                                     <Expander Background="Transparent"
@@ -374,10 +502,9 @@
                         </ScrollViewer>
                     </TabItem>
                 </TabControl>
-
-                <!--<TextBlock Grid.Row="1" Text="{Binding ViewModel.NotificationSettingsSelectedProvider}"></TextBlock>-->
             </Grid>
         </controls1:ListDetailView.LeftContent>
+
         <controls1:ListDetailView.RightContent>
             <!-- 提醒详细信息 -->
             <Grid>
@@ -385,17 +512,15 @@
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Style.Triggers>
-                                <DataTrigger
-                                    Binding="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
-                                    Value="{x:Null}">
+                                <DataTrigger Binding="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
+                                             Value="{x:Null}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
-                    <Grid
-                        DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
-                        d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
+                    <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                          d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
                         <ContentPresenter ClipToBounds="True"
                                           Margin="0 48 0 0"
                                           Content="{Binding ProviderInstance.SettingsElement}" />
@@ -417,9 +542,8 @@
                                        Margin="0 8 0 0" />
                         </StackPanel>
 
-                        <Expander
-                            VerticalAlignment="Top"
-                            Background="{DynamicResource MaterialDesignPaper}">
+                        <Expander VerticalAlignment="Top"
+                                  Background="{DynamicResource MaterialDesignPaper}">
                             <Expander.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <ToggleButton Margin="0 0 4 0"
@@ -432,12 +556,14 @@
                                             IsEnabled="{Binding ProviderSettings.IsSettingsEnabled}">
                                     <TextBlock Text="此处的设置将覆盖全局设置和提醒请求中要求的设置。" Margin="2 4"
                                                Visibility="{Binding ProviderSettings.IsSettingsEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    
                                     <!-- 启用提醒语音 -->
                                     <controls2:SettingsCard IconGlyph="TextToSpeech"
                                                             Foreground="{DynamicResource MaterialDesignBody}"
                                                             Header="启用提醒语音"
                                                             Description="在发出提醒时用语音播报提醒内容。"
                                                             IsOn="{Binding ProviderSettings.IsSpeechEnabled, Mode=TwoWay}" />
+                                    
                                     <!-- 启用提醒强调特效 -->
                                     <controls2:SettingsCard IconGlyph="LayersOutline"
                                                             Margin="0 6 0 0"
@@ -446,6 +572,7 @@
                                                             IsEnabled="{Binding SettingsService.Settings.IsCompatibleWindowTransparentEnabled, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:NotificationSettingsPage}}"
                                                             Description="启用后，发出提醒时会播放全屏强调特效。"
                                                             IsOn="{Binding ProviderSettings.IsNotificationEffectEnabled, Mode=TwoWay}" />
+                                    
                                     <!-- 启用提醒音效 -->
                                     <materialDesign:Card Margin="0 6 0 0">
                                         <Expander Background="Transparent"
@@ -462,7 +589,7 @@
                                             <StackPanel Margin="36 0 48 12"
                                                         IsEnabled="{Binding ProviderSettings.IsNotificationSoundEnabled}">
                                                 <!-- 自定义音效 -->
-                                                <controls2:SettingsControl
+                                                <ccontrols2:SettingsControl
                                                     IconGlyph="FileMusicOutline" Header="自定义音效"
                                                     Foreground="{DynamicResource MaterialDesignBody}"
                                                     Description="设置自定义音效，留空以禁用。如果音效长于提醒显示时间，多出来的部分会被截断。">
