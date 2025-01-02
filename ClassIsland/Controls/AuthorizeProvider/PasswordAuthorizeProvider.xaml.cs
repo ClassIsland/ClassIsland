@@ -33,6 +33,15 @@ public partial class PasswordAuthorizeProvider
         set { SetValue(AuthorizeFailedProperty, value); }
     }
 
+    public static readonly DependencyProperty ProtectPasswordProperty = DependencyProperty.Register(
+        nameof(ProtectPassword), typeof(bool), typeof(PasswordAuthorizeProvider), new PropertyMetadata(default(bool)));
+
+    public bool ProtectPassword
+    {
+        get { return (bool)GetValue(ProtectPasswordProperty); }
+        set { SetValue(ProtectPasswordProperty, value); }
+    }
+
     public PasswordAuthorizeProvider()
     {
         InitializeComponent();
@@ -86,5 +95,18 @@ public partial class PasswordAuthorizeProvider
             return;
         }
         CheckPassword();
+    }
+
+    private void PasswordAuthorizeProvider_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (!string.IsNullOrEmpty(Settings.PasswordHash) && IsEditingMode)
+        {
+            ProtectPassword = true;
+        }
+    }
+
+    private void ButtonChangePassword_OnClick(object sender, RoutedEventArgs e)
+    {
+        ProtectPassword = false;
     }
 }
