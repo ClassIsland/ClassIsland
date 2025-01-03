@@ -183,7 +183,7 @@
                                                                  IsEnabled="{Binding SettingsService.Settings.IsSystemSpeechSystemExist}" />
                                                     <ListBoxItem Content="Edge TTS"
                                                                  IsEnabled="{Binding SettingsService.Settings.IsNetworkConnect, Mode=TwoWay}" />
-                                                    <ListBoxItem Content="GPTSoVITS" />
+                                                    <ListBoxItem Content="GPT-SoVITS" />
                                                 </ListBox>
                                             </StackPanel>
 
@@ -232,7 +232,7 @@
                                                 </StackPanel.Style>
                                                 
                                                 <!-- GPTSoVITS 设置 -->
-                                                <TextBlock Text="GPTSoVITS 设置" FontWeight="Bold" FontSize="16" Margin="0 0 0 4"/>
+                                                <TextBlock Text="GPT-SoVITS 设置" FontWeight="Bold" FontSize="16" Margin="0 0 0 4"/>
 
                                                 <!-- 服务器 IP -->
                                                 <StackPanel Orientation="Horizontal" Margin="0 2">
@@ -271,14 +271,14 @@
                                                     
                                                 <!-- 提示语言 -->
                                                 <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="提示语言：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBlock Text="参考音频语言：" Width="150" VerticalAlignment="Center" />
                                                     <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                              Margin="0 4" Width="200" />
                                                 </StackPanel>
 
                                                 <!-- 提示文本 -->
                                                 <StackPanel Orientation="Vertical" Margin="0 2">
-                                                    <TextBlock Text="提示文本：" Width="150" VerticalAlignment="Top" />
+                                                    <TextBlock Text="参考音频文本：" Width="150" VerticalAlignment="Top" />
                                                     <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                              Margin="0 4" Width="350" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
                                                 </StackPanel>
@@ -292,33 +292,12 @@
 
                                                 <!-- 批量大小 -->
                                                 <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="批量大小：" Width="150" VerticalAlignment="Center" />
+                                                    <TextBlock Text="并发数：" Width="150" VerticalAlignment="Center" />
                                                     <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                                              Margin="0 4" Width="200" />
                                                 </StackPanel>
 
-                                                <!-- 测试朗读文本 -->
-                                                <StackPanel Orientation="Vertical" Margin="0 2">
-                                                    <TextBlock Text="测试朗读文本：" Width="150" VerticalAlignment="Top" />
-                                                    <TextBox Text="{Binding ViewModel.TestSpeechTextGPTSoVITS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="350" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
-                                                </StackPanel>
 
-                                                <!-- 测试语音和打开设置按钮 -->
-                                                <WrapPanel Margin="0 6 0 0">
-                                                    <Button Click="ButtonTestSpeechingGPTSoVITS_OnClick"
-                                                            HorizontalAlignment="Left"
-                                                            Style="{StaticResource MaterialDesignFlatButton}">
-                                                        <controls2:IconText Kind="Play"
-                                                                            Text="测试语音" />
-                                                    </Button>
-                                                    <Button Click="ButtonOpenSpeechSettingsGPTSoVITS_OnClick"
-                                                            HorizontalAlignment="Left"
-                                                            Style="{StaticResource MaterialDesignFlatButton}">
-                                                        <controls2:IconText Kind="ExternalLink"
-                                                                            Text="GPTSoVITS设置" />
-                                                    </Button>
-                                                </WrapPanel>
                                             </StackPanel>
 
                                             <!-- 语音音量 -->
@@ -354,12 +333,6 @@
                                                         Style="{StaticResource MaterialDesignFlatButton}">
                                                     <controls2:IconText Kind="Play"
                                                                         Text="测试语音" />
-                                                </Button>
-                                                <Button Click="ButtonOpenSpeechSettings_OnClick"
-                                                        HorizontalAlignment="Left"
-                                                        Style="{StaticResource MaterialDesignFlatButton}">
-                                                    <controls2:IconText Kind="ExternalLink"
-                                                                        Text="系统文本转语音设置" />
                                                 </Button>
                                             </WrapPanel>
                                         </Grid>
