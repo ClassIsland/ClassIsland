@@ -278,9 +278,9 @@
 
                                                 <!-- 提示文本 -->
                                                 <StackPanel Orientation="Vertical" Margin="0 2">
-                                                    <TextBlock Text="参考音频文本：" Width="150" VerticalAlignment="Top" />
+                                                    <TextBlock Text="参考音频文本：" Width="150" VerticalAlignment="Stretch" HorizontalAlignment="Left" />
                                                     <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="350" Height="60" TextWrapping="Wrap" AcceptsReturn="True"/>
+                                                             Margin="0 4" Width="350" Height="60" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" />
                                                 </StackPanel>
 
                                                 <!-- 文本分割方法 -->
@@ -303,11 +303,11 @@
                                             <!-- 语音音量 -->
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="语音音量"
                                                        VerticalAlignment="Center"
-                                                       Margin="0 6 0 0" />
+                                                       Margin="0 6 0 6" />
                                             <StackPanel Grid.Row="3" Grid.Column="1"
                                                         Orientation="Horizontal"
                                                         HorizontalAlignment="Right"
-                                                        Margin="0 6 0 0"
+                                                        Margin="0 6 0 6"
                                                         VerticalAlignment="Center">
                                                 <Slider Minimum="0" Maximum="1"
                                                         Value="{Binding SettingsService.Settings.SpeechVolume}"
