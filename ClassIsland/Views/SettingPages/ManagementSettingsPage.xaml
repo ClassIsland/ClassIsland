@@ -90,7 +90,7 @@
                     </Button>
                     <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="classisland://app/settings/management/policy">
+                            CommandParameter="classisland://app/settings/management.policy">
                         <Grid>
                             <TextBlock Text="限制策略…" />
                         </Grid>

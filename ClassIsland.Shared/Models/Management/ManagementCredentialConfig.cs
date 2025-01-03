@@ -16,6 +16,7 @@ public class ManagementCredentialConfig : ObservableRecipient
     private AuthorizeLevel _editSettingsAuthorizeLevel = AuthorizeLevel.None;
     private AuthorizeLevel _exitApplicationAuthorizeLevel = AuthorizeLevel.None;
     private AuthorizeLevel _changeLessonsAuthorizeLevel = AuthorizeLevel.None;
+    private AuthorizeLevel _editPolicyAuthorizeLevel = AuthorizeLevel.None;
 
     /// <summary>
     /// 用户凭据
@@ -42,6 +43,15 @@ public class ManagementCredentialConfig : ObservableRecipient
     {
         get => _editAuthorizeSettingsAuthorizeLevel;
         set => SetProperty(ref _editAuthorizeSettingsAuthorizeLevel, value);
+    }
+
+    /// <summary>
+    /// 编辑策略的授权等级
+    /// </summary>
+    public AuthorizeLevel EditPolicyAuthorizeLevel
+    {
+        get => _editPolicyAuthorizeLevel;
+        set => SetProperty(ref _editPolicyAuthorizeLevel, value);
     }
 
     /// <summary>
