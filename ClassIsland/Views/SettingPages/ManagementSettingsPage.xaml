@@ -83,14 +83,14 @@
 
                     <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="classisland://app/settings/management.credentials">
+                            CommandParameter="classisland://app/settings/management.credentials?ci_keepHistory=true">
                         <Grid>
                             <TextBlock Text="密码保护设置…" />
                         </Grid>
                     </Button>
                     <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="classisland://app/settings/management.policy">
+                            CommandParameter="classisland://app/settings/management.policy?ci_keepHistory=true">
                         <Grid>
                             <TextBlock Text="限制策略…" />
                         </Grid>

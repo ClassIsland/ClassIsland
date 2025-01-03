@@ -1,15 +1,18 @@
-﻿namespace ClassIsland.Core.Models.SettingsWindow;
+﻿using System.Web;
+
+namespace ClassIsland.Core.Models.SettingsWindow;
 
 /// <summary>
 /// 代表设置窗口页面的导航附加信息。
 /// </summary>
 public class SettingsWindowNavigationData
 {
-    internal SettingsWindowNavigationData(bool isNavigateFromSettingsWindow, bool isNavigateFromUri, Uri? navigateUri)
+    internal SettingsWindowNavigationData(bool isNavigateFromSettingsWindow, bool isNavigateFromUri, Uri? navigateUri, bool keepHistory)
     {
         IsNavigateFromSettingsWindow = isNavigateFromSettingsWindow;
         IsNavigateFromUri = isNavigateFromUri;
         NavigateUri = navigateUri;
+        KeepHistory = keepHistory;
     }
 
     /// <summary>
@@ -32,5 +35,10 @@ public class SettingsWindowNavigationData
     /// 仅当<see cref="IsNavigateFromUri"/>为 true 时，此属性不为空。
     /// </remarks>
     public Uri? NavigateUri { get; }
+
+    /// <summary>
+    /// 导航时是否需要保留历史记录
+    /// </summary>
+    public bool KeepHistory { get; }
 
 }

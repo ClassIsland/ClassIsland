@@ -369,6 +369,10 @@
                                         <Separator/>-->
                                             <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"
                                                   Click="MenuItemExperimentalSettings_OnClick" />
+                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="集控选项…"
+                                                      Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                      CommandParameter="classisland://app/settings/management?ci_keepHistory=true">
+                                            </MenuItem>
                                             <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="加入管理…"
                                                   Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
                                                   Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">

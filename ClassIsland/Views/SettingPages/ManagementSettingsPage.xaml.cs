@@ -27,7 +27,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// ManagementSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("management", "集控", SettingsPageCategory.About)]
+[SettingsPageInfo("management", "集控", true, SettingsPageCategory.About)]
 public partial class ManagementSettingsPage
 {
     public IManagementService ManagementService { get; }
