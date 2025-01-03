@@ -269,7 +269,7 @@
                                                              Margin="0 4" Width="200" />
                                                 </StackPanel>
                                                     
-                                                <!-- 提示语言 -->
+                                                <!-- 参考音频语言 -->
                                                 <StackPanel Orientation="Horizontal" Margin="0 2">
                                                     <TextBlock Text="参考音频语言：" Width="150" VerticalAlignment="Center" />
                                                     <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
@@ -290,7 +290,7 @@
                                                              Margin="0 4" Width="200" />
                                                 </StackPanel>
 
-                                                <!-- 批量大小 -->
+                                                <!-- 并发数 -->
                                                 <StackPanel Orientation="Horizontal" Margin="0 2">
                                                     <TextBlock Text="并发数：" Width="150" VerticalAlignment="Center" />
                                                     <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
@@ -316,13 +316,13 @@
                                                         AutoToolTipPrecision="2"
                                                         Width="150" />
                                             </StackPanel>
-
+                                            
                                             <!-- 测试朗读文本和测试语音功能 -->
                                             <TextBox Grid.Row="4" Grid.Column="0"
                                                      Grid.ColumnSpan="2"
                                                      Margin="0 6 0 0"
                                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                     materialDesign:HintAssist.Hint="测试朗读文本"
+                                                     materialDesign:HintAssist.Hint="朗读测试文本"
                                                      Text="{Binding ViewModel.TestSpeechText}" />
                                             
                                             <WrapPanel Grid.Row="5" Grid.Column="0"
