@@ -168,6 +168,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "xiaowuap",
+      "name": "Enzo Wu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44547885?v=4",
+      "profile": "http://xiaowuap.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
