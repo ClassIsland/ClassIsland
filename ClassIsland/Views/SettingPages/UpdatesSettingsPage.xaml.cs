@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
@@ -41,6 +42,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     public SettingsService SettingsService { get; }
 
     public UpdateService UpdateService { get; }
+    public IManagementService ManagementService { get; }
 
     public UpdateSettingsViewModel ViewModel { get; } = new();
 
@@ -54,11 +56,12 @@ public partial class UpdatesSettingsPage : SettingsPageBase
         set => SetValue(IsEasterEggTriggeredProperty, value);
     }
 
-    public UpdatesSettingsPage(SettingsService settingsService, UpdateService updateService)
+    public UpdatesSettingsPage(SettingsService settingsService, UpdateService updateService, IManagementService managementService)
     {
         DataContext = this;
         SettingsService = settingsService;
         UpdateService = updateService;
+        ManagementService = managementService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         InitializeComponent();
     }
@@ -196,6 +199,10 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private void IconUpdateStatus_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        if (ManagementService.Policy.DisableEasterEggs)
+        {
+            return;
+        }
         IsEasterEggTriggered = true;
     }
 }

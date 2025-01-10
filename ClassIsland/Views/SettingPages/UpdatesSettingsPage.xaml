@@ -553,33 +553,24 @@
                                    StickerToolTip="光辉矢愿_遨游"
                                    PackIconKind="UploadOutline"/>
 
-                            <TextBlock Text="已经是最新版啦，真棒，夸夸你哦♪" TextWrapping="Wrap"
+                            <TextBlock TextWrapping="Wrap"
+                                       HorizontalAlignment="Center"
                                        Margin="0 8 0 0" >
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger
                                                 Binding="{Binding IsEasterEggTriggered}"
-                                                Value="false">
-                                                <Setter Property="Visibility" Value="Visible" />
+                                                Value="True">
+                                                <Setter Property="Text" Value="头抬起，请坐和放宽，好东西就要来了。" />
                                             </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Text="头抬起，请坐和放宽，好东西就要来了" TextWrapping="Wrap"
-                                       Margin="0 8 0 0" >
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
                                             <DataTrigger
-                                                Binding="{Binding IsEasterEggTriggered}"
-                                                Value="true">
-                                                <Setter Property="Visibility" Value="Visible" />
+                                                Binding="{Binding ManagementService.Policy.DisableEasterEggs}"
+                                                Value="True">
+                                                <Setter Property="Text" Value="已经是最新版本。" />
                                             </DataTrigger>
                                         </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Setter Property="Text" Value="已经是最新版啦，真棒，夸夸你哦♪" />
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>

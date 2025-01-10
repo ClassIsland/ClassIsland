@@ -64,7 +64,8 @@
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
                            Margin="0 0 0 16" />
                 <CheckBox IsChecked="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading}"
-                          Margin="0 0 0 6">
+                          Margin="0 0 0 6"
+                          IsEnabled="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource BooleanToBooleanReConverter}}">
                     <TextBlock TextWrapping="Wrap">
                         在加载设置页面时显示回声洞
                         <Run TextDecorations="{x:Static TextDecorations.Strikethrough}">
@@ -240,9 +241,14 @@
                             <Grid
                                 HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
-                                        Visibility="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Margin="32 8 8 16"
+                                Margin="32 8 8 16"
                                         Opacity="0.75">
+                                <Grid.Visibility>
+                                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                        <Binding Path="SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading"/>
+                                        <Binding Path="ManagementService.Policy.DisableEasterEggs" Converter="{StaticResource BooleanToBooleanReConverter}"/>
+                                    </MultiBinding>
+                                </Grid.Visibility>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>
