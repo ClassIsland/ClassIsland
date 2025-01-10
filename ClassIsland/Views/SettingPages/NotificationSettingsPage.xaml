@@ -176,15 +176,14 @@
                                                         Orientation="Horizontal"
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center">
-                                                <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                                         SelectedIndex="{Binding SettingsService.Settings.SpeechSource}"
-                                                         Width="200">
-                                                    <ListBoxItem Content="系统TTS"
-                                                                 IsEnabled="{Binding SettingsService.Settings.IsSystemSpeechSystemExist}" />
-                                                    <ListBoxItem Content="Edge TTS"
-                                                                 IsEnabled="{Binding SettingsService.Settings.IsNetworkConnect, Mode=TwoWay}" />
-                                                    <ListBoxItem Content="GPT-SoVITS" />
-                                                </ListBox>
+                                                <ComboBox SelectedIndex="{Binding SettingsService.Settings.SpeechSource}"
+                                                         >
+                                                    <ComboBoxItem Content="系统TTS"
+                                                                  IsEnabled="{Binding SettingsService.Settings.IsSystemSpeechSystemExist}" />
+                                                    <ComboBoxItem Content="Edge TTS"
+                                                                  IsEnabled="{Binding SettingsService.Settings.IsNetworkConnect, Mode=TwoWay}" />
+                                                    <ComboBoxItem Content="GPT-SoVITS" />
+                                                </ComboBox>
                                             </StackPanel>
 
                                             <!-- Edge TTS 相关设置，仅在选择 Edge TTS 时显示 -->
@@ -206,8 +205,7 @@
                                                           materialDesign:HintAssist.Hint="EdgeTTS说话人"
                                                           SelectedValuePath="ShortName"
                                                           SelectedValue="{Binding SettingsService.Settings.EdgeTtsVoiceName}"
-                                                          ItemsSource="{Binding ViewModel.EdgeVoices}"
-                                                          Width="200">
+                                                          ItemsSource="{Binding ViewModel.EdgeVoices}">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
                                                             <TextBlock Text="{Binding FriendlyName}" />
@@ -217,7 +215,7 @@
                                             </StackPanel>
 
                                             <!-- GPTSoVITS 相关设置，仅在选择 GPTSoVITS 时显示 -->
-                                            <StackPanel Grid.Row="3" Grid.Column="0"
+                                            <StackPanel Grid.Row="2" Grid.Column="0"
                                                         Grid.ColumnSpan="2" Margin="0 6 0 6">
                                                 <StackPanel.Style>
                                                     <Style TargetType="StackPanel">
@@ -230,76 +228,71 @@
                                                         </Style.Triggers>
                                                     </Style>
                                                 </StackPanel.Style>
-                                                
-                                                <!-- GPTSoVITS 设置 -->
-                                                <TextBlock Text="GPT-SoVITS 设置" FontWeight="Bold" FontSize="16" Margin="0 0 0 4"/>
 
                                                 <!-- 服务器 IP -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="服务器 IP：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
+                                                <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                         Margin="0 4 0 0" 
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         materialDesign:HintAssist.Hint="服务器 IP"/>
 
                                                 <!-- 服务器端口 -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="服务器端口：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
+                                                <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                         Margin="0 4 0 0" 
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         materialDesign:HintAssist.Hint="服务器端口"/>
 
                                                 <!-- 语音名称 -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="语音名称：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSVoiceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
+                                                <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSVoiceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                         Margin="0 4 0 0" 
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         materialDesign:HintAssist.Hint="语音名称"/>
 
                                                 <!-- 文本语言 -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="文本语言：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSTextLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
+                                                <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSTextLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                         Margin="0 4 0 0" 
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         materialDesign:HintAssist.Hint="文本语言"/>
 
                                                 <!-- 参考音频路径 -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="参考音频路径：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSRefAudioPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
+                                                <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSRefAudioPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                         Margin="0 4 0 0" 
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         materialDesign:HintAssist.Hint="参考音频路径"/>
                                                     
                                                 <!-- 参考音频语言 -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="参考音频语言：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
+                                                <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                         Margin="0 4 0 0" 
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         materialDesign:HintAssist.Hint="参考音频语言"/>
 
-                                                <!-- 提示文本 -->
-                                                <StackPanel Orientation="Vertical" Margin="0 2">
-                                                    <TextBlock Text="参考音频文本：" Width="150" VerticalAlignment="Stretch" HorizontalAlignment="Left" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="350" Height="60" TextWrapping="Wrap" AcceptsReturn="True" HorizontalAlignment="Stretch" />
-                                                </StackPanel>
+                                                <!-- 参考音频文本 -->
+                                                <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                                         Margin="0 4 0 0" 
+                                                         TextWrapping="Wrap"
+                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                         materialDesign:HintAssist.Hint="参考音频文本"/>
 
-                                                <!-- 文本分割方法 -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="文本分割方法：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSTextSplitMethod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
+                                                <Expander Background="{x:Null}"
+                                                          Margin="0 6 0 0"
+                                                          materialDesign:ExpanderAssist.VerticalHeaderPadding="2"
+                                                          materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
+                                                          Header="高级选项">
+                                                    <StackPanel>
+                                                        <!-- 文本分割方法 -->
+                                                        <TextBox
+                                                            Text="{Binding SettingsService.Settings.GPTSoVITSTextSplitMethod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                            Margin="0 4 0 0"
+                                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                            materialDesign:HintAssist.Hint="文本分割方法" />
 
-                                                <!-- 并发数 -->
-                                                <StackPanel Orientation="Horizontal" Margin="0 2">
-                                                    <TextBlock Text="并发数：" Width="150" VerticalAlignment="Center" />
-                                                    <TextBox Text="{Binding SettingsService.Settings.GPTSoVITSBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                             Margin="0 4" Width="200" />
-                                                </StackPanel>
-
-
+                                                        <!-- 并发数 -->
+                                                        <TextBox
+                                                            Text="{Binding SettingsService.Settings.GPTSoVITSBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                            Margin="0 4 0 0"
+                                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                            materialDesign:HintAssist.Hint="并发数" />
+                                                    </StackPanel></Expander>
                                             </StackPanel>
-
                                             <!-- 语音音量 -->
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="语音音量"
                                                        VerticalAlignment="Center"
@@ -322,9 +315,9 @@
                                                      Grid.ColumnSpan="2"
                                                      Margin="0 6 0 0"
                                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                     materialDesign:HintAssist.Hint="朗读测试文本"
+                                                     materialDesign:HintAssist.Hint="测试朗读文本"
                                                      Text="{Binding ViewModel.TestSpeechText}" />
-                                            
+
                                             <WrapPanel Grid.Row="5" Grid.Column="0"
                                                        Grid.ColumnSpan="2"
                                                        Margin="0 6 0 0">
@@ -333,6 +326,12 @@
                                                         Style="{StaticResource MaterialDesignFlatButton}">
                                                     <controls2:IconText Kind="Play"
                                                                         Text="测试语音" />
+                                                </Button>
+                                                <Button Click="ButtonOpenSpeechSettings_OnClick"
+                                                        HorizontalAlignment="Left"
+                                                        Style="{StaticResource MaterialDesignFlatButton}">
+                                                    <controls2:IconText Kind="ExternalLink"
+                                                                        Text="系统文本转语音设置" />
                                                 </Button>
                                             </WrapPanel>
                                         </Grid>
