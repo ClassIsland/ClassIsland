@@ -7,7 +7,9 @@ using System.Windows.Media.Imaging;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
+using ClassIsland.Core.Enums;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
@@ -23,6 +25,7 @@ using Microsoft.Extensions.Logging;
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
+using ControlzEx.Standard;
 
 namespace ClassIsland.Services.Management;
 
@@ -195,22 +198,16 @@ public class ManagementService : IManagementService
                 throw new ArgumentOutOfRangeException(nameof(settings.ManagementServerKind), "无效的服务器类型。");
         }
 
-        var r = CommonDialog.ShowDialog("ClassIsland", $"确定要加入组织 {mf.OrganizationName} 的管理吗？", new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
-            60, 60, [
-                new DialogAction()
-                {
-                    PackIconKind = PackIconKind.Cancel,
-                    Name = "取消"
-                },
-                new DialogAction()
-                {
-                    PackIconKind = PackIconKind.Check,
-                    Name = "加入",
-                    IsPrimary = true
-                }
-            ]);
-        if (r != 1)
+        var dialogBuilder = new CommonDialogBuilder()
+            .SetContent($"确定要加入组织 {mf.OrganizationName} 的管理吗？")
+            .SetIconKind(CommonDialogIconKind.Hint)
+            .AddCancelAction()
+            .AddAction("加入", PackIconKind.Check, true);
+
+        var result = dialogBuilder.ShowDialog();
+        if (result != 1)
             return;
+
         var w = CopyObject(settings);
         w.IsManagementEnabled = true;
         // 清空旧的配置
@@ -224,7 +221,7 @@ public class ManagementService : IManagementService
         }
         SaveConfig(ManagementSettingsPath, w);
         CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
-        
+
         AppBase.Current.Restart();
     }
 
@@ -240,21 +237,15 @@ public class ManagementService : IManagementService
         if (!Policy.AllowExitManagement)
             throw new Exception("您的组织不允许您退出集控。");
 
-        var r = CommonDialog.ShowDialog("ClassIsland", $"确定要退出组织 {Manifest.OrganizationName} 的管理吗？", new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
-            60, 60, [
-                new DialogAction()
-                {
-                    PackIconKind = PackIconKind.Cancel,
-                    Name = "取消"
-                },
-                new DialogAction()
-                {
-                    PackIconKind = PackIconKind.ExitRun,
-                    Name = "退出",
-                    IsPrimary = true
-                }
-            ]);
-        if (r != 1) return;
+        var dialogBuilder = new CommonDialogBuilder()
+            .SetContent($"确定要退出组织 {Manifest.OrganizationName} 的管理吗？")
+            .SetIconKind(CommonDialogIconKind.Hint)
+            .AddCancelAction()
+            .AddAction("退出", PackIconKind.ExitRun, true);
+
+        var result = dialogBuilder.ShowDialog();
+        if (result != 1)
+            return;
         Settings.IsManagementEnabled = false;
         SaveConfig(ManagementSettingsPath, Settings);
 

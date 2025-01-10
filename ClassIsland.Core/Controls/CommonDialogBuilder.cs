@@ -91,7 +91,7 @@ public class CommonDialogBuilder
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
     public CommonDialogBuilder SetIconKind(CommonDialogIconKind kind)
     {
-        var managementService = IAppHost.GetService<IManagementService>();
+        var managementService = IAppHost.TryGetService<IManagementService>();
         return managementService?.Policy.DisableEasterEggs == true
             ? kind switch
             {

@@ -69,6 +69,7 @@ using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ControlzEx.Native;
 using ClassIsland.Controls.ActionSettingsControls;
 using ClassIsland.Controls.AuthorizeProvider;
+using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
 
 namespace ClassIsland;
@@ -662,7 +663,7 @@ public partial class App : AppBase, IAppHost
     {
         var r = new CommonDialogBuilder()
             .SetContent("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。")
-            .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.RelativeOrAbsolute))
+            .SetIconKind(CommonDialogIconKind.Hint)
             .AddAction("退出应用", PackIconKind.ExitToApp)
             .AddAction("重启现有实例", PackIconKind.Restart, true)
             .ShowDialog();
