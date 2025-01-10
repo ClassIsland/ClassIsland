@@ -92,4 +92,25 @@ public partial class NotificationSettingsPage : SettingsPageBase
     {
         Process.Start(@"C:\WINDOWS\system32\rundll32.exe", @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
     }
+
+     // 新增的 GPTSoVITS 测试语音按钮事件处理
+    private void ButtonTestSpeechingGPTSoVITS_OnClick(object sender, RoutedEventArgs e)
+    {
+        // 调用 GPTSoVITS 服务进行测试语音
+        // 确保 ViewModel 和 SpeechService 已正确配置
+        SpeechService.ClearSpeechQueue();
+        SpeechService.EnqueueSpeechQueue(ViewModel.TestSpeechTextGPTSoVITS);
+    }
+
+    // 新增的 GPTSoVITS 打开设置按钮事件处理
+    private void ButtonOpenSpeechSettingsGPTSoVITS_OnClick(object sender, RoutedEventArgs e)
+    {
+        // 打开 GPTSoVITS 的相关设置页面
+        // 请将 URL 替换为实际的 GPTSoVITS 设置页面地址
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = "https://gptsovits.example.com/settings", // 替换为实际 URL
+            UseShellExecute = true
+        });
+    }
 }
