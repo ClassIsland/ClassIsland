@@ -69,24 +69,10 @@ namespace ClassIsland.Services.SpeechService
             var cache = GetCachePath(text);
             Logger.LogDebug("语音缓存路径：{CachePath}", cache);
 
-            Task? task = null;
+            Task<bool>? task = null;
             if (!File.Exists(cache))
             {
-                task = Task.Run(async () =>
-                {
-                    try
-                    {
-                        var response = await GenerateSpeechAsync(text, cache, requestingCancellationTokenSource.Token);
-                        if (!response)
-                        {
-                            Logger.LogError("生成语音失败，文本：{Text}", text);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "生成语音时发生异常。");
-                    }
-                }, requestingCancellationTokenSource.Token);
+                task = GenerateSpeechAsync(text, cache, requestingCancellationTokenSource.Token);
             }
 
             if (requestingCancellationTokenSource.IsCancellationRequested)
@@ -170,7 +156,12 @@ namespace ClassIsland.Services.SpeechService
                 if (playInfo.DownloadTask != null)
                 {
                     Logger.LogDebug("等待语音生成完成...");
-                    await playInfo.DownloadTask;
+                    var result = await playInfo.DownloadTask;
+                    if (!result)
+                    {
+                        Logger.LogError("语音 {} 生成失败。", playInfo.FilePath);
+                        continue;
+                    }
                     Logger.LogDebug("语音生成完成。");
                 }
 
@@ -225,10 +216,10 @@ namespace ClassIsland.Services.SpeechService
     {
         public string FilePath { get; }
         public CancellationTokenSource CancellationTokenSource { get; }
-        public Task? DownloadTask { get; }
+        public Task<bool>? DownloadTask { get; }
         public bool IsPlayingCompleted { get; set; }
 
-        public GPTSoVITSPlayInfo(string filePath, CancellationTokenSource cts, Task? downloadTask)
+        public GPTSoVITSPlayInfo(string filePath, CancellationTokenSource cts, Task<bool>? downloadTask)
         {
             FilePath = filePath;
             CancellationTokenSource = cts;
