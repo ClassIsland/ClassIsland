@@ -4,6 +4,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Enums;
+using ClassIsland.Shared;
 
 namespace ClassIsland.Core.Controls;
 
@@ -74,9 +77,43 @@ public class CommonDialogBuilder
     /// <param name="uri">自定义位图的 Uri</param>
     /// <param name="width">位图宽度（px），默认为 64</param>
     /// <param name="height">位图高度（px），默认为 64</param>
+    /// <remarks>
+    /// 如果您想设置一个内置的表情包图标，建议使用 <see cref="SetIconKind"/> 方法。此方法可以在【禁用彩蛋】策略启用时自动切换到对应的 <see cref="PackIcon"/> 图标。
+    /// </remarks>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
     public CommonDialogBuilder SetBitmapIcon(Uri uri, double width = 64, double height = 64) =>
         SetBitmapIcon(new BitmapImage(uri), width, height);
+
+    /// <summary>
+    /// 设置图标类型。
+    /// </summary>
+    /// <param name="kind">图标类型</param>
+    /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
+    public CommonDialogBuilder SetIconKind(CommonDialogIconKind kind)
+    {
+        var managementService = IAppHost.GetService<IManagementService>();
+        return managementService?.Policy.DisableEasterEggs == true
+            ? kind switch
+            {
+                CommonDialogIconKind.Information => SetPackIcon(PackIconKind.InfoCircle),
+                CommonDialogIconKind.Hint => SetPackIcon(PackIconKind.WarningCircle),
+                CommonDialogIconKind.Forbidden => SetPackIcon(PackIconKind.AlertOctagon),
+                CommonDialogIconKind.Error => SetPackIcon(PackIconKind.CloseCircle),
+                _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
+            }
+            : kind switch
+            {
+                CommonDialogIconKind.Information => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_点赞.png",
+                    UriKind.RelativeOrAbsolute)),
+                CommonDialogIconKind.Hint => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_注意.png",
+                    UriKind.RelativeOrAbsolute)),
+                CommonDialogIconKind.Forbidden => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_不可以.png",
+                    UriKind.RelativeOrAbsolute)),
+                CommonDialogIconKind.Error => SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_哭哭.png",
+                    UriKind.RelativeOrAbsolute)),
+                _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
+            };
+    }
 
     /// <summary>
     /// 设置自定义 <see cref="PackIcon"/> 图标。
