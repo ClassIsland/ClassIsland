@@ -24,7 +24,7 @@
         <None Remove="assets\documents\ChangeLog.md" />
         <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
         <None Remove="assets\Tellings.txt" />
-        <None Remove="Assets\TrustedPublicKeys\ClassIsland.MetadaPublisher.pub" />
+        <None Remove="Assets\TrustedPublicKeys\ClassIsland.MetadataPublisher.asc" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6" />
@@ -46,6 +46,7 @@
         </PackageReference>
         <PackageReference Include="NAudio" Version="2.2.1" />
         <PackageReference Include="Pastel" Version="4.2.0" />
+        <PackageReference Include="PgpCore" Version="6.5.1" />
         <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
         <PackageReference Include="Sentry" Version="4.9.0" />
         <PackageReference Include="Sentry.Extensions.Logging" Version="4.9.0" />

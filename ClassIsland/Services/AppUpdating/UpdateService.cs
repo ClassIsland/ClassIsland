@@ -28,7 +28,8 @@ using ClassIsland.Views;
 using Downloader;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Octokit;
+using Org.BouncyCastle.Bcpg.OpenPgp;
+using PgpCore;
 using Application = System.Windows.Application;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
@@ -82,6 +83,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private ILogger<UpdateService> Logger { get; }
 
+    private string MetadataPublisherPublicKey { get; }
+
     public UpdateService(SettingsService settingsService, ITaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime,
         ISplashService splashService, ILogger<UpdateService> logger)
     {
@@ -89,6 +92,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         TaskBarIconService = taskBarIconService;
         SplashService = splashService;
         Logger = logger;
+
+        var keyStream = Application
+            .GetResourceStream(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute))!.Stream;
+        MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
         Index = ConfigureFileHelper.LoadConfig<VersionsIndex>(Path.Combine(UpdateCachePath, "Index.json"));
         SelectedVersionInfo = ConfigureFileHelper.LoadConfig<VersionInfo>(Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
@@ -243,7 +250,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         try
         {
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
-            Index = await WebRequestHelper.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"));
+            Index = await WebRequestHelper.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"), verifySign:true, publicKey:MetadataPublisherPublicKey);
             SyncSpeedTestResults();
             var version = Index.Versions
                 .Where(x => Version.TryParse(x.Version, out _) && x.Channels.Contains(Settings.SelectedUpdateChannelV2))
@@ -255,7 +262,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 return;
             }
 
-            SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
+            SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             TaskBarIconService.MainTaskBarIcon.ShowNotification("发现新版本",
                 $"{Assembly.GetExecutingAssembly().GetName().Version} -> {version.Version}\n" +
