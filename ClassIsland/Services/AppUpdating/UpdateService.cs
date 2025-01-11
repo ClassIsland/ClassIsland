@@ -18,9 +18,11 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Core.Models.Updating;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Helpers;
 using ClassIsland.Views;
 using Downloader;
 using Microsoft.Extensions.Hosting;
@@ -45,6 +47,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private TimeSpan _downloadEtcSeconds = TimeSpan.Zero;
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
+
+    internal static string UpdateCachePath { get; } = Path.Combine(App.AppCacheFolderPath, "Update");
+
+    internal const string UpdateMetadataUrl =
+        "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
+
+    public VersionsIndex Index { get; set; }
+
+    public VersionInfo SelectedVersionInfo { get; set; }
 
     public static string AppCenterSourceKey { get; } = "8593a4a2-0848-40ca-a87c-16e46bf5f695";
     public static string GitHubSourceKey { get; } = "05cb3142-d4ea-4eb0-9dfc-ddc3af6e20b0";
@@ -115,6 +126,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         TaskBarIconService = taskBarIconService;
         SplashService = splashService;
         Logger = logger;
+
+        Index = ConfigureFileHelper.LoadConfig<VersionsIndex>(Path.Combine(UpdateCachePath, "Index.json"));
+        SelectedVersionInfo = ConfigureFileHelper.LoadConfig<VersionInfo>(Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
 
         if (AppBase.Current.IsAssetsTrimmed())
         {
@@ -316,74 +330,22 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         try
         {
-            var kind = UpdateSources[Settings.SelectedUpgradeMirror].Kind;
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
-            Settings.UpdateArtifactHash = "";
-            Version verCode;
-            Logger.LogInformation("正在检查应用更新。{}", kind);
-
-            if (kind == UpdateSourceKind.GitHub)
-            {
-                // 使用 GitHub 获取更新
-                var versionsGh = await GetUpdateVersionsGitHubAsync(Settings.DebugGitHubAuthKey);
-                if (versionsGh.Count <= 0)
-                {
-                    CurrentWorkingStatus = UpdateWorkingStatus.Idle;
-                    return;
-                }
-
-                var v = (versionsGh.Where(i => (CurrentUpdateSourceUrl == AppCenterBetaRootUrl || !i.Prerelease) 
-                                               && Version.TryParse((string?)i.TagName, out _))
-                    .OrderByDescending(i => Version.Parse(i.TagName))).First();
-                var fileName = AppBase.Current.IsAssetsTrimmed() ? "ClassIsland_AssetsTrimmed.zip" : "ClassIsland.zip";
-                verCode = Version.Parse(v.TagName);
-                Settings.UpdateReleaseInfo = v.Body;
-                Settings.UpdateArtifactHash = ChecksumHelper.ExtractHashInfo(v.Body, fileName);
-                Settings.LastCheckUpdateInfoCacheGitHub = v;
-                var assetsUrl = v.Assets.First(x => x.Name == fileName).BrowserDownloadUrl;    
-                Settings.UpdateDownloadUrl = Settings.SelectedUpgradeMirror == GhProxySourceKey ? $"https://mirror.ghproxy.com/{assetsUrl}" : assetsUrl;
-            }
-            else
-            {
-                var versions = await GetUpdateVersionsAsync(CurrentUpdateSourceUrl + "/public_releases");
-                if (versions.Count <= 0)
-                {
-                    CurrentWorkingStatus = UpdateWorkingStatus.Idle;
-                    return;
-                }
-
-                var v = versions.Where(i => Version.TryParse(i.Version, out _)).OrderByDescending(i => Version.Parse(i.Version)).First();
-                verCode = Version.Parse(v.Version);
-                if (IsNewerVersion(isForce, isCancel, verCode))
-                {
-                    Settings.LastCheckUpdateInfoCache =
-                        await GetVersionArtifactsAsync(CurrentUpdateSourceUrl + $"/releases/{v.Id}");
-                    Settings.UpdateReleaseInfo = Settings.LastCheckUpdateInfoCache.ReleaseNotes;
-                    Settings.UpdateDownloadUrl = Settings.LastCheckUpdateInfoCache.DownloadUrl;
-                    Settings.UpdateArtifactHash = Settings.LastCheckUpdateInfoCache.Fingerprint;
-                }
-            }
-
-            Settings.LastUpdateSourceKind = kind;
-            if (IsNewerVersion(isForce, isCancel, verCode)) 
-            {
-                Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
-                Settings.UpdateVersion = verCode;
-                TaskBarIconService.MainTaskBarIcon.ShowNotification("发现新版本",
-                    $"{Assembly.GetExecutingAssembly().GetName().Version} -> {verCode}\n" +
-                    "点击以查看详细信息。");
-                Logger.LogDebug("更新包MD5：{}", Settings.UpdateArtifactHash);
-                if (Settings.UpdateArtifactHash == "")
-                {
-                    Logger.LogWarning("未获取到更新包MD5校验值。");
-                }
-            }
-            else
+            Index = await WebRequestHelper.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"));
+            var version = Index.Versions
+                .Where(x => Version.TryParse(x.Version, out _))
+                .FirstOrDefault(x =>
+                    isForce || Version.Parse(x.Version) >= Assembly.GetExecutingAssembly().GetName().Version!);
+            Settings.LastCheckUpdateTime = DateTime.Now;
+            if (version == null)
             {
                 Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+                return;
             }
 
-            Settings.LastCheckUpdateTime = DateTime.Now;
+            Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
+            SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
+            
         }
         catch (Exception ex)
         {
@@ -419,7 +381,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         try
         {
-            Logger.LogInformation("下载应用更新包：{}", Settings.UpdateDownloadUrl);
+            // TODO: 根据应用发布类型自动生成 subChannel
+            var downloadSubChannel = "windows;x86_64;singleFile;full";
+            var downloadInfo = SelectedVersionInfo.DownloadInfos[downloadSubChannel];
+            Settings.UpdateArtifactHash = downloadInfo.ArchiveSHA256;
+            Logger.LogInformation("下载应用更新包：{}", downloadInfo.ArchiveDownloadUrl);
             TotalSize = 0;
             DownloadedSize = 0;
             DownloadSpeed = 0;
@@ -427,7 +393,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
 
             Downloader = DownloadBuilder.New()
-                .WithUrl(Settings.UpdateDownloadUrl)
+                .WithUrl(downloadInfo.ArchiveDownloadUrl)
                 .Configure((c) =>
                 {
                     c.ChunkCount = 32;
@@ -508,13 +474,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
     {
-        if (DownloadStatusUpdateStopwatch.ElapsedMilliseconds < 1000)
+        if (DownloadStatusUpdateStopwatch.ElapsedMilliseconds < 250)
             return;
         DownloadStatusUpdateStopwatch.Restart();
         TotalSize = e.TotalBytesToReceive;
         DownloadedSize = e.ReceivedBytesSize;
         DownloadSpeed = e.BytesPerSecondSpeed;
-        DownloadEtcSeconds = TimeSpan.FromSeconds((long)((TotalSize - DownloadedSize) / DownloadSpeed));
+        
+        DownloadEtcSeconds = TimeSpan.FromSeconds(DownloadSpeed == 0 ? 0 : (long)((TotalSize - DownloadedSize) / DownloadSpeed));
         Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
 
     }
@@ -537,8 +504,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
 
         await using var stream = File.OpenRead(@"./UpdateTemp/update.zip");
-        var md5 = await MD5.HashDataAsync(stream);
-        var str = BitConverter.ToString(md5);
+        var sha256 = await SHA256.HashDataAsync(stream);
+        var str = BitConverter.ToString(sha256);
         str = str.Replace("-", "");
         Logger.LogDebug("更新文件哈希：{}", str);
         if (!string.Equals(str, Settings.UpdateArtifactHash, StringComparison.CurrentCultureIgnoreCase))

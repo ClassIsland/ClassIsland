@@ -70,6 +70,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Enums\Updating\" />
     <Folder Include="Properties\" />
     <Folder Include="Commands\" />
   </ItemGroup>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClassIsland.Services.AppUpdating;
 using ClassIsland.Services.Management;
 using ClassIsland.Services.SpeechService;
 
@@ -24,6 +25,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         ManagementService.ManagementConfigureFolderPath,
         "./Temp",
         App.AppCacheFolderPath,
+        UpdateService.UpdateCachePath,
         EdgeTtsService.EdgeTtsCacheFolderPath,
         PluginService.PluginsPkgRootPath,
         PluginService.PluginsRootPath,

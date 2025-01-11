@@ -222,7 +222,7 @@
                         </TextBlock.Style>
                         <Run Text="新版本：">
                         </Run>
-                        <Run Text="{Binding SettingsService.Settings.UpdateVersion, Mode=OneWay}" />
+                        <Run Text="{Binding UpdateService.SelectedVersionInfo.Version, Mode=OneWay}" />
                     </TextBlock>
                 </StackPanel>
 
