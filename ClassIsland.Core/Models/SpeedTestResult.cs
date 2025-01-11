@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ClassIsland.Models;
+namespace ClassIsland.Core.Models;
 
 public class SpeedTestResult : ObservableRecipient
 {

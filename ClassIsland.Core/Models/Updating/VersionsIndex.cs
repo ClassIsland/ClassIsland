@@ -1,4 +1,6 @@
-﻿namespace ClassIsland.Core.Models.Updating;
+﻿using System.Text.Json.Serialization;
+
+namespace ClassIsland.Core.Models.Updating;
 
 public class VersionsIndex
 {

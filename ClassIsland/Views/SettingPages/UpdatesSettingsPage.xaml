@@ -674,12 +674,12 @@
                                         <Grid>
                                             <ComboBox Width="150"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
-                                                      ItemsSource="{x:Static appUpdating:UpdateService.UpdateChannels}"
-                                                      SelectedValue="{Binding SettingsService.Settings.SelectedChannel}"
-                                                      SelectedValuePath="RootUrl">
+                                                      ItemsSource="{Binding UpdateService.Index.Channels}"
+                                                      SelectedValue="{Binding SettingsService.Settings.SelectedUpdateChannelV2}"
+                                                      SelectedValuePath="Key">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Text="{Binding Name}" />
+                                                        <TextBlock Text="{Binding Value.Name}" />
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>
@@ -710,11 +710,11 @@
                                 </Expander.Header>
                                 <StackPanel Margin="36 0 64 12">
                                     <ListBox
-                                        ItemsSource="{x:Static appUpdating:UpdateService.UpdateSources}"
+                                        ItemsSource="{Binding UpdateService.Index.Mirrors}"
                                         Margin="-36 0 -64 0"
                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
                                         SelectedValuePath="Key"
-                                        SelectedValue="{Binding SettingsService.Settings.SelectedUpgradeMirror}">
+                                        SelectedValue="{Binding SettingsService.Settings.SelectedUpdateMirrorV2}">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal"

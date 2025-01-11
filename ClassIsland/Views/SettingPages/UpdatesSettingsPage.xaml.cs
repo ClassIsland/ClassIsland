@@ -88,12 +88,15 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private void UpdateCache()
     {
-        ViewModel.CurrentMarkdownDocument = MarkdownConvertHelper.ConvertMarkdown(SettingsService.Settings.UpdateReleaseInfo);
+        ViewModel.CurrentMarkdownDocument = MarkdownConvertHelper.ConvertMarkdown(UpdateService.SelectedVersionInfo.ChangeLogs);
     }
 
     private void RefreshDescription()
     {
-        ViewModel.SelectedChannelModel = UpdateService.UpdateChannels.FirstOrDefault(c => c.RootUrl == SettingsService.Settings.SelectedChannel) ?? new UpdateChannel();
+        if (UpdateService.Index.Channels.TryGetValue(SettingsService.Settings.SelectedUpdateChannelV2, out var channelInfo))
+        {
+            ViewModel.SelectedChannelModel = channelInfo;
+        }
     }
 
     private void UpdateErrorMessage_OnActionClick(object sender, RoutedEventArgs e)

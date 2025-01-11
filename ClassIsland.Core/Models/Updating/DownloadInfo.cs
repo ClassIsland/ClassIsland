@@ -6,7 +6,7 @@ public class DownloadInfo
 {
     public DeployMethod DeployMethod { get; set; } = DeployMethod.None;
 
-    public string ArchiveDownloadUrl { get; set; } = "";
+    public Dictionary<string, string> ArchiveDownloadUrls { get; set; } = new();
 
     public string ArchiveSHA256 { get; set; } = "";
 

@@ -18,6 +18,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Updating;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
@@ -57,44 +58,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public VersionInfo SelectedVersionInfo { get; set; }
 
-    public static string AppCenterSourceKey { get; } = "8593a4a2-0848-40ca-a87c-16e46bf5f695";
-    public static string GitHubSourceKey { get; } = "05cb3142-d4ea-4eb0-9dfc-ddc3af6e20b0";
-    public static string GhProxySourceKey { get; } = "454a648f-12a0-485e-ae85-10a738e25679";
-
-    public static Dictionary<string, UpdateSource> UpdateSources = new()
-    {
-        {AppCenterSourceKey, new UpdateSource()
-        {
-            Name = "Microsoft App Center",
-            Kind = UpdateSourceKind.AppCenter,
-            SpeedTestSources =
-            {
-                "install.appcenter.ms",
-                "appcenter-filemanagement-distrib1ede6f06e.azureedge.net"
-            }
-        }},
-        {GitHubSourceKey, new UpdateSource()
-        {
-            Name = "GitHub",
-            Kind = UpdateSourceKind.GitHub,
-            SpeedTestSources =
-            {
-                "api.github.com",
-                "objects.githubusercontent.com"
-            }
-        }},
-        {GhProxySourceKey, new UpdateSource()
-        {
-            Name = "GitHub（ghproxy镜像）",
-            Kind = UpdateSourceKind.GitHub,
-            SpeedTestSources =
-            {
-                "api.github.com",
-                "mirror.ghproxy.com"
-            }
-        }}
-    };
-
     public Stopwatch DownloadStatusUpdateStopwatch { get; } = new();
 
     public UpdateWorkingStatus CurrentWorkingStatus
@@ -130,20 +93,13 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         Index = ConfigureFileHelper.LoadConfig<VersionsIndex>(Path.Combine(UpdateCachePath, "Index.json"));
         SelectedVersionInfo = ConfigureFileHelper.LoadConfig<VersionInfo>(Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
 
-        if (AppBase.Current.IsAssetsTrimmed())
-        {
-            foreach (var i in UpdateSources.Where(x => x.Value.Kind == UpdateSourceKind.AppCenter).ToList())
-            {
-                UpdateSources.Remove(i.Key);
-            }
-        }
 
-        if (!UpdateSources.ContainsKey(Settings.SelectedUpgradeMirror))
-        {
-            Settings.SelectedUpgradeMirror = UpdateSources.Keys.FirstOrDefault() ?? Settings.SelectedUpgradeMirror;
-        }
+        SyncSpeedTestResults();
+    }
 
-        foreach (var i in UpdateSources)
+    private void SyncSpeedTestResults()
+    {
+        foreach (var i in Index.Mirrors)
         {
             if (!Settings.SpeedTestResults.ContainsKey(i.Key))
             {
@@ -240,26 +196,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
-    public static string AppCenterBetaRootUrl { get; } =
-        "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta";
-
-    public static readonly ObservableCollection<UpdateChannel> UpdateChannels = new()
-    {
-        new UpdateChannel
-        {
-            Name = "稳定通道",
-            Description = "接收应用稳定版的更新，包含较新且稳定的特性和改进。",
-            RootUrl = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public",
-            RootUrlGitHub = "https://api.github.com/repos/HelloWRC/ClassIsland/releases"
-        },
-        new UpdateChannel
-        {
-            Name = "测试通道",
-            Description = "接收应用最新的测试版更新，包含最新的特性和改进，可能包含较多的缺陷和未完工的功能。",
-            RootUrl = AppCenterBetaRootUrl,
-            RootUrlGitHub = "https://api.github.com/repos/HelloWRC/ClassIsland/releases"
-        }
-    };
 
     public static async Task ReplaceApplicationFile(string target)
     {
@@ -332,20 +268,25 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
             Index = await WebRequestHelper.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"));
+            SyncSpeedTestResults();
             var version = Index.Versions
-                .Where(x => Version.TryParse(x.Version, out _))
-                .FirstOrDefault(x =>
-                    isForce || Version.Parse(x.Version) >= Assembly.GetExecutingAssembly().GetName().Version!);
-            Settings.LastCheckUpdateTime = DateTime.Now;
-            if (version == null)
+                .Where(x => Version.TryParse(x.Version, out _) && x.Channels.Contains(Settings.SelectedUpdateChannelV2))
+                .OrderByDescending(x => Version.Parse(x.Version))
+                .FirstOrDefault();
+            if (version == null || !IsNewerVersion(isForce, isCancel, Version.Parse(version.Version)))
             {
                 Settings.LastUpdateStatus = UpdateStatus.UpToDate;
                 return;
             }
 
-            Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
-            
+            Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
+            TaskBarIconService.MainTaskBarIcon.ShowNotification("发现新版本",
+                $"{Assembly.GetExecutingAssembly().GetName().Version} -> {version.Version}\n" +
+                "点击以查看详细信息。");
+
+            Settings.LastCheckUpdateTime = DateTime.Now;
+            Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
         }
         catch (Exception ex)
         {
@@ -385,7 +326,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             var downloadSubChannel = "windows;x86_64;singleFile;full";
             var downloadInfo = SelectedVersionInfo.DownloadInfos[downloadSubChannel];
             Settings.UpdateArtifactHash = downloadInfo.ArchiveSHA256;
-            Logger.LogInformation("下载应用更新包：{}", downloadInfo.ArchiveDownloadUrl);
+            Logger.LogInformation("下载应用更新包：{}", downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2]);
             TotalSize = 0;
             DownloadedSize = 0;
             DownloadSpeed = 0;
@@ -393,7 +334,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
 
             Downloader = DownloadBuilder.New()
-                .WithUrl(downloadInfo.ArchiveDownloadUrl)
+                .WithUrl(downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2])
                 .Configure((c) =>
                 {
                     c.ChunkCount = 32;

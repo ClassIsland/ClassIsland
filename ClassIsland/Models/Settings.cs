@@ -32,6 +32,7 @@ using WindowsShortcutFactory;
 
 using File = System.IO.File;
 using System.Runtime.InteropServices;
+using ClassIsland.Core.Models;
 
 namespace ClassIsland.Models;
 
@@ -120,7 +121,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isDebugConsoleEnabled = false;
     private string _debugGitHubAuthKey = "";
     private Dictionary<string, SpeedTestResult> _speedTestResults = new();
-    private string _selectedUpgradeMirror = UpdateService.AppCenterSourceKey;
     private bool _isAutoSelectUpgradeMirror = true;
     private DateTime _lastSpeedTest = DateTime.MinValue;
     private UpdateSourceKind _lastUpdateSourceKind = UpdateSourceKind.None;
@@ -227,6 +227,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _gptSoVITSPromptText = "我是「罗浮」云骑将军景元。不必拘谨，「将军」只是一时的身份，你称呼我景元便可";
     private string _gptSoVITSTextSplitMethod = "cut5";
     private int _gptSoVITSBatchSize = 1;
+    private string _selectedUpdateMirrorV2 = "main";
+    private string _selectedUpdateChannelV2 = "stable";
 
     /// <summary>
     /// GPTSoVITS 服务器的 IP 地址。
@@ -1553,17 +1555,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Dictionary<string, string> ReleaseChannels
-    {
-        get => _releaseChannels;
-        set
-        {
-            if (Equals(value, _releaseChannels)) return;
-            _releaseChannels = value;
-            OnPropertyChanged();
-        }
-    }
-
+    [Obsolete]
     public string SelectedChannel
     {
         get => _selectedChannel;
@@ -1586,16 +1578,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public AppCenterReleaseInfo LastCheckUpdateInfoCache
-    {
-        get => _lastCheckUpdateInfoCache;
-        set
-        {
-            if (Equals(value, _lastCheckUpdateInfoCache)) return;
-            _lastCheckUpdateInfoCache = value;
-            OnPropertyChanged();
-        }
-    }
 
     public UpdateStatus LastUpdateStatus
     {
@@ -1630,16 +1612,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public string SelectedUpgradeMirror
-    {
-        get => _selectedUpgradeMirror;
-        set
-        {
-            if (value == _selectedUpgradeMirror) return;
-            _selectedUpgradeMirror = value;
-            OnPropertyChanged();
-        }
-    }
 
     public bool IsAutoSelectUpgradeMirror
     {
@@ -1685,16 +1657,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Release LastCheckUpdateInfoCacheGitHub
-    {
-        get => _lastCheckUpdateInfoCacheGitHub;
-        set
-        {
-            if (Equals(value, _lastCheckUpdateInfoCacheGitHub)) return;
-            _lastCheckUpdateInfoCacheGitHub = value;
-            OnPropertyChanged();
-        }
-    }
 
     public string UpdateDownloadUrl
     {
@@ -1725,6 +1687,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _updateArtifactHash) return;
             _updateArtifactHash = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedUpdateMirrorV2
+    {
+        get => _selectedUpdateMirrorV2;
+        set
+        {
+            if (value == _selectedUpdateMirrorV2) return;
+            _selectedUpdateMirrorV2 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedUpdateChannelV2
+    {
+        get => _selectedUpdateChannelV2;
+        set
+        {
+            if (value == _selectedUpdateChannelV2) return;
+            _selectedUpdateChannelV2 = value;
             OnPropertyChanged();
         }
     }
