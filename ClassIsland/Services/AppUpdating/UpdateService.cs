@@ -322,9 +322,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         try
         {
-            // TODO: 根据应用发布类型自动生成 subChannel
-            var downloadSubChannel = "windows;x86_64;singleFile;full";
-            var downloadInfo = SelectedVersionInfo.DownloadInfos[downloadSubChannel];
+            var downloadInfo = SelectedVersionInfo.DownloadInfos[AppBase.Current.AppSubChannel];
             Settings.UpdateArtifactHash = downloadInfo.ArchiveSHA256;
             Logger.LogInformation("下载应用更新包：{}", downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2]);
             TotalSize = 0;

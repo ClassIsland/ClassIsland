@@ -40,6 +40,11 @@ public abstract class AppBase : Application, IAppHost
     /// </summary>
     public abstract event EventHandler? AppStopping;
 
+    /// <summary>
+    /// 应用分发频道
+    /// </summary>
+    public string AppSubChannel => $"windows;x86_64;singleFile;{(IsAssetsTrimmed() ? "trimmed" : "full")}";
+
     internal AppBase()
     {
     }
