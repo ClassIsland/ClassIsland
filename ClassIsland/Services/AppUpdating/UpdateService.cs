@@ -237,30 +237,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
     }
 
-    
-    public static async Task<List<AppCenterReleaseInfoMin>> GetUpdateVersionsAsync(string queryRoot)
-    {
-        return await WebRequestHelper.GetJson<List<AppCenterReleaseInfoMin>>(new Uri(queryRoot));
-    }
-
-    public static async Task<IReadOnlyList<Release>> GetUpdateVersionsGitHubAsync(string? key=null)
-    {
-        var github = new GitHubClient(new ProductHeaderValue("ClassIsland"));
-        if (!string.IsNullOrEmpty(key))
-        {
-            github.Credentials = new Credentials(key);
-        }
-        var r = await github.Repository.Release.GetAll("HelloWRC", "ClassIsland");
-        return r;
-        //throw new ArgumentException("Releases info array is null!");
-    }
-
-    public static async Task<AppCenterReleaseInfo> GetVersionArtifactsAsync(string versionRoot)
-    {
-        return await WebRequestHelper.GetJson<AppCenterReleaseInfo>(new Uri(versionRoot));
-    }
-
-    
 
     public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
