@@ -1,5 +1,6 @@
 $ErrorActionPreference = "Stop"
 
+Install-Module powershell-yaml -Force
 Import-Module ./tools/release-gen/alist-utils.psm1
 
 function GenerateDownloadInfo {
