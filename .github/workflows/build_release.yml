@@ -154,20 +154,21 @@ jobs:
           parameters: |
             version: ${{ toJSON(steps.commit.outputs.long) }}
 
-      - name: Login GitHub APP
-        id: ghapp_login
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.METADATA_DEPLOY_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Upload APP
         env:
           GHAPP_PRIVATE_KEY: ${{ secrets.GHAPP_PRIVATE_KEY }}
           GHAPP_ID: 998668
           GHAPP_INSTALLATION_ID: 54893567
+          ALIST_HOST: ${{ secrets.ALIST_HOST }}
+          ALIST_KEY: ${{ secrets.ALIST_KEY }}
         run: |
           pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
-          
-
-      - name: Upload APP
-        env:
-          GITHUB_TOKEN: ${{ steps.ghapp_login.outputs.GHAPP_TOKEN }}
-        run: |
           pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
           
       # - name: Sentry Release

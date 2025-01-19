@@ -10,7 +10,7 @@ $header = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((Conve
 
 $payload = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes((ConvertTo-Json -InputObject @{
   iat = [System.DateTimeOffset]::UtcNow.AddSeconds(-10).ToUnixTimeSeconds()
-  exp = [System.DateTimeOffset]::UtcNow.AddMinutes(10).ToUnixTimeSeconds()
+  exp = [System.DateTimeOffset]::UtcNow.AddMinutes(5).ToUnixTimeSeconds()
    iss = $AppId 
 }))).TrimEnd('=').Replace('+', '-').Replace('/', '_');
 
@@ -30,5 +30,5 @@ $headers = @{
 $response = Invoke-RestMethod -Uri $uri -Headers $headers -Method Post
 $accessToken = $response.token
 
-gh auth login --with-token $accessToken
-echo "##vso[task.setvariable variable=GHAPP_TOKEN]$accessToken"
+$accessToken | gh auth login --with-token
+$env:GITHUB_TOKEN = $accessToken

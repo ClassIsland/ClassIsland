@@ -16,19 +16,22 @@ Copy-Item ./out_signed/* -Destination ./out/ -Recurse -Force
 
 $version = $(git describe --abbrev=0 --tags)
 $gitCommitId = $(git rev-parse HEAD)
-$infoYaml = $(git tag -l --format='%(contents:body)' $version)
+$infoYaml = $(git tag -l --format='%(contents)' $version) | Join-String -Separator "`n"
 $tagInfo = $(ConvertFrom-Yaml $infoYaml)
 $versionInfo = @{
     Version = $version
     Title = $version
     DownloadInfos = @{}
-    ChangeLogs = $(Get-Content ./docs/ChangeLogs/${tagInfo.primaryVersion}/App.md)
+    ChangeLogs = $(Get-Content ./doc/ChangeLogs/$($tagInfo.primaryVersion)/App.md -Raw)
     Channels = @()
 }
 $versionInfo.Channels = $tagInfo.Channels
 
 $artifacts = $(Get-ChildItem ./out)
-foreach ($artifact in $artifacts | Where-Object Name.StartWith("out_app")){
+foreach ($artifact in $artifacts){
+    if ($artifact.Name.StartsWith("out_app") -ne $true) {
+        continue
+    }
     # TODO: 根据 artifact name 生成对应的 DeployMethod
     $downloadInfo = @{
         "DeployMethod" = 1
@@ -39,29 +42,31 @@ foreach ($artifact in $artifacts | Where-Object Name.StartWith("out_app")){
         "ArchiveSHA256"= $(Get-FileHash $artifact -Algorithm SHA256).Hash
     }
     UploadFile $artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/${version}/"
-    $versionInfo.DownloadInfos[$($artifact.Name)] = $downloadInfo
+    $versionInfo.DownloadInfos[$([System.IO.Path]::GetFileNameWithoutExtension($artifact.Name))] = $downloadInfo
 }
 
-Copy-Item ./docs/ChangeLogs/${tagInfo.primaryVersion}/App.md -Destination ./out/ChangeLogs.md -Force
-ConvertTo-Json $versionInfo | Out-File ./out/index.json
+Copy-Item ./doc/ChangeLogs/$($tagInfo.primaryVersion)/App.md -Destination ./out/ChangeLogs.md -Force
+ConvertTo-Json $versionInfo -Depth 99 | Out-File ./out/index.json
 
 # Upload metadata
-git clone https://github.com/ClassIsland/metadata.git
+$token_base64 = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($env:GITHUB_TOKEN))
+git clone git@github.com:ClassIsland/metadata.git
 cd metadata
 
 git checkout -b metadata/disturb/$version
 if ($(Test-Path ./metadata/disturb/$version) -eq $false) {
-    mkdir out
+    mkdir ./metadata/disturb/$version
 }
 Copy-Item ../out/index.json -Destination ./metadata/disturb/$version/index.json -Force
-$globalIndex = ConvertFrom-Json (Get-Content ./metadata/disturb/index.json)
+$globalIndex = ConvertFrom-Json (Get-Content ./metadata/disturb/index.json -Raw)
+$globalIndex.Versions = [System.Collections.ArrayList]@($globalIndex.Versions)
 $globalIndex.Versions.Add(@{
     Version = $version
     Title = $version
-    Channels = $versionsInfo.Channels
+    Channels = $tagInfo.Channels
     VersionInfoUrl = "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/${version}/index.json"
 })
-ConvertTo-Json $globalIndex | Out-File ./metadata/disturb/index.json
+ConvertTo-Json $globalIndex -Depth 99 | Out-File ./metadata/disturb/index.json
 git add .
 git commit -m "metadata(disturb): release $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId"
 git push origin metadata/disturb/$version
