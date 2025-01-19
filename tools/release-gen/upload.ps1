@@ -1,3 +1,5 @@
+$ErrorActionPreference = "Stop"
+
 Import-Module ./tools/release-gen/alist-utils.psm1
 
 function GenerateDownloadInfo {
@@ -36,7 +38,7 @@ foreach ($artifact in $artifacts | Where-Object Name.StartWith("out_app")){
         "ArchiveSHA256"= $(Get-FileHash $artifact -Algorithm SHA256).Hash
     }
     UploadFile $artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/${version}/"
-    $versionInfo.DownloadInfos[$artifact.Name] = $downloadInfo
+    $versionInfo.DownloadInfos[$($artifact.Name)] = $downloadInfo
 }
 
 Copy-Item ./docs/ChangeLogs/${tagInfo.primaryVersion}/App.md -Destination ./out/ChangeLogs.md -Force

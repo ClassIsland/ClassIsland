@@ -1,3 +1,4 @@
+$ErrorActionPreference = "Stop"
 $AppId = $env:GHAPP_ID  # 使用GitHub App的ID
 $PrivateKey = $env:GHAPP_PRIVATE_KEY  # 使用GitHub App的Private Key
 $InstallationId = $env:GHAPP_INSTALLATION_ID  # 安装ID
