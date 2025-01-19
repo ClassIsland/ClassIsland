@@ -1,6 +1,7 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -23,8 +24,13 @@ using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using System.Diagnostics;
 using ClassIsland.Core.Enums.SettingsWindow;
+using ClassIsland.Models;
+using ClassIsland.Shared.Helpers;
+using CommunityToolkit.Mvvm.Input;
 
 namespace ClassIsland.Views.SettingPages;
+
+using GptSoVitsSpeechSettingsList = ObservableCollection<GptSoVitsSpeechSettings>;
 
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑
@@ -42,6 +48,49 @@ public partial class NotificationSettingsPage : SettingsPageBase
 
     public NotificationSettingsViewModel ViewModel { get; } = new();
 
+    public GptSoVitsSpeechSettingsList GptSoVitsSpeechSettingsPresets { get; }
+
+    public static readonly string GptSoVitsSettingsPresetsPath = System.IO.Path.Combine(App.AppConfigPath,
+        "GptSovitsSettingsPresets.json");
+
+    public static readonly GptSoVitsSpeechSettingsList InternalGptSoVitsSpeechPresets = [
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "派蒙（原神）",
+            GptSoVitsVoiceName = "paimon",
+            IsInternal = true,
+            GptSoVitsServerIp = "paimon.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "既然罗莎莉亚说足迹上有元素力，用元素视野应该能很清楚地看到吧。",
+            GptSoVitsRefAudioPath = "template_audio/paimon.wav"
+
+        },
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "可莉（原神）",
+            GptSoVitsVoiceName = "klee",
+            IsInternal = true,
+            GptSoVitsServerIp = "klee.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "买东西那天还有一个人一起帮着看了款式，那个人好像叫",
+            GptSoVitsRefAudioPath = "template_audio/klee.wav"
+
+        },
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "神里绫华（原神）",
+            GptSoVitsVoiceName = "ayaka",
+            IsInternal = true,
+            GptSoVitsServerIp = "ayaka.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "这里有别于神里家的布景，移步之间，处处都有新奇感。",
+            GptSoVitsRefAudioPath = "template_audio/ayaka.wav"
+        }
+        ];
+
     public NotificationSettingsPage(SettingsService settingsService, INotificationHostService notificationHostService, ISpeechService speechService, IManagementService managementService)
     {
         InitializeComponent();
@@ -51,6 +100,21 @@ public partial class NotificationSettingsPage : SettingsPageBase
         SpeechService = speechService;
         ManagementService = managementService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        
+        GptSoVitsSpeechSettingsPresets =
+            ConfigureFileHelper.LoadConfig<GptSoVitsSpeechSettingsList>(GptSoVitsSettingsPresetsPath);
+        foreach (var preset in GptSoVitsSpeechSettingsPresets.Where(x => x.IsInternal).ToList())
+        {
+            GptSoVitsSpeechSettingsPresets.Remove(preset);
+        }
+
+        foreach (var preset in InternalGptSoVitsSpeechPresets)
+        {
+            GptSoVitsSpeechSettingsPresets.Insert(0, preset);
+        }
+
+        ConfigureFileHelper.SaveConfig(GptSoVitsSettingsPresetsPath, GptSoVitsSpeechSettingsPresets);
+        GptSoVitsSpeechSettingsPresets.CollectionChanged += (_, _) => ConfigureFileHelper.SaveConfig(GptSoVitsSettingsPresetsPath, GptSoVitsSpeechSettingsPresets);
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -93,24 +157,64 @@ public partial class NotificationSettingsPage : SettingsPageBase
         Process.Start(@"C:\WINDOWS\system32\rundll32.exe", @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
     }
 
-     // 新增的 GPTSoVITS 测试语音按钮事件处理
-    private void ButtonTestSpeechingGPTSoVITS_OnClick(object sender, RoutedEventArgs e)
+
+    private void ButtonSaveGptSovitsPreset_OnClick(object sender, RoutedEventArgs e)
     {
-        // 调用 GPTSoVITS 服务进行测试语音
-        // 确保 ViewModel 和 SpeechService 已正确配置
-        SpeechService.ClearSpeechQueue();
-        SpeechService.EnqueueSpeechQueue(ViewModel.TestSpeechTextGPTSoVITS);
+        SaveGptSovitsPreset();
     }
 
-    // 新增的 GPTSoVITS 打开设置按钮事件处理
-    private void ButtonOpenSpeechSettingsGPTSoVITS_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonOpenGptSovitsPresetsDrawer_OnClick(object sender, RoutedEventArgs e)
     {
-        // 打开 GPTSoVITS 的相关设置页面
-        // 请将 URL 替换为实际的 GPTSoVITS 设置页面地址
-        Process.Start(new ProcessStartInfo
+        OpenDrawer("SpeechPresets");
+    }
+
+    [RelayCommand]
+    private void LoadGptSoVitsPreset(GptSoVitsSpeechSettings settings)
+    {
+        SettingsService.Settings.GptSoVitsSpeechSettings = ConfigureFileHelper.CopyObject(settings);
+    }
+
+    [RelayCommand]
+    private void OverwriteGptSoVitsPreset(GptSoVitsSpeechSettings settings)
+    {
+        GptSoVitsSpeechSettingsPresets.Insert(GptSoVitsSpeechSettingsPresets.IndexOf(settings), ConfigureFileHelper.CopyObject(SettingsService.Settings.GptSoVitsSpeechSettings));
+        GptSoVitsSpeechSettingsPresets.Remove(settings);
+    }
+
+    [RelayCommand]
+    private void DuplicateGptSoVitsPreset(GptSoVitsSpeechSettings settings)
+    {
+        var newPreset = ConfigureFileHelper.CopyObject(settings);
+        newPreset.IsInternal = false;
+        GptSoVitsSpeechSettingsPresets.Add(newPreset);
+        ViewModel.SelectedGptSoVitsSpeechPreset = newPreset;
+    }
+
+    [RelayCommand]
+    private void RemoveGptSoVitsPreset(GptSoVitsSpeechSettings settings)
+    {
+        GptSoVitsSpeechSettingsPresets.Remove(settings);
+    }
+
+    private void DataGridPresets_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
+    {
+        if (e.Row.Item is GptSoVitsSpeechSettings settings)
         {
-            FileName = "https://gptsovits.example.com/settings", // 替换为实际 URL
-            UseShellExecute = true
-        });
+            e.Cancel = settings.IsInternal;
+        }
+    }
+
+    private void ButtonSaveGptSovitsPreset2_OnClick(object sender, RoutedEventArgs e)
+    {
+        SaveGptSovitsPreset();
+        OpenDrawer("SpeechPresets");
+    }
+
+    private void SaveGptSovitsPreset()
+    {
+        var newPreset = ConfigureFileHelper.CopyObject(SettingsService.Settings.GptSoVitsSpeechSettings);
+        newPreset.IsInternal = false;
+        GptSoVitsSpeechSettingsPresets.Add(newPreset);
+        ViewModel.SelectedGptSoVitsSpeechPreset = newPreset;
     }
 }

@@ -361,7 +361,7 @@ public partial class App : AppBase, IAppHost
                         {
                             0 => new SystemSpeechService(),
                             1 => new EdgeTtsService(),
-                            2 => new GPTSoVITSService(),
+                            2 => new GptSoVitsService(),
                             _ => new SystemSpeechService()
                         };
                     }
