@@ -12,11 +12,11 @@ jobs:
       # Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       Wap_Project_Directory: ClassIsland/ClassIsland    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
-      artifact_name: out_app_windows_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
+      artifact_name: out_app_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
     strategy:
       matrix:
         trim_assets: ['true', 'false']
-    name: Build_windows_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
+    name: Build_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -130,7 +130,7 @@ jobs:
 
       - name: Create Sign Bundle
         run: |
-          pwsh -ep Bypass -c ./tools/release-gen/signing-bundle.ps1
+          pwsh -ep Bypass -c ./tools/release-gen/create-sign-bundle.ps1
 
       - name: Upload Sign Bundle to artifacts
         id: upload-sign-bundle
