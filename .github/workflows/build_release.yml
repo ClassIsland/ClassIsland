@@ -12,10 +12,11 @@ jobs:
       # Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
       Wap_Project_Directory: ClassIsland/ClassIsland    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
       Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      artifact_name: out_app_windows_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
     strategy:
-      matrix: 
+      matrix:
         trim_assets: [true, false]
-    name: Build (AssetsTrimmed ${{ matrix.trim_assets }})
+    name: Build_windows_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -41,54 +42,14 @@ jobs:
           trim_assets: ${{ matrix.trim_assets }}
         run: |
           ls
-          pwsh -ep Bypass -c ./tools/publish.ps1 $env:trim_assets
-          
-#      - name: Sign application
-#        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
-#        env:
-#          SIGNPATH_TOKEN: ${{ secrets.SIGNPATH_TOKEN }}
-#        run: |
-#          pwsh -ep Bypass -c ./tools/sign.ps1
+          pwsh -ep Bypass -c ./tools/release-gen/publish.ps1 $env:trim_assets
 
       - name: Upload Unsigned APP to artifacts
         id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
-          name: out_app_assetsTrimmed_${{ matrix.trim_assets }}_unsigned
+          name: ${{ env.artifact_name }}
           path: ./out/*.zip
-          
-      - uses: olegtarasov/get-tag@v2.1.4
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
-        id: tagName
-
-      - name: Get commit hash
-        uses: prompt/actions-commit-hash@v3
-        id: commit
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
-        with:
-          prefix: "${{ steps.tagName.outputs.tag }}+"
-          
-      - name: Sign Application
-        uses: signpath/github-action-submit-signing-request@v1
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
-        with:
-          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
-          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
-          project-slug: 'ClassIsland'
-          artifact-configuration-slug: 'zip-single-file'
-          signing-policy-slug: 'release-signing'
-          github-artifact-id: '${{ steps.upload-unsigned-artifact.outputs.artifact-id }}'
-          wait-for-completion: true
-          output-artifact-directory: '/out_signed'
-          parameters: |
-            version: ${{ toJSON(steps.commit.outputs.long) }}
-
-      - name: Upload signed APP to artifacts
-        uses: actions/upload-artifact@v4
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
-        with:
-          name: out_app_assetsTrimmed_${{ matrix.trim_assets }}
-          path: ./out_signed/*.zip
           
   build_nupkg:
     runs-on: windows-latest  # For a list of available runner types, refer to
@@ -124,7 +85,7 @@ jobs:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
-          pwsh -ep Bypass -c ./tools/publish-nupkg.ps1 $env:is_release
+          pwsh -ep Bypass -c ./tools/release-gen/publish-nupkg.ps1 $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
         if: ${{ github.event_name != 'pull_request' }} 
@@ -150,15 +111,64 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - uses: olegtarasov/get-tag@v2.1.4
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        id: tagName
+
+      - name: Get commit hash
+        uses: prompt/actions-commit-hash@v3
+        id: commit
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        with:
+          prefix: "${{ steps.tagName.outputs.tag }}+"
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./out_artifacts
 
-      - name: Pre publish
+      - name: Create Sign Bundle
         run: |
-          pwsh -ep Bypass -c ./tools/pre-publish.ps1
+          pwsh -ep Bypass -c ./tools/release-gen/signing-bundle.ps1
+
+      - name: Upload Sign Bundle to artifacts
+        id: upload-sign-bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sign-bundle
+          path: ./ci_tmp/sign_bundle/*
+
+      - name: Sign Application
+        uses: signpath/github-action-submit-signing-request@v1
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        with:
+          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
+          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
+          project-slug: 'ClassIsland'
+          artifact-configuration-slug: 'sign_bundle'
+          signing-policy-slug: 'test-signing'  # TODO: 记得改成 release-signing
+          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: '/out_signed'
+          parameters: |
+            version: ${{ toJSON(steps.commit.outputs.long) }}
+
+      - name: Login GitHub APP
+        id: ghapp_login
+        env:
+          GHAPP_PRIVATE_KEY: ${{ secrets.GHAPP_PRIVATE_KEY }}
+          GHAPP_ID: 998668
+          GHAPP_INSTALLATION_ID: 54893567
+        run: |
+          pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
+          
+
+      - name: Upload APP
+        env:
+          GITHUB_TOKEN: ${{ steps.ghapp_login.outputs.GHAPP_TOKEN }}
+        run: |
+          pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
           
       # - name: Sentry Release
       #   uses: getsentry/action-release@v1.7.0
@@ -173,26 +183,26 @@ jobs:
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./out/ClassIsland.zip,./out/*.zip
+          artifacts: ./out/*.zip
           draft: true
-          bodyFile: ./out/checksums.md
+          bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' }}
-        env:
-          NUGET_KEY: ${{ secrets.NUGET_KEY }}
-        run: |
-          ls
-          cd out
-          dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
+      # - name: Upload Nuget packages to NuGet Gallery
+      #   if: ${{ github.event_name != 'pull_request' }}
+      #   env:
+      #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      #   run: |
+      #     ls
+      #     cd out
+      #     dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
           
-      - name: Upload to AppCenter
-        env:
-          APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
-        run: |
-          $env:app_ver = (git describe --abbrev=0 --tags)
-          Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
-          pwsh -ep Bypass -c .\tools\pre-appcenter-upload.ps1
-          pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
+      # - name: Upload to AppCenter
+      #   env:
+      #     APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
+      #   run: |
+      #     $env:app_ver = (git describe --abbrev=0 --tags)
+      #     Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
+      #     pwsh -ep Bypass -c .\tools\release-gen\pre-appcenter-upload.ps1
+      #     pwsh -ep Bypass -c .\tools\release-gen\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
 
