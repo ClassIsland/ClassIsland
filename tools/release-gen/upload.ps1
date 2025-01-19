@@ -47,8 +47,12 @@ ConvertTo-Json $versionInfo | Out-File ./out/index.json
 # Upload metadata
 git clone https://github.com/ClassIsland/metadata.git
 cd metadata
+
 git checkout -b metadata/disturb/$version
-Copy-Item ../out/index.json -Destination .//metadata/disturb/$version/index.json -Force
+if ($(Test-Path ./metadata/disturb/$version) -eq $false) {
+    mkdir out
+}
+Copy-Item ../out/index.json -Destination ./metadata/disturb/$version/index.json -Force
 $globalIndex = ConvertFrom-Json (Get-Content ./metadata/disturb/index.json)
 $globalIndex.Versions.Add(@{
     Version = $version
