@@ -15,7 +15,7 @@ jobs:
       artifact_name: out_app_windows_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
     strategy:
       matrix:
-        trim_assets: [true, false]
+        trim_assets: ['true', 'false']
     name: Build_windows_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_singleFile
     steps:
       - name: Checkout
