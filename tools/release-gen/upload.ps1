@@ -20,7 +20,9 @@ $versionInfo = @{
 }
 $versionInfo.Channels = $tagInfo.Channels
 
-Move-Item ./out/out_app_* -Destination ./out/ClassIsland_app_* -Force
+foreach ($artifact in $(Get-ChildItem ./out)) {
+    Move-Item $artifact.FullName -Destination $artifact.FullName.Replace("out_app_", "ClassIsland_app_") -Force
+}
 $artifacts = $(Get-ChildItem ./out)
 $hashSummary = "
 
@@ -60,8 +62,8 @@ $hashSummary | Add-Content ./out/ChangeLogs.md
 ConvertTo-Json $versionInfo -Depth 99 | Out-File ./out/index.json
 
 # Upload metadata
-git config --global user.name 'classisland-bot'
-git config --global user.email 'elf-elysia.noreply@classisland.tech'
+# git config --global user.name 'classisland-bot'
+# git config --global user.email 'elf-elysia.noreply@classisland.tech'
 git clone git@github.com:ClassIsland/metadata.git
 cd metadata
 
