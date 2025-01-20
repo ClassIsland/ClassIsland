@@ -159,7 +159,7 @@ jobs:
           organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
           project-slug: 'ClassIsland'
           artifact-configuration-slug: 'sign_bundle'
-          signing-policy-slug: 'test-signing'  # TODO: 记得改成 release-signing
+          signing-policy-slug: 'release-signing'  # TODO: 记得改成 release-signing
           github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: '/out_signed'
@@ -203,22 +203,22 @@ jobs:
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
-      # - name: Upload Nuget packages to NuGet Gallery
-      #   if: ${{ github.event_name != 'pull_request' }}
-      #   env:
-      #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
-      #   run: |
-      #     ls
-      #     cd out
-      #     dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Upload Nuget packages to NuGet Gallery
+        if: ${{ github.event_name != 'pull_request' }}
+        env:
+          NUGET_KEY: ${{ secrets.NUGET_KEY }}
+        run: |
+          ls
+          cd out
+          dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
           
-      # - name: Upload to AppCenter
-      #   env:
-      #     APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
-      #   run: |
-      #     $env:app_ver = (git describe --abbrev=0 --tags)
-      #     Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
-      #     pwsh -ep Bypass -c .\tools\release-gen\pre-appcenter-upload.ps1
-      #     pwsh -ep Bypass -c .\tools\release-gen\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
+      - name: Upload to AppCenter
+        env:
+          APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
+        run: |
+          $env:app_ver = (git describe --abbrev=0 --tags)
+          Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
+          pwsh -ep Bypass -c .\tools\release-gen\pre-appcenter-upload.ps1
+          pwsh -ep Bypass -c .\tools\release-gen\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
 
 
