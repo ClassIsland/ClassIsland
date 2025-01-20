@@ -3,7 +3,7 @@ name: Build
 on:
   push:
     tags-ignore: 
-      - **
+      - "**"
   workflow_call:
     inputs:
       release_tag:

@@ -18,7 +18,7 @@ on:
         
 jobs:    
   build:
-    uses: ./build_release.yml
+    uses: ClassIsland/ClassIsland/.github/workflows/build_release.yml@develop/ci/update-v2-intergation
     with:
       release_tag: ${{ github.event.inputs.release_tag }}
     secrets: inherit
