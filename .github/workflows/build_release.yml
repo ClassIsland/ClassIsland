@@ -37,7 +37,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_call' && github.ref || github.event.inputs.release_tag }} 
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
       
       - name: List files
         run: ls
@@ -81,6 +81,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
       - name: List files
         run: ls
@@ -126,6 +127,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
       - uses: olegtarasov/get-tag@v2.1.4
         if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
@@ -205,7 +208,7 @@ jobs:
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
-
+          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
       # - name: Upload Nuget packages to NuGet Gallery
       #   if: ${{ github.event_name != 'pull_request' }}
       #   env:
