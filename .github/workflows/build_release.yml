@@ -120,7 +120,7 @@ jobs:
 
   publish:
     runs-on: windows-latest
-    if: ${{ github.event.inputs.release_tag }}
+    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}
     needs: [ build_app, build_nupkg ]
     steps:
       - name: Checkout
@@ -131,13 +131,11 @@ jobs:
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
       - uses: olegtarasov/get-tag@v2.1.4
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
         id: tagName
 
       - name: Get commit hash
         uses: prompt/actions-commit-hash@v3
         id: commit
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
         with:
           prefix: "${{ steps.tagName.outputs.tag }}+"
       
@@ -159,7 +157,6 @@ jobs:
 
       - name: Sign Application
         uses: signpath/github-action-submit-signing-request@v1
-        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
         with:
           api-token: '${{ secrets.SIGNPATH_TOKEN }}'
           organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
