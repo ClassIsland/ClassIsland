@@ -130,14 +130,11 @@ jobs:
           submodules: recursive
           ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
-      - uses: olegtarasov/get-tag@v2.1.4
-        id: tagName
-
       - name: Get commit hash
         uses: prompt/actions-commit-hash@v3
         id: commit
         with:
-          prefix: "${{ steps.tagName.outputs.tag }}+"
+          prefix: "${{ github.event.inputs.release_tag }}+"
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
