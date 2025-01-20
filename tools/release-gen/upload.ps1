@@ -62,8 +62,8 @@ $hashSummary | Add-Content ./out/ChangeLogs.md
 ConvertTo-Json $versionInfo -Depth 99 | Out-File ./out/index.json
 
 # Upload metadata
-# git config --global user.name 'classisland-bot'
-# git config --global user.email 'elf-elysia.noreply@classisland.tech'
+git config --global user.name 'classisland-bot'
+git config --global user.email 'elf-elysia.noreply@classisland.tech'
 git clone git@github.com:ClassIsland/metadata.git
 cd metadata
 
@@ -84,4 +84,4 @@ ConvertTo-Json $globalIndex -Depth 99 | Out-File ./metadata/disturb/index.json
 git add .
 git commit -m "metadata(disturb): release $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId"
 git push origin metadata/disturb/$version
-gh pr create -R ClassIsland/metadata -t "Add metadata for $version" -b "Add metadata for $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId" -B main
+gh pr create -R ClassIsland/metadata -t "Add metadata for $version" -b "Add metadata for $version at https://github.com/ClassIsland/ClassIsland/commit/$gitCommitId" -B main -a HelloWRC
