@@ -1,0 +1,131 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: '发布标签'
+        required: true
+        type: string
+      primary_version:
+        description: '主发布版本'
+        required: true
+        type: string
+      channels:
+        description: '发布通道'
+        required: true
+        type: string
+        
+jobs:    
+  build:
+    uses: ./build_release.yml
+    with:
+      release_tag: ${{ github.event.inputs.release_tag }}
+    secrets: inherit
+
+  publish:
+    runs-on: windows-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: olegtarasov/get-tag@v2.1.4
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        id: tagName
+
+      - name: Get commit hash
+        uses: prompt/actions-commit-hash@v3
+        id: commit
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        with:
+          prefix: "${{ steps.tagName.outputs.tag }}+"
+      
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./out_artifacts
+
+      - name: Create Sign Bundle
+        run: |
+          pwsh -ep Bypass -c ./tools/release-gen/create-sign-bundle.ps1
+
+      - name: Upload Sign Bundle to artifacts
+        id: upload-sign-bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sign-bundle
+          path: ./ci_tmp/sign_bundle/*
+
+      - name: Sign Application
+        uses: signpath/github-action-submit-signing-request@v1
+        if: ${{ startsWith(github.ref, 'refs/tags/') && github.event_name != 'pull_request' }}
+        with:
+          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
+          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
+          project-slug: 'ClassIsland'
+          artifact-configuration-slug: 'sign_bundle'
+          signing-policy-slug: 'test-signing'  # TODO: 记得改成 release-signing
+          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: '/out_signed'
+          parameters: |
+            version: ${{ toJSON(steps.commit.outputs.long) }}
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.METADATA_DEPLOY_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Upload APP
+        env:
+          GHAPP_PRIVATE_KEY: ${{ secrets.GHAPP_PRIVATE_KEY }}
+          GHAPP_ID: 998668
+          GHAPP_INSTALLATION_ID: 54893567
+          ALIST_HOST: ${{ secrets.ALIST_HOST }}
+          ALIST_KEY: ${{ secrets.ALIST_KEY }}
+          primaryVersion: ${{ github.event.inputs.primary_version }}
+          channels: ${{ github.event.inputs.channels }}
+        run: |
+          pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
+          pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
+          
+      # - name: Sentry Release
+      #   uses: getsentry/action-release@v1.7.0
+      #   env:
+      #     SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     SENTRY_ORG: classisland
+      #     SENTRY_PROJECT: classisland
+      #     SENTRY_URL: ${{ vars.SENTRY_URL }}
+      #   with:
+      #     environment: production
+      
+      - name: Upload APP to release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./out/*.zip
+          draft: true
+          bodyFile: ./out/ChangeLogs.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Upload Nuget packages to NuGet Gallery
+      #   if: ${{ github.event_name != 'pull_request' }}
+      #   env:
+      #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
+      #   run: |
+      #     ls
+      #     cd out
+      #     dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
+          
+      # - name: Upload to AppCenter
+      #   env:
+      #     APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
+      #   run: |
+      #     $env:app_ver = (git describe --abbrev=0 --tags)
+      #     Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
+      #     pwsh -ep Bypass -c .\tools\release-gen\pre-appcenter-upload.ps1
+      #     pwsh -ep Bypass -c .\tools\release-gen\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
+
