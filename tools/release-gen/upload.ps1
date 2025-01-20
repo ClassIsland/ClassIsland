@@ -1,33 +1,34 @@
 $ErrorActionPreference = "Stop"
 
-Install-Module powershell-yaml -Force
 Import-Module ./tools/release-gen/alist-utils.psm1
-
-function GenerateDownloadInfo {
-    param (
-        $artifact_name,
-        $artifact_path
-    )
-
-}
 
 # Generate metadata & upload artifacts
 Copy-Item ./out_signed/* -Destination ./out/ -Recurse -Force
 
 $version = $(git describe --abbrev=0 --tags)
 $gitCommitId = $(git rev-parse HEAD)
-$infoYaml = $(git tag -l --format='%(contents)' $version) | Join-String -Separator "`n"
-$tagInfo = $(ConvertFrom-Yaml $infoYaml)
+$infoJson = $(git tag -n1 --format='%(subject)' $version).Split("`n")[0]
+Write-Output $infoJson
+$tagInfo = $(ConvertFrom-Json $infoJson)
 $versionInfo = @{
     Version = $version
     Title = $version
     DownloadInfos = @{}
-    ChangeLogs = $(Get-Content ./doc/ChangeLogs/$($tagInfo.primaryVersion)/App.md -Raw)
+    ChangeLogs = $(Get-Content ./doc/ChangeLogs/$($tagInfo.PrimaryVersion)/App.md -Raw)
     Channels = @()
 }
 $versionInfo.Channels = $tagInfo.Channels
 
 $artifacts = $(Get-ChildItem ./out)
+$hashSummary = "
+
+> [!important]
+> 下载时请注意核对文件 SHA256 是否正确。
+
+| 文件名 | SHA256 |
+| --- | --- |
+"
+$legaceyMD5Hashes = [ordered]@{}
 foreach ($artifact in $artifacts){
     if ($artifact.Name.StartsWith("out_app") -ne $true) {
         continue
@@ -43,13 +44,18 @@ foreach ($artifact in $artifacts){
     }
     UploadFile $artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/${version}/"
     $versionInfo.DownloadInfos[$([System.IO.Path]::GetFileNameWithoutExtension($artifact.Name))] = $downloadInfo
+    $hashSummary +=  "| $($artifact.Name) | ``$($downloadInfo.ArchiveSHA256)`` |`n"
+    $legaceyMD5Hashes.Add($artifact.Name, (Get-FileHash $artifact -Algorithm MD5).Hash)
 }
 
 Copy-Item ./doc/ChangeLogs/$($tagInfo.primaryVersion)/App.md -Destination ./out/ChangeLogs.md -Force
+
+$hashSummary | Add-Content ./out/ChangeLogs.md
+"<!-- CLASSISLAND_PKG_MD5 $(ConvertTo-Json $legaceyMD5Hashes -Compress) -->" | Add-Content ./out/ChangeLogs.md 
+
 ConvertTo-Json $versionInfo -Depth 99 | Out-File ./out/index.json
 
 # Upload metadata
-$token_base64 = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes($env:GITHUB_TOKEN))
 git clone git@github.com:ClassIsland/metadata.git
 cd metadata
 
