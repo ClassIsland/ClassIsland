@@ -235,7 +235,8 @@
                          Style="{StaticResource ComponentListBoxStyle}"
                          SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
                 </ListBox>
-            </StackPanel></GroupBox>
+            </StackPanel>
+        </GroupBox>
 
         <!-- ROW 4 组件设置 -->
         <Grid Grid.Row="4" HorizontalAlignment="Stretch">
@@ -525,6 +526,25 @@
                     </ContentPresenter>
                 </TabItem>
             </TabControl>
+
+            <Grid MaxWidth="750" Visibility="{Binding ViewModel.IsComponentAdvancedSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right">
+                    <TextBox Text="{Binding ViewModel.SelectedComponentSettings.RelativeLineNumber, Converter={StaticResource IntToStringConverter}}"
+                             Width="70"
+                             materialDesign:HintAssist.Hint="相对行号"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Content="{materialDesign:PackIcon ArrowUp}"
+                            Click="ButtonMoveToPrevLine_OnClick"
+                            ToolTip="移动到上一行"/>
+                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Content="{materialDesign:PackIcon ArrowDown}"
+                            Click="ButtonMoveToNextLine_OnClick"
+                            ToolTip="移动到下一行"/>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </controls:SettingsPageBase>

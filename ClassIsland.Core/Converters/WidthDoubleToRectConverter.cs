@@ -21,12 +21,12 @@ public class WidthDoubleToRectConverter : IMultiValueConverter
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        var w = Math.Max(0, (double)values[0]);
-        var gw = Math.Max(0, (double)values[1]);
-        var gh = Math.Max(0, (double)values[2]);
-        var l = (int)values[3];
-        var rX = (double)values[4];
-        var rY = (double)values[5];
+        var w = Math.Max(0, values[0] as double? ?? 0);
+        var gw = Math.Max(0, values[1] as double? ?? 0);
+        var gh = Math.Max(0, values[2] as double? ?? 0);
+        var l = values[3] as int? ?? 0;
+        var rX = values[4] as double? ?? 0;
+        var rY = values[5] as double? ?? 0; 
 
         var px = 0.0;
         if (double.IsNaN(gw))

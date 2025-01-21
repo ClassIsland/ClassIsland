@@ -271,4 +271,16 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
                 break;
         }
     }
+
+    private void ButtonMoveToPrevLine_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedComponentSettings != null) 
+            ViewModel.SelectedComponentSettings.RelativeLineNumber--;
+    }
+
+    private void ButtonMoveToNextLine_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedComponentSettings != null)
+            ViewModel.SelectedComponentSettings.RelativeLineNumber++;
+    }
 }

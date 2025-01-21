@@ -21,6 +21,8 @@ using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Models;
+using ClassIsland.Models.EventArgs;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
@@ -43,6 +45,7 @@ using Application = System.Windows.Application;
 using Window = System.Windows.Window;
 using NAudio.Wave.SampleProviders;
 using Linearstar.Windows.RawInput;
+using ProgressBar = System.Windows.Controls.ProgressBar;
 using WindowChrome = System.Windows.Shell.WindowChrome;
 
 
@@ -125,6 +128,13 @@ public partial class MainWindow : Window
     public IRulesetService RulesetService { get; }
     public IWindowRuleService WindowRuleService { get; }
 
+    public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
+
+    public event EventHandler<RawInputEventArgs>? RawInputEvent;
+
+    public event EventHandler<MainWindowAnimationEventArgs>? MainWindowAnimationEvent;
+
+
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
 
@@ -132,6 +142,15 @@ public partial class MainWindow : Window
     {
         get { return (double)GetValue(BackgroundWidthProperty); }
         set { SetValue(BackgroundWidthProperty, value); }
+    }
+
+    public static readonly DependencyProperty NotificationProgressBarValueProperty = DependencyProperty.Register(
+        nameof(NotificationProgressBarValue), typeof(double), typeof(MainWindow), new PropertyMetadata(default(double)));
+
+    public double NotificationProgressBarValue
+    {
+        get { return (double)GetValue(NotificationProgressBarValueProperty); }
+        set { SetValue(NotificationProgressBarValueProperty, value); }
     }
 
     public MainWindow(SettingsService settingsService, 
@@ -254,6 +273,11 @@ public partial class MainWindow : Window
         return a;
     }
 
+    private void BeginStoryboardInLine(string name)
+    {
+        MainWindowAnimationEvent?.Invoke(this, new MainWindowAnimationEventArgs(name));
+    }
+
     private void UpdateMouseStatus()
     {
         if (PresentationSource.FromVisual(this) == null)
@@ -264,7 +288,7 @@ public partial class MainWindow : Window
         try
         {
             GetCursorPos(out var ptr);
-            ViewModel.IsMouseIn = GetMouseStatusByPos(ptr);
+            MousePosChanged?.Invoke(this, new MousePosChangedEventArgs(ptr));
         }
         catch (Exception ex)
         {
@@ -296,9 +320,13 @@ public partial class MainWindow : Window
     public Point GetCenter()
     {
         GetCurrentDpi(out var dpi, out _);
-        var p = GridWrapper.TranslatePoint(new Point(GridWrapper.ActualWidth / 2, GridWrapper.ActualHeight / 2), this);
+        
+        if (VisualTreeUtils.FindChildVisualByName<Grid>(this, "PART_GridWrapper") is not { } gridWrapper) 
+            return new Point(0, 0);
+        var p = gridWrapper.TranslatePoint(new Point(gridWrapper.ActualWidth / 2, gridWrapper.ActualHeight / 2), this);
         p.Y = Top + ActualHeight / 2;
         return p;
+
     }
 
     private async Task ProcessNotification()
@@ -357,7 +385,7 @@ public partial class MainWindow : Window
                 {
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
                 }
-                BeginStoryboard("OverlayMaskIn");
+                BeginStoryboardInLine("OverlayMaskIn");
                 // 播放提醒音效
                 if (settings.IsNotificationSoundEnabled && ViewModel.Settings.AllowNotificationSound)
                 {
@@ -392,7 +420,7 @@ public partial class MainWindow : Window
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
                 if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
                 {
-                    BeginStoryboard("OverlayMaskOutDirect");
+                    BeginStoryboardInLine("OverlayMaskOutDirect");
                 }
                 else
                 {
@@ -401,7 +429,7 @@ public partial class MainWindow : Window
                     {
                         SpeechService.EnqueueSpeechQueue(request.OverlaySpeechContent);
                     }
-                    BeginStoryboard("OverlayMaskOut");
+                    BeginStoryboardInLine("OverlayMaskOut");
                     ViewModel.OverlayRemainStopwatch.Restart();
                     // 倒计时动画
                     var da = new DoubleAnimation()
@@ -414,8 +442,8 @@ public partial class MainWindow : Window
                     var storyboard = new Storyboard()
                     {
                     };
-                    Storyboard.SetTarget(da, OverlayTimeProgressBar);
-                    Storyboard.SetTargetProperty(da, new PropertyPath(RangeBase.ValueProperty));
+                    Storyboard.SetTarget(da, this);
+                    Storyboard.SetTargetProperty(da, new PropertyPath(NotificationProgressBarValueProperty));
                     storyboard.Children.Add(da);
                     storyboard.Begin();
                     await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.OverlayDuration),
@@ -427,7 +455,7 @@ public partial class MainWindow : Window
 
             if (NotificationHostService.RequestQueue.Count < 1)
             {
-                BeginStoryboard("OverlayOut");
+                BeginStoryboardInLine("OverlayOut");
             }
             await request.CompletedTokenSource.CancelAsync();
         }
@@ -582,36 +610,7 @@ public partial class MainWindow : Window
             RawInputUpdateStopWatch.Restart();
             // Create an RawInputData from the handle stored in lParam.
             var data = RawInputData.FromHandle(lParam);
-
-            switch (data)
-            {
-                case RawInputDigitizerData digitizerData:
-                {
-                    var contacts = digitizerData.Contacts;
-                    //Logger.LogTrace("TOUCH {}", string.Join(", ", contacts.ToList().Select(x => $"({x.X}, {x.Y} + {x.Width})")));
-                    var r = ViewModel.IsMouseIn =
-                        contacts.ToList().Exists(x => GetMouseStatusByPos(new System.Drawing.Point(x.X, x.Y)));
-                    if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
-                    {
-                        TouchInFadingTimer.Stop();
-                        TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
-                        TouchInFadingTimer.Start();
-                    }
-
-                    if (!r)
-                    {
-                        TouchInFadingTimer.Stop();
-                    }
-                    break;
-                }
-                case RawInputMouseData mouseData:
-                    //Logger.LogTrace("MOUSE ({}, {}) {}", mouseData.Mouse.LastX, mouseData.Mouse.LastY, mouseData.Mouse.Buttons);
-                    //if (TouchInFadingTimer.IsEnabled)
-                        TouchInFadingTimer.Stop();
-                    UpdateMouseStatus();
-                    break;
-            }
-
+            RawInputEvent?.Invoke(this, new RawInputEventArgs(data));
         }
 
         if (msg == 0x0047) // WM_WINDOWPOSCHANGED

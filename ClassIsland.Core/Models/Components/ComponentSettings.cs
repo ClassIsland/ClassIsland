@@ -33,6 +33,8 @@ public class ComponentSettings : ObservableRecipient
     private bool _isFixedWidthEnabled = false;
     private double _fixedWidth = 200;
     private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Stretch;
+    private int _relativeLineNumber = 0;
+    private bool _isVisible = false;
 
     /// <summary>
     /// 要显示的组件Id，ClassIsland用这个来索引组件，与<see cref="ComponentInfo"/>的Guid一致。
@@ -232,6 +234,20 @@ public class ComponentSettings : ObservableRecipient
     #region Layouts
 
     /// <summary>
+    /// 相对行号
+    /// </summary>
+    public int RelativeLineNumber
+    {
+        get => _relativeLineNumber;
+        set
+        {
+            if (value == _relativeLineNumber) return;
+            _relativeLineNumber = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
     /// 是否启用最小宽度
     /// </summary>
     public bool IsMinWidthEnabled
@@ -339,4 +355,19 @@ public class ComponentSettings : ObservableRecipient
     }
 
     #endregion
+
+    /// <summary>
+    /// 组件当前是否可见
+    /// </summary>
+    [JsonIgnore]
+    public bool IsVisible
+    {
+        get => _isVisible;
+        internal set
+        {
+            if (value == _isVisible) return;
+            _isVisible = value;
+            OnPropertyChanged();
+        }
+    }
 }

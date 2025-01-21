@@ -20,7 +20,8 @@
         xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
-        xmlns:controls1="clr-namespace:ClassIsland.Controls;assembly=ClassIsland.Core"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         TextElement.FontSize="14"
@@ -171,6 +172,23 @@
                 <MenuItem Header="FitSize" Click="MenuItemDebugFitSize_OnClick"/>
             </MenuItem>
         </ContextMenu>
+        <CollectionViewSource x:Key="ComponentsCollectionViewSource"
+                              Source="{Binding ComponentsService.CurrentComponents}"
+                              IsLiveGroupingRequested="True"
+                              IsLiveSortingRequested="True">
+            <!--<CollectionViewSource.LiveSortingProperties>
+                <system:String>RelativeLineNumber</system:String>
+            </CollectionViewSource.LiveSortingProperties>
+            <CollectionViewSource.SortDescriptions>
+                <componentModel:SortDescription PropertyName="RelativeLineNumber"/>
+            </CollectionViewSource.SortDescriptions>-->
+            <CollectionViewSource.LiveFilteringProperties>
+                <system:String>RelativeLineNumber</system:String>
+            </CollectionViewSource.LiveFilteringProperties>
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="RelativeLineNumber"/>
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
 
         <!--#region StoryBoards-->
         <Storyboard x:Key="OverlayMaskIn">
@@ -372,15 +390,6 @@
     <Window.Style>
         <Style TargetType="Window">
             <Style.Triggers>
-                <!-- 鼠标移入 -->
-                <DataTrigger Binding="{Binding ViewModel.IsMainWindowFaded, Mode=OneWay}" Value="True">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
                 <!-- Debug -->
                 <DataTrigger Binding="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Mode=OneWay}" Value="True">
                     <Setter Property="Background" Value="#2FAA0000"/>
@@ -500,164 +509,196 @@
                 <Border.Resources>
 
                 </Border.Resources>
-                <Grid HorizontalAlignment="Stretch"
-                      ClipToBounds="True">
-                    <Grid.Style>
-                        <!-- 贴靠Style -->
-                        <Style TargetType="Grid">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
-                                             Value="0">
-                                    <Setter Property="Margin" Value="0 0 8 8" />
-                                    <Setter Property="HorizontalAlignment" Value="Left" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
-                                             Value="1">
-                                    <Setter Property="Margin" Value="8 0 8 8" />
-                                    <Setter Property="HorizontalAlignment" Value="Center" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
-                                             Value="2">
-                                    <Setter Property="Margin" Value="8 0 0 8" />
-                                    <Setter Property="HorizontalAlignment" Value="Right" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
-                                             Value="3">
-                                    <Setter Property="Margin" Value="0 8 8 0" />
-                                    <Setter Property="HorizontalAlignment" Value="Left" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
-                                             Value="4">
-                                    <Setter Property="Margin" Value="8 8 8 0" />
-                                    <Setter Property="HorizontalAlignment" Value="Center" />
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
-                                             Value="5">
-                                    <Setter Property="Margin" Value="8 8 0 0" />
-                                    <Setter Property="HorizontalAlignment" Value="Right" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
-                    <Grid.Clip>
-                        <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
-                            <Binding Path="BackgroundWidth" Mode="OneWay"/>
-                            <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}"/>
-                            <Binding Path="ActualHeight" Mode="OneWay" RelativeSource="{RelativeSource Self}"/>
-                            <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"/>
-                            <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"/>
-                            <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"/>
-                        </MultiBinding>
-                    </Grid.Clip>
-                    <!-- Background -->
-                    <Border x:Name="BackgroundBorder"
-                            Width="{Binding BackgroundWidth, Mode=OneWay}"
-                            Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}"
-                            Style="{StaticResource BackgroundBorderStyle}"
-                            SnapsToDevicePixels="True"
-                            Height="40" d:IsHidden="True" />
-                    <Border x:Name="BackgroundBorderOverlay"
-                            Width="{Binding ActualWidth, ElementName=BackgroundBorder, Mode=OneWay}"
-                            Background="{DynamicResource MaterialDesignPaper}"
-                            Opacity="0"
-                            Style="{StaticResource DockingStyle}"
-                            SnapsToDevicePixels="True"
-                            Height="40" d:IsHidden="True">
-                    </Border>
-                    <Grid Style="{StaticResource DockingStyle}"
-                          Width="{Binding BackgroundWidth, Mode=OneWay}"
-                          Height="40"
-                          SnapsToDevicePixels="True"
-                          ClipToBounds="True">
-                        <materialDesign:ColorZone x:Name="BackgroundBorderOverlayMask" Mode="PrimaryMid"
-                                                  VerticalAlignment="Stretch"
-                                                  RenderTransformOrigin="0.5,0.5">
-                            <materialDesign:ColorZone.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform />
-                                    <SkewTransform />
-                                    <RotateTransform />
-                                    <TranslateTransform Y="-50" />
-                                </TransformGroup>
-                            </materialDesign:ColorZone.RenderTransform>
-                        </materialDesign:ColorZone>
-                    </Grid>
-
-                    <Grid x:Name="GridWrapper" ClipToBounds="True"
-                          Height="40" Style="{StaticResource DockingStyle}"
-                          SizeChanged="GridWrapper_OnSizeChanged"
-                          SnapsToDevicePixels="True">
-
-                        <Grid Height="40"
-                              x:Name="GridContentRoot"
-                              Margin="12 0">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <ItemsControl Grid.Column="0"
-                                          ItemsSource="{Binding ComponentsService.CurrentComponents}"
-                                          VerticalContentAlignment="Stretch">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <StackPanel Orientation="Horizontal" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <ci:ComponentPresenter IsOnMainWindow="True" 
-                                                                         Settings="{Binding}"
-                                                                         HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                                         HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                                         Margin="6 0" />
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-
-                        </Grid>
-
-                        <!-- Overlay View -->
-                        <Grid x:Name="GridOverlay"
+                <Grid>
+                    <Grid HorizontalAlignment="Stretch"
+                          ClipToBounds="True"
+                          Visibility="Collapsed"
+                          Opacity="0">
+                        <Grid.Style>
+                            <!-- 贴靠Style -->
+                            <Style TargetType="Grid">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                                 Value="0">
+                                        <Setter Property="Margin" Value="0 0 8 8" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                                 Value="1">
+                                        <Setter Property="Margin" Value="8 0 8 8" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                                 Value="2">
+                                        <Setter Property="Margin" Value="8 0 0 8" />
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                                 Value="3">
+                                        <Setter Property="Margin" Value="0 8 8 0" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                                 Value="4">
+                                        <Setter Property="Margin" Value="8 8 8 0" />
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                                 Value="5">
+                                        <Setter Property="Margin" Value="8 8 0 0" />
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Grid.Style>
+                        <Grid.Clip>
+                            <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                                <Binding Path="BackgroundWidth" Mode="OneWay"/>
+                                <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}"/>
+                                <Binding Path="ActualHeight" Mode="OneWay" RelativeSource="{RelativeSource Self}"/>
+                                <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"/>
+                                <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"/>
+                                <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"/>
+                            </MultiBinding>
+                        </Grid.Clip>
+                        <!-- Background -->
+                        <Border x:Name="BackgroundBorder"
+                                Width="{Binding BackgroundWidth, Mode=OneWay}"
+                                Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay}"
+                                Style="{StaticResource BackgroundBorderStyle}"
+                                SnapsToDevicePixels="True"
+                                Height="40" d:IsHidden="True" />
+                        <Border x:Name="BackgroundBorderOverlay"
+                                Width="{Binding ActualWidth, ElementName=BackgroundBorder, Mode=OneWay}"
+                                Background="{DynamicResource MaterialDesignPaper}"
+                                Opacity="0"
+                                Style="{StaticResource DockingStyle}"
+                                SnapsToDevicePixels="True"
+                                Height="40" d:IsHidden="True">
+                        </Border>
+                        <Grid Style="{StaticResource DockingStyle}"
+                              Width="{Binding BackgroundWidth, Mode=OneWay}"
+                              Height="40"
                               SnapsToDevicePixels="True"
                               ClipToBounds="True">
-                            <Border CornerRadius="20"
-                                    ClipToBounds="True">
-
-                                <ProgressBar VerticalAlignment="Stretch"
-                                             Maximum="1"
-                                             x:Name="OverlayTimeProgressBar"
-                                             materialDesign:TransitionAssist.DisableTransitions="True"
-                                             Height="{Binding Height, ElementName=GridWrapper}"
-                                             Foreground="{DynamicResource MaterialDesignBody}"
-                                             Background="Transparent"
-                                             BorderBrush="Transparent"
-                                             Opacity="0.16">
-                                </ProgressBar>
-                            </Border>
-                            <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}" />
-
+                            <materialDesign:ColorZone x:Name="BackgroundBorderOverlayMask" Mode="PrimaryMid"
+                                                      VerticalAlignment="Stretch"
+                                                      RenderTransformOrigin="0.5,0.5">
+                                <materialDesign:ColorZone.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform />
+                                        <SkewTransform />
+                                        <RotateTransform />
+                                        <TranslateTransform Y="-50" />
+                                    </TransformGroup>
+                                </materialDesign:ColorZone.RenderTransform>
+                            </materialDesign:ColorZone>
                         </Grid>
 
-                        <!-- Mask -->
-                        <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" HorizontalAlignment="Stretch"
-                                                  VerticalAlignment="Stretch"
-                                                  RenderTransformOrigin="0.5,0.5"
-                                                  SnapsToDevicePixels="True">
-                            <materialDesign:ColorZone.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform />
-                                    <SkewTransform />
-                                    <RotateTransform />
-                                    <TranslateTransform Y="-50" />
-                                </TransformGroup>
-                            </materialDesign:ColorZone.RenderTransform>
-                            <ContentPresenter x:Name="OverlayMaskContent"
-                                              Content="{Binding ViewModel.CurrentMaskElement}" />
-                        </materialDesign:ColorZone>
+                        <Grid x:Name="GridWrapper" ClipToBounds="True"
+                              Height="40" Style="{StaticResource DockingStyle}"
+                              SizeChanged="GridWrapper_OnSizeChanged"
+                              SnapsToDevicePixels="True">
+
+                            <Grid Height="40"
+                                  x:Name="GridContentRoot"
+                                  Margin="12 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                            
+
+                            </Grid>
+
+                            <!-- Overlay View -->
+                            <Grid x:Name="GridOverlay"
+                                  SnapsToDevicePixels="True"
+                                  ClipToBounds="True">
+                                <Border CornerRadius="20"
+                                        ClipToBounds="True">
+
+                                    <ProgressBar VerticalAlignment="Stretch"
+                                                 Maximum="1"
+                                                 x:Name="OverlayTimeProgressBar"
+                                                 materialDesign:TransitionAssist.DisableTransitions="True"
+                                                 Height="{Binding Height, ElementName=GridWrapper}"
+                                                 Foreground="{DynamicResource MaterialDesignBody}"
+                                                 Background="Transparent"
+                                                 BorderBrush="Transparent"
+                                                 Opacity="0.16">
+                                    </ProgressBar>
+                                </Border>
+                                <ContentPresenter Content="{Binding ViewModel.CurrentOverlayElement}" />
+
+                            </Grid>
+
+                            <!-- Mask -->
+                            <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" HorizontalAlignment="Stretch"
+                                                      VerticalAlignment="Stretch"
+                                                      RenderTransformOrigin="0.5,0.5"
+                                                      SnapsToDevicePixels="True">
+                                <materialDesign:ColorZone.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform />
+                                        <SkewTransform />
+                                        <RotateTransform />
+                                        <TranslateTransform Y="-50" />
+                                    </TransformGroup>
+                                </materialDesign:ColorZone.RenderTransform>
+                                <ContentPresenter x:Name="OverlayMaskContent"
+                                                  Content="{Binding ViewModel.CurrentMaskElement}" />
+                            </materialDesign:ColorZone>
+                        </Grid>
                     </Grid>
+
+                    <ItemsControl Grid.Column="0"
+                                  ItemsSource="{Binding Source={StaticResource ComponentsCollectionViewSource}}"
+                                  VerticalContentAlignment="Stretch"
+                                  HorizontalContentAlignment="Stretch">
+                        <ItemsControl.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.Panel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel IsItemsHost="True"/>
+                                    </ItemsPanelTemplate>
+                                </GroupStyle.Panel>
+                                <GroupStyle.ContainerStyle>
+                                    <Style TargetType="{x:Type GroupItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                    <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                                             IsMainLine="{Binding Converter={StaticResource MainWindowIsMainLineConverter}, ConverterParameter={StaticResource ComponentsCollectionViewSource}}"
+                                                                             LineNumber="{Binding Name}">
+                                                        <ItemsPresenter/>
+                                                    </controls:MainWindowLine>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </GroupStyle.ContainerStyle>
+                            </GroupStyle>
+                        </ItemsControl.GroupStyle>
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <ci:ComponentPresenter IsOnMainWindow="True" 
+                                                           Settings="{Binding}"
+                                                           HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                           HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                           Margin="6 0" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </Grid>
+
             </Border>
 
             <!--<hc:NotifyIcon ContextMenu="{StaticResource AppContextMenu}" Text="ClassIsland" Icon="/Assets/AppLogo.ico"/>-->

@@ -219,6 +219,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _selectedUpdateMirrorV2 = "main";
     private string _selectedUpdateChannelV2 = "stable";
     private GptSoVitsSpeechSettings _gptSoVitsSpeechSettings = new();
+    private double _mainWindowLineVerticalMargin = 5;
 
 
     public void NotifyPropertyChanged(string propertyName)
@@ -1054,6 +1055,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_customForegroundColor)) return;
             _customForegroundColor = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double MainWindowLineVerticalMargin
+    {
+        get => _mainWindowLineVerticalMargin;
+        set
+        {
+            if (value.Equals(_mainWindowLineVerticalMargin)) return;
+            _mainWindowLineVerticalMargin = value;
             OnPropertyChanged();
         }
     }

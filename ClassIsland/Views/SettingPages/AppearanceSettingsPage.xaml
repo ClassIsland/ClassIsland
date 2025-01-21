@@ -81,6 +81,22 @@
                             AutoToolTipPrecision="1" />
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
+            <!-- 行间隔 -->
+            <controls1:SettingsCard IconGlyph="Margin" Header="行间隔"
+                                    Description="主界面行间间隔。">
+                <controls1:SettingsCard.Switcher>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Width="130" Minimum="0" Maximum="150"
+                                Value="{Binding SettingsService.Settings.MainWindowLineVerticalMargin}"
+                                AutoToolTipPlacement="BottomRight"
+                                TickFrequency="5"
+                                IsSnapToTickEnabled="True"
+                                AutoToolTipPrecision="1" />
+                        <TextBox Text="{Binding SettingsService.Settings.MainWindowLineVerticalMargin, Converter={StaticResource IntToStringConverter}}"
+                                 Width="50"/>
+                    </StackPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Kind="PaletteOutline" Text="主题" Margin="0 0 0 8" />
             <!-- 应用主题 -->

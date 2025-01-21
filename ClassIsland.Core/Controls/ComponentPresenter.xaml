@@ -45,6 +45,7 @@
             </Style>
         </Border.Style>
         <ContentPresenter x:Name="MainContentPresenter"
+                          local:ComponentPresenter.ComponentVisibilityChanged="MainContentPresenter_OnComponentVisibilityChanged"
                           Content="{Binding PresentingContent, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentPresenter}}">
             <ContentPresenter.Style>
                 <Style TargetType="ContentPresenter">

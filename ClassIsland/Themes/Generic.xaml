@@ -18,6 +18,7 @@
         <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
         <ResourceDictionary Source="/Themes/MaterialDesignYouNavigationStyles.xaml" />
+        <ResourceDictionary Source="/Controls/MainWindowLine.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="controls1:NumbericTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">

@@ -74,6 +74,21 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         set { SetValue(IsOnMainWindowProperty, value); }
     }
 
+    private bool _isAllComponentsHid = false;
+
+    public static readonly RoutedEvent ComponentVisibilityChangedEvent = EventManager.RegisterRoutedEvent(
+        name: "ComponentVisibilityChanged",
+        routingStrategy: RoutingStrategy.Bubble,
+        handlerType: typeof(RoutedEventHandler),
+        ownerType: typeof(ComponentPresenter));
+
+    // Provide CLR accessors for adding and removing an event handler.
+    public event RoutedEventHandler ComponentVisibilityChanged
+    {
+        add { AddHandler(ComponentVisibilityChangedEvent, value); }
+        remove { RemoveHandler(ComponentVisibilityChangedEvent, value); }
+    }
+
     private static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
         if (d is ComponentPresenter p)
@@ -189,11 +204,13 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
             RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
             Visibility = Visibility.Visible;
         }
+        UpdateComponentHidState();
     }
 
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
     {
         CheckHideRule();
+        UpdateComponentHidState();
     }
 
     private void CheckHideRule()
@@ -225,5 +242,18 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         field = value;
         OnPropertyChanged(propertyName);
         return true;
+    }
+
+    private void MainContentPresenter_OnComponentVisibilityChanged(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;  // 不需要继续向上冒泡
+        UpdateComponentHidState();
+    }
+
+    private void UpdateComponentHidState()
+    {
+        _isAllComponentsHid = Settings?.Children != null && Settings.Children.FirstOrDefault(x => x.IsVisible) == null;
+        if (Settings != null) Settings.IsVisible = Visibility == Visibility.Visible && !_isAllComponentsHid;
+        RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
     }
 }
