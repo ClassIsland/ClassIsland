@@ -326,7 +326,8 @@
                 </StackPanel>
             </materialDesign:Card>
 
-            <materialDesign:Card Margin="0 12 0 0" ClipContent="True" MouseLeftButtonDown="Sayings_OnMouseLeftButtonDown">
+            <materialDesign:Card Margin="0 12 0 0" ClipContent="True" MouseLeftButtonDown="Sayings_OnMouseLeftButtonDown"
+                                 Visibility="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource InverseBoolToVisConverter}}">
                 <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
                     <TextBlock Text="回声洞" FontWeight="Bold" Margin="16 12 16 6"/>
 
