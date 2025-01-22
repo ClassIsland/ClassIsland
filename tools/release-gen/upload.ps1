@@ -54,6 +54,12 @@ foreach ($artifact in $artifacts){
     $legaceyMD5Hashes.Add($artifact.Name, (Get-FileHash $artifact -Algorithm MD5).Hash)
 }
 
+# 兼容旧版更新系统
+Copy-Item ./out/ClassIsland_app_windows_x64_full_singleFile.zip -Destination ./out/ClassIsland.zip -Force
+Copy-Item ./out/ClassIsland_app_windows_x64_trimmed_singleFile.zip -Destination ./out/ClassIsland_AssetsTrimmed.zip -Force
+$legaceyMD5Hashes."ClassIsland.zip" = (Get-FileHash ./out/ClassIsland.zip -Algorithm MD5).Hash
+$legaceyMD5Hashes."ClassIsland_AssetsTrimmed.zip" = (Get-FileHash ./out/ClassIsland_AssetsTrimmed.zip -Algorithm MD5).Hash
+
 Copy-Item ./doc/ChangeLogs/$($tagInfo.primaryVersion)/$version/App.md -Destination ./out/ChangeLogs.md -Force
 
 $hashSummary | Add-Content ./out/ChangeLogs.md
