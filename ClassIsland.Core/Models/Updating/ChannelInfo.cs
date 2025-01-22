@@ -1,10 +1,43 @@
-﻿namespace ClassIsland.Core.Models.Updating;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class ChannelInfo
+namespace ClassIsland.Core.Models.Updating;
+
+public class ChannelInfo : ObservableRecipient
 {
-    public string Name { get; set; } = "";
+    private string _name = "";
+    private string _description = "";
+    private string? _warnings = "";
 
-    public string Description { get; set; } = "";
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            if (value == _name) return;
+            _name = value;
+            OnPropertyChanged();
+        }
+    }
 
-    public string? Warnings { get; set; } = "";
+    public string Description
+    {
+        get => _description;
+        set
+        {
+            if (value == _description) return;
+            _description = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? Warnings
+    {
+        get => _warnings;
+        set
+        {
+            if (value == _warnings) return;
+            _warnings = value;
+            OnPropertyChanged();
+        }
+    }
 }

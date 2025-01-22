@@ -114,6 +114,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         return (T?)Settings.MiniInfoProviderSettings[key.ToLower()] ?? fallback;
     }
 
+#pragma warning disable CS0612 // 类型或成员已过时
     private void MigrateSettings(out bool requiresRestarting)
     {
         requiresRestarting = false;
@@ -197,7 +198,18 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             Logger.LogInformation("新格式城市Id转换完成！");
             Logger.LogInformation("成功迁移了 1.5.2.2 以前的设置。");
         }
+        if (Settings.LastAppVersion < Version.Parse("1.5.3.0"))
+        {
+            Settings.SelectedUpdateChannelV2 = Settings.SelectedChannel switch
+            {
+                "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public" =>
+                    "stable",
+                "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta" => "beta",
+                _ => "stable"
+            };
+        }
     }
+#pragma warning restore CS0612 // 类型或成员已过时
 
     public void SaveSettings(string note = "")
     {
