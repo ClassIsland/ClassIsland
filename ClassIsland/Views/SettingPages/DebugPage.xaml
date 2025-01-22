@@ -99,15 +99,7 @@
             <Separator />
 
             <UniformGrid IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}">
-                <MenuItem Header="禁止编辑档案" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileEditing}"/>
                 <MenuItem IsCheckable="True" Header="正在集控管理" IsChecked="{Binding ManagementService.IsManagementEnabled}"/>
-                <MenuItem Header="禁止编辑课表" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileClassPlanEditing}"/>
-                <MenuItem IsCheckable="True" Header="允许退出集控" IsChecked="{Binding ManagementService.Policy.AllowExitManagement}"/>
-                <MenuItem Header="禁止编辑时间表" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing}"/>
-                <MenuItem IsCheckable="True" Header="禁止编辑应用设置" IsChecked="{Binding ManagementService.Policy.DisableSettingsEditing}"/>
-                <MenuItem Header="禁止编辑科目" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileSubjectsEditing}"/>
-                <MenuItem IsCheckable="True" Header="禁止自定义启动加载界面" IsChecked="{Binding ManagementService.Policy.DisableSplashCustomize}"/>
-                <MenuItem IsCheckable="True" Header="禁用彩蛋" IsChecked="{Binding ManagementService.Policy.DisableEasterEggs}"/>
             </UniformGrid>
             <Separator />
 
