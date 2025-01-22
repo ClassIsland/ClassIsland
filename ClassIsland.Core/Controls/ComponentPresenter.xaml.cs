@@ -74,6 +74,15 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         set { SetValue(IsOnMainWindowProperty, value); }
     }
 
+    public static readonly DependencyProperty IsRootComponentProperty = DependencyProperty.Register(
+        nameof(IsRootComponent), typeof(bool), typeof(ComponentPresenter), new PropertyMetadata(default(bool)));
+
+    public bool IsRootComponent
+    {
+        get { return (bool)GetValue(IsRootComponentProperty); }
+        set { SetValue(IsRootComponentProperty, value); }
+    }
+
     private bool _isAllComponentsHid = false;
 
     public static readonly RoutedEvent ComponentVisibilityChangedEvent = EventManager.RegisterRoutedEvent(

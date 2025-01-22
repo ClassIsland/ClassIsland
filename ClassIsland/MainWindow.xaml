@@ -536,6 +536,7 @@
                             <DataTemplate>
                                 <Grid>
                                     <ci:ComponentPresenter IsOnMainWindow="True" 
+                                                           IsRootComponent="True"
                                                            Settings="{Binding}"
                                                            HidingRules="{Binding HidingRules, Mode=OneWay}"
                                                            HideOnRule="{Binding HideOnRule, Mode=OneWay}"

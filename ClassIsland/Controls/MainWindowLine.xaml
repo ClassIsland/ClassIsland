@@ -3,7 +3,8 @@
                     xmlns:controls="clr-namespace:ClassIsland.Controls"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
-                    xmlns:classIsland="clr-namespace:ClassIsland">
+                    xmlns:classIsland="clr-namespace:ClassIsland"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
@@ -250,6 +251,7 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+    <system:Double x:Key="IslandContainerHeight">40</system:Double>
 
     <ControlTemplate x:Key="MainWindowLineFullControlTemplate">
         <Grid>
@@ -282,18 +284,18 @@
                         Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                         SnapsToDevicePixels="True"
-                        Height="40" />
+                        Height="{StaticResource IslandContainerHeight}" />
                 <Border x:Name="BackgroundBorderOverlay"
                         Style="{StaticResource BackgroundBorderStyle}"
                         Width="{Binding ActualWidth, ElementName=BackgroundBorder, Mode=OneWay}"
                         Opacity="0"
                         SnapsToDevicePixels="True"
-                        Height="40">
+                        Height="{StaticResource IslandContainerHeight}">
                 </Border>
                 <Grid
                     Style="{StaticResource DockingStyle}"
                     Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                    Height="40"
+                    Height="{StaticResource IslandContainerHeight}"
                     SnapsToDevicePixels="True"
                     ClipToBounds="True">
                     <materialDesign:ColorZone x:Name="BackgroundBorderOverlayMask" Mode="PrimaryMid"
@@ -311,11 +313,11 @@
                 </Grid>
 
                 <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
-                      Height="40"
+                      Height="{StaticResource IslandContainerHeight}"
                       SnapsToDevicePixels="True"
                       Style="{StaticResource DockingStyle}">
 
-                    <Grid Height="40"
+                    <Grid Height="{StaticResource IslandContainerHeight}"
                           x:Name="GridContentRoot"
                           Margin="12 0">
                         <ContentPresenter
@@ -390,15 +392,15 @@
                     Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                     Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                     SnapsToDevicePixels="True"
-                    Height="40" />
+                    Height="{StaticResource IslandContainerHeight}" />
 
 
             <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
-                  Height="40"
+                  Height="{StaticResource IslandContainerHeight}"
                   SnapsToDevicePixels="True"
                   Style="{StaticResource DockingStyle}">
 
-                <Grid Height="40"
+                <Grid Height="{StaticResource IslandContainerHeight}"
                       x:Name="GridContentRoot"
                       Margin="12 0">
                     <ContentPresenter
