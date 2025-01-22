@@ -54,7 +54,7 @@ foreach ($artifact in $artifacts){
     $legaceyMD5Hashes.Add($artifact.Name, (Get-FileHash $artifact -Algorithm MD5).Hash)
 }
 
-Copy-Item ./doc/ChangeLogs/$($tagInfo.primaryVersion)/App.md -Destination ./out/ChangeLogs.md -Force
+Copy-Item ./doc/ChangeLogs/$($tagInfo.primaryVersion)/$version/App.md -Destination ./out/ChangeLogs.md -Force
 
 $hashSummary | Add-Content ./out/ChangeLogs.md
 "<!-- CLASSISLAND_PKG_MD5 $(ConvertTo-Json $legaceyMD5Hashes -Compress) -->" | Add-Content ./out/ChangeLogs.md 
