@@ -68,6 +68,8 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using ControlzEx.Native;
 using ClassIsland.Controls.ActionSettingsControls;
+using ClassIsland.Controls.AuthorizeProvider;
+using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
 
 namespace ClassIsland;
@@ -374,6 +376,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 services.AddSingleton<IIpcService, IpcService>();
+                services.AddSingleton<IAuthorizeService, AuthorizeService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
@@ -403,6 +406,9 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<DebugPage>();
                 services.AddSettingsPage<DebugBrushesSettingsPage>();
                 services.AddSettingsPage<AboutSettingsPage>();
+                services.AddSettingsPage<ManagementSettingsPage>();
+                services.AddSettingsPage<ManagementCredentialsSettingsPage>();
+                services.AddSettingsPage<ManagementPolicySettingsPage>();
                 // 主界面组件
                 services.AddComponent<TextComponent, TextComponentSettingsControl>();
                 services.AddComponent<SeparatorComponent>();
@@ -467,6 +473,8 @@ public partial class App : AppBase, IAppHost
                 services.AddHostedService<RunActionHandler>();
                 services.AddHostedService<AppSettingsActionHandler>();
                 services.AddHostedService<SleepActionHandler>();
+                // 认证提供方
+                services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
                 // Plugins
                 PluginService.InitializePlugins(context, services);
             }).Build();
@@ -656,7 +664,7 @@ public partial class App : AppBase, IAppHost
     {
         var r = new CommonDialogBuilder()
             .SetContent("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。")
-            .SetBitmapIcon(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.RelativeOrAbsolute))
+            .SetIconKind(CommonDialogIconKind.Hint)
             .AddAction("退出应用", PackIconKind.ExitToApp)
             .AddAction("重启现有实例", PackIconKind.Restart, true)
             .ShowDialog();

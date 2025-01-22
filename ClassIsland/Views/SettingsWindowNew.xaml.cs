@@ -40,6 +40,8 @@ using System.IO;
 using ClassIsland.Controls;
 using Path = System.IO.Path;
 using System.Collections.ObjectModel;
+using System.Web;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.SettingsWindow;
 using Application = System.Windows.Application;
 using YamlDotNet.Core.Tokens;
@@ -51,6 +53,8 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class SettingsWindowNew : MyWindow
 {
+    private const string KeepHistoryParameterName = "ci_keepHistory";
+
     public SettingsNewViewModel ViewModel { get; } = new();
 
     [NotNull]
@@ -205,10 +209,13 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
     {
-        if (e.ExtraData is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true })  
+        if (e.ExtraData is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)  
         {
-            // 如果是从设置导航栏导航的，那么就要清除掉返回项目
-            NavigationService.RemoveBackEntry();
+            // 如果是从设置导航栏导航的，并且没有要求保留历史记录，那么就要清除掉返回项目
+            if (!data.KeepHistory)
+            {
+                NavigationService.RemoveBackEntry();
+            }
             if (!IThemeService.IsWaitForTransientDisabled)
             {
                 await Dispatcher.Yield();
@@ -253,6 +260,7 @@ public partial class SettingsWindowNew : MyWindow
             return;
         }
         Logger.LogTrace("开始导航");
+        ViewModel.IsPopupOpen = false;
         ViewModel.IsNavigating = true;
         if (ViewModel.IsViewCompressed)
         {
@@ -260,6 +268,8 @@ public partial class SettingsWindowNew : MyWindow
         }
         ViewModel.SelectedPageInfo = info;
 
+        var uriQuery = HttpUtility.ParseQueryString(uri?.Query ?? "");
+        var keepHistory = uriQuery[KeepHistoryParameterName] == "true";
         var child = LoadingAsyncBox.LoadingView as LoadingMask;
         child?.StartFakeLoading();
         if (SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading)
@@ -277,10 +287,16 @@ public partial class SettingsWindowNew : MyWindow
         ViewModel.IsDrawerOpen = false;
         ViewModel.DrawerContent = null;
         // 进行导航
-        NavigationService.RemoveBackEntry();
-        NavigationService.Navigate(page, new SettingsWindowNavigationData(true, uri != null, uri));
+        if (!keepHistory)
+        {
+            NavigationService.RemoveBackEntry();
+        }
+        NavigationService.Navigate(page, new SettingsWindowNavigationData(true, uri != null, uri, keepHistory));
         //ViewModel.FrameContent;
-        NavigationService.RemoveBackEntry();
+        if (!keepHistory)
+        {
+            NavigationService.RemoveBackEntry();
+        }
     }
 
     private SettingsPageBase? GetPage(string? id)
@@ -319,10 +335,14 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.GoBack();
     }
 
-    public void Open()
+    public async void Open()
     {
         if (!IsOpened)
         {
+            if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+            {
+                return;
+            }
             SentrySdk.Metrics.Increment("views.SettingsWindow.open");
             IsOpened = true;
             Show();
@@ -443,20 +463,13 @@ public partial class SettingsWindowNew : MyWindow
     {
         try
         {
-            var r = CommonDialog.ShowDialog("ClassIsland", $"您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。", new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
-                60, 60, [
-                    new DialogAction()
-                    {
-                        PackIconKind = PackIconKind.Cancel,
-                        Name = "取消"
-                    },
-                    new DialogAction()
-                    {
-                        PackIconKind = PackIconKind.Check,
-                        Name = "继续",
-                        IsPrimary = true
-                    }
-                ]);
+            var r = new CommonDialogBuilder()
+                .SetContent("您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。")
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .AddCancelAction()
+                .AddAction("继续", PackIconKind.Check, true)
+                .ShowDialog();
+            
             if (r != 1)
                 return;
             var dialog = new SaveFileDialog()

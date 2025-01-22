@@ -85,6 +85,20 @@
                     </ScrollViewer>
                 </Grid>
             </TabItem>
+            <TabItem Header="SecureDesktop">
+                <StackPanel>
+                    <Button Click="ButtonBase_OnClick">test desktop</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="AuthorizeWindow">
+                <StackPanel>
+                    <Button Content="Show auth window" Click="ButtonShowAuthWindow_OnClick"/>
+                    <Button Content="Create credential" Click="ButtonCreateCredential_OnClick"/>
+                    <Button Content="Authorize" Click="ButtonAuthorize_OnClick"/>
+                    <ci:CredentialEditControl CredentialString="{Binding Text, ElementName=CredentialStringTextBox, Mode=TwoWay}"/>
+                    <TextBox x:Name="CredentialStringTextBox"/>
+                </StackPanel>
+            </TabItem>
             <TabItem Header="ActionControl">
                 <Grid Background="#99000000">
                     <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
@@ -124,13 +138,18 @@
                 </Grid>
             </TabItem>
             <TabItem Header="IconControl">
-                <Grid>
+                <StackPanel HorizontalAlignment="Center">
                     <ci:IconControl PackIconKind="Github"
                                     FallbackPackIconKind="QuestionMarkCircleOutline"
                                     Width="64" Height="64"
                                     IconKind="Image"
                                     ImageSource="/Assets/HoYoStickers/光辉矢愿_想我了吗.png"/>
-                </Grid>
+                    <ci:StickerControl PackIconKind="Github"
+                                    FallbackPackIconKind="QuestionMarkCircleOutline"
+                                    Width="64" Height="64"
+                                    StickerToolTip="帕姆_点赞"
+                                    ImageSource="/Assets/HoYoStickers/帕姆_点赞.png"/>
+                </StackPanel>
             </TabItem>
             <TabItem Header="LessonsListBox">
                 <StackPanel>

@@ -20,6 +20,7 @@ using Windows.Win32.UI.Accessibility;
 using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Models;
 using ClassIsland.Models.EventArgs;
@@ -47,6 +48,8 @@ using NAudio.Wave.SampleProviders;
 using Linearstar.Windows.RawInput;
 using ProgressBar = System.Windows.Controls.ProgressBar;
 using WindowChrome = System.Windows.Shell.WindowChrome;
+using ClassIsland.Services.Management;
+
 
 
 #if DEBUG
@@ -127,6 +130,7 @@ public partial class MainWindow : Window
     private IUriNavigationService UriNavigationService { get; }
     public IRulesetService RulesetService { get; }
     public IWindowRuleService WindowRuleService { get; }
+    public IManagementService ManagementService { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -166,7 +170,8 @@ public partial class MainWindow : Window
         ILessonsService lessonsService,
         IUriNavigationService uriNavigationService,
         IRulesetService rulesetService,
-        IWindowRuleService windowRuleService)
+        IWindowRuleService windowRuleService,
+        IManagementService managementService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -182,6 +187,7 @@ public partial class MainWindow : Window
         UriNavigationService = uriNavigationService;
         RulesetService = rulesetService;
         WindowRuleService = windowRuleService;
+        ManagementService = managementService;
 
         SettingsService.PropertyChanged += (sender, args) =>
         {
@@ -905,8 +911,12 @@ public partial class MainWindow : Window
         BeginStoryboard("OverlayMaskOutDirect");
     }
 
-    private void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
+    private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {
+        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
+        {
+            return;
+        }
         ViewModel.IsClosing = true;
         Close();
     }
@@ -1081,8 +1091,12 @@ public partial class MainWindow : Window
         OpenClassSwapWindow();
     }
 
-    private void OpenClassSwapWindow()
+    private async void OpenClassSwapWindow()
     {
+        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ChangeLessonsAuthorizeLevel))
+        {
+            return;
+        }
         if (LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
         {
             App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");

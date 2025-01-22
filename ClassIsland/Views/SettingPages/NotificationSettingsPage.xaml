@@ -698,8 +698,9 @@
                             <Setter Property="Visibility" Value="Collapsed" />
                         </Style>
                     </StackPanel.Style>
-                    <Image Source="/Assets/HoYoStickers/普罗米修斯_查询.png" Width="72" Height="72"
-                           ToolTip="普罗米修斯_查询" />
+                    <ci:StickerControl ImageSource="/Assets/HoYoStickers/普罗米修斯_查询.png" Width="72" Height="72"
+                           StickerToolTip="普罗米修斯_查询"
+                           PackIconKind="BellNotificationOutline"/>
                     <TextBlock Text="在左侧选择一个提醒提供方，然后在此处进行设置。" TextWrapping="Wrap"
                                Margin="0 4 0 0" />
                 </StackPanel>

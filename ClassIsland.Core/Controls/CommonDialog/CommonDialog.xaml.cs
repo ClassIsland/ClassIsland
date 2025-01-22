@@ -9,7 +9,10 @@ using System.Windows.Media.Imaging;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.UI.WindowsAndMessaging;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Shared;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls.CommonDialog;
@@ -102,6 +105,8 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
         InitializeComponent();
     }
 
+    private static bool IsEasterEggDisabled => IAppHost.TryGetService<IManagementService>()?.Policy.DisableEasterEggs == true;
+
     protected override void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
@@ -145,16 +150,16 @@ public partial class CommonDialog : MyWindow, INotifyPropertyChanged
 
 
     public static int ShowError(string message) =>
-        ShowDialog(message, new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_不可以.png", UriKind.Relative)),
-            60, 60);
+        new CommonDialogBuilder().SetContent(message).SetIconKind(CommonDialogIconKind.Forbidden).AddConfirmAction()
+            .ShowDialog();
 
     public static int ShowInfo(string message) =>
-        ShowDialog(message, new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_点赞.png", UriKind.Relative)),
-            60, 60);
+        new CommonDialogBuilder().SetContent(message).SetIconKind(CommonDialogIconKind.Information).AddConfirmAction()
+            .ShowDialog();
 
     public static int ShowHint(string message) =>
-        ShowDialog(message, new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
-            60, 60);
+        new CommonDialogBuilder().SetContent(message).SetIconKind(CommonDialogIconKind.Hint).AddConfirmAction()
+            .ShowDialog();
 
     public static int ShowDialog(string caption, string message, BitmapImage icon, double iconWidth, double iconHeight, ObservableCollection<DialogAction> dialogActions)
     {

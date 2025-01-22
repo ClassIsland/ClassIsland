@@ -5,7 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
-    <Style TargetType="{x:Type iconControl:IconControl}">
+    <Style TargetType="{x:Type iconControl:IconControl}" x:Key="IconControlBaseStyle">
         <Style.Triggers>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -53,4 +53,6 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type iconControl:IconControl}" BasedOn="{StaticResource IconControlBaseStyle}"/>
 </ResourceDictionary>

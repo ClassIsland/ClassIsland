@@ -107,6 +107,7 @@
                 <MenuItem IsCheckable="True" Header="禁止编辑应用设置" IsChecked="{Binding ManagementService.Policy.DisableSettingsEditing}"/>
                 <MenuItem Header="禁止编辑科目" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileSubjectsEditing}"/>
                 <MenuItem IsCheckable="True" Header="禁止自定义启动加载界面" IsChecked="{Binding ManagementService.Policy.DisableSplashCustomize}"/>
+                <MenuItem IsCheckable="True" Header="禁用彩蛋" IsChecked="{Binding ManagementService.Policy.DisableEasterEggs}"/>
             </UniformGrid>
             <Separator />
 

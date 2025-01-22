@@ -19,8 +19,8 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
     public SettingsService SettingsService { get; } = settingsService;
     public ILogger<FileFolderService> Logger { get; } = logger;
 
-    private static List<string> Folders = new()
-    {
+    private static List<string> Folders =
+    [
         App.AppDataFolderPath,
         ManagementService.ManagementConfigureFolderPath,
         "./Temp",
@@ -34,7 +34,8 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         "./Backups",
         App.AppLogFolderPath,
         AutomationService.AutomationConfigsFolderPath,
-    };
+        ManagementService.LocalManagementConfigureFolderPath
+    ];
 
     public static void CreateFolders()
     {
