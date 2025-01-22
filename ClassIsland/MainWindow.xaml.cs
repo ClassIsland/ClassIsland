@@ -303,24 +303,10 @@ public partial class MainWindow : Window
         
     }
 
+    [Obsolete]
     private bool GetMouseStatusByPos(System.Drawing.Point ptr)
     {
-        if (PresentationSource.FromVisual(GridWrapper) == null)
-        {
-            return false;
-        }
-        GetCurrentDpi(out var dpiX, out var dpiY);
-        var scale = ViewModel.Settings.Scale;
-        //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
-        var root = GridWrapper.PointToScreen(new Point(0, 0));
-        var cx = root.X;
-        var cy = root.Y;
-        var cw = GridWrapper.ActualWidth * dpiX * scale;
-        var ch = GridWrapper.ActualHeight * dpiY * scale;
-        var cr = cx + cw;
-        var cb = cy + ch;
-
-        return (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+        return false;
     }
 
     public Point GetCenter()
@@ -1059,11 +1045,6 @@ public partial class MainWindow : Window
     {
         Width = e.NewSize.Width * ViewModel.Settings.Scale;
         Height = e.NewSize.Height * ViewModel.Settings.Scale;
-    }
-
-    private void GridContent_OnSizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        GridWrapper.Width = e.NewSize.Width + 32;
     }
 
     private async void MenuItemDebugFitSize_OnClick(object sender, RoutedEventArgs e)
