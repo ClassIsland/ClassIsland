@@ -256,4 +256,9 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         if (Settings != null) Settings.IsVisible = Visibility == Visibility.Visible && !_isAllComponentsHid;
         RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
     }
+
+    private void ComponentPresenter_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        UpdateComponentHidState();
+    }
 }

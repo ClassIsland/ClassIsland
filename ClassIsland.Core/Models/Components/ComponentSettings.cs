@@ -34,7 +34,7 @@ public class ComponentSettings : ObservableRecipient
     private double _fixedWidth = 200;
     private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Stretch;
     private int _relativeLineNumber = 0;
-    private bool _isVisible = false;
+    private bool _isVisible = true;
 
     /// <summary>
     /// 要显示的组件Id，ClassIsland用这个来索引组件，与<see cref="ComponentInfo"/>的Guid一致。
