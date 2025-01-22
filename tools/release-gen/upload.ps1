@@ -15,7 +15,7 @@ $versionInfo = @{
     Version = $version
     Title = $version
     DownloadInfos = @{}
-    ChangeLogs = $(Get-Content ./doc/ChangeLogs/$($tagInfo.PrimaryVersion)/App.md -Raw)
+    ChangeLogs = $(Get-Content ./doc/ChangeLogs/$($tagInfo.PrimaryVersion)/$version/App.md -Raw)
     Channels = @()
 }
 $versionInfo.Channels = $tagInfo.Channels
@@ -60,7 +60,7 @@ Copy-Item ./out/ClassIsland_app_windows_x64_trimmed_singleFile.zip -Destination 
 $legaceyMD5Hashes."ClassIsland.zip" = (Get-FileHash ./out/ClassIsland.zip -Algorithm MD5).Hash
 $legaceyMD5Hashes."ClassIsland_AssetsTrimmed.zip" = (Get-FileHash ./out/ClassIsland_AssetsTrimmed.zip -Algorithm MD5).Hash
 
-Copy-Item ./doc/ChangeLogs/$($tagInfo.primaryVersion)/$version/App.md -Destination ./out/ChangeLogs.md -Force
+Copy-Item ./doc/ChangeLogs/$($tagInfo.PrimaryVersion)/$version/App.md -Destination ./out/ChangeLogs.md -Force
 
 $hashSummary | Add-Content ./out/ChangeLogs.md
 "<!-- CLASSISLAND_PKG_MD5 $(ConvertTo-Json $legaceyMD5Hashes -Compress) -->" | Add-Content ./out/ChangeLogs.md 
