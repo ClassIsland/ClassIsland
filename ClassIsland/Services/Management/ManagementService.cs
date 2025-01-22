@@ -268,8 +268,8 @@ public class ManagementService : IManagementService
         return level switch
         {
             AuthorizeLevel.None => true,
-            AuthorizeLevel.User => await AuthorizeService.AuthorizeAsync(Fallback(CredentialConfig.UserCredential)),
-            AuthorizeLevel.Admin => await AuthorizeService.AuthorizeAsync(Fallback(CredentialConfig.AdminCredential)),
+            AuthorizeLevel.User => await AuthorizeService.AuthenticateAsync(Fallback(CredentialConfig.UserCredential)),
+            AuthorizeLevel.Admin => await AuthorizeService.AuthenticateAsync(Fallback(CredentialConfig.AdminCredential)),
             _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
         };
 

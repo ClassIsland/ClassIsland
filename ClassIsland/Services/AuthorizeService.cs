@@ -43,7 +43,7 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
         }
     }
 
-    public async Task<bool> AuthorizeAsync(string credentialString)
+    public async Task<bool> AuthenticateAsync(string credentialString)
     {
         if (string.IsNullOrWhiteSpace(credentialString))
         {

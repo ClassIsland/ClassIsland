@@ -18,6 +18,6 @@ public interface IAuthorizeService
     /// </summary>
     /// <param name="credentialString">要用于认证的凭据字符串</param>
     /// <returns>是否认证成功</returns>
-    Task<bool> AuthorizeAsync(string credentialString);
+    Task<bool> AuthenticateAsync(string credentialString);
 
 }

@@ -97,7 +97,7 @@ public partial class FeatureDebugWindow : MyWindow
             .AddConfirmAction()
             .SetContent("输入认证字符串")
             .ShowDialog(out var credentialString, this);
-        var result = await AuthorizeService.AuthorizeAsync(credentialString);
+        var result = await AuthorizeService.AuthenticateAsync(credentialString);
         CommonDialog.ShowInfo(result.ToString());
     }
 }
