@@ -3,6 +3,7 @@ $ErrorActionPreference = "Stop"
 Import-Module ./tools/release-gen/alist-utils.psm1
 
 # Generate metadata & upload artifacts
+Write-Output "Generating metadata & uploading artifacts"
 Copy-Item ./out_signed/* -Destination ./out/ -Recurse -Force
 
 $version = $(git describe --abbrev=0 --tags)
@@ -38,7 +39,8 @@ foreach ($artifact in $artifacts){
     if ($artifact.Name.StartsWith("ClassIsland_app") -ne $true) {
         continue
     }
-    $artifactId = [System.IO.Path]::GetFileNameWithoutExtension($artifact.Name).Split("_")[2..-1] -join "_"
+    $artifactId = [System.IO.Path]::GetFileNameWithoutExtension($artifact.Name).Split("_")[2..5] -join "_"
+    Write-Output "Generating metadata for $artifactId"
     # TODO: 根据 artifact name 生成对应的 DeployMethod
     $downloadInfo = @{
         "DeployMethod" = 1
@@ -48,17 +50,21 @@ foreach ($artifact in $artifacts){
         }
         "ArchiveSHA256"= $(Get-FileHash $artifact -Algorithm SHA256).Hash
     }
+    Write-Output "Uploading artifact $artifactId"
     UploadFile $artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/${version}/"
     $versionInfo.DownloadInfos[$artifactId] = $downloadInfo
     $hashSummary +=  "| $($artifact.Name) | ``$($downloadInfo.ArchiveSHA256)`` |`n"
     $legaceyMD5Hashes.Add($artifact.Name, (Get-FileHash $artifact -Algorithm MD5).Hash)
 }
 
-# 兼容旧版更新系统
+# 兼容旧版更新系统 （<1.5.3）
 Copy-Item ./out/ClassIsland_app_windows_x64_full_singleFile.zip -Destination ./out/ClassIsland.zip -Force
 Copy-Item ./out/ClassIsland_app_windows_x64_trimmed_singleFile.zip -Destination ./out/ClassIsland_AssetsTrimmed.zip -Force
 $legaceyMD5Hashes."ClassIsland.zip" = (Get-FileHash ./out/ClassIsland.zip -Algorithm MD5).Hash
 $legaceyMD5Hashes."ClassIsland_AssetsTrimmed.zip" = (Get-FileHash ./out/ClassIsland_AssetsTrimmed.zip -Algorithm MD5).Hash
+# 兼容旧版更新系统 (<1.5.3.1)
+$versionInfo.DownloadInfos["windows;x86_64;singleFile;full"] = $versionInfo.DownloadInfos["windows_x64_full_singleFile"]
+$versionInfo.DownloadInfos["windows;x86_64;singleFile;trimmed"] = $versionInfo.DownloadInfos["windows_x64_trimmed_singleFile"]
 
 Copy-Item ./doc/ChangeLogs/$($tagInfo.PrimaryVersion)/$version/App.md -Destination ./out/ChangeLogs.md -Force
 
@@ -68,6 +74,7 @@ $hashSummary | Add-Content ./out/ChangeLogs.md
 ConvertTo-Json $versionInfo -Depth 99 | Out-File ./out/index.json
 
 # Upload metadata
+Write-Output "Uploading metadata"
 git config --global user.name 'classisland-bot'
 git config --global user.email 'elf-elysia.noreply@classisland.tech'
 git clone git@github.com:ClassIsland/metadata.git
