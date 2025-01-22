@@ -2,11 +2,23 @@
 
 1.6 - Himeko 的新增功能。
 
-## 容器组件
+## 本地集控
+
+![Image](https://github.com/user-attachments/assets/321b4305-560d-4ce4-bf15-d250f1eca661)
+
+您可以在[【应用设置】->【集控选项】](classisland://app/settings/management)中在不使用集控服务的情况下，为应用设置密码保护和限制策略。您可以通过【限制策略】功能来限制某些功能的使用，也可以通过【密码保护】功能为某些功能设置密码。
+
+## 组件
+
+本版本添加了【容器组件】和【多行组件】功能，增强了组件的自定义能力。
 
 ![图片](https://github.com/user-attachments/assets/1cd29caf-dacf-436e-baa7-00fda187f004)
 
 容器组件是一种特殊的组件类型，可以容纳并展示其它组件。目前 ClassIsland 加入了轮播组件和分组组件等容器组件，您可以利用这些组件更好地自定义主界面上的内容。
+
+![Image](https://github.com/user-attachments/assets/2694ffa5-62e3-4812-a602-5c92767d2c66)
+
+【多行组件】功能可以让组件显示在不同的行上。当某一行上的组件全部隐藏时，这一行也会随之隐藏。您可以利用此功能在主界面展示更多的信息。
 
 ## 自动化
 
@@ -15,6 +27,37 @@
 您可以通过自动化让 ClassIsland 在一些特定的时间节点执行一些特定的操作，比如切换组件配置，运行程序等。
 
 此功能还在早期开发中，欢迎在[ClassIsland/ClassIsland#119](https://github.com/ClassIsland/ClassIsland/issues/119)讨论您的看法和建议。关于此功能的下一步开发方向，请见[此评论](https://github.com/ClassIsland/ClassIsland/issues/119#issuecomment-2408577363)。
+
+***
+
+# 1.5.3.0
+
+1.6 - Himeko
+
+> 1.6 - Himeko 测试版，可能包含未完善和不稳定的功能
+
+## 🚀 新增功能与优化
+
+- **【组件】多行组件：**支持为主界面设置多行组件 ([#181](https://github.com/ClassIsland/ClassIsland/issues/181))
+- **【集控】本地集控：**允许在不使用集控服务的情况下在本地设置密码和限制策略
+- **【集控】密码保护功能：**允许为某些功能设置访问密码 ([#311](https://github.com/ClassIsland/ClassIsland/issues/311))
+- 【天气】天气的搜索城市不再使用本地数据库，改为在线获取城市信息
+- 【天气】添加对非中国内地城市的支持
+- 【天气】获取日出日落数据
+- 【提醒/语音】添加 GPT-SoVITS 语音支持 ([#590](https://github.com/ClassIsland/ClassIsland/issues/590))
+- 【更新】重构更新系统，支持从内地源下载应用更新 ([#401](https://github.com/ClassIsland/ClassIsland/issues/401))
+- 【API/认证】认证提供方注册功能
+- 【API/Uri 导航】允许在通过 Uri 导航应用设置页面时保留历史记录
+- 【API/通用对话框】添加 CommonDialogBuilder.SetIconKind 方法以按照对话框类型设置图标
+
+## ♻ 移除的功能
+
+- 【调试】移除调试中集控策略选项
+
+## 🐛 Bug 修复
+
+- 【插件】修复加载损坏的插件配置导致应用无法启动的问题 ([#565](https://github.com/ClassIsland/ClassIsland/issues/565))
+- 【构建】修复 Edge_tts_sharp 项目还原问题
 
 ***
 
@@ -29,7 +72,7 @@
 ## 新增功能与优化
 
 - 【提醒/天气预报】将天气预报中分割最高与最低气温间的符号改为“~” ([#470](https://github.com/ClassIsland/ClassIsland/issues/470))
-- 【应用设置】为天气组件设置添加Uri跳转,并调整UI风格 (by @LiPolymer)
+- 【应用设置】为天气组件设置添加 Uri 跳转，并调整 UI 风格 (by @LiPolymer)
 - 【应用设置】统一部分倒计时日和文本组件设置页面风格 (by @LiPolymer)
 - 【天气】搜索城市时使用小米天气 API 获取城市信息 (by @mcAmiya)
 
