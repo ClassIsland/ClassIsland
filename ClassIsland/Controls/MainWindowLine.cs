@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -59,7 +60,13 @@ public class MainWindowLine : Control
     }
 
     public static readonly DependencyProperty IsMouseInProperty = DependencyProperty.Register(
-        nameof(IsMouseIn), typeof(bool), typeof(MainWindowLine), new PropertyMetadata(default(bool)));
+        nameof(IsMouseIn), typeof(bool), typeof(MainWindowLine), new PropertyMetadata(default(bool), (o, args) =>
+        {
+            if (o is MainWindowLine line)
+            {
+                line.UpdateFadeStatus();
+            }
+        }));
 
     public bool IsMouseIn
     {
@@ -83,6 +90,15 @@ public class MainWindowLine : Control
     {
         get { return (bool)GetValue(IsAllComponentsHidProperty); }
         set { SetValue(IsAllComponentsHidProperty, value); }
+    }
+
+    public static readonly DependencyProperty IsLineFadedProperty = DependencyProperty.Register(
+        nameof(IsLineFaded), typeof(bool), typeof(MainWindowLine), new PropertyMetadata(default(bool)));
+
+    public bool IsLineFaded
+    {
+        get { return (bool)GetValue(IsLineFadedProperty); }
+        set { SetValue(IsLineFadedProperty, value); }
     }
 
     public MainWindow MainWindow { get; } = IAppHost.GetService<MainWindow>();
@@ -117,12 +133,32 @@ public class MainWindowLine : Control
         MainWindow.MousePosChanged += MainWindowOnMousePosChanged;
         MainWindow.RawInputEvent += MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
     }
+
+
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         MainWindow.MousePosChanged -= MainWindowOnMousePosChanged;
         MainWindow.RawInputEvent -= MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent -= MainWindowOnMainWindowAnimationEvent;
+        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+    }
+
+    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(SettingsService.Settings.IsMouseInFadingReversed)
+            or nameof(SettingsService.Settings.IsMouseInFadingEnabled))
+        {
+            UpdateFadeStatus();
+        }
+    }
+
+    private void UpdateFadeStatus()
+    {
+        IsLineFaded =
+            SettingsService.Settings.IsMouseInFadingEnabled &&
+            (IsMouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
     }
 
     private Storyboard BeginStoryboard(string name)

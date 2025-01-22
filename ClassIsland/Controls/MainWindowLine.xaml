@@ -411,7 +411,7 @@
     <Style x:Key="MainWindowLineBaseStyle" TargetType="controls:MainWindowLine">
         <Style.Triggers>
             <!-- 鼠标移入 -->
-            <Trigger Property="IsMouseIn" Value="True">
+            <Trigger Property="IsLineFaded" Value="True">
                 <Trigger.EnterActions>
                     <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
                 </Trigger.EnterActions>
