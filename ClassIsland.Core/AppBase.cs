@@ -43,7 +43,7 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用分发频道
     /// </summary>
-    public string AppSubChannel => $"windows;x86_64;singleFile;{(IsAssetsTrimmed() ? "trimmed" : "full")}";
+    public string AppSubChannel => $"windows_x64_{(IsAssetsTrimmed() ? "trimmed" : "full")}_singleFile";
 
     internal AppBase()
     {
