@@ -62,7 +62,6 @@ public partial class UpdatesSettingsPage : SettingsPageBase
         SettingsService = settingsService;
         UpdateService = updateService;
         ManagementService = managementService;
-        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         InitializeComponent();
     }
 
@@ -207,5 +206,23 @@ public partial class UpdatesSettingsPage : SettingsPageBase
             return;
         }
         IsEasterEggTriggered = true;
+    }
+    private void UpdateServiceOnUpdateInfoUpdated(object? sender, EventArgs e)
+    {
+        UpdateCache();
+        RefreshDescription();
+    }
+
+    private void UpdatesSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateService.UpdateInfoUpdated += UpdateServiceOnUpdateInfoUpdated;
+    }
+
+
+    private void UpdatesSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        UpdateService.UpdateInfoUpdated -= UpdateServiceOnUpdateInfoUpdated;
     }
 }

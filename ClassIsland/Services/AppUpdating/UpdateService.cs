@@ -47,6 +47,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private bool _isCanceled = false;
     private Exception? _networkErrorException;
     private TimeSpan _downloadEtcSeconds = TimeSpan.Zero;
+    private VersionInfo _selectedVersionInfo = new();
 
     public string CurrentUpdateSourceUrl => Settings.SelectedChannel;
 
@@ -57,7 +58,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public VersionsIndex Index { get; set; }
 
-    public VersionInfo SelectedVersionInfo { get; set; }
+    public VersionInfo SelectedVersionInfo
+    {
+        get => _selectedVersionInfo;
+        set => SetField(ref _selectedVersionInfo, value);
+    }
 
     public Stopwatch DownloadStatusUpdateStopwatch { get; } = new();
 
@@ -84,6 +89,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private ILogger<UpdateService> Logger { get; }
 
     private string MetadataPublisherPublicKey { get; }
+
+    public event EventHandler? UpdateInfoUpdated;
 
     public UpdateService(SettingsService settingsService, ITaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime,
         ISplashService splashService, ILogger<UpdateService> logger)
@@ -279,6 +286,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         finally
         {
+            UpdateInfoUpdated?.Invoke(this, EventArgs.Empty);
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
         }
     }

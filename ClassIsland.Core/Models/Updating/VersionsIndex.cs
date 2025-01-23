@@ -5,40 +5,23 @@ namespace ClassIsland.Core.Models.Updating;
 
 public class VersionsIndex : ObservableRecipient
 {
-    private Dictionary<string, DownloadMirror> _mirrors = new();
-    private List<VersionInfoMin> _versions = [];
-    private Dictionary<string, ChannelInfo> _channels = [];
-
+    // 注意：考虑到给这些值添加属性更变通知会导致设置页面上的【更新通道】和【更新镜像源】选项在检查更新后出现问题（变成空值），
+    //      不要给这个类型中的属性启用属性更变通知。
     public Dictionary<string, DownloadMirror> Mirrors
     {
-        get => _mirrors;
-        set
-        {
-            if (Equals(value, _mirrors)) return;
-            _mirrors = value;
-            OnPropertyChanged();
-        }
-    }
+        get;
+        set;
+    } = new();
 
     public List<VersionInfoMin> Versions
     {
-        get => _versions;
-        set
-        {
-            if (Equals(value, _versions)) return;
-            _versions = value;
-            OnPropertyChanged();
-        }
-    }
+        get;
+        set;
+    } = new();
 
     public Dictionary<string, ChannelInfo> Channels
     {
-        get => _channels;
-        set
-        {
-            if (Equals(value, _channels)) return;
-            _channels = value;
-            OnPropertyChanged();
-        }
-    }
+        get;
+        set;
+    } = new();
 }

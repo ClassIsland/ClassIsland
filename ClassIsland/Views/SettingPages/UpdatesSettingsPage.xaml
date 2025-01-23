@@ -22,6 +22,8 @@
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
       TextOptions.TextRenderingMode="Auto"
+      Loaded="UpdatesSettingsPage_OnLoaded"
+      Unloaded="UpdatesSettingsPage_OnUnloaded"
       d:DataContext="{d:DesignInstance local:UpdatesSettingsPage}">
 
     <controls:SettingsPageBase.Resources>
@@ -98,6 +100,7 @@
                 </Grid>
             </ScrollViewer>
         </Grid>
+        <ci:PreventNullConverter x:Key="PreventNullConverter" />
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
@@ -668,7 +671,7 @@
                                             <ComboBox Width="150"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
                                                       ItemsSource="{Binding UpdateService.Index.Channels}"
-                                                      SelectedValue="{Binding SettingsService.Settings.SelectedUpdateChannelV2}"
+                                                      SelectedValue="{Binding SettingsService.Settings.SelectedUpdateChannelV2, Converter={StaticResource PreventNullConverter}}"
                                                       SelectedValuePath="Key">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
@@ -707,7 +710,7 @@
                                         Margin="-36 0 -64 0"
                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
                                         SelectedValuePath="Key"
-                                        SelectedValue="{Binding SettingsService.Settings.SelectedUpdateMirrorV2}">
+                                        SelectedValue="{Binding SettingsService.Settings.SelectedUpdateMirrorV2, Converter={StaticResource PreventNullConverter}}">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal"
