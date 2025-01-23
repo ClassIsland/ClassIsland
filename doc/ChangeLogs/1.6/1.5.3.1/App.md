@@ -2,12 +2,13 @@
 
 1.6 - Himeko
 
-本版本包含了对 1.5.3.0 中一些问题的修复。
-
 > 1.6 - Himeko 测试版，可能包含未完善和不稳定的功能
+
+本版本包含了对 1.5.3.0 中一些问题的修复。
 
 ## 🚀 新增功能与优化
 
+- 【应用】优化应用异常捕获逻辑
 - 【API/主界面】引入行高度 IslandContainerHeight 资源值
 - 【API/主界面/组件】为 ContentPresenter 引入表示组件为根组件的 IsRootComponent 属性
 
