@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -156,15 +157,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         {
             return;
         }
-
-        CopyException();
-        var message = $"""
-                       很抱歉，ClassIsland 遇到了无法解决的问题，即将退出。堆栈跟踪信息已复制到剪贴板。点击【确定】将退出应用，点击【取消】将启动调试器。
-
-                       错误信息：{(eventArgs.ExceptionObject as Exception)?.Message}
-
-                       如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
-                       """;
+        
         try
         {
             var app = (App)AppBase.Current;
@@ -183,11 +176,32 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {
                 return;
             }
-            var r = System.Windows.MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-            if (r == MessageBoxResult.Cancel)
-            {
-                Debugger.Launch();
-            }
+            ProcessCriticalException(eventArgs.ExceptionObject as Exception);
+        }
+    }
+
+    public static void ProcessCriticalException(Exception? ex)
+    {
+        if (App._isCriticalSafeModeEnabled)  // 教学安全模式
+        {
+            return;
+        }
+
+        CopyException();
+        var message = $"""
+                       很抱歉，ClassIsland 遇到了无法解决的问题，即将退出。堆栈跟踪信息已复制到剪贴板。点击【确定】将退出应用，点击【取消】将启动调试器。
+
+                       错误信息：{ex?.Message}
+
+                       如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
+                       """;
+        
+        
+            
+        var r = System.Windows.MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        if (r == MessageBoxResult.Cancel)
+        {
+            Debugger.Launch();
         }
         return;
 
@@ -195,7 +209,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         {
             try
             {
-                Clipboard.SetDataObject(eventArgs.ExceptionObject?.ToString() ?? "");
+                Clipboard.SetDataObject(ex?.ToString() ?? "");
             }
             catch (Exception e)
             {

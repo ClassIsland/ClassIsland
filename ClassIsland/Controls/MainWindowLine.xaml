@@ -284,18 +284,18 @@
                         Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                         Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                         SnapsToDevicePixels="True"
-                        Height="{StaticResource IslandContainerHeight}" />
+                        Height="{DynamicResource IslandContainerHeight}" />
                 <Border x:Name="BackgroundBorderOverlay"
                         Style="{StaticResource BackgroundBorderStyle}"
                         Width="{Binding ActualWidth, ElementName=BackgroundBorder, Mode=OneWay}"
                         Opacity="0"
                         SnapsToDevicePixels="True"
-                        Height="{StaticResource IslandContainerHeight}">
+                        Height="{DynamicResource IslandContainerHeight}">
                 </Border>
                 <Grid
                     Style="{StaticResource DockingStyle}"
                     Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
-                    Height="{StaticResource IslandContainerHeight}"
+                    Height="{DynamicResource IslandContainerHeight}"
                     SnapsToDevicePixels="True"
                     ClipToBounds="True">
                     <materialDesign:ColorZone x:Name="BackgroundBorderOverlayMask" Mode="PrimaryMid"
@@ -313,11 +313,11 @@
                 </Grid>
 
                 <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
-                      Height="{StaticResource IslandContainerHeight}"
+                      Height="{DynamicResource IslandContainerHeight}"
                       SnapsToDevicePixels="True"
                       Style="{StaticResource DockingStyle}">
 
-                    <Grid Height="{StaticResource IslandContainerHeight}"
+                    <Grid Height="{DynamicResource IslandContainerHeight}"
                           x:Name="GridContentRoot"
                           Margin="12 0">
                         <ContentPresenter
@@ -392,15 +392,15 @@
                     Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
                     Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
                     SnapsToDevicePixels="True"
-                    Height="{StaticResource IslandContainerHeight}" />
+                    Height="{DynamicResource IslandContainerHeight}" />
 
 
             <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
-                  Height="{StaticResource IslandContainerHeight}"
+                  Height="{DynamicResource IslandContainerHeight}"
                   SnapsToDevicePixels="True"
                   Style="{StaticResource DockingStyle}">
 
-                <Grid Height="{StaticResource IslandContainerHeight}"
+                <Grid Height="{DynamicResource IslandContainerHeight}"
                       x:Name="GridContentRoot"
                       Margin="12 0">
                     <ContentPresenter

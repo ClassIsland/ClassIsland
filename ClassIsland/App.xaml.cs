@@ -71,6 +71,7 @@ using ClassIsland.Controls.ActionSettingsControls;
 using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
+using System.Diagnostics.Tracing;
 
 namespace ClassIsland;
 /// <summary>
@@ -149,9 +150,19 @@ public partial class App : AppBase, IAppHost
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
+        try
+        {
+            ProcessUnhandledException(e.Exception);
+        }
+        catch
+        {
+            Exit += (_, _) =>
+            {
+                DiagnosticService.ProcessCriticalException(e.Exception);
+            };
+            Stop();
+        }
         e.Handled = true;
-
-        ProcessUnhandledException(e.Exception);
     }
 
     internal void ProcessUnhandledException(Exception e, bool critical=false)
