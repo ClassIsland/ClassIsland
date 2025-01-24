@@ -3,15 +3,17 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Windows.Controls;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Action;
 using ClassIsland.Shared;
 using Microsoft.Extensions.DependencyInjection;
+
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
-/// 可附加设置的控件
+/// 触发器设置控件基类
 /// </summary>
-public abstract class ActionSettingsControlBase : UserControl, INotifyPropertyChanged
+public abstract class TriggerSettingsControlBase : UserControl, INotifyPropertyChanged
 {
     [NotNull] internal object? SettingsInternal { get; set; }
 
@@ -21,9 +23,9 @@ public abstract class ActionSettingsControlBase : UserControl, INotifyPropertyCh
     /// <param name="info">控件信息</param>
     /// <param name="settings">要附加的设置对象</param>
     /// <returns>初始化的控件对象。</returns>
-    public static ActionSettingsControlBase? GetInstance(ActionRegistryInfo info, ref object? settings)
+    public static TriggerSettingsControlBase? GetInstance(TriggerInfo info, ref object? settings)
     {
-        var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(info.Id);
+        var control = IAppHost.Host?.Services.GetKeyedService<TriggerSettingsControlBase>(info.Id);
         if (control == null || info.SettingsControlType == null)
         {
             return null;
@@ -43,12 +45,10 @@ public abstract class ActionSettingsControlBase : UserControl, INotifyPropertyCh
             {
                 settingsReal = Activator.CreateInstance(settingsType);
             }
-
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;
         }
-
         return control;
     }
 
@@ -73,9 +73,9 @@ public abstract class ActionSettingsControlBase : UserControl, INotifyPropertyCh
 }
 
 /// <summary>
-/// 可附加设置的控件
+/// 触发器设置控件基类
 /// </summary>
-public abstract class ActionSettingsControlBase<T> : ActionSettingsControlBase where T : class
+public abstract class TriggerSettingsControlBase<T> : TriggerSettingsControlBase where T : class
 {
     /// <summary>
     /// 当前控件的设置

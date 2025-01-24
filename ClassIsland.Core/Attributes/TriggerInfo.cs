@@ -35,5 +35,5 @@ public class TriggerInfo(string id, string name, PackIconKind iconKind=PackIconK
     /// <summary>
     /// 设置界面类型
     /// </summary>
-    public Type? SettingsType { get; internal set; }
+    public Type? SettingsControlType { get; internal set; }
 }

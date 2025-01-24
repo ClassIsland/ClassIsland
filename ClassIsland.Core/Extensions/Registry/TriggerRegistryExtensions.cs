@@ -1,4 +1,5 @@
 ﻿using ClassIsland.Core.Abstractions.Automation;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,10 +31,11 @@ public static class TriggerRegistryExtensions
     /// <typeparam name="TSettings">自动化触发器设置界面类型</typeparam>
     /// <param name="services"><see cref="IServiceCollection"/> 对象</param>
     /// <returns>原来的 <see cref="IServiceCollection"/> 对象</returns>
-    public static IServiceCollection AddTrigger<TTrigger, TSettings>(this IServiceCollection services) where TTrigger : TriggerBase where TSettings : class
+    public static IServiceCollection AddTrigger<TTrigger, TSettings>(this IServiceCollection services) where TTrigger : TriggerBase where TSettings : TriggerSettingsControlBase
     {
         var info = Register(typeof(TTrigger), typeof(TSettings));
         services.AddKeyedTransient<TriggerBase, TTrigger>(info.Id);
+        services.AddKeyedTransient<TriggerSettingsControlBase, TSettings>(info.Id);
         return services;
     }
 
@@ -50,7 +52,7 @@ public static class TriggerRegistryExtensions
         }
 
         info.TriggerType = triggerType;
-        info.SettingsType = settingsType;
+        info.SettingsControlType = settingsType;
         IAutomationService.RegisteredTriggers.Add(info);
         return info;
     }

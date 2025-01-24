@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ClassIsland.Core.Models;
 
 namespace ClassIsland.Core.Abstractions.Automation;
 
@@ -37,9 +38,14 @@ public abstract class TriggerBase
     /// <remarks>触发器必须在这个方法调用时释放之前加载的资源，比如取消订阅事件处理器等，否则可能造成内存泄漏。</remarks>
     public abstract void UnLoaded();
 
-    internal EventHandler? Triggered;
+    internal event EventHandler? Triggered;
 
-    internal EventHandler? TriggeredRecover;
+    internal event EventHandler? TriggeredRecover;
+
+    /// <summary>
+    /// 此触发器关联的工作流。
+    /// </summary>
+    [NotNull] public Workflow? AssociatedWorkflow { get; internal set; }
 }
 
 /// <inheritdoc cref="TriggerBase"/>

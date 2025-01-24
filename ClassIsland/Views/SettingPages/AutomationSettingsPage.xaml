@@ -341,6 +341,18 @@
                                         </Style>
                                     </StackPanel.Style>
 
+                                    <!-- 触发器编辑 -->
+                                    <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
+                                              Margin="2 2 2 10">
+                                        <GroupBox.HeaderTemplate>
+                                            <DataTemplate>
+                                                <ci:IconText Text="当触发以下事件时"
+                                                             Kind="EventAlert" />
+                                            </DataTemplate>
+                                        </GroupBox.HeaderTemplate>
+                                        <action:TriggerSettingsControl Triggers="{Binding Triggers}"/>
+                                    </GroupBox>
+
                                     <!--规则编辑-->
                                     <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
                                               Margin="2 2 2 10">

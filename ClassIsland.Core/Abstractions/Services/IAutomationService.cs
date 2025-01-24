@@ -28,5 +28,5 @@ public interface IAutomationService
     /// </summary>
     void RefreshConfigs();
 
-    internal static List<TriggerInfo> RegisteredTriggers { get; } = [];
+    public static List<TriggerInfo> RegisteredTriggers { get; } = [];
 }

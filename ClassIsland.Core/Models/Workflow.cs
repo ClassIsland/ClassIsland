@@ -54,5 +54,10 @@ public class Workflow : ObservableRecipient
         }
     }
 
-    
+    internal void Unload()
+    {
+        Unloading?.Invoke(this, EventArgs.Empty);
+    }
+
+    internal event EventHandler? Unloading;
 }
