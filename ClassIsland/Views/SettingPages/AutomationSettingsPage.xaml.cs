@@ -47,23 +47,23 @@ public partial class AutomationSettingsPage
 
     private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)
     {
-        AutomationService.Automations.Add(new() { Actionset = new() { Name = "新自动化" } });
-        ViewModel.SelectedAutomation = AutomationService.Automations.Last();
+        AutomationService.Workflows.Add(new() { Actionset = new() { Name = "新自动化" } });
+        ViewModel.SelectedAutomation = AutomationService.Workflows.Last();
         ViewModel.IsPanelOpened = true;
     }
 
     private void CommandRemove_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Automation automation) return;
+        if (e.Parameter is not Workflow automation) return;
 
-        AutomationService.Automations.Remove(automation);
+        AutomationService.Workflows.Remove(automation);
     }
 
     private void CommandDuplicate_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Automation automation) return;
+        if (e.Parameter is not Workflow automation) return;
 
-        AutomationService.Automations.Insert(AutomationService.Automations.IndexOf(automation) + 1, ConfigureFileHelper.CopyObject(automation));
+        AutomationService.Workflows.Insert(AutomationService.Workflows.IndexOf(automation) + 1, ConfigureFileHelper.CopyObject(automation));
     }
 
     private void CommandDebugInvokeAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -129,7 +129,7 @@ public partial class AutomationSettingsPage
         {
             return;
         }
-        ConfigureFileHelper.SaveConfig(path, new ObservableCollection<Automation>());
+        ConfigureFileHelper.SaveConfig(path, new ObservableCollection<Workflow>());
         AutomationService.RefreshConfigs();
         SettingsService.Settings.CurrentAutomationConfig = ViewModel.CreateProfileName;
         ViewModel.CreateProfileName = "Default";

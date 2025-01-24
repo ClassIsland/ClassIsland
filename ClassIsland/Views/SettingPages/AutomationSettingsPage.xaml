@@ -170,7 +170,7 @@
 
                         <!-- 左：自动化导航栏 -->
                         <ScrollViewer Grid.Row="2">
-                            <ListBox ItemsSource="{Binding AutomationService.Automations}"
+                            <ListBox ItemsSource="{Binding AutomationService.Workflows}"
                                      Style="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                                      SelectionChanged="ListBox_SelectionChanged"
                                      SelectedItem="{Binding ViewModel.SelectedAutomation, Mode=TwoWay}"

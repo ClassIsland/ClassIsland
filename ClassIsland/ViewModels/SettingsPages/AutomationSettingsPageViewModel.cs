@@ -16,8 +16,8 @@ public class AutomationSettingsViewModel : ObservableRecipient
         }
     }
 
-    Automation? _selectedAutomation;
-    public Automation? SelectedAutomation
+    Workflow? _selectedAutomation;
+    public Workflow? SelectedAutomation
     {
         get => _selectedAutomation;
         set

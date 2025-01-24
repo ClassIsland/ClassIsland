@@ -29,7 +29,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         RefreshConfigs();
 
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
-        Automations.CollectionChanged += (_, _) => SaveConfig();
+        Workflows.CollectionChanged += (_, _) => SaveConfig();
         SettingsService.Settings.PropertyChanged += (_, e) => {
             if (e.PropertyName == nameof(SettingsService.Settings.CurrentAutomationConfig))
                 LoadConfig();
@@ -47,7 +47,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         if (!SettingsService.Settings.IsAutomationEnabled) return;
 
         var isPropertyChanged = false; // 如果 Actionset.IsOn 改变，则触发保存。
-        foreach (var a in Automations)
+        foreach (var a in Workflows)
         {
             if (!a.Actionset.IsEnabled) continue;
             if (!a.Actionset.IsOn)
@@ -73,11 +73,11 @@ public class AutomationService : ObservableRecipient, IAutomationService
     {
         if (File.Exists(CurrentConfigPath))
         {
-            Automations = ConfigureFileHelper.LoadConfig<ObservableCollection<Automation>>(CurrentConfigPath);
+            Workflows = ConfigureFileHelper.LoadConfig<ObservableCollection<Workflow>>(CurrentConfigPath);
         }
         else
         {
-            Automations = ConfigureFileHelper.CopyObject(new ObservableCollection<Automation>());
+            Workflows = ConfigureFileHelper.CopyObject(new ObservableCollection<Workflow>());
             SaveConfig();
         }
     }
@@ -87,7 +87,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         Logger.LogInformation(note == "" ?
             $"写入自动化配置（{SettingsService.Settings.CurrentAutomationConfig}.json）" :
             $"写入自动化配置（{SettingsService.Settings.CurrentAutomationConfig}.json）：{note}");
-        ConfigureFileHelper.SaveConfig(CurrentConfigPath, Automations);
+        ConfigureFileHelper.SaveConfig(CurrentConfigPath, Workflows);
     }
 
     public void RefreshConfigs()
@@ -98,8 +98,8 @@ public class AutomationService : ObservableRecipient, IAutomationService
                            .ToList()!;
     }
 
-    ObservableCollection<Automation> _automations = [];
-    public ObservableCollection<Automation> Automations
+    ObservableCollection<Workflow> _automations = [];
+    public ObservableCollection<Workflow> Workflows
     {
         get => _automations;
         set

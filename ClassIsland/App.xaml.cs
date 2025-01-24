@@ -72,6 +72,7 @@ using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
 using System.Diagnostics.Tracing;
+using ClassIsland.Services.Automation.Triggers;
 
 namespace ClassIsland;
 /// <summary>
@@ -464,9 +465,11 @@ public partial class App : AppBase, IAppHost
                 services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
+                // 触发器
+                services.AddTrigger<RulesetChangedTrigger>();
                 // 规则
-                //services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
-                //services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
+                services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
+                services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
                 services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.className", "前台窗口类名", PackIconKind.WindowMaximize);
                 services.AddRule<StringMatchingSettings, RulesetStringMatchingSettingsControl>("classisland.windows.text", "前台窗口标题", PackIconKind.FormatTitle);
                 services.AddRule<WindowStatusRuleSettings, WindowStatusRuleSettingsControl>("classisland.windows.status", "前台窗口状态是", PackIconKind.DockWindow);

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models;
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -10,7 +11,7 @@ public interface IAutomationService
     /// <summary>
     /// 当前配置文件的所有自动化
     /// </summary>
-    ObservableCollection<Automation> Automations { get; set; }
+    ObservableCollection<Workflow> Workflows { get; set; }
 
     /// <summary>
     /// 自动化配置文件列表
@@ -26,4 +27,6 @@ public interface IAutomationService
     /// 重新加载自动化配置文件列表。
     /// </summary>
     void RefreshConfigs();
+
+    internal static List<TriggerInfo> RegisteredTriggers { get; } = [];
 }
