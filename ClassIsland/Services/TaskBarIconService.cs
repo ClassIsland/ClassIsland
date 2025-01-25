@@ -13,28 +13,6 @@ namespace ClassIsland.Services;
 
 public class TaskBarIconService : IHostedService, ITaskBarIconService
 {
-    private SettingsService SettingsService { get; }
-
-    public TaskBarIconService(SettingsService settingsService)
-    {
-        SettingsService = settingsService;
-        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
-        UpdateMenuAction();
-    }
-
-    private void UpdateMenuAction()
-    {
-        MainTaskBarIcon.MenuActivation =
-            SettingsService.Settings.TaskBarIconClickBehavior == 0 ?
-            PopupActivationMode.LeftOrRightClick :
-            PopupActivationMode.RightClick;
-    }
-
-    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        UpdateMenuAction();
-    }
-
     public TaskbarIcon MainTaskBarIcon
     {
         get;
@@ -44,8 +22,8 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
         {
             BackgroundSource = new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png", UriKind.Absolute)),
         },
-        ToolTipText = "ClassIsland",
-        NoLeftClickDelay = true,
+        MenuActivation = PopupActivationMode.RightClick,
+        ToolTipText = "ClassIsland"
     };
 
     public async Task StartAsync(CancellationToken cancellationToken)
