@@ -73,6 +73,7 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
 using System.Diagnostics.Tracing;
 using ClassIsland.Services.Automation.Triggers;
+using ClassIsland.Controls.TriggerSettingsControls;
 
 namespace ClassIsland;
 /// <summary>
@@ -389,6 +390,7 @@ public partial class App : AppBase, IAppHost
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 services.AddSingleton<IIpcService, IpcService>();
                 services.AddSingleton<IAuthorizeService, AuthorizeService>();
+                services.AddSingleton<UriTriggerHandlerService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
@@ -467,6 +469,7 @@ public partial class App : AppBase, IAppHost
                 services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
                 // 触发器
                 services.AddTrigger<RulesetChangedTrigger>();
+                services.AddTrigger<UriTrigger, UriTriggerSettingsControl>();
                 // 规则
                 services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
                 services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);

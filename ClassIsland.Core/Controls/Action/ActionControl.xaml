@@ -16,7 +16,7 @@
         <CommandBinding Command="{x:Static local:ActionControl.RemoveActionCommand}" Executed="CommandRemoveAction_OnExecuted"/>
     </UserControl.CommandBindings>
     <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ActionControl}}">
-        <ItemsControl ItemsSource="{Binding Actionset.Actions}"
+        <ItemsControl ItemsSource="{Binding ActionSet.Actions}"
                       HorizontalContentAlignment="Stretch"
                       dd:DragDrop.IsDragSource="True"
                       dd:DragDrop.IsDropTarget="True"

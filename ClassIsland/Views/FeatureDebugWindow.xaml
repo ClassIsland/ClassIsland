@@ -13,6 +13,7 @@
         xmlns:action="clr-namespace:ClassIsland.Core.Models.Action;assembly=ClassIsland.Core"
         xmlns:mdXaml="https://github.com/whistyun/MdXaml"
         xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
+        xmlns:action1="clr-namespace:ClassIsland.Shared.Models.Action;assembly=ClassIsland.Shared"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -103,9 +104,9 @@
                 <Grid Background="#99000000">
                     <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
                                           HorizontalAlignment="Right">
-                        <actionControls:ActionControl.Actionset>
-                            <action:Actionset />
-                        </actionControls:ActionControl.Actionset>
+                        <actionControls:ActionControl.ActionSet>
+                            <action1:ActionSet />
+                        </actionControls:ActionControl.ActionSet>
                     </actionControls:ActionControl>
 
                 </Grid>

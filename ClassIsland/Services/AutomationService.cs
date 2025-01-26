@@ -60,12 +60,12 @@ public class AutomationService : ObservableRecipient, IAutomationService
     {
         if (!SettingsService.Settings.IsAutomationEnabled) return;
 
-        foreach (var workflow in Workflows.Where(x => x.Actionset.IsOn))
+        foreach (var workflow in Workflows.Where(x => x.ActionSet.IsOn))
         {
             if (RulesetService.IsRulesetSatisfied(workflow.Ruleset)) 
                 continue;
-            ActionService.Revert(workflow.Actionset);
-            workflow.Actionset.IsOn = false;
+            ActionService.Revert(workflow.ActionSet);
+            workflow.ActionSet.IsOn = false;
         }
     }
 
@@ -124,19 +124,19 @@ public class AutomationService : ObservableRecipient, IAutomationService
 
     private void UnloadWorkflow(Workflow workflow)
     {
-        Logger.LogInformation("卸载工作流 {}", workflow.Actionset.Name);
+        Logger.LogInformation("卸载工作流 {}", workflow.ActionSet.Name);
         workflow.Unload();
         foreach (var trigger in workflow.Triggers)
         {
             UnloadTrigger(workflow, trigger);
         }
 
-        Logger.LogDebug("成功卸载工作流 {}", workflow.Actionset.Name);
+        Logger.LogDebug("成功卸载工作流 {}", workflow.ActionSet.Name);
     }
 
     private void LoadWorkflow(Workflow workflow)
     {
-        Logger.LogInformation("加载工作流 {}", workflow.Actionset.Name);
+        Logger.LogInformation("加载工作流 {}", workflow.ActionSet.Name);
         workflow.Triggers.CollectionChanged += TriggersOnCollectionChanged;
         workflow.Unloading += WorkflowOnUnloading;
 
@@ -145,7 +145,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
             LoadTrigger(workflow, trigger);
         }
 
-        Logger.LogDebug("成功加载工作流 {}", workflow.Actionset.Name);
+        Logger.LogDebug("成功加载工作流 {}", workflow.ActionSet.Name);
         return;
 
         void WorkflowOnUnloading(object? sender, EventArgs e)
@@ -189,7 +189,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         {
             return;
         }
-        Logger.LogDebug("加载触发器 {}/{}", workflow.Actionset.Name, trigger.Id);
+        Logger.LogDebug("加载触发器 {}/{}", workflow.ActionSet.Name, trigger.Id);
         var settings = trigger.Settings;
         trigger.TriggerInstance = ActivateTrigger(trigger.AssociatedTriggerInfo, ref settings);
         trigger.Settings = settings;
@@ -204,7 +204,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         trigger.TriggerInstance.TriggeredRecover += TriggerTriggeredRecover;
         trigger.TriggerInstance.Loaded();
 
-        Logger.LogDebug("成功加载触发器 {}/{}", workflow.Actionset.Name, trigger.Id);
+        Logger.LogDebug("成功加载触发器 {}/{}", workflow.ActionSet.Name, trigger.Id);
         return;
 
         void TriggerOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -229,13 +229,13 @@ public class AutomationService : ObservableRecipient, IAutomationService
         {
             return;
         }
-        Logger.LogDebug("卸载触发器 {}/{}", workflow.Actionset.Name, trigger.Id);
+        Logger.LogDebug("卸载触发器 {}/{}", workflow.ActionSet.Name, trigger.Id);
         trigger.Unload();
         trigger.TriggerInstance.UnLoaded();
         trigger.TriggerInstance.Triggered -= TriggerTriggered;
         trigger.TriggerInstance.TriggeredRecover -= TriggerTriggeredRecover;
         trigger.TriggerInstance = null;
-        Logger.LogDebug("成功卸载触发器 {}/{}", workflow.Actionset.Name, trigger.Id);
+        Logger.LogDebug("成功卸载触发器 {}/{}", workflow.ActionSet.Name, trigger.Id);
 
     }
 
@@ -246,16 +246,16 @@ public class AutomationService : ObservableRecipient, IAutomationService
         if (sender is not TriggerBase trigger) return;
         var workflow = trigger.AssociatedWorkflow;
 
-        if (!workflow.Actionset.IsEnabled) return;
-        if (workflow.Actionset.IsOn)
+        if (!workflow.ActionSet.IsEnabled) return;
+        if (workflow.ActionSet.IsOn)
         {
             return;
         }
 
-        Logger.LogTrace("工作流 {} 由触发器 {} 触发", workflow.Actionset.Name, trigger);
+        Logger.LogTrace("工作流 {} 由触发器 {} 触发", workflow.ActionSet.Name, trigger);
         if (!RulesetService.IsRulesetSatisfied(workflow.Ruleset)) return;
-        ActionService.Invoke(workflow.Actionset);
-        workflow.Actionset.IsOn = true;
+        ActionService.Invoke(workflow.ActionSet);
+        workflow.ActionSet.IsOn = true;
         SaveConfig();
     }
     private void TriggerTriggeredRecover(object? sender, EventArgs e)
@@ -264,13 +264,13 @@ public class AutomationService : ObservableRecipient, IAutomationService
         if (sender is not TriggerBase trigger) return;
         var workflow = trigger.AssociatedWorkflow;
 
-        if (!workflow.Actionset.IsOn)
+        if (!workflow.ActionSet.IsOn)
         {
             return;
         }
-        Logger.LogTrace("工作流 {} 由触发器 {} 触发恢复", workflow.Actionset.Name, trigger);
-        ActionService.Revert(workflow.Actionset);
-        workflow.Actionset.IsOn = false;
+        Logger.LogTrace("工作流 {} 由触发器 {} 触发恢复", workflow.ActionSet.Name, trigger);
+        ActionService.Revert(workflow.ActionSet);
+        workflow.ActionSet.IsOn = false;
         SaveConfig();
     }
 

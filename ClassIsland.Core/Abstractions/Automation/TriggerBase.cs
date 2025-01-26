@@ -21,7 +21,7 @@ public abstract class TriggerBase
     /// <summary>
     /// 触发恢复触发器。
     /// </summary>
-    protected void TriggerRecover()
+    protected void TriggerRevert()
     {
         TriggeredRecover?.Invoke(this, EventArgs.Empty);
     }

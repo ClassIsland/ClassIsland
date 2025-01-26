@@ -201,7 +201,7 @@
                                                         HorizontalAlignment="Right"
                                                         DockPanel.Dock="Right">
                                                 <ToggleButton ToolTip="启用"
-                                                              IsChecked="{Binding Actionset.IsEnabled}" />
+                                                              IsChecked="{Binding ActionSet.IsEnabled}" />
                                                 <Button Content="{materialDesign:PackIcon Kind=ContentCopy}"
                                                         ToolTip="复制"
                                                         Style="{StaticResource MaterialDesignToolForegroundButton}"
@@ -224,7 +224,7 @@
                                                 <materialDesign:PackIcon.Style>
                                                     <Style TargetType="materialDesign:PackIcon">
                                                         <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding Actionset.Name}"
+                                                            <DataTrigger Binding="{Binding ActionSet.Name}"
                                                                          Value="">
                                                                 <Setter Property="Visibility"
                                                                         Value="Visible" />
@@ -235,7 +235,7 @@
                                                     </Style>
                                                 </materialDesign:PackIcon.Style>
                                             </materialDesign:PackIcon>
-                                            <TextBlock Text="{Binding Actionset.Name}"
+                                            <TextBlock Text="{Binding ActionSet.Name}"
                                                        TextTrimming="CharacterEllipsis"
                                                        VerticalAlignment="Center"
                                                        HorizontalAlignment="Left"
@@ -266,7 +266,7 @@
                         <TextBox materialDesign:HintAssist.Hint="名称"
                                  materialDesign:HintAssist.IsFloating="True"
                                  DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
-                                 Text="{Binding Actionset.Name, UpdateSourceTrigger=PropertyChanged}"
+                                 Text="{Binding ActionSet.Name, UpdateSourceTrigger=PropertyChanged}"
                                  FontWeight="Medium"
                                  FontSize="15"
                                  VerticalAlignment="Center"
@@ -279,12 +279,12 @@
                                     Grid.Column="2"
                                     DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}">
                             <Button Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}"
-                                    CommandParameter="{Binding Actionset}"
+                                    CommandParameter="{Binding ActionSet}"
                                     Padding="12 0">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Actionset.IsOn}" Value="True">
+                                            <DataTrigger Binding="{Binding ActionSet.IsOn}" Value="True">
                                                 <Setter Property="Opacity" Value="0.56" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -294,13 +294,13 @@
                             </Button>
 
                             <Button Command="{x:Static local:AutomationSettingsPage.DebugInvokeRevertActionCommand}"
-                                    CommandParameter="{Binding Actionset}"
+                                    CommandParameter="{Binding ActionSet}"
                                     Padding="12 0"
                                     Margin="0 0 8 0">
                                 <Button.Style>
                                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Actionset.IsOn}" Value="False">
+                                            <DataTrigger Binding="{Binding ActionSet.IsOn}" Value="False">
                                                 <Setter Property="Opacity" Value="0.56" />
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -332,7 +332,7 @@
                                     <StackPanel.Style>
                                         <Style TargetType="StackPanel">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Actionset.IsEnabled}"
+                                                <DataTrigger Binding="{Binding ActionSet.IsEnabled}"
                                                              Value="False">
                                                     <Setter Property="Opacity"
                                                             Value="0.56" />
@@ -375,7 +375,7 @@
                                                              Kind="Airplane" />
                                             </DataTemplate>
                                         </GroupBox.HeaderTemplate>
-                                        <action:ActionControl Actionset="{Binding Actionset}" />
+                                        <action:ActionControl ActionSet="{Binding ActionSet}" />
                                     </GroupBox>
 
                                     <!--TODO: 恢复行动编辑-->

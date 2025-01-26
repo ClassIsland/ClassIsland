@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using ClassIsland.Core.Models.Action;
+using ClassIsland.Shared.Models.Action;
 using CommunityToolkit.Mvvm.ComponentModel;
 namespace ClassIsland.Core.Models;
 
@@ -23,19 +24,19 @@ public class Workflow : ObservableRecipient
         }
     }
 
-    private Actionset _actionset = new();
+    private ActionSet _actionSet = new();
     private ObservableCollection<TriggerSettings> _triggers = [];
 
     /// <summary>
     /// 行动组
     /// </summary>
-    public Actionset Actionset
+    public ActionSet ActionSet
     {
-        get => _actionset;
+        get => _actionSet;
         set
         {
-            if (value == _actionset) return;
-            _actionset = value;
+            if (value == _actionSet) return;
+            _actionSet = value;
             OnPropertyChanged();
         }
     }

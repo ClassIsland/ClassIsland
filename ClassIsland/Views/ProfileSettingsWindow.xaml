@@ -24,6 +24,7 @@
                    xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
                    xmlns:controls2="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                   xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -1316,6 +1317,9 @@
                                         <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
                                             <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                                         </Button>
+                                        <Button Click="ButtonAddActionTimePoint_OnClick" ToolTip="添加行动时间点。">
+                                            <controls1:IconText Kind="AirplanePlus" Text="行动"/>
+                                        </Button>
                                         <Separator/>
                                         <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
                                             <Button.Style>
@@ -1389,59 +1393,7 @@
                                                 </ListBox.ItemContainerStyle>
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                            </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto" />
-                                                                <ColumnDefinition />
-                                                            </Grid.ColumnDefinitions>
-                                                            <!-- Icon -->
-                                                            <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
-                                                                Margin="0 0 6 0">
-                                                                <materialDesign:PackIcon.Style>
-                                                                    <Style TargetType="materialDesign:PackIcon">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding TimeType}"
-                                                                                Value="0">
-                                                                                <Setter Property="Kind" Value="BookOutline" />
-                                                                                <Setter Property="ToolTip" Value="上课时间" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding TimeType}"
-                                                                                Value="1">
-                                                                                <Setter Property="Kind"
-                                                                                    Value="ClockOutline" />
-                                                                                <Setter Property="ToolTip" Value="课间休息" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding TimeType}"
-                                                                                Value="2">
-                                                                                <Setter Property="Kind"
-                                                                                    Value="ArrowSplitHorizontal" />
-                                                                                <Setter Property="ToolTip" Value="分割线" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </materialDesign:PackIcon.Style>
-                                                            </materialDesign:PackIcon>
-
-                                                            <!-- Time -->
-                                                            <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14"
-                                                                       ToolTip="时间段">
-                                                                <Run
-                                                                    Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                                                                <Run Text="-" />
-                                                                <Run
-                                                                    Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                                                            </TextBlock>
-
-                                                            <!-- Last Time -->
-                                                            <controls1:IconText Grid.Column="1" Grid.Row="1"
-                                                                               Kind="ClockAutoOutline"
-                                                                               Text="{Binding Last}"
-                                                                               Margin="0 3 0 0" ToolTip="持续时间" />
-                                                        </Grid>
+                                                        <controls:TimeLineListItemControl TimePoint="{Binding}"/>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
@@ -1595,6 +1547,11 @@
                                                                     Value="2">
                                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                                 </DataTrigger>
+                                                                <DataTrigger
+                                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                    Value="3">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                             <Setter Property="Visibility" Value="Visible" />
                                                         </Style>
@@ -1611,8 +1568,11 @@
                                                     <ListBoxItem>
                                                         <controls1:IconText Kind="ClockOutline" Text="课间休息" />
                                                     </ListBoxItem>
-                                                    <ListBoxItem>
+                                                    <ListBoxItem Visibility="Collapsed">
                                                         <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
+                                                    </ListBoxItem>
+                                                    <ListBoxItem Visibility="Collapsed">
+                                                        <controls1:IconText Kind="Airplane" Text="行动" />
                                                     </ListBoxItem>
                                                 </ListBox>
                                             </StackPanel>
@@ -1673,21 +1633,48 @@
                                                     materialDesign:HintAssist.Hint="课间名称" />
                                             </StackPanel>
                                             <Separator Margin="0 20 0 8" />
-                                            <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
-                                            <ItemsControl
-                                                ItemsSource="{x:Static services:IAttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}"
-                                                            Margin="0 0 0 8"
-                                                            ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
-                                                            ContentIndex="{Binding SelectedIndex, ElementName=TimeLineListControl, Mode=OneWay}"
-                                                            TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
+                                            <StackPanel>
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger
+                                                                Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                Value="3">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
+                                                <ItemsControl
+                                                    ItemsSource="{x:Static services:IAttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                                                                Margin="0 0 0 8"
+                                                                ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
+                                                                ContentIndex="{Binding SelectedIndex, ElementName=TimeLineListControl, Mode=OneWay}"
+                                                                TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
 
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger
+                                                                Binding="{Binding ViewModel.SelectedTimePoint.ActionSet}"
+                                                                Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <controls1:IconText Kind="Airplane" Text="行动" Margin="0 0 0 8" />
+                                                <action:ActionControl ActionSet="{Binding ViewModel.SelectedTimePoint.ActionSet}"/>
+                                            </StackPanel>
                                         </StackPanel>
                                     </ScrollViewer>
                                     <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" 

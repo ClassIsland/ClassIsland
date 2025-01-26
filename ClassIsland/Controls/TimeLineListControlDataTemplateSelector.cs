@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 
 using ClassIsland.Shared.Models.Profile;
@@ -11,7 +12,14 @@ public class TimeLineListControlDataTemplateSelector : DataTemplateSelector
     {
         var e = (FrameworkElement)container;
         var o = (TimeLayoutItem)item;
-        var key = o.TimeType == 2 ? "DataTemplateSeparator" : "DataTemplateTimePoint";
+        var key = o.TimeType switch
+        {
+            0 => "DataTemplateTimePoint",
+            1 => "DataTemplateTimePoint",
+            2 => "DataTemplateSeparator",
+            3 => "DataTemplateAction",
+            _ => "DataTemplateTimePoint"
+        };
         return (DataTemplate)e.FindResource(key);
     }
 }

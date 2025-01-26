@@ -15,6 +15,8 @@ using System.Windows.Controls;
 using System.Diagnostics;
 using System.IO;
 using ClassIsland.Core.Models.Action;
+using ClassIsland.Shared.Models.Action;
+
 namespace ClassIsland.Views.SettingPages;
 
 /// <summary>
@@ -47,7 +49,7 @@ public partial class AutomationSettingsPage
 
     private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)
     {
-        AutomationService.Workflows.Add(new() { Actionset = new() { Name = "新自动化" } });
+        AutomationService.Workflows.Add(new() { ActionSet = new() { Name = "新自动化" } });
         ViewModel.SelectedAutomation = AutomationService.Workflows.Last();
         ViewModel.IsPanelOpened = true;
     }
@@ -68,14 +70,14 @@ public partial class AutomationSettingsPage
 
     private void CommandDebugInvokeAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Actionset actionset) return;
+        if (e.Parameter is not ActionSet actionset) return;
 
         App.GetService<IActionService>().Invoke(actionset);
     }
 
     private void CommandDebugInvokeRevertAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Actionset actionset) return;
+        if (e.Parameter is not ActionSet actionset) return;
 
         App.GetService<IActionService>().Revert(actionset);
     }

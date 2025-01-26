@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ClassIsland.Shared.Models.Action;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -14,6 +15,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     private bool _isHideDefault = false;
     private string _defaultClassId = "";
     private string _breakName = "";
+    private ActionSet? _actionSet;
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
@@ -76,7 +78,8 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// <value>
     /// 0 - 上课 <br/>
     /// 1 - 课间 <br/>
-    /// 2 - 分割线
+    /// 2 - 分割线 <br/>
+    /// 3 - 行动
     /// </value>
     public int TimeType
     {
@@ -139,6 +142,20 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
             _breakName = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(BreakNameText));
+        }
+    }
+
+    /// <summary>
+    /// 当当前时间点为【行动】时，要执行的行动组
+    /// </summary>
+    public ActionSet? ActionSet
+    {
+        get => _actionSet;
+        set
+        {
+            if (Equals(value, _actionSet)) return;
+            _actionSet = value;
+            OnPropertyChanged();
         }
     }
 

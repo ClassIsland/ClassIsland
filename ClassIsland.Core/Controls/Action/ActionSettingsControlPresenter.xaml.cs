@@ -26,7 +26,7 @@ public partial class ActionSettingsControlPresenter : UserControl
     }
 
     public static readonly DependencyProperty ActionProperty = DependencyProperty.Register(
-        nameof(Action), typeof(A.Action), typeof(ActionSettingsControlPresenter), new PropertyMetadata(default(A.Action), (o, _) =>
+        nameof(Action), typeof(Shared.Models.Action.Action), typeof(ActionSettingsControlPresenter), new PropertyMetadata(default(Shared.Models.Action.Action), (o, _) =>
         {
             if (o is ActionSettingsControlPresenter control)
             {
@@ -34,9 +34,9 @@ public partial class ActionSettingsControlPresenter : UserControl
             }
         }));
 
-    public A.Action? Action
+    public Shared.Models.Action.Action? Action
     {
-        get => (A.Action)GetValue(ActionProperty);
+        get => (Shared.Models.Action.Action)GetValue(ActionProperty);
         set => SetValue(ActionProperty, value);
     }
 

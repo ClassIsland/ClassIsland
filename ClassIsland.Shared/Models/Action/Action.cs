@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-namespace ClassIsland.Core.Models.Action;
+namespace ClassIsland.Shared.Models.Action;
 
 /// <summary>
 /// 代表一个行动。

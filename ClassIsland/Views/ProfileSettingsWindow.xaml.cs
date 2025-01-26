@@ -23,6 +23,7 @@ using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
+using ClassIsland.Shared.Models.Action;
 using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;
@@ -234,9 +235,10 @@ public partial class ProfileSettingsWindow : MyWindow
         var settings   = App.GetService<SettingsService>().Settings;
         var lastTime   = TimeSpan.FromMinutes(timeType switch
         {
-            0 => settings.DefaultOnClassTimePointMinutes,
-            1 => settings.DefaultBreakingTimePointMinutes,
-            2 => 0,
+            0 => settings.DefaultOnClassTimePointMinutes,  // 上课
+            1 => settings.DefaultBreakingTimePointMinutes, // 课间休息
+            2 => 0,  // 分割线
+            3 => 0,  // 行动
             _ => 0
         });
         if (selected != null)
@@ -291,6 +293,7 @@ public partial class ProfileSettingsWindow : MyWindow
             TimeType = timeType,
             StartSecond = baseSec,
             EndSecond = baseSec + lastTime,
+            ActionSet = timeType == 3 ? new ActionSet() : null
         };
         AddTimePoint(newItem);
         // ReSortTimeLayout(newItem);
@@ -1105,5 +1108,10 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         ViewModel.IsWeekOffsetSettingsOpen = false;
+    }
+
+    private void ButtonAddActionTimePoint_OnClick(object sender, RoutedEventArgs e)
+    {
+        AddTimeLayoutItem(3);
     }
 }

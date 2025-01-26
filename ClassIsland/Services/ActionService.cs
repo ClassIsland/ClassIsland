@@ -1,15 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Action;
 using System.Text.Json;
-using Action = ClassIsland.Core.Models.Action.Action;
+using Action = ClassIsland.Shared.Models.Action.Action;
 using System.Threading.Tasks;
+using ClassIsland.Shared.Models.Action;
+
 namespace ClassIsland.Services;
 
-public class ActionService(ILogger<ActionService> Logger) : IActionService
+public class ActionService : IActionService
 {
+    private ILogger<ActionService> Logger { get; }
+
+    private DateTime LastActionRunTime { get; set; } 
+
+    public ActionService(ILogger<ActionService> logger, ILessonsService lessonsService, IExactTimeService exactTimeService)
+    {
+        Logger = logger;
+        LessonsService = lessonsService;
+        ExactTimeService = exactTimeService;
+
+        LastActionRunTime = ExactTimeService.GetCurrentLocalDateTime();
+        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+    }
+
+    private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
+    {
+        var currentTime = ExactTimeService.GetCurrentLocalDateTime();
+        var triggeredActions = LessonsService.CurrentClassPlan?.TimeLayout?.Layouts
+            .Where(x => x.TimeType == 3 && x.StartSecond.TimeOfDay > LastActionRunTime.TimeOfDay &&
+                        x.StartSecond.TimeOfDay <= currentTime.TimeOfDay)
+            .Select(x => x)
+            .ToList();
+        LastActionRunTime = currentTime;
+        if (triggeredActions == null)
+        {
+            return;
+        }
+
+        foreach (var i in triggeredActions)
+        {
+            if (i.ActionSet == null)
+            {
+                continue;
+            }
+            Logger.LogInformation("触发时间点行动：{}/[{}]", LessonsService.CurrentClassPlan?.TimeLayout?.Name, i.StartSecond);
+            Invoke(i.ActionSet);
+        }
+    }
+
+    public ILessonsService LessonsService { get; }
+    public IExactTimeService ExactTimeService { get; }
+
     public void RegisterActionHandler(string id, ActionRegistryInfo.HandleDelegate handler)
     {
         if (!IActionService.Actions.TryGetValue(id, out var actionRegistryInfo))
@@ -28,30 +73,30 @@ public class ActionService(ILogger<ActionService> Logger) : IActionService
         Logger.LogTrace($"注册恢复行动：{id}（{IActionService.Actions[id].Name}）");
     }
 
-    public void Invoke(Actionset actionset)
+    public void Invoke(ActionSet actionSet)
     {
-        foreach (var action in actionset.Actions)
+        foreach (var action in actionSet.Actions)
             action.Exception = null;
-        actionset.IsOn = true;
+        actionSet.IsOn = true;
         Task.Run(() =>
         {
-            foreach (var action in actionset.Actions)
+            foreach (var action in actionSet.Actions)
             {
-                InvokeAction(action, actionset.Guid);
+                InvokeAction(action, actionSet.Guid);
             }
         });
     }
 
-    public void Revert(Actionset actionset)
+    public void Revert(ActionSet actionSet)
     {
-        foreach (var action in actionset.Actions)
+        foreach (var action in actionSet.Actions)
             action.Exception = null;
-        actionset.IsOn = false;
+        actionSet.IsOn = false;
         Task.Run(() =>
         {
-            foreach (var action in actionset.Actions)
+            foreach (var action in actionSet.Actions)
             {
-                InvokeAction(action, actionset.Guid, isBack: true);
+                InvokeAction(action, actionSet.Guid, isBack: true);
             }
         });
     }

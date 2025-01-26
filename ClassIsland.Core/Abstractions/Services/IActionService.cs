@@ -1,6 +1,8 @@
 ﻿using ClassIsland.Shared;
 using ClassIsland.Core.Models.Action;
-using Action = ClassIsland.Core.Models.Action.Action;
+using ClassIsland.Shared.Models.Action;
+using Action = ClassIsland.Shared.Models.Action.Action;
+
 namespace ClassIsland.Core.Abstractions.Services;
 
 /// <summary>
@@ -26,12 +28,12 @@ public interface IActionService
     /// <summary>
     /// 触发行动组。
     /// </summary>
-    void Invoke(Actionset actionset);
+    void Invoke(ActionSet actionSet);
 
     /// <summary>
     /// 恢复行动组。
     /// </summary>
-    void Revert(Actionset actionset);
+    void Revert(ActionSet actionSet);
 
     /// <summary>
     /// 行动是否有内建的恢复。

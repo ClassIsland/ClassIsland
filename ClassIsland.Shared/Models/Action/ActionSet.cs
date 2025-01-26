@@ -1,12 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using ClassIsland.Core.Abstractions.Services;
 using System.Collections.ObjectModel;
-namespace ClassIsland.Core.Models.Action;
+namespace ClassIsland.Shared.Models.Action;
 
 /// <summary>
-/// 代表一个行动组。要触发或恢复行动组，需要使用<see cref="IActionService"/>。
+/// 代表一个行动组。
 /// </summary>
-public class Actionset : ObservableRecipient
+public class ActionSet : ObservableRecipient
 {
     private bool _isEnabled = true;
     /// <summary>
