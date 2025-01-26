@@ -106,7 +106,7 @@ public partial class DebugPage : SettingsPageBase
 
     private void ButtonReset_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.TimeOffsetSeconds = 0;
+        SettingsService.Settings.DebugTimeOffsetSeconds = 0;
         ViewModel.IsTargetDateTimeLoaded = false;
         ViewModel.TargetDate = ExactTimeService.GetCurrentLocalDateTime().Date;
         ViewModel.TargetTime = ExactTimeService.GetCurrentLocalDateTime();
@@ -127,7 +127,7 @@ public partial class DebugPage : SettingsPageBase
         DateTime now = ExactTimeService.GetCurrentLocalDateTime().Date;
         DateTime tar = ViewModel.TargetDate.Date;
 
-        SettingsService.Settings.TimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
+        SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
     }
 
     private void TargetTime_OnChanged(object sender, RoutedEventArgs e)
@@ -137,7 +137,7 @@ public partial class DebugPage : SettingsPageBase
         DateTime now = ExactTimeService.GetCurrentLocalDateTime();
         DateTime tar = new(DateOnly.FromDateTime(now), TimeOnly.FromDateTime(ViewModel.TargetTime));
 
-        SettingsService.Settings.TimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
+        SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
     }
 
     private void MenuItemStartMainTimer_OnClick(object sender, RoutedEventArgs e)

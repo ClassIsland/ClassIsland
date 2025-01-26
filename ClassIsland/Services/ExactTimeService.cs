@@ -131,7 +131,6 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         {
             NtpClock = NtpClient.Query();
             var nowBase = SettingsService.Settings.IsExactTimeEnabled ? NtpClock.Now.LocalDateTime : DateTime.Now;
-            //var now = nowBase + TimeSpan.FromSeconds(SettingsService.Settings.TimeOffsetSeconds);
             if (30 > Math.Abs((nowBase - prev).TotalSeconds) && nowBase < prev)
             {
                 NeedWaiting = true;
@@ -161,6 +160,7 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
                 NeedWaiting = false;
             baseTime = now;
         }
-        return baseTime + TimeSpan.FromSeconds(SettingsService.Settings.TimeOffsetSeconds);
+        return baseTime + TimeSpan.FromSeconds(SettingsService.Settings.TimeOffsetSeconds +
+                                               SettingsService.Settings.DebugTimeOffsetSeconds);
     }
 }
