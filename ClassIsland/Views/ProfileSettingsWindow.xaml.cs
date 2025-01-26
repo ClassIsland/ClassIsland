@@ -250,7 +250,7 @@ public partial class ProfileSettingsWindow : MyWindow
                 // var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
                 selected = l.Count > 0 ? l.Last() : selected;
             }*/
-            if (timeType != 2 && index < timeLayout.Layouts.Count - 1)
+            if (timeType != 2 && timeType != 3 && index < timeLayout.Layouts.Count - 1)
             {
                 var nexts = (from i 
                             in timeLayout.Layouts.Skip(index + 1) 

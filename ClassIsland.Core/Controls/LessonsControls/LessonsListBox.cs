@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
+using unvell.ReoGrid.IO;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
 
@@ -125,6 +126,19 @@ public class LessonsListBox : ListBox
         if (FindResource("LessonsListBoxItemTemplateMultiConverter") is LessonsListBoxItemTemplateMultiConverter cv)
         {
             
+        }
+
+        if (FindResource("ClassPlanCollectionViewSource") is CollectionViewSource cvs)
+        {
+            cvs.Filter += CvsOnFilter;
+        }
+    }
+
+    private void CvsOnFilter(object sender, FilterEventArgs e)
+    {
+        if (e.Item is TimeLayoutItem timePoint)
+        {
+            e.Accepted = timePoint.TimeType != 3;
         }
     }
 

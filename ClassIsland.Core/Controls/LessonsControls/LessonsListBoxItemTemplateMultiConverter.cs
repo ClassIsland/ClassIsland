@@ -56,6 +56,11 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
             return BlankDataTemplate;
         }
 
+        if (timeType == 3)
+        {
+            return BlankDataTemplate;
+        }
+
         var selectedItem = values[2] as TimeLayoutItem;
         var currentItem = values[3] as TimeLayoutItem;
         if (currentItem != selectedItem && selectedItem?.TimeType == 0 && showCurrentTimeLayoutItemOnlyOnClass)
