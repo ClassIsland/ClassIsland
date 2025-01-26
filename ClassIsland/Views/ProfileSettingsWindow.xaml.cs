@@ -356,7 +356,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedValue).Value;
         var i = timeLayout.Layouts.IndexOf(timePoint);
         timeLayout.RemoveTimePoint(timePoint);
-        UpdateTimeLayout();
+        //UpdateTimeLayout();
         if (i > 0)
             ViewModel.SelectedTimePoint = timeLayout.Layouts[i - 1];
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.remove");
