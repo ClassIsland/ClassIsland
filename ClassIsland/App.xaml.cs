@@ -74,6 +74,7 @@ using ClassIsland.Services.ActionHandlers;
 using System.Diagnostics.Tracing;
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
+using ClassIsland.Models.Automation.Triggers;
 
 namespace ClassIsland;
 /// <summary>
@@ -388,9 +389,11 @@ public partial class App : AppBase, IAppHost
                 }));
                 services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
+                services.AddSingleton<IProfileAnalyzeService, ProfileAnalyzeService>();
                 services.AddSingleton<IIpcService, IpcService>();
                 services.AddSingleton<IAuthorizeService, AuthorizeService>();
                 services.AddSingleton<UriTriggerHandlerService>();
+                services.AddSingleton<SignalTriggerHandlerService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
@@ -403,7 +406,6 @@ public partial class App : AppBase, IAppHost
                     MainViewModel = s.GetService<MainWindow>()?.ViewModel ?? new()
                 });
                 services.AddTransient<ClassPlanDetailsWindow>();
-                services.AddSingleton<IProfileAnalyzeService, ProfileAnalyzeService>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
@@ -470,6 +472,7 @@ public partial class App : AppBase, IAppHost
                 // 触发器
                 services.AddTrigger<RulesetChangedTrigger>();
                 services.AddTrigger<UriTrigger, UriTriggerSettingsControl>();
+                services.AddTrigger<SignalTrigger, SignalTriggerSettingsControl>();
                 // 规则
                 services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
                 services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
@@ -486,6 +489,7 @@ public partial class App : AppBase, IAppHost
                 services.AddAction<RunActionSettings, RunActionSettingsControl>("classisland.os.run", "运行", PackIconKind.OpenInApp);
                 services.AddAction<SleepActionSettings, SleepActionSettingsControl>("classisland.action.sleep", "等待时长", PackIconKind.TimerSand);
                 services.AddAction("classisland.app.quit", "退出 ClassIsland", PackIconKind.ExitToApp, (_, _) => Current.Stop());
+                services.AddAction<SignalTriggerSettings, BroadcastSignalActionSettingsControl>("classisland.broadcastSignal", "广播信号", PackIconKind.Broadcast);
                 // 行动处理
                 services.AddHostedService<RunActionHandler>();
                 services.AddHostedService<AppSettingsActionHandler>();
@@ -634,6 +638,7 @@ public partial class App : AppBase, IAppHost
         GetService<MainWindow>().Show();
         GetService<ISplashService>().CurrentProgress = 90;
         GetService<IWindowRuleService>();
+        GetService<SignalTriggerHandlerService>();
 
         // 注册uri导航
         var uriNavigationService = GetService<IUriNavigationService>();
