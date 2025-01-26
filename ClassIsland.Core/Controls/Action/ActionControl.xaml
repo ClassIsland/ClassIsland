@@ -35,9 +35,8 @@
             </dd:DragDrop.EffectMoveAdornerTemplate>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Border HorizontalAlignment="Stretch"
-                            Background="{DynamicResource MaterialDesignCardBackground}">
-                        <Grid Margin="0 8">
+                    <Border HorizontalAlignment="Stretch">
+                        <Grid Margin="0 4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />

@@ -1295,7 +1295,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="5"/>
-                                        <ColumnDefinition Width="350" MinWidth="250" MaxWidth="350"/>
+                                        <ColumnDefinition Width="375" MinWidth="250" MaxWidth="450"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -1557,24 +1557,43 @@
                                                         </Style>
                                                     </materialDesign:TimePicker.Style>
                                                 </materialDesign:TimePicker>
-                                                <TextBlock Text="类型" Margin="0 16 0 0" />
-                                                <ListBox
-                                                    Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                                    SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
-                                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                                    <ListBoxItem>
-                                                        <controls1:IconText Kind="BookOutline" Text="上课" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem>
-                                                        <controls1:IconText Kind="ClockOutline" Text="课间休息" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem Visibility="Collapsed">
-                                                        <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem Visibility="Collapsed">
-                                                        <controls1:IconText Kind="Airplane" Text="行动" />
-                                                    </ListBoxItem>
-                                                </ListBox>
+                                                <StackPanel>
+                                                    <StackPanel.Style>
+                                                        <Style TargetType="StackPanel">
+                                                            <Style.Triggers>
+                                                                <DataTrigger
+                                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                    Value="0">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                                <DataTrigger
+                                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                    Value="1">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Style>
+                                                    </StackPanel.Style>
+                                                    <TextBlock Text="类型" Margin="0 16 0 0" />
+                                                    <ListBox
+                                                        Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                                        SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                        PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                                        <ListBoxItem>
+                                                            <controls1:IconText Kind="BookOutline" Text="上课" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem>
+                                                            <controls1:IconText Kind="ClockOutline" Text="课间休息" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem Visibility="Collapsed">
+                                                            <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem Visibility="Collapsed">
+                                                            <controls1:IconText Kind="Airplane" Text="行动" />
+                                                        </ListBoxItem>
+                                                    </ListBox>
+                                                </StackPanel>
                                             </StackPanel>
                                             <StackPanel>
                                                 <StackPanel.Style>
