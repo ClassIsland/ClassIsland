@@ -231,7 +231,7 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var selected   = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
-        var baseSec    = selected?.EndSecond ?? DateTime.Today + new TimeSpan(7, 30, 0);
+        var baseSec    = (timeType is 0 or 1 ? selected?.EndSecond : selected?.StartSecond) ?? DateTime.Today + new TimeSpan(7, 30, 0);
         var settings   = App.GetService<SettingsService>().Settings;
         var lastTime   = TimeSpan.FromMinutes(timeType switch
         {
@@ -558,7 +558,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var l = timeLayout.Layouts;
         for (var i = 0; i < l.Count - 1; i++)
         {
-            if (l[i].StartSecond.TimeOfDay < item.StartSecond.TimeOfDay)
+            if (l[i].StartSecond.TimeOfDay <= item.StartSecond.TimeOfDay)
                 continue;
             timeLayout.InsertTimePoint(i, item);
             return;

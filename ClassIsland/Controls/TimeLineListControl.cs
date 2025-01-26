@@ -100,7 +100,7 @@ public class TimeLineListControl : ListBox
         for (var index = 0; index < layout.Count - 1; index++)
         {
             var i = layout[index + 1];
-            if (layout[index].StartSecond.TimeOfDay <= layout[index + 1].StartSecond.TimeOfDay) continue;
+            if (layout[index].StartSecond.TimeOfDay < layout[index + 1].StartSecond.TimeOfDay) continue;
             isSorted = false;
             break;
         }
@@ -114,7 +114,7 @@ public class TimeLineListControl : ListBox
         for (var index = 0; index < validTimePoints.Count; index++)
         {
             var i = validTimePoints[index];
-            if (i.StartSecond.TimeOfDay < args.Item.StartSecond.TimeOfDay) continue;
+            if (i.StartSecond.TimeOfDay <= args.Item.StartSecond.TimeOfDay) continue;
             Console.WriteLine($"{rawIndex} -> {layout.IndexOf(i)}");
             layout.Move(rawIndex, layout.IndexOf(i));
             SelectedItem = args.Item;
