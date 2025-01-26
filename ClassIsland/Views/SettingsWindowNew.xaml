@@ -130,7 +130,8 @@
 
         <CollectionViewSource x:Key="NavigationCollectionViewSource"
                               Source="{x:Static services:SettingsWindowRegistryService.Registered}"
-                              Filter="NavigationCollectionViewSource_OnFilter">
+                              Filter="NavigationCollectionViewSource_OnFilter"
+                              IsLiveFilteringRequested="True">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="Category"/>
             </CollectionViewSource.GroupDescriptions>
