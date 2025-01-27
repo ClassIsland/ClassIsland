@@ -247,7 +247,7 @@
                 <!-- 放学后显示明天课表 -->
                 <ci:SettingsCard IconGlyph="CalendarOutline"
                                  Header="显示明天课表"
-                                 Description="设置什么时候显示明天课表"
+                                 Description="设置什么时候显示明天课表。"
                                  Margin="0 0 0 6">
                     <ci:SettingsCard.Switcher>
                         <Grid>

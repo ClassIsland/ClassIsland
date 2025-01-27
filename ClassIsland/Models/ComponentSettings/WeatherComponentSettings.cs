@@ -16,4 +16,16 @@ public class WeatherComponentSettings : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    private int _alertsTitleShowMode = 1;
+    public int AlertsTitleShowMode
+    {
+        get => _alertsTitleShowMode;
+        set
+        {
+            if (value == _alertsTitleShowMode) return;
+            _alertsTitleShowMode = value;
+            OnPropertyChanged();
+        }
+    }
 }
