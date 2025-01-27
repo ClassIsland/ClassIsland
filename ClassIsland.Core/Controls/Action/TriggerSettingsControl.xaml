@@ -44,7 +44,7 @@
                                     Command="{Binding RemoveTriggerCommand, RelativeSource={RelativeSource AncestorType=local:TriggerSettingsControl}}"
                                     CommandParameter="{Binding}"
                                     Margin="0 0 2 0"
-                                    Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ActionControl}}"/>
+                                    Visibility="{Binding IsEnabled, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:TriggerSettingsControl}}"/>
                             <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />

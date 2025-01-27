@@ -60,12 +60,11 @@ public class AutomationService : ObservableRecipient, IAutomationService
     {
         if (!SettingsService.Settings.IsAutomationEnabled) return;
 
-        foreach (var workflow in Workflows.Where(x => x.ActionSet.IsOn))
+        foreach (var workflow in Workflows.Where(x => x.ActionSet is { IsOn: true, IsRevertEnabled: true }))
         {
             if (RulesetService.IsRulesetSatisfied(workflow.Ruleset)) 
                 continue;
             ActionService.Revert(workflow.ActionSet);
-            workflow.ActionSet.IsOn = false;
         }
     }
 
@@ -253,9 +252,9 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
 
         Logger.LogTrace("工作流 {} 由触发器 {} 触发", workflow.ActionSet.Name, trigger);
-        if (!RulesetService.IsRulesetSatisfied(workflow.Ruleset)) return;
+        if (workflow.IsConditionEnabled && !RulesetService.IsRulesetSatisfied(workflow.Ruleset)) 
+            return;
         ActionService.Invoke(workflow.ActionSet);
-        workflow.ActionSet.IsOn = true;
         SaveConfig();
     }
     private void TriggerTriggeredRecover(object? sender, EventArgs e)
@@ -270,7 +269,6 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
         Logger.LogTrace("工作流 {} 由触发器 {} 触发恢复", workflow.ActionSet.Name, trigger);
         ActionService.Revert(workflow.ActionSet);
-        workflow.ActionSet.IsOn = false;
         SaveConfig();
     }
 

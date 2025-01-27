@@ -68,6 +68,8 @@ public class ActionSet : ObservableRecipient
     }
 
     private ObservableCollection<Action> _actions = [];
+    private bool _isRevertEnabled = true;
+
     /// <summary>
     /// 行动组中的所有行动。
     /// </summary>
@@ -78,6 +80,20 @@ public class ActionSet : ObservableRecipient
         {
             if (value == _actions) return;
             _actions = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否启用恢复
+    /// </summary>
+    public bool IsRevertEnabled
+    {
+        get => _isRevertEnabled;
+        set
+        {
+            if (value == _isRevertEnabled) return;
+            _isRevertEnabled = value;
             OnPropertyChanged();
         }
     }

@@ -33,6 +33,8 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
+    public bool WillMigrateProfileTrustedState { get; set; } = false;
+
     private async Task LoadManagementSettingsAsync()
     {
         if (!ManagementService.Manifest.DefaultSettingsSource.IsNewerAndNotNull(ManagementService.Versions
@@ -207,6 +209,12 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
                 "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/publicbeta" => "beta",
                 _ => "stable"
             };
+            Logger.LogInformation("成功迁移了 1.5.3.0 以前的设置。");
+        }
+        if (Settings.LastAppVersion < Version.Parse("1.5.4.0"))
+        {
+            WillMigrateProfileTrustedState = true;
+            Logger.LogInformation("成功迁移了 1.5.4.0 以前的设置。");
         }
     }
 #pragma warning restore CS0612 // 类型或成员已过时

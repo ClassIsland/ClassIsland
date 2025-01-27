@@ -15,6 +15,7 @@
                      d:DesignHeight="450"
                      d:DesignWidth="800"
                      xmlns:dd="urn:gong-wpf-dragdrop"
+                     xmlns:models="clr-namespace:ClassIsland.Core.Models;assembly=ClassIsland.Core"
                      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                      Background="{DynamicResource MaterialDesignPaper}"
                      FontFamily="{StaticResource HarmonyOsSans}"
@@ -71,25 +72,6 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <!--自动化实验性警告--> 
-            <materialDesign:ColorZone Background="#10FF0000" Panel.ZIndex="1" Margin="0 0 0 0">
-                <Grid>
-                    <DockPanel Margin="8 4">
-                        <materialDesign:PackIcon Kind="ErrorOutline"
-                                                    Height="20" Width="20"/>
-                        <TextBlock TextWrapping="Wrap"
-                                    VerticalAlignment="Center"
-                                    Margin="4 0 0 0" >
-                                    <Run>你正在使用自动化的早期版本，此版本仅供尝鲜使用，不建议用于生产环境。此功能在未来可能会产生较大的变动，并且
-                                    </Run><Bold>可能无法保证配置文件完全向下兼容。
-                                    </Bold><Run>欢迎在
-                                    </Run><ci:NavHyperlink CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/119">ClassIsland/ClassIsland#119
-                                    </ci:NavHyperlink><Run>讨论此功能。</Run>
-                        </TextBlock>
-                    </DockPanel>
-                </Grid>
-            </materialDesign:ColorZone>
-
             <!-- 自动化编辑 -->
             <controls1:ListDetailView Grid.Row="1"
                                       ShowTitleWhenNotCompressed="True"
@@ -276,8 +258,9 @@
 
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Right"
-                                    Grid.Column="2"
                                     DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}">
+                            <CheckBox IsChecked="{Binding ActionSet.IsRevertEnabled}"
+                                      Content="启用恢复"/>
                             <Button Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}"
                                     CommandParameter="{Binding ActionSet}"
                                     Padding="12 0">
@@ -319,7 +302,7 @@
                                 <Grid.Style>
                                     <Style TargetType="Grid">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ViewModel.SelectedAutomation}"
+                                            <DataTrigger Binding="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
                                                          Value="{x:Null}">
                                                 <Setter Property="Visibility"
                                                         Value="Collapsed" />
@@ -327,8 +310,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>
-                                <StackPanel DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}"
-                                            Margin="0 0 6 0">
+                                <StackPanel Margin="0 0 6 0" DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}">
                                     <StackPanel.Style>
                                         <Style TargetType="StackPanel">
                                             <Style.Triggers>
@@ -346,8 +328,8 @@
                                               Margin="2 2 2 10">
                                         <GroupBox.HeaderTemplate>
                                             <DataTemplate>
-                                                <ci:IconText Text="当触发以下事件时"
-                                                             Kind="EventAlert" />
+                                                <ci:IconText Text="当以下事件触发时"
+                                                             Kind="AlertOctagonOutline" />
                                             </DataTemplate>
                                         </GroupBox.HeaderTemplate>
                                         <action:TriggerSettingsControl Triggers="{Binding Triggers}"/>
@@ -355,15 +337,25 @@
 
                                     <!--规则编辑-->
                                     <GroupBox Style="{StaticResource MaterialDesignCardGroupBox}"
-                                              Margin="2 2 2 10">
+                                              Margin="2 2 2 10"
+                                              Header="{Binding}">
                                         <GroupBox.HeaderTemplate>
                                             <DataTemplate>
-                                                <ci:IconText Text="当以下规则满足时"
-                                                             Kind="TagMultipleOutline" />
+                                                <StackPanel Orientation="Horizontal">
+                                                    <ToggleButton IsChecked="{Binding IsConditionEnabled, Mode=TwoWay}"
+                                                                  Margin="0 0 4 0"/>
+                                                    <ci:IconText Text="并且满足以下规则时"
+                                                                 Kind="TagMultipleOutline" />
+                                                </StackPanel>
                                             </DataTemplate>
                                         </GroupBox.HeaderTemplate>
-                                        <ruleset:RulesetControl Ruleset="{Binding Ruleset}"
-                                                                ShowTitle="False" />
+                                        <Grid>
+                                            <TextBlock Text="工作流运行时不会考虑规则集。"
+                                   Visibility="{Binding IsConditionEnabled, Converter={StaticResource InverseBoolToVisConverter}, Mode=OneWay}"/>
+                                            <ruleset:RulesetControl Ruleset="{Binding Ruleset}"
+                                                ShowTitle="False" 
+                                                Visibility="{Binding IsConditionEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>
+                                        </Grid>
                                     </GroupBox>
 
                                     <!--行动编辑-->
@@ -392,6 +384,7 @@
 
                                     <ci:IconText Text="当规则不再满足时，将自动恢复行动。"
                                                  Kind="AirplaneLanding"
+                                                 Visibility="{Binding ActionSet.IsRevertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                  Margin="10 2 0 10" />
                                 </StackPanel>
                             </Grid>

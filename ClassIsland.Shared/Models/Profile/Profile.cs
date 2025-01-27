@@ -27,6 +27,7 @@ public class Profile : ObservableRecipient
     private DateTime _tempClassPlanGroupExpireTime = DateTime.Now;
     private bool _isTempClassPlanGroupEnabled = false;
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
+    private string _id = Guid.NewGuid().ToString();
 
     /// <summary>
     /// 实例化对象
@@ -440,6 +441,20 @@ public class Profile : ObservableRecipient
         {
             if (value == _tempClassPlanGroupType) return;
             _tempClassPlanGroupType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 档案 ID
+    /// </summary>
+    public string Id
+    {
+        get => _id;
+        set
+        {
+            if (value == _id) return;
+            _id = value;
             OnPropertyChanged();
         }
     }

@@ -23,6 +23,7 @@ using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Action;
 using ClassIsland.ViewModels;
 
@@ -1113,5 +1114,25 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonAddActionTimePoint_OnClick(object sender, RoutedEventArgs e)
     {
         AddTimeLayoutItem(3);
+    }
+
+    private void ButtonDebugTriggerAction_OnClick(object sender, RoutedEventArgs e)
+    {
+        var action = ViewModel.SelectedTimePoint?.ActionSet;
+        if (action == null)
+        {
+            return;
+        }
+        IAppHost.GetService<IActionService>().Invoke(action);
+    }
+
+    private async void ButtonUnTrustedProfile_OnClick(object sender, RoutedEventArgs e)
+    {
+        var r = await DialogHost.Show(FindResource("ProfileTrustWarning"), ViewModel.DialogHostId);
+        if (r as bool? != true)
+        {
+            return;
+        }
+        ProfileService.TrustCurrentProfile();
     }
 }

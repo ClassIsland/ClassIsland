@@ -26,6 +26,8 @@ public class Workflow : ObservableRecipient
 
     private ActionSet _actionSet = new();
     private ObservableCollection<TriggerSettings> _triggers = [];
+    private bool _isConditionEnabled = false;
+
 
     /// <summary>
     /// 行动组
@@ -61,4 +63,18 @@ public class Workflow : ObservableRecipient
     }
 
     internal event EventHandler? Unloading;
+
+    /// <summary>
+    /// 是否启用条件判定
+    /// </summary>
+    public bool IsConditionEnabled
+    {
+        get => _isConditionEnabled;
+        set
+        {
+            if (value == _isConditionEnabled) return;
+            _isConditionEnabled = value;
+            OnPropertyChanged();
+        }
+    }
 }

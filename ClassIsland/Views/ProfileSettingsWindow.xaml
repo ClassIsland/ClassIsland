@@ -663,6 +663,30 @@
         </CollectionViewSource>
         <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
 
+        <StackPanel x:Key="ProfileTrustWarning" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="不信任的档案"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="当前档案不受信任，部分功能（如行动时间点等）将禁用。如果您信任此档案并希望启用这些受限的功能，请将此档案设置为信任。"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="信任此档案" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
     </Window.Resources>
     <Grid>
 
@@ -1317,7 +1341,8 @@
                                         <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
                                             <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
                                         </Button>
-                                        <Button Click="ButtonAddActionTimePoint_OnClick" ToolTip="添加行动时间点。">
+                                        <Button Click="ButtonAddActionTimePoint_OnClick" ToolTip="添加行动时间点。"
+                                                IsEnabled="{Binding ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}">
                                             <controls1:IconText Kind="AirplanePlus" Text="行动"/>
                                         </Button>
                                         <Separator/>
@@ -1692,6 +1717,12 @@
                                                     </Style>
                                                 </StackPanel.Style>
                                                 <controls1:IconText Kind="Airplane" Text="行动" Margin="0 0 0 8" />
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                                                        Click="ButtonDebugTriggerAction_OnClick"
+                                                        IsEnabled="{Binding ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}"
+                                                        Margin="0 0 0 2">
+                                                    <ci:IconText Kind="MotionPlayOutline" Text="触发"/>
+                                                </Button>
                                                 <action:ActionControl ActionSet="{Binding ViewModel.SelectedTimePoint.ActionSet}"/>
                                             </StackPanel>
                                         </StackPanel>
@@ -2130,6 +2161,15 @@
                             <StackPanel Grid.Column="2" Orientation="Horizontal"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
+                                <materialDesign:Chip
+                                    ToolTip="当前档案不受信任，部分功能受限。"
+                                    Icon="{materialDesign:PackIcon Warning}"
+                                    Click="ButtonUnTrustedProfile_OnClick"
+                                    Visibility="{Binding ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                    <TextBlock>
+                                        <Run Text="不信任"/>
+                                    </TextBlock>
+                                </materialDesign:Chip>
                                 <materialDesign:Chip
                                     ToolTip="查看档案编辑帮助。"
                                     Icon="{materialDesign:PackIcon Help}"

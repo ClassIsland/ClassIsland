@@ -220,6 +220,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _selectedUpdateChannelV2 = "stable";
     private GptSoVitsSpeechSettings _gptSoVitsSpeechSettings = new();
     private double _mainWindowLineVerticalMargin = 5;
+    private ObservableCollection<string> _trustedProfileIds = [];
 
 
     public void NotifyPropertyChanged(string propertyName)
@@ -2195,6 +2196,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _settingsPagesCachePolicy) return;
             _settingsPagesCachePolicy = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<string> TrustedProfileIds
+    {
+        get => _trustedProfileIds;
+        set
+        {
+            if (Equals(value, _trustedProfileIds)) return;
+            _trustedProfileIds = value;
             OnPropertyChanged();
         }
     }

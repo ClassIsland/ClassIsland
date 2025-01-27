@@ -17,11 +17,12 @@ public class ActionService : IActionService
 
     private DateTime LastActionRunTime { get; set; } 
 
-    public ActionService(ILogger<ActionService> logger, ILessonsService lessonsService, IExactTimeService exactTimeService)
+    public ActionService(ILogger<ActionService> logger, ILessonsService lessonsService, IExactTimeService exactTimeService, IProfileService profileService)
     {
         Logger = logger;
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
+        ProfileService = profileService;
 
         LastActionRunTime = ExactTimeService.GetCurrentLocalDateTime();
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
@@ -29,6 +30,10 @@ public class ActionService : IActionService
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
+        if (!ProfileService.IsCurrentProfileTrusted)
+        {
+            return;
+        }
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
         var triggeredActions = LessonsService.CurrentClassPlan?.TimeLayout?.Layouts
             .Where(x => x.TimeType == 3 && x.StartSecond.TimeOfDay > LastActionRunTime.TimeOfDay &&
@@ -54,6 +59,7 @@ public class ActionService : IActionService
 
     public ILessonsService LessonsService { get; }
     public IExactTimeService ExactTimeService { get; }
+    public IProfileService ProfileService { get; }
 
     public void RegisterActionHandler(string id, ActionRegistryInfo.HandleDelegate handler)
     {
@@ -77,7 +83,10 @@ public class ActionService : IActionService
     {
         foreach (var action in actionSet.Actions)
             action.Exception = null;
-        actionSet.IsOn = true;
+        if (actionSet.IsRevertEnabled)
+        {
+            actionSet.IsOn = true;
+        }
         Task.Run(() =>
         {
             foreach (var action in actionSet.Actions)

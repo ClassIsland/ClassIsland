@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,7 +26,7 @@ using Sentry;
 
 namespace ClassIsland.Services;
 
-public class ProfileService : IProfileService
+public class ProfileService : IProfileService, INotifyPropertyChanged
 {
     public string CurrentProfilePath { 
         get; 
@@ -52,6 +55,7 @@ public class ProfileService : IProfileService
     public IIpcService IpcService { get; }
 
     private bool _isProfileLoaded = false;
+    private bool _isCurrentProfileTrusted = false;
 
     public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
     {
@@ -156,8 +160,19 @@ public class ProfileService : IProfileService
         }
         Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
+        if (SettingsService.Settings.TrustedProfileIds.Contains(Profile.Id))
+        {
+            IsCurrentProfileTrusted = true;
+        }
+
+        if (SettingsService.WillMigrateProfileTrustedState)
+        {
+            //TrustCurrentProfile();
+            SettingsService.WillMigrateProfileTrustedState = false;
+            Logger.LogInformation("自动信任来自 1.5.4.0 以前的当前档案。");
+        }
         CurrentProfilePath = filename;
-        Logger.LogTrace("成功加载档案！");
+        Logger.LogTrace("成功加载档案！信任：{}", IsCurrentProfileTrusted);
         CleanExpiredTempClassPlan();
         _isProfileLoaded = true;
         spanLoadingProfile?.Finish();
@@ -296,11 +311,43 @@ public class ProfileService : IProfileService
         Profile.IsTempClassPlanGroupEnabled = false;
     }
 
+    public bool IsCurrentProfileTrusted
+    {
+        get => _isCurrentProfileTrusted;
+        private set
+        {
+            if (value == _isCurrentProfileTrusted) return;
+            _isCurrentProfileTrusted = value;
+            OnPropertyChanged();
+        }
+    }
+
     public void ClearExpiredTempClassPlanGroup()
     {
         if (Profile.TempClassPlanGroupExpireTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
         {
             ClearTempClassPlanGroup();
         }
+    }
+
+    public void TrustCurrentProfile()
+    {
+        SettingsService.Settings.TrustedProfileIds.Add(Profile.Id);
+        IsCurrentProfileTrusted = true;
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }

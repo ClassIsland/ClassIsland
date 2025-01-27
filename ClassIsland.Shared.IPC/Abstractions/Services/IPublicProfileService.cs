@@ -59,4 +59,9 @@ public interface IPublicProfileService
     /// 清除当前的临时课表组。
     /// </summary>
     void ClearTempClassPlanGroup();
+
+    /// <summary>
+    /// 当前档案是否为信任档案。
+    /// </summary>
+    bool IsCurrentProfileTrusted { get; }
 }
