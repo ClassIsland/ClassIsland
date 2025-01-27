@@ -8,7 +8,6 @@
                         xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                         xmlns:controls1="clr-namespace:ClassIsland.Controls"
-                        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                         mc:Ignorable="d"
                         d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
@@ -51,17 +50,24 @@
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </Style>
                             </TabControl.Resources>
-                            <TabItem Visibility="Collapsed">
+                            <TabItem>
                                 <Image Source="{Binding Images[icon]}" Height="22" Margin="2 0 0 0" />
                             </TabItem>
                             <TabItem>
-                                <materialDesign:Chip IconBackground="Transparent"
-                                                     Margin="-2 0 0 0">
-                                    <materialDesign:Chip.Icon>
-                                        <Image Source="{Binding Images[icon]}" Height="22" />
-                                    </materialDesign:Chip.Icon>
-                                    <TextBlock Text="{Binding Type}" Margin="-8 0 -4 0" />
-                                </materialDesign:Chip>
+                                <Grid Margin="2 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.ColumnSpan="2"
+                                            Background="{DynamicResource MaterialDesignBody}" Opacity="0.1"
+                                            CornerRadius="11" />
+                                    <Image Grid.Column="0"
+                                           Source="{Binding Images[icon]}" Height="22" />
+                                    <TextBlock Grid.Column="1" Margin="4 0 8 0"
+                                               Text="{Binding Type}" VerticalAlignment="Center"
+                                               FontSize="{DynamicResource MainWindowSecondaryFontSize}" />
+                                </Grid>
                             </TabItem>
                         </TabControl>
                     </DataTemplate>
