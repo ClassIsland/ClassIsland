@@ -219,6 +219,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         void TriggerOnUnloading(object? sender, EventArgs e)
         {
             trigger.Unloading -= TriggerOnUnloading;
+            trigger.PropertyChanged -= TriggerOnPropertyChanged;
         }
     }
 
