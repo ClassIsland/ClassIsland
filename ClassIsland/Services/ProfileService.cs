@@ -167,7 +167,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
         if (SettingsService.WillMigrateProfileTrustedState)
         {
-            //TrustCurrentProfile();
+            TrustCurrentProfile();
             SettingsService.WillMigrateProfileTrustedState = false;
             Logger.LogInformation("自动信任来自 1.5.4.0 以前的当前档案。");
         }
@@ -334,6 +334,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     {
         SettingsService.Settings.TrustedProfileIds.Add(Profile.Id);
         IsCurrentProfileTrusted = true;
+        Logger.LogInformation("已信任当前档案 {}", Profile.Id);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

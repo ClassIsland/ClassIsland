@@ -471,9 +471,16 @@ public partial class App : AppBase, IAppHost
                 services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
                 // 触发器
-                services.AddTrigger<RulesetChangedTrigger>();
-                services.AddTrigger<UriTrigger, UriTriggerSettingsControl>();
                 services.AddTrigger<SignalTrigger, SignalTriggerSettingsControl>();
+                services.AddTrigger<UriTrigger, UriTriggerSettingsControl>();
+                services.AddTrigger<RulesetChangedTrigger>();
+                services.AddTrigger<CronTrigger, CronTriggerSettingsControl>();
+                services.AddTrigger<AppStartupTrigger>();
+                services.AddTrigger<AppStoppingTrigger>();
+                services.AddTrigger<OnClassTrigger>();
+                services.AddTrigger<OnBreakingTimeTrigger>();
+                services.AddTrigger<OnAfterSchoolTrigger>();
+                services.AddTrigger<CurrentTimeStateChangedTrigger>();
                 // 规则
                 services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
                 services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);

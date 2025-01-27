@@ -32,7 +32,7 @@
                 <DataTemplate>
                     <Border HorizontalAlignment="Stretch"
                             Background="{DynamicResource MaterialDesignCardBackground}">
-                        <Grid Margin="0 8">
+                        <Grid Margin="0 4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
