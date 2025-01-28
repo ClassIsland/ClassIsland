@@ -96,7 +96,7 @@ public partial class AppLogsWindow : MyWindow
         }
         else
         {
-            e.Accepted = c1 && (i.Message.Contains(ViewModel.FilterText) || i.CategoryName.Contains(ViewModel.FilterText));
+            e.Accepted = c1 && (i.Message.Contains(ViewModel.FilterText, StringComparison.OrdinalIgnoreCase) || i.CategoryName.Contains(ViewModel.FilterText));
         }
     }
 

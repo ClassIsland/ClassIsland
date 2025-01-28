@@ -309,9 +309,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
         var filter = ViewModel.PluginFilterText;
         if (string.IsNullOrWhiteSpace(filter))
             return;
-        e.Accepted = info.Manifest.Id.Contains(filter) ||
-                     info.Manifest.Name.Contains(filter) ||
-                     info.Manifest.Description.Contains(filter);
+        e.Accepted = info.Manifest.Id.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                     info.Manifest.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                     info.Manifest.Description.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
 
     private void TextBoxFilter_OnKeyDown(object sender, KeyEventArgs e)
