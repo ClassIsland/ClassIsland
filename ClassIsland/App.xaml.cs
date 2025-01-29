@@ -205,7 +205,7 @@ public partial class App : AppBase, IAppHost
         CrashWindow = new CrashWindow()
         {
             CrashInfo = e.ToString(),
-            AllowIgnore = _isStartedCompleted && !critical,
+            AllowIgnore = !critical,
             IsCritical = critical
         };
         if (!critical)  // 全局未捕获的异常应该由 SentrySdk 自行捕获。
