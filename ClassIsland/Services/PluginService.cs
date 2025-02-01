@@ -152,7 +152,7 @@ public class PluginService : IPluginService
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
-                Console.WriteLine($"Initialize plugin: {pluginDir}");
+                Console.WriteLine($"Initialize plugin: {pluginDir} ({manifest.Version})");
             }
             catch (Exception ex)
             {

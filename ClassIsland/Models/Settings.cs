@@ -113,6 +113,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _defaultBreakingTimePointMinutes = 10;
     private double _debugAnimationScale = 1.0;
     private double _debugTimeSpeed = 1.0;
+    private double _debugTimeOffsetSeconds = 0.0;
     private bool _expIsExcelImportEnabled = false;
     private int _timeLayoutEditorIndex = 1;
     private bool _isSplashEnabled = true;
@@ -2075,6 +2076,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_debugTimeSpeed)) return;
             _debugTimeSpeed = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public double DebugTimeOffsetSeconds
+    {
+        get => _debugTimeOffsetSeconds;
+        set
+        {
+            if (value == _debugTimeOffsetSeconds) return;
+            _debugTimeOffsetSeconds = value;
             OnPropertyChanged();
         }
     }

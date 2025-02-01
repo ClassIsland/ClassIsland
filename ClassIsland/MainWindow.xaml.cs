@@ -263,7 +263,7 @@ public partial class MainWindow : Window
 
         if (SettingsService.Settings.DebugTimeSpeed != 0)
         {
-            SettingsService.Settings.TimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
+            SettingsService.Settings.DebugTimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
         }
     }
 

@@ -134,6 +134,7 @@ public class MainWindowLine : Control
         MainWindow.RawInputEvent += MainWindowOnRawInputEvent;
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateFadeStatus();
     }
 
 

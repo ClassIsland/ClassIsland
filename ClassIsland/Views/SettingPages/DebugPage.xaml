@@ -74,7 +74,7 @@
                     <UniformGrid>
                         <MenuItem Grid.Column="0" Grid.Row="1"
                                   Icon="{materialDesign:PackIcon ClockRemoveOutline}"
-                                  Header="重置时间偏移"
+                                  Header="重置调试时间偏移"
                                   Click="ButtonReset_OnClick" />
                         <materialDesign:TimePicker Grid.Column="1" Grid.Row="1" Margin="0 0 3 0"
                                   Background="{DynamicResource MaterialDesignCardBackground}"
@@ -95,11 +95,8 @@
                 <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发下课" Click="MenuItemDebugTriggerAfterClass_OnClick" />
                 <MenuItem Icon="{materialDesign:PackIcon Pause}" Header="停止主计时器" Click="MenuItemStopMainTimer_OnClick" />
                 <MenuItem Icon="{materialDesign:PackIcon RubbishBinOutline}" Header="垃圾回收" Click="MenuItemGcCollect_OnClick" />
-            </UniformGrid>
-            <Separator />
-
-            <UniformGrid IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}">
-                <MenuItem IsCheckable="True" Header="正在集控管理" IsChecked="{Binding ManagementService.IsManagementEnabled}"/>
+                <MenuItem IsCheckable="True" Header="正在集控管理" IsChecked="{Binding ManagementService.IsManagementEnabled}"
+                          IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}" />
             </UniformGrid>
             <Separator />
 
@@ -190,9 +187,6 @@
                     <MenuItem Icon="{materialDesign:PackIcon Dangerous}"
                               Header="Environment.FailFast();"
                               Click="MenuItemFailFast_OnClick" />
-                    <MenuItem Header="集控：禁用调试菜单" IsCheckable="True"
-                              IsChecked="{Binding ManagementService.Policy.DisableDebugMenu}"
-                              IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}"/>
                 </StackPanel>
                 
             </Expander>
