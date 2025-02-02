@@ -68,9 +68,10 @@ public static class CsesExtensions
             var classPlan = new ClassPlan();
             for (var j = 0; j < i.Classes.Count; j++)
             {
+                subjectsCache.TryGetValue(i.Classes[j].Subject, out var subjectId);
                 classPlan.Classes.Add(new ClassInfo()
                 {
-                    SubjectId = subjectsCache[i.Classes[j].Subject],
+                    SubjectId = subjectId ?? "",
                 });
 
                 if (timeLayoutKey != null)
@@ -103,6 +104,7 @@ public static class CsesExtensions
             classPlan.TimeRule.WeekCountDiv = (int)i.Weeks;
             classPlan.TimeRule.WeekDay = (int)i.EnableDay;
             classPlan.Name = i.Name;
+            result.ClassPlans[Guid.NewGuid().ToString()] = classPlan;
         }
 
         return result;
@@ -141,13 +143,15 @@ public static class CsesExtensions
             };
             foreach (var j in i.Value.Classes)
             {
+                profile.Subjects.TryGetValue(j.SubjectId, out var subject);
                 schedule.Classes.Add(new CsesSharp.Models.ClassInfo()
                 {
                     StartTime = j.CurrentTimeLayoutItem.StartSecond.TimeOfDay,
                     EndTime = j.CurrentTimeLayoutItem.EndSecond.TimeOfDay,
-                    Subject = profile.Subjects[j.SubjectId].Name,
+                    Subject = subject?.Name ?? "",
                 });
             }
+            result.Schedules.Add(schedule);
         }
 
         return result;

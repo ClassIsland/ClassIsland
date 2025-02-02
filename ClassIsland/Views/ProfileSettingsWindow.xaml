@@ -2180,15 +2180,53 @@
                                         <Run Text="帮助"/>
                                     </TextBlock>
                                 </materialDesign:Chip>
-                                <materialDesign:Chip
-                                    ToolTip="从表格导入课表和时间表…"
-                                    Icon="{materialDesign:PackIcon Import}"
-                                    Click="ButtonImportFromFile_OnClick"
-                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock>
-                                        <Run Text="从表格导入…"/>
-                                    </TextBlock>
-                                </materialDesign:Chip>
+                                <Grid>
+                                    <materialDesign:Chip
+                                        ToolTip="导入或导出档案…"
+                                        Icon="{materialDesign:PackIcon Import}"
+                                        Click="ButtonImportFromFile_OnClick"
+                                        IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
+                                        <TextBlock>
+                                            <Run Text="导入/导出" />
+                                        </TextBlock>
+                                    </materialDesign:Chip>
+                                    <materialDesign:PopupEx
+                                        AllowsTransparency="True"
+                                        StaysOpen="False"
+                                        PopupAnimation="Fade"
+
+                                        IsOpen="{Binding ViewModel.IsProfileImportMenuOpened}">
+                                        <materialDesign:Card
+                                            MenuItem.Click="MenuItemImports_OnClick"
+                                            Margin="16"
+                                            Background="{DynamicResource MaterialDesignPaper}"
+                                            materialDesign:ElevationAssist.Elevation="Dp4"
+                                            TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+                                            <StackPanel Margin="0 4">
+                                                <TextBlock Text="导入" Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                           FontWeight="Bold"
+                                                           Margin="12 8 8 4" />
+                                                <MenuItem Header="从 Excel 表格导入…"
+                                                          Icon="{materialDesign:PackIcon FileExcelOutline}"
+                                                          Click="MenuItemImportFromExcel_OnClick" />
+                                                <MenuItem Header="从 CSES 导入…"
+                                                          Icon="{materialDesign:PackIcon FileCodeOutline}"
+                                                          Click="MenuItemImportFromCses_OnClick" />
+                                                <MenuItem Header="从其它课表软件导入…"
+                                                          Icon="{materialDesign:PackIcon ApplicationOutline}"
+                                                          Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                                          CommandParameter="https://migrate.classisland.tech/" />
+                                                <Separator />
+                                                <TextBlock Text="导出" Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                           FontWeight="Bold"
+                                                           Margin="12 8 8 4" />
+                                                <MenuItem Header="导出到 CSES…"
+                                                          Click="MenuItemExportCses_OnClick"
+                                                          Icon="{materialDesign:PackIcon FileCodeOutline}" />
+                                            </StackPanel>
+                                        </materialDesign:Card>
+                                    </materialDesign:PopupEx>
+                                </Grid>
                             </StackPanel>
                         </Grid>
                     </materialDesign:ColorZone>

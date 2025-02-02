@@ -19,18 +19,22 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Converters;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared;
+using ClassIsland.Shared.Extensions;
 using ClassIsland.Shared.Models.Action;
 using ClassIsland.ViewModels;
-
+using CsesSharp;
 using MaterialDesignThemes.Wpf;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using Sentry;
 using Application = System.Windows.Application;
+using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
@@ -905,8 +909,10 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.MessageQueue.Enqueue($"此功能已被您的组织禁用。");
             return;
         }
-        var eiw = App.GetService<ExcelImportWindow>();
-        eiw.Show();
+
+        ViewModel.IsProfileImportMenuOpened = true;
+        //var eiw = App.GetService<ExcelImportWindow>();
+        //eiw.Show();
     }   
 
     private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
@@ -1134,5 +1140,87 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         ProfileService.TrustCurrentProfile();
+    }
+
+    private void MenuItemImportFromExcel_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsProfileImportMenuOpened = false;
+        var eiw = App.GetService<ExcelImportWindow>();
+        eiw.Show();
+    }
+
+    private async void MenuItemImportFromCses_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsProfileImportMenuOpened = false;
+        var r = await DialogHost.Show(new CsesImportControl(), ViewModel.DialogHostId);
+        if (r as bool? == true)
+        {
+            ViewModel.MessageQueue.Enqueue("成功导入了 CSES 课表。");
+            RefreshProfiles();
+        }
+    }
+
+    private void MenuItemImports_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsProfileImportMenuOpened = false;
+    }
+
+    private void MenuItemExportCses_OnClick(object sender, RoutedEventArgs e)
+    {
+        var warnings = new List<string>();
+        foreach (var i in ProfileService.Profile.ClassPlans)
+        {
+            if (i.Value.TimeRule.WeekCountDivTotal > 2 || i.Value.TimeRule.WeekCountDiv > 2)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出包含 2 周以上轮换的课表。");
+            }
+            if (i.Value.TimeLayout == null)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出使用无效时间表的课表。");
+            }
+            if (i.Value.IsEnabled == false)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出不默认启用的课表。");
+            }
+        }
+
+        if (warnings.Count > 0)
+        {
+            var r = new CommonDialogBuilder()
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .SetContent("兼容性警告：以下课表无法导出到 CSES 格式：\n" + string.Join('\n', warnings) + "\n\n是否继续导出？")
+                .AddCancelAction()
+                .AddAction("继续", PackIconKind.Check, true)
+                .ShowDialog(this);
+            if (r == 0)
+            {
+                return;
+            }
+        }
+
+        var dialog = new SaveFileDialog()
+        {
+            Filter = "CSES 课表文件(*.yml, *.yaml)|*.yml;*.yaml"
+        };
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            var csesProfile = ProfileService.Profile.ToCsesObject();
+            CsesLoader.SaveToYamlFile(csesProfile, dialog.FileName);
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Path.GetDirectoryName(Path.GetFullPath(dialog.FileName)),
+                UseShellExecute = true
+            });
+        }
+        catch (Exception exception)
+        {
+            IAppHost.GetService<ILogger<ProfileSettingsWindow>>().LogError(exception, "无法导出到 CSES 课表");
+            CommonDialog.ShowError($"无法导出到 CSES 课表：{exception.Message}");
+        }
     }
 }

@@ -34,6 +34,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isClassPlanEditComplete = false;
     private bool _isWeekOffsetSettingsOpen = false;
     private TimeLayoutItem? _previousTrackedTimeLayoutItem;
+    private bool _isProfileImportMenuOpened = false;
 
     public object DrawerContent
     {
@@ -289,6 +290,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _previousTrackedTimeLayoutItem)) return;
             _previousTrackedTimeLayoutItem = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsProfileImportMenuOpened
+    {
+        get => _isProfileImportMenuOpened;
+        set
+        {
+            if (value == _isProfileImportMenuOpened) return;
+            _isProfileImportMenuOpened = value;
             OnPropertyChanged();
         }
     }
