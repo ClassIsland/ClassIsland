@@ -18,7 +18,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug'">
         <OutputType>Exe</OutputType>
-        <DefineConstants>TRACE</DefineConstants>
+        <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
@@ -77,8 +77,11 @@
         <Resource Remove="Assets\Fonts\*.ttf" />
 	</ItemGroup>
     <PropertyGroup Condition="'$(TrimAssets)'=='true'">
-        <DefineConstants>TrimAssets</DefineConstants>
+        <DefineConstants>$(DefineConstants);TrimAssets</DefineConstants>
     </PropertyGroup>
+	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And '$(Configuration)' == 'Debug'">
+		<DefineConstants>$(DefineConstants);DevelopmentBuild</DefineConstants>
+	</PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />

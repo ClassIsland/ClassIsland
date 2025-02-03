@@ -112,6 +112,14 @@ public partial class App : AppBase, IAppHost
 
     internal static bool _isCriticalSafeModeEnabled = false;
 
+    public override bool IsDevelopmentBuild =>
+#if DevelopmentBuild
+        true
+#else
+        false
+#endif
+    ;
+
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
@@ -142,14 +150,6 @@ public partial class App : AppBase, IAppHost
     } = new();
 
     public Settings Settings { get; set; } = new();
-
-    public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
-
-    // ReSharper disable once StringLiteralTypo
-    public static string AppCodeName => "Himeko";
-
-    public static string AppVersionLong =>
-        $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {

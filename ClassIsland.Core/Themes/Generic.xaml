@@ -13,6 +13,7 @@
         <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/IconControl/IconControl.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/StickerControl/StickerControl.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Themes/MaterialProgressBar.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/ClassIsland.Core;;;component/Controls/DevelopmentBuildAdorner.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     

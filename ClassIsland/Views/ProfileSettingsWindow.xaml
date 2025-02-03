@@ -1981,6 +1981,11 @@
 
                             </Grid>
                         </TabItem>
+                        <TabItem Visibility="Collapsed">
+                            <Grid>
+                                <Calendar/>
+                            </Grid>
+                        </TabItem>
 
                     </TabControl>
 
@@ -2157,6 +2162,7 @@
                                 <system:String>课表</system:String>
                                 <system:String>时间表</system:String>
                                 <system:String>科目</system:String>
+                                <system:String>调课</system:String>
                             </ListBox>
                             <StackPanel Grid.Column="2" Orientation="Horizontal"
                                         HorizontalAlignment="Right"
