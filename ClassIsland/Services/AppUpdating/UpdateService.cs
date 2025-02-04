@@ -14,7 +14,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+#if IsMsix
 using Windows.Storage;
+#endif
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -57,7 +59,12 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     internal const string UpdateMetadataUrl =
         "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
 
-    public static string UpdateTempPath => App._isMsix ? Path.Combine(ApplicationData.Current.TemporaryFolder.Path, "UpdateTemp") : UpdateTempPath;
+    public static string UpdateTempPath =>
+#if IsMsix
+        Path.Combine(ApplicationData.Current.TemporaryFolder.Path, "UpdateTemp");
+#else
+        UpdateTempPath;
+#endif
 
     public VersionsIndex Index { get; set; }
 

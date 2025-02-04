@@ -72,8 +72,10 @@ using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
 using System.Diagnostics.Tracing;
+#if IsMsix
 using Windows.ApplicationModel;
 using Windows.Storage;
+#endif
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Models.Automation.Triggers;
