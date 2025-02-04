@@ -5,6 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Title>ClassIsland Plugin SDK</Title>
+		<Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -206,7 +206,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void RefreshProfiles()
     {
         ViewModel.Profiles = new ObservableCollection<string>
-            (from i in Directory.GetFiles("./Profiles")
+            (from i in Directory.GetFiles(Services.ProfileService.ProfilePath)
             where i.EndsWith(".json")
             select Path.GetFileName(i));
     }
@@ -698,7 +698,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var r = await DialogHost.Show(FindResource("CreateProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
 
-        var path = $"./Profiles/{r}.json";
+        var path = Path.Combine(Services.ProfileService.ProfilePath, $"{r}.json");
         if (r == null || File.Exists(path))
         {
             return;
@@ -717,7 +717,7 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.openFolder");
         Process.Start(new ProcessStartInfo()
         {
-            FileName = Path.GetFullPath("./Profiles/"),
+            FileName = Path.GetFullPath(Services.ProfileService.ProfilePath),
             UseShellExecute = true
         });
     }
@@ -735,8 +735,8 @@ public partial class ProfileSettingsWindow : MyWindow
         var r = await DialogHost.Show(FindResource("RenameProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
 
-        var raw = $"./Profiles/{ViewModel.SelectedProfile}";
-        var path = $"./Profiles/{r}.json";
+        var raw = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
+        var path = Path.Combine(Services.ProfileService.ProfilePath, $"{r}.json");
         if (r == null || !File.Exists(raw) || File.Exists(path))
         {
             return;
@@ -754,7 +754,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private async void MenuItemDeleteProfile_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.DeleteConfirmField = "";
-        var path = $"./Profiles/{ViewModel.SelectedProfile}";
+        var path = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
         if (ViewModel.SelectedProfile == MainViewModel.CurrentProfilePath ||
             ViewModel.SelectedProfile == MainViewModel.Settings.SelectedProfile)
         {
@@ -791,9 +791,9 @@ public partial class ProfileSettingsWindow : MyWindow
     private void MenuItemProfileDuplicate_OnClick(object sender, RoutedEventArgs e)
     {
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.duplicate");
-        var raw = $"./Profiles/{ViewModel.SelectedProfile}";
+        var raw = Path.Combine(Services.ProfileService.ProfilePath, $"./Profiles/{ViewModel.SelectedProfile}");
         var d = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile) + " - 副本.json";
-        var d1 = $"./Profiles/{d}";
+        var d1 = Path.Combine(Services.ProfileService.ProfilePath, $"./Profiles/{d}");
         File.Copy(raw, d1);
         RefreshProfiles();
     }

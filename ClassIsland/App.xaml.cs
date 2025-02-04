@@ -72,6 +72,8 @@ using ClassIsland.Controls.AuthorizeProvider;
 using ClassIsland.Core.Enums;
 using ClassIsland.Services.ActionHandlers;
 using System.Diagnostics.Tracing;
+using Windows.ApplicationModel;
+using Windows.Storage;
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Models.Automation.Triggers;
@@ -95,14 +97,32 @@ public partial class App : AppBase, IAppHost
     private ILogger<App>? Logger { get; set; }
     //public static IHost? Host;
 
+    public static readonly string AppRootFolderPath =
+#if IsMsix
+        ApplicationData.Current.LocalFolder.Path;
+#else
+        "./";
+#endif
     public static readonly string AppDataFolderPath =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClassIsland");
 
-    public static readonly string AppLogFolderPath = "./Logs";
+    public static readonly string AppLogFolderPath = Path.Combine(AppRootFolderPath, "Logs");
 
-    public static readonly string AppConfigPath = "./Config";
+    public static readonly string AppConfigPath = Path.Combine(AppRootFolderPath, "Config");
 
-    public static readonly string AppCacheFolderPath = "./Cache";
+    public static readonly string AppCacheFolderPath =
+#if IsMsix
+        ApplicationData.Current.LocalCacheFolder.Path;
+#else
+        Path.Combine(AppRootFolderPath, "Cache");
+#endif
+
+    public static readonly string AppTempFolderPath =
+#if IsMsix
+        ApplicationData.Current.TemporaryFolder.Path;
+#else
+        Path.Combine(AppRootFolderPath, "Temp");
+#endif
 
     public static T GetService<T>() => IAppHost.GetService<T>();
 
@@ -114,6 +134,16 @@ public partial class App : AppBase, IAppHost
 
     public override bool IsDevelopmentBuild =>
 #if DevelopmentBuild
+        true
+#else
+        false
+#endif
+    ;
+
+    public override bool IsMsix => _isMsix;
+
+    public static readonly bool _isMsix =
+#if IsMsix
         true
 #else
         false
@@ -283,8 +313,9 @@ public partial class App : AppBase, IAppHost
         // 检测目录是否可以访问
         try
         {
-            await File.WriteAllTextAsync("./.test-write", "");
-            File.Delete("./.test-write");
+            var testWritePath = Path.Combine(AppRootFolderPath, "./.test-write");
+            await File.WriteAllTextAsync(testWritePath, "");
+            File.Delete(testWritePath);
         }
         catch (Exception ex)
         {

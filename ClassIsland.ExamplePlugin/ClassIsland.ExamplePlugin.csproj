@@ -6,11 +6,12 @@
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <EnableDynamicLoading>true</EnableDynamicLoading>
+	  <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
 
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClassIsland.PluginSdk\ClassIsland.PluginSdk.csproj" >
+    <ProjectReference Include="..\ClassIsland.PluginSdk\ClassIsland.PluginSdk.csproj">
         <Private>false</Private>
         <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>

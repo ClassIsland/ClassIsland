@@ -57,7 +57,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     {
         try
         {
-            if (!File.Exists("./Settings.json"))
+            if (!File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json")))
             {
                 SkipMigration = true; // 如果是新的配置文件，那么就需要跳过迁移。
                 Logger.LogInformation("配置文件不存在，跳过加载。");
@@ -65,7 +65,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             else
             {
                 Logger.LogInformation("加载配置文件。");
-                var r = ConfigureFileHelper.LoadConfig<Settings>("./Settings.json");
+                var r = ConfigureFileHelper.LoadConfig<Settings>(Path.Combine(App.AppRootFolderPath, "Settings.json"));
                 Settings = r;
                 Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName!);
             }
@@ -221,7 +221,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     public void SaveSettings(string note = "")
     {
         Logger.LogInformation(note == "" ? "写入配置文件。" : $"写入配置文件：{note}");
-        ConfigureFileHelper.SaveConfig("./Settings.json", Settings);
+        ConfigureFileHelper.SaveConfig(Path.Combine(App.AppRootFolderPath, "Settings.json"), Settings);
     }
 
     /// <summary>

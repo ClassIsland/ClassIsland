@@ -1,18 +1,41 @@
 <Project>
 	<PropertyGroup>
-		<GitVersion>false</GitVersion>
 		<!-- we'll do our own versioning -->
+		<GitVersion>false</GitVersion>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="GitInfo" Version="2.3.0">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<Compile Include="..\AssemblyInfo.cs">
+			<LinkBase>Properties</LinkBase>
+		</Compile>
 	</ItemGroup>
 
-	<Target Name="PopulateInfo" DependsOnTargets="GitVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
+	<!--<Target Name="PopulateInfo" DependsOnTargets="GitVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
 		<PropertyGroup>
 			<Version>$(GitBaseTag)</Version>
 		</PropertyGroup>
-	</Target>
+	</Target>-->
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX'">
+		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+		<IsMsix>true</IsMsix>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release_MSIX'">
+		<IsMsix>true</IsMsix>
+	</PropertyGroup>
+	<!-- <PropertyGroup Condition="'$(IsMsix)'=='true'">
+		<Platform>AnyCPU</Platform>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+	<Target Name="OverrideProperties" BeforeTargets="PrepareForBuild" Condition="'$(IsMsix)'=='true'">
+		<Message Text="Overriding properties for MSIX build" Importance="high" />
+		<PropertyGroup>
+			<RuntimeIdentifier></RuntimeIdentifier>
+		</PropertyGroup>
+	</Target> -->
 </Project>

@@ -31,7 +31,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public string CurrentProfilePath { 
         get; 
         set;
-    } = @".\Profiles\Default.json";
+    } = Path.Combine(App.AppRootFolderPath, @"Default.json");
 
     public static readonly string ManagementClassPlanPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
@@ -41,6 +41,8 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public static readonly string ManagementSubjectsPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
+
+    public static readonly string ProfilePath = Path.Combine(App.AppRootFolderPath, "Profiles");
 
     public Profile Profile {
         get;
@@ -64,9 +66,9 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         IpcService = ipcService;
         SettingsService = settingsService;
         IpcService.IpcProvider.CreateIpcJoint<IPublicProfileService>(this);
-        if (!Directory.Exists("./Profiles"))
+        if (!Directory.Exists(ProfilePath))
         {
-            Directory.CreateDirectory("./Profiles");
+            Directory.CreateDirectory(ProfilePath);
         }
     }
 
@@ -138,7 +140,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         var span = SentrySdk.GetSpan();
         var spanLoadingProfile = span?.StartChild("profile-loading");
         var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
-        var path = $"./Profiles/{filename}";
+        var path = Path.Combine(ProfilePath, filename);
         Logger.LogInformation("加载档案中：{}", path);
         if (!File.Exists(path))
         {
@@ -196,8 +198,8 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public void SaveProfile(string filename)
     {
-        Logger.LogInformation("写入档案文件：{}", $"./Profiles/{filename}");
-        SaveConfig($"./Profiles/{filename}", Profile);
+        Logger.LogInformation("写入档案文件：{}", Path.Combine(ProfilePath, filename));
+        SaveConfig(Path.Combine(ProfilePath, filename), Profile);
     }
 
     private static T DuplicateJson<T>(T o)

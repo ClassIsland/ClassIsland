@@ -183,8 +183,8 @@ public partial class DebugPage : SettingsPageBase
     {
         ProfileAnalyzeService.Analyze();
         var result = ProfileAnalyzeService.DumpMermaidGraph();
-        await File.WriteAllTextAsync("./Profile-dump.mmd", result);
-        CommonDialog.ShowInfo($"转储成功。已保存到 {Path.GetFullPath("./Profile-dump.mmd")} 。");
+        await File.WriteAllTextAsync(Path.Combine(App.AppRootFolderPath, "Profile-dump.mmd"), result);
+        CommonDialog.ShowInfo($"转储成功。已保存到 {Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Profile-dump.mmd"))} 。");
     }
 
     private void MenuItemFindNext_OnClick(object sender, RoutedEventArgs e)

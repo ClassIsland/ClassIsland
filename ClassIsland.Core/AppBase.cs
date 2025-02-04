@@ -37,6 +37,11 @@ public abstract class AppBase : Application, IAppHost
     public abstract bool IsDevelopmentBuild { get; }
 
     /// <summary>
+    /// 应用是否处于 MSIX 打包
+    /// </summary>
+    public abstract bool IsMsix { get; }
+
+    /// <summary>
     /// 当应用启动时触发。
     /// </summary>
     public abstract event EventHandler? AppStarted;
@@ -47,9 +52,14 @@ public abstract class AppBase : Application, IAppHost
     public abstract event EventHandler? AppStopping;
 
     /// <summary>
+    /// 应用打包类型
+    /// </summary>
+    public string PackagingType => IsMsix ? "msix" : "singleFile";
+
+    /// <summary>
     /// 应用分发频道
     /// </summary>
-    public string AppSubChannel => $"windows_x64_{(IsAssetsTrimmed() ? "trimmed" : "full")}_singleFile";
+    public string AppSubChannel => $"windows_x64_{(IsAssetsTrimmed() ? "trimmed" : "full")}_{PackagingType}";
 
     internal AppBase()
     {

@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Windows.Storage;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -55,6 +56,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     internal const string UpdateMetadataUrl =
         "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
+
+    public static string UpdateTempPath => App._isMsix ? Path.Combine(ApplicationData.Current.TemporaryFolder.Path, "UpdateTemp") : UpdateTempPath;
 
     public VersionsIndex Index { get; set; }
 
@@ -163,7 +166,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         if (Settings.AutoInstallUpdateNextStartup 
             && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded
-            && File.Exists(".\\UpdateTemp\\update.zip"))
+            && File.Exists(Path.Combine(UpdateTempPath, "update.zip")))
         {
             SplashService.SplashStatus = "正在准备更新…";
             App.GetService<ISplashService>().CurrentProgress = 90;
@@ -242,7 +245,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         try
         {
-            Directory.Delete("./UpdateTemp", true);
+            Directory.Delete(UpdateTempPath, true);
         }
         catch (Exception e)
         {
@@ -302,9 +305,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         try
         {
-            if (Directory.Exists("./UpdateTemp"))
+            if (Directory.Exists(UpdateTempPath))
             {
-                Directory.Delete("./UpdateTemp", true);
+                Directory.Delete(UpdateTempPath, true);
             }
         }
         catch (Exception ex)
@@ -331,7 +334,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     c.ParallelDownload = true;
                     //c.Timeout = 4096;
                 })
-                .WithDirectory(@".\UpdateTemp")
+                .WithDirectory(UpdateTempPath)
                 .WithFileName("update.zip")
                 .Build();
             Downloader.DownloadProgressChanged += DownloaderOnDownloadProgressChanged;
@@ -345,7 +348,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     return;
                 }
 
-                if (!File.Exists(@".\UpdateTemp\update.zip") || args.Error != null)
+                if (!File.Exists(Path.Combine(UpdateTempPath, @"update.zip")) || args.Error != null)
                 {
                     //await RemoveDownloadedFiles();
                     throw new Exception("更新下载失败。", args.Error);
@@ -393,7 +396,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         try
         {
-            Directory.Delete("./UpdateTemp", true);
+            Directory.Delete(UpdateTempPath, true);
         }
         catch (Exception ex)
         {
@@ -421,7 +424,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         Logger.LogInformation("正在展开应用更新包。");
         await Task.Run(() =>
         {
-            ZipFile.ExtractToDirectory(@"./UpdateTemp/update.zip", "./UpdateTemp/extracted", true);
+            ZipFile.ExtractToDirectory(Path.Combine(UpdateTempPath, @"./update.zip"), Path.Combine(UpdateTempPath, @"./extracted"), true);
         });
     }
 
@@ -433,7 +436,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             return;
         }
 
-        await using var stream = File.OpenRead(@"./UpdateTemp/update.zip");
+        await using var stream = File.OpenRead(Path.Combine(UpdateTempPath, @"./update.zip"));
         var sha256 = await SHA256.HashDataAsync(stream);
         var str = BitConverter.ToString(sha256);
         str = str.Replace("-", "");
@@ -456,7 +459,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             await ExtractUpdateAsync();
             Process.Start(new ProcessStartInfo()
             {
-                FileName = "./UpdateTemp/extracted/ClassIsland.exe",
+                FileName = Path.Combine(UpdateTempPath, @"extracted/ClassIsland.exe"),
                 ArgumentList =
                 {
                     "-urt", Environment.ProcessPath!,

@@ -30,6 +30,7 @@ using MaterialDesignThemes.Wpf;
 using MdXaml;
 using Sentry;
 using WebSocketSharp;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -118,7 +119,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private async void ButtonRestartToUpdate_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!File.Exists(".\\UpdateTemp\\update.zip"))
+        if (!File.Exists(Path.Combine(UpdateService.UpdateTempPath, "update.zip")))
             return;
         await UpdateService.RestartAppToUpdateAsync();
     }

@@ -33,6 +33,17 @@
     "ClassIsland (禁用集控) verbose": {
       "commandName": "Project",
       "commandLineArgs": "-dm -v"
+    },
+    "ClassIsland_Pakaging": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "", 
+      "alwaysReinstallApp": false, 
+      "remoteDebugEnabled": false, 
+      "allowLocalNetworkLoopbackProperty": true, 
+      "authenticationMode": "Windows", 
+      "doNotLaunchApp": false, 
+      "remoteDebugMachine": "", 
+      "nativeDebugging": false 
     }
   }
 }
