@@ -127,11 +127,6 @@ public class LessonsListBox : ListBox
         {
             
         }
-
-        if (FindResource("ClassPlanCollectionViewSource") is CollectionViewSource cvs)
-        {
-            cvs.Filter += CvsOnFilter;
-        }
     }
 
     private void CvsOnFilter(object sender, FilterEventArgs e)
