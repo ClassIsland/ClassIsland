@@ -27,6 +27,8 @@ foreach ($artifact in $(Get-ChildItem ./out)) {
 $artifacts = $(Get-ChildItem ./out)
 $hashSummary = "
 
+***
+
 > [!important]
 > 下载时请注意核对文件 SHA256 是否正确。
 
@@ -41,9 +43,20 @@ foreach ($artifact in $artifacts){
     }
     $artifactId = [System.IO.Path]::GetFileNameWithoutExtension($artifact.Name).Split("_")[2..5] -join "_"
     Write-Output "Generating metadata for $artifactId"
-    # TODO: 根据 artifact name 生成对应的 DeployMethod
+    $deployMethod = [System.IO.Path]::GetFileNameWithoutExtension($artifact.Name).Split("_")[5]
+    $deployMethodId = 0  # none
+    if ($deployMethod -eq "singleFile") {
+        $deployMethodId = 1
+    }
+    if ($deployMethod -eq "folder") {
+        $deployMethodId = 2
+    }
+    if ($deployMethod -eq "wap") {
+        $deployMethodId = 3
+    }
+    Write-Output "artifact ${artifactId}: deployMethod=${deployMethod}; deployMethodId=${deployMethodId}"
     $downloadInfo = @{
-        "DeployMethod" = 1
+        "DeployMethod" = $deployMethodId
         "ArchiveDownloadUrls" = @{
             "main" = "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/${version}/$($artifact.Name)"
             "github-origin" = "https://github.com/ClassIsland/ClassIsland/releases/download/${version}/$($artifact.Name)"

@@ -16,6 +16,10 @@ on:
         description: '发布通道'
         required: true
         type: string
+      is_test_mode:
+        description: '是否处于测试发布模式'
+        required: false
+        type: boolean
 
 jobs:
   build_app:
@@ -23,6 +27,7 @@ jobs:
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     env:
       artifact_name: out_app_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+      isTestMode: ${{ github.event.inputs.is_test_mode == true }}
     strategy:
       matrix:
         trim_assets: ['true', 'false']
@@ -131,6 +136,8 @@ jobs:
 
   publish:
     runs-on: windows-latest
+    env:
+      isTestMode: ${{ github.event.inputs.is_test_mode == true }}
     if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}
     needs: [ build_app, build_nupkg ]
     steps:
@@ -170,7 +177,7 @@ jobs:
           organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
           project-slug: 'ClassIsland'
           artifact-configuration-slug: 'sign_bundle'
-          signing-policy-slug: 'release-signing'  # TODO: 记得改成 release-signing
+          signing-policy-slug: ${{ github.event.inputs.is_test_mode && 'test-signing' || 'release-signing' }}
           github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: '/out_signed'
@@ -209,13 +216,13 @@ jobs:
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./out/*.zip
+          artifacts: "./out/*.zip,./out/*.appx"
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
       - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' && !github.event.inputs.is_test_mode }}
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
         run: |
@@ -224,6 +231,7 @@ jobs:
           dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
           
       - name: Upload to AppCenter
+        if: ${{ !github.event.inputs.is_test_mode }}
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
         run: |
