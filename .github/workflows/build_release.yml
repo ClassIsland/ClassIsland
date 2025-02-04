@@ -27,7 +27,7 @@ jobs:
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     env:
       artifact_name: out_app_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
-      isTestMode: ${{ github.event.inputs.is_test_mode == true }}
+      isTestMode: ${{ github.event.inputs.is_test_mode }}
     strategy:
       matrix:
         trim_assets: ['true', 'false']
