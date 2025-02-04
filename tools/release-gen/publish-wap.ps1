@@ -17,12 +17,11 @@ if ($(Test-Path ./out) -eq $false) {
     Remove-Item out/* -Recurse -Force
 }
 
-# if (!$isReleaseSigning) {
-#     $certificatePath = "./TestSigningCert.pfx"
-#     $pfx_cert_byte = [System.Convert]::FromBase64String($env:TestSigningCert)
-#     $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath TestSigningKey.pfx
-#     [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
-# }
+if (!$isReleaseSigning) {
+    $pfx_cert_byte = [System.Convert]::FromBase64String($env:test_signing_key)
+    $certificatePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath TestSigningKey.pfx
+    [IO.File]::WriteAllBytes("$certificatePath", $pfx_cert_byte)
+}
 
 if ($isReleaseSigning) {
     $releasePublisher = 'Publisher="CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US"'
