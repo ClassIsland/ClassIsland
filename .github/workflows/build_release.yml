@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         trim_assets: ['true', 'false']
-        package: ['singleFile', 'wap']
+        package: ['singleFile']
         exclude:
           - package: wap
             trim_assets: 'true'
