@@ -50,7 +50,8 @@
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
                            IsLiveUpdatingEnabled="True"
                            ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
-                           HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}">
+                           HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}"
+                           HideFinishedClass="{Binding Settings.HideFinishedClass, Mode=OneWay}">
 
             <ci:LessonsListBox.Style>
                 <Style TargetType="ci:LessonsListBox" BasedOn="{StaticResource ClassIsland.LessonsListBox}">

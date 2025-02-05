@@ -188,6 +188,12 @@
                                  Description="在处于上课类型的时间点时，只显示当前时间点。"
                                  IsOn="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"
                                  Margin="0 0 0 6" />
+                <!-- 不显示已结束的课程 -->
+                <ci:SettingsCard IconGlyph="HideOutline"
+                 Header="不显示已结束的课程"
+                 Description="隐藏已结束的课程，只显示当前课程与暂未开始的课程。"
+                 IsOn="{Binding Settings.HideFinishedClass, Mode=TwoWay}"
+                 Margin="0 0 0 6" />
                 <!-- 标记换课课程 -->
                 <ci:SettingsCard IconGlyph="SwapHorizontal"
                                  Header="标记换课课程"
