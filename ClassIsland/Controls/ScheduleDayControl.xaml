@@ -14,6 +14,7 @@
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ScheduleDayControl}}"
           MouseDown="UIElement_OnMouseDown"
           MouseUp="UIElement_OnMouseUp"
+          PreviewMouseUp="UIElement_OnPreviewMouseUp2"
           Background="Transparent">
         <Grid.Resources>
             <CollectionViewSource x:Key="ClassPlanSource" 
@@ -57,7 +58,8 @@
                         ToolTip="预定临时课表"
                         Margin="-4"
                         Background="Transparent"
-                        PreviewMouseUp="UIElement_OnPreviewMouseUp" />
+                        ClickMode="Press"
+                        Click="ButtonOrderSchedule_OnClick" />
             </materialDesign:Badged>
             <Button Content="{materialDesign:PackIcon Clear}"
                     Style="{StaticResource MaterialDesignToolForegroundButton}"
@@ -67,75 +69,75 @@
                     Background="Transparent"
                     ClickMode="Press"
                     Visibility="{Binding HasOrderedSchedule, Converter={StaticResource BooleanToVisibilityConverter}}"
-                    PreviewMouseUp="ButtonClearTempClassPlan_OnClick" />
+                    Click="ButtonClearTempClassPlan_OnClick" />
         </StackPanel>
 
         <Grid Grid.Column="0" Grid.Row="2"
               Grid.ColumnSpan="2"
               MouseDown="PopupCardRoot_OnMouseDown">
-            <Button Visibility="Collapsed" MouseDown="">
-                <materialDesign:PopupEx AllowsTransparency="True"
-                                        StaysOpen="True"
-                                        PopupAnimation="Fade"
-                                        IsOpen="{Binding IsClassPlanSelectionPopupOpen, Mode=TwoWay}">
-                    <materialDesign:Card Background="{DynamicResource MaterialDesignPaper}"
-                                         Margin="8"
-                                         PreviewMouseDown="UIElement_OnPreviewMouseDown"
-                                         MouseDown="UIElement_OnMouseDown"
-                                         materialDesign:ElevationAssist.Elevation="Dp8"
-                                         TextElement.FontSize="13">
-                        <Grid Margin="4" MaxHeight="360" Width="300">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                    Content="{materialDesign:PackIcon Close}"
-                                    HorizontalAlignment="Right"
-                                    ToolTip="关闭" ClickMode="Press"
-                                    Margin="0 -4"
-                                    Click="ButtonCloseSchedulePopup_OnClick" />
-                            <TextBlock Text="选择要临时启用的课表"
-                                       Grid.Row="0"
-                                       FontSize="14"
-                                       HorizontalAlignment="Left"
-                                       VerticalAlignment="Center"
-                                       Foreground="{DynamicResource PrimaryHueMidBrush}"
-                                       FontWeight="Bold" />
-                            <ListBox Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassPlanSource}}"
-                                     Margin="0 12 0 0"
-                                     SelectionMode="Single"
-                                     Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
-                                     SelectedValue="{Binding SelectedClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
-                                     SelectedValuePath="Key"
-                                     SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
-                                     HorizontalContentAlignment="Stretch"
-                                     VerticalContentAlignment="Stretch">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <CheckBox
-                                            IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
-                                            Content="{Binding Value.Name}"
-                                            IsHitTestVisible="False"
-                                            Focusable="False"
-                                            HorizontalAlignment="Stretch" />
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <StackPanel Orientation="Horizontal" Grid.Row="2">
-                                <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                        Click="ButtonConfirmTempClassPlan_OnClick" ClickMode="Press">
-                                    <ci:IconText Kind="Check" Text="确定" />
-                                </Button>
-                                <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                        Click="ButtonClearTempClassPlan_OnClick" ClickMode="Press">
-                                    <ci:IconText Kind="Clear" Text="清除" />
-                                </Button>
-                            </StackPanel>
-                        </Grid>
-                    </materialDesign:Card>
-                </materialDesign:PopupEx></Button>
+            <materialDesign:PopupEx AllowsTransparency="True"
+                                    StaysOpen="True"
+                                    PopupAnimation="Fade"
+                                    IsOpen="{Binding IsClassPlanSelectionPopupOpen, Mode=TwoWay}">
+                <materialDesign:Card Background="{DynamicResource MaterialDesignPaper}"
+                                     Margin="8"
+                                     PreviewMouseDown="UIElement_OnPreviewMouseDown"
+                                     MouseDown="UIElement_OnMouseDown"
+                                     materialDesign:ElevationAssist.Elevation="Dp8"
+                                     TextElement.FontSize="13">
+                    <Grid Margin="4" MaxHeight="360" Width="300">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                Content="{materialDesign:PackIcon Close}"
+                                HorizontalAlignment="Right"
+                                ToolTip="关闭" ClickMode="Press"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Margin="0 -4"
+                                Click="ButtonCloseSchedulePopup_OnClick" />
+                        <TextBlock Text="选择要临时启用的课表"
+                                   Grid.Row="0"
+                                   FontSize="14"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                   FontWeight="Bold" />
+                        <ListBox Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassPlanSource}}"
+                                 Margin="0 12 0 0"
+                                 SelectionMode="Single"
+                                 Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                                 SelectedValue="{Binding SelectedClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
+                                 SelectedValuePath="Key"
+                                 SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
+                                 HorizontalContentAlignment="Stretch"
+                                 VerticalContentAlignment="Stretch">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox
+                                        IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
+                                        Content="{Binding Value.Name}"
+                                        IsHitTestVisible="False"
+                                        Focusable="False"
+                                        HorizontalAlignment="Stretch" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal" Grid.Row="2">
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonConfirmTempClassPlan_OnClick" ClickMode="Press">
+                                <ci:IconText Kind="Check" Text="确定" />
+                            </Button>
+                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                    Click="ButtonClearTempClassPlan_OnClick" ClickMode="Press">
+                                <ci:IconText Kind="Clear" Text="清除" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </materialDesign:Card>
+            </materialDesign:PopupEx>
         </Grid>
     </Grid>
 </UserControl>

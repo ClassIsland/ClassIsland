@@ -99,9 +99,7 @@ public partial class ScheduleDayControl : UserControl
 
     private void UIElement_OnPreviewMouseUp(object sender, MouseButtonEventArgs e)
     {
-        e.Handled = false;
-        IsClassPlanSelectionPopupOpen = true;
-        UpdateData();
+        
     }
 
     private void ClassPlanSource_OnFilter(object sender, FilterEventArgs e)
@@ -117,6 +115,11 @@ public partial class ScheduleDayControl : UserControl
     private void ButtonConfirmTempClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
         var date = Date;
+        if (string.IsNullOrWhiteSpace(SelectedClassPlanId))
+        {
+            IsClassPlanSelectionPopupOpen = false;
+            return;
+        }
         ProfileService.Profile.OrderedSchedules[date] = new OrderedSchedule()
         {
             ClassPlanId = SelectedClassPlanId
@@ -166,5 +169,17 @@ public partial class ScheduleDayControl : UserControl
     private void UIElement_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
         e.Handled = false;
+    }
+
+    private void UIElement_OnPreviewMouseUp2(object sender, MouseButtonEventArgs e)
+    {
+        e.Handled = true;
+    }
+
+    private void ButtonOrderSchedule_OnClick(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+        IsClassPlanSelectionPopupOpen = true;
+        UpdateData();
     }
 }

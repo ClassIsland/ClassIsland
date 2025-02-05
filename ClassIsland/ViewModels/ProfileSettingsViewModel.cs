@@ -34,7 +34,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isClassPlanEditComplete = false;
     private bool _isWeekOffsetSettingsOpen = false;
     private TimeLayoutItem? _previousTrackedTimeLayoutItem;
-    private DateTime _scheduleCalendarSelectedDate = DateTime.Now;
+    private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
 
     public object DrawerContent
     {

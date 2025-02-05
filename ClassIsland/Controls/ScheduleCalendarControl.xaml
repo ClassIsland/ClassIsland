@@ -291,7 +291,7 @@
                                                 <VisualState x:Name="Disabled" />
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-                                        <TextBlock Text="{Binding SelectedDate, RelativeSource={RelativeSource FindAncestor, AncestorType=Calendar}, StringFormat={}{0:yyyy年 MM月dd日}}"/>
+                                        <TextBlock Text="{Binding DisplayDate, RelativeSource={RelativeSource FindAncestor, AncestorType=Calendar}, StringFormat={}{0:yyyy年 MM月}}"/>
                                     </Grid>
                                 </ControlTemplate>
                             </Grid.Resources>
@@ -348,15 +348,13 @@
                                   Grid.Row="2"
                                   Grid.Column="1"
                                   Grid.ColumnSpan="3"
+                                  SnapsToDevicePixels="True"
+                                  Margin="-1.25 0 0 0"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch">
                                 <Border x:Name="PART_MonthViewCopy"
                                         Opacity="0"
                                         RenderTransformOrigin="0, 0.5">
-                                    <Border.Background>
-                                        <VisualBrush Stretch="UniformToFill"
-                                                     Visual="{Binding ElementName=PART_MonthView}" />
-                                    </Border.Background>
                                     <Border.RenderTransform>
                                         <TranslateTransform X="0" />
                                     </Border.RenderTransform>

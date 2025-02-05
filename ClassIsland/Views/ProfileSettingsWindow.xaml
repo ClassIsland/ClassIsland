@@ -1990,7 +1990,7 @@
                                 <controls:ScheduleCalendarControl Grid.Row="0"
                                                                   x:Name="ScheduleCalendarControl"
                                                                   Grid.RowSpan="2"
-                                                                  SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate}"/>
+                                                                  SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"/>
                             </Grid>
                         </TabItem>
 
