@@ -71,7 +71,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
             return BlankDataTemplate;
 
         var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartSecond : currentItem?.EndSecond;
-        if (itemDateTime < IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime() && hideFinishedClass)
+        if (itemDateTime.HasValue && TimeOnly.FromDateTime(itemDateTime.Value) < TimeOnly.FromDateTime(IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime()) && hideFinishedClass)
         {
             return BlankDataTemplate;
         }
