@@ -1983,7 +1983,14 @@
                         </TabItem>
                         <TabItem Visibility="Collapsed">
                             <Grid>
-                                <Calendar/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="36"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <controls:ScheduleCalendarControl Grid.Row="0"
+                                                                  x:Name="ScheduleCalendarControl"
+                                                                  Grid.RowSpan="2"
+                                                                  SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate}"/>
                             </Grid>
                         </TabItem>
 

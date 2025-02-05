@@ -1135,4 +1135,10 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         ProfileService.TrustCurrentProfile();
     }
+
+    private void ButtonScheduleCalendarPrevMonth_OnClick(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
 }

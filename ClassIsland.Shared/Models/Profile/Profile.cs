@@ -28,6 +28,7 @@ public class Profile : ObservableRecipient
     private bool _isTempClassPlanGroupEnabled = false;
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
     private string _id = Guid.NewGuid().ToString();
+    private ObservableDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
 
     /// <summary>
     /// 实例化对象
@@ -455,6 +456,20 @@ public class Profile : ObservableRecipient
         {
             if (value == _id) return;
             _id = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 已预定启用的课表
+    /// </summary>
+    public ObservableDictionary<DateTime, OrderedSchedule> OrderedSchedules
+    {
+        get => _orderedSchedules;
+        set
+        {
+            if (Equals(value, _orderedSchedules)) return;
+            _orderedSchedules = value;
             OnPropertyChanged();
         }
     }

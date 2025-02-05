@@ -156,6 +156,12 @@ public class LessonsService : ObservableRecipient, ILessonsService
         {
             return overlay;
         }
+        // 加载预定的临时课表
+        if (Profile.OrderedSchedules.TryGetValue(date.Date, out var orderedScheduleInfo)
+            && Profile.ClassPlans.TryGetValue(orderedScheduleInfo.ClassPlanId, out var orderedClassPlan))
+        {
+            return orderedClassPlan;
+        }
         // 加载临时课表
         if (Profile.TempClassPlanId != null &&
             Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan) &&

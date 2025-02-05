@@ -26,6 +26,11 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="ScheduleCalendar">
+                <Grid>
+                    <controls:ScheduleCalendarControl/>
+                </Grid>
+            </TabItem>
             <TabItem Header="MarkdownTest">
                 <Grid>
                     <Grid.ColumnDefinitions>
