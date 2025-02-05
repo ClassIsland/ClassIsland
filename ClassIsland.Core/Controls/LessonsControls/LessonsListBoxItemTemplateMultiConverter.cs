@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
@@ -80,7 +82,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         }
 
 
-        if (currentItem?.EndSecond < DateTime.Now && hideFinishedClass)
+        if (currentItem?.EndSecond < IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime() && hideFinishedClass)
         {
             return BlankDataTemplate;
         }
