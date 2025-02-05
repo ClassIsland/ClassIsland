@@ -115,12 +115,34 @@
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Visible"/>
                         </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="True"/>
+                                <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
                     </Style.Triggers>
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </Style>
             </Grid.Style>
-            <TextBlock Text="{Binding Settings.PlaceholderText}"
-                       VerticalAlignment="Center"/>
+            <TextBlock VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass}"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                    <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded}"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </Grid>
     </Grid>
 </ci:ComponentBase>
