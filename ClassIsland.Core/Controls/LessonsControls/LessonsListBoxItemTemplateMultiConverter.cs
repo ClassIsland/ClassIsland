@@ -70,6 +70,12 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         if (currentItem != selectedItem && selectedItem?.TimeType == 0 && showCurrentTimeLayoutItemOnlyOnClass)
             return BlankDataTemplate;
 
+        var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartSecond : currentItem?.EndSecond;
+        if (itemDateTime < IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime() && hideFinishedClass)
+        {
+            return BlankDataTemplate;
+        }
+
         if (timeType == 2)
         {
             return SeparatorDataTemplate;
@@ -81,11 +87,6 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
             return BlankDataTemplate;
         }
 
-
-        if (currentItem?.EndSecond < IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime() && hideFinishedClass)
-        {
-            return BlankDataTemplate;
-        }
 
         return selectedItem == currentItem ? ExpandedDataTemplate : MinimizedDataTemplate;
     }
