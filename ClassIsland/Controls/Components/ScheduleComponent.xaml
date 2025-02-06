@@ -68,7 +68,6 @@
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
                             <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
                             <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
-
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0">
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
@@ -117,9 +116,20 @@
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
                                 <Condition Binding="{Binding IsAfterSchool}" Value="True"/>
                                 <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
                                 <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="True"/>
+                                <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                                <Condition Binding="{Binding TomorrowClassPlan}" Value="{x:Null}"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Visible"/>
                         </MultiDataTrigger>
@@ -136,6 +146,14 @@
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
                                     <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded}"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                    <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                                    <Condition Binding="{Binding TomorrowClassPlan}" Value="{x:Null}"/>
                                 </MultiDataTrigger.Conditions>
                                 <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded}"/>
                             </MultiDataTrigger>
