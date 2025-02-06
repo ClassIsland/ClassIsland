@@ -172,7 +172,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-18-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -207,6 +207,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
       <td align="center" valign="top" width="14.28%"><a href="http://lipoly.ink"><img src="https://avatars.githubusercontent.com/u/110595296?v=4?s=100" width="100px;" alt="LiPolymer"/><br /><sub><b>LiPolymer</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiPolymer" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://www.mczhiguang.icoc.me/"><img src="https://avatars.githubusercontent.com/u/53519310?v=4?s=100" width="100px;" alt="Amiya"/><br /><sub><b>Amiya</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=mcAmiya" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://xiaowuap.com"><img src="https://avatars.githubusercontent.com/u/44547885?v=4?s=100" width="100px;" alt="Enzo Wu"/><br /><sub><b>Enzo Wu</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=xiaowuap" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://itshenryz.com"><img src="https://avatars.githubusercontent.com/u/58730749?v=4?s=100" width="100px;" alt="itsHenry"/><br /><sub><b>itsHenry</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=itsHenry35" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
