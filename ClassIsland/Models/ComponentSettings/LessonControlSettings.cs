@@ -12,8 +12,10 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private int _extraInfo4ShowSecondsSeconds = 0;
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
+    private bool _hideFinishedClass = false;
     private bool _showPlaceholderOnEmptyClassPlan = true;
-    private string _placeholderText = "今天没有课程。";
+    private string _placeholderTextNoClass = "今天没有课程。";
+    private string _placeholderTextAllClassEnded = "今日课程已全部结束。";
     private bool _showTomorrowSchedules = false;
     private int _tomorrowScheduleShowMode = 1;
     private bool _highlightChangedClass = false;
@@ -106,13 +108,24 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         }
     }
 
-    public string PlaceholderText
+    public string PlaceholderTextNoClass
     {
-        get => _placeholderText;
+        get => _placeholderTextNoClass;
         set
         {
-            if (value == _placeholderText) return;
-            _placeholderText = value;
+            if (value == _placeholderTextNoClass) return;
+            _placeholderTextNoClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string PlaceholderTextAllClassEnded
+    {
+        get => _placeholderTextAllClassEnded;
+        set
+        {
+            if (value == _placeholderTextAllClassEnded) return;
+            _placeholderTextAllClassEnded = value;
             OnPropertyChanged();
         }
     }
@@ -135,6 +148,17 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _highlightChangedClass) return;
             _highlightChangedClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool HideFinishedClass
+    {
+        get => _hideFinishedClass;
+        set
+        {
+            if (value == _hideFinishedClass) return;
+            _hideFinishedClass = value;
             OnPropertyChanged();
         }
     }

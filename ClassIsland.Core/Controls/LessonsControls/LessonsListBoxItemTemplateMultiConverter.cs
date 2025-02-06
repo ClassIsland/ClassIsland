@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
@@ -46,12 +48,14 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         // [3]: TimeLayoutItem CurrentItem
         // [4]: bool           DiscardHidingDefault (reserved)
         // [5]: bool           ShowCurrentTimeLayoutItemOnlyOnClass
-        if (values.Length < 6)
+        // [6]: bool           HideFinishedClass
+        if (values.Length < 7)
             return BlankDataTemplate;
         if (values[0] is not int timeType ||
             values[1] is not bool isHideDefault ||
             values[4] is not bool discardHidingDefault ||
-            values[5] is not bool showCurrentTimeLayoutItemOnlyOnClass)
+            values[5] is not bool showCurrentTimeLayoutItemOnlyOnClass ||
+            values[6] is not bool hideFinishedClass)
         {
             return BlankDataTemplate;
         }
@@ -66,6 +70,12 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         if (currentItem != selectedItem && selectedItem?.TimeType == 0 && showCurrentTimeLayoutItemOnlyOnClass)
             return BlankDataTemplate;
 
+        var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartSecond : currentItem?.EndSecond;
+        if (itemDateTime.HasValue && TimeOnly.FromDateTime(itemDateTime.Value) < TimeOnly.FromDateTime(IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime()) && hideFinishedClass)
+        {
+            return BlankDataTemplate;
+        }
+
         if (timeType == 2)
         {
             return SeparatorDataTemplate;
@@ -76,6 +86,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         {
             return BlankDataTemplate;
         }
+
 
         return selectedItem == currentItem ? ExpandedDataTemplate : MinimizedDataTemplate;
     }

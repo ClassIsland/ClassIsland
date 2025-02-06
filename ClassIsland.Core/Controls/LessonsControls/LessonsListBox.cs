@@ -107,6 +107,15 @@ public class LessonsListBox : ListBox
         set { SetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty, value); }
     }
 
+    public static readonly DependencyProperty HideFinishedClassProperty = DependencyProperty.Register(
+        nameof(HideFinishedClass), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)));
+
+    public bool HideFinishedClass
+    {
+        get { return (bool)GetValue(HideFinishedClassProperty); }
+        set { SetValue(HideFinishedClassProperty, value); }
+    }
+
     static LessonsListBox()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(LessonsListBox), new FrameworkPropertyMetadata(typeof(LessonsListBox)));
