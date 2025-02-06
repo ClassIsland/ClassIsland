@@ -36,6 +36,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private TimeLayoutItem? _previousTrackedTimeLayoutItem;
     private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
     private DateTime _overlayEnableDateTime = DateTime.Today;
+    private bool _isProfileImportMenuOpened = false;
 
     public object DrawerContent
     {
@@ -313,6 +314,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (value.Equals(_overlayEnableDateTime)) return;
             _overlayEnableDateTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsProfileImportMenuOpened
+    {
+        get => _isProfileImportMenuOpened;
+        set
+        {
+            if (value == _isProfileImportMenuOpened) return;
+            _isProfileImportMenuOpened = value;
             OnPropertyChanged();
         }
     }
