@@ -35,6 +35,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isWeekOffsetSettingsOpen = false;
     private TimeLayoutItem? _previousTrackedTimeLayoutItem;
     private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
+    private DateTime _overlayEnableDateTime = DateTime.Today;
 
     public object DrawerContent
     {
@@ -301,6 +302,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (value.Equals(_scheduleCalendarSelectedDate)) return;
             _scheduleCalendarSelectedDate = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime OverlayEnableDateTime
+    {
+        get => _overlayEnableDateTime;
+        set
+        {
+            if (value.Equals(_overlayEnableDateTime)) return;
+            _overlayEnableDateTime = value;
             OnPropertyChanged();
         }
     }

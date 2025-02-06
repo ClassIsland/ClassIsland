@@ -331,6 +331,7 @@ public class Profile : ObservableRecipient
             if (value == _overlayClassPlanId) return;
             _overlayClassPlanId = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(HasOverlayClassPlan));
         }
     }
 
@@ -473,4 +474,10 @@ public class Profile : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    /// <summary>
+    /// 是否启用临时层课表
+    /// </summary>
+    [JsonIgnore]
+    public bool HasOverlayClassPlan => OverlayClassPlanId != null;
 }

@@ -520,13 +520,10 @@ public partial class ProfileSettingsWindow : MyWindow
             });
 
             var kvp = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem);
-            if (kvp.Value.IsOverlay)
+            MainViewModel.Profile.ClassPlans.Remove(kvp.Key);
+            foreach (var (key, _) in MainViewModel.Profile.OrderedSchedules.Where(x => x.Value.ClassPlanId == kvp.Key).ToList())
             {
-                ProfileService.ClearTempClassPlan();
-            }
-            else
-            {
-                MainViewModel.Profile.ClassPlans.Remove(kvp.Key);
+                MainViewModel.Profile.OrderedSchedules.Remove(key);
             }
         }
         else
@@ -845,17 +842,17 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonCreateTempOverlayClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ProfileService.Profile.OverlayClassPlanId != null &&
-            ProfileService.Profile.ClassPlans.ContainsKey(ProfileService.Profile.OverlayClassPlanId))
-        {
-            ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
-        }
         var id = ProfileService.CreateTempClassPlan(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key,
-            ViewModel.TempOverlayClassPlanTimeLayoutId);
+            ViewModel.TempOverlayClassPlanTimeLayoutId,
+            ViewModel.OverlayEnableDateTime);
         if (id != null)
         {
             ListViewClassPlans.SelectedItem = new KeyValuePair<string,ClassPlan>(id, ProfileService.Profile.ClassPlans[id]);
             OpenDrawer("ClassPlansInfoEditor");
+        }
+        else
+        {
+            ViewModel.MessageQueue.Enqueue("在这一天已存在一个临时层课表，无法创建新的临时层课表。");
         }
 
         PopupCreateTempOverlayClassPlan.IsOpen = false;
@@ -987,12 +984,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonBeginCreateTempOverlayClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ProfileService.Profile.OverlayClassPlanId != null &&
-            ProfileService.Profile.ClassPlans.ContainsKey(ProfileService.Profile.OverlayClassPlanId))
-        {
-            ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
-            return;
-        }
+        ViewModel.OverlayEnableDateTime = ExactTimeService.GetCurrentLocalDateTime().Date;
         ViewModel.TempOverlayClassPlanTimeLayoutId =
             ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeLayoutId;
         PopupCreateTempOverlayClassPlan.IsOpen = true;

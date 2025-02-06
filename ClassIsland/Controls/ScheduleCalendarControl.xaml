@@ -139,7 +139,7 @@
                                 BorderBrush="{DynamicResource MaterialDesignDivider}"
                                 BorderThickness="1 1 0 0 " />
                         
-                        <Grid VerticalAlignment="Top" HorizontalAlignment="Left"
+                        <Grid VerticalAlignment="Top" HorizontalAlignment="Right"
                               Grid.Row="0"
                               Width="28" Height="28"
                               Margin="4">
@@ -312,7 +312,7 @@
                                     Grid.Column="0"
                                     Grid.ColumnSpan="4"
                                     Height="Auto"
-                                    Margin="20,0"
+                                    Margin="16,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     materialDesign:CalendarAssist.Orientation="{TemplateBinding materialDesign:CalendarAssist.Orientation}"
@@ -325,7 +325,7 @@
                                     Grid.Row="1"
                                     Grid.Column="2"
                                     Width="32"
-                                    Height="36"
+                                    Height="28"
                                     Margin="3,0"
                                     HorizontalAlignment="Left"
                                     Focusable="False"
@@ -336,7 +336,7 @@
                                     Grid.Row="1"
                                     Grid.Column="3"
                                     Width="32"
-                                    Height="36"
+                                    Height="28"
                                     Margin="3,0"
                                     HorizontalAlignment="Right"
                                     Focusable="False"

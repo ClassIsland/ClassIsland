@@ -22,24 +22,26 @@
                                   Filter="ClassPlanSource_OnFilter"/>
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="36"/>
             <ColumnDefinition/>
+            <ColumnDefinition Width="36"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="36"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <TextBlock 
-            Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+            Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
             IsHitTestVisible="False"
+            Margin="4"
+            TextTrimming="CharacterEllipsis"
             Text="{Binding CurrentClassPlan.Name}"/>
 
         <StackPanel 
             Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
             Orientation="Horizontal"
-            Margin="4">
-            <materialDesign:Badged Margin="4 4" VerticalAlignment="Center">
+            Margin="2">
+            <materialDesign:Badged Margin="0 0 4 0 " VerticalAlignment="Bottom">
                 <materialDesign:Badged.Style>
                     <Style TargetType="materialDesign:Badged">
                         <Style.Triggers>
@@ -56,7 +58,7 @@
                 <Button Content="{materialDesign:PackIcon FileDocumentMultipleOutline}"
                         Style="{StaticResource MaterialDesignToolForegroundButton}"
                         ToolTip="预定临时课表"
-                        Margin="-4"
+                        Margin="0 -4 -4 0"
                         Background="Transparent"
                         ClickMode="Press"
                         Click="ButtonOrderSchedule_OnClick" />
@@ -64,8 +66,8 @@
             <Button Content="{materialDesign:PackIcon Clear}"
                     Style="{StaticResource MaterialDesignToolForegroundButton}"
                     ToolTip="清除临时课表"
-                    VerticalAlignment="Center"
-                    Margin="4 0"
+                    VerticalAlignment="Bottom"
+                    Margin="0 0 4 0 "
                     Background="Transparent"
                     ClickMode="Press"
                     Visibility="{Binding HasOrderedSchedule, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -108,7 +110,6 @@
                         <ListBox Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassPlanSource}}"
                                  Margin="0 12 0 0"
                                  SelectionMode="Single"
-                                 Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                                  SelectedValue="{Binding SelectedClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
                                  SelectedValuePath="Key"
                                  SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"

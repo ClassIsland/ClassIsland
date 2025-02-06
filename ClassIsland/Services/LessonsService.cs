@@ -147,19 +147,25 @@ public class LessonsService : ObservableRecipient, ILessonsService
         set => SetProperty(ref _multiWeekRotation, value);
     }
 
-    public ClassPlan? GetClassPlanByDate(DateTime date)
+    public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
+
+    public ClassPlan? GetClassPlanByDate(DateTime date, out string? guid)
     {
-        // 加载临时层
-        if (Profile is { IsOverlayClassPlanEnabled: true, OverlayClassPlanId: not null } &&
-            Profile.ClassPlans.TryGetValue(Profile.OverlayClassPlanId, out var overlay) &&
-            overlay.OverlaySetupTime.Date >= date.Date)
-        {
-            return overlay;
-        }
+        guid = null;
+        // 加载临时层（弃用）
+        // 现在临时层使用预定临时课表的加载逻辑。
+        //if (Profile is { IsOverlayClassPlanEnabled: true, OverlayClassPlanId: not null } &&
+        //    Profile.ClassPlans.TryGetValue(Profile.OverlayClassPlanId, out var overlay) &&
+        //    overlay.OverlaySetupTime.Date >= date.Date)
+        //{
+        //    return overlay;
+        //}
         // 加载预定的临时课表
         if (Profile.OrderedSchedules.TryGetValue(date.Date, out var orderedScheduleInfo)
-            && Profile.ClassPlans.TryGetValue(orderedScheduleInfo.ClassPlanId, out var orderedClassPlan))
+            && Profile.ClassPlans.TryGetValue(orderedScheduleInfo.ClassPlanId, out var orderedClassPlan)
+            && (!orderedClassPlan.IsOverlay || Profile.IsOverlayClassPlanEnabled))
         {
+            guid = orderedScheduleInfo.ClassPlanId;
             return orderedClassPlan;
         }
         // 加载临时课表
@@ -167,6 +173,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan) &&
             Profile.TempClassPlanSetupTime.Date >= date.Date)
         {
+            guid = Profile.TempClassPlanId;
             return tempClassPlan;
         }
         // 加载课表
@@ -196,8 +203,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 return 0;
             })
             .Where(p => CheckClassPlan(p.Value, date))
-            .Select(p => p.Value);
-        return a.FirstOrDefault();
+            .Select(p => p);
+        var classPlanKvp = a.FirstOrDefault();
+        guid = classPlanKvp.Key;
+        return classPlanKvp.Value;
     }
 
     public event EventHandler? OnClass;
@@ -459,7 +468,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         ProfileService.Profile.RefreshTimeLayouts();
         RefreshMultiWeekRotation();
-        if (Profile.TempClassPlanSetupTime.Date < ExactTimeService.GetCurrentLocalDateTime().Date)  // 清除过期临时课表
+        var currentTime = ExactTimeService.GetCurrentLocalDateTime();
+        if (Profile.TempClassPlanSetupTime.Date < currentTime.Date)  // 清除过期临时课表
         {
             Profile.TempClassPlanId = null;
         }
@@ -475,7 +485,18 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return;
         }
 
-        CurrentClassPlan = GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime());
+        CurrentClassPlan = GetClassPlanByDate(currentTime);
+        var orderedClassPlanId = Profile.OrderedSchedules[currentTime.Date]?.ClassPlanId;
+        if (orderedClassPlanId != null 
+            && Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
+            && classPlan.IsOverlay)
+        {
+            Profile.OverlayClassPlanId = orderedClassPlanId;
+        }
+        else
+        {
+            Profile.OverlayClassPlanId = null;
+        }
     }
 
     private bool CheckClassPlan(ClassPlan plan, DateTime time)

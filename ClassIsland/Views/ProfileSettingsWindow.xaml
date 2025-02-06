@@ -349,18 +349,29 @@
                     </Button>
                     <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
                                TextWrapping="Wrap"
-                               Margin="0 4 0 0"
-                               Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                               Margin="0 4 0 0">
+                        <TextBlock.Visibility>
+                            <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                <Binding Path="ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                                <Binding Path="ProfileService.Profile.HasOverlayClassPlan"/>
+                            </MultiBinding>
+                        </TextBlock.Visibility>
+                    </TextBlock>
                 </StackPanel>
                 <ListBox Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassPlanSource}}"
                          Margin="0 12 0 0"
                          SelectionMode="Single"
-                         Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                          SelectedValue="{Binding ProfileService.Profile.TempClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
                          SelectedValuePath="Key"
                          SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch">
+                    <ListBox.Visibility>
+                        <MultiBinding Converter="{StaticResource InvertBooleanAndToVisibilityMultiConverter}">
+                            <Binding Path="ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                            <Binding Path="ProfileService.Profile.HasOverlayClassPlan"/>
+                        </MultiBinding>
+                    </ListBox.Visibility>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
@@ -1018,7 +1029,7 @@
                                                     </Border.Effect>
                                                     <StackPanel Margin="12">
                                                         <TextBlock Text="创建临时层" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-                                                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                                                        <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
                                                                   materialDesign:HintAssist.Hint="时间表"
                                                                   ItemsSource="{Binding ProfileService.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"
                                                                   SelectedValuePath="Key"
@@ -1030,6 +1041,10 @@
                                                                 </DataTemplate>
                                                             </ComboBox.ItemTemplate>
                                                         </ComboBox>
+                                                        <DatePicker SelectedDate="{Binding ViewModel.OverlayEnableDateTime, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"
+                                                                    materialDesign:HintAssist.Hint="启用日期"
+                                                                    Margin="0 4 0 0"
+                                                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"/>
                                                         <Button HorizontalAlignment="Right" Margin="0 12 0 0"
                                                                 Click="ButtonCreateTempOverlayClassPlan_OnClick">
                                                             <controls1:IconText Kind="Check" Text="创建"/>
@@ -1983,14 +1998,85 @@
                         </TabItem>
                         <TabItem Visibility="Collapsed">
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="36"/>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <controls:ScheduleCalendarControl Grid.Row="0"
-                                                                  x:Name="ScheduleCalendarControl"
-                                                                  Grid.RowSpan="2"
-                                                                  SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"/>
+                                <ToolBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                                         ToolBarTray.IsLocked="True">
+                                    <Button>
+                                        <ci:IconText Kind="Add" Text="添加"/>
+                                    </Button>
+                                </ToolBar>
+
+                                <ListBox Grid.Row="1" Grid.Column="0"
+                                         ItemsSource="{Binding ProfileService.Profile.OrderedSchedules}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock VerticalAlignment="Center">
+                                                    <Run
+                                                        Text="{Binding Key, Mode=OneWay, StringFormat={}{0:yy/MM/dd ddd}, ConverterCulture=zh-CN}" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+                                <GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"
+                                              VerticalAlignment="Stretch"
+                                              Width="5"
+                                              Margin="4 0"
+                                              ResizeBehavior="PreviousAndNext"/>
+
+                                <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl">
+                                    <TabItem Visibility="Collapsed"></TabItem>
+                                    <TabItem Visibility="Collapsed">
+                                        <controls:ScheduleCalendarControl x:Name="ScheduleCalendarControl"
+                                                                          SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />
+                                    </TabItem>
+                                </TabControl>
+                                <ListBox Grid.Row="2"
+                                         Grid.Column="2"
+                                         Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                         VerticalContentAlignment="Stretch"
+                                         VerticalAlignment="Bottom"
+                                         HorizontalAlignment="Left"
+                                         SelectedIndex="{Binding SelectedIndex, ElementName=ScheduleAdjustmentTabControl}"
+                                         materialDesign:ListBoxItemAssist.ShowSelection="False">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                            <Setter Property="Padding" Value="0"/>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type materialDesign:PackIcon}">
+                                            <DataTemplate.Resources>
+                                                <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButtonTop}">
+                                                    <Setter Property="ToolTipService.Placement" Value="Top"/>
+                                                </Style>
+                                                <converters1:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                            </DataTemplate.Resources>
+                                            <RadioButton ToolTip="{Binding ToolTip}"
+                                                             IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                                <materialDesign:PackIcon Kind="{Binding Kind}"/>
+                                            </RadioButton>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                    <materialDesign:PackIcon Kind="Table" ToolTip="周视图"/>
+                                    <materialDesign:PackIcon Kind="CalendarOutline" ToolTip="日历视图"/>
+                                </ListBox>
                             </Grid>
                         </TabItem>
 

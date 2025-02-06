@@ -20,6 +20,7 @@ using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
 using System.Windows.Input;
+using ClassIsland.Shared;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
@@ -208,26 +209,32 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public string? CreateTempClassPlan(string id, string? timeLayoutId=null)
+    public string? CreateTempClassPlan(string id, string? timeLayoutId=null, DateTime? enableDateTime = null)
     {
         Logger.LogInformation("创建临时层：{}", id);
-        if (Profile.OverlayClassPlanId != null && Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        if (Profile.OrderedSchedules.TryGetValue(date, out var orderedSchedule)
+            && Profile.ClassPlans.ContainsKey(orderedSchedule.ClassPlanId))
         {
             return null;
         }
         var cp = Profile.ClassPlans[id];
-        timeLayoutId = timeLayoutId ?? cp.TimeLayoutId;
+        timeLayoutId ??= cp.TimeLayoutId;
         var newCp = DuplicateJson(cp);
 
         newCp.IsOverlay = true;
         newCp.TimeLayoutId = timeLayoutId;
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
-        newCp.OverlaySetupTime = App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        newCp.OverlaySetupTime = date;
         Profile.IsOverlayClassPlanEnabled = true;
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
         Profile.ClassPlans.Add(newId, newCp);
+        Profile.OrderedSchedules.Add(date, new OrderedSchedule()
+        {
+            ClassPlanId = newId
+        });
         return newId;
     }
 
@@ -238,24 +245,31 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             return;
         }
 
-        Logger.LogInformation("清空临时层：{}", Profile.OverlayClassPlanId);
-        Profile.IsOverlayClassPlanEnabled = false;
-        Profile.ClassPlans.Remove(Profile.OverlayClassPlanId);
+        Logger.LogInformation("清空今天的临时层：{}", Profile.OverlayClassPlanId);
+        Profile.OrderedSchedules.Remove(IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date);
         Profile.OverlayClassPlanId = null;
+        CleanExpiredTempClassPlan();
     }
 
     public void CleanExpiredTempClassPlan()
     {
-        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        var today = IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        foreach (var (key, _) in Profile.OrderedSchedules
+                     .Where(x => x.Key < today)
+                     .ToList())
         {
-            return;
+            Profile.OrderedSchedules.Remove(key);
+            Logger.LogInformation("清理过期的课表预定：{}", key);
         }
 
-        var cp = Profile.ClassPlans[Profile.OverlayClassPlanId];
-        if (cp.OverlaySetupTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
+        var orderedSchedules = Profile.OrderedSchedules.Select(x => x.Value.ClassPlanId).ToList();
+
+        foreach (var (key, _) in Profile.ClassPlans.Where(x => x.Value.IsOverlay).ToList())
         {
-            Logger.LogInformation("清理过期的临时层课表。");
-            ClearTempClassPlan();
+            if (orderedSchedules.Contains(key)) 
+                continue;
+            Profile.ClassPlans.Remove(key);
+            Logger.LogInformation("清理没有被引用的过期临时层课表：{}", key);
         }
     }
 
@@ -266,15 +280,22 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public void ConvertToStdClassPlan()
     {
-        Logger.LogInformation("将临时层课表转换为普通课表：{}", Profile.OverlayClassPlanId);
-        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        Logger.LogInformation("将当前临时层课表转换为普通课表：{}", Profile.OverlayClassPlanId);
+        if (Profile.OverlayClassPlanId != null)
+        {
+            ConvertToStdClassPlan(Profile.OverlayClassPlanId);
+        }
+    }
+
+    public void ConvertToStdClassPlan(string id)
+    {
+        Logger.LogInformation("将临时层课表转换为普通课表：{}", id);
+        var today = IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        if (!Profile.ClassPlans.TryGetValue(id, out var classPlan))
         {
             return;
         }
-
-        Profile.IsOverlayClassPlanEnabled = false;
-        Profile.ClassPlans[Profile.OverlayClassPlanId].IsOverlay = false;
-        Profile.OverlayClassPlanId = null;
+        classPlan.IsOverlay = false;
     }
 
     public void SetupTempClassPlanGroup(string key, DateTime? expireTime = null)
