@@ -142,6 +142,9 @@
                     <Style TargetType="TextBlock">
                         <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass}"/>
                         <Style.Triggers>
+                            <DataTrigger Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}">
+                                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass}"/>
+                            </DataTrigger>
                             <MultiDataTrigger>
                                 <MultiDataTrigger.Conditions>
                                     <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
@@ -157,6 +160,7 @@
                                 </MultiDataTrigger.Conditions>
                                 <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded}"/>
                             </MultiDataTrigger>
+                            
                         </Style.Triggers>
                     </Style>
                 </TextBlock.Style>
