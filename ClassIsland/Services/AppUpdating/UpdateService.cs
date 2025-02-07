@@ -63,7 +63,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 #if IsMsix
         Path.Combine(ApplicationData.Current.TemporaryFolder.Path, "UpdateTemp");
 #else
-        UpdateTempPath;
+        Path.Combine(App.AppRootFolderPath, "UpdateTemp");
 #endif
 
     public VersionsIndex Index { get; set; }
