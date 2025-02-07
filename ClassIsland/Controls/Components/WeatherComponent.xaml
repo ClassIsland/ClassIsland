@@ -8,8 +8,13 @@
                         xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
                         xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
                         xmlns:controls1="clr-namespace:ClassIsland.Controls"
+                        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                        xmlns:ci="http://classisland.tech/schemas/xaml/core"
                         mc:Ignorable="d"
                         d:DesignHeight="450" d:DesignWidth="800">
+    <controls:ComponentBase.Resources>
+        <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
+    </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <controls1:WeatherPackIconControl Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
@@ -73,6 +78,47 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            <!-- 降水预警 -->
+            <Grid VerticalAlignment="Center" Margin="8 0 0 0">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Settings.ShowRainTime}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Border Background="{DynamicResource Rainy}"
+                        Height="{Binding ActualHeight, ElementName=BorderStroke}"
+                        ClipToBounds="True"
+                        BorderThickness="1"
+                        Padding="8 0"
+                        Opacity="0.15"
+                        VerticalAlignment="Bottom"
+                        CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                </Border>
+                <Border ClipToBounds="True"
+                        BorderBrush="{DynamicResource Rainy}"
+                        BorderThickness="1"
+                        Padding="8 0"
+                        x:Name="BorderStroke"
+                        VerticalAlignment="Bottom"
+                        CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="WeatherPouring" VerticalAlignment="Center"
+                                                 Margin="0 0 4 0"/>
+                        <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
+                                   VerticalAlignment="Center" FontWeight="Regular">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}">
+                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="m"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </StackPanel>
     </Grid>
 </controls:ComponentBase>

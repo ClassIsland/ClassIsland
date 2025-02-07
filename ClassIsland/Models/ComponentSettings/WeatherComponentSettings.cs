@@ -18,6 +18,8 @@ public class WeatherComponentSettings : ObservableRecipient
     }
 
     private int _alertsTitleShowMode = 1;
+    private bool _showRainTime = true;
+
     public int AlertsTitleShowMode
     {
         get => _alertsTitleShowMode;
@@ -25,6 +27,17 @@ public class WeatherComponentSettings : ObservableRecipient
         {
             if (value == _alertsTitleShowMode) return;
             _alertsTitleShowMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowRainTime
+    {
+        get => _showRainTime;
+        set
+        {
+            if (value == _showRainTime) return;
+            _showRainTime = value;
             OnPropertyChanged();
         }
     }
