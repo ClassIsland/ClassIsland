@@ -343,8 +343,13 @@
                             HorizontalAlignment="Left"
                             ToolTip="清除选择的临时课表，并恢复至正常课表安排。"
                             Margin="0 6 0 0"
-                            Click="ButtonClearTemporaryClassPlan_OnClick"
-                            Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
+                            Click="ButtonClearTemporaryClassPlan_OnClick">
+                        <Button.Visibility>
+                            <MultiBinding Converter="{StaticResource InvertBooleanAndToVisibilityMultiConverter}">
+                                <Binding Path="ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                                <Binding Path="ProfileService.Profile.HasOverlayClassPlan"/>
+                            </MultiBinding>
+                        </Button.Visibility>
                         <controls1:IconText Kind="ClearOutline" Text="清除临时课表"/>
                     </Button>
                     <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
@@ -698,6 +703,7 @@
                 </Button>
             </StackPanel>
         </StackPanel>
+        <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter2" />
     </Window.Resources>
     <Grid>
 
@@ -2013,6 +2019,20 @@
                                     <Button>
                                         <ci:IconText Kind="Add" Text="添加"/>
                                     </Button>
+                                    <Separator/>
+                                    <Button Click="ButtonRefreshScheduleAdjustmentView_OnClick">
+                                        <ci:IconText Kind="Refresh" Text="刷新"/>
+                                    </Button>
+                                    <Button Click="ButtonSwapSchedule_OnClick" IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                        <ci:IconText Kind="SwapHorizontal" Text="交换课程"/>
+                                    </Button>
+                                    <Button Click="ButtonSwapScheduleComplete_OnClick" Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <ci:IconText Kind="Check" Text="完成交换"/>
+                                    </Button>
+                                    <CheckBox Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                              IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}">
+                                        永久换课
+                                    </CheckBox>
                                 </ToolBar>
 
                                 <ListBox Grid.Row="1" Grid.Column="0"
@@ -2036,7 +2056,238 @@
                                               ResizeBehavior="PreviousAndNext"/>
 
                                 <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl">
-                                    <TabItem Visibility="Collapsed"></TabItem>
+                                    <TabItem Visibility="Collapsed">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                                <DatePicker SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate}"
+                                                            Width="100"/>
+                                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                        Content="{materialDesign:PackIcon ArrowLeft}"
+                                                        ToolTip="上一周"
+                                                        Margin="4 0 0 0"
+                                                        Click="ButtonPreviousWeek_OnClick"/>
+                                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                        Content="{materialDesign:PackIcon ArrowRight}"
+                                                        ToolTip="下一周"
+                                                        Margin="4 0 0 0"
+                                                        Click="ButtonNextWeek_OnClick"/>
+                                            </StackPanel>
+
+                                            <materialDesign:ColorZone Background="#204169e1" 
+                                                                      Panel.ZIndex="1" 
+                                                                      Grid.Row="2"
+                                                                      Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <Grid>
+                                                    <DockPanel Margin="8 4">
+                                                        <materialDesign:PackIcon Kind="SwapHorizontal"
+                                                            Height="20" Width="20"/>
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="4 0 0 0" >
+                                                            <Run Text="正在交换课程。选择要与"/>
+                                                            <Run Text="{Binding ViewModel.ClassSwapStartPosition, Mode=OneWay}"/>
+                                                            <Run Text="交换的课程，然后点击【完成交换】。"/>
+                                                        </TextBlock>
+                                                    </DockPanel>
+                                                </Grid>
+                                            </materialDesign:ColorZone>
+
+                                            <DataGrid Grid.Row="1"
+                                                      ItemsSource="{Binding ViewModel.WeekClassPlanRows, Mode=TwoWay}"
+                                                      CanUserAddRows="False"
+                                                      CanUserDeleteRows="False"
+                                                      CanUserSortColumns="False"
+                                                      CanUserReorderColumns="False"
+                                                      AutoGenerateColumns="False"
+                                                      VirtualizingPanel.IsVirtualizing="True"
+                                                      VirtualizingPanel.ScrollUnit="Pixel"
+                                                      CanUserResizeColumns="False"
+                                                      SelectionUnit="Cell"
+                                                      SelectionMode="Single"
+                                                      SelectedItem="{Binding ViewModel.SelectedWeekClassPlanRow}"
+                                                      PreparingCellForEdit="DataGridWeekSchedule_OnPreparingCellForEdit"
+                                                      BeginningEdit="DataGridWeekSchedule_OnBeginningEdit"
+                                                      x:Name="DataGridWeekSchedule">
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn Header="周日" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Sunday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Sunday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周一" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Monday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Monday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周二" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Tuesday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Tuesday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周三" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Wednesday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Wednesday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周四" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Thursday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Thursday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周五" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Friday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Friday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周六" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Saturday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Saturday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
+                                    </TabItem>
                                     <TabItem Visibility="Collapsed">
                                         <controls:ScheduleCalendarControl x:Name="ScheduleCalendarControl"
                                                                           SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />

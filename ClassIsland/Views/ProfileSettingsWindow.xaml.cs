@@ -21,6 +21,7 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Converters;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Models;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
@@ -34,6 +35,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Sentry;
 using Application = System.Windows.Application;
+using ClassPlanDictionaryValueAccessConverter = ClassIsland.Core.Converters.ClassPlanDictionaryValueAccessConverter;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -1221,4 +1223,163 @@ public partial class ProfileSettingsWindow : MyWindow
         
     }
 
+    private void RefreshWeekScheduleRows()
+    {
+        var selectedDate = ViewModel.ScheduleCalendarSelectedDate.Date;
+        var baseDate = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
+        ViewModel.ScheduleWeekViewBaseDate = baseDate;
+        List<ClassPlan?> classPlans = [];
+        ViewModel.WeekClassPlanRows.Clear();
+        var maxClasses = 0;
+        for (var i = 0; i < 7; i++)
+        {
+            var classPlan = LessonsService.GetClassPlanByDate(baseDate.AddDays(i));
+            maxClasses = Math.Max(maxClasses, classPlan?.Classes.Count ?? 0);
+            classPlans.Add(classPlan);
+        }
+
+        for (var i = 0; i < maxClasses; i++)
+        {
+            var row = new WeekClassPlanRow()
+            {
+                Sunday = TryGetClassInfo(classPlans[0], i),
+                Monday = TryGetClassInfo(classPlans[1], i),
+                Tuesday = TryGetClassInfo(classPlans[2], i),
+                Wednesday = TryGetClassInfo(classPlans[3], i),
+                Thursday = TryGetClassInfo(classPlans[4], i),
+                Friday = TryGetClassInfo(classPlans[5], i),
+                Saturday = TryGetClassInfo(classPlans[6], i),
+            };
+            ViewModel.WeekClassPlanRows.Add(row);
+        }
+
+        return;
+
+        ClassInfo? TryGetClassInfo(ClassPlan? classPlan, int index)
+        {
+            if (classPlan != null && classPlan.Classes.Count > index)
+            {
+                return classPlan.Classes[index];
+            }
+
+            return null;
+        }
+    }
+    private void ButtonRefreshScheduleAdjustmentView_OnClick(object sender, RoutedEventArgs e)
+    {
+        RefreshWeekScheduleRows();
+    }
+
+    private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
+    {
+        
+    }
+
+    private void DataGridWeekSchedule_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
+    {
+        if (e.Row.Item is WeekClassPlanRow row &&
+            GetClassInfoFromRow(row, e.Column.DisplayIndex) == null)
+        {
+            e.Cancel = true;
+        }
+    }
+
+    private ClassInfo? GetClassInfoFromRow(WeekClassPlanRow row, int index)
+    {
+        return index switch
+        {
+            0 => row.Sunday,
+            1 => row.Monday,
+            2 => row.Tuesday,
+            3 => row.Wednesday,
+            4 => row.Thursday,
+            5 => row.Friday,
+            6 => row.Saturday,
+            _ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+        };
+    }
+
+    private void ButtonSwapSchedule_OnClick(object sender, RoutedEventArgs e)
+    {
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow row)
+        {
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        ViewModel.ClassSwapStartPosition = new ScheduleClassPosition(date, index);
+        ViewModel.IsInScheduleSwappingMode = true;
+    }
+
+    private void ButtonNextWeek_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ScheduleCalendarSelectedDate += TimeSpan.FromDays(7);
+        RefreshWeekScheduleRows();
+    }
+
+    private void ButtonPreviousWeek_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ScheduleCalendarSelectedDate -= TimeSpan.FromDays(7);
+        RefreshWeekScheduleRows();
+    }
+
+    private void ButtonSwapScheduleComplete_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsInScheduleSwappingMode = false;
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow row)
+        {
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        ViewModel.ClassSwapEndPosition = new ScheduleClassPosition(date, index);
+
+        var startOverlay = GetTargetClassPlan(ViewModel.ClassSwapStartPosition.Date, ViewModel.IsTempSwapMode, out _);
+        var endOverlay = GetTargetClassPlan(ViewModel.ClassSwapEndPosition.Date, ViewModel.IsTempSwapMode, out _);
+        if (startOverlay == null || endOverlay == null ||
+            endOverlay.Classes.Count <= ViewModel.ClassSwapEndPosition.Index ||
+            startOverlay.Classes.Count <= ViewModel.ClassSwapStartPosition.Index)
+        {
+            return;
+        }
+
+        (startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId, endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId) = (endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId, startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId);
+        startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].IsChangedClass = true;
+        endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].IsChangedClass = true;
+
+        RefreshWeekScheduleRows();
+
+        return;
+
+        ClassPlan? GetTargetClassPlan(DateTime dateTime, bool overlay, out string? targetGuid)
+        {
+            targetGuid = null;
+            var baseClassPlan = LessonsService.GetClassPlanByDate(dateTime, out var baseGuid);
+            if (baseClassPlan == null || baseGuid == null)
+            {
+                return null;
+            }
+
+            if (!overlay || baseClassPlan.IsOverlay)
+            {
+                targetGuid = baseGuid;
+                return baseClassPlan;
+            }
+
+            var orderedClassPlanId = ProfileService.Profile.OrderedSchedules[dateTime]?.ClassPlanId;
+            if (orderedClassPlanId != null
+                && ProfileService.Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
+                && classPlan.IsOverlay)
+            {
+                targetGuid = baseGuid;
+                return baseClassPlan;
+            }
+
+            targetGuid =
+                ProfileService.CreateTempClassPlan(baseGuid, enableDateTime: dateTime);
+            return targetGuid == null ? null : ProfileService.Profile.ClassPlans[targetGuid];
+        }
+    }
 }

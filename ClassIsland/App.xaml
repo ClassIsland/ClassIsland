@@ -19,6 +19,7 @@
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
             <ci:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
             <ci:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+            <Visibility x:Key="VisibilityCollapsedValue">Collapsed</Visibility>
 
             <Style TargetType="Slider" BasedOn="{StaticResource MaterialDesignSlider}">
                 <Setter Property="materialDesign:BehaviorsAssist.Behaviors">

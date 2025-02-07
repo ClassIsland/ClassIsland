@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
