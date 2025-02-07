@@ -177,7 +177,7 @@ jobs:
           organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
           project-slug: 'ClassIsland'
           artifact-configuration-slug: 'sign_bundle'
-          signing-policy-slug: ${{ github.event.inputs.is_test_mode && 'test-signing' || 'release-signing' }}
+          signing-policy-slug: release-signing
           github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
           wait-for-completion: true
           output-artifact-directory: '/out_signed'
@@ -222,7 +222,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
       - name: Upload Nuget packages to NuGet Gallery
-        if: ${{ github.event_name != 'pull_request' && !github.event.inputs.is_test_mode }}
+        if: ${{ github.event_name != 'pull_request' }}
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
         run: |
@@ -231,7 +231,6 @@ jobs:
           dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
           
       - name: Upload to AppCenter
-        if: ${{ !github.event.inputs.is_test_mode }}
         env:
           APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
         run: |
