@@ -60,7 +60,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
     {
         if (!SettingsService.Settings.IsAutomationEnabled) return;
 
-        foreach (var workflow in Workflows.Where(x => x.ActionSet is { IsOn: true, IsRevertEnabled: true }))
+        foreach (var workflow in Workflows.Where(x => x is { ActionSet: { IsOn: true, IsRevertEnabled: true }, IsConditionEnabled: true }))
         {
             if (RulesetService.IsRulesetSatisfied(workflow.Ruleset)) 
                 continue;
