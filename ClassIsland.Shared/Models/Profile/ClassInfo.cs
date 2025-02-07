@@ -69,7 +69,6 @@ public class ClassInfo : AttachableSettingsObject
     /// <summary>
     /// 课程是否是临时换课课程
     /// </summary>
-    [JsonIgnore]
     public bool IsChangedClass
     {
         get => _isChangedClass;

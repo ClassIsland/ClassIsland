@@ -1253,6 +1253,9 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.WeekClassPlanRows.Add(row);
         }
 
+        ViewModel.DataGridWeekRowsWeekIndex =
+            (int)Math.Ceiling((baseDate - MainViewModel.Settings.SingleWeekStartTime).TotalDays / 7);
+
         return;
 
         ClassInfo? TryGetClassInfo(ClassPlan? classPlan, int index)
@@ -1304,6 +1307,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
         if (cell.Item is not WeekClassPlanRow row)
         {
+            ViewModel.MessageQueue.Enqueue("请先选择要交换的课程。");
             return;
         }
         var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
@@ -1346,40 +1350,96 @@ public partial class ProfileSettingsWindow : MyWindow
         }
 
         (startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId, endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId) = (endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId, startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId);
-        startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].IsChangedClass = true;
-        endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].IsChangedClass = true;
+        if (ViewModel.IsTempSwapMode)
+        {
+            startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].IsChangedClass = true;
+            endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].IsChangedClass = true;
+        }
 
         RefreshWeekScheduleRows();
+    }
 
-        return;
-
-        ClassPlan? GetTargetClassPlan(DateTime dateTime, bool overlay, out string? targetGuid)
+    private ClassPlan? GetTargetClassPlan(DateTime dateTime, bool overlay, out string? targetGuid)
+    {
+        targetGuid = null;
+        var baseClassPlan = LessonsService.GetClassPlanByDate(dateTime, out var baseGuid);
+        if (baseClassPlan == null || baseGuid == null)
         {
-            targetGuid = null;
-            var baseClassPlan = LessonsService.GetClassPlanByDate(dateTime, out var baseGuid);
-            if (baseClassPlan == null || baseGuid == null)
-            {
-                return null;
-            }
+            return null;
+        }
 
-            if (!overlay || baseClassPlan.IsOverlay)
-            {
-                targetGuid = baseGuid;
-                return baseClassPlan;
-            }
+        if (!overlay || baseClassPlan.IsOverlay)
+        {
+            targetGuid = baseGuid;
+            return baseClassPlan;
+        }
 
-            var orderedClassPlanId = ProfileService.Profile.OrderedSchedules[dateTime]?.ClassPlanId;
-            if (orderedClassPlanId != null
-                && ProfileService.Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
-                && classPlan.IsOverlay)
-            {
-                targetGuid = baseGuid;
-                return baseClassPlan;
-            }
+        var orderedClassPlanId = ProfileService.Profile.OrderedSchedules[dateTime]?.ClassPlanId;
+        if (orderedClassPlanId != null
+            && ProfileService.Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
+            && classPlan.IsOverlay)
+        {
+            targetGuid = baseGuid;
+            return baseClassPlan;
+        }
 
-            targetGuid =
-                ProfileService.CreateTempClassPlan(baseGuid, enableDateTime: dateTime);
-            return targetGuid == null ? null : ProfileService.Profile.ClassPlans[targetGuid];
+        targetGuid =
+            ProfileService.CreateTempClassPlan(baseGuid, enableDateTime: dateTime);
+        return targetGuid == null ? null : ProfileService.Profile.ClassPlans[targetGuid];
+    }
+
+    private void HyperlinkNavigateTimeLayoutPage_OnClick(object sender, RoutedEventArgs e)
+    {
+        RootTabControl.SelectedIndex = 1;
+    }
+
+    private void ButtonCancelClassSwap_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsInScheduleSwappingMode = false;
+    }
+
+    private void ButtonEditClassInfoTemp_OnClick(object sender, RoutedEventArgs e)
+    {
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow)
+        {
+            ViewModel.MessageQueue.Enqueue("请先选择要修改的课程。");
+            return;
+        }
+
+        ViewModel.TargetSubjectIndex = "";
+        ViewModel.IsClassPlanTempEditPopupOpen = true;
+    }
+
+    private void ButtonEditClassInfoTempConfirm_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsClassPlanTempEditPopupOpen = false;
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow row)
+        {
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+
+        var targetClassPlan = GetTargetClassPlan(date, ViewModel.IsTempSwapMode, out var guid);
+        if (targetClassPlan == null || targetClassPlan.Classes.Count <= index)
+        {
+            return;
+        }
+
+        targetClassPlan.Classes[index].SubjectId = ViewModel.TargetSubjectIndex;
+        if (ViewModel.IsTempSwapMode)
+        {
+            targetClassPlan.Classes[index].IsChangedClass = true;
+        }
+    }
+
+    private void RootTabControlNavigator_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (RootTabControl.SelectedIndex == 3)
+        {
+            RefreshWeekScheduleRows();
         }
     }
 }

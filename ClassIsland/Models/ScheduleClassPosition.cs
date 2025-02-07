@@ -8,6 +8,6 @@ public record ScheduleClassPosition(DateTime Date, int Index)
 
     public override string ToString()
     {
-        return $"{Date:yy/MM/dd ddd} 第{Index}节课";
+        return $"{Date:yy/MM/dd ddd} 第{Index + 1}节课";
     }
 }

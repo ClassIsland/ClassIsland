@@ -1066,12 +1066,77 @@
 
                                         <!-- 课表编辑 -->
                                         <Grid Grid.Row="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="5"/>
                                                 <ColumnDefinition Width="350" MinWidth="300" MaxWidth="450"/>
                                             </Grid.ColumnDefinitions>
-                                            <DataGrid Grid.Column="0"
+
+                                            <!-- Warnings -->
+                                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                                <materialDesign:ColorZone Background="#17800080" 
+                                                                          Panel.ZIndex="1">
+                                                    <materialDesign:ColorZone.Style>
+                                                        <Style TargetType="materialDesign:ColorZone">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ProfileService.Profile.TimeLayouts.Count, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}" Value="0">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </materialDesign:ColorZone.Style>
+                                                    <Grid>
+                                                        <DockPanel Margin="8 4">
+                                                            <materialDesign:PackIcon Kind="MessageAlertOutline"
+                                                                Height="20" Width="20"/>
+                                                            <TextBlock TextWrapping="Wrap"
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="4 0 0 0" >
+                                                                <Run Text="在设置课表之前，您需要在"/>
+                                                                <Hyperlink Click="HyperlinkNavigateTimeLayoutPage_OnClick">【时间表】</Hyperlink>
+                                                                <Run Text="页面中根据学校的作息安排编排时间表。"/>
+                                                            </TextBlock>
+                                                        </DockPanel>
+                                                    </Grid>
+                                                </materialDesign:ColorZone>
+                                                <materialDesign:ColorZone Background="#17800080" 
+                                                                          Panel.ZIndex="1">
+                                                    <materialDesign:ColorZone.Style>
+                                                        <Style TargetType="materialDesign:ColorZone">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding TimeLayoutId}" Value="">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ProfileService.Profile.TimeLayouts.Count, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}" Value="0">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </materialDesign:ColorZone.Style>
+                                                    <Grid>
+                                                        <DockPanel Margin="8 4">
+                                                            <materialDesign:PackIcon Kind="MessageAlertOutline"
+                                                                Height="20" Width="20"/>
+                                                            <TextBlock TextWrapping="Wrap"
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="4 0 0 0" >
+                                                                <Run Text="您还没有为此课表设置时间表。在编排课程之前，您需要在"/>
+                                                                <Hyperlink Click="ButtonClassPlanInfoEdit_OnClick"
+                                                                           Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">【课表信息】</Hyperlink>
+                                                                <Run Text="中为本课表设置一个时间表。"/>
+                                                            </TextBlock>
+                                                        </DockPanel>
+                                                    </Grid>
+                                                </materialDesign:ColorZone>
+                                            </StackPanel>
+
+                                            <DataGrid Grid.Column="0" Grid.Row="1"
                                                       Margin="0 0 4 0"
                                                       AutoGenerateColumns="False"
                                                       ItemsSource="{Binding Classes}"
@@ -1110,9 +1175,10 @@
                                             </DataGrid>
 
                                             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
+                                                          Grid.Row="0" Grid.RowSpan="2"
                                                           VerticalAlignment="Stretch"/>
 
-                                            <TabControl Grid.Column="2"
+                                            <TabControl Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
                                                         HorizontalContentAlignment="Left">
                                                 <TabControl.Style>
                                                     <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
@@ -1191,7 +1257,7 @@
                                                 </TabItem>-->
                                             </TabControl>
 
-                                            <StackPanel Grid.Column="2" 
+                                            <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
                                                         VerticalAlignment="Center" HorizontalAlignment="Center">
                                                 <StackPanel.Style>
                                                     <Style TargetType="StackPanel">
@@ -2016,27 +2082,103 @@
                                 </Grid.RowDefinitions>
                                 <ToolBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
                                          ToolBarTray.IsLocked="True">
-                                    <Button>
-                                        <ci:IconText Kind="Add" Text="添加"/>
-                                    </Button>
-                                    <Separator/>
-                                    <Button Click="ButtonRefreshScheduleAdjustmentView_OnClick">
+                                    <Button Click="ButtonRefreshScheduleAdjustmentView_OnClick" IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
                                         <ci:IconText Kind="Refresh" Text="刷新"/>
                                     </Button>
-                                    <Button Click="ButtonSwapSchedule_OnClick" IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
-                                        <ci:IconText Kind="SwapHorizontal" Text="交换课程"/>
-                                    </Button>
-                                    <Button Click="ButtonSwapScheduleComplete_OnClick" Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <ci:IconText Kind="Check" Text="完成交换"/>
-                                    </Button>
-                                    <CheckBox Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                              IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}">
-                                        永久换课
-                                    </CheckBox>
+                                    <Separator/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ScheduleAdjustmentTabControl}" Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <StackPanel.Resources>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
+                                        </StackPanel.Resources>
+                                        <Grid>
+                                            <Button Click="ButtonEditClassInfoTemp_OnClick"
+                                                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                    IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                                <ci:IconText Kind="EditOutline" Text="修改课程" />
+                                            </Button>
+                                            <materialDesign:PopupEx AllowsTransparency="True"
+                                                                    StaysOpen="False"
+                                                                    PopupAnimation="Fade"
+                                                                    IsOpen="{Binding ViewModel.IsClassPlanTempEditPopupOpen}">
+                                                <materialDesign:Card Background="{DynamicResource MaterialDesignPaper}"
+                                                                     Margin="8"
+                                                                     materialDesign:ElevationAssist.Elevation="Dp8">
+                                                    <StackPanel Margin="12" Width="250">
+                                                        <TextBlock Text="修改课程"
+                                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                                                   Margin="0 0 0 8" />
+                                                        <ComboBox HorizontalAlignment="Stretch"
+                                                                  materialDesign:HintAssist.Hint="换课成…"
+                                                                  Margin="0 0 0 8"
+                                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                                  ItemsSource="{Binding ProfileService.Profile.Subjects, UpdateSourceTrigger=PropertyChanged}"
+                                                                  SelectedValuePath="Key"
+                                                                  SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Value.Name}" />
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                        <CheckBox
+                                                            IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}"
+                                                            Margin="0 0 0 8">
+                                                            永久换课
+                                                        </CheckBox>
+                                                        <Button Click="ButtonEditClassInfoTempConfirm_OnClick"
+                                                                HorizontalAlignment="Left">
+                                                            <Button.Style>
+                                                                <Style TargetType="Button"
+                                                                       BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding ViewModel.TargetSubjectIndex}"
+                                                                            Value="">
+                                                                            <Setter Property="IsEnabled" Value="False" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                            <controls1:IconText Kind="Check" Text="确定" />
+                                                        </Button>
+                                                    </StackPanel>
+                                                </materialDesign:Card>
+                                            </materialDesign:PopupEx>
+                                        </Grid>
+                                        <Button Click="ButtonSwapSchedule_OnClick"
+                                                IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                            <ci:IconText Kind="SwapHorizontal" Text="交换课程" />
+                                        </Button>
+                                        <Button Click="ButtonCancelClassSwap_OnClick"
+                                                Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <ci:IconText Kind="Cancel" Text="取消" />
+                                        </Button>
+                                        <Button Click="ButtonSwapScheduleComplete_OnClick"
+                                                Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <ci:IconText Kind="Check" Text="完成交换" />
+                                        </Button>
+                                        <CheckBox
+                                            Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}">
+                                            永久换课
+                                        </CheckBox></StackPanel>
                                 </ToolBar>
 
                                 <ListBox Grid.Row="1" Grid.Column="0"
-                                         ItemsSource="{Binding ProfileService.Profile.OrderedSchedules}">
+                                         ItemsSource="{Binding ProfileService.Profile.OrderedSchedules}"
+                                         SelectedValue="{Binding ViewModel.ScheduleCalendarSelectedDate}"
+                                         SelectedValuePath="Key"
+                                         Style="{StaticResource NavigationListBox}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal">
@@ -2078,6 +2220,10 @@
                                                         ToolTip="下一周"
                                                         Margin="4 0 0 0"
                                                         Click="ButtonNextWeek_OnClick"/>
+                                                <TextBlock VerticalAlignment="Center"
+                                                           Margin="8 0 0 0">
+                                                    <Run Text="第"/><Run Text="{Binding ViewModel.DataGridWeekRowsWeekIndex}"/><Run Text="周"/>
+                                                </TextBlock>
                                             </StackPanel>
 
                                             <materialDesign:ColorZone Background="#204169e1" 
@@ -2100,6 +2246,7 @@
                                             </materialDesign:ColorZone>
 
                                             <DataGrid Grid.Row="1"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                                       ItemsSource="{Binding ViewModel.WeekClassPlanRows, Mode=TwoWay}"
                                                       CanUserAddRows="False"
                                                       CanUserDeleteRows="False"
@@ -2290,6 +2437,7 @@
                                     </TabItem>
                                     <TabItem Visibility="Collapsed">
                                         <controls:ScheduleCalendarControl x:Name="ScheduleCalendarControl"
+                                                                          DisplayDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"
                                                                           SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />
                                     </TabItem>
                                 </TabControl>
@@ -2376,7 +2524,7 @@
                                     Icon="{materialDesign:PackIcon FileDocumentOutline}"
                                     Click="ButtonProfileManage_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock MaxWidth="150" TextWrapping="Wrap">
+                                    <TextBlock MaxWidth="100" TextTrimming="CharacterEllipsis">
                                         <Run Text="{Binding ProfileService.CurrentProfilePath}"/>
                                     </TextBlock>
                                 </materialDesign:Chip>
@@ -2422,7 +2570,7 @@
                                             <Setter Property="Icon" Value="{materialDesign:PackIcon FileDocumentMultipleOutline}"/>
                                         </Style>
                                     </materialDesign:Chip.Style>
-                                    <TextBlock FontFamily="{StaticResource HarmonyOsSans}" MaxWidth="170" TextWrapping="Wrap">
+                                    <TextBlock FontFamily="{StaticResource HarmonyOsSans}" MaxWidth="100" TextTrimming="CharacterEllipsis">
                                         <Run>
                                             <Run.Style>
                                                 <Style TargetType="Run">
@@ -2445,7 +2593,7 @@
                                     Icon="{materialDesign:PackIcon Group}"
                                     Click="ButtonClassPlansGroup_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock MaxWidth="170" TextWrapping="Wrap">
+                                    <TextBlock MaxWidth="100" TextTrimming="CharacterEllipsis">
                                         <TextBlock.DataContext>
                                             <MultiBinding Converter="{StaticResource ClassPlanGroupIdToClassPlanGroupConverter}">
                                                 <Binding Path="ProfileService.Profile.ClassPlanGroups"/>
@@ -2464,6 +2612,7 @@
                                      ScrollViewer.CanContentScroll="True"
                                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                     SelectionChanged="RootTabControlNavigator_OnSelectionChanged"
                                      Visibility="{Binding ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InverseBoolToVisConverter}}"
                                      Margin="6 -15 0 -15">
                                 <ListBox.ItemsPanel>
@@ -2515,7 +2664,7 @@
                                     ToolTip="当前档案不受信任，部分功能受限。"
                                     Icon="{materialDesign:PackIcon Warning}"
                                     Click="ButtonUnTrustedProfile_OnClick"
-                                    Visibility="{Binding ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                                    Visibility="{Binding ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InverseBoolToVisConverter}}">
                                     <TextBlock>
                                         <Run Text="不信任"/>
                                     </TextBlock>

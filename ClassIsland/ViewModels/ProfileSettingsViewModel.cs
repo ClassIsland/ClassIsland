@@ -44,6 +44,9 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private ScheduleClassPosition _classSwapStartPosition = ScheduleClassPosition.Zero;
     private DateTime _scheduleWeekViewBaseDate = DateTime.Now;
     private bool _isTempSwapMode = true;
+    private int _dataGridWeekRowsWeekIndex = 0;
+    private bool _isClassPlanTempEditPopupOpen = false;
+    private string _targetSubjectIndex = "";
 
     public object DrawerContent
     {
@@ -409,6 +412,39 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (value == _isTempSwapMode) return;
             _isTempSwapMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int DataGridWeekRowsWeekIndex
+    {
+        get => _dataGridWeekRowsWeekIndex;
+        set
+        {
+            if (value == _dataGridWeekRowsWeekIndex) return;
+            _dataGridWeekRowsWeekIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClassPlanTempEditPopupOpen
+    {
+        get => _isClassPlanTempEditPopupOpen;
+        set
+        {
+            if (value == _isClassPlanTempEditPopupOpen) return;
+            _isClassPlanTempEditPopupOpen = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string TargetSubjectIndex
+    {
+        get => _targetSubjectIndex;
+        set
+        {
+            if (value == _targetSubjectIndex) return;
+            _targetSubjectIndex = value;
             OnPropertyChanged();
         }
     }
