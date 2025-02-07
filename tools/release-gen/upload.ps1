@@ -24,7 +24,7 @@ $versionInfo.Channels = $tagInfo.Channels
 foreach ($artifact in $(Get-ChildItem ./out)) {
     Move-Item $artifact.FullName -Destination $artifact.FullName.Replace("out_app_", "ClassIsland_app_") -Force
 }
-Move-Item ./out/out_app_windows_x64_full_wap.msix -Destination ./out/out_app_windows_x64_full_wap.appx
+# Move-Item ./out/out_app_windows_x64_full_wap.msix -Destination ./out/out_app_windows_x64_full_wap.appx
 $artifacts = $(Get-ChildItem ./out)
 $hashSummary = "
 

@@ -14,5 +14,5 @@ foreach ($artifact in $artifacts) {
     Copy-Item ./out_artifacts/$($artifact.Name)/* -Destination ./ci_tmp/sign_bundle/ -Recurse -Force
 }
 
-Move-Item ./ci_tmp/sign_bundle/out_app_windows_x64_full_wap.appx -Destination ./ci_tmp/sign_bundle/out_app_windows_x64_full_wap.msix
-Remove-Item ./out/out_app_windows_x64_full_wap.appx
+# Move-Item ./ci_tmp/sign_bundle/out_app_windows_x64_full_wap.appx -Destination ./ci_tmp/sign_bundle/out_app_windows_x64_full_wap.msix
+# Remove-Item ./out/out_app_windows_x64_full_wap.appx
