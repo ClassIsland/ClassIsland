@@ -58,6 +58,12 @@
                  Foreground="{DynamicResource MaterialDesignBody}"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 0 0 6" />
+        <!-- 下课提醒文字 -->
+        <TextBox Text="{Binding Settings.ClassOffOverlayText}"
+                 materialDesign:HintAssist.Hint="下课提醒文字（留空以禁用）"
+                 Foreground="{DynamicResource MaterialDesignBody}"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 0 0 6" />
 
     </StackPanel>
 </ci:AttachedSettingsControlBase>

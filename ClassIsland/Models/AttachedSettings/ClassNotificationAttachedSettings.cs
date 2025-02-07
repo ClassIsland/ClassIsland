@@ -15,6 +15,7 @@ public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedS
     private string _classOnPreparingMaskText = "即将上课";
     private string _classOnMaskText = "上课";
     private string _classOffMaskText = "课间休息";
+    private string _classOffOverlayText = "";
 
     public bool IsClassOnNotificationEnabled
     {
@@ -100,6 +101,17 @@ public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedS
         {
             if (value == _classOffMaskText) return;
             _classOffMaskText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string ClassOffOverlayText
+    {
+        get => _classOffOverlayText;
+        set
+        {
+            if (value == _classOffOverlayText) return;
+            _classOffOverlayText = value;
             OnPropertyChanged();
         }
     }

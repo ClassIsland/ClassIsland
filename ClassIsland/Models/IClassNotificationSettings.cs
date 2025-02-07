@@ -12,4 +12,6 @@ public interface IClassNotificationSettings : INotifyPropertyChanged
     string ClassOnPreparingMaskText { get; set; }
     string ClassOnMaskText { get; set; }
     string ClassOffMaskText { get; set; }
+
+    string ClassOffOverlayText { get; set; }
 }

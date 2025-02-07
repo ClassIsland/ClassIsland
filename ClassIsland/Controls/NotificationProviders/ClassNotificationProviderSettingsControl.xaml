@@ -155,6 +155,12 @@
                             <!-- 启用语音 -->
                             <CheckBox Content="启用语音" Margin="0 0 0 6"
                                       IsChecked="{Binding Settings.IsSpeechEnabledOnClassOff}"/>
+                            <!-- 下课提醒文字 -->
+                            <TextBox Text="{Binding Settings.ClassOffOverlayText}"
+                                     materialDesign:HintAssist.Hint="下课提醒文字（留空以禁用）"
+                                     Foreground="{DynamicResource MaterialDesignBody}"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     Margin="0 0 0 6" />
 
                         </StackPanel>
                     </Expander>

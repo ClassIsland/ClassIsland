@@ -88,7 +88,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         var visual = FindResource(key) as FrameworkElement;
         Element = visual;
         Timer.Tick += TimerOnTick;
-        if (key == "ClassPrepareNotifyOverlay")
+        if (key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
         {
             Timer.Start();
         }
