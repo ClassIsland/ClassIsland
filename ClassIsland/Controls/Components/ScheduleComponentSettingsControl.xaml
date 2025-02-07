@@ -169,16 +169,23 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition />
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Column="0" Text="时间点结束倒计时时长" VerticalAlignment="Center" />
-                            <ci:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="时间点结束倒计时时长" VerticalAlignment="Center" />
+                            <ci:NumbericTextBox Grid.Row="0" MaxValue="36000" MinValue="0" Width="100"
                                                 Grid.Column="1"
                                                 VerticalAlignment="Center"
                                                 materialDesign:TextFieldAssist.SuffixText="秒"
                                                 Foreground="{DynamicResource MaterialDesignBody}"
                                                 Style="{StaticResource MaterialDesignTextBoxBase}"
                                                 Text="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                        Margin="0 8 0 0">
+                                <ToggleButton IsChecked="{Binding Settings.IsNonExactCountdownEnabled}"/>
+                                <TextBlock Text="使用模糊倒计时" Margin="4 0 0 0"/>
+                            </StackPanel>
                         </Grid>
                     </Expander>
                 </materialDesign:Card>

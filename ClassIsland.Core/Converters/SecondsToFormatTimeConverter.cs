@@ -31,7 +31,7 @@ public class SecondsToFormatTimeConverter : DependencyObject, IValueConverter
         var withSeconds = parameter as bool? ?? false;
 
         if (withSeconds) {
-            var v = TimeSpan.FromSeconds(value as long? ?? 0);
+            var v = TimeSpan.FromSeconds(value as long? ?? value as int? ?? 0);
             return v.TotalSeconds switch // 显示秒数
             {
                 >= 3600 => $"{Math.Floor(v.TotalHours)}:{v.Minutes:00}:{v.Seconds:00}",
@@ -41,7 +41,7 @@ public class SecondsToFormatTimeConverter : DependencyObject, IValueConverter
             };
         }
 
-        var rounded = TimeSpan.FromMinutes(Round(TimeSpan.FromSeconds(value as long? ?? 0).TotalMinutes));
+        var rounded = TimeSpan.FromMinutes(Round(TimeSpan.FromSeconds(value as long? ?? value as int? ?? 0).TotalMinutes));
         return rounded.TotalSeconds switch // 不显示秒数
         {
             >= 3600 => $"{Math.Floor(rounded.TotalHours)}h{rounded.Minutes:00}m",

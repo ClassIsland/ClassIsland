@@ -76,7 +76,11 @@
                                       Style="{StaticResource MaterialDesignTextBoxBase}"
                                       Text="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
         </WrapPanel>
+        <CheckBox Content="使用模糊倒计时"
+                  Margin="0 0 0 6"
+                  IsChecked="{Binding Settings.IsNonExactCountdownEnabled}"/>
         <CheckBox Content="上课时仅显示当前课程"
+                  Margin="0 0 0 6"
                   IsChecked="{Binding Settings.ShowCurrentLessonOnlyOnClass}"/>
     </StackPanel>
 

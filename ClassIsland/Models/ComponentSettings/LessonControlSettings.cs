@@ -19,6 +19,7 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
     private bool _showTomorrowSchedules = false;
     private int _tomorrowScheduleShowMode = 1;
     private bool _highlightChangedClass = false;
+    private bool _isNonExactCountdownEnabled = false;
 
     public bool ShowExtraInfoOnTimePoint
     {
@@ -93,6 +94,17 @@ public class LessonControlSettings : ObservableRecipient, ILessonControlSettings
         {
             if (value == _showCurrentLessonOnlyOnClass) return;
             _showCurrentLessonOnlyOnClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNonExactCountdownEnabled
+    {
+        get => _isNonExactCountdownEnabled;
+        set
+        {
+            if (value == _isNonExactCountdownEnabled) return;
+            _isNonExactCountdownEnabled = value;
             OnPropertyChanged();
         }
     }

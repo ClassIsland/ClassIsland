@@ -16,6 +16,7 @@
         <converters:SecondsToFormatTimeMultiConverter x:Key="SecondsToFormatTimeMultiConverter" />
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
+        <converters:BooleanToVisibilityReConverter x:Key="InverseBooleanToVisConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -167,11 +168,17 @@
                                     VerticalAlignment="Bottom"
                                     CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                                 <Grid>
-                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center">
+                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
+                                               Visibility="{Binding SettingsSource.IsNonExactCountdownEnabled, Converter={StaticResource InverseBooleanToVisConverter}}">
                                         <Run Text="-">
                                         </Run><Run Text="{Binding LeftSeconds,
                                                    Converter={StaticResource SecondsToFormatTimeConverter},
                                                    ConverterParameter={StaticResource TrueValue}}"/>
+                                    </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
+                                               Visibility="{Binding SettingsSource.IsNonExactCountdownEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Run Text="&lt;">
+                                        </Run><Run Text="{Binding SettingsSource.CountdownSeconds, Mode=OneWay, Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
                                     </TextBlock>
                                 </Grid>
                             </Border>

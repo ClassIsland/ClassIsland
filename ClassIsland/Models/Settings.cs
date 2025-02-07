@@ -222,6 +222,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private GptSoVitsSpeechSettings _gptSoVitsSpeechSettings = new();
     private double _mainWindowLineVerticalMargin = 5;
     private ObservableCollection<string> _trustedProfileIds = [];
+    private bool _isNonExactCountdownEnabled = false;
 
 
     public void NotifyPropertyChanged(string propertyName)
@@ -619,6 +620,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _showCurrentLessonOnlyOnClass) return;
             _showCurrentLessonOnlyOnClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNonExactCountdownEnabled
+    {
+        get => _isNonExactCountdownEnabled;
+        set
+        {
+            if (value == _isNonExactCountdownEnabled) return;
+            _isNonExactCountdownEnabled = value;
             OnPropertyChanged();
         }
     }
