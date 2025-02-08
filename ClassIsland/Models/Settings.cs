@@ -32,6 +32,7 @@ using WindowsShortcutFactory;
 
 using File = System.IO.File;
 using System.Runtime.InteropServices;
+using ClassIsland.Core.Models;
 
 namespace ClassIsland.Models;
 
@@ -99,8 +100,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
-    private string _cityId = "101010100";
-    private string _cityName = "北京";
+    private string _cityId = "weathercn:101010100";
+    private string _cityName = "北京 (北京, 中国)";
     private int _mainWindowFontWeight2 = FontWeights.Medium.ToOpenTypeWeight();
     private int _taskBarIconClickBehavior = 0;
     private bool _showExtraInfoOnTimePoint = true;
@@ -112,6 +113,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _defaultBreakingTimePointMinutes = 10;
     private double _debugAnimationScale = 1.0;
     private double _debugTimeSpeed = 1.0;
+    private double _debugTimeOffsetSeconds = 0.0;
     private bool _expIsExcelImportEnabled = false;
     private int _timeLayoutEditorIndex = 1;
     private bool _isSplashEnabled = true;
@@ -120,7 +122,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isDebugConsoleEnabled = false;
     private string _debugGitHubAuthKey = "";
     private Dictionary<string, SpeedTestResult> _speedTestResults = new();
-    private string _selectedUpgradeMirror = UpdateService.AppCenterSourceKey;
     private bool _isAutoSelectUpgradeMirror = true;
     private DateTime _lastSpeedTest = DateTime.MinValue;
     private UpdateSourceKind _lastUpdateSourceKind = UpdateSourceKind.None;
@@ -162,6 +163,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _updateArtifactHash = "";
     private ObservableCollection<string> _excludedWeatherAlerts = new();
     private string _currentComponentConfig = "Default";
+    private bool _isAutomationEnabled = false;
+    private bool _isAutomationWarningVisible = true;
+    private string _currentAutomationConfig = "Default";
     private Version _lastAppVersion = new Version("0.0.0.0");
     private bool _showComponentsMigrateTip = false;
     private bool _expAllowEditingActivatedTimeLayout = false;
@@ -191,6 +195,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _autoBackupIntervalDays = 7;
     private bool _useRawInput = false;
     private bool _isMouseInFadingEnabled = true;
+    private bool _isMouseInFadingReversed = false;
     private double _touchInFadingDurationMs = 0;
     private bool _isCompatibleWindowTransparentEnabled = false;
     private double _mainWindowSecondaryFontSize = 14;
@@ -207,15 +212,24 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
     private bool _isSwapMode = true;
+    private Dictionary<string, Dictionary<string, dynamic?>> _settingsOverlay = [];
     private bool _showEchoCaveWhenSettingsPageLoading = false;
     private int _settingsPagesCachePolicy = 0;
     private string _notificationSpeechCustomSmgTokenSource = "";
+
+    private string _selectedUpdateMirrorV2 = "main";
+    private string _selectedUpdateChannelV2 = "stable";
+    private GptSoVitsSpeechSettings _gptSoVitsSpeechSettings = new();
+    private double _mainWindowLineVerticalMargin = 5;
+    private ObservableCollection<string> _trustedProfileIds = [];
+    private bool _isNonExactCountdownEnabled = false;
+
 
     public void NotifyPropertyChanged(string propertyName)
     {
         OnPropertyChanged(propertyName);
     }
- 
+
     public string SelectedProfile
     {
         get => _selectedProfile;
@@ -249,6 +263,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public Dictionary<string, Dictionary<string, dynamic?>> SettingsOverlay
+    {
+        get => _settingsOverlay;
+        set
+        {
+            if (value == _settingsOverlay) return;
+            _settingsOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
     #region Gerneral
 
     public DateTime SingleWeekStartTime
@@ -262,19 +287,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    /// <summary>
-    /// 以 2022/4/18 为基准周的多周轮换周数。
-    /// </summary>
-    /// <remarks>
-    /// 第 2 位 - 双周轮换<br/>
-    /// 第 3 位 - 三周轮换<br/>
-    /// ……<br/>
-    /// <br/>
-    /// 0 - 基准周是单周<br/>
-    /// 1 - 基准周是双周<br/>
-    /// 2 - 基准周是 3/x 周<br/>
-    /// ……<br/>
-    /// </remarks>
     public ObservableCollection<int> MultiWeekRotationOffset
     {
         get => _multiWeekRotationOffset;
@@ -608,6 +620,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _showCurrentLessonOnlyOnClass) return;
             _showCurrentLessonOnlyOnClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsNonExactCountdownEnabled
+    {
+        get => _isNonExactCountdownEnabled;
+        set
+        {
+            if (value == _isNonExactCountdownEnabled) return;
+            _isNonExactCountdownEnabled = value;
             OnPropertyChanged();
         }
     }
@@ -1050,6 +1073,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public double MainWindowLineVerticalMargin
+    {
+        get => _mainWindowLineVerticalMargin;
+        set
+        {
+            if (value.Equals(_mainWindowLineVerticalMargin)) return;
+            _mainWindowLineVerticalMargin = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Components
@@ -1352,6 +1386,55 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public GptSoVitsSpeechSettings GptSoVitsSpeechSettings
+    {
+        get => _gptSoVitsSpeechSettings;
+        set
+        {
+            if (Equals(value, _gptSoVitsSpeechSettings)) return;
+            _gptSoVitsSpeechSettings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Automations
+
+    public bool IsAutomationEnabled
+    {
+        get => _isAutomationEnabled;
+        set
+        {
+            if (value == _isAutomationEnabled) return;
+            _isAutomationEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CurrentAutomationConfig
+    {
+        get => _currentAutomationConfig;
+        set
+        {
+            if (value == _currentAutomationConfig) return;
+            App.GetService<IAutomationService>().SaveConfig();
+            _currentAutomationConfig = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsAutomationWarningVisible
+    {
+        get => _isAutomationWarningVisible;
+        set
+        {
+            if (value == _isAutomationWarningVisible) return;
+            _isAutomationWarningVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region AppUpgrades
@@ -1371,17 +1454,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Dictionary<string, string> ReleaseChannels
-    {
-        get => _releaseChannels;
-        set
-        {
-            if (Equals(value, _releaseChannels)) return;
-            _releaseChannels = value;
-            OnPropertyChanged();
-        }
-    }
-
+    [Obsolete]
     public string SelectedChannel
     {
         get => _selectedChannel;
@@ -1404,16 +1477,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public AppCenterReleaseInfo LastCheckUpdateInfoCache
-    {
-        get => _lastCheckUpdateInfoCache;
-        set
-        {
-            if (Equals(value, _lastCheckUpdateInfoCache)) return;
-            _lastCheckUpdateInfoCache = value;
-            OnPropertyChanged();
-        }
-    }
 
     public UpdateStatus LastUpdateStatus
     {
@@ -1448,16 +1511,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public string SelectedUpgradeMirror
-    {
-        get => _selectedUpgradeMirror;
-        set
-        {
-            if (value == _selectedUpgradeMirror) return;
-            _selectedUpgradeMirror = value;
-            OnPropertyChanged();
-        }
-    }
 
     public bool IsAutoSelectUpgradeMirror
     {
@@ -1503,16 +1556,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public Release LastCheckUpdateInfoCacheGitHub
-    {
-        get => _lastCheckUpdateInfoCacheGitHub;
-        set
-        {
-            if (Equals(value, _lastCheckUpdateInfoCacheGitHub)) return;
-            _lastCheckUpdateInfoCacheGitHub = value;
-            OnPropertyChanged();
-        }
-    }
 
     public string UpdateDownloadUrl
     {
@@ -1543,6 +1586,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _updateArtifactHash) return;
             _updateArtifactHash = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedUpdateMirrorV2
+    {
+        get => _selectedUpdateMirrorV2;
+        set
+        {
+            if (value == _selectedUpdateMirrorV2) return;
+            _selectedUpdateMirrorV2 = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedUpdateChannelV2
+    {
+        get => _selectedUpdateChannelV2;
+        set
+        {
+            if (value == _selectedUpdateChannelV2) return;
+            _selectedUpdateChannelV2 = value;
             OnPropertyChanged();
         }
     }
@@ -1655,6 +1720,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isMouseInFadingEnabled) return;
             _isMouseInFadingEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMouseInFadingReversed
+    {
+        get => _isMouseInFadingReversed;
+        set
+        {
+            if (value == _isMouseInFadingReversed) return;
+            _isMouseInFadingReversed = value;
             OnPropertyChanged();
         }
     }
@@ -2004,6 +2080,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    [JsonIgnore]
     public double DebugTimeSpeed
     {
         get => _debugTimeSpeed;
@@ -2011,6 +2088,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value.Equals(_debugTimeSpeed)) return;
             _debugTimeSpeed = value;
+            OnPropertyChanged();
+        }
+    }
+
+    [JsonIgnore]
+    public double DebugTimeOffsetSeconds
+    {
+        get => _debugTimeOffsetSeconds;
+        set
+        {
+            if (value == _debugTimeOffsetSeconds) return;
+            _debugTimeOffsetSeconds = value;
             OnPropertyChanged();
         }
     }
@@ -2102,6 +2191,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
+
     public bool IsSwapMode
     {
         get => _isSwapMode;
@@ -2131,6 +2221,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _settingsPagesCachePolicy) return;
             _settingsPagesCachePolicy = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<string> TrustedProfileIds
+    {
+        get => _trustedProfileIds;
+        set
+        {
+            if (Equals(value, _trustedProfileIds)) return;
+            _trustedProfileIds = value;
             OnPropertyChanged();
         }
     }

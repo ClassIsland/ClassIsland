@@ -64,7 +64,8 @@
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
                            Margin="0 0 0 16" />
                 <CheckBox IsChecked="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading}"
-                          Margin="0 0 0 6">
+                          Margin="0 0 0 6"
+                          IsEnabled="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource BooleanToBooleanReConverter}}">
                     <TextBlock TextWrapping="Wrap">
                         在加载设置页面时显示回声洞
                         <Run TextDecorations="{x:Static TextDecorations.Strikethrough}">
@@ -129,7 +130,8 @@
 
         <CollectionViewSource x:Key="NavigationCollectionViewSource"
                               Source="{x:Static services:SettingsWindowRegistryService.Registered}"
-                              Filter="NavigationCollectionViewSource_OnFilter">
+                              Filter="NavigationCollectionViewSource_OnFilter"
+                              IsLiveFilteringRequested="True">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="Category"/>
             </CollectionViewSource.GroupDescriptions>
@@ -225,6 +227,13 @@
                                             </StackPanel>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VirtualizingStackPanel IsVirtualizingWhenGrouping="True"
+                                                                    IsVirtualizing="True"
+                                                                    IsContainerVirtualizable="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
                                 </ListBox>
                             </Grid>
                         </materialDesign:DrawerHost.LeftDrawerContent>
@@ -233,9 +242,14 @@
                             <Grid
                                 HorizontalAlignment="Left"
                                         VerticalAlignment="Bottom"
-                                        Visibility="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Margin="32 8 8 16"
+                                Margin="32 8 8 16"
                                         Opacity="0.75">
+                                <Grid.Visibility>
+                                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                        <Binding Path="SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading"/>
+                                        <Binding Path="ManagementService.Policy.DisableEasterEggs" Converter="{StaticResource BooleanToBooleanReConverter}"/>
+                                    </MultiBinding>
+                                </Grid.Visibility>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition/>
@@ -362,6 +376,10 @@
                                         <Separator/>-->
                                             <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"
                                                   Click="MenuItemExperimentalSettings_OnClick" />
+                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="集控选项…"
+                                                      Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                                      CommandParameter="classisland://app/settings/management?ci_keepHistory=true">
+                                            </MenuItem>
                                             <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="加入管理…"
                                                   Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
                                                   Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">

@@ -11,6 +11,8 @@
 	  <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 
 	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
+
+	  <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

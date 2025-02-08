@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -82,6 +83,12 @@ public partial class DebugPage : SettingsPageBase
         throw new Exception("Crash test.");
     }
 
+    private async void ButtonDelayCrash_OnClick(object sender, RoutedEventArgs e)
+    {
+        await Task.Delay(3000);
+        throw new Exception("Crash test.");
+    }
+
     private void MenuItemDebugTriggerAfterClass_OnClick(object sender, RoutedEventArgs e)
     {
         LessonsService.DebugTriggerOnBreakingTime();
@@ -99,7 +106,7 @@ public partial class DebugPage : SettingsPageBase
 
     private void ButtonReset_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsService.Settings.TimeOffsetSeconds = 0;
+        SettingsService.Settings.DebugTimeOffsetSeconds = 0;
         ViewModel.IsTargetDateTimeLoaded = false;
         ViewModel.TargetDate = ExactTimeService.GetCurrentLocalDateTime().Date;
         ViewModel.TargetTime = ExactTimeService.GetCurrentLocalDateTime();
@@ -116,18 +123,21 @@ public partial class DebugPage : SettingsPageBase
     private void TargetDate_OnChanged(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
-        var offset = SettingsService.Settings.TimeOffsetSeconds % (60 * 60 * 24); // 原时间偏移的时间
-        SettingsService.Settings.TimeOffsetSeconds = 0; // 重置偏移以便获取网络精确时间
-        SettingsService.Settings.TimeOffsetSeconds = (ViewModel.TargetDate - ExactTimeService.GetCurrentLocalDateTime().Date).TotalSeconds // 目标日期
-                                                   +  offset;
+
+        DateTime now = ExactTimeService.GetCurrentLocalDateTime().Date;
+        DateTime tar = ViewModel.TargetDate.Date;
+
+        SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
     }
 
     private void TargetTime_OnChanged(object sender, RoutedEventArgs e)
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
-        SettingsService.Settings.TimeOffsetSeconds = 0;
-        SettingsService.Settings.TimeOffsetSeconds = Math.Round(
-            (ViewModel.TargetDate + (ViewModel.TargetTime - ViewModel.TargetTime.Date) - ExactTimeService.GetCurrentLocalDateTime()).TotalSeconds);
+
+        DateTime now = ExactTimeService.GetCurrentLocalDateTime();
+        DateTime tar = new(DateOnly.FromDateTime(now), TimeOnly.FromDateTime(ViewModel.TargetTime));
+
+        SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
     }
 
     private void MenuItemStartMainTimer_OnClick(object sender, RoutedEventArgs e)
@@ -150,6 +160,11 @@ public partial class DebugPage : SettingsPageBase
         SettingsService.Settings.IsPluginMarketWarningVisible = true;
     }
 
+    private void MenuItemShowAutomationWarning_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.IsAutomationWarningVisible = true;
+    }
+
     private void MenuItemOverwriteSettingsVersion_OnClick(object sender, RoutedEventArgs e)
     {
         var r = new CommonDialogBuilder()
@@ -168,8 +183,8 @@ public partial class DebugPage : SettingsPageBase
     {
         ProfileAnalyzeService.Analyze();
         var result = ProfileAnalyzeService.DumpMermaidGraph();
-        await File.WriteAllTextAsync("./Profile-dump.mmd", result);
-        CommonDialog.ShowInfo($"转储成功。已保存到 {Path.GetFullPath("./Profile-dump.mmd")} 。");
+        await File.WriteAllTextAsync(Path.Combine(App.AppRootFolderPath, "Profile-dump.mmd"), result);
+        CommonDialog.ShowInfo($"转储成功。已保存到 {Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Profile-dump.mmd"))} 。");
     }
 
     private void MenuItemFindNext_OnClick(object sender, RoutedEventArgs e)
@@ -201,5 +216,40 @@ public partial class DebugPage : SettingsPageBase
                 parent.RaiseEvent(eventArg);
             }
         }
+    }
+
+    private void MenuItemCrashOnTask_OnClick(object sender, RoutedEventArgs e)
+    {
+        Task.Run(() => throw new Exception("Crash test."));
+    }
+
+    private void MenuItemGcCollect_OnClick(object sender, RoutedEventArgs e)
+    {
+        GC.Collect();
+    }
+
+    private void MenuItemOpenMdDocs_OnClick(object sender, RoutedEventArgs e)
+    {
+        new CommonDialogBuilder()
+            .AddConfirmAction()
+            .SetContent("文档 Uri")
+            .HasInput(true)
+            .ShowDialog(out var result);
+        var reader = new DocumentReaderWindow()
+        {
+            Source = new Uri(result)
+        };
+        reader.Show();
+    }
+
+    private void MenuItemFailFast_OnClick(object sender, RoutedEventArgs e)
+    {
+        Environment.FailFast("debug");
+    }
+
+    private void MenuItemCrashTestGlobal_OnClick(object sender, RoutedEventArgs e)
+    {
+        var thread = new Thread(() => throw new Exception());
+        thread.Start();
     }
 }

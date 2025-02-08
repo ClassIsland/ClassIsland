@@ -30,6 +30,23 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
         set => SetField(ref _weatherName, value);
     }
 
+    public static readonly DependencyProperty AllowColorProperty = DependencyProperty.Register(
+        nameof(AllowColor), typeof(bool), typeof(WeatherPackIconControl), new PropertyMetadata(true));
+
+    public bool AllowColor
+    {
+        get => (bool)GetValue(AllowColorProperty);
+        set => SetValue(AllowColorProperty, value);
+    }
+
+    private string _weatherColor = "";
+
+    public string WeatherColor
+    {
+        get => _weatherColor;
+        set => SetField(ref _weatherColor, value);
+    }
+
     public WeatherPackIconControl()
     {
         InitializeComponent();
@@ -43,6 +60,12 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
         {
             var c = (string)e.NewValue;
             WeatherName = App.GetService<IWeatherService>().GetWeatherTextByCode(c);
+            WeatherColor = "";
+            if (AllowColor)
+            {
+                if (WeatherName.Contains('雨') || WeatherName is "飑")
+                    WeatherColor = "Rainy";
+            }
         }
         base.OnPropertyChanged(e);
     }

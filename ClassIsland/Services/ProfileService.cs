@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,18 +20,19 @@ using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
 using System.Windows.Input;
+using ClassIsland.Shared;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
 
 namespace ClassIsland.Services;
 
-public class ProfileService : IProfileService
+public class ProfileService : IProfileService, INotifyPropertyChanged
 {
     public string CurrentProfilePath { 
         get; 
         set;
-    } = @".\Profiles\Default.json";
+    } = Path.Combine(App.AppRootFolderPath, @"Default.json");
 
     public static readonly string ManagementClassPlanPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
@@ -38,6 +42,8 @@ public class ProfileService : IProfileService
 
     public static readonly string ManagementSubjectsPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
+
+    public static readonly string ProfilePath = Path.Combine(App.AppRootFolderPath, "Profiles");
 
     public Profile Profile {
         get;
@@ -52,6 +58,7 @@ public class ProfileService : IProfileService
     public IIpcService IpcService { get; }
 
     private bool _isProfileLoaded = false;
+    private bool _isCurrentProfileTrusted = false;
 
     public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
     {
@@ -60,9 +67,9 @@ public class ProfileService : IProfileService
         IpcService = ipcService;
         SettingsService = settingsService;
         IpcService.IpcProvider.CreateIpcJoint<IPublicProfileService>(this);
-        if (!Directory.Exists("./Profiles"))
+        if (!Directory.Exists(ProfilePath))
         {
-            Directory.CreateDirectory("./Profiles");
+            Directory.CreateDirectory(ProfilePath);
         }
     }
 
@@ -134,7 +141,7 @@ public class ProfileService : IProfileService
         var span = SentrySdk.GetSpan();
         var spanLoadingProfile = span?.StartChild("profile-loading");
         var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
-        var path = $"./Profiles/{filename}";
+        var path = Path.Combine(ProfilePath, filename);
         Logger.LogInformation("加载档案中：{}", path);
         if (!File.Exists(path))
         {
@@ -156,8 +163,19 @@ public class ProfileService : IProfileService
         }
         Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
+        if (SettingsService.Settings.TrustedProfileIds.Contains(Profile.Id))
+        {
+            IsCurrentProfileTrusted = true;
+        }
+
+        if (SettingsService.WillMigrateProfileTrustedState)
+        {
+            TrustCurrentProfile();
+            SettingsService.WillMigrateProfileTrustedState = false;
+            Logger.LogInformation("自动信任来自 1.5.4.0 以前的当前档案。");
+        }
         CurrentProfilePath = filename;
-        Logger.LogTrace("成功加载档案！");
+        Logger.LogTrace("成功加载档案！信任：{}", IsCurrentProfileTrusted);
         CleanExpiredTempClassPlan();
         _isProfileLoaded = true;
         spanLoadingProfile?.Finish();
@@ -181,8 +199,8 @@ public class ProfileService : IProfileService
 
     public void SaveProfile(string filename)
     {
-        Logger.LogInformation("写入档案文件：{}", $"./Profiles/{filename}");
-        SaveConfig($"./Profiles/{filename}", Profile);
+        Logger.LogInformation("写入档案文件：{}", Path.Combine(ProfilePath, filename));
+        SaveConfig(Path.Combine(ProfilePath, filename), Profile);
     }
 
     private static T DuplicateJson<T>(T o)
@@ -191,26 +209,32 @@ public class ProfileService : IProfileService
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public string? CreateTempClassPlan(string id, string? timeLayoutId=null)
+    public string? CreateTempClassPlan(string id, string? timeLayoutId=null, DateTime? enableDateTime = null)
     {
         Logger.LogInformation("创建临时层：{}", id);
-        if (Profile.OverlayClassPlanId != null && Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        if (Profile.OrderedSchedules.TryGetValue(date, out var orderedSchedule)
+            && Profile.ClassPlans.ContainsKey(orderedSchedule.ClassPlanId))
         {
             return null;
         }
         var cp = Profile.ClassPlans[id];
-        timeLayoutId = timeLayoutId ?? cp.TimeLayoutId;
+        timeLayoutId ??= cp.TimeLayoutId;
         var newCp = DuplicateJson(cp);
 
         newCp.IsOverlay = true;
         newCp.TimeLayoutId = timeLayoutId;
         newCp.OverlaySourceId = id;
         newCp.Name += "（临时层）";
-        newCp.OverlaySetupTime = App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        newCp.OverlaySetupTime = date;
         Profile.IsOverlayClassPlanEnabled = true;
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
         Profile.ClassPlans.Add(newId, newCp);
+        Profile.OrderedSchedules.Add(date, new OrderedSchedule()
+        {
+            ClassPlanId = newId
+        });
         return newId;
     }
 
@@ -221,24 +245,31 @@ public class ProfileService : IProfileService
             return;
         }
 
-        Logger.LogInformation("清空临时层：{}", Profile.OverlayClassPlanId);
-        Profile.IsOverlayClassPlanEnabled = false;
-        Profile.ClassPlans.Remove(Profile.OverlayClassPlanId);
+        Logger.LogInformation("清空今天的临时层：{}", Profile.OverlayClassPlanId);
+        Profile.OrderedSchedules.Remove(IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date);
         Profile.OverlayClassPlanId = null;
+        CleanExpiredTempClassPlan();
     }
 
     public void CleanExpiredTempClassPlan()
     {
-        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        var today = IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        foreach (var (key, _) in Profile.OrderedSchedules
+                     .Where(x => x.Key < today)
+                     .ToList())
         {
-            return;
+            Profile.OrderedSchedules.Remove(key);
+            Logger.LogInformation("清理过期的课表预定：{}", key);
         }
 
-        var cp = Profile.ClassPlans[Profile.OverlayClassPlanId];
-        if (cp.OverlaySetupTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
+        var orderedSchedules = Profile.OrderedSchedules.Select(x => x.Value.ClassPlanId).ToList();
+
+        foreach (var (key, _) in Profile.ClassPlans.Where(x => x.Value.IsOverlay).ToList())
         {
-            Logger.LogInformation("清理过期的临时层课表。");
-            ClearTempClassPlan();
+            if (orderedSchedules.Contains(key)) 
+                continue;
+            Profile.ClassPlans.Remove(key);
+            Logger.LogInformation("清理没有被引用的过期临时层课表：{}", key);
         }
     }
 
@@ -249,15 +280,22 @@ public class ProfileService : IProfileService
 
     public void ConvertToStdClassPlan()
     {
-        Logger.LogInformation("将临时层课表转换为普通课表：{}", Profile.OverlayClassPlanId);
-        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        Logger.LogInformation("将当前临时层课表转换为普通课表：{}", Profile.OverlayClassPlanId);
+        if (Profile.OverlayClassPlanId != null)
+        {
+            ConvertToStdClassPlan(Profile.OverlayClassPlanId);
+        }
+    }
+
+    public void ConvertToStdClassPlan(string id)
+    {
+        Logger.LogInformation("将临时层课表转换为普通课表：{}", id);
+        var today = IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
+        if (!Profile.ClassPlans.TryGetValue(id, out var classPlan))
         {
             return;
         }
-
-        Profile.IsOverlayClassPlanEnabled = false;
-        Profile.ClassPlans[Profile.OverlayClassPlanId].IsOverlay = false;
-        Profile.OverlayClassPlanId = null;
+        classPlan.IsOverlay = false;
     }
 
     public void SetupTempClassPlanGroup(string key, DateTime? expireTime = null)
@@ -296,11 +334,44 @@ public class ProfileService : IProfileService
         Profile.IsTempClassPlanGroupEnabled = false;
     }
 
+    public bool IsCurrentProfileTrusted
+    {
+        get => _isCurrentProfileTrusted;
+        private set
+        {
+            if (value == _isCurrentProfileTrusted) return;
+            _isCurrentProfileTrusted = value;
+            OnPropertyChanged();
+        }
+    }
+
     public void ClearExpiredTempClassPlanGroup()
     {
         if (Profile.TempClassPlanGroupExpireTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
         {
             ClearTempClassPlanGroup();
         }
+    }
+
+    public void TrustCurrentProfile()
+    {
+        SettingsService.Settings.TrustedProfileIds.Add(Profile.Id);
+        IsCurrentProfileTrusted = true;
+        Logger.LogInformation("已信任当前档案 {}", Profile.Id);
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }

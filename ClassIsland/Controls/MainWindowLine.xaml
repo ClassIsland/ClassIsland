@@ -1,0 +1,520 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:ClassIsland.Controls"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                    xmlns:classIsland="clr-namespace:ClassIsland"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+    <ci:InvertBooleanAndToVisibilityMultiConverter x:Key="InvertBooleanAndToVisibilityMultiConverter" />
+
+    <!--#region StoryBoards-->
+    <Storyboard x:Key="OverlayMaskIn">
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <QuinticEase EasingMode="EaseOut"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <PowerEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0.7">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <QuinticEase EasingMode="EaseOut"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>-->
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <QuinticEase EasingMode="EaseOut"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+    <Storyboard x:Key="OverlayMaskOut">
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridContentRoot" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.7"/>
+            <!--<EasingDoubleKeyFrame KeyTime="00:00:00.1" Value="0.7"/>-->
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+    <Storyboard x:Key="OverlayOut">
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridContentRoot" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+            <!--<EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>-->
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+            <!--<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.7"/>-->
+            <!--<EasingDoubleKeyFrame KeyTime="00:00:00.1" Value="0.7"/>-->
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>-->
+    </Storyboard>
+    <Storyboard x:Key="OverlayMaskOutDirect">
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridContentRoot" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CubicEase EasingMode="EaseOut"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+            <EasingDoubleKeyFrame KeyTime="00:00:00.0000000" Value="0.7"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+        </DoubleAnimationUsingKeyFrames>
+        <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>-->
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+
+    <Storyboard x:Key="WindowMouseIn">
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0.05">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseOut"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+    <Storyboard x:Key="WindowMouseOut">
+        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+            <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.05"/>
+            <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="1">
+                <EasingDoubleKeyFrame.EasingFunction>
+                    <CircleEase EasingMode="EaseIn"/>
+                </EasingDoubleKeyFrame.EasingFunction>
+            </EasingDoubleKeyFrame>
+        </DoubleAnimationUsingKeyFrames>
+    </Storyboard>
+    <ci:IntToStringConverter x:Key="IntToStringConverter" />
+    <ci:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
+    <ci:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter"/>
+    <!--#endregion 1-->
+
+    <Style TargetType="FrameworkElement" x:Key="DockingStyle">
+        <Style.Resources>
+            
+        </Style.Resources>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                         Value="0">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                         Value="1">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                         Value="2">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                         Value="3">
+                <Setter Property="HorizontalAlignment" Value="Left" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                         Value="4">
+                <Setter Property="HorizontalAlignment" Value="Center" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                         Value="5">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <ci:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
+
+    <ci:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
+    <Style TargetType="Border" x:Key="BackgroundBorderStyle" BasedOn="{StaticResource DockingStyle}">
+        <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}" Value="True">
+                <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <system:Double x:Key="IslandContainerHeight">40</system:Double>
+
+    <ControlTemplate x:Key="MainWindowLineFullControlTemplate">
+        <Grid>
+            <Grid.Effect>
+                <DropShadowEffect BlurRadius="8" Direction="0" 
+                                  ShadowDepth="0" Opacity="0"
+                                  x:Name="RootDropShadowEffect"
+                                  Color="Black"/>
+            </Grid.Effect>
+            <Grid
+                ClipToBounds="True"
+                Style="{StaticResource DockingStyle}">
+                <Grid.Clip>
+                    <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                        <Binding Path="BackgroundWidth" Mode="OneWay"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                        <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                        <Binding Path="ActualHeight" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                        <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                        <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                        <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    </MultiBinding>
+                </Grid.Clip>
+                <!-- Background -->
+                <Border x:Name="BackgroundBorder"
+                        Style="{StaticResource BackgroundBorderStyle}"
+                        Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                        Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
+                        SnapsToDevicePixels="True"
+                        Height="{DynamicResource IslandContainerHeight}" />
+                <Border x:Name="BackgroundBorderOverlay"
+                        Style="{StaticResource BackgroundBorderStyle}"
+                        Width="{Binding ActualWidth, ElementName=BackgroundBorder, Mode=OneWay}"
+                        Opacity="0"
+                        SnapsToDevicePixels="True"
+                        Height="{DynamicResource IslandContainerHeight}">
+                </Border>
+                <Grid
+                    Style="{StaticResource DockingStyle}"
+                    Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                    Height="{DynamicResource IslandContainerHeight}"
+                    SnapsToDevicePixels="True"
+                    ClipToBounds="True">
+                    <materialDesign:ColorZone x:Name="BackgroundBorderOverlayMask" Mode="PrimaryMid"
+                                              VerticalAlignment="Stretch"
+                                              RenderTransformOrigin="0.5,0.5">
+                        <materialDesign:ColorZone.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform />
+                                <SkewTransform />
+                                <RotateTransform />
+                                <TranslateTransform Y="-50" />
+                            </TransformGroup>
+                        </materialDesign:ColorZone.RenderTransform>
+                    </materialDesign:ColorZone>
+                </Grid>
+
+                <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
+                      Height="{DynamicResource IslandContainerHeight}"
+                      SnapsToDevicePixels="True"
+                      Style="{StaticResource DockingStyle}">
+
+                    <Grid Height="{DynamicResource IslandContainerHeight}"
+                          x:Name="GridContentRoot"
+                          Margin="12 0">
+                        <ContentPresenter
+                            Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
+                    </Grid>
+
+                    <!-- Overlay View -->
+                    <Grid x:Name="GridOverlay"
+                          SnapsToDevicePixels="True"
+                          ClipToBounds="True">
+                        <Border CornerRadius="20"
+                                ClipToBounds="True">
+
+                            <ProgressBar VerticalAlignment="Stretch"
+                                         Maximum="1"
+                                         Value="{Binding NotificationProgressBarValue, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                                         x:Name="OverlayTimeProgressBar"
+                                         materialDesign:TransitionAssist.DisableTransitions="True"
+                                         Height="{Binding Height, ElementName=PART_GridWrapper}"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         Background="Transparent"
+                                         BorderBrush="Transparent"
+                                         Opacity="0.16">
+                            </ProgressBar>
+                        </Border>
+                        <ContentPresenter
+                            Content="{Binding ViewModel.CurrentOverlayElement, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" />
+
+                    </Grid>
+
+                    <!-- Mask -->
+                    <materialDesign:ColorZone x:Name="OverlayMask" Mode="PrimaryMid" HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              RenderTransformOrigin="0.5,0.5"
+                                              SnapsToDevicePixels="True">
+                        <materialDesign:ColorZone.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform />
+                                <SkewTransform />
+                                <RotateTransform />
+                                <TranslateTransform Y="-50" />
+                            </TransformGroup>
+                        </materialDesign:ColorZone.RenderTransform>
+                        <ContentPresenter x:Name="OverlayMaskContent"
+                                          Content="{Binding ViewModel.CurrentMaskElement, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" />
+                    </materialDesign:ColorZone>
+                </Grid>
+            </Grid>
+        </Grid>
+    </ControlTemplate>
+    <ControlTemplate x:Key="MainWindowLineMinControlTemplate">
+        <Grid
+            ClipToBounds="True"
+            Style="{StaticResource DockingStyle}">
+            <Grid.Clip>
+                <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                    <Binding Path="BackgroundWidth" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}" />
+                    <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="ActualHeight" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="ViewModel.Settings.WindowDockingLocation" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                    <Binding Path="ViewModel.Settings.RadiusX" Mode="OneWay"
+                             RelativeSource="{RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}" />
+                </MultiBinding>
+            </Grid.Clip>
+            <!-- Background -->
+            <Border x:Name="BackgroundBorder"
+                    Style="{StaticResource BackgroundBorderStyle}"
+                    Width="{Binding BackgroundWidth, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:MainWindowLine}}"
+                    Opacity="{Binding ViewModel.Settings.Opacity, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"
+                    SnapsToDevicePixels="True"
+                    Height="{DynamicResource IslandContainerHeight}" />
+
+
+            <Grid x:Name="PART_GridWrapper" ClipToBounds="True"
+                  Height="{DynamicResource IslandContainerHeight}"
+                  SnapsToDevicePixels="True"
+                  Style="{StaticResource DockingStyle}">
+
+                <Grid Height="{DynamicResource IslandContainerHeight}"
+                      x:Name="GridContentRoot"
+                      Margin="12 0">
+                    <ContentPresenter
+                        Content="{Binding Content, RelativeSource={RelativeSource AncestorType=controls:MainWindowLine}}" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </ControlTemplate>
+    <ci:DoubleToThicknessMultiConverter x:Key="DoubleToThicknessMultiConverter" />
+    <Style x:Key="MainWindowLineBaseStyle" TargetType="controls:MainWindowLine">
+        <Style.Triggers>
+            <!-- 鼠标移入 -->
+            <Trigger Property="IsLineFaded" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource WindowMouseIn}" Name="WindowMouseIn"/>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource WindowMouseOut}" Name="WindowMouseOut"/>
+                </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsMainLine" Value="False">
+                <Setter Property="Template" Value="{StaticResource MainWindowLineMinControlTemplate}"/>
+                <Setter Property="Visibility" Value="{Binding IsAllComponentsHid, RelativeSource={RelativeSource Self}, Converter={StaticResource InverseBoolToVisConverter}}"/>
+            </Trigger>
+
+            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                         Value="0">
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                         Value="1">
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                         Value="2">
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                         Value="3">
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
+                            <Binding Source="{x:Null}"/>
+                            <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                         Value="4">
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
+                            <Binding Source="{x:Null}"/>
+                            <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, RelativeSource={RelativeSource AncestorType=classIsland:MainWindow}}"
+                         Value="5">
+                <Setter Property="Margin">
+                    <Setter.Value>
+                        <MultiBinding Converter="{StaticResource DoubleToThicknessMultiConverter}">
+                            <Binding Source="{x:Null}"/>
+                            <Binding Path="ViewModel.Settings.MainWindowLineVerticalMargin"  RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}"/>
+                            <Binding Source="{x:Null}"/>
+                            <Binding Source="{x:Null}"/>
+                        </MultiBinding>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </Style.Triggers>
+        <Setter Property="Template" Value="{StaticResource MainWindowLineFullControlTemplate}"/>
+        <Setter Property="Visibility">
+            <Setter.Value>
+                <MultiBinding Converter="{StaticResource InvertBooleanAndToVisibilityMultiConverter}">
+                    <Binding Path="IsAllComponentsHid" RelativeSource="{RelativeSource Self}" />
+                    <Binding Path="ViewModel.IsOverlayOpened" RelativeSource="{RelativeSource AncestorType=classIsland:MainWindow}" Converter="{StaticResource InvertBooleanConverter}"/>
+                </MultiBinding>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="controls:MainWindowLine" BasedOn="{StaticResource MainWindowLineBaseStyle}"/>
+</ResourceDictionary>

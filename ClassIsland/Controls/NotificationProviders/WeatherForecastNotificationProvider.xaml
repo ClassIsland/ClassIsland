@@ -16,7 +16,7 @@
                                      Height="20" Width="20"/>
             <TextBlock Text="天气预报" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <controls:WeatherPackIconControl Code="{Binding Info.ForecastDaily.Weather.Value[0].To}" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+                                     Height="20" Width="20" AllowColor="False"/>
         </StackPanel>
         <Grid HorizontalAlignment="Center" Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12 0">
@@ -28,7 +28,7 @@
                                                       Margin="0 0 2 0"/>
                 <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastDaily.Temperature.Value[0].From}"/><Run Text="℃">
-                    </Run><Run Text="-">
+                    </Run><Run Text="~">
                     </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[0].To}"/><Run Text="℃"/>
                 </TextBlock>
                 <!--<materialDesign:PackIcon Width="22" Height="22" 
@@ -56,7 +56,7 @@
                                                       Margin="0 0 2 0"/>
                 <TextBlock VerticalAlignment="Center">
                     <Run Text="{Binding Info.ForecastDaily.Temperature.Value[1].From}"/><Run Text="℃">
-                    </Run><Run Text="-">
+                    </Run><Run Text="~">
                     </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[1].To}"/><Run Text="℃"/>
                 </TextBlock>
                 <!--<materialDesign:PackIcon Width="22" Height="22" 
@@ -84,7 +84,7 @@
                                                       Margin="0 0 2 0"/>
                 <TextBlock VerticalAlignment="Center" Margin="0 0 6 0">
                     <Run Text="{Binding Info.ForecastDaily.Temperature.Value[2].From}"/><Run Text="℃">
-                    </Run><Run Text="-">
+                    </Run><Run Text="~">
                     </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[2].To}"/><Run Text="℃"/>
                 </TextBlock>
             </StackPanel>

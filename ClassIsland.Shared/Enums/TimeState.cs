@@ -14,11 +14,15 @@ public enum TimeState
     /// </summary>
     OnClass,
     /// <summary>
-    /// 准备上课
+    /// 准备上课（预留）
     /// </summary>
     PrepareOnClass,
     /// <summary>
     /// 课间休息
     /// </summary>
-    Breaking
+    Breaking,
+    /// <summary>
+    /// 放学
+    /// </summary>
+    AfterSchool,
 }

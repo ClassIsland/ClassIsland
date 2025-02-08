@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+using ClassIsland.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services.AppUpdating;
@@ -22,18 +23,24 @@ public class UpdateNodeSpeedTestingService
 
     public async Task RunSpeedTestAsync()
     {
+        var updateService = IAppHost.TryGetService<UpdateService>();
+        if (updateService == null)
+        {
+            return;
+        }
         foreach (var i in SettingsService.Settings.SpeedTestResults)
         {
             i.Value.IsTesting = true;
         }
         var client = new HttpClient()
         {
-            
+
         };
-        foreach (var i in UpdateService.UpdateSources)
+
+        foreach (var i in updateService.Index.Mirrors)
         {
             var delays = new List<long>();
-            foreach (var k in i.Value.SpeedTestSources)
+            foreach (var k in i.Value.SpeedTestUrls)
             {
                 var ping = new Ping();
                 Logger.LogInformation("Https prepare get {}", k);
@@ -54,7 +61,7 @@ public class UpdateNodeSpeedTestingService
                         }
                         Logger.LogInformation("Ping {}, {}ms", k, pr.RoundtripTime);
                         delays.Add(pr.RoundtripTime);
-                        
+
                     });
                 }
                 catch (Exception e)
@@ -79,13 +86,19 @@ public class UpdateNodeSpeedTestingService
 
         if (SettingsService.Settings.IsAutoSelectUpgradeMirror)
         {
-            var re = from i in UpdateService.UpdateSources
-                where i.Value.SpeedTestResult.CanConnect
-                orderby i.Value.SpeedTestResult.Delay
-                select i.Key;
+            if (updateService.Index.Mirrors.TryGetValue("main", out var mainMirror) &&
+                mainMirror.SpeedTestResult.CanConnect)
+            {
+                SettingsService.Settings.SelectedUpdateMirrorV2 = "main";
+                return;
+            }
+            var re = from i in updateService.Index.Mirrors
+                     where i.Value.SpeedTestResult.CanConnect
+                     orderby i.Value.SpeedTestResult.Delay
+                     select i.Key;
             foreach (var i in re)
             {
-                SettingsService.Settings.SelectedUpgradeMirror = i;
+                SettingsService.Settings.SelectedUpdateMirrorV2 = i;
                 break;
             }
         }

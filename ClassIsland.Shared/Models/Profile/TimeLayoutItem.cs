@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using ClassIsland.Shared.Models.Action;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -14,6 +15,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     private bool _isHideDefault = false;
     private string _defaultClassId = "";
     private string _breakName = "";
+    private ActionSet? _actionSet;
 
     /// <summary>
     /// 时间段在一天中开始的秒钟数
@@ -57,6 +59,16 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
         }
     }
 
+
+    /// <summary>
+    /// 代表一个空时间点。
+    /// </summary>
+    public static readonly TimeLayoutItem Empty = new()
+    {
+        StartSecond = DateTime.MinValue,
+        EndSecond = DateTime.MinValue,
+    };
+
     [JsonIgnore]
     public TimeSpan Last => EndSecond.TimeOfDay - StartSecond.TimeOfDay;
 
@@ -66,7 +78,8 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// <value>
     /// 0 - 上课 <br/>
     /// 1 - 课间 <br/>
-    /// 2 - 分割线
+    /// 2 - 分割线 <br/>
+    /// 3 - 行动
     /// </value>
     public int TimeType
     {
@@ -114,10 +127,10 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     /// 课间名称。
     /// </summary>
     [JsonIgnore]
-    public string BreakNameText => string.IsNullOrEmpty(_breakName) ? "课间休息" : _breakName;
+    public string BreakNameText => string.IsNullOrEmpty(BreakName) ? "课间休息" : BreakName;
 
     /// <summary>
-    /// 自定义课间名称。
+    /// 自定义课间名称。应使用<see cref="BreakNameText"/>获取实际课间名称。
     /// </summary>
     public string BreakName
     {
@@ -129,6 +142,20 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
             _breakName = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(BreakNameText));
+        }
+    }
+
+    /// <summary>
+    /// 当当前时间点为【行动】时，要执行的行动组
+    /// </summary>
+    public ActionSet? ActionSet
+    {
+        get => _actionSet;
+        set
+        {
+            if (Equals(value, _actionSet)) return;
+            _actionSet = value;
+            OnPropertyChanged();
         }
     }
 

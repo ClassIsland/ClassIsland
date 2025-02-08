@@ -16,7 +16,7 @@
 
             </Border>
             <Grid Margin="-16" Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=local:TimeLineListItemSeparatorAdornerControl}, Converter={StaticResource InverseBoolToVisConverter}}">
-                <!--<Thumb Cursor="SizeAll" DragDelta="Thumb_OnDragDelta">
+                <Thumb Cursor="SizeAll" DragDelta="Thumb_OnDragDelta" DragCompleted="Thumb_OnDragCompleted">
                     <Thumb.Template>
                         <ControlTemplate>
                             <Ellipse Width="16" Height="16" 
@@ -37,7 +37,7 @@
                             </Ellipse>
                         </ControlTemplate>
                     </Thumb.Template>
-                </Thumb>-->
+                </Thumb>
             </Grid>
         </Grid>
     </Grid>

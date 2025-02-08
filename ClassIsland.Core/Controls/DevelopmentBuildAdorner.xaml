@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:core="clr-namespace:ClassIsland.Core">
+    <ControlTemplate x:Key="DevelopmentBuildAdornerControlTemplate"
+                     TargetType="Control">
+        <Grid VerticalAlignment="Stretch"
+              IsHitTestVisible="False"
+              HorizontalAlignment="Stretch">
+            <!--<TextBlock VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right"
+                       FontWeight="Bold">Development Build</TextBlock>-->
+            <TextBlock VerticalAlignment="Bottom"
+                       HorizontalAlignment="Left"
+                       FontSize="12"
+                       Opacity="0.8">
+                <Run Text="开发中画面，不代表最终品质。"/><LineBreak/>
+                <Run Text="{x:Static core:AppBase.AppVersionLong}"/>
+            </TextBlock>
+        </Grid>
+    </ControlTemplate>
+</ResourceDictionary>

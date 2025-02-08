@@ -8,33 +8,163 @@
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:models="clr-namespace:ClassIsland.Models"
              xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ScheduleComponent}}">
-        <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"
-                           SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <materialDesign:ColorZone 
+            Grid.Column="0"
+            Margin="0 0 2 0"
+            VerticalAlignment="Center"
+            Mode="PrimaryMid"
+            Padding="8 2"
+            CornerRadius="16"
+            x:Name="Tomorrow">
+            <materialDesign:ColorZone.Style>
+                <Style TargetType="materialDesign:ColorZone">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="False"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding TomorrowClassPlan}" Value="{x:Null}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </materialDesign:ColorZone.Style>
+            <TextBlock Text="明天"/>
+        </materialDesign:ColorZone>
+        <ci:LessonsListBox Grid.Column="1" 
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
                            IsLiveUpdatingEnabled="True"
-                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"/>
-        <Grid>
+                           ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
+                           HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}">
+
+            <ci:LessonsListBox.Style>
+                <Style TargetType="ci:LessonsListBox" BasedOn="{StaticResource ClassIsland.LessonsListBox}">
+                    <Style.Triggers>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="False"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                            <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding TomorrowClassPlan}" Value="{x:Null}">
+                            <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                            <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0">
+                            <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                            <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="2">
+                            <Setter Property="ClassPlan" Value="{Binding TomorrowClassPlan, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="-1"/>
+                            <Setter Property="HideFinishedClass" Value="False"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="ClassPlan" Value="{Binding TomorrowClassPlan, Mode=OneWay}"/>
+                    <Setter Property="SelectedIndex" Value="-1"/>
+                </Style>
+            </ci:LessonsListBox.Style>
+        </ci:LessonsListBox>
+        <Grid Grid.Column="0" Grid.ColumnSpan="2">
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Style.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
-                                <Condition Binding="{Binding LessonsService.IsClassPlanLoaded}" Value="False"/>
+                                <Condition Binding="{Binding TomorrowClassPlan}" Value="{x:Null}"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="2"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Visible"/>
                         </MultiDataTrigger>
-
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
+                                <Condition Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}"/>
+                                <Condition Binding="{Binding Visibility, ElementName=Tomorrow}" Value="Collapsed"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
+                                <Condition Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="True"/>
+                                <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding Settings.ShowPlaceholderOnEmptyClassPlan}" Value="True"/>
+                                <Condition Binding="{Binding IsAfterSchool}" Value="True"/>
+                                <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                                <Condition Binding="{Binding TomorrowClassPlan}" Value="{x:Null}"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </MultiDataTrigger>
                     </Style.Triggers>
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </Style>
             </Grid.Style>
-            <TextBlock Text="{Binding Settings.PlaceholderText}"
-                       VerticalAlignment="Center"/>
+            <TextBlock VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}">
+                                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextNoClass}"/>
+                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                    <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded}"/>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding Settings.HideFinishedClass}" Value="True"/>
+                                    <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
+                                    <Condition Binding="{Binding TomorrowClassPlan}" Value="{x:Null}"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Text" Value="{Binding Settings.PlaceholderTextAllClassEnded}"/>
+                            </MultiDataTrigger>
+                            
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
         </Grid>
     </Grid>
 </ci:ComponentBase>

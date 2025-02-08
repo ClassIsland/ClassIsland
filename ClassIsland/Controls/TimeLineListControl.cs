@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
+using ClassIsland.Models.EventArgs;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
@@ -74,8 +76,55 @@ public class TimeLineListControl : ListBox
 
     public TimeLineListControl()
     {
+        AddHandler(TimeLineListItemSeparatorAdornerControl.SeparatorLikeTimePointMovedEvent, new RoutedEventHandler(SeparatorLikeTimePointMovedEventHandler));
     }
-    
+
+    private void SeparatorLikeTimePointMovedEventHandler(object sender, RoutedEventArgs e)
+    {
+        if (e is not SeparatorLikeTimePointMovedEventArgs args)
+        {
+            return;
+        }
+        if (ItemsSource is not ObservableCollection<TimeLayoutItem> layout)
+        {
+            return;
+        }
+
+        var rawIndex = layout.IndexOf(args.Item);
+        if (rawIndex == -1)
+        {
+            return;
+        }
+
+        var isSorted = true;
+        for (var index = 0; index < layout.Count - 1; index++)
+        {
+            var i = layout[index + 1];
+            if (layout[index].StartSecond.TimeOfDay < layout[index + 1].StartSecond.TimeOfDay) continue;
+            isSorted = false;
+            break;
+        }
+
+        if (isSorted)
+        {
+            return;
+        }
+
+        var validTimePoints = layout.Where(x => x.TimeType is 0 or 1).ToList();
+        for (var index = 0; index < validTimePoints.Count; index++)
+        {
+            var i = validTimePoints[index];
+            if (i.StartSecond.TimeOfDay <= args.Item.StartSecond.TimeOfDay) continue;
+            Console.WriteLine($"{rawIndex} -> {layout.IndexOf(i)}");
+            layout.Move(rawIndex, layout.IndexOf(i));
+            SelectedItem = args.Item;
+            return;
+        }
+        layout.Move(rawIndex, layout.Count - 1);
+        SelectedItem = args.Item;
+
+    }
+
 
     protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
     {

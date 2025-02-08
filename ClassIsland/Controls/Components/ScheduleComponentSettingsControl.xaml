@@ -169,34 +169,54 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition />
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Column="0" Text="时间点结束倒计时时长" VerticalAlignment="Center" />
-                            <ci:NumbericTextBox MaxValue="36000" MinValue="0" Width="100"
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="时间点结束倒计时时长" VerticalAlignment="Center" />
+                            <ci:NumbericTextBox Grid.Row="0" MaxValue="36000" MinValue="0" Width="100"
                                                 Grid.Column="1"
                                                 VerticalAlignment="Center"
                                                 materialDesign:TextFieldAssist.SuffixText="秒"
                                                 Foreground="{DynamicResource MaterialDesignBody}"
                                                 Style="{StaticResource MaterialDesignTextBoxBase}"
                                                 Text="{Binding Settings.CountdownSeconds, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}" />
+
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                        Margin="0 8 0 0">
+                                <ToggleButton IsChecked="{Binding Settings.IsNonExactCountdownEnabled}"/>
+                                <TextBlock Text="使用模糊倒计时" Margin="4 0 0 0"/>
+                            </StackPanel>
                         </Grid>
                     </Expander>
                 </materialDesign:Card>
                 <!-- 上课时仅显示当前课程 -->
                 <ci:SettingsCard IconGlyph="HideOutline"
-                                       Header="上课时仅显示当前课程"
-                                       Description="在处于上课类型的时间点时，只显示当前时间点。"
-                                       IsOn="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"
-                                       Margin="0 0 0 6" />
+                                 Header="上课时仅显示当前课程"
+                                 Description="在处于上课类型的时间点时，只显示当前时间点。"
+                                 IsOn="{Binding Settings.ShowCurrentLessonOnlyOnClass, Mode=TwoWay}"
+                                 Margin="0 0 0 6" />
+                <!-- 不显示已结束的课程 -->
+                <ci:SettingsCard IconGlyph="HideOutline"
+                 Header="不显示已结束的课程"
+                 Description="隐藏已结束的课程，只显示当前课程与暂未开始的课程。"
+                 IsOn="{Binding Settings.HideFinishedClass, Mode=TwoWay}"
+                 Margin="0 0 0 6" />
+                <!-- 标记换课课程 -->
+                <ci:SettingsCard IconGlyph="SwapHorizontal"
+                                 Header="标记换课课程"
+                                 Description="将临时层中的换课课程以高亮色标记，仅支持使用“换课”修改的课程。"
+                                 IsOn="{Binding Settings.HighlightChangedClass, Mode=TwoWay}"
+                                 Margin="0 0 0 6" />
                 <!-- 课程表文本间距 -->
                 <ci:SettingsCard IconGlyph="ArrowExpandHorizontal"
                                  Header="课程表文本间距"
                                  Description="使课程表显示更紧凑或宽松。"
                                  Margin="0 0 0 6">
                     <ci:SettingsCard.Switcher>
-                        <Slider Width="150" Minimum="0.2" Maximum="1"
+                        <Slider Width="150" Minimum="0.3" Maximum="1"
                                 Value="{Binding Settings.ScheduleSpacing}"
-                                TickFrequency="0.1" AutoToolTipPrecision="1"
+                                TickFrequency="0.05" IsSnapToTickEnabled="True"
+                                AutoToolTipPrecision="2"
                                 AutoToolTipPlacement="BottomRight"/>
                     </ci:SettingsCard.Switcher>
                 </ci:SettingsCard>
@@ -209,34 +229,72 @@
                             <ci:SettingsControl IconGlyph="FileChartOutline"
                                                 Foreground="{DynamicResource MaterialDesignBody}"
                                                 Header="无课程时显示占位符"
-                                                Description="当当前没有加载课表时，显示指定的占位符。"
+                                                Description="当当前没有加载课表或当日所有课程都已结束且不显示第二日课程时，显示指定的占位符。"
                                                 IsOn="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=TwoWay}"
                                                 Margin="-12 0" />
                         </Expander.Header>
-                        <Grid Margin="36 0 48 12"
-                              IsEnabled="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=OneWay}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Column="0" Text="占位符内容" VerticalAlignment="Center" />
-                            <ComboBox MinWidth="100"
+                        <StackPanel Margin="36 0 48 12"
+                                    IsEnabled="{Binding Settings.ShowPlaceholderOnEmptyClassPlan, Mode=OneWay}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Column="0" Text="当日没有课程的占位符内容" VerticalAlignment="Center" />
+                                <ComboBox MinWidth="100"
                                       MaxWidth="300"
                                       Grid.Column="1"
                                       VerticalAlignment="Center"
                                       Foreground="{DynamicResource MaterialDesignBody}"
                                       IsEditable="True"
-                                      Text="{Binding Settings.PlaceholderText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                                <system:String>今天没有课程。</system:String>
-                                <system:String>无</system:String>
-                                <system:String>[ ]</system:String>
-                            </ComboBox>
-                        </Grid>
+                                      Text="{Binding Settings.PlaceholderTextNoClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <system:String>今天没有课程。</system:String>
+                                    <system:String>无</system:String>
+                                    <system:String>[ ]</system:String>
+                                </ComboBox>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Column="0" Text="当日课程结束的占位符内容" VerticalAlignment="Center" />
+                                <ComboBox MinWidth="100"
+                                      MaxWidth="300"
+                                      Grid.Column="1"
+                                      VerticalAlignment="Center"
+                                      Foreground="{DynamicResource MaterialDesignBody}"
+                                      IsEditable="True"
+                                      Text="{Binding Settings.PlaceholderTextAllClassEnded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                    <system:String>今日课程已全部结束。</system:String>
+                                    <system:String>无</system:String>
+                                    <system:String>[ ]</system:String>
+                                </ComboBox>
+                            </Grid>
+                        </StackPanel>
                     </Expander>
                 </materialDesign:Card>
+                <!-- 放学后显示明天课表 -->
+                <ci:SettingsCard IconGlyph="CalendarOutline"
+                                 Header="显示明天课表"
+                                 Description="设置什么时候显示明天课表。"
+                                 Margin="0 0 0 6">
+                    <ci:SettingsCard.Switcher>
+                        <Grid>
+                            <ComboBox SelectedIndex="{Binding Settings.TomorrowScheduleShowMode}">
+                                <ComboBoxItem>不显示</ComboBoxItem>
+                                <ComboBoxItem>放学后显示</ComboBoxItem>
+                                <ComboBoxItem>总是显示</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+                    </ci:SettingsCard.Switcher>
+                </ci:SettingsCard>
                 <Button Margin="0 0 0 6" HorizontalAlignment="Left"
                         Style="{StaticResource MaterialDesignFlatButton}"
                         Click="ButtonImportLegacySettings_OnClick"

@@ -22,6 +22,8 @@ using ClassIsland.Services;
 using MaterialDesignThemes.Wpf;
 using ClassIsland.Core.Models.AttachedSettings;
 using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls.Components;
 
@@ -33,11 +35,26 @@ namespace ClassIsland.Controls.Components;
 public partial class ScheduleComponent : INotifyPropertyChanged
 {
     private bool _showCurrentLessonOnlyOnClass = false;
+    private bool _isAfterSchool = false;
+    private ClassPlan? _tomorrowClassPlan;
+    private ClassPlan? _tomorrowClassPlan1;
     public ILessonsService LessonsService { get; }
 
     public SettingsService SettingsService { get; }
 
     public IProfileService ProfileService { get; }
+    public IExactTimeService ExactTimeService { get; }
+
+    public bool IsAfterSchool
+    {
+        get => _isAfterSchool;
+        set
+        {
+            if (value == _isAfterSchool) return;
+            _isAfterSchool = value;
+            OnPropertyChanged();
+        }
+    }
 
     public bool ShowCurrentLessonOnlyOnClass
     {
@@ -50,14 +67,42 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         }
     }
 
+    public ClassPlan? TomorrowClassPlan
+    {
+        get => _tomorrowClassPlan1;
+        set
+        {
+            if (Equals(value, _tomorrowClassPlan1)) return;
+            _tomorrowClassPlan1 = value;
+            OnPropertyChanged();
+        }
+    }
 
-    public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService, IProfileService profileService)
+    public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService, IProfileService profileService, IExactTimeService exactTimeService)
     {
         LessonsService = lessonsService;
         SettingsService = settingsService;
         ProfileService = profileService;
-        LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        ExactTimeService = exactTimeService;
+
+        Loaded += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
+        Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged; ;
+        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged; ;
         InitializeComponent();
+        CurrentTimeStateChanged();
+    }
+
+    private void OnLessonsServiceOnCurrentTimeStateChanged(object? o, EventArgs eventArgs)
+    {
+        CurrentTimeStateChanged();
+    }
+
+    private void CurrentTimeStateChanged()
+    {
+        IsAfterSchool =
+            LessonsService.CurrentState == TimeState.AfterSchool ||
+            LessonsService.CurrentClassPlan == null;
     }
 
     public override void OnMigrated(Guid sourceId, object? settings)
@@ -81,6 +126,8 @@ public partial class ScheduleComponent : INotifyPropertyChanged
                 LessonsService.CurrentClassPlan?.TimeLayout) ??
             Settings;
         ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
+        //IsAfterSchool = CheckIsAfterSchool();
+        TomorrowClassPlan = LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ClassIsland.Services.AppUpdating;
 using ClassIsland.Services.Management;
 using ClassIsland.Services.SpeechService;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Services;
 
@@ -18,20 +20,23 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
     public SettingsService SettingsService { get; } = settingsService;
     public ILogger<FileFolderService> Logger { get; } = logger;
 
-    private static List<string> Folders = new()
-    {
+    private static List<string> Folders =
+    [
         App.AppDataFolderPath,
         ManagementService.ManagementConfigureFolderPath,
-        "./Temp",
+        App.AppTempFolderPath,
         App.AppCacheFolderPath,
+        UpdateService.UpdateCachePath,
         EdgeTtsService.EdgeTtsCacheFolderPath,
         PluginService.PluginsPkgRootPath,
         PluginService.PluginsRootPath,
         PluginService.PluginConfigsFolderPath,
         PluginService.PluginsIndexPath,
-        "./Backups",
-        App.AppLogFolderPath
-    };
+        Path.Combine(App.AppRootFolderPath, "Backups"),
+        App.AppLogFolderPath,
+        AutomationService.AutomationConfigsFolderPath,
+        ManagementService.LocalManagementConfigureFolderPath
+    ];
 
     public static void CreateFolders()
     {
@@ -90,7 +95,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         await CreateBackupAsync(true);
         SettingsService.Settings.LastAutoBackupTime = DateTime.Now;
 
-        if (!Directory.Exists("./Backups"))
+        if (!Directory.Exists(Path.Combine(App.AppRootFolderPath, "Backups")))
         {
             return;
         }
@@ -99,14 +104,14 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         {
             return;
         }
-        var outdatedBackups = Directory.EnumerateDirectories("./Backups", "Auto_*").OrderByDescending(Directory.GetLastWriteTime).Skip(SettingsService.Settings.AutoBackupLimit).ToList();
+        var outdatedBackups = Directory.EnumerateDirectories(Path.Combine(App.AppRootFolderPath, "Backups"), "Auto_*").OrderByDescending(Directory.GetLastWriteTime).Skip(SettingsService.Settings.AutoBackupLimit).ToList();
         foreach (var i in outdatedBackups)
         {
             Directory.Delete(i, true);
         }        
     }
 
-    public static async Task CreateBackupAsync(bool isAuto=false, string? filename=null, string rootPath=".")
+    public static async Task CreateBackupAsync(bool isAuto=false, string? filename=null, string? rootPath=null)
     {
         string[] backupFolders =
         [
@@ -117,6 +122,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         [
             "Settings.json"
         ];
+        rootPath ??= App.AppRootFolderPath;
         var backupFolder = Path.Combine(rootPath, "Backups/");
         var backupFilename = string.IsNullOrWhiteSpace(filename) ? $"Backup_{DateTime.Now:yy-MMM-dd_HH-mm-ss}" : filename;
         if (isAuto)

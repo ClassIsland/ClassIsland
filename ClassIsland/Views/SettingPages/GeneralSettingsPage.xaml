@@ -92,11 +92,11 @@
                                 <StackPanel.Resources>
                                     <Style TargetType="CheckBox"
                                            BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                        <Setter Property="Margin" Value="0 3" />
+                                        <Setter Property="Margin" Value="0 2" />
                                     </Style>
                                 </StackPanel.Resources>
-                                <CheckBox Content="上课时" IsChecked="{Binding SettingsService.Settings.HideOnClass}"
-                                          Style="{StaticResource MaterialDesignCheckBox}" />
+                                <CheckBox Content="上课时"
+                                          IsChecked="{Binding SettingsService.Settings.HideOnClass}"/>
                                 <CheckBox Content="前台是最大化窗口时"
                                           IsChecked="{Binding SettingsService.Settings.HideOnMaxWindow}" />
                                 <CheckBox Content="前台是全屏窗口时"
@@ -273,18 +273,18 @@
                                                   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                     <Expander.Header>
                         <controls1:SettingsControl IconGlyph="ClockArrow"
-                                                                          Header="时间偏移"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Description="设定课程时间与实际时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
-                                                                          IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
-                                                                          Margin="-12 0">
+                                                   Header="时间偏移"
+                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                   Description="设定课程时间与实际时间的偏移值。增大偏移以抵消铃声提前，减小偏移以抵消铃声滞后。"
+                                                   IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
+                                                   Margin="-12 0">
                             <controls1:SettingsControl.Switcher>
                                 <TextBox Grid.Column="1" Grid.Row="1"
-                                                                 VerticalAlignment="Center"
-                                                                 MinWidth="150"
-                                                                 Foreground="{DynamicResource MaterialDesignBody}"
-                                                                 materialDesign:TextFieldAssist.SuffixText="秒"
-                                                                 Text="{Binding SettingsService.Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
+                                         VerticalAlignment="Center"
+                                         MinWidth="147"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         materialDesign:TextFieldAssist.SuffixText="秒"
+                                         Text="{Binding SettingsService.Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
                             </controls1:SettingsControl.Switcher>
                         </controls1:SettingsControl>
                     </Expander.Header>
@@ -361,7 +361,7 @@
             <!-- 教学安全模式 -->
             <controls1:SettingsCard IconGlyph="CarBrakeAlert"
                                     Header="教学安全模式"
-                                    Description="启用后，ClassIsland 会在崩溃时自动退出而不弹出崩溃窗口，以确保教学不受到影响。"
+                                    Description="启用后，如果 ClassIsland 发生意外崩溃，将自动退出而不弹出崩溃窗口，以确保教学不受到影响。您可以在日志目录查看崩溃详情。"
                                     IsOn="{Binding SettingsService.Settings.IsCriticalSafeMode, Mode=TwoWay}"
                                     Margin="0 0 0 6" />
         </StackPanel>

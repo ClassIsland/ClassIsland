@@ -31,7 +31,7 @@
             <!-- 启用自动备份 -->
             <materialDesign:Card Margin="0 0 0 6">
                 <Expander Background="Transparent"
-                          IsExpanded="{Binding SettingsService.Settings.IsAutoBackupEnabled, Mode=TwoWay}"
+                          IsExpanded="{Binding SettingsService.Settings.IsAutoBackupEnabled, Mode=OneWay}"
                           TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                     <Expander.Header>
                         <ci:SettingsControl IconGlyph="AutoMode"

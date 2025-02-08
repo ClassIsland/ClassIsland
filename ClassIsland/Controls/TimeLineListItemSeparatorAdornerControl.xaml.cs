@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-
+using ClassIsland.Models.EventArgs;
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
@@ -17,7 +17,7 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
     public static readonly DependencyProperty TimePointProperty = DependencyProperty.Register(
         nameof(TimePoint), typeof(TimeLayoutItem), typeof(TimeLineListItemSeparatorAdornerControl), new PropertyMetadata(default(TimeLayoutItem)));
 
-    public TimeLayoutItem TimePoint
+    public TimeLayoutItem? TimePoint
     {
         get { return (TimeLayoutItem)GetValue(TimePointProperty); }
         set { SetValue(TimePointProperty, value); }
@@ -41,6 +41,20 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
         set { SetValue(IsReadOnlyProperty, value); }
     }
 
+    // Register a custom routed event using the Bubble routing strategy.
+    public static readonly RoutedEvent SeparatorLikeTimePointMovedEvent = EventManager.RegisterRoutedEvent(
+        name: "SeparatorLikeTimePointMoved",
+        routingStrategy: RoutingStrategy.Bubble,
+        handlerType: typeof(EventHandler<SeparatorLikeTimePointMovedEventArgs>),
+        ownerType: typeof(TimeLineListItemSeparatorAdornerControl));
+
+    // Provide CLR accessors for adding and removing an event handler.
+    public event RoutedEventHandler SeparatorLikeTimePointMoved
+    {
+        add { AddHandler(SeparatorLikeTimePointMovedEvent, value); }
+        remove { RemoveHandler(SeparatorLikeTimePointMovedEvent, value); }
+    }
+
     public TimeLineListItemSeparatorAdornerControl()
     {
         InitializeComponent();
@@ -61,10 +75,23 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
 
     private void Thumb_OnDragDelta(object sender, DragDeltaEventArgs e)
     {
+        if (TimePoint == null)
+        {
+            return;
+        }
         var v = e.VerticalChange;
         var d = GetDelta(TimePoint.StartSecond.TimeOfDay, v);
 
         TimePoint.StartSecond += d;
         TimePoint.EndSecond += d;
+    }
+
+    private void Thumb_OnDragCompleted(object sender, DragCompletedEventArgs e)
+    {
+        if (TimePoint == null)
+        {
+            return;
+        }
+        RaiseEvent(new SeparatorLikeTimePointMovedEventArgs(TimePoint));
     }
 }

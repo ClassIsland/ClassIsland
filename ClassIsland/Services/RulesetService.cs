@@ -20,8 +20,7 @@ public class RulesetService : IRulesetService
     public RulesetService(ILogger<RulesetService> logger)
     {
         Logger = logger;
-
-        
+        NotifyStatusChanged();
     }
 
     
@@ -29,43 +28,54 @@ public class RulesetService : IRulesetService
     public event EventHandler? ForegroundWindowChanged;
 
     public event EventHandler? StatusUpdated;
-    private bool IsRulesetGroupSatisfied(RuleGroup ruleset)
+
+    private bool? IsRuleSatisfied(Rule i)
+    {
+        if (i.Id == string.Empty)
+            return null;
+
+        if (!IRulesetService.Rules.TryGetValue(i.Id, out var rule))
+        {
+            Logger.LogWarning("找不到规则 {} 的注册信息，已默认其结果为 false.", i.Id);
+            return false;
+        }
+
+        object? settings = null;
+        var settingsType = rule.SettingsType;
+        if (settingsType != null)
+        {
+            settings = i.Settings ?? Activator.CreateInstance(settingsType);
+            if (settings is JsonElement json)
+            {
+                settings = json.Deserialize(settingsType);
+            }
+        }
+        if (rule.Handle != null)
+        {
+            return rule.Handle(settings);
+        }
+        else
+        {
+            Logger.LogWarning("规则 {} 的处理程序没有注册，已默认其结果为 false.", rule.Id);
+            return false;
+        }
+
+    }
+
+    private bool? IsRulesetGroupSatisfied(RuleGroup ruleset)
     {
         var rulesetSatisfied = ruleset.Mode == RulesetLogicalMode.And;
-        if (ruleset.Rules.Count <= 0)
+        if (ruleset.Rules.Where(r => r.Id != "").ToList().Count <= 0)
         {
-            return false;
+            return null;
         }
         foreach (var i in ruleset.Rules)
         {
-            if (!IRulesetService.Rules.TryGetValue(i.Id, out var rule))
-            {
-                Logger.LogWarning("找不到规则 {} 的注册信息。", i.Id);
+            bool? res = IsRuleSatisfied(i);
+            if (res == null)
                 continue;
-            }
 
-            bool result;
-            object? settings = null;
-            var settingsType = rule.SettingsType;
-            if (settingsType != null)
-            {
-                settings = i.Settings ?? Activator.CreateInstance(settingsType);
-                if (settings is JsonElement json)
-                {
-                    settings = json.Deserialize(settingsType);
-                }
-            }
-            if (rule.Handle != null)
-            {
-                result = rule.Handle(settings);
-            }
-            else
-            {
-                result = false;
-                Logger.LogWarning("规则 {} 的处理程序没有注册，已默认其结果为 false.", rule.Id);
-            }
-            
-
+            bool result = (bool)res;
             result ^= i.IsReversed;
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
             {
@@ -91,7 +101,11 @@ public class RulesetService : IRulesetService
         }
         foreach (var group in ruleset.Groups.Where(x => x.IsEnabled))
         {
-            var result = IsRulesetGroupSatisfied(group);
+            bool? res = IsRulesetGroupSatisfied(group);
+            if (res == null)
+                continue;
+
+            bool result = (bool)res;
             result ^= group.IsReversed;
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
             {

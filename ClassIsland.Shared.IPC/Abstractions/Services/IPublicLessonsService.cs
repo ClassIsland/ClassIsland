@@ -12,52 +12,60 @@ namespace ClassIsland.Shared.IPC.Abstractions.Services;
 public interface IPublicLessonsService
 {
     /// <summary>
-    /// 主计时器是否正在工作
+    /// 主计时器是否正在工作。
     /// </summary>
     bool IsTimerRunning { get; }
 
     /// <summary>
-    /// 当前加载的课表。如果当前没有课表，则为null。
+    /// 当前加载的课表。如果当前没有课表，则为 null。
     /// </summary>
     ClassPlan? CurrentClassPlan { get; set; }
 
     /// <summary>
-    /// 当前所处时间点<see cref="TimeLayoutItem"/>的索引。
+    /// 当前所处时间点<see cref="TimeLayoutItem"/>的索引。如无，则为 -1。
     /// </summary>
-    int? CurrentSelectedIndex { get; set; }
+    int CurrentSelectedIndex { get; set; }
 
     /// <summary>
-    /// 下一节课（下一个上课类型的时间点<see cref="TimeLayoutItem"/>）的科目。
+    /// 当前或下一节课（下一个上课类型的时间点<see cref="TimeLayoutItem"/>）的科目。如无，则为 <see cref="Subject.Empty"/>。
     /// </summary>
     Subject NextClassSubject { get; set; }
 
     /// <summary>
-    /// 下一个课间休息类型的时间点。
+    /// 当前或下一个课间休息类型的时间点。如无，则为 <see cref="TimeLayoutItem.Empty"/>。
     /// </summary>
     TimeLayoutItem NextBreakingTimeLayoutItem { get; set; }
 
     /// <summary>
-    /// 下一个上课类型的时间点。
+    /// 当前或下一个上课类型的时间点。如无，则为 <see cref="TimeLayoutItem.Empty"/>。
     /// </summary>
     TimeLayoutItem NextClassTimeLayoutItem { get; set; }
 
     /// <summary>
-    /// 距离上课剩余时间。
+    /// 距上课剩余时间。如果当前正在上课，或没有下一节课程，则为 <see cref="TimeSpan.Zero"/>。
     /// </summary>
     TimeSpan OnClassLeftTime { get; set; }
 
     /// <summary>
-    /// 当前时间点状态
+    /// 距下课剩余时间。如果当前不在上课，则为 <see cref="TimeSpan.Zero"/>。
+    /// </summary>
+    TimeSpan OnBreakingTimeLeftTime { get; set; }
+
+    /// <summary>
+    /// 当前时间点状态。
     /// </summary>
     TimeState CurrentState { get; set; }
 
     /// <summary>
-    /// 当前所处的时间点。
+    /// 当前所处的时间点。如果当前没有时间点，则为 <see cref="TimeLayoutItem.Empty"/>。
     /// </summary>
     TimeLayoutItem CurrentTimeLayoutItem { get; set; }
 
     /// <summary>
-    /// 当前所处时间点<see cref="TimeLayoutItem"/>的科目。如果没有加载课表，则为null。
+    /// 当前所处时间点<see cref="TimeLayoutItem"/>的科目。<br/><br/>
+    /// 如果当前是课间休息，则其中 <see cref="Subject.Name"/>(科目名) 为课间名称。<br/>
+    /// 如果当前课程未定义，则为 <see cref="Subject.Empty"/>。<br/>
+    /// 如果当前没有时间点，或没有加载课表，则为 null。<br/>
     /// </summary>
     Subject? CurrentSubject { get; set; }
 
@@ -77,22 +85,21 @@ public interface IPublicLessonsService
     bool IsLessonConfirmed { get; set; }
 
     /// <summary>
-    /// 距下课剩余时间
-    /// </summary>
-    TimeSpan OnBreakingTimeLeftTime { get; set; }
-
-    /// <summary>
     /// 本周多周轮换周数。
     /// </summary>
-    /// <remarks>
-    /// 第 2 位 - 双周轮换<br/>
-    /// 第 3 位 - 三周轮换<br/>
-    /// ……<br/>
+    /// <value>
+    /// 第 x 位数字是 y（MultiWeekRotation[x]=y）— 本周是 x 周轮换中的第 y 周。<br/>
     /// <br/>
-    /// 1 - 本周单周<br/>
-    /// 2 - 本周是双周<br/>
-    /// 3 - 本周是 3/x 周<br/>
-    /// ……<br/>
-    /// </remarks>
+    /// 例：<br/>
+    /// 第 2 位数字是 1（MultiWeekRotation[2]=1）— 本周是 2 周轮换中的第 1 周。<br/>
+    /// 第 4 位数字是 3（MultiWeekRotation[4]=3）— 本周是 4 周轮换中的第 3 周。<br/>
+    /// </value>
     ObservableCollection<int> MultiWeekRotation { get; set; }
+
+    /// <summary>
+    /// 根据日期获取当天的课表<see cref="ClassPlan"/>。如果那天没有课表安排，则返回 null
+    /// </summary>
+    /// <param name="date">要获取课表的日期</param>
+    /// <returns>获取到的课表</returns>
+    ClassPlan? GetClassPlanByDate(DateTime date);
 }

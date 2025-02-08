@@ -14,5 +14,9 @@ public class WeatherInfo
 
     [JsonPropertyName("forecastDaily")] public ForecastDaily ForecastDaily { get; set; } = new();
 
+    [JsonPropertyName("forecastHourly")] public ForecastHourly ForecastHourly { get; set; } = new();
+
+    [JsonPropertyName("minutely")] public Minutely Minutely { get; set; } = new();
+
     [JsonIgnore] public DateTime UpdateTime => DateTimeOffset.FromUnixTimeMilliseconds(UpdateTimeUnix).LocalDateTime;
 }

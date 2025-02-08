@@ -9,6 +9,7 @@
     <UserSecretsId>d3a133e8-8208-4210-818a-e5c3335f8cbf</UserSecretsId>
     <Description>ClassIsland 应用核心依赖库，包括 ClassIsland 封装的一些常用控件和方法。</Description>
     <PackageTags>classisland;wpf;material design</PackageTags>
+    <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
 	  
   </PropertyGroup>
 
@@ -37,15 +38,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
-    <PackageReference Include="MdXaml" Version="1.21.0" />
-    <PackageReference Include="MdXaml.AnimatedGif" Version="1.21.0" />
-    <PackageReference Include="MdXaml.Html" Version="1.21.0" />
+    <PackageReference Include="MdXaml.AnimatedGif" Version="1.27.0" />
+    <PackageReference Include="MdXaml.Html" Version="1.27.0" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.131" />
     <PackageReference Include="MaterialDesignThemes" Version="4.8.0" />
     <PackageReference Include="MaterialDesignThemes.MahApps" Version="0.2.8" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
-
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
 
     <PackageReference Include="Octokit" Version="9.1.0" />
     <PackageReference Include="unvell.ReoGridWPF.dll" Version="2.2.0" />
@@ -54,7 +52,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="VirtualizingWrapPanel" Version="2.0.6" />
-    <PackageReference Include="YamlDotNet" Version="16.0.0" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,7 +71,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\SettingsWindow\" />
+    <Folder Include="Controls\StickerControl\" />
+    <Folder Include="Enums\Updating\" />
     <Folder Include="Properties\" />
     <Folder Include="Commands\" />
   </ItemGroup>

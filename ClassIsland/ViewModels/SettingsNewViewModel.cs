@@ -187,4 +187,6 @@ public class SettingsNewViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    public List<SettingsPageInfo> SideBarPages { get; } = [];
 }

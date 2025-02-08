@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
+using unvell.ReoGrid.IO;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
 
@@ -63,6 +64,15 @@ public class LessonsListBox : ListBox
         set { SetValue(IsLiveUpdatingEnabledProperty, value); }
     }
 
+    public static readonly DependencyProperty HighlightChangedClassProperty = DependencyProperty.Register(
+        nameof(HighlightChangedClass), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)));
+
+    public bool HighlightChangedClass
+    {
+        get { return (bool)GetValue(HighlightChangedClassProperty); }
+        set { SetValue(HighlightChangedClassProperty, value); }
+    }
+
     public static readonly DependencyProperty LessonControlSettingsProperty = DependencyProperty.Register(
         nameof(LessonControlSettings), typeof(ILessonControlSettings), typeof(LessonsListBox), new PropertyMetadata(default(ILessonControlSettings)));
 
@@ -73,14 +83,14 @@ public class LessonsListBox : ListBox
     }
 
     public static readonly DependencyProperty DiscardHidingDefaultProperty = DependencyProperty.Register(
-        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool),
+        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)/*,
             (o, args) =>
             {
                 var control = o as LessonsListBox;
                 if (control?.FindResource("LessonsListBoxItemTemplateMultiConverter") is not LessonsListBoxItemTemplateMultiConverter cv)
                     return;
 
-            }));
+            }*/));
 
     public bool DiscardHidingDefault
     {
@@ -95,6 +105,15 @@ public class LessonsListBox : ListBox
     {
         get { return (bool)GetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty); }
         set { SetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty, value); }
+    }
+
+    public static readonly DependencyProperty HideFinishedClassProperty = DependencyProperty.Register(
+        nameof(HideFinishedClass), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)));
+
+    public bool HideFinishedClass
+    {
+        get { return (bool)GetValue(HideFinishedClassProperty); }
+        set { SetValue(HideFinishedClassProperty, value); }
     }
 
     static LessonsListBox()
@@ -116,6 +135,14 @@ public class LessonsListBox : ListBox
         if (FindResource("LessonsListBoxItemTemplateMultiConverter") is LessonsListBoxItemTemplateMultiConverter cv)
         {
             
+        }
+    }
+
+    private void CvsOnFilter(object sender, FilterEventArgs e)
+    {
+        if (e.Item is TimeLayoutItem timePoint)
+        {
+            e.Accepted = timePoint.TimeType != 3;
         }
     }
 

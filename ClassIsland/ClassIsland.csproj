@@ -1,6 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <UseWindowsForms>True</UseWindowsForms>
@@ -11,22 +10,54 @@
         <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <StartupObject></StartupObject>
+        <AssemblyName>ClassIsland</AssemblyName>
+        <RootNamespace>ClassIsland</RootNamespace>
+		<IsMsix>$(IsMsix)</IsMsix>
+		<Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
         <OutputType>WinExe</OutputType>
         <DebugType>embedded</DebugType>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-        <OutputType>Exe</OutputType>
-        <DefineConstants>TRACE</DefineConstants>
+    <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
+	    <OutputType>Exe</OutputType>
+	    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX' Or '$(Configuration)'=='Release_MSIX'">
+      <IsMsix>true</IsMsix>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(IsMsix)'=='true'">
+        <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+        <!-- <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+        <EnableMsixTooling>true</EnableMsixTooling>
+        <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
+        <TargetPlatformMinVersion>10.0.14393.0</TargetPlatformMinVersion>
+        <DefaultLanguage>zh-CN</DefaultLanguage>
+        <AppxPackageSigningEnabled>false</AppxPackageSigningEnabled>
+        <EnablePreviewMsixTooling>true</EnablePreviewMsixTooling> -->
+    </PropertyGroup>
+    <ItemGroup Condition="'$(IsMsix)'=='true'">
+        <AppxManifest Include="Package.appxmanifest">
+            <SubType>Designer</SubType>
+        </AppxManifest>
+    </ItemGroup>
+    <PropertyGroup Condition="'$(IsMsix)'!='true'">
+        <TargetFramework>net8.0-windows</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="assets\documents\ChangeLog.md" />
         <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
         <None Remove="assets\Tellings.txt" />
+        <None Remove="Assets\TrustedPublicKeys\ClassIsland.MetadataPublisher.asc" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(Configuration)'=='Debug_MSIX'">
+      <PackageReference Include="JetBrains.Profiler.Api">
+        <Version>1.4.6</Version>
+      </PackageReference>
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
@@ -44,8 +75,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="NAudio" Version="2.2.1" />
+        <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6" />
         <PackageReference Include="Octokit" Version="9.1.0" />
         <PackageReference Include="Pastel" Version="4.2.0" />
+        <PackageReference Include="PgpCore" Version="6.5.1" />
         <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
         <PackageReference Include="Sentry" Version="4.9.0" />
         <PackageReference Include="Sentry.Extensions.Logging" Version="4.9.0" />
@@ -53,6 +86,7 @@
         <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
         <PackageReference Include="System.Management" Version="8.0.0" />
         <PackageReference Include="System.Speech" Version="8.0.0" />
+        <PackageReference Include="TimeCrontab" Version="3.5.1" />
         <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
     </ItemGroup>
     <ItemGroup>
@@ -61,6 +95,7 @@
         <Folder Include="Models\TimeRules\" />
         <Folder Include="Enums\" />
         <Folder Include="Models\Ipc\" />
+        <Folder Include="Models\AuthorizeProviderSettings\" />
     </ItemGroup>
     <ItemGroup>
         <None Include="..\..\.editorconfig" Link=".editorconfig" />
@@ -72,25 +107,37 @@
         <Resource Remove="Assets\Fonts\*.ttf" />
 	</ItemGroup>
     <PropertyGroup Condition="'$(TrimAssets)'=='true'">
-        <DefineConstants>TrimAssets</DefineConstants>
+        <DefineConstants>$(DefineConstants);TrimAssets</DefineConstants>
     </PropertyGroup>
+	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
+		<DefineConstants>$(DefineConstants);DevelopmentBuild</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(IsMsix)' == 'true'">
+		<DefineConstants>$(DefineConstants);IsMsix</DefineConstants>
+	</PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
         <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
         <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
     </ItemGroup>
-    <ItemGroup>
-      <Page Update="Themes\LightTheme.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-      <Page Update="Themes\DarkTheme.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-      </Page>
-    </ItemGroup>
+	<ItemGroup>
+		<Page Update="Themes\LightTheme.xaml">
+			<Generator>MSBuild:Compile</Generator>
+			<XamlRuntime>Wpf</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="Themes\DarkTheme.xaml">
+			<Generator>MSBuild:Compile</Generator>
+			<XamlRuntime>Wpf</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+	</ItemGroup>
+
+    <Target Name="PrintConstants" AfterTargets="Build">
+		<Message Text="Constants: $(DefineConstants)" Importance="high" />
+		<Message Text="IsMsix: $(IsMsix)" Importance="high" />
+		<Message Text="TargetFramework: $(TargetFramework)" Importance="high" />
+    </Target>
 
 	<Import Project="..\Global.props" />
 </Project>

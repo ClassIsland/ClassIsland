@@ -1,0 +1,110 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.ManagementPolicySettingsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ManagementPolicySettingsPage"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      Loaded="ManagementPolicySettingsPage_OnLoaded"
+      Unloaded="ManagementPolicySettingsPage_OnUnloaded"
+      d:DataContext="{d:DesignInstance local:ManagementPolicySettingsPage}">
+
+    <ScrollViewer>
+        <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" IsEnabled="{Binding ViewModel.IsLocked, Converter={StaticResource InvertBooleanConverter}}">
+            <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
+                                      Margin="0 0 0 4">
+                <Grid>
+                    <DockPanel Margin="8 0 4 0">
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                DockPanel.Dock="Right"
+                                materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
+                                Foreground="{DynamicResource MaterialDesignBody}"
+                                Click="ButtonRestart_OnClick">
+                            <ci:IconText Kind="Restart" Text="重启应用"/>
+                        </Button>
+                        <materialDesign:PackIcon Kind="InfoCircleOutline"
+                                                 Margin="0 0 4 0"
+                                                 VerticalAlignment="Center"/>
+                        <TextBlock Text="部分策略设置可能需要重启才能生效。"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </DockPanel>
+                </Grid>
+            </materialDesign:ColorZone>
+            <ci:IconText Kind="FileDocumentOutline" Text="档案" Margin="0 0 0 8" />
+            <!-- 禁止编辑档案 -->
+            <ci:SettingsCard IconGlyph="FileDocumentEditOutline"
+                             Header="禁止编辑档案"
+                             Description="启用此项后，用户将不能编辑档案内所有内容，同时【从 Excel 表格导入功能】也将被禁用。临时换课和启用临时课表功能不受影响。"
+                             IsOn="{Binding ManagementService.Policy.DisableProfileEditing, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+            <!-- 禁止修改课表 -->
+            <ci:SettingsCard IconGlyph="FileChartOutline"
+                           Header="禁止编辑课表"
+                           Description="启用此项后，用户将不能创建、删除和编辑课表，同时【从 Excel 表格导入功能】也将被禁用。临时换课和启用临时课表功能不受影响。"
+                           IsOn="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Mode=TwoWay}"
+                           Margin="0 0 0 6" />
+            <!-- 禁止编辑时间表 -->
+            <ci:SettingsCard IconGlyph="Timetable"
+                             Header="禁止编辑时间表"
+                             Description="启用此项后，用户将不能创建、删除和编辑时间表，同时【从 Excel 表格导入功能】也将被禁用。"
+                             IsOn="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+            <!-- 禁止编辑科目 -->
+            <ci:SettingsCard IconGlyph="BookOutline"
+                             Header="禁止编辑科目"
+                             Description="启用此项后，用户将不能创建、删除和编辑科目。"
+                             IsOn="{Binding ManagementService.Policy.DisableProfileSubjectsEditing, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+
+            <Separator Margin="0 16 0 8" />
+            <ci:IconText Kind="CogOutline" Text="应用设置" Margin="0 0 0 8" />
+
+            <!-- 禁止编辑应用设置 -->
+            <ci:SettingsCard IconGlyph="CogOutline"
+                             Header="禁止编辑应用设置"
+                             Description="启用此项后，用户将不能调整应用的设置。但先前调整过的设置在启用此项后不受影响。"
+                             IsOn="{Binding ManagementService.Policy.DisableSettingsEditing, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+            <!-- 禁止自定义启动加载界面 -->
+            <ci:SettingsCard IconGlyph="RocketLaunchOutline"
+                             Header="禁止自定义启动加载界面"
+                             Description="启用此项后，用户将不能自定义启动界面。如果先前调整过启动界面自定义设置，这些设置会被清除。"
+                             IsOn="{Binding ManagementService.Policy.DisableSplashCustomize, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+            <!-- 禁用调试菜单 -->
+            <ci:SettingsCard IconGlyph="BugOutline"
+                             Header="禁用调试菜单"
+                             Description="启用此项后，用户将不能进入调试页面。"
+                             IsOn="{Binding ManagementService.Policy.DisableDebugMenu, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+
+            <Separator Margin="0 16 0 8" />
+            <ci:IconText Kind="EllipsisHorizontalCircleOutline" Text="杂项" Margin="0 0 0 8" />
+
+            <!-- 允许退出集控 -->
+            <ci:SettingsCard IconGlyph="WorkOutline"
+                             Header="允许退出集控"
+                             Description="控制用户是否能主动退出集控。禁用后，用户将无法自行退出集控。"
+                             IsOn="{Binding ManagementService.Policy.AllowExitManagement, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+            <!-- 禁用彩蛋 -->
+            <ci:SettingsCard IconGlyph="EggEaster"
+                             Header="禁用彩蛋"
+                             Description="启用此项后，界面中的彩蛋将被禁用。"
+                             IsOn="{Binding ManagementService.Policy.DisableEasterEggs, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+        </StackPanel>
+    </ScrollViewer>
+</ci:SettingsPageBase>

@@ -13,18 +13,14 @@ public interface IProfileService : IPublicProfileService
     /// 清空过期的临时层课表
     /// </summary>
     void CleanExpiredTempClassPlan();
-    
-    /// <summary>
-    /// 检查课表是否符合当前的启用规则。
-    /// </summary>
-    /// <param name="plan">要检查的课表</param>
-    /// <returns>是否满足启用规则</returns>
-    //[Obsolete]
-    //bool CheckClassPlan(ClassPlan plan);
 
     /// <summary>
     /// 清除过期的临时课表群。
     /// </summary>
     void ClearExpiredTempClassPlanGroup();
 
+    /// <summary>
+    /// 将当前档案标记为信任。
+    /// </summary>
+    void TrustCurrentProfile();
 }

@@ -33,13 +33,19 @@
             <StackPanel Grid.Row="0">
                 <TextBlock Text="搜索城市" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                            Margin="0 0 0 8" />
-                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         materialDesign:TextFieldAssist.HasClearButton="True"
-                         TextChanged="TextBoxSearchCity_OnTextChanged"
-                         materialDesign:HintAssist.Hint="搜索城市或省份…"
-                         x:Name="TextBoxSearchCity">
-
-                </TextBox>
+                <Grid>
+                    <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             materialDesign:TextFieldAssist.HasClearButton="True"
+                             TextChanged="TextBoxSearchCity_OnTextChanged"
+                             materialDesign:HintAssist.Hint="搜索城市或省份…"
+                             x:Name="TextBoxSearchCity"/>
+                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                 IsIndeterminate="True"
+                                 HorizontalAlignment="Right"
+                                 Margin="0 0 18 0"
+                                 IsHitTestVisible="False"
+                                 Visibility="{Binding ViewModel.IsSearchingWeather, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
             </StackPanel>
             <!-- Main list box -->
             <ListBox Grid.Row="1"
@@ -74,7 +80,7 @@
                     </Style>
                 </StackPanel.Style>
                 <materialDesign:PackIcon Kind="Search" Width="81" Height="81" HorizontalAlignment="Center" />
-                <TextBlock Text="找不到符合条件的城市。请更换搜索关键字，然后再试一次。因天气api不全，可能搜索不到您所在的城市。" TextWrapping="Wrap"
+                <TextBlock Text="找不到符合条件的城市。请更换搜索关键字，然后再试一次。" TextWrapping="Wrap"
                            TextAlignment="Center"
                            Margin="0 8 0 0" />
             </StackPanel>
@@ -130,7 +136,7 @@
             <controls1:IconText Kind="CogOutline" Text="设置" Margin="0 0 0 8" />
             <!-- 城市选择 -->
             <controls1:SettingsCard IconGlyph="MapOutline" Header="城市选择"
-                                    Description="选择当前所在的城市，以用于天气查询。仅支持国内天气查询。">
+                                    Description="选择当前所在的城市，以用于天气查询。">
                 <controls1:SettingsCard.Switcher>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding SettingsService.Settings.CityName}"

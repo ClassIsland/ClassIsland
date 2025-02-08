@@ -14,6 +14,7 @@ public class ClassPlan : AttachableSettingsObject
     private ObservableCollection<ClassInfo> _classes = new();
     private string _name = "新课表";
     private ObservableDictionary<string, TimeLayout> _timeLayouts = new();
+    private ObservableDictionary<string, ClassPlan> _classPlans = new();
     private TimeRule _timeRule = new();
     private bool _isActivated = false;
     private bool _isOverlay = false;
@@ -101,6 +102,12 @@ public class ClassPlan : AttachableSettingsObject
     private void ClassInfoOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         NotifyClassesChanged();
+
+        if (!IsActivated) return;
+
+        // TODO: 支持预定临时层后，移除 IsActivated 判断。
+        if (e.PropertyName is not "IsChangedClass")
+            RefreshIsChangedClass();
     }
 
     private void TimeLayoutOnLayoutObjectChanged(object? sender, EventArgs e)
@@ -204,6 +211,18 @@ public class ClassPlan : AttachableSettingsObject
                 throw new ArgumentOutOfRangeException();
         }
         //RefreshClassesList();
+    }
+
+    [JsonIgnore]
+    internal ObservableDictionary<string, ClassPlan> ClassPlans
+    {
+        get => _classPlans;
+        set
+        {
+            if (Equals(value, _classPlans)) return;
+            _classPlans = value;
+            OnPropertyChanged();
+        }
     }
 
     [JsonIgnore]
@@ -322,6 +341,28 @@ public class ClassPlan : AttachableSettingsObject
         }
 
         LastTimeLayoutCount = TimeLayout.Layouts.Count;
+    }
+
+    /// <summary>
+    /// 标记换课课程
+    /// </summary>
+    internal void RefreshIsChangedClass()
+    {
+        if (OverlaySourceId == null ||
+            !ClassPlans.TryGetValue(OverlaySourceId, out var overlaySource) ||
+            Classes.Count != overlaySource.Classes.Count)
+        {
+            foreach (var classInfo in Classes)
+                classInfo.IsChangedClass = false;
+            return;
+        }
+
+        foreach (var classInfo in Classes)
+        {
+            classInfo.IsChangedClass =
+                classInfo.Index >= overlaySource.Classes.Count ? false : // 兜底判断，理论上可以删去
+                classInfo.SubjectId != overlaySource.Classes[classInfo.Index].SubjectId;
+        }
     }
 
     internal void RemoveTimePointSafe(TimeLayoutItem timePoint)

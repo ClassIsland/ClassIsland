@@ -326,7 +326,8 @@
                 </StackPanel>
             </materialDesign:Card>
 
-            <materialDesign:Card Margin="0 12 0 0" ClipContent="True" MouseLeftButtonDown="Sayings_OnMouseLeftButtonDown">
+            <materialDesign:Card Margin="0 12 0 0" ClipContent="True" MouseLeftButtonDown="Sayings_OnMouseLeftButtonDown"
+                                 Visibility="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource InverseBoolToVisConverter}}">
                 <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
                     <TextBlock Text="回声洞" FontWeight="Bold" Margin="16 12 16 6"/>
 
@@ -350,17 +351,17 @@
                         </Grid>
                     </Button>
                     <Separator Margin="0 -0.5" Opacity="0.5"/>
-                    <TextBlock LineHeight="30" Margin="24 12 0 0" FontSize="14">
+                    <TextBlock LineHeight="30" Margin="24 12 0 0" FontSize="14" TextWrapping="Wrap">
                         本项目受到
                         <Hyperlink Click="Hyperlink2_OnClick">DuguSand/class_form</Hyperlink>
                         的启发而开发。<LineBreak/>
                         界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。<LineBreak/>
                         应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak/>
-                        协助本应用测试的同学。<LineBreak/>
-                        感谢<commands:NavHyperlink CommandParameter="https://www.jiangyin14.top/">姜胤</commands:NavHyperlink>为本项目提供的服务器资源。<LineBreak/>
+                        感谢协助本应用测试的同学。<LineBreak/>
+                        感谢<commands:NavHyperlink CommandParameter="https://www.jiangyin14.top/">姜胤</commands:NavHyperlink>和<commands:NavHyperlink CommandParameter="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>为本项目提供的服务器资源。<LineBreak/>
                         天气数据来源于小米天气。<LineBreak/>
                         部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak/>
-                        其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
+                        感谢其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
                     </TextBlock>
                 </StackPanel>
             </materialDesign:Card>

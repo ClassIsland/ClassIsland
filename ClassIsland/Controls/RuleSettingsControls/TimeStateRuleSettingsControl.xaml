@@ -28,6 +28,9 @@
             <ComboBoxItem>
                 课间休息
             </ComboBoxItem>
+            <ComboBoxItem>
+                放学后
+            </ComboBoxItem>
         </ComboBox>
     </Grid>
 </ci:RuleSettingsControlBase>

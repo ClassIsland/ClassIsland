@@ -81,6 +81,22 @@
                             AutoToolTipPrecision="1" />
                 </controls1:SettingsCard.Switcher>
             </controls1:SettingsCard>
+            <!-- 行间隔 -->
+            <controls1:SettingsCard IconGlyph="Margin" Header="行间隔"
+                                    Description="主界面行间间隔。">
+                <controls1:SettingsCard.Switcher>
+                    <StackPanel Orientation="Horizontal">
+                        <Slider Width="130" Minimum="0" Maximum="150"
+                                Value="{Binding SettingsService.Settings.MainWindowLineVerticalMargin}"
+                                AutoToolTipPlacement="BottomRight"
+                                TickFrequency="5"
+                                IsSnapToTickEnabled="True"
+                                AutoToolTipPrecision="1" />
+                        <TextBox Text="{Binding SettingsService.Settings.MainWindowLineVerticalMargin, Converter={StaticResource IntToStringConverter}}"
+                                 Width="50"/>
+                    </StackPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Kind="PaletteOutline" Text="主题" Margin="0 0 0 8" />
             <!-- 应用主题 -->
@@ -510,8 +526,7 @@
                                              FontFamily="{Binding SettingsService.Settings.MainWindowFont, Mode=OneWay}"
                                              Margin="0 4 0 0"
                                              TextAlignment="Center"
-                                             xml:space="preserve">送给你纯白色的花 塞西莉亚 塞西莉亚
-盛开在起风的地方 沐浴九月的骄阳
+                                             xml:space="preserve">悲剧并非终结，而是希望的起始。
 语文 数学 英语 历史 物理 政治 化学 生物 地理
 the quick brown fox jumps over a lazy dog
 THE QUICK BROWN FOX JUMPS OVER A LAZY DOG

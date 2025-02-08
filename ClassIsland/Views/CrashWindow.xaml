@@ -18,7 +18,7 @@
                    mc:Ignorable="d"
                    WindowStartupLocation="CenterScreen"
                    Icon="/Assets/AppLogo.ico"
-                   Title="ClassIsland 已崩溃" Height="450" Width="800">
+                   Title="ClassIsland 崩溃报告" Height="450" Width="800">
     <Grid Margin="12">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -30,6 +30,7 @@
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <materialDesign:PackIcon Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left"
                                  Grid.RowSpan="2"
@@ -39,7 +40,7 @@
                                  Height="56" Width="56" />
 
         <TextBlock Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" FontSize="14">
-            <Run Text="ClassIsland 碰到了严重错误而无法继续运行。您可以保存下方的错误信息并向他人寻求帮助。如果您认为这是由软件本身的错误所致，请点击下方【反馈问题】按钮。"/>
+            <Run Text="ClassIsland 碰到了严重错误而无法正常运行。您可以保存下方的错误信息并向他人寻求帮助。如果您认为这是由软件本身的错误所致，请点击下方“反馈问题”按钮。"/>
         </TextBlock>
         <TextBox Grid.Column="1"
                  x:Name="TextBoxCrashInfo" Grid.Row="2" 
@@ -53,10 +54,34 @@
                  VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}"
                  TextAlignment="Left" TextWrapping="Wrap"
                  d:Text="123"/>
-        <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" Margin="-12 8"/>
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0" Click="ButtonIgnore_OnClick">
-                <controls1:IconText Kind="Close" Text="忽略错误，强制继续运行" IconMargin="3 0 0 0"/>
+
+        <materialDesign:ColorZone Grid.Row="3"
+                                  Grid.Column="0" Grid.ColumnSpan="2"
+                                  Background="#22FF0000"
+                                  Margin="0 6 0 0"
+                                  Visibility="{Binding IsCritical, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid TextElement.FontSize="13">
+                <DockPanel Margin="8 4 4 4">
+                    <materialDesign:PackIcon Kind="ErrorOutline"
+                                             Margin="0 0 4 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Text="这个异常无法被忽略，您需要重启或退出应用。很抱歉对您的使用造成不便。"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </DockPanel>
+            </Grid>
+        </materialDesign:ColorZone>
+        <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="-12 8"/>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
+                    Visibility="{Binding IsCritical, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="ButtonDebug_OnClick">
+                <controls1:IconText Kind="BugOutline" Text="调试" IconMargin="3 0 0 0"/>
+            </Button>
+            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
+                    Visibility="{Binding AllowIgnore, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Click="ButtonIgnore_OnClick">
+                <controls1:IconText Kind="Close" Text="忽略" IconMargin="3 0 0 0"/>
             </Button>
             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0" Click="ButtonExit_OnClick">
                 <controls1:IconText Kind="ExitToApp" Text="退出应用" IconMargin="3 0 0 0"/>
@@ -65,7 +90,7 @@
                 <controls1:IconText Kind="Restart" Text="重启应用" IconMargin="3 0 0 0"/>
             </Button>
         </StackPanel>
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Left" Orientation="Horizontal">
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" HorizontalAlignment="Left" Orientation="Horizontal">
             <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonCopy_OnClick" Margin="0 0 6 0">
                 <controls1:IconText Kind="ContentCopy" Text="复制" IconMargin="3 0 0 0"/>
             </Button>
@@ -82,7 +107,7 @@
                                   Padding="16">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBlock Text="崩溃啦！(T_T)" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                    <TextBlock Text="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
                                Margin="0 0 16 0"/>

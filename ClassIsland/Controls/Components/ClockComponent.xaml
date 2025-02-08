@@ -13,7 +13,9 @@
     <controls:ComponentBase.Resources>
         <converters:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter"/>
     </controls:ComponentBase.Resources>
-    <Grid VerticalAlignment="Center" TextElement.FontSize="{DynamicResource MainWindowEmphasizedFontSize}" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponent}}">
+    <Grid VerticalAlignment="Center" HorizontalAlignment="Center"
+          TextElement.FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+          DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClockComponent}}">
         <TextBlock>
             <TextBlock.Style>
                 <Style TargetType="TextBlock">

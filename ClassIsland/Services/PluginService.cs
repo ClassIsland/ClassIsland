@@ -19,7 +19,7 @@ namespace ClassIsland.Services;
 
 public class PluginService : IPluginService
 {
-    public static readonly string PluginsRootPath = @".\Plugins\";
+    public static readonly string PluginsRootPath = Path.Combine(App.AppRootFolderPath, @"Plugins\");
 
     public static readonly string PluginsIndexPath = Path.Combine(App.AppConfigPath, "PluginsIndex");
 
@@ -97,7 +97,11 @@ public class PluginService : IPluginService
             }
 
             var manifestYaml = File.ReadAllText(manifestPath);
-            var manifest = deserializer.Deserialize<PluginManifest>(manifestYaml);
+            var manifest = deserializer.Deserialize<PluginManifest?>(manifestYaml);
+            if (manifest == null)
+            {
+                continue;
+            }
             var info = new PluginInfo
             {
                 Manifest = manifest,
@@ -148,7 +152,7 @@ public class PluginService : IPluginService
                 services.AddSingleton(typeof(PluginBase), entranceObj);
                 services.AddSingleton(entrance, entranceObj);
                 info.LoadStatus = PluginLoadStatus.Loaded;
-                Console.WriteLine($"Initialize plugin: {pluginDir}");
+                Console.WriteLine($"Initialize plugin: {pluginDir} ({manifest.Version})");
             }
             catch (Exception ex)
             {

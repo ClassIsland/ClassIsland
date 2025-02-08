@@ -28,11 +28,15 @@
                     Visibility="{Binding ManagementService.Policy.DisableDebugMenu, Converter={StaticResource InverseBoolToVisConverter}}">
             <StackPanel.Resources>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                    <Setter Property="MinWidth" Value="2000" />
                     <Style.Resources>
                         <Style TargetType="materialDesign:PackIcon">
                             <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}" />
                         </Style>
                     </Style.Resources>
+                </Style>
+                <Style TargetType="UniformGrid">
+                    <Setter Property="Columns" Value="2" />
                 </Style>
             </StackPanel.Resources>
             <TextBlock Text="调试" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
@@ -45,16 +49,14 @@
             <MenuItem Icon="{materialDesign:PackIcon LightningBoltOutline}"
                       Header="特性调试窗口"
                       Click="MenuItemFeatureDebugWindow_OnClick"/>
-            <UniformGrid Rows="1">
-                <MenuItem IsCheckable="True" Header="调试菜单"
-                      IsChecked="{Binding SettingsService.Settings.IsDebugEnabled}" />
-                <MenuItem IsCheckable="True" Header="主窗口调试界面" Width="1000"
-                      IsChecked="{Binding SettingsService.Settings.IsMainWindowDebugEnabled}" />
+            <UniformGrid>
+                <MenuItem IsCheckable="True" Header="调试菜单" IsChecked="{Binding SettingsService.Settings.IsDebugEnabled}" />
+                <MenuItem IsCheckable="True" Header="主窗口调试界面" IsChecked="{Binding SettingsService.Settings.IsMainWindowDebugEnabled}" />
             </UniformGrid>
 
-            <materialDesign:Card Margin="0 8 0 8" HorizontalAlignment="Stretch">
+            <materialDesign:Card Margin="0 4" HorizontalAlignment="Stretch">
                 <StackPanel>
-                    <Viewbox Stretch="Uniform" MaxWidth="600">
+                    <Viewbox Stretch="Uniform" MaxHeight="340">
                         <StackPanel Orientation="Horizontal">
                             <Calendar SelectedDate="{Binding ViewModel.TargetDate}"
                                       Style="{StaticResource MaterialDesignDatePickerCalendarPortrait}"
@@ -69,10 +71,10 @@
                                       Time="{Binding ViewModel.TargetTime}"/>
                         </StackPanel>
                     </Viewbox>
-                    <UniformGrid Rows="1">
+                    <UniformGrid>
                         <MenuItem Grid.Column="0" Grid.Row="1"
                                   Icon="{materialDesign:PackIcon ClockRemoveOutline}"
-                                  Header="重置时间偏移"
+                                  Header="重置调试时间偏移"
                                   Click="ButtonReset_OnClick" />
                         <materialDesign:TimePicker Grid.Column="1" Grid.Row="1" Margin="0 0 3 0"
                                   Background="{DynamicResource MaterialDesignCardBackground}"
@@ -88,57 +90,44 @@
             </materialDesign:Card>
 
             <UniformGrid>
-                <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发上课"
-                          Click="MenuItemDebugTriggerOnClass_OnClick" />
-                <MenuItem Icon="{materialDesign:PackIcon PlayOutline}" Header="启动主计时器"
-                          Click="MenuItemStartMainTimer_OnClick" />
-                <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发下课"
-                          Click="MenuItemDebugTriggerAfterClass_OnClick" />
-                <MenuItem Icon="{materialDesign:PackIcon Pause}" Header="停止主计时器"
-                          Click="MenuItemStopMainTimer_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发上课" Click="MenuItemDebugTriggerOnClass_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon PlayOutline}" Header="启动主计时器" Click="MenuItemStartMainTimer_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon FlashOutline}" Header="触发下课" Click="MenuItemDebugTriggerAfterClass_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon Pause}" Header="停止主计时器" Click="MenuItemStopMainTimer_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon RubbishBinOutline}" Header="垃圾回收" Click="MenuItemGcCollect_OnClick" />
+                <MenuItem IsCheckable="True" Header="正在集控管理" IsChecked="{Binding ManagementService.IsManagementEnabled}"
+                          IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}" />
             </UniformGrid>
             <Separator />
 
-            <UniformGrid Columns="2" 
-                         IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}">
-                <MenuItem Header="禁止编辑档案" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileEditing}" Width="1000"/>
-                <MenuItem IsCheckable="True" Header="正在集控管理" IsChecked="{Binding ManagementService.IsManagementEnabled}" Width="1000"/>
-                <MenuItem Header="禁止编辑课表" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileClassPlanEditing}" Width="1000"/>
-                <MenuItem IsCheckable="True" Header="允许退出集控" IsChecked="{Binding ManagementService.Policy.AllowExitManagement}" Width="1000"/>
-                <MenuItem Header="禁止编辑时间表" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing}" Width="1000"/>
-                <MenuItem IsCheckable="True" Header="禁止编辑应用设置" IsChecked="{Binding ManagementService.Policy.DisableSettingsEditing}" Width="1000"/>
-                <MenuItem Header="禁止编辑科目" IsCheckable="True" IsChecked="{Binding ManagementService.Policy.DisableProfileSubjectsEditing}" Width="1000"/>
-                <MenuItem IsCheckable="True" Header="禁止自定义启动加载界面" IsChecked="{Binding ManagementService.Policy.DisableSplashCustomize}" Width="1000"/>
-            </UniformGrid>
-            <Separator />
-
-            <MenuItem Icon="{materialDesign:PackIcon CogOutline}" Header="覆盖设置版本" Width="1000"
-                      Click="MenuItemOverwriteSettingsVersion_OnClick"/>
-            <UniformGrid Columns="2">
-                <MenuItem Icon="{materialDesign:PackIcon ArrowLeftRight}" Header="显示快速信息迁移提示" Width="1000"
-                          Click="MenuItemShowComponentsMigrateTips_OnClick"/>
-                <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="转储课表关系图" Width="1000"
-                          Click="MenuItemDumpProfileRelations_OnClick" />
-                <MenuItem Icon="{materialDesign:PackIcon ToyBrickOutline}" Header="显示插件使用须知" Width="1000"
-                          Click="MenuItemShowPluginMarketWarning_OnClick"/>
-                <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="测试课表找下级" Width="1000"
-                          Click="MenuItemFindNext_OnClick" />
+            <UniformGrid>
+                <MenuItem Icon="{materialDesign:PackIcon ArrowLeftRight}" Header="显示快速信息迁移提示" Click="MenuItemShowComponentsMigrateTips_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon CogOutline}" Header="覆盖设置版本" Click="MenuItemOverwriteSettingsVersion_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon ToyBrickOutline}" Header="显示插件使用须知" Click="MenuItemShowPluginMarketWarning_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="转储课表关系图" Click="MenuItemDumpProfileRelations_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon ScriptTextOutline}" Header="显示自动化使用须知" Click="MenuItemShowAutomationWarning_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon RelationManyToMany}" Header="测试课表找下级" Click="MenuItemFindNext_OnClick" />
+                <MenuItem Icon="{materialDesign:PackIcon LanguageMarkdownOutline}" Header="打开 Markdown 文档" Click="MenuItemOpenMdDocs_OnClick" />
             </UniformGrid>
 
             <!-- 动画缩放 -->
-            <controls2:SettingsControl IconGlyph="BugOutline" Header="动画缩放" Margin="0 13 0 0"
-                                                              Description="主界面缩放动画播放倍速。">
+            <controls2:SettingsControl IconGlyph="BugOutline"
+                                       Header="动画缩放"
+                                       Description="主界面缩放动画播放倍速。"
+                                       Margin="0 13 0 0">
                 <controls2:SettingsControl.Switcher>
                     <TextBox
-                                                Text="{Binding SettingsService.Settings.DebugAnimationScale, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
-                                                MinWidth="150"
-                                                Foreground="{DynamicResource MaterialDesignBody}"/>
+                        Text="{Binding SettingsService.Settings.DebugAnimationScale, Mode=TwoWay, Converter={StaticResource IntToStringConverter}}"
+                        MinWidth="150"
+                        Foreground="{DynamicResource MaterialDesignBody}"/>
                 </controls2:SettingsControl.Switcher>
             </controls2:SettingsControl>
 
             <!-- 时间流速 -->
-            <controls2:SettingsControl IconGlyph="ClockFast" Header="时间流速" Margin="0 13 0 0"
-                                                             Description="持续调整时间偏移，以控制时间流速。">
+            <controls2:SettingsControl IconGlyph="ClockFast"
+                                       Header="时间流速"
+                                       Description="持续调整时间偏移，以控制时间流速。"
+                                       Margin="0 13 0 0">
                 <controls2:SettingsControl.Switcher>
                     <Grid HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
@@ -186,9 +175,18 @@
                     <MenuItem Icon="{materialDesign:PackIcon Bomb}"
                               Header="崩溃测试"
                               Click="ButtonCrash_OnClick" />
-                    <MenuItem Header="集控：禁用调试菜单" Width="1000" IsCheckable="True"
-                              IsChecked="{Binding ManagementService.Policy.DisableDebugMenu}"
-                              IsEnabled="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneTime}"/>
+                    <MenuItem Icon="{materialDesign:PackIcon Bomb}"
+                              Header="崩溃测试（延迟3秒）"
+                              Click="ButtonDelayCrash_OnClick"/>
+                    <MenuItem Icon="{materialDesign:PackIcon Bomb}"
+                              Header="崩溃测试（Task）"
+                              Click="MenuItemCrashOnTask_OnClick" />
+                    <MenuItem Icon="{materialDesign:PackIcon Dangerous}"
+                              Header="崩溃测试（扔到栈顶）"
+                              Click="MenuItemCrashTestGlobal_OnClick" />
+                    <MenuItem Icon="{materialDesign:PackIcon Dangerous}"
+                              Header="Environment.FailFast();"
+                              Click="MenuItemFailFast_OnClick" />
                 </StackPanel>
                 
             </Expander>

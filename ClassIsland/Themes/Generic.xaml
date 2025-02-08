@@ -18,6 +18,8 @@
         <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
         <ResourceDictionary Source="/Themes/MaterialDesignYouNavigationStyles.xaml" />
+        <ResourceDictionary Source="/Controls/MainWindowLine.xaml"/>
+        <ResourceDictionary Source="/Controls/ScheduleCalendarControl.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="controls1:NumbericTextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
@@ -97,12 +99,32 @@
                         <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
                     </Grid.Resources>
                     <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
-                    <Line SnapsToDevicePixels="True" StrokeThickness="6" Stroke="Red"
-                          X1="0" X2="{Binding ActualWidth, RelativeSource={RelativeSource Self}}">
-                        <Line.ToolTip>
+                    <Rectangle Height="6" HorizontalAlignment="Stretch">
+                        <Rectangle.ToolTip>
                             <controls:TimeLineListItemControl TimePoint="{Binding}"/>
-                        </Line.ToolTip>
-                    </Line>
+                        </Rectangle.ToolTip>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="DarkGray"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate DataType="{x:Type profile:TimeLayoutItem}" x:Key="DataTemplateAction">
+                <Grid VerticalAlignment="Stretch">
+                    <Grid.Resources>
+                        <converters1:DateTimeToCanvasPosConverter x:Key="DateTimeToCanvasPosConverter" />
+                        <converters1:DateTimeDeltaToCanvasPosConverter x:Key="DateTimeDeltaToCanvasPosConverter" />
+                    </Grid.Resources>
+                    <!--<TextBlock Text="{Binding StartSecond, Converter={StaticResource DateTimeToCanvasPosConverter}}"/>-->
+                    <Rectangle Height="6" HorizontalAlignment="Stretch">
+                        <Rectangle.ToolTip>
+                            <controls:TimeLineListItemControl TimePoint="{Binding}"/>
+                        </Rectangle.ToolTip>
+                        <Rectangle.Fill>
+                            <SolidColorBrush Color="Green"/>
+                        </Rectangle.Fill>
+                    </Rectangle>
                 </Grid>
             </DataTemplate>
 
@@ -167,6 +189,55 @@
                     <Style.Triggers>
                         <!-- 档案编辑 > 时间线视图 > 分割线装饰器 -->
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
+                            <Setter Property="Height" Value="Auto"/>
+                            <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
+                                <Setter.Value>
+                                    <materialDesign:BehaviorCollection>
+                                        <behaviors:TimeLineListItemBehavior>
+                                            <behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                                <ControlTemplate>
+                                                    <Grid Margin="-20">
+                                                        <controls:TimeLineListItemSeparatorAdornerControl
+                                                            Margin="20"
+                                                            VerticalAlignment="Stretch"
+                                                            HorizontalAlignment="Stretch"
+                                                            IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                            TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
+                                                            Scale="{Binding Scale, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}" />
+                                                        <Border Background="{DynamicResource MaterialDesignPaper}"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Center"
+                                                                Visibility="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}, Converter={StaticResource InverseBoolToVisConverter}}"
+                                                                Margin="0 0 28 0"
+                                                                Padding="2"
+                                                                CornerRadius="4">
+                                                            <Border.Effect>
+                                                                <DropShadowEffect Direction="0" ShadowDepth="0"
+                                                                    Opacity="0.4" BlurRadius="8">
+                                                                </DropShadowEffect>
+                                                            </Border.Effect>
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <!--<Button Content="{materialDesign:PackIcon Edit}"
+                                                                        Command="{x:Static views:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}"
+                                                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                        ToolTip="编辑时间点…" Margin="0 0 4 0" />-->
+                                                                <Button Content="{materialDesign:PackIcon Delete}"
+                                                                        Foreground="IndianRed"
+                                                                        Command="{x:Static views:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}"
+                                                                        Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                                        ToolTip="删除时间点" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </behaviors:TimeLineListItemBehavior.ThumbTemplate>
+                                        </behaviors:TimeLineListItemBehavior>
+                                    </materialDesign:BehaviorCollection>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <!-- 档案编辑 > 时间线视图 > 行动装饰器 -->
+                        <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="3">
                             <Setter Property="Height" Value="Auto"/>
                             <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                                 <Setter.Value>

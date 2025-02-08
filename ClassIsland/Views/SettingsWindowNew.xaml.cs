@@ -40,7 +40,11 @@ using System.IO;
 using ClassIsland.Controls;
 using Path = System.IO.Path;
 using System.Collections.ObjectModel;
+using System.Web;
+using ClassIsland.Core.Enums;
+using ClassIsland.Core.Models.SettingsWindow;
 using Application = System.Windows.Application;
+using YamlDotNet.Core.Tokens;
 
 namespace ClassIsland.Views;
 
@@ -49,6 +53,8 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class SettingsWindowNew : MyWindow
 {
+    private const string KeepHistoryParameterName = "ci_keepHistory";
+
     public SettingsNewViewModel ViewModel { get; } = new();
 
     [NotNull]
@@ -105,7 +111,7 @@ public partial class SettingsWindowNew : MyWindow
         {
             if (!IsLoaded || !ViewModel.IsRendered)
                 return;
-            await CoreNavigate();
+            await CoreNavigate(ViewModel.SelectedPageInfo);
         }
     }
 
@@ -123,10 +129,10 @@ public partial class SettingsWindowNew : MyWindow
     protected override async void OnContentRendered(EventArgs e)
     {
         base.OnContentRendered(e);
-        ViewModel.SelectedPageInfo =
-            SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
+        var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == LaunchSettingsPage);
         ViewModel.IsRendered = true;
-        await CoreNavigate();
+        await CoreNavigate(page);
+        //await CoreNavigate(ViewModel.SelectedPageInfo);
     }
 
     private async Task BeginStoryboardAsync(string key)
@@ -203,10 +209,13 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
     {
-        if (e.ExtraData as SettingsWindowNavigationExtraData? == SettingsWindowNavigationExtraData.NavigateFromNavigationView)  
+        if (e.ExtraData is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)  
         {
-            // 如果是从设置导航栏导航的，那么就要清除掉返回项目
-            NavigationService.RemoveBackEntry();
+            // 如果是从设置导航栏导航的，并且没有要求保留历史记录，那么就要清除掉返回项目
+            if (!data.KeepHistory)
+            {
+                NavigationService.RemoveBackEntry();
+            }
             if (!IThemeService.IsWaitForTransientDisabled)
             {
                 await Dispatcher.Yield();
@@ -229,10 +238,14 @@ public partial class SettingsWindowNew : MyWindow
         
     }
 
-    private async Task CoreNavigate()
+    private async Task CoreNavigate(SettingsPageInfo? info, Uri? uri = null)
     {
-        Logger.LogTrace("开始导航");
-        switch (ViewModel.SelectedPageInfo?.Category)
+        Logger.LogTrace("pre-开始导航");
+        if (info == null)
+        {
+            return;
+        }
+        switch (info.Category)
         {
             // 判断是否可以导航
             case SettingsPageCategory.Internal or SettingsPageCategory.External when
@@ -242,12 +255,21 @@ public partial class SettingsWindowNew : MyWindow
                 return;
         }
 
+        if (ViewModel.IsNavigating)
+        {
+            return;
+        }
+        Logger.LogTrace("开始导航");
+        ViewModel.IsPopupOpen = false;
         ViewModel.IsNavigating = true;
         if (ViewModel.IsViewCompressed)
         {
             ViewModel.IsNavigationDrawerOpened = false;
         }
+        ViewModel.SelectedPageInfo = info;
 
+        var uriQuery = HttpUtility.ParseQueryString(uri?.Query ?? "");
+        var keepHistory = uriQuery[KeepHistoryParameterName] == "true";
         var child = LoadingAsyncBox.LoadingView as LoadingMask;
         child?.StartFakeLoading();
         if (SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading)
@@ -260,15 +282,21 @@ public partial class SettingsWindowNew : MyWindow
         }
         HangService.AssumeHang();
         // 从ioc容器获取页面
-        var page = GetPage(ViewModel.SelectedPageInfo?.Id);
+        var page = GetPage(info.Id);
         // 清空抽屉
         ViewModel.IsDrawerOpen = false;
         ViewModel.DrawerContent = null;
         // 进行导航
-        NavigationService.RemoveBackEntry();
-        NavigationService.Navigate(page, SettingsWindowNavigationExtraData.NavigateFromNavigationView);
+        if (!keepHistory)
+        {
+            NavigationService.RemoveBackEntry();
+        }
+        NavigationService.Navigate(page, new SettingsWindowNavigationData(true, uri != null, uri, keepHistory));
         //ViewModel.FrameContent;
-        NavigationService.RemoveBackEntry();
+        if (!keepHistory)
+        {
+            NavigationService.RemoveBackEntry();
+        }
     }
 
     private SettingsPageBase? GetPage(string? id)
@@ -307,10 +335,14 @@ public partial class SettingsWindowNew : MyWindow
         NavigationService.GoBack();
     }
 
-    public void Open()
+    public async void Open()
     {
         if (!IsOpened)
         {
+            if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+            {
+                return;
+            }
             SentrySdk.Metrics.Increment("views.SettingsWindow.open");
             IsOpened = true;
             Show();
@@ -326,10 +358,11 @@ public partial class SettingsWindowNew : MyWindow
         }
     }
 
-    public void Open(string key)
+    public async void Open(string key, Uri? uri = null)
     {
-        ViewModel.SelectedPageInfo = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key) ?? ViewModel.SelectedPageInfo;
+        var page = SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == key) ?? ViewModel.SelectedPageInfo;
         LaunchSettingsPage = key;
+        await CoreNavigate(page, uri);
         Open();
     }
 
@@ -338,7 +371,7 @@ public partial class SettingsWindowNew : MyWindow
         if (uri.Segments.Length > 2)
         {
             var uriSegment = uri.Segments[2].EndsWith('/') ? uri.Segments[2][..^1] : uri.Segments[2];
-            Open(uriSegment);
+            Open(uriSegment, uri);
         }
         else if (uri.Segments.Length == 2)
             Open();
@@ -349,8 +382,9 @@ public partial class SettingsWindowNew : MyWindow
         e.Cancel = true;
         IsOpened = false;
         Hide();
-        SettingsService.SaveSettings(sender?.ToString() + "关闭");
+        SettingsService.SaveSettings("关闭应用设置窗口");
         ComponentsService.SaveConfig();
+        App.GetService<IAutomationService>().SaveConfig("关闭应用设置窗口");
         if (SettingsService.Settings.SettingsPagesCachePolicy <= 1)
         {
             _cachedPages.Clear();
@@ -429,20 +463,13 @@ public partial class SettingsWindowNew : MyWindow
     {
         try
         {
-            var r = CommonDialog.ShowDialog("ClassIsland", $"您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。", new BitmapImage(new Uri("/Assets/HoYoStickers/帕姆_注意.png", UriKind.Relative)),
-                60, 60, [
-                    new DialogAction()
-                    {
-                        PackIconKind = PackIconKind.Cancel,
-                        Name = "取消"
-                    },
-                    new DialogAction()
-                    {
-                        PackIconKind = PackIconKind.Check,
-                        Name = "继续",
-                        IsPrimary = true
-                    }
-                ]);
+            var r = new CommonDialogBuilder()
+                .SetContent("您正在导出应用的诊断数据。导出的诊断数据将包含应用 30 天内产生的日志、系统及环境信息、应用设置、当前加载的档案和集控设置（如有），可能包含敏感信息，请在导出后注意检查。")
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .AddCancelAction()
+                .AddAction("继续", PackIconKind.Check, true)
+                .ShowDialog();
+            
             if (r != 1)
                 return;
             var dialog = new SaveFileDialog()
@@ -465,8 +492,14 @@ public partial class SettingsWindowNew : MyWindow
     {
         if (e.Item is not SettingsPageInfo item)
             return;
+        if (item.HideDefault)
+        {
+            e.Accepted = false;
+            return;
+        }
         if (item.Category is SettingsPageCategory.Internal or SettingsPageCategory.External && ManagementService.Policy.DisableSettingsEditing)
-        {e.Accepted = false;
+        {
+            e.Accepted = false;
             return;
         }
         if (item.Category == SettingsPageCategory.Debug && ManagementService.Policy.DisableDebugMenu)

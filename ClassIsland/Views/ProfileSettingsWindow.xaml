@@ -24,6 +24,7 @@
                    xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
                    xmlns:controls2="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                   xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
                    mc:Ignorable="d" 
                    d:DesignHeight="450" d:DesignWidth="800"
                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -342,24 +343,40 @@
                             HorizontalAlignment="Left"
                             ToolTip="清除选择的临时课表，并恢复至正常课表安排。"
                             Margin="0 6 0 0"
-                            Click="ButtonClearTemporaryClassPlan_OnClick"
-                            Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
+                            Click="ButtonClearTemporaryClassPlan_OnClick">
+                        <Button.Visibility>
+                            <MultiBinding Converter="{StaticResource InvertBooleanAndToVisibilityMultiConverter}">
+                                <Binding Path="ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                                <Binding Path="ProfileService.Profile.HasOverlayClassPlan"/>
+                            </MultiBinding>
+                        </Button.Visibility>
                         <controls1:IconText Kind="ClearOutline" Text="清除临时课表"/>
                     </Button>
                     <TextBlock Text="临时课表被临时层课表覆盖。要使用临时课表，请暂时禁用或清除临时层课表。"
                                TextWrapping="Wrap"
-                               Margin="0 4 0 0"
-                               Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                               Margin="0 4 0 0">
+                        <TextBlock.Visibility>
+                            <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                <Binding Path="ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                                <Binding Path="ProfileService.Profile.HasOverlayClassPlan"/>
+                            </MultiBinding>
+                        </TextBlock.Visibility>
+                    </TextBlock>
                 </StackPanel>
                 <ListBox Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassPlanSource}}"
                          Margin="0 12 0 0"
                          SelectionMode="Single"
-                         Visibility="{Binding ProfileService.Profile.IsOverlayClassPlanEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                          SelectedValue="{Binding ProfileService.Profile.TempClassPlanId, Mode=TwoWay, Converter={StaticResource PreventNullConverter}}"
                          SelectedValuePath="Key"
                          SelectionChanged="ListBoxTempClassPlanSelector_OnSelectionChanged"
                          HorizontalContentAlignment="Stretch"
                          VerticalContentAlignment="Stretch">
+                    <ListBox.Visibility>
+                        <MultiBinding Converter="{StaticResource InvertBooleanAndToVisibilityMultiConverter}">
+                            <Binding Path="ProfileService.Profile.IsOverlayClassPlanEnabled"/>
+                            <Binding Path="ProfileService.Profile.HasOverlayClassPlan"/>
+                        </MultiBinding>
+                    </ListBox.Visibility>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
@@ -662,6 +679,31 @@
         </CollectionViewSource>
         <converters:SubjectDictionaryKeyFinderMultiConverter x:Key="SubjectDictionaryKeyFinderMultiConverter" />
 
+        <StackPanel x:Key="ProfileTrustWarning" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="不信任的档案"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="当前档案不受信任，部分功能（如行动时间点等）将禁用。如果您信任此档案并希望启用这些受限的功能，请将此档案设置为信任。"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="信任此档案" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+        <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter2" />
     </Window.Resources>
     <Grid>
 
@@ -993,7 +1035,7 @@
                                                     </Border.Effect>
                                                     <StackPanel Margin="12">
                                                         <TextBlock Text="创建临时层" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
-                                                        <ComboBox Style="{StaticResource MaterialDesignOutlinedComboBox}" 
+                                                        <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}" 
                                                                   materialDesign:HintAssist.Hint="时间表"
                                                                   ItemsSource="{Binding ProfileService.Profile.TimeLayouts, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"
                                                                   SelectedValuePath="Key"
@@ -1005,6 +1047,10 @@
                                                                 </DataTemplate>
                                                             </ComboBox.ItemTemplate>
                                                         </ComboBox>
+                                                        <DatePicker SelectedDate="{Binding ViewModel.OverlayEnableDateTime, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}"
+                                                                    materialDesign:HintAssist.Hint="启用日期"
+                                                                    Margin="0 4 0 0"
+                                                                    Style="{StaticResource MaterialDesignFloatingHintDatePicker}"/>
                                                         <Button HorizontalAlignment="Right" Margin="0 12 0 0"
                                                                 Click="ButtonCreateTempOverlayClassPlan_OnClick">
                                                             <controls1:IconText Kind="Check" Text="创建"/>
@@ -1020,12 +1066,77 @@
 
                                         <!-- 课表编辑 -->
                                         <Grid Grid.Row="1">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="5"/>
                                                 <ColumnDefinition Width="350" MinWidth="300" MaxWidth="450"/>
                                             </Grid.ColumnDefinitions>
-                                            <DataGrid Grid.Column="0"
+
+                                            <!-- Warnings -->
+                                            <StackPanel Grid.Row="0" Grid.Column="0">
+                                                <materialDesign:ColorZone Background="#17800080" 
+                                                                          Panel.ZIndex="1">
+                                                    <materialDesign:ColorZone.Style>
+                                                        <Style TargetType="materialDesign:ColorZone">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding ProfileService.Profile.TimeLayouts.Count, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}" Value="0">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </materialDesign:ColorZone.Style>
+                                                    <Grid>
+                                                        <DockPanel Margin="8 4">
+                                                            <materialDesign:PackIcon Kind="MessageAlertOutline"
+                                                                Height="20" Width="20"/>
+                                                            <TextBlock TextWrapping="Wrap"
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="4 0 0 0" >
+                                                                <Run Text="在设置课表之前，您需要在"/>
+                                                                <Hyperlink Click="HyperlinkNavigateTimeLayoutPage_OnClick">【时间表】</Hyperlink>
+                                                                <Run Text="页面中根据学校的作息安排编排时间表。"/>
+                                                            </TextBlock>
+                                                        </DockPanel>
+                                                    </Grid>
+                                                </materialDesign:ColorZone>
+                                                <materialDesign:ColorZone Background="#17800080" 
+                                                                          Panel.ZIndex="1">
+                                                    <materialDesign:ColorZone.Style>
+                                                        <Style TargetType="materialDesign:ColorZone">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding TimeLayoutId}" Value="">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding ProfileService.Profile.TimeLayouts.Count, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}" Value="0">
+                                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </materialDesign:ColorZone.Style>
+                                                    <Grid>
+                                                        <DockPanel Margin="8 4">
+                                                            <materialDesign:PackIcon Kind="MessageAlertOutline"
+                                                                Height="20" Width="20"/>
+                                                            <TextBlock TextWrapping="Wrap"
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="4 0 0 0" >
+                                                                <Run Text="您还没有为此课表设置时间表。在编排课程之前，您需要在"/>
+                                                                <Hyperlink Click="ButtonClassPlanInfoEdit_OnClick"
+                                                                           Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">【课表信息】</Hyperlink>
+                                                                <Run Text="中为本课表设置一个时间表。"/>
+                                                            </TextBlock>
+                                                        </DockPanel>
+                                                    </Grid>
+                                                </materialDesign:ColorZone>
+                                            </StackPanel>
+
+                                            <DataGrid Grid.Column="0" Grid.Row="1"
                                                       Margin="0 0 4 0"
                                                       AutoGenerateColumns="False"
                                                       ItemsSource="{Binding Classes}"
@@ -1064,9 +1175,10 @@
                                             </DataGrid>
 
                                             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"
+                                                          Grid.Row="0" Grid.RowSpan="2"
                                                           VerticalAlignment="Stretch"/>
 
-                                            <TabControl Grid.Column="2"
+                                            <TabControl Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
                                                         HorizontalContentAlignment="Left">
                                                 <TabControl.Style>
                                                     <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControl}">
@@ -1145,7 +1257,7 @@
                                                 </TabItem>-->
                                             </TabControl>
 
-                                            <StackPanel Grid.Column="2" 
+                                            <StackPanel Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
                                                         VerticalAlignment="Center" HorizontalAlignment="Center">
                                                 <StackPanel.Style>
                                                     <Style TargetType="StackPanel">
@@ -1242,8 +1354,8 @@
                                             <DataTemplate>
                                                 <Grid HorizontalAlignment="Stretch">
                                                     <TextBlock Text="{Binding Value.Name}" HorizontalAlignment="Left"/>
-                                                    <materialDesign:PackIcon Kind="Lock" HorizontalAlignment="Right"
-                                                                             ToolTip="已锁定活动的时间表。"
+                                                    <materialDesign:PackIcon Kind="MapMarkerRadiusOutline" HorizontalAlignment="Right"
+                                                                             ToolTip="此时间表正在活动。"
                                                                              Visibility="{Binding Value.IsActivated, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                                 </Grid>
                                             </DataTemplate>
@@ -1294,7 +1406,7 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>
                                         <ColumnDefinition Width="5"/>
-                                        <ColumnDefinition Width="350" MinWidth="250" MaxWidth="350"/>
+                                        <ColumnDefinition Width="375" MinWidth="250" MaxWidth="450"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto"/>
@@ -1307,14 +1419,18 @@
                                     <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" 
                                              IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                         <!--<TextBlock Text="{Binding Layouts}"/>-->
-                                        <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <Button Click="ButtonAddClassTime_OnClick" ToolTip="添加上课时间点。">
                                             <controls1:IconText Kind="NotePlusOutline" Text="上课"/>
                                         </Button>
-                                        <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <Button Click="ButtonAddBreakTime_OnClick" ToolTip="添加课间休息时间点。">
                                             <controls1:IconText Kind="ClockPlusOutline" Text="课间"/>
                                         </Button>
-                                        <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。" IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                        <Button Click="ButtonAddSeparator_OnClick" ToolTip="添加分割线。">
                                             <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线"/>
+                                        </Button>
+                                        <Button Click="ButtonAddActionTimePoint_OnClick" ToolTip="添加行动时间点。"
+                                                IsEnabled="{Binding ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}">
+                                            <controls1:IconText Kind="AirplanePlus" Text="行动"/>
                                         </Button>
                                         <Separator/>
                                         <Button Click="ButtonRemoveTimePoint_OnClick" ToolTip="删除选中的时间点。">
@@ -1325,14 +1441,13 @@
                                                             <Setter Property="IsEnabled" Value="False"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
-                                                    <Setter Property="IsEnabled" Value="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}"/>
                                                 </Style>
                                             </Button.Style>
                                             <controls1:IconText Kind="Remove" Text="删除"/>
                                         </Button>
                                         <Button Click="ButtonRefreshTimeLayout_OnClick"
                                                 ToolTip="重新排序该时间表中的时间点。"
-                                                IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                               >
                                             <controls1:IconText Kind="Refresh" Text="刷新"/>
                                         </Button>
                                         <!--<Button  Click="ButtonEditTimePoint_OnClick"
@@ -1361,8 +1476,7 @@
                                             <controls1:IconText Kind="InfoOutline" Text="时间表信息"/>
                                         </Button>
                                         <Button Click="ButtonDeleteTimeLayout_OnClick"
-                                                ToolTip="删除该时间表。"
-                                                IsEnabled="{Binding IsActivated, Converter={StaticResource BooleanToBooleanReConverter}}">
+                                                ToolTip="删除该时间表。">
                                             <controls1:IconText Kind="Delete" Text="删除时间表"/>
                                         </Button>
                                     </ToolBar>
@@ -1391,59 +1505,7 @@
                                                 </ListBox.ItemContainerStyle>
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <Grid>
-                                                            <Grid.RowDefinitions>
-                                                                <RowDefinition Height="Auto" />
-                                                                <RowDefinition Height="Auto" />
-                                                            </Grid.RowDefinitions>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto" />
-                                                                <ColumnDefinition />
-                                                            </Grid.ColumnDefinitions>
-                                                            <!-- Icon -->
-                                                            <materialDesign:PackIcon Grid.Column="0" Grid.Row="0"
-                                                                Margin="0 0 6 0">
-                                                                <materialDesign:PackIcon.Style>
-                                                                    <Style TargetType="materialDesign:PackIcon">
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding TimeType}"
-                                                                                Value="0">
-                                                                                <Setter Property="Kind" Value="BookOutline" />
-                                                                                <Setter Property="ToolTip" Value="上课时间" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding TimeType}"
-                                                                                Value="1">
-                                                                                <Setter Property="Kind"
-                                                                                    Value="ClockOutline" />
-                                                                                <Setter Property="ToolTip" Value="课间休息" />
-                                                                            </DataTrigger>
-                                                                            <DataTrigger Binding="{Binding TimeType}"
-                                                                                Value="2">
-                                                                                <Setter Property="Kind"
-                                                                                    Value="ArrowSplitHorizontal" />
-                                                                                <Setter Property="ToolTip" Value="分割线" />
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </materialDesign:PackIcon.Style>
-                                                            </materialDesign:PackIcon>
-
-                                                            <!-- Time -->
-                                                            <TextBlock Grid.Column="1" Grid.Row="0" FontSize="14"
-                                                                       ToolTip="时间段">
-                                                                <Run
-                                                                    Text="{Binding StartSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                                                                <Run Text="-" />
-                                                                <Run
-                                                                    Text="{Binding EndSecond, ConverterCulture=zh-cn, StringFormat={}{0:HH:mm:ss}}" />
-                                                            </TextBlock>
-
-                                                            <!-- Last Time -->
-                                                            <controls1:IconText Grid.Column="1" Grid.Row="1"
-                                                                               Kind="ClockAutoOutline"
-                                                                               Text="{Binding Last}"
-                                                                               Margin="0 3 0 0" ToolTip="持续时间" />
-                                                        </Grid>
+                                                        <controls:TimeLineListItemControl TimePoint="{Binding}"/>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                             </ListBox>
@@ -1458,10 +1520,7 @@
                                                                           IsPanningModeEnabled="True">
                                                 <!-- 回应我吧，爱莉希雅 -->
                                                 <controls:TimeLineListControl.IsReadOnly>
-                                                    <MultiBinding Converter="{StaticResource BooleanOrExpressionMultiConverter}" Mode="OneWay">
-                                                        <Binding Path="IsActivated" Mode="OneWay"/>
-                                                        <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}" Mode="OneWay"/>
-                                                    </MultiBinding>
+                                                    <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" RelativeSource="{RelativeSource Mode=FindAncestor, AncestorType=local:ProfileSettingsWindow}" Mode="OneWay"/>
                                                 </controls:TimeLineListControl.IsReadOnly>
                                             </controls:TimeLineListControl>
                                         </TabItem>
@@ -1571,15 +1630,6 @@
                                         <materialDesign:PackIcon Kind="TimelineOutline" ToolTip="时间线视图"/>
                                     </ListBox>
 
-                                    <!-- 编辑警告 -->
-                                    <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                                                              Mode="PrimaryLight"
-                                                              Background="LightYellow"
-                                                              Visibility="{Binding IsActivated, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                        <controls1:IconText Kind="Warning" Text="当前时间表处于活动状态，部分设置无法编辑。"
-                                                           Margin="4"/>
-                                    </materialDesign:ColorZone>
-
                                     <GridSplitter Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch" Grid.RowSpan="2"/>
 
                                     <!-- 时间点编辑 -->
@@ -1587,7 +1637,7 @@
                                         <StackPanel Margin="16" 
                                                     IsEnabled="{Binding ManagementService.Policy.DisableProfileTimeLayoutEditing, Converter={StaticResource InvertBooleanConverter}}"
                                                     DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
-                                            <StackPanel IsEnabled="{Binding SelectedItem.Value.IsActivated, ElementName=ListViewTimeLayouts, Converter={StaticResource InvertBooleanConverter}}">
+                                            <StackPanel>
                                                 <TextBlock Text="编辑时间点"
                                                            Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
                                                 <!--<TextBlock Text="{Binding}"/>-->
@@ -1609,26 +1659,53 @@
                                                                     Value="2">
                                                                     <Setter Property="Visibility" Value="Collapsed" />
                                                                 </DataTrigger>
+                                                                <DataTrigger
+                                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                    Value="3">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                             <Setter Property="Visibility" Value="Visible" />
                                                         </Style>
                                                     </materialDesign:TimePicker.Style>
                                                 </materialDesign:TimePicker>
-                                                <TextBlock Text="类型" Margin="0 16 0 0" />
-                                                <ListBox
-                                                    Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
-                                                    SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
-                                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                                                    <ListBoxItem>
-                                                        <controls1:IconText Kind="BookOutline" Text="上课" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem>
-                                                        <controls1:IconText Kind="ClockOutline" Text="课间休息" />
-                                                    </ListBoxItem>
-                                                    <ListBoxItem>
-                                                        <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
-                                                    </ListBoxItem>
-                                                </ListBox>
+                                                <StackPanel>
+                                                    <StackPanel.Style>
+                                                        <Style TargetType="StackPanel">
+                                                            <Style.Triggers>
+                                                                <DataTrigger
+                                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                    Value="0">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                                <DataTrigger
+                                                                    Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                    Value="1">
+                                                                    <Setter Property="Visibility" Value="Visible" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </Style>
+                                                    </StackPanel.Style>
+                                                    <TextBlock Text="类型" Margin="0 16 0 0" />
+                                                    <ListBox
+                                                        Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                                        SelectedIndex="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                        PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                                                        <ListBoxItem>
+                                                            <controls1:IconText Kind="BookOutline" Text="上课" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem>
+                                                            <controls1:IconText Kind="ClockOutline" Text="课间休息" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem Visibility="Collapsed">
+                                                            <controls1:IconText Kind="ArrowSplitHorizontal" Text="分割线" />
+                                                        </ListBoxItem>
+                                                        <ListBoxItem Visibility="Collapsed">
+                                                            <controls1:IconText Kind="Airplane" Text="行动" />
+                                                        </ListBoxItem>
+                                                    </ListBox>
+                                                </StackPanel>
                                             </StackPanel>
                                             <StackPanel>
                                                 <StackPanel.Style>
@@ -1662,7 +1739,8 @@
                                                 </ComboBox>
                                                 <WrapPanel Orientation="Horizontal" Margin="0 4 0 0">
                                                     <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                            Click="ButtonOverwriteClasses_OnClick">
+                                                            Click="ButtonOverwriteClasses_OnClick"
+                                                            IsEnabled="{Binding ManagementService.Policy.DisableProfileClassPlanEditing, Converter={StaticResource InvertBooleanConverter}}">
                                                         <controls1:IconText Kind="Upload" Text="覆盖现有课程"/>
                                                     </Button>
                                                 </WrapPanel>
@@ -1682,25 +1760,58 @@
                                                 </StackPanel.Style>
                                                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                                     Margin="0 12 0 0"
-                                                    Text="{Binding ViewModel.SelectedTimePoint.BreakName}"
+                                                    Text="{Binding ViewModel.SelectedTimePoint.BreakName, UpdateSourceTrigger=PropertyChanged}"
                                                     materialDesign:HintAssist.Hint="课间名称" />
                                             </StackPanel>
                                             <Separator Margin="0 20 0 8" />
-                                            <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
-                                            <ItemsControl
-                                                ItemsSource="{x:Static services:IAttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}"
-                                                            Margin="0 0 0 8"
-                                                            ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
-                                                            ContentIndex="{Binding SelectedIndex, ElementName=TimeLineListControl, Mode=OneWay}"
-                                                            TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
+                                            <StackPanel>
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger
+                                                                Binding="{Binding ViewModel.SelectedTimePoint.TimeType}"
+                                                                Value="3">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <controls1:IconText Kind="CogOutline" Text="更多选项" Margin="0 0 0 8" />
+                                                <ItemsControl
+                                                    ItemsSource="{x:Static services:IAttachedSettingsHostService.TimePointSettingsAttachedSettingsControls}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <controls1:AttachedSettingsControlPresenter ControlInfo="{Binding}"
+                                                                Margin="0 0 0 8"
+                                                                ContentId="{Binding SelectedItem.Key, ElementName=ListViewTimeLayouts, Mode=OneWay}"
+                                                                ContentIndex="{Binding SelectedIndex, ElementName=TimeLineListControl, Mode=OneWay}"
+                                                                TargetObject="{Binding ViewModel.SelectedTimePoint, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}" />
 
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                            </ItemsControl>
-
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                            <StackPanel>
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger
+                                                                Binding="{Binding ViewModel.SelectedTimePoint.ActionSet}"
+                                                                Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <controls1:IconText Kind="Airplane" Text="行动" Margin="0 0 0 8" />
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                                                        Click="ButtonDebugTriggerAction_OnClick"
+                                                        IsEnabled="{Binding ProfileService.IsCurrentProfileTrusted, RelativeSource={RelativeSource AncestorType=local:ProfileSettingsWindow}}"
+                                                        Margin="0 0 0 2">
+                                                    <ci:IconText Kind="MotionPlayOutline" Text="触发"/>
+                                                </Button>
+                                                <action:ActionControl ActionSet="{Binding ViewModel.SelectedTimePoint.ActionSet}"/>
+                                            </StackPanel>
                                         </StackPanel>
                                     </ScrollViewer>
                                     <Grid Grid.Row="2" Grid.Column="2" Grid.RowSpan="2" 
@@ -1717,8 +1828,10 @@
                                             </Style>
                                         </Grid.Style>
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16">
-                                            <Image Source="/Assets/HoYoStickers/藿藿_好痛.png" Width="78" Stretch="UniformToFill" Margin="0 0 0 8"
-                                                   ToolTip="霍霍_好痛"/>
+                                            <ci:StickerControl ImageSource="/Assets/HoYoStickers/藿藿_好痛.png" Width="78" 
+                                                               PackIconKind="ClockCheckOutline"
+                                                               Margin="0 0 0 8"
+                                                                StickerToolTip="霍霍_好痛"/>
                                             <TextBlock Text="您还没有创建时间点。点击上方工具栏新建时间点按钮以新建时间点。"
                                                        TextAlignment="Center"
                                                        VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"/>
@@ -1955,6 +2068,416 @@
 
                             </Grid>
                         </TabItem>
+                        <TabItem Visibility="Collapsed">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250" MinWidth="250" MaxWidth="400"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <ToolBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                                         ToolBarTray.IsLocked="True">
+                                    <Button Click="ButtonRefreshScheduleAdjustmentView_OnClick" IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                        <ci:IconText Kind="Refresh" Text="刷新"/>
+                                    </Button>
+                                    <Separator/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedIndex, ElementName=ScheduleAdjustmentTabControl}" Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <StackPanel.Resources>
+                                            <Style TargetType="Button" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
+                                        </StackPanel.Resources>
+                                        <Grid>
+                                            <Button Click="ButtonEditClassInfoTemp_OnClick"
+                                                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"
+                                                    IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                                <ci:IconText Kind="EditOutline" Text="修改课程" />
+                                            </Button>
+                                            <materialDesign:PopupEx AllowsTransparency="True"
+                                                                    StaysOpen="False"
+                                                                    PopupAnimation="Fade"
+                                                                    IsOpen="{Binding ViewModel.IsClassPlanTempEditPopupOpen}">
+                                                <materialDesign:Card Background="{DynamicResource MaterialDesignPaper}"
+                                                                     Margin="8"
+                                                                     materialDesign:ElevationAssist.Elevation="Dp8">
+                                                    <StackPanel Margin="12" Width="250">
+                                                        <TextBlock Text="修改课程"
+                                                                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                                                   Margin="0 0 0 8" />
+                                                        <ComboBox HorizontalAlignment="Stretch"
+                                                                  materialDesign:HintAssist.Hint="换课成…"
+                                                                  Margin="0 0 0 8"
+                                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                                                  ItemsSource="{Binding ProfileService.Profile.Subjects, UpdateSourceTrigger=PropertyChanged}"
+                                                                  SelectedValuePath="Key"
+                                                                  SelectedValue="{Binding ViewModel.TargetSubjectIndex}">
+                                                            <ComboBox.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Value.Name}" />
+                                                                </DataTemplate>
+                                                            </ComboBox.ItemTemplate>
+                                                        </ComboBox>
+                                                        <CheckBox
+                                                            IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}"
+                                                            Margin="0 0 0 8">
+                                                            永久换课
+                                                        </CheckBox>
+                                                        <Button Click="ButtonEditClassInfoTempConfirm_OnClick"
+                                                                HorizontalAlignment="Left">
+                                                            <Button.Style>
+                                                                <Style TargetType="Button"
+                                                                       BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding ViewModel.TargetSubjectIndex}"
+                                                                            Value="">
+                                                                            <Setter Property="IsEnabled" Value="False" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Button.Style>
+                                                            <controls1:IconText Kind="Check" Text="确定" />
+                                                        </Button>
+                                                    </StackPanel>
+                                                </materialDesign:Card>
+                                            </materialDesign:PopupEx>
+                                        </Grid>
+                                        <Button Click="ButtonSwapSchedule_OnClick"
+                                                IsEnabled="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource InvertBooleanConverter}}">
+                                            <ci:IconText Kind="SwapHorizontal" Text="交换课程" />
+                                        </Button>
+                                        <Button Click="ButtonCancelClassSwap_OnClick"
+                                                Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <ci:IconText Kind="Cancel" Text="取消" />
+                                        </Button>
+                                        <Button Click="ButtonSwapScheduleComplete_OnClick"
+                                                Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                            <ci:IconText Kind="Check" Text="完成交换" />
+                                        </Button>
+                                        <CheckBox
+                                            Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            IsChecked="{Binding ViewModel.IsTempSwapMode, Converter={StaticResource InvertBooleanConverter}}">
+                                            永久换课
+                                        </CheckBox></StackPanel>
+                                </ToolBar>
+
+                                <ListBox Grid.Row="1" Grid.Column="0"
+                                         ItemsSource="{Binding ProfileService.Profile.OrderedSchedules}"
+                                         SelectedValue="{Binding ViewModel.ScheduleCalendarSelectedDate}"
+                                         SelectedValuePath="Key"
+                                         Style="{StaticResource NavigationListBox}">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock VerticalAlignment="Center">
+                                                    <Run
+                                                        Text="{Binding Key, Mode=OneWay, StringFormat={}{0:yy/MM/dd ddd}, ConverterCulture=zh-CN}" />
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+
+                                <GridSplitter Grid.Row="1" Grid.RowSpan="2" Grid.Column="1"
+                                              VerticalAlignment="Stretch"
+                                              Width="5"
+                                              Margin="4 0"
+                                              ResizeBehavior="PreviousAndNext"/>
+
+                                <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl">
+                                    <TabItem Visibility="Collapsed">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
+
+
+                                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                                <DatePicker SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate}"
+                                                            Width="100"/>
+                                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                        Content="{materialDesign:PackIcon ArrowLeft}"
+                                                        ToolTip="上一周"
+                                                        Margin="4 0 0 0"
+                                                        Click="ButtonPreviousWeek_OnClick"/>
+                                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                        Content="{materialDesign:PackIcon ArrowRight}"
+                                                        ToolTip="下一周"
+                                                        Margin="4 0 0 0"
+                                                        Click="ButtonNextWeek_OnClick"/>
+                                                <TextBlock VerticalAlignment="Center"
+                                                           Margin="8 0 0 0">
+                                                    <Run Text="第"/><Run Text="{Binding ViewModel.DataGridWeekRowsWeekIndex}"/><Run Text="周"/>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <materialDesign:ColorZone Background="#204169e1" 
+                                                                      Panel.ZIndex="1" 
+                                                                      Grid.Row="2"
+                                                                      Visibility="{Binding ViewModel.IsInScheduleSwappingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <Grid>
+                                                    <DockPanel Margin="8 4">
+                                                        <materialDesign:PackIcon Kind="SwapHorizontal"
+                                                            Height="20" Width="20"/>
+                                                        <TextBlock TextWrapping="Wrap"
+                                                                   VerticalAlignment="Center"
+                                                                   Margin="4 0 0 0" >
+                                                            <Run Text="正在交换课程。选择要与"/>
+                                                            <Run Text="{Binding ViewModel.ClassSwapStartPosition, Mode=OneWay}"/>
+                                                            <Run Text="交换的课程，然后点击【完成交换】。"/>
+                                                        </TextBlock>
+                                                    </DockPanel>
+                                                </Grid>
+                                            </materialDesign:ColorZone>
+
+                                            <DataGrid Grid.Row="1"
+                                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                                      ItemsSource="{Binding ViewModel.WeekClassPlanRows, Mode=TwoWay}"
+                                                      CanUserAddRows="False"
+                                                      CanUserDeleteRows="False"
+                                                      CanUserSortColumns="False"
+                                                      CanUserReorderColumns="False"
+                                                      AutoGenerateColumns="False"
+                                                      VirtualizingPanel.IsVirtualizing="True"
+                                                      VirtualizingPanel.ScrollUnit="Pixel"
+                                                      CanUserResizeColumns="False"
+                                                      SelectionUnit="Cell"
+                                                      SelectionMode="Single"
+                                                      SelectedItem="{Binding ViewModel.SelectedWeekClassPlanRow}"
+                                                      PreparingCellForEdit="DataGridWeekSchedule_OnPreparingCellForEdit"
+                                                      BeginningEdit="DataGridWeekSchedule_OnBeginningEdit"
+                                                      x:Name="DataGridWeekSchedule">
+                                                <DataGrid.Columns>
+                                                    <DataGridTemplateColumn Header="周日" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Sunday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Sunday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周一" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Monday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Monday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周二" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Tuesday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Tuesday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周三" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Wednesday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Wednesday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周四" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Thursday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Thursday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周五" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Friday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Friday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                    <DataGridTemplateColumn Header="周六" Width="*">
+                                                        <DataGridTemplateColumn.CellTemplate>
+                                                            <DataTemplate>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Grid>
+                                                                        <Grid.DataContext>
+                                                                            <MultiBinding
+                                                                                Converter="{StaticResource SubjectIdToSubjectConverter}">
+                                                                                <Binding
+                                                                                    Path="ProfileService.Profile.Subjects"
+                                                                                    RelativeSource="{RelativeSource AncestorType=local:ProfileSettingsWindow}" />
+                                                                                <Binding Path="Saturday.SubjectId"
+                                                                                    Mode="OneWay" />
+                                                                            </MultiBinding>
+                                                                        </Grid.DataContext>
+                                                                        <TextBlock Text="{Binding Name}" />
+                                                                    </Grid>
+                                                                    <Ellipse Width="8" Height="8" Fill="{DynamicResource PrimaryHueMidBrush}"
+                                                                             VerticalAlignment="Center" Margin="4 0 0 0"
+                                                                             Visibility="{Binding Saturday.IsChangedClass, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue={StaticResource VisibilityCollapsedValue}}"/>
+                                                                </StackPanel>
+                                                            </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                    </DataGridTemplateColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Visibility="Collapsed">
+                                        <controls:ScheduleCalendarControl x:Name="ScheduleCalendarControl"
+                                                                          DisplayDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}"
+                                                                          SelectedDate="{Binding ViewModel.ScheduleCalendarSelectedDate, Mode=TwoWay}" />
+                                    </TabItem>
+                                </TabControl>
+                                <ListBox Grid.Row="2"
+                                         Grid.Column="2"
+                                         Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                         VerticalContentAlignment="Stretch"
+                                         VerticalAlignment="Bottom"
+                                         HorizontalAlignment="Left"
+                                         SelectedIndex="{Binding SelectedIndex, ElementName=ScheduleAdjustmentTabControl}"
+                                         materialDesign:ListBoxItemAssist.ShowSelection="False">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                            <Setter Property="Padding" Value="0"/>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type materialDesign:PackIcon}">
+                                            <DataTemplate.Resources>
+                                                <Style TargetType="RadioButton" BasedOn="{StaticResource MaterialDesignTabRadioButtonTop}">
+                                                    <Setter Property="ToolTipService.Placement" Value="Top"/>
+                                                </Style>
+                                                <converters1:StringToRadioButtonSelectionConverter x:Key="StringToRadioButtonSelectionConverter" />
+                                            </DataTemplate.Resources>
+                                            <RadioButton ToolTip="{Binding ToolTip}"
+                                                             IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                                                <materialDesign:PackIcon Kind="{Binding Kind}"/>
+                                            </RadioButton>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                    <materialDesign:PackIcon Kind="Table" ToolTip="周视图"/>
+                                    <materialDesign:PackIcon Kind="CalendarOutline" ToolTip="日历视图"/>
+                                </ListBox>
+                            </Grid>
+                        </TabItem>
 
                     </TabControl>
 
@@ -2001,7 +2524,7 @@
                                     Icon="{materialDesign:PackIcon FileDocumentOutline}"
                                     Click="ButtonProfileManage_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock MaxWidth="150" TextWrapping="Wrap">
+                                    <TextBlock MaxWidth="100" TextTrimming="CharacterEllipsis">
                                         <Run Text="{Binding ProfileService.CurrentProfilePath}"/>
                                     </TextBlock>
                                 </materialDesign:Chip>
@@ -2047,7 +2570,7 @@
                                             <Setter Property="Icon" Value="{materialDesign:PackIcon FileDocumentMultipleOutline}"/>
                                         </Style>
                                     </materialDesign:Chip.Style>
-                                    <TextBlock FontFamily="{StaticResource HarmonyOsSans}" MaxWidth="170" TextWrapping="Wrap">
+                                    <TextBlock FontFamily="{StaticResource HarmonyOsSans}" MaxWidth="100" TextTrimming="CharacterEllipsis">
                                         <Run>
                                             <Run.Style>
                                                 <Style TargetType="Run">
@@ -2070,7 +2593,7 @@
                                     Icon="{materialDesign:PackIcon Group}"
                                     Click="ButtonClassPlansGroup_OnClick"
                                     IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock MaxWidth="170" TextWrapping="Wrap">
+                                    <TextBlock MaxWidth="100" TextTrimming="CharacterEllipsis">
                                         <TextBlock.DataContext>
                                             <MultiBinding Converter="{StaticResource ClassPlanGroupIdToClassPlanGroupConverter}">
                                                 <Binding Path="ProfileService.Profile.ClassPlanGroups"/>
@@ -2089,6 +2612,7 @@
                                      ScrollViewer.CanContentScroll="True"
                                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                                      ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                     SelectionChanged="RootTabControlNavigator_OnSelectionChanged"
                                      Visibility="{Binding ManagementService.Policy.DisableProfileEditing, Converter={StaticResource InverseBoolToVisConverter}}"
                                      Margin="6 -15 0 -15">
                                 <ListBox.ItemsPanel>
@@ -2131,10 +2655,20 @@
                                 <system:String>课表</system:String>
                                 <system:String>时间表</system:String>
                                 <system:String>科目</system:String>
+                                <system:String>调课</system:String>
                             </ListBox>
                             <StackPanel Grid.Column="2" Orientation="Horizontal"
                                         HorizontalAlignment="Right"
                                         VerticalAlignment="Center">
+                                <materialDesign:Chip
+                                    ToolTip="当前档案不受信任，部分功能受限。"
+                                    Icon="{materialDesign:PackIcon Warning}"
+                                    Click="ButtonUnTrustedProfile_OnClick"
+                                    Visibility="{Binding ProfileService.IsCurrentProfileTrusted, Converter={StaticResource InverseBoolToVisConverter}}">
+                                    <TextBlock>
+                                        <Run Text="不信任"/>
+                                    </TextBlock>
+                                </materialDesign:Chip>
                                 <materialDesign:Chip
                                     ToolTip="查看档案编辑帮助。"
                                     Icon="{materialDesign:PackIcon Help}"
@@ -2145,15 +2679,53 @@
                                         <Run Text="帮助"/>
                                     </TextBlock>
                                 </materialDesign:Chip>
-                                <materialDesign:Chip
-                                    ToolTip="从表格导入课表和时间表…"
-                                    Icon="{materialDesign:PackIcon Import}"
-                                    Click="ButtonImportFromFile_OnClick"
-                                    IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
-                                    <TextBlock>
-                                        <Run Text="从表格导入…"/>
-                                    </TextBlock>
-                                </materialDesign:Chip>
+                                <Grid>
+                                    <materialDesign:Chip
+                                        ToolTip="导入或导出档案…"
+                                        Icon="{materialDesign:PackIcon Import}"
+                                        Click="ButtonImportFromFile_OnClick"
+                                        IsEnabled="{Binding ViewModel.IsOfflineEditor, Converter={StaticResource BooleanToBooleanReConverter}, Mode=OneWay}">
+                                        <TextBlock>
+                                            <Run Text="导入/导出" />
+                                        </TextBlock>
+                                    </materialDesign:Chip>
+                                    <materialDesign:PopupEx
+                                        AllowsTransparency="True"
+                                        StaysOpen="False"
+                                        PopupAnimation="Fade"
+
+                                        IsOpen="{Binding ViewModel.IsProfileImportMenuOpened}">
+                                        <materialDesign:Card
+                                            MenuItem.Click="MenuItemImports_OnClick"
+                                            Margin="16"
+                                            Background="{DynamicResource MaterialDesignPaper}"
+                                            materialDesign:ElevationAssist.Elevation="Dp4"
+                                            TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+                                            <StackPanel Margin="0 4">
+                                                <TextBlock Text="导入" Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                           FontWeight="Bold"
+                                                           Margin="12 8 8 4" />
+                                                <MenuItem Header="从 Excel 表格导入…"
+                                                          Icon="{materialDesign:PackIcon FileExcelOutline}"
+                                                          Click="MenuItemImportFromExcel_OnClick" />
+                                                <MenuItem Header="从 CSES 导入…"
+                                                          Icon="{materialDesign:PackIcon FileCodeOutline}"
+                                                          Click="MenuItemImportFromCses_OnClick" />
+                                                <MenuItem Header="从其它课表软件导入…"
+                                                          Icon="{materialDesign:PackIcon ApplicationOutline}"
+                                                          Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                                                          CommandParameter="https://migrate.classisland.tech/" />
+                                                <Separator />
+                                                <TextBlock Text="导出" Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                           FontWeight="Bold"
+                                                           Margin="12 8 8 4" />
+                                                <MenuItem Header="导出到 CSES…"
+                                                          Click="MenuItemExportCses_OnClick"
+                                                          Icon="{materialDesign:PackIcon FileCodeOutline}" />
+                                            </StackPanel>
+                                        </materialDesign:Card>
+                                    </materialDesign:PopupEx>
+                                </Grid>
                             </StackPanel>
                         </Grid>
                     </materialDesign:ColorZone>

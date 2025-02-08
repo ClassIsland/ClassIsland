@@ -3,26 +3,46 @@ name: Build
 on:
   push:
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: '发布标签'
+        required: true
+        type: string
+      primary_version:
+        description: '主发布版本'
+        required: true
+        type: string
+      channels:
+        description: '发布通道'
+        required: true
+        type: string
+      is_test_mode:
+        description: '是否处于测试发布模式'
+        required: false
+        type: boolean
 
 jobs:
   build_app:
     runs-on: windows-latest  # For a list of available runner types, refer to
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     env:
-      Solution_Name: ClassIsland.sln                       # Replace with your solution name, i.e. MyWpfApp.sln.
-      # Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: ClassIsland/ClassIsland    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: ClassIsland/ClassIsland/ClassIsland.csproj                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      artifact_name: out_app_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+      isTestMode: ${{ github.event.inputs.is_test_mode }}
     strategy:
-      matrix: 
-        trim_assets: [true, false]
-    name: Build (AssetsTrimmed ${{ matrix.trim_assets }})
+      matrix:
+        trim_assets: ['true', 'false']
+        package: ['singleFile']
+        exclude:
+          - package: wap
+            trim_assets: 'true'
+    name: Build_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
       
       - name: List files
         run: ls
@@ -40,15 +60,27 @@ jobs:
       - name: Build application
         env:
           trim_assets: ${{ matrix.trim_assets }}
+          package: ${{ matrix.package }}
+          is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
+          test_signing_key: ${{ secrets.TEST_SIGNING_KEY }}
         run: |
           ls
-          pwsh -ep Bypass -c ./tools/publish.ps1 $env:trim_assets
-          
-      - name: Upload APP to artifacts
+          if ($env:package -eq "wap") {  
+            # WAP
+            pwsh -ep Bypass -c ./tools/release-gen/publish-wap.ps1 false $env:is_release
+          } else {  
+            # Single File
+            pwsh -ep Bypass -c ./tools/release-gen/publish.ps1 $env:trim_assets
+          }
+
+      - name: Upload Unsigned APP to artifacts
+        id: upload-unsigned-artifact
         uses: actions/upload-artifact@v4
         with:
-          name: out_app_assetsTrimmed_${{ matrix.trim_assets }}
-          path: ./out/*.zip
+          name: ${{ env.artifact_name }}
+          path: |
+            ./out/*.zip
+            ./out/*.appx
           
   build_nupkg:
     runs-on: windows-latest  # For a list of available runner types, refer to
@@ -65,6 +97,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
       - name: List files
         run: ls
@@ -84,7 +117,7 @@ jobs:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
-          pwsh -ep Bypass -c ./tools/publish-nupkg.ps1 $env:is_release
+          pwsh -ep Bypass -c ./tools/release-gen/publish-nupkg.ps1 $env:is_release
       
       - name: Upload Nuget packages to GitHub registry
         if: ${{ github.event_name != 'pull_request' }} 
@@ -100,25 +133,75 @@ jobs:
         with:
           name: out_nupkgs
           path: ./out/*.nupkg
-      
+
   publish:
     runs-on: windows-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    needs: [build_app, build_nupkg]
+    env:
+      isTestMode: ${{ github.event.inputs.is_test_mode == true }}
+    if: ${{ github.event.inputs.release_tag && github.event_name != 'pull_request' }}
+    needs: [ build_app, build_nupkg ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          submodules: recursive
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+
+      - name: Get commit hash
+        uses: prompt/actions-commit-hash@v3
+        id: commit
+        with:
+          prefix: "${{ github.event.inputs.release_tag }}+"
       
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
           path: ./out_artifacts
 
-      - name: Pre publish
+      - name: Create Sign Bundle
         run: |
-          pwsh -ep Bypass -c ./tools/pre-publish.ps1
+          pwsh -ep Bypass -c ./tools/release-gen/create-sign-bundle.ps1
+
+      - name: Upload Sign Bundle to artifacts
+        id: upload-sign-bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sign-bundle
+          path: ./ci_tmp/sign_bundle/*
+
+      - name: Sign Application
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: '${{ secrets.SIGNPATH_TOKEN }}'
+          organization-id: '74962648-db7a-4a10-bfdd-0637542e39df'
+          project-slug: 'ClassIsland'
+          artifact-configuration-slug: 'sign_bundle'
+          signing-policy-slug: release-signing
+          github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
+          wait-for-completion: true
+          output-artifact-directory: '/out_signed'
+          parameters: |
+            version: ${{ toJSON(steps.commit.outputs.long) }}
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.METADATA_DEPLOY_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Upload APP
+        env:
+          GHAPP_PRIVATE_KEY: ${{ secrets.GHAPP_PRIVATE_KEY }}
+          GHAPP_ID: 998668
+          GHAPP_INSTALLATION_ID: 54893567
+          ALIST_HOST: ${{ secrets.ALIST_HOST }}
+          ALIST_KEY: ${{ secrets.ALIST_KEY }}
+          primaryVersion: ${{ github.event.inputs.primary_version }}
+          channels: ${{ github.event.inputs.channels }}
+        run: |
+          pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
+          pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
           
       # - name: Sentry Release
       #   uses: getsentry/action-release@v1.7.0
@@ -133,11 +216,11 @@ jobs:
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ./out/ClassIsland.zip,./out/*.zip
+          artifacts: "./out/*.zip,./out/*.appx"
           draft: true
-          bodyFile: ./out/checksums.md
+          bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
-
+          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
       - name: Upload Nuget packages to NuGet Gallery
         if: ${{ github.event_name != 'pull_request' }}
         env:
@@ -153,6 +236,7 @@ jobs:
         run: |
           $env:app_ver = (git describe --abbrev=0 --tags)
           Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
-          pwsh -ep Bypass -c .\tools\pre-appcenter-upload.ps1
-          pwsh -ep Bypass -c .\tools\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
+          pwsh -ep Bypass -c .\tools\release-gen\pre-appcenter-upload.ps1
+          pwsh -ep Bypass -c .\tools\release-gen\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
+
 

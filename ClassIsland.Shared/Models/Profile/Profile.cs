@@ -27,6 +27,8 @@ public class Profile : ObservableRecipient
     private DateTime _tempClassPlanGroupExpireTime = DateTime.Now;
     private bool _isTempClassPlanGroupEnabled = false;
     private TempClassPlanGroupType _tempClassPlanGroupType = TempClassPlanGroupType.Inherit;
+    private string _id = Guid.NewGuid().ToString();
+    private ObservableDictionary<DateTime, OrderedSchedule> _orderedSchedules = new();
 
     /// <summary>
     /// 实例化对象
@@ -271,6 +273,7 @@ public class Profile : ObservableRecipient
         foreach (var i in _classPlans)
         {
             i.Value.TimeLayouts = TimeLayouts;
+            i.Value.ClassPlans = ClassPlans;
         }
     }
 
@@ -328,6 +331,7 @@ public class Profile : ObservableRecipient
             if (value == _overlayClassPlanId) return;
             _overlayClassPlanId = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(HasOverlayClassPlan));
         }
     }
 
@@ -442,4 +446,38 @@ public class Profile : ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    /// <summary>
+    /// 档案 ID
+    /// </summary>
+    public string Id
+    {
+        get => _id;
+        set
+        {
+            if (value == _id) return;
+            _id = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 已预定启用的课表
+    /// </summary>
+    public ObservableDictionary<DateTime, OrderedSchedule> OrderedSchedules
+    {
+        get => _orderedSchedules;
+        set
+        {
+            if (Equals(value, _orderedSchedules)) return;
+            _orderedSchedules = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否启用临时层课表
+    /// </summary>
+    [JsonIgnore]
+    public bool HasOverlayClassPlan => OverlayClassPlanId != null;
 }

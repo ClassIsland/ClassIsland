@@ -221,7 +221,7 @@ public partial class ExcelImportWindow : MyWindow
             }
         });
 
-        var filePath = $"./Temp/excel{Guid.NewGuid()}.xlsx";
+        var filePath = Path.Combine(App.AppTempFolderPath, $"excel{Guid.NewGuid()}.xlsx");
         await excel.SaveAsAsync(filePath);
         ExcelSourcePath = filePath ;
     }

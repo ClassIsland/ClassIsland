@@ -1,0 +1,38 @@
+﻿<ci:ComponentBase x:Class="ClassIsland.Controls.Components.SlideComponent"
+                  x:TypeArguments="componentSettings:SlideComponentSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.Components"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+             mc:Ignorable="d" 
+                  Loaded="SlideComponent_OnLoaded"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}">
+        <TabControl Grid.Column="0"
+                      Margin="-6 0"
+                      SelectedIndex="{Binding SelectedIndex}"
+                      ItemsSource="{Binding Settings.Children}"
+                      VerticalContentAlignment="Stretch">
+            <TabControl.ItemContainerStyle>
+                <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </Style>
+            </TabControl.ItemContainerStyle>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <ci:ComponentPresenter IsOnMainWindow="True" 
+                                               Settings="{Binding}"
+                                               HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                               HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                               Margin="6 0" />
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+        <!--<TextBlock Text="{Binding SelectedIndex}" Foreground="Red"/>-->
+    </Grid>
+</ci:ComponentBase>

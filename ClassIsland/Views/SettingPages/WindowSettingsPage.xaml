@@ -238,6 +238,14 @@
                                 </ci:SettingsControl.Switcher>
                             </ci:SettingsControl>
 
+                            <!-- 反转指针移入淡化 -->
+                            <ci:SettingsControl IconGlyph="MouseMoveUp"
+                                                Foreground="{DynamicResource MaterialDesignBody}"
+                                                Header="反转指针移入淡化"
+                                                Description="启用后，将默认淡化主界面，使主界面仅在鼠标移入时显示。此开关不影响隐藏主界面。"
+                                                IsOn="{Binding SettingsService.Settings.IsMouseInFadingReversed, Mode=TwoWay}"
+                                                Margin="0 6 0 0" />
+
                         </StackPanel>
                     </StackPanel>
                 </Expander>

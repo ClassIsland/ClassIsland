@@ -4,6 +4,7 @@
          xmlns:ci="http://classisland.tech/schemas/xaml/core"
          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
          xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
+         xmlns:converters="clr-namespace:ClassIsland.Converters"
          Startup="App_OnStartup"
          ShutdownMode="OnExplicitShutdown"
          DispatcherUnhandledException="App_OnDispatcherUnhandledException">
@@ -18,6 +19,7 @@
             <FontFamily x:Key="BackendFontFamily">Microsoft YaHei UI</FontFamily>
             <ci:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
             <ci:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
+            <Visibility x:Key="VisibilityCollapsedValue">Collapsed</Visibility>
 
             <Style TargetType="Slider" BasedOn="{StaticResource MaterialDesignSlider}">
                 <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
@@ -28,6 +30,7 @@
                     </Setter.Value>
                 </Setter>
             </Style>
+            <converters:MainWindowIsMainLineConverter x:Key="MainWindowIsMainLineConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </ci:AppBase>

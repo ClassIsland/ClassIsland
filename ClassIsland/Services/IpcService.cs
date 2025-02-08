@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.Ipc;
@@ -18,7 +19,7 @@ public class IpcService : IIpcService
     public IpcProvider IpcProvider { get; }
     public JsonIpcDirectRoutedProvider JsonRoutedProvider { get; }
 
-    private ObservableCollection<IpcPeer> ConnectedPeers { get; } = [];
+    private ObservableCollection<IpcPeer?> ConnectedPeers { get; } = [];
 
     public IpcService(ILogger<IpcService> logger)
     {
@@ -43,17 +44,21 @@ public class IpcService : IIpcService
 
     public async Task BroadcastNotificationAsync(string id)
     {
+        ConnectedPeers.Remove(null);
         foreach (var i in ConnectedPeers)
         {
-            await i.JsonPeerProxy.NotifyAsync(id);
+            if (i?.JsonPeerProxy != null) 
+                await i.JsonPeerProxy.NotifyAsync(id);
         }
     }
 
     public async Task BroadcastNotificationAsync<T>(string id, T obj) where T : class
     {
+        ConnectedPeers.Remove(null);
         foreach (var i in ConnectedPeers)
         {
-            await i.JsonPeerProxy.NotifyAsync(id, obj);
+            if (i?.JsonPeerProxy != null) 
+                await i.JsonPeerProxy.NotifyAsync(id, obj);
         }
     }
 }

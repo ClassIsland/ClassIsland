@@ -9,6 +9,11 @@
         xmlns:notificationEffects="clr-namespace:ClassIsland.Controls.NotificationEffects"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:ruleset="clr-namespace:ClassIsland.Core.Models.Ruleset;assembly=ClassIsland.Core"
+        xmlns:actionControls="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
+        xmlns:action="clr-namespace:ClassIsland.Core.Models.Action;assembly=ClassIsland.Core"
+        xmlns:mdXaml="https://github.com/whistyun/MdXaml"
+        xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
+        xmlns:action1="clr-namespace:ClassIsland.Shared.Models.Action;assembly=ClassIsland.Shared"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -21,6 +26,96 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="ScheduleCalendar">
+                <Grid>
+                    <controls:ScheduleCalendarControl/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="MarkdownTest">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="TextBoxMarkdown" Grid.Column="0"
+                             AcceptsReturn="True"
+                             VerticalContentAlignment="Top"
+                             TextWrapping="Wrap"
+                             TextChanged="TextBoxMarkdown_OnTextChanged"/>
+                    <ScrollViewer Grid.Column="1">
+                        <Grid>
+                            <mdXaml:MarkdownScrollViewer
+                                    x:Name="MarkdownReader"
+                                    FontFamily="{StaticResource HarmonyOsSans}"
+                                    FontWeight="Normal"
+                                    PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    HorizontalContentAlignment="Stretch"
+                                    IsSelectionEnabled="False"
+                                    ScrollViewer.CanContentScroll="True"
+                                    IsToolBarVisible="False"
+                                    Zoom="90"
+                                    Padding="0"
+                                    ScrollViewer.PanningMode="None"
+                                    ToolTipService.Placement="MousePoint">
+                                <mdXaml:MarkdownScrollViewer.Resources>
+                                    <Style TargetType="ScrollViewer"
+                                               BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                        <Setter Property="CanContentScroll" Value="True" />
+                                        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+                                    </Style>
+                                    <Style TargetType="Hyperlink">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Foreground"
+                                                            Value="{DynamicResource PrimaryHueLightBrush}">
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                        <Setter Property="Foreground"
+                                                    Value="{DynamicResource PrimaryHueMidBrush}" />
+                                        <Setter Property="ToolTipService.Placement" Value="Mouse" />
+                                    </Style>
+                                </mdXaml:MarkdownScrollViewer.Resources>
+                                <mdXaml:MarkdownScrollViewer.Style>
+                                    <Style TargetType="mdXaml:MarkdownScrollViewer">
+                                        <Style.Resources>
+
+                                        </Style.Resources>
+                                    </Style>
+                                </mdXaml:MarkdownScrollViewer.Style>
+                            </mdXaml:MarkdownScrollViewer>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+            <TabItem Header="SecureDesktop">
+                <StackPanel>
+                    <Button Click="ButtonBase_OnClick">test desktop</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="AuthorizeWindow">
+                <StackPanel>
+                    <Button Content="Show auth window" Click="ButtonShowAuthWindow_OnClick"/>
+                    <Button Content="Create credential" Click="ButtonCreateCredential_OnClick"/>
+                    <Button Content="Authorize" Click="ButtonAuthorize_OnClick"/>
+                    <ci:CredentialEditControl CredentialString="{Binding Text, ElementName=CredentialStringTextBox, Mode=TwoWay}"/>
+                    <TextBox x:Name="CredentialStringTextBox"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="ActionControl">
+                <Grid Background="#99000000">
+                    <actionControls:ActionControl Background="{DynamicResource MaterialDesignPaper}"
+                                          HorizontalAlignment="Right">
+                        <actionControls:ActionControl.ActionSet>
+                            <action1:ActionSet />
+                        </actionControls:ActionControl.ActionSet>
+                    </actionControls:ActionControl>
+
+                </Grid>
+            </TabItem>
             <TabItem Header="FakeLoading">
                 <StackPanel>
                     <controls:LoadingMask x:Name="LoadingMask"
@@ -49,19 +144,33 @@
                 </Grid>
             </TabItem>
             <TabItem Header="IconControl">
-                <Grid>
+                <StackPanel HorizontalAlignment="Center">
                     <ci:IconControl PackIconKind="Github"
                                     FallbackPackIconKind="QuestionMarkCircleOutline"
                                     Width="64" Height="64"
                                     IconKind="Image"
                                     ImageSource="/Assets/HoYoStickers/光辉矢愿_想我了吗.png"/>
-                </Grid>
+                    <ci:StickerControl PackIconKind="Github"
+                                    FallbackPackIconKind="QuestionMarkCircleOutline"
+                                    Width="64" Height="64"
+                                    StickerToolTip="帕姆_点赞"
+                                    ImageSource="/Assets/HoYoStickers/帕姆_点赞.png"/>
+                </StackPanel>
             </TabItem>
             <TabItem Header="LessonsListBox">
-                <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
-                                   SelectedIndex="{Binding LessonsService.CurrentSelectedIndex}"
-                                   Subjects="{Binding ProfileService.Profile.Subjects}"
-                                   IsLiveUpdatingEnabled="False"/>
+                <StackPanel>
+                    <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
+                                       SelectedIndex="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWayToSource}"
+                                       Subjects="{Binding ProfileService.Profile.Subjects}"
+                                       IsLiveUpdatingEnabled="False"/>
+
+                    <ci:LessonsListBox ClassPlan="{Binding LessonsService.CurrentClassPlan}"
+                                       SelectedIndex="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWayToSource}"
+                                       Subjects="{Binding ProfileService.Profile.Subjects}"
+                                       IsLiveUpdatingEnabled="False"
+                                       HighlightChangedClass="True"
+                                       DiscardHidingDefault="True" />
+                </StackPanel>
             </TabItem>
             <TabItem Header="水波纹提醒">
                 <DockPanel >

@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
@@ -29,6 +30,7 @@ using MaterialDesignThemes.Wpf;
 using MdXaml;
 using Sentry;
 using WebSocketSharp;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -41,6 +43,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     public SettingsService SettingsService { get; }
 
     public UpdateService UpdateService { get; }
+    public IManagementService ManagementService { get; }
 
     public UpdateSettingsViewModel ViewModel { get; } = new();
 
@@ -54,12 +57,12 @@ public partial class UpdatesSettingsPage : SettingsPageBase
         set => SetValue(IsEasterEggTriggeredProperty, value);
     }
 
-    public UpdatesSettingsPage(SettingsService settingsService, UpdateService updateService)
+    public UpdatesSettingsPage(SettingsService settingsService, UpdateService updateService, IManagementService managementService)
     {
         DataContext = this;
         SettingsService = settingsService;
         UpdateService = updateService;
-        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        ManagementService = managementService;
         InitializeComponent();
     }
 
@@ -88,24 +91,15 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private void UpdateCache()
     {
-        var e = new Markdown()
-        {
-            Heading1Style = (Style)FindResource("MarkdownHeadline1Style"),
-            Heading2Style = (Style)FindResource("MarkdownHeadline2Style"),
-            Heading3Style = (Style)FindResource("MarkdownHeadline3Style"),
-            Heading4Style = (Style)FindResource("MarkdownHeadline4Style"),
-            //CodeBlockStyle = (Style)FindResource("MarkdownCodeBlockStyle"),
-            //NoteStyle = (Style)FindResource("MarkdownNoteStyle"),
-            ImageStyle = (Style)FindResource("MarkdownImageStyle"),
-        };
-        var fd = e.Transform(SettingsService.Settings.UpdateReleaseInfo);
-        fd.FontFamily = (FontFamily)FindResource("HarmonyOsSans");
-        ViewModel.CurrentMarkdownDocument = fd;
+        ViewModel.CurrentMarkdownDocument = MarkdownConvertHelper.ConvertMarkdown(UpdateService.SelectedVersionInfo.ChangeLogs);
     }
 
     private void RefreshDescription()
     {
-        ViewModel.SelectedChannelModel = UpdateService.UpdateChannels.FirstOrDefault(c => c.RootUrl == SettingsService.Settings.SelectedChannel) ?? new UpdateChannel();
+        if (UpdateService.Index.Channels.TryGetValue(SettingsService.Settings.SelectedUpdateChannelV2, out var channelInfo))
+        {
+            ViewModel.SelectedChannelModel = channelInfo;
+        }
     }
 
     private void UpdateErrorMessage_OnActionClick(object sender, RoutedEventArgs e)
@@ -125,7 +119,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private async void ButtonRestartToUpdate_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!File.Exists(".\\UpdateTemp\\update.zip"))
+        if (!File.Exists(Path.Combine(UpdateService.UpdateTempPath, "update.zip")))
             return;
         await UpdateService.RestartAppToUpdateAsync();
     }
@@ -208,6 +202,28 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private void IconUpdateStatus_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
+        if (ManagementService.Policy.DisableEasterEggs)
+        {
+            return;
+        }
         IsEasterEggTriggered = true;
+    }
+    private void UpdateServiceOnUpdateInfoUpdated(object? sender, EventArgs e)
+    {
+        UpdateCache();
+        RefreshDescription();
+    }
+
+    private void UpdatesSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+        UpdateService.UpdateInfoUpdated += UpdateServiceOnUpdateInfoUpdated;
+    }
+
+
+    private void UpdatesSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
+        UpdateService.UpdateInfoUpdated -= UpdateServiceOnUpdateInfoUpdated;
     }
 }

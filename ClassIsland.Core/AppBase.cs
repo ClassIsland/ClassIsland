@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Windows;
 using ClassIsland.Shared;
 
@@ -31,6 +32,16 @@ public abstract class AppBase : Application, IAppHost
     public abstract bool IsAssetsTrimmed();
 
     /// <summary>
+    /// 应用是否属于开发构建
+    /// </summary>
+    public abstract bool IsDevelopmentBuild { get; }
+
+    /// <summary>
+    /// 应用是否处于 MSIX 打包
+    /// </summary>
+    public abstract bool IsMsix { get; }
+
+    /// <summary>
     /// 当应用启动时触发。
     /// </summary>
     public abstract event EventHandler? AppStarted;
@@ -40,7 +51,34 @@ public abstract class AppBase : Application, IAppHost
     /// </summary>
     public abstract event EventHandler? AppStopping;
 
+    /// <summary>
+    /// 应用打包类型
+    /// </summary>
+    public string PackagingType => IsMsix ? "msix" : "singleFile";
+
+    /// <summary>
+    /// 应用分发频道
+    /// </summary>
+    public string AppSubChannel => $"windows_x64_{(IsAssetsTrimmed() ? "trimmed" : "full")}_{PackagingType}";
+
     internal AppBase()
     {
     }
+
+    /// <summary>
+    /// 应用版本
+    /// </summary>
+    public static string AppVersion => Assembly.GetExecutingAssembly().GetName().Version!.ToString();
+
+    /// <summary>
+    /// 应用版本代号
+    /// </summary>
+    // ReSharper disable once StringLiteralTypo
+    public static string AppCodeName => "Himeko";
+
+    /// <summary>
+    /// 应用长版本号
+    /// </summary>
+    public static string AppVersionLong =>
+        $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
 }

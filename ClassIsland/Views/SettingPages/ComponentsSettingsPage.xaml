@@ -13,6 +13,7 @@
       xmlns:controls3="clr-namespace:ClassIsland.Controls"
       xmlns:ci="http://classisland.tech/schemas/xaml/core"
       xmlns:components="clr-namespace:ClassIsland.Core.Models.Components;assembly=ClassIsland.Core"
+      xmlns:converters="clr-namespace:ClassIsland.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ComponentsSettingsPage"
@@ -26,6 +27,7 @@
       d:DataContext="{d:DesignInstance local:ComponentsSettingsPage}">
 
     <controls:SettingsPageBase.Resources>
+        <ci:BindingProxy x:Key="DataProxy" Data="{Binding Mode=OneWay}"/>
         <CollectionViewSource x:Key="RegisteredComponentsSource" 
                               Source="{x:Static registry:ComponentRegistryService.Registered}"/>
 
@@ -45,15 +47,94 @@
 
         <ci:RulesetControl x:Key="RulesetControl" />
 
+        <local:ComponentsSettingsPageDropHandler x:Key="MainComponentsSettingsPageDropHandler" Components="{Binding ComponentsService.CurrentComponents, Mode=OneWay}"/>
+        <local:ComponentsSettingsPageDropHandler x:Key="ChildComponentsSettingsPageDropHandler" 
+                                                 Components="{Binding Data.ViewModel.SelectedComponentContainerChildren, Mode=OneWay, Source={StaticResource DataProxy}}"
+                                                 CurrentSelectedContainerComponentSettings="{Binding Data.ViewModel.SelectedContainerComponent, Mode=OneWay, Source={StaticResource DataProxy}}"/>
+
+        <Style x:Key="ComponentListBoxStyle" BasedOn="{StaticResource MaterialDesignListBox}"
+               TargetType="ListBox">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="dd:DragDrop.IsDragSource" Value="True"/>
+            <Setter Property="dd:DragDrop.IsDropTarget" Value="True"/>
+            <Setter Property="dd:DragDrop.UseDefaultEffectDataTemplate" Value="False"/>
+            <Setter Property="dd:DragDrop.SelectDroppedItems" Value="True"/>
+            <Setter Property="dd:DragDrop.DropTargetAdornerBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+            <Setter Property="dd:DragDrop.DropHandler" Value="{Binding}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="HorizontalOnly"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="dd:DragDrop.EffectMoveAdornerTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <materialDesign:ColorZone Mode="PrimaryMid" Height="24"
+                                                  CornerRadius="12">
+                            <controls2:IconText Kind="ArrowAll" Text="移动"
+                                                Margin="4 0"
+                                                IconMargin="2"
+                                                TextElement.FontWeight="Medium"
+                                                VerticalAlignment="Center"/>
+                        </materialDesign:ColorZone>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="{x:Type components:ComponentSettings}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <materialDesign:PackIcon Kind="{Binding AssociatedComponentInfo.PackIcon}"
+                                                     VerticalAlignment="Center"
+                                                     />
+                            <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
+                                       VerticalAlignment="Center"/>
+                            <Button Content="{materialDesign:PackIcon OpenInBrowser}"
+                                    Margin="4 -16 -4 -16"
+                                    VerticalAlignment="Center"
+                                    ToolTip="查看子组件"
+                                    Click="ButtonShowChildrenComponents_OnClick"
+                                    Style="{StaticResource MaterialDesignToolForegroundButton}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                        <Binding Path="IsSelected" RelativeSource="{RelativeSource FindAncestor, AncestorType=ListBoxItem}"/>
+                                        <Binding Path="AssociatedComponentInfo.IsComponentContainer"/>
+                                    </MultiBinding>
+                                </Button.Visibility>
+                            </Button>
+                            <Button Content="{materialDesign:PackIcon Remove}"
+                                    Foreground="IndianRed"
+                                    Margin="4 -16 -4 -16"
+                                    VerticalAlignment="Center"
+                                    ToolTip="删除"
+                                    Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Click="ButtonRemoveSelectedComponent_OnClick"
+                                    Style="{StaticResource MaterialDesignToolForegroundButton}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" IsItemsHost="True"
+                                    Height="40"
+                                    CanHorizontallyScroll="True"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <converters:HorizontalAlignmentToIntConverter x:Key="HorizontalAlignmentToIntConverter" />
+
     </controls:SettingsPageBase.Resources>
     <Grid Margin="8 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <!-- TODO: 组件方案管理 -->
+        <!-- ROW 0 组件方案管理 -->
         <Grid Grid.Row="0" MaxWidth="750">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -92,77 +173,73 @@
                         Style="{StaticResource MaterialDesignToolForegroundButton}"/>
             </StackPanel>
         </Grid>
-        <!-- 列表编辑区域 -->
+        <!-- ROW 1 列表编辑区域 -->
         <Border Grid.Row="1"
                 Background="{DynamicResource MaterialDesignToolBarBackground}"
                 Margin="-8 8"/>
         <ListBox Grid.Row="1"
                  Margin="-8 8"
-                 HorizontalAlignment="Stretch"
                  ItemsSource="{Binding ComponentsService.CurrentComponents}"
-                 dd:DragDrop.IsDragSource="True"
-                 dd:DragDrop.IsDropTarget="True"
-                 dd:DragDrop.UseDefaultEffectDataTemplate="False"
-                 dd:DragDrop.SelectDroppedItems="True"
-                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
-                 HorizontalContentAlignment="Center"
+                 SelectedItem="{Binding ViewModel.SelectedComponentSettingsMain}"
                  SelectionChanged="SelectorComponents_OnSelectionChanged"
-                 ScrollViewer.PanningMode="HorizontalOnly" 
-                 ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                 SelectedItem="{Binding ViewModel.SelectedComponentSettings}">
-            <dd:DragDrop.EffectMoveAdornerTemplate>
-                <DataTemplate>
-                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24"
-                                              CornerRadius="12">
-                        <controls2:IconText Kind="ArrowAll" Text="移动"
-                                            Margin="4 0"
-                                            IconMargin="2"
-                                            TextElement.FontWeight="Medium"
-                                            VerticalAlignment="Center"/>
-                    </materialDesign:ColorZone>
-                </DataTemplate>
-            </dd:DragDrop.EffectMoveAdornerTemplate>
-
-            <dd:DragDrop.DropHandler>
-                <local:ComponentsSettingsPageDropHandler/>
-            </dd:DragDrop.DropHandler>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="{Binding AssociatedComponentInfo.PackIcon}"
-                                                 VerticalAlignment="Center"
-                                                 />
-                        <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
-                                   VerticalAlignment="Center"/>
-                        <Button Content="{materialDesign:PackIcon Remove}"
-                                Foreground="IndianRed"
-                                Margin="4 -16 -4 -16"
-                                VerticalAlignment="Center"
-                                ToolTip="删除"
-                                Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                Click="ButtonRemoveSelectedComponent_OnClick"
-                                Style="{StaticResource MaterialDesignToolForegroundButton}"/>
-                    </StackPanel>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" IsItemsHost="True"
-                                Height="40"
-                                CanHorizontallyScroll="True"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
+                 Style="{StaticResource ComponentListBoxStyle}">
         </ListBox>
-        <!-- 选中组件信息 -->
+        <!-- ROW 2 选中组件信息 -->
         <StackPanel Grid.Row="2" MaxWidth="750">
             <StackPanel Orientation="Horizontal">
                 
             </StackPanel>
         </StackPanel>
 
-        <!-- 组件设置 -->
-        <Grid Grid.Row="3" HorizontalAlignment="Stretch">
+        <!-- ROW 3 容器组件 -->
+        <GroupBox Grid.Row="3" Visibility="{Binding ViewModel.IsComponentChildrenViewOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <GroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentsSettingsPage}}">
+                        <Grid.Resources>
+                            
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="{materialDesign:PackIcon ArrowUpLeft}"
+                                Margin="0 -16 4 -16"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right"
+                                ToolTip="返回上一层级"
+                                Visibility="{Binding ViewModel.CanChildrenNavigateBack, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
+                                Click="ButtonNavigateUp_OnClick"
+                                Style="{StaticResource MaterialDesignToolForegroundButton}" />
+                        <TextBlock VerticalAlignment="Center"
+                                   Grid.Column="1"
+                                   HorizontalAlignment="Left">
+                            <Run Text="此组件的子组件" />
+                        </TextBlock>
+                        <Button Grid.Column="1" Content="{materialDesign:PackIcon Remove}"
+                                Margin="4 -16 -4 -16"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right"
+                                ToolTip="关闭"
+                                Click="ButtonChildrenViewClose_OnClick"
+                                Style="{StaticResource MaterialDesignToolForegroundButton}" />
+                    </Grid>
+                </DataTemplate>
+            </GroupBox.HeaderTemplate>
+            <StackPanel Margin="0 0 0 0">
+                
+                <ListBox Margin="-8 -8 -8 -8"
+                         Background="{DynamicResource MaterialDesignToolBarBackground}"
+                         ItemsSource="{Binding ViewModel.SelectedComponentContainerChildren}"
+                         SelectedItem="{Binding ViewModel.SelectedComponentSettingsChild}"
+                         Style="{StaticResource ComponentListBoxStyle}"
+                         SelectionChanged="SelectorComponentsChildren_OnSelectionChanged">
+                </ListBox>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- ROW 4 组件设置 -->
+        <Grid Grid.Row="4" HorizontalAlignment="Stretch">
 
             <TabControl HorizontalContentAlignment="Left" 
                         MaxWidth="750"
@@ -233,7 +310,7 @@
                     </ListBox>
                 </TabItem>
                 <TabItem Header="组件设置" Visibility="{Binding ViewModel.IsComponentSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <controls3:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
+                    <controls2:ComponentPresenter Settings="{Binding ViewModel.SelectedComponentSettings}"
                                                   IsPresentingSettings="True"/>
                 </TabItem>
                 <TabItem Header="高级设置" Visibility="{Binding ViewModel.IsComponentAdvancedSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -326,6 +403,7 @@
                                         <!-- 字体颜色 -->
                                         <controls2:SettingsCard IconGlyph="FormatColorFill"
                                                                 Header="字体颜色"
+                                                                IsOn="True"
                                                                 Description="调整字体颜色，将覆盖在【外观】中的设置。"
                                                                 Margin="0 0 0 6">
                                             <controls2:SettingsCard.Switcher>
@@ -339,6 +417,108 @@
                                                 </StackPanel>
                                             </controls2:SettingsCard.Switcher>
                                         </controls2:SettingsCard>
+
+                                        <Separator Margin="0 16 0 8" />
+                                        <controls2:IconText Kind="Grid" Text="布局" Margin="0 0 0 8" />
+                                        <!-- 对齐方式 -->
+                                        <controls2:SettingsCard IconGlyph="AlignHorizontalCenter"
+                                                               Header="对齐方式"
+                                                               IsOn="True"
+                                                               Description="指定组件在显示容器中对齐的方式。"
+                                                               Margin="0 0 0 6">
+                                            <controls2:SettingsCard.Switcher>
+                                                <Grid>
+                                                    <ListBox SelectedIndex="{Binding HorizontalAlignment, Converter={StaticResource HorizontalAlignmentToIntConverter}}">
+                                                        <ListBox.ItemContainerStyle>
+                                                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                                                <Style.Triggers>
+                                                                    <Trigger Property="IsSelected" Value="True">
+                                                                        <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                                                                    </Trigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ListBox.ItemContainerStyle>
+                                                        <ListBox.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                                                            </ItemsPanelTemplate>
+                                                        </ListBox.ItemsPanel>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalLeft}" ToolTip="左对齐"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalCenter}" ToolTip="居中"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalRight}" ToolTip="右对齐"/>
+                                                        <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalDistribute}" ToolTip="拉伸"/>
+                                                    </ListBox>
+                                                </Grid>
+                                            </controls2:SettingsCard.Switcher>
+                                        </controls2:SettingsCard>
+                                        <!-- 固定宽度 -->
+                                        <controls2:SettingsCard IconGlyph="PinOutline"
+                                                               Header="固定宽度"
+                                                               IsOn="True"
+                                                               Description="启用后，组件将使用固定宽度，不会自动适应内容宽度。"
+                                                               Margin="0 0 0 6">
+                                            <controls2:SettingsCard.Switcher>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBox VerticalAlignment="Center"
+                                                             materialDesign:TextFieldAssist.SuffixText="px"
+                                                             Visibility="{Binding IsFixedWidthEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                             Margin="0 0 6 0"
+                                                             Width="100"
+                                                             Text="{Binding FixedWidth, Converter={StaticResource IntToStringConverter}}"/>
+                                                    <ToggleButton VerticalAlignment="Center"
+                                                                  IsChecked="{Binding IsFixedWidthEnabled}" />
+                                                </StackPanel>
+                                            </controls2:SettingsCard.Switcher>
+                                        </controls2:SettingsCard>
+                                        <!-- 宽度限制 -->
+                                        <materialDesign:Card Margin="0 0 0 6"
+                                                             Visibility="{Binding IsFixedWidthEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
+                                            <Expander Background="Transparent"
+                                                      IsExpanded="True"
+                                                      TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                                                <Expander.Header>
+                                                    <controls2:SettingsControl IconGlyph="Resize"
+                                                                              Foreground="{DynamicResource MaterialDesignBody}"
+                                                                              Header="宽度限制"
+                                                                              IsOn="True"
+                                                                              Description="限制控件的最大和最小宽度。"
+                                                                              HasSwitcher="False"
+                                                                              Margin="-12 0" />
+                                                </Expander.Header>
+                                                <Grid Margin="36 0 48 12">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition/>
+                                                        <ColumnDefinition Width="100"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- 最小宽度 -->
+                                                    <ToggleButton Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"
+                                                                  Margin="0 0 4 0"
+                                                                  IsChecked="{Binding IsMinWidthEnabled}"/>
+                                                    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"
+                                                               Text="最小宽度"/>
+                                                    <TextBox Grid.Row="0" Grid.Column="2" VerticalAlignment="Center"
+                                                             materialDesign:TextFieldAssist.SuffixText="px"
+                                                             IsEnabled="{Binding IsMinWidthEnabled}"
+                                                             Text="{Binding MinWidth, Converter={StaticResource IntToStringConverter}}"/>
+                                                    <!-- 最大宽度 -->
+                                                    <ToggleButton Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"
+                                                                  Margin="0 0 4 0"
+                                                                  IsChecked="{Binding IsMaxWidthEnabled}"/>
+                                                    <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
+                                                               Text="最大宽度"/>
+                                                    <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"
+                                                             materialDesign:TextFieldAssist.SuffixText="px"
+                                                             IsEnabled="{Binding IsMaxWidthEnabled}"
+                                                             Text="{Binding MaxWidth, Converter={StaticResource IntToStringConverter}}"/>
+                                                </Grid>
+                                            </Expander>
+                                        </materialDesign:Card>
                                     </StackPanel>
                                 </ScrollViewer>
                             </DataTemplate>
@@ -346,6 +526,25 @@
                     </ContentPresenter>
                 </TabItem>
             </TabControl>
+
+            <Grid MaxWidth="750" Visibility="{Binding ViewModel.IsComponentAdvancedSettingsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right">
+                    <TextBox Text="{Binding ViewModel.SelectedComponentSettings.RelativeLineNumber, Converter={StaticResource IntToStringConverter}}"
+                             Width="70"
+                             materialDesign:HintAssist.Hint="相对行号"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Content="{materialDesign:PackIcon ArrowUp}"
+                            Click="ButtonMoveToPrevLine_OnClick"
+                            ToolTip="移动到上一行"/>
+                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                            Content="{materialDesign:PackIcon ArrowDown}"
+                            Click="ButtonMoveToNextLine_OnClick"
+                            ToolTip="移动到下一行"/>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </controls:SettingsPageBase>

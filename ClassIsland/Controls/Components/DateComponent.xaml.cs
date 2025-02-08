@@ -49,7 +49,8 @@ public partial class DateComponent : ComponentBase, INotifyPropertyChanged
         LessonsService = lessonsService;
         InitializeComponent();
         ExactTimeService = exactTimeService;
-        LessonsService.PostMainTimerTicked += UpdateDate;
+        Loaded += (_, _) => LessonsService.PostMainTimerTicked += UpdateDate;
+        Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= UpdateDate;
     }
 
     private void UpdateDate(object? sender, EventArgs e)

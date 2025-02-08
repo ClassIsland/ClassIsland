@@ -89,7 +89,7 @@ public class WindowRuleService : IWindowRuleService
         return s.State switch
         {
             0 => !(fullscreen || maximize || minimize),
-            1 => maximize,
+            1 => maximize && !fullscreen,
             2 => minimize,
             3 => fullscreen,
             _ => false
@@ -147,5 +147,13 @@ public class WindowRuleService : IWindowRuleService
         {
             ForegroundWindowChanged?.Invoke(hook, @event, hwnd, idObject, child, thread, time);
         });
+    }
+
+    public unsafe bool IsForegroundWindowClassIsland()
+    {
+        uint pid = 0;
+        GetWindowThreadProcessId(ForegroundHwnd, &pid);
+        var process = Process.GetProcessById((int)pid);
+        return process.Id == Environment.ProcessId;
     }
 }

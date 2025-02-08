@@ -13,27 +13,6 @@ namespace ClassIsland.Services;
 
 public class TaskBarIconService : IHostedService, ITaskBarIconService
 {
-    private SettingsService SettingsService { get; }
-
-    public TaskBarIconService(SettingsService settingsService)
-    {
-        SettingsService = settingsService;
-        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
-        UpdateMenuAction();
-    }
-
-    private void UpdateMenuAction()
-    {
-        // 由于 ClassIsland 现在会自行处理左键抬起事件来显示菜单，
-        // 所以只保留默认的右键打开菜单方式。
-        MainTaskBarIcon.MenuActivation = PopupActivationMode.RightClick;
-    }
-
-    private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        UpdateMenuAction();
-    }
-
     public TaskbarIcon MainTaskBarIcon
     {
         get;

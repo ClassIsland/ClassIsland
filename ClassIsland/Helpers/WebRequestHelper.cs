@@ -1,13 +1,17 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Windows;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 
 using Microsoft.Extensions.Logging;
+using Org.BouncyCastle.Bcpg.OpenPgp;
+using Org.BouncyCastle.Security;
+using PgpCore;
 using Sentry;
 
 namespace ClassIsland.Helpers;
@@ -19,7 +23,7 @@ public class WebRequestHelper
 
     private static readonly int MaxRetries = 7;
 
-    public static async Task<T> GetJson<T>(Uri uri, int retries=3, CancellationToken? cancellationToken=null)
+    public static async Task<T> GetJson<T>(Uri uri, int retries=3, CancellationToken? cancellationToken=null, bool verifySign=false, string? publicKey=null)
     {
         var logger = IAppHost.TryGetService<ILogger<WebRequestHelper>>();
         cancellationToken = cancellationToken ?? CancellationToken.None;
@@ -34,8 +38,19 @@ public class WebRequestHelper
         {
             try
             {
-                var str = await HttpClient.GetStringAsync(uri, cancellationToken.Value);
-                var r = JsonSerializer.Deserialize<T>(str, JsonOptions);
+                var data = await HttpClient.GetStringAsync(uri, cancellationToken.Value);
+                if (verifySign && publicKey != null)
+                {
+                    var signUri = new UriBuilder(uri);
+                    signUri.Path += ".sig";
+                    var sign = await HttpClient.GetByteArrayAsync(signUri.Uri, CancellationToken.None);
+                    var valid = DetachedSignatureProcessor.VerifyDetachedSignature(data, sign, publicKey);
+                    if (!valid)
+                    {
+                        throw new GeneralSecurityException("数据签名校验失败。");
+                    }
+                }
+                var r = JsonSerializer.Deserialize<T>(data, JsonOptions);
                 return r == null ? throw new Exception("Json.Deserialize returned null value.") : r;
             }
             catch (Exception ex)
@@ -53,9 +68,9 @@ public class WebRequestHelper
         throw new Exception($"在 {retries} 次重试后无法完成对 {uri} 的GET请求。", innerException);
     }
 
-    public static async Task<T> SaveJson<T>(Uri uri, string path)
+    public static async Task<T> SaveJson<T>(Uri uri, string path, int retries = 3, CancellationToken? cancellationToken = null, bool verifySign = false, string? publicKey = null)
     {
-        var j = await GetJson<T>(uri);
+        var j = await GetJson<T>(uri, retries, cancellationToken, verifySign, publicKey);
         ConfigureFileHelper.SaveConfig(path, j);
         return j;
     }

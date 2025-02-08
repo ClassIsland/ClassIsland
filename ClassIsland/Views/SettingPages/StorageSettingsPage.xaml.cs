@@ -24,6 +24,7 @@ using Grpc.Core.Logging;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
+using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -71,7 +72,7 @@ public partial class StorageSettingsPage
         {
             Process.Start(new ProcessStartInfo()
             {
-                FileName = System.IO.Path.GetFullPath("./Backups"),
+                FileName = System.IO.Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Backups")),
                 UseShellExecute = true
             });
         }

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -45,6 +47,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
     private IAttachedSettingsHostService AttachedSettingsHostService { get; }
 
     private ILessonsService LessonsService { get; }
+    public IActionService ActionService { get; }
 
     private List<string> ShownAlerts { get; } = new();
 
@@ -52,13 +55,15 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         IAttachedSettingsHostService attachedSettingsHostService,
         IWeatherService weatherService,
         SettingsService settingsService,
-        ILessonsService lessonsService)
+        ILessonsService lessonsService,
+        IActionService actionService)
     {
         NotificationHostService = notificationHostService;
         WeatherService = weatherService;
         SettingsService = settingsService;
         AttachedSettingsHostService = attachedSettingsHostService;
         LessonsService = lessonsService;
+        ActionService = actionService;
 
         NotificationHostService.RegisterNotificationProvider(this);
 
@@ -68,6 +73,30 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
         LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
         LessonsService.OnClass += NotificationHostServiceOnOnClass;
+
+        ActionService.RegisterActionHandler("classisland.notification.weather", (settings, _) => 
+            AppBase.Current.Dispatcher.Invoke(() => HandleWeatherAction(settings)));
+    }
+
+    private void HandleWeatherAction(object? s)
+    {
+        if (s is not WeatherNotificationActionSettings settings)
+        {
+            return;
+        }
+
+        switch (settings.NotificationKind)
+        {
+            case 0:
+                ShowWeatherForecastCore();
+                break;
+            case 1:
+                ShowAlertsNotificationCore();
+                break;
+            case 2:
+                ShowWeatherForecastHourlyCore();
+                break;
+        }
     }
 
     private void NotificationHostServiceOnOnClass(object? sender, EventArgs e)
@@ -89,10 +118,25 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
+        ShowWeatherForecastCore();
+    }
+
+    private void ShowWeatherForecastCore()
+    {
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
             MaskContent = new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
             OverlayContent = new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
+            OverlayDuration = TimeSpan.FromSeconds(15)
+        });
+    }
+
+    private void ShowWeatherForecastHourlyCore()
+    {
+        NotificationHostService.ShowNotification(new NotificationRequest()
+        {
+            MaskContent = new WeatherHourlyForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
+            OverlayContent = new WeatherHourlyForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
             OverlayDuration = TimeSpan.FromSeconds(15)
         });
     }
@@ -117,6 +161,11 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
             return;
         }
 
+        ShowAlertsNotificationCore();
+    }
+
+    private void ShowAlertsNotificationCore()
+    {
         foreach (var i in SettingsService.Settings.LastWeatherInfo.Alerts.Where(i => !ShownAlerts.Contains(i.Detail)))
         {
             var t = i.Detail.Length / Settings.WeatherAlertSpeed;

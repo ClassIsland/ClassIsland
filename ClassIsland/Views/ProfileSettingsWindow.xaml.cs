@@ -19,16 +19,24 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Converters;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Models;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Extensions;
+using ClassIsland.Shared.Models.Action;
 using ClassIsland.ViewModels;
-
+using CsesSharp;
 using MaterialDesignThemes.Wpf;
-
+using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using Sentry;
 using Application = System.Windows.Application;
+using ClassPlanDictionaryValueAccessConverter = ClassIsland.Core.Converters.ClassPlanDictionaryValueAccessConverter;
+using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
@@ -204,7 +212,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void RefreshProfiles()
     {
         ViewModel.Profiles = new ObservableCollection<string>
-            (from i in Directory.GetFiles("./Profiles")
+            (from i in Directory.GetFiles(Services.ProfileService.ProfilePath)
             where i.EndsWith(".json")
             select Path.GetFileName(i));
     }
@@ -230,13 +238,14 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedItem).Value;
         var selected   = (TimeLayoutItem?)ListViewTimePoints.SelectedValue;
-        var baseSec    = selected?.EndSecond ?? DateTime.Today + new TimeSpan(7, 30, 0);
+        var baseSec    = (timeType is 0 or 1 ? selected?.EndSecond : selected?.StartSecond) ?? DateTime.Today + new TimeSpan(7, 30, 0);
         var settings   = App.GetService<SettingsService>().Settings;
         var lastTime   = TimeSpan.FromMinutes(timeType switch
         {
-            0 => settings.DefaultOnClassTimePointMinutes,
-            1 => settings.DefaultBreakingTimePointMinutes,
-            2 => 0,
+            0 => settings.DefaultOnClassTimePointMinutes,  // 上课
+            1 => settings.DefaultBreakingTimePointMinutes, // 课间休息
+            2 => 0,  // 分割线
+            3 => 0,  // 行动
             _ => 0
         });
         if (selected != null)
@@ -248,7 +257,7 @@ public partial class ProfileSettingsWindow : MyWindow
                 // var l = (from i in timeLayout.Layouts.Take(index + 1) where i.TimeType != 2 select i).ToList();
                 selected = l.Count > 0 ? l.Last() : selected;
             }*/
-            if (timeType != 2 && index < timeLayout.Layouts.Count - 1)
+            if (timeType != 2 && timeType != 3 && index < timeLayout.Layouts.Count - 1)
             {
                 var nexts = (from i 
                             in timeLayout.Layouts.Skip(index + 1) 
@@ -291,6 +300,7 @@ public partial class ProfileSettingsWindow : MyWindow
             TimeType = timeType,
             StartSecond = baseSec,
             EndSecond = baseSec + lastTime,
+            ActionSet = timeType == 3 ? new ActionSet() : null
         };
         AddTimePoint(newItem);
         // ReSortTimeLayout(newItem);
@@ -353,7 +363,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var timeLayout = ((KeyValuePair<string, TimeLayout>)ListViewTimeLayouts.SelectedValue).Value;
         var i = timeLayout.Layouts.IndexOf(timePoint);
         timeLayout.RemoveTimePoint(timePoint);
-        UpdateTimeLayout();
+        //UpdateTimeLayout();
         if (i > 0)
             ViewModel.SelectedTimePoint = timeLayout.Layouts[i - 1];
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.timePoint.remove");
@@ -516,13 +526,10 @@ public partial class ProfileSettingsWindow : MyWindow
             });
 
             var kvp = ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem);
-            if (kvp.Value.IsOverlay)
+            MainViewModel.Profile.ClassPlans.Remove(kvp.Key);
+            foreach (var (key, _) in MainViewModel.Profile.OrderedSchedules.Where(x => x.Value.ClassPlanId == kvp.Key).ToList())
             {
-                ProfileService.ClearTempClassPlan();
-            }
-            else
-            {
-                MainViewModel.Profile.ClassPlans.Remove(kvp.Key);
+                MainViewModel.Profile.OrderedSchedules.Remove(key);
             }
         }
         else
@@ -555,7 +562,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var l = timeLayout.Layouts;
         for (var i = 0; i < l.Count - 1; i++)
         {
-            if (l[i].StartSecond.TimeOfDay < item.StartSecond.TimeOfDay)
+            if (l[i].StartSecond.TimeOfDay <= item.StartSecond.TimeOfDay)
                 continue;
             timeLayout.InsertTimePoint(i, item);
             return;
@@ -694,7 +701,7 @@ public partial class ProfileSettingsWindow : MyWindow
         var r = await DialogHost.Show(FindResource("CreateProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
 
-        var path = $"./Profiles/{r}.json";
+        var path = Path.Combine(Services.ProfileService.ProfilePath, $"{r}.json");
         if (r == null || File.Exists(path))
         {
             return;
@@ -713,7 +720,7 @@ public partial class ProfileSettingsWindow : MyWindow
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.openFolder");
         Process.Start(new ProcessStartInfo()
         {
-            FileName = Path.GetFullPath("./Profiles/"),
+            FileName = Path.GetFullPath(Services.ProfileService.ProfilePath),
             UseShellExecute = true
         });
     }
@@ -731,8 +738,8 @@ public partial class ProfileSettingsWindow : MyWindow
         var r = await DialogHost.Show(FindResource("RenameProfileDialog"), ViewModel.DialogHostId);
         Debug.WriteLine(r);
 
-        var raw = $"./Profiles/{ViewModel.SelectedProfile}";
-        var path = $"./Profiles/{r}.json";
+        var raw = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
+        var path = Path.Combine(Services.ProfileService.ProfilePath, $"{r}.json");
         if (r == null || !File.Exists(raw) || File.Exists(path))
         {
             return;
@@ -750,7 +757,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private async void MenuItemDeleteProfile_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.DeleteConfirmField = "";
-        var path = $"./Profiles/{ViewModel.SelectedProfile}";
+        var path = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
         if (ViewModel.SelectedProfile == MainViewModel.CurrentProfilePath ||
             ViewModel.SelectedProfile == MainViewModel.Settings.SelectedProfile)
         {
@@ -787,9 +794,9 @@ public partial class ProfileSettingsWindow : MyWindow
     private void MenuItemProfileDuplicate_OnClick(object sender, RoutedEventArgs e)
     {
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.duplicate");
-        var raw = $"./Profiles/{ViewModel.SelectedProfile}";
+        var raw = Path.Combine(Services.ProfileService.ProfilePath, $"./Profiles/{ViewModel.SelectedProfile}");
         var d = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile) + " - 副本.json";
-        var d1 = $"./Profiles/{d}";
+        var d1 = Path.Combine(Services.ProfileService.ProfilePath, $"./Profiles/{d}");
         File.Copy(raw, d1);
         RefreshProfiles();
     }
@@ -841,17 +848,17 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonCreateTempOverlayClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ProfileService.Profile.OverlayClassPlanId != null &&
-            ProfileService.Profile.ClassPlans.ContainsKey(ProfileService.Profile.OverlayClassPlanId))
-        {
-            ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
-        }
         var id = ProfileService.CreateTempClassPlan(((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Key,
-            ViewModel.TempOverlayClassPlanTimeLayoutId);
+            ViewModel.TempOverlayClassPlanTimeLayoutId,
+            ViewModel.OverlayEnableDateTime);
         if (id != null)
         {
             ListViewClassPlans.SelectedItem = new KeyValuePair<string,ClassPlan>(id, ProfileService.Profile.ClassPlans[id]);
             OpenDrawer("ClassPlansInfoEditor");
+        }
+        else
+        {
+            ViewModel.MessageQueue.Enqueue("在这一天已存在一个临时层课表，无法创建新的临时层课表。");
         }
 
         PopupCreateTempOverlayClassPlan.IsOpen = false;
@@ -901,8 +908,10 @@ public partial class ProfileSettingsWindow : MyWindow
             ViewModel.MessageQueue.Enqueue($"此功能已被您的组织禁用。");
             return;
         }
-        var eiw = App.GetService<ExcelImportWindow>();
-        eiw.Show();
+
+        ViewModel.IsProfileImportMenuOpened = true;
+        //var eiw = App.GetService<ExcelImportWindow>();
+        //eiw.Show();
     }   
 
     private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
@@ -983,12 +992,7 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonBeginCreateTempOverlayClassPlan_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ProfileService.Profile.OverlayClassPlanId != null &&
-            ProfileService.Profile.ClassPlans.ContainsKey(ProfileService.Profile.OverlayClassPlanId))
-        {
-            ViewModel.MessageQueue.Enqueue("已存在一个临时层课表，无法创建新的临时层课表。");
-            return;
-        }
+        ViewModel.OverlayEnableDateTime = ExactTimeService.GetCurrentLocalDateTime().Date;
         ViewModel.TempOverlayClassPlanTimeLayoutId =
             ((KeyValuePair<string, ClassPlan>)ListViewClassPlans.SelectedItem).Value.TimeLayoutId;
         PopupCreateTempOverlayClassPlan.IsOpen = true;
@@ -1029,10 +1033,14 @@ public partial class ProfileSettingsWindow : MyWindow
         ProfileService.ClearTempClassPlanGroup();
     }
 
-    public void Open()
+    public async void Open()
     {
         if (!IsOpened)
         {
+            if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditProfileAuthorizeLevel))
+            {
+                return;
+            }
             SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.open");
             IsOpened = true;
             Show();
@@ -1101,5 +1109,337 @@ public partial class ProfileSettingsWindow : MyWindow
             return;
         }
         ViewModel.IsWeekOffsetSettingsOpen = false;
+    }
+
+    private void ButtonAddActionTimePoint_OnClick(object sender, RoutedEventArgs e)
+    {
+        AddTimeLayoutItem(3);
+    }
+
+    private void ButtonDebugTriggerAction_OnClick(object sender, RoutedEventArgs e)
+    {
+        var action = ViewModel.SelectedTimePoint?.ActionSet;
+        if (action == null)
+        {
+            return;
+        }
+        IAppHost.GetService<IActionService>().Invoke(action);
+    }
+
+    private async void ButtonUnTrustedProfile_OnClick(object sender, RoutedEventArgs e)
+    {
+        var r = await DialogHost.Show(FindResource("ProfileTrustWarning"), ViewModel.DialogHostId);
+        if (r as bool? != true)
+        {
+            return;
+        }
+        ProfileService.TrustCurrentProfile();
+    }
+
+    private void MenuItemImportFromExcel_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsProfileImportMenuOpened = false;
+        var eiw = App.GetService<ExcelImportWindow>();
+        eiw.Show();
+    }
+
+    private async void MenuItemImportFromCses_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsProfileImportMenuOpened = false;
+        var r = await DialogHost.Show(new CsesImportControl(), ViewModel.DialogHostId);
+        if (r as bool? == true)
+        {
+            ViewModel.MessageQueue.Enqueue("成功导入了 CSES 课表。");
+            RefreshProfiles();
+        }
+    }
+
+    private void MenuItemImports_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsProfileImportMenuOpened = false;
+    }
+
+    private void MenuItemExportCses_OnClick(object sender, RoutedEventArgs e)
+    {
+        var warnings = new List<string>();
+        foreach (var i in ProfileService.Profile.ClassPlans)
+        {
+            if (i.Value.TimeRule.WeekCountDivTotal > 2 || i.Value.TimeRule.WeekCountDiv > 2)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出包含 2 周以上轮换的课表。");
+            }
+            if (i.Value.TimeLayout == null)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出使用无效时间表的课表。");
+            }
+            if (i.Value.IsEnabled == false)
+            {
+                warnings.Add($"课程表 {i.Value.Name}：无法导出不默认启用的课表。");
+            }
+        }
+
+        if (warnings.Count > 0)
+        {
+            var r = new CommonDialogBuilder()
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .SetContent("兼容性警告：以下课表无法导出到 CSES 格式：\n" + string.Join('\n', warnings) + "\n\n是否继续导出？")
+                .AddCancelAction()
+                .AddAction("继续", PackIconKind.Check, true)
+                .ShowDialog(this);
+            if (r == 0)
+            {
+                return;
+            }
+        }
+
+        var dialog = new SaveFileDialog()
+        {
+            Filter = "CSES 课表文件(*.yml, *.yaml)|*.yml;*.yaml"
+        };
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            var csesProfile = ProfileService.Profile.ToCsesObject();
+            CsesLoader.SaveToYamlFile(csesProfile, dialog.FileName);
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Path.GetDirectoryName(Path.GetFullPath(dialog.FileName)),
+                UseShellExecute = true
+            });
+        }
+        catch (Exception exception)
+        {
+            IAppHost.GetService<ILogger<ProfileSettingsWindow>>().LogError(exception, "无法导出到 CSES 课表");
+            CommonDialog.ShowError($"无法导出到 CSES 课表：{exception.Message}");
+        }
+    }
+
+    private void ButtonScheduleCalendarPrevMonth_OnClick(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    private void RefreshWeekScheduleRows()
+    {
+        var selectedDate = ViewModel.ScheduleCalendarSelectedDate.Date;
+        var baseDate = selectedDate.AddDays(-(int)selectedDate.DayOfWeek);
+        ViewModel.ScheduleWeekViewBaseDate = baseDate;
+        List<ClassPlan?> classPlans = [];
+        ViewModel.WeekClassPlanRows.Clear();
+        var maxClasses = 0;
+        for (var i = 0; i < 7; i++)
+        {
+            var classPlan = LessonsService.GetClassPlanByDate(baseDate.AddDays(i));
+            maxClasses = Math.Max(maxClasses, classPlan?.Classes.Count ?? 0);
+            classPlans.Add(classPlan);
+        }
+
+        for (var i = 0; i < maxClasses; i++)
+        {
+            var row = new WeekClassPlanRow()
+            {
+                Sunday = TryGetClassInfo(classPlans[0], i),
+                Monday = TryGetClassInfo(classPlans[1], i),
+                Tuesday = TryGetClassInfo(classPlans[2], i),
+                Wednesday = TryGetClassInfo(classPlans[3], i),
+                Thursday = TryGetClassInfo(classPlans[4], i),
+                Friday = TryGetClassInfo(classPlans[5], i),
+                Saturday = TryGetClassInfo(classPlans[6], i),
+            };
+            ViewModel.WeekClassPlanRows.Add(row);
+        }
+
+        ViewModel.DataGridWeekRowsWeekIndex =
+            (int)Math.Ceiling((baseDate - MainViewModel.Settings.SingleWeekStartTime).TotalDays / 7);
+
+        return;
+
+        ClassInfo? TryGetClassInfo(ClassPlan? classPlan, int index)
+        {
+            if (classPlan != null && classPlan.Classes.Count > index)
+            {
+                return classPlan.Classes[index];
+            }
+
+            return null;
+        }
+    }
+    private void ButtonRefreshScheduleAdjustmentView_OnClick(object sender, RoutedEventArgs e)
+    {
+        RefreshWeekScheduleRows();
+    }
+
+    private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
+    {
+        
+    }
+
+    private void DataGridWeekSchedule_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
+    {
+        if (e.Row.Item is WeekClassPlanRow row &&
+            GetClassInfoFromRow(row, e.Column.DisplayIndex) == null)
+        {
+            e.Cancel = true;
+        }
+    }
+
+    private ClassInfo? GetClassInfoFromRow(WeekClassPlanRow row, int index)
+    {
+        return index switch
+        {
+            0 => row.Sunday,
+            1 => row.Monday,
+            2 => row.Tuesday,
+            3 => row.Wednesday,
+            4 => row.Thursday,
+            5 => row.Friday,
+            6 => row.Saturday,
+            _ => throw new ArgumentOutOfRangeException(nameof(index), index, null)
+        };
+    }
+
+    private void ButtonSwapSchedule_OnClick(object sender, RoutedEventArgs e)
+    {
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow row)
+        {
+            ViewModel.MessageQueue.Enqueue("请先选择要交换的课程。");
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        ViewModel.ClassSwapStartPosition = new ScheduleClassPosition(date, index);
+        ViewModel.IsInScheduleSwappingMode = true;
+    }
+
+    private void ButtonNextWeek_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ScheduleCalendarSelectedDate += TimeSpan.FromDays(7);
+        RefreshWeekScheduleRows();
+    }
+
+    private void ButtonPreviousWeek_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.ScheduleCalendarSelectedDate -= TimeSpan.FromDays(7);
+        RefreshWeekScheduleRows();
+    }
+
+    private void ButtonSwapScheduleComplete_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsInScheduleSwappingMode = false;
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow row)
+        {
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        ViewModel.ClassSwapEndPosition = new ScheduleClassPosition(date, index);
+
+        var startOverlay = GetTargetClassPlan(ViewModel.ClassSwapStartPosition.Date, ViewModel.IsTempSwapMode, out _);
+        var endOverlay = GetTargetClassPlan(ViewModel.ClassSwapEndPosition.Date, ViewModel.IsTempSwapMode, out _);
+        if (startOverlay == null || endOverlay == null ||
+            endOverlay.Classes.Count <= ViewModel.ClassSwapEndPosition.Index ||
+            startOverlay.Classes.Count <= ViewModel.ClassSwapStartPosition.Index)
+        {
+            return;
+        }
+
+        (startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId, endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId) = (endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].SubjectId, startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].SubjectId);
+        if (ViewModel.IsTempSwapMode)
+        {
+            startOverlay.Classes[ViewModel.ClassSwapStartPosition.Index].IsChangedClass = true;
+            endOverlay.Classes[ViewModel.ClassSwapEndPosition.Index].IsChangedClass = true;
+        }
+
+        RefreshWeekScheduleRows();
+    }
+
+    private ClassPlan? GetTargetClassPlan(DateTime dateTime, bool overlay, out string? targetGuid)
+    {
+        targetGuid = null;
+        var baseClassPlan = LessonsService.GetClassPlanByDate(dateTime, out var baseGuid);
+        if (baseClassPlan == null || baseGuid == null)
+        {
+            return null;
+        }
+
+        if (!overlay || baseClassPlan.IsOverlay)
+        {
+            targetGuid = baseGuid;
+            return baseClassPlan;
+        }
+
+        var orderedClassPlanId = ProfileService.Profile.OrderedSchedules[dateTime]?.ClassPlanId;
+        if (orderedClassPlanId != null
+            && ProfileService.Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
+            && classPlan.IsOverlay)
+        {
+            targetGuid = baseGuid;
+            return baseClassPlan;
+        }
+
+        targetGuid =
+            ProfileService.CreateTempClassPlan(baseGuid, enableDateTime: dateTime);
+        return targetGuid == null ? null : ProfileService.Profile.ClassPlans[targetGuid];
+    }
+
+    private void HyperlinkNavigateTimeLayoutPage_OnClick(object sender, RoutedEventArgs e)
+    {
+        RootTabControl.SelectedIndex = 1;
+    }
+
+    private void ButtonCancelClassSwap_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsInScheduleSwappingMode = false;
+    }
+
+    private void ButtonEditClassInfoTemp_OnClick(object sender, RoutedEventArgs e)
+    {
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow)
+        {
+            ViewModel.MessageQueue.Enqueue("请先选择要修改的课程。");
+            return;
+        }
+
+        ViewModel.TargetSubjectIndex = "";
+        ViewModel.IsClassPlanTempEditPopupOpen = true;
+    }
+
+    private void ButtonEditClassInfoTempConfirm_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.IsClassPlanTempEditPopupOpen = false;
+        var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
+        if (cell.Item is not WeekClassPlanRow row)
+        {
+            return;
+        }
+        var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
+        var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+
+        var targetClassPlan = GetTargetClassPlan(date, ViewModel.IsTempSwapMode, out var guid);
+        if (targetClassPlan == null || targetClassPlan.Classes.Count <= index)
+        {
+            return;
+        }
+
+        targetClassPlan.Classes[index].SubjectId = ViewModel.TargetSubjectIndex;
+        if (ViewModel.IsTempSwapMode)
+        {
+            targetClassPlan.Classes[index].IsChangedClass = true;
+        }
+    }
+
+    private void RootTabControlNavigator_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (RootTabControl.SelectedIndex == 3)
+        {
+            RefreshWeekScheduleRows();
+        }
     }
 }
