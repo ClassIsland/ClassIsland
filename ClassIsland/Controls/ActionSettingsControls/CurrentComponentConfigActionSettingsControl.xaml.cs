@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Controls.ActionSettingsControls;
 
@@ -12,4 +12,4 @@ public partial class CurrentComponentConfigActionSettingsControl
     }
 
     public IComponentsService ComponentsService { get; }
-};
+}

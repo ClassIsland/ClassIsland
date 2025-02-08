@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
@@ -28,6 +28,6 @@ public class DoubleToThicknessMultiConverter : IMultiValueConverter
     /// <inheritdoc />
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
-        return new object[] { };
+        return Array.Empty<object>();
     }
 }

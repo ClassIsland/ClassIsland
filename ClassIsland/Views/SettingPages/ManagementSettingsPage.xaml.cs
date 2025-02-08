@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,6 +56,5 @@ public partial class ManagementSettingsPage
 
         var qrcode = QrCode.EncodeText(ManagementService.Persist.ClientUniqueId.ToString(), QrCode.Ecc.Medium);
         ViewModel.CuidQrCodePath = Geometry.Parse(qrcode.ToGraphicsPath());
-        
     }
 }

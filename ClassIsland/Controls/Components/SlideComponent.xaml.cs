@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -151,7 +151,6 @@ public partial class SlideComponent
             list.RemoveAt(Random.Shared.Next(0, list.Count - 1));
             _randomPlaylist.Add(i);
         }
-
     }
 
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)

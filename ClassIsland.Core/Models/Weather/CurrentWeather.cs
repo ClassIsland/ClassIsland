@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ClassIsland.Core.Models.Weather;
 
@@ -16,5 +16,4 @@ public class CurrentWeather
     [JsonPropertyName("weather")] public string Weather { get; set; } = "99";
 
     [JsonPropertyName("pubTime")] public DateTime PublishTime { get; set; } = DateTime.Now;
-
 }

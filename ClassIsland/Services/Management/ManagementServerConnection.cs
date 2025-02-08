@@ -66,7 +66,6 @@ public class ManagementServerConnection : IManagementServerConnection
             return;
         // 接受命令
         Task.Run(ListenCommands);
-
     }
 
 
@@ -211,5 +210,4 @@ public class ManagementServerConnection : IManagementServerConnection
     }
 
     public event EventHandler<ClientCommandEventArgs>? CommandReceived;
-
 }

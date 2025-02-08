@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Shared.Models.Management;
+namespace ClassIsland.Shared.Models.Management;
 
 /// <summary>
 /// 可版本化字符串
@@ -7,7 +7,6 @@ public struct ReVersionString
 {
     public ReVersionString()
     {
-        
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -322,7 +322,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
         {
             source.View.Refresh();
         }
-
     }
 
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)

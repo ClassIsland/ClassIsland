@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 
 namespace ClassIsland.Core.Models.SettingsWindow;
 
@@ -40,5 +40,4 @@ public class SettingsWindowNavigationData
     /// 导航时是否需要保留历史记录
     /// </summary>
     public bool KeepHistory { get; }
-
 }

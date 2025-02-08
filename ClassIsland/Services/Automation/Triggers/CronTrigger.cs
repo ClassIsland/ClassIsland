@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +23,6 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
         Settings.PropertyChanged += SettingsOnPropertyChanged;
         _stopCancellationTokenSource = new CancellationTokenSource();
         LoadCron();
-        
     }
 
     private async Task CronWorker()

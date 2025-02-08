@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -89,7 +89,7 @@ public partial class TypingControl : UserControl
             await Task.Delay(TimeSpan.FromMilliseconds(150));
             for (int i = 0; i < Text.Length; i++)
             {
-                DisplayingText = Text[..i] + (i / 10 % 2 == 0 ? "_" : "");
+                DisplayingText = Text[..i] + ((i / 10) % 2 == 0 ? "_" : "");
                 await Task.Delay(TimeSpan.FromMilliseconds(40));
             }
         }
@@ -99,5 +99,4 @@ public partial class TypingControl : UserControl
         DisplayingText = Text;  
         IsBusy = false;
     }
-
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
@@ -11,7 +11,6 @@ namespace ClassIsland.Core.Abstractions.Services;
 /// </summary>
 public interface IComponentsService : INotifyPropertyChanged
 {
-
     /// <summary>
     /// 当前显示的所有组件
     /// </summary>

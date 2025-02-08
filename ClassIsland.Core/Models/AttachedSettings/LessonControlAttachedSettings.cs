@@ -1,4 +1,4 @@
-﻿using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -94,7 +94,9 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         get => _scheduleSpacing;
         set
         {
-            if (value.Equals(_scheduleSpacing)) ;
+            if (value.Equals(_scheduleSpacing))
+            {
+            }
             _scheduleSpacing = value;
             OnPropertyChanged();
         }

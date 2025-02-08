@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -51,8 +51,6 @@ public partial class ColorPicker : UserControl, INotifyPropertyChanged
         //    OnPropertyChanged(nameof(ColorBrush));
         //}
         Pop.IsOpen = true;
-
-
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

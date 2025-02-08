@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
@@ -37,5 +37,4 @@ public partial class GptSoVitsSpeechSettings : ObservableObject
 
     [ObservableProperty]
     private int _gptSoVitsBatchSize = 1;
-
 }

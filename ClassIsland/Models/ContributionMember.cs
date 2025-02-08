@@ -1,4 +1,4 @@
-﻿using System.Windows.Media;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace ClassIsland.Models;
@@ -28,5 +28,4 @@ public class ContributionMember
         get;
         set;
     } = new BitmapImage();
-
 }

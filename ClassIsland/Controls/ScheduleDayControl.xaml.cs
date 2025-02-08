@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -99,17 +99,14 @@ public partial class ScheduleDayControl : UserControl
 
     private void UIElement_OnPreviewMouseUp(object sender, MouseButtonEventArgs e)
     {
-        
     }
 
     private void ClassPlanSource_OnFilter(object sender, FilterEventArgs e)
     {
-
     }
 
     private void ListBoxTempClassPlanSelector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-
     }
 
     private void ButtonConfirmTempClassPlan_OnClick(object sender, RoutedEventArgs e)
@@ -152,7 +149,6 @@ public partial class ScheduleDayControl : UserControl
     private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
     {
         e.Handled = true;
-        
     }
 
     private void ButtonCloseSchedulePopup_OnClick(object sender, RoutedEventArgs e)
@@ -163,7 +159,6 @@ public partial class ScheduleDayControl : UserControl
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
-
     }
 
     private void UIElement_OnPreviewMouseDown(object sender, MouseButtonEventArgs e)

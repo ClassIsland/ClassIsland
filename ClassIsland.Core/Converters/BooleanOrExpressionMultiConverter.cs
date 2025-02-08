@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Windows.Data;
 
 namespace ClassIsland.Core.Converters;
@@ -12,6 +12,6 @@ public class BooleanOrExpressionMultiConverter : IMultiValueConverter
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
-        return new object[] { };
+        return Array.Empty<object>();
     }
 }

@@ -1,8 +1,7 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
 namespace ClassIsland.Controls;
 
 public class ScheduleCalendarControl : Calendar
 {
-    
 }

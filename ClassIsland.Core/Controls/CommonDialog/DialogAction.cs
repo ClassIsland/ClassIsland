@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Controls.CommonDialog;
@@ -49,5 +49,4 @@ public class DialogAction : DependencyObject
         get { return (bool)GetValue(IsPrimaryProperty); }
         set { SetValue(IsPrimaryProperty, value); }
     }
-
 }

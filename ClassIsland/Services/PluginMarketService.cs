@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -110,7 +110,7 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
                 var i1 = i;
                 download.DownloadProgressChanged +=
                     (sender, args) =>
-                        PluginSourceDownloadProgress = args.ProgressPercentage / total + i1 / total * 100.0;
+                        PluginSourceDownloadProgress = (args.ProgressPercentage / total) + (i1 / total * 100.0);
                 download.DownloadFileCompleted += (sender, args) =>
                 {
                     if (args.Error != null)
@@ -129,7 +129,6 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
                 await download.StartAsync();
 
                 i++;
-                
             }
 
             LoadPluginSource();
@@ -229,7 +228,6 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
         }
         task.IsDownloading = false;
         DownloadTasks.Remove(id);
-
     }
 
     public event EventHandler? RestartRequested;
@@ -303,7 +301,6 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             if (!b || v == null)
                 continue;
             v.DownloadProgress = i.Value;
-            
         }
 
         foreach (var plugin in MergedPlugins.Where(plugin => File.Exists(Path.Combine(Services.PluginService.PluginsPkgRootPath, plugin.Value.Manifest.Id + ".cipx"))))

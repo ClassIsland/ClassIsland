@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Profile;
 
@@ -22,6 +22,4 @@ public class OrderedSchedule : ObservableRecipient
             OnPropertyChanged();
         }
     }
-
-
 }

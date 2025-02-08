@@ -1,4 +1,4 @@
-﻿using ClassIsland.Shared.Enums;
+using ClassIsland.Shared.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Management;
@@ -66,7 +66,6 @@ public class ManagementCredentialConfig : ObservableRecipient
     /// <summary>
     /// 编辑档案的授权等级
     /// </summary>
-
     public AuthorizeLevel EditProfileAuthorizeLevel
     {
         get => _editProfileAuthorizeLevel;

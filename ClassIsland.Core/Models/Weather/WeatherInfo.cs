@@ -1,10 +1,9 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ClassIsland.Core.Models.Weather;
 
 public class WeatherInfo
 {
-
     [JsonPropertyName("current")] public CurrentWeather Current { get; set; } = new();
 
     [JsonPropertyName("alerts")] public List<WeatherAlert> Alerts { get; set; } = new();

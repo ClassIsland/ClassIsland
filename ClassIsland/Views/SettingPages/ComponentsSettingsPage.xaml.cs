@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -87,7 +87,6 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         {
             ViewModel.SelectedComponentContainerChildren.Remove(remove);
         }
-
     }
 
     private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
@@ -198,7 +197,6 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
     {
         if (ViewModel.SelectedComponentSettingsChild != null)
         {
-            
             ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
             ViewModel.SelectedComponentSettingsMain = null;
         }

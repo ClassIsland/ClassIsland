@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
@@ -23,5 +23,4 @@ public class AppStoppingTrigger : TriggerBase
     {
         Trigger();
     }
-
 }

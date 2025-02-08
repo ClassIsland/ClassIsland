@@ -1,4 +1,4 @@
-﻿#if !NETFRAMEWORK
+#if !NETFRAMEWORK
 
 namespace ClassIsland.Shared.Interfaces;
 
@@ -20,12 +20,10 @@ public interface INotificationProvider
     /// <summary>
     /// 提醒提供方 GUID
     /// </summary>
-
     public Guid ProviderGuid { get; set; }
     /// <summary>
     /// 提醒提供方设置界面控件，将显示在【应用设置】->【提醒】中。留空则代表此提醒提供方没有设置界面。
     /// </summary>
-
     public object? SettingsElement { get; set; }
 
     /// <summary>
@@ -36,7 +34,6 @@ public interface INotificationProvider
     /// <summary>
     /// 提醒提供方默认提醒音效 Uri
     /// </summary>
-
     public static readonly Uri DefaultNotificationSoundUri = new Uri("pack://application:,,,/ClassIsland;component/Assets/Media/Notification/1.wav");
 }
 #endif

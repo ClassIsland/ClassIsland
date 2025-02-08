@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Shared;
 
@@ -22,7 +22,6 @@ public interface IRulesetService
     /// <summary>
     /// 已经注册的规则列表。
     /// </summary>
-
     public static ObservableDictionary<string, RuleRegistryInfo> Rules { get; } = new();
 
     /// <summary>
