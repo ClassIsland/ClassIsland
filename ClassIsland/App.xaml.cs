@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -246,7 +246,6 @@ public partial class App : AppBase, IAppHost
             {
                 scope.Level = SentryLevel.Fatal;
             });
-            
         }
         if (!safe)
             CrashWindow.ShowDialog();
@@ -418,7 +417,6 @@ public partial class App : AppBase, IAppHost
                     {
                         return new EdgeTtsService();
                     }
-                    
                 }));
                 services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
@@ -756,7 +754,6 @@ public partial class App : AppBase, IAppHost
         catch (Exception e)
         {
             CommonDialog.ShowError($"无法重新启动应用，可能当前运行的实例正在以管理员身份运行。请使用任务管理器终止正在运行的实例，然后再试一次。\n\n{e.Message}");
-
         }
     }
 

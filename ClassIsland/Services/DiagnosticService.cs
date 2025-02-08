@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
@@ -129,7 +129,6 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             Logger.LogError(e, "无法导出诊断数据。");
             throw;
         }
-        
     }
 
     public static void GetDeviceInfo(out string name, out string vendor)
@@ -168,7 +167,6 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                     app?.ProcessUnhandledException(exception, eventArgs.IsTerminating);
                 }
             });
-            
         }
         catch
         {

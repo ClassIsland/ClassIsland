@@ -43,7 +43,6 @@ public class SettingsPageInfo : Attribute
 
     public SettingsPageInfo(string id, string name, string unSelectedBitmapUri, string selectedBitmapUri,
         SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, category)
-
     {
         UnSelectedBitmapUri = unSelectedBitmapUri;
         SelectedBitmapUri = selectedBitmapUri;
@@ -52,7 +51,6 @@ public class SettingsPageInfo : Attribute
 
     public SettingsPageInfo(string id, string name, string unSelectedBitmapUri, string selectedBitmapUri, bool hideDefault,
         SettingsPageCategory category = SettingsPageCategory.External) : this(id, name, unSelectedBitmapUri, selectedBitmapUri, category)
-
     {
         HideDefault = hideDefault;
     }

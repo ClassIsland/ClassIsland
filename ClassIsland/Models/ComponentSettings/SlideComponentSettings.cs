@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Models.Ruleset;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -28,5 +28,4 @@ public partial class SlideComponentSettings : ObservableObject, IComponentContai
     [ObservableProperty] private bool _isStopOnRuleEnabled = false;
 
     [ObservableProperty] private Ruleset _stopRule = new();
-
 }

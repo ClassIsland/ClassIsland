@@ -28,7 +28,6 @@ public partial class TestSettingsPage : SettingsPageBase
         DataContext = this;
         InitializeComponent();
         Loaded+= OnLoaded;
-        
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

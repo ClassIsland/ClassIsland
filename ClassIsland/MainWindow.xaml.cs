@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -300,7 +300,6 @@ public partial class MainWindow : Window
         {
             Logger.LogError(ex, "无法更新鼠标状态。");
         }
-        
     }
 
     [Obsolete]
@@ -316,9 +315,8 @@ public partial class MainWindow : Window
         if (VisualTreeUtils.FindChildVisualByName<Grid>(this, "PART_GridWrapper") is not { } gridWrapper) 
             return new Point(0, 0);
         var p = gridWrapper.TranslatePoint(new Point(gridWrapper.ActualWidth / 2, gridWrapper.ActualHeight / 2), this);
-        p.Y = Top + ActualHeight / 2;
+        p.Y = Top + (ActualHeight / 2);
         return p;
-
     }
 
     private async Task ProcessNotification()
@@ -429,7 +427,6 @@ public partial class MainWindow : Window
                         From = 1.0,
                         To = 0.0,
                         Duration = new Duration(request.OverlayDuration),
-
                     };
                     var storyboard = new Storyboard()
                     {
@@ -563,13 +560,10 @@ public partial class MainWindow : Window
         var handle = new WindowInteropHelper(this).Handle;
         if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.Settings.WindowLayer == 1)
         {
-
             SetWindowPos((HWND)handle, NativeWindowHelper.HWND_TOPMOST, 0, 0, 0, 0,
                 SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE | SET_WINDOW_POS_FLAGS.SWP_NOSENDCHANGING);
             //Topmost = true;
-            
         }
-
     }
 
     private void InitializeRawInputHandler()
@@ -583,7 +577,6 @@ public partial class MainWindow : Window
         RawInputUpdateStopWatch.Start();
         var hWndSource = HwndSource.FromHwnd(handle);
         hWndSource?.AddHook(ProcWnd);
-        
     }
 
     private void ProcessMousePos(object? sender, EventArgs e)
@@ -805,7 +798,6 @@ public partial class MainWindow : Window
                     Logger.LogError(ex, "获取系统主题色失败。");
                 }
                 break;
-
         }
         ThemeService.SetTheme(ViewModel.Settings.Theme, primary, secondary);
 
@@ -1177,7 +1169,6 @@ public partial class MainWindow : Window
 
     private void TrayIconOnClicked_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        
     }
 
     private void MenuItemSettingsWindow2_OnClick(object sender, RoutedEventArgs e)

@@ -17,7 +17,6 @@ public partial class TimeRuleEditControl : UserControl
         nameof(TimeRule), typeof(TimeRule), typeof(TimeRuleEditControl), new PropertyMetadata(default(TimeRule),
             (o, args) =>
             {
-
                 if (o is not TimeRuleEditControl control) 
                     return;
                 if (args.NewValue is TimeRule newRule)
@@ -75,7 +74,6 @@ public partial class TimeRuleEditControl : UserControl
 
     private void TimeRuleEditControl_OnLoaded(object sender, RoutedEventArgs e)
     {
-
     }
 
     private void UpdateWeekCountDivs()

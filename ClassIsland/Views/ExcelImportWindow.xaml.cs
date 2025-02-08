@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -77,7 +77,6 @@ public partial class ExcelImportWindow : MyWindow
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        
     }
     private void EnterSelectingMode()
     {
@@ -271,7 +270,6 @@ public partial class ExcelImportWindow : MyWindow
             ViewModel.OpenException = e;
             await ShowDialog("OpenFileFailed");
         }
-
     }
 
     private void ProfileSettingsWindow_OnDrop(object sender, DragEventArgs e)
@@ -298,18 +296,15 @@ public partial class ExcelImportWindow : MyWindow
 
     private void Grid_OnCurrentWorksheetChanged(object? sender, EventArgs e)
     {
-        
     }
 
     private void Grid_OnBeforeActionPerform(object? sender, WorkbookActionEventArgs e)
     {
         Debug.WriteLine(e.Action.GetName());
-        
     }
 
     private void SelectionValueUpdateCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        
     }
 
     private void OpenProfileSettingsWindow()

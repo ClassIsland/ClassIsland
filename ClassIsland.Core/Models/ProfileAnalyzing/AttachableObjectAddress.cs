@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using ClassIsland.Shared;
 
 namespace ClassIsland.Core.Models.ProfileAnalyzing;
@@ -10,7 +10,6 @@ public class AttachableObjectAddress(string guid, int index = -1)
 {
     public AttachableObjectAddress() : this("", -1)
     {
-        
     }
 
     public string Guid { get; set; } = guid;

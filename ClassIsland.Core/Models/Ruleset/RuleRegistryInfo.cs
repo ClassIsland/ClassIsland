@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Models.Ruleset;
@@ -40,5 +40,4 @@ public class RuleRegistryInfo(string id, string name = "", PackIconKind iconKind
     public delegate bool HandleDelegate(object? settings);
 
     public HandleDelegate? Handle;
-
 }

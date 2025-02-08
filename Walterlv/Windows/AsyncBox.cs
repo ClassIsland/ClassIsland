@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -120,7 +120,6 @@ public class AsyncBox : FrameworkElement
     {
         if (DesignerProperties.GetIsInDesignMode(this))
         {
-
             AddVisualChild(_contentPresenter);
             AddVisualChild(_hostVisual);
             ActivateChild();

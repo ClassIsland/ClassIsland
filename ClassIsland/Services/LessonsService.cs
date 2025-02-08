@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -304,7 +304,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
 
         return CurrentState == s.State ||
-               CurrentState == TimeState.AfterSchool && s.State == TimeState.None;
+               (CurrentState == TimeState.AfterSchool && s.State == TimeState.None);
     }
 
     private void MainTimerOnTick(object? sender, EventArgs e)

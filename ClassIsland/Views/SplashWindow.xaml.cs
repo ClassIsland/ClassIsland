@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
@@ -48,6 +48,5 @@ public partial class SplashWindow : Window
 
     private void SplashWindow_OnClosed(object? sender, EventArgs e)
     {
-        
     }
 }

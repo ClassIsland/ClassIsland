@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
@@ -47,7 +47,6 @@ public class TimeLayout : AttachableSettingsObject
             case nameof(Layouts):
                 //LayoutObjectChanged?.Invoke(this, EventArgs.Empty);
                 break;
-
         }
     }
 

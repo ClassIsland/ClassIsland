@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ClassIsland.Core.Models.Plugin;
 
@@ -16,5 +16,4 @@ public class PluginIndexItem : PluginInfo
     /// 插件最新版本下载MD5
     /// </summary>
     public string DownloadMd5 { get; set; } = "";
-
 }

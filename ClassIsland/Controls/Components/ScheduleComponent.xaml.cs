@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Controls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -86,9 +86,9 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         ExactTimeService = exactTimeService;
 
         Loaded += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
-        Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged; ;
+        Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
         Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
-        Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged; ;
+        Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
         InitializeComponent();
         CurrentTimeStateChanged();
     }

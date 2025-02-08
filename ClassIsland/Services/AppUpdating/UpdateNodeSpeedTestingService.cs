@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -34,7 +34,6 @@ public class UpdateNodeSpeedTestingService
         }
         var client = new HttpClient()
         {
-
         };
 
         foreach (var i in updateService.Index.Mirrors)
@@ -61,7 +60,6 @@ public class UpdateNodeSpeedTestingService
                         }
                         Logger.LogInformation("Ping {}, {}ms", k, pr.RoundtripTime);
                         delays.Add(pr.RoundtripTime);
-
                     });
                 }
                 catch (Exception e)

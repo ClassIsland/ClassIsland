@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -11,7 +11,6 @@ public class Contributor : ObservableRecipient
 {
     public static readonly Dictionary<string, string> ContributionKeys = new()
     {
-
         {"audio", "音频"},
         {"a11y", "无障碍"},
         {"bug", "Bug 反馈"},

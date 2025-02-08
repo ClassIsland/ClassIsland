@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Core.Abstractions.Services;
+namespace ClassIsland.Core.Abstractions.Services;
 
 /// <summary>
 /// 凭据服务，用于进行访问认证。
@@ -19,5 +19,4 @@ public interface IAuthorizeService
     /// <param name="credentialString">要用于认证的凭据字符串</param>
     /// <returns>是否认证成功</returns>
     Task<bool> AuthenticateAsync(string credentialString);
-
 }

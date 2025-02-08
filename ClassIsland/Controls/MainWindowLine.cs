@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -226,7 +226,6 @@ public class MainWindowLine : Control
         {
             Logger.LogError(ex, "无法更新鼠标状态。");
         }
-
     }
 
     private void MainWindowOnMousePosChanged(object? sender, MousePosChangedEventArgs e)

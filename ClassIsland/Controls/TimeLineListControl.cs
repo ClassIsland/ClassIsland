@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -122,7 +122,6 @@ public class TimeLineListControl : ListBox
         }
         layout.Move(rawIndex, layout.Count - 1);
         SelectedItem = args.Item;
-
     }
 
 

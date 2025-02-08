@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Core.Models.Weather;
+namespace ClassIsland.Core.Models.Weather;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -30,5 +30,4 @@ public class CityInfo
     /// Latitude 城市或地区的纬度。
     /// </summary>
     [JsonPropertyName("longitude")] public string Longitude { get; set; } = string.Empty;
-    
 }

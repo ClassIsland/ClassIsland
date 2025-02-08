@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Controls.ActionSettingsControls;
+namespace ClassIsland.Controls.ActionSettingsControls;
 
 public partial class SleepActionSettingsControl
 {
@@ -7,4 +7,4 @@ public partial class SleepActionSettingsControl
         InitializeComponent();
         DataContext = this;
     }
-};
+}

@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
@@ -327,7 +327,6 @@ public class ClassPlan : AttachableSettingsObject
             {
                 Classes.RemoveAt(Classes.Count - 1);
             }
-
         }
 
         for (var i = 0; i < Classes.Count; i++)

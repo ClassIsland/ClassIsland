@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
 
@@ -22,7 +22,6 @@ public abstract class ComponentBase : UserControl
     /// <param name="settings">源组件的设置</param>
     public virtual void OnMigrated(Guid sourceId, object? settings)
     {
-        
     }
 }
 

@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -73,12 +73,10 @@ public abstract class AuthorizeProviderControlBase : UserControl
 /// <summary>
 /// 认证提供方控件基类。
 /// </summary>
-
 public abstract class AuthorizeProviderControlBase<T> : AuthorizeProviderControlBase where T : class
 {
     /// <summary>
     /// 当前组件的设置
     /// </summary>
     public T Settings => (SettingsInternal as T)!;
-
 }

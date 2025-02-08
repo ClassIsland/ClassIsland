@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text.Json.Serialization;
 using System.Windows.Documents;
 using ClassIsland.Core.Abstractions.Services;
@@ -41,7 +41,6 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件是否已启用
     /// </summary>
-
     [JsonIgnore]
     public bool IsEnabled
     {
@@ -72,7 +71,6 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件是否将要卸载
     /// </summary>
-
     [JsonIgnore]
     public bool IsUninstalling
     {
@@ -103,7 +101,6 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件文件路径。
     /// </summary>
-
     [JsonIgnore]
     public string PluginFolderPath { get; internal set; } = "";
 
@@ -115,14 +112,12 @@ public class PluginInfo() : ObservableRecipient
     /// <summary>
     /// 插件加载时错误
     /// </summary>
-
     [JsonIgnore]
     public Exception? Exception { get; internal set; }
 
     /// <summary>
     /// 插件加载状态
     /// </summary>
-
     [JsonIgnore]
     public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
 

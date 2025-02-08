@@ -1,4 +1,4 @@
-﻿using System.Collections.Specialized;
+using System.Collections.Specialized;
 using System.ComponentModel;
 
 namespace ClassIsland.Shared;
@@ -134,7 +134,6 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
         }
         catch (Exception)
         {
-
         }
     }
 
@@ -192,7 +191,6 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
                 return index;
             }
             index++;
-
         }
         return -1;
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Web;
 using System.Windows;
@@ -70,7 +70,6 @@ public partial class CrashWindow : MyWindow
             FileName = uri.ToString(),
             UseShellExecute = true
         });
-
     }
 
     private void ButtonDebug_OnClick(object sender, RoutedEventArgs e)

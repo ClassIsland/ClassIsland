@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -51,7 +51,6 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
 
     protected override void OnInitialized(EventArgs e)
     {
-        
         base.OnInitialized(e);
     }
 
@@ -78,7 +77,6 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
             Duration = new Duration(Duration),
-
         };
         var storyboard = new Storyboard()
         {

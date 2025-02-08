@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Controls;
 
 using ClassIsland.Shared;
@@ -27,5 +27,4 @@ public partial class TestAttachedSettingsControl : UserControl, IAttachedSetting
     public TestAttachedSettings? Settings =>
         (TestAttachedSettings?)((AttachedSettingsControlHelper<TestAttachedSettings>)AttachedSettingsControlHelper)
         .AttachedSettings;
-
 }

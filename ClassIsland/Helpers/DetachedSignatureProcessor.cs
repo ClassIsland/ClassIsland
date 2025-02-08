@@ -1,4 +1,4 @@
-﻿using Org.BouncyCastle.Bcpg.OpenPgp;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Bcpg;
 using System.IO;
 using System;
@@ -10,7 +10,6 @@ namespace ClassIsland.Helpers;
 // https://github.com/bcgit/bc-csharp/blob/master/crypto/test/src/openpgp/examples/DetachedSignatureProcessor.cs
 public static class DetachedSignatureProcessor
 {
-
     /// <summary>
     /// 验证分离的 PGP 签名。
     /// </summary>

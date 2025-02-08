@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -194,7 +194,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         if (Settings.IsAutoSelectUpgradeMirror && DateTime.Now - Settings.LastSpeedTest >= TimeSpan.FromDays(7))
         {
             await App.GetService<UpdateNodeSpeedTestingService>().RunSpeedTestAsync();
-
         }
         await CheckUpdateAsync();
 
@@ -369,7 +368,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 }
             };
             await Downloader.StartAsync();
-
         }
         catch (Exception ex)
         {
@@ -381,7 +379,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
         }
-
     }
 
     public async void StopDownloading()
@@ -423,7 +420,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         
         DownloadEtcSeconds = TimeSpan.FromSeconds(DownloadSpeed == 0 ? 0 : (long)((TotalSize - DownloadedSize) / DownloadSpeed));
         Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
-
     }
 
     public async Task ExtractUpdateAsync()

@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using System.ComponentModel;
@@ -11,7 +11,6 @@ namespace ClassIsland.Core.Extensions.Registry;
 /// </summary>
 public static class AuthorizeProviderRegistryExtensions
 {
-
     /// <summary>
     /// 注册认证提供方。
     /// </summary>

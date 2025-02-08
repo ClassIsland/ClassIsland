@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -127,14 +127,12 @@ public class LessonsListBox : ListBox
         //ItemContainerStyleSelector = new LessonsListBoxItemContainerStyleSelector(this);
         //ItemTemplateSelector = new LessonsListBoxItemTemplateSelector(this);
         Loaded += LessonsListBox_Loaded;
-        
     }
 
     private void LessonsListBox_Loaded(object sender, RoutedEventArgs e)
     {
         if (FindResource("LessonsListBoxItemTemplateMultiConverter") is LessonsListBoxItemTemplateMultiConverter cv)
         {
-            
         }
     }
 

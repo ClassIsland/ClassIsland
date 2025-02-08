@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
@@ -24,5 +24,4 @@ public class OnAfterSchoolTrigger(ILessonsService lessonsService) : TriggerBase
     {
         Trigger();
     }
-
 }

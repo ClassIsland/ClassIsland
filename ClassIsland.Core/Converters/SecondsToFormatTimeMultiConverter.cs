@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Windows.Data;
 
 namespace ClassIsland.Core.Converters;
@@ -29,5 +29,5 @@ public class SecondsToFormatTimeMultiConverter : IMultiValueConverter
         double Round(double x) => ceiling ? Math.Ceiling(x) : Math.Floor(x);
     }
 
-    public object[] ConvertBack(object value, Type[] targetType, object? parameter, CultureInfo culture) => new object[] { };
+    public object[] ConvertBack(object value, Type[] targetType, object? parameter, CultureInfo culture) => Array.Empty<object>();
 }
