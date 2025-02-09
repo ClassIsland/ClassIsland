@@ -265,6 +265,7 @@ public partial class App : AppBase, IAppHost
         );
         SentrySdk.ConfigureScope(s => s.Transaction = transaction);
         var spanPreInit = transaction.StartChild("startup-init");
+        MyWindow.ShowOssWatermark = ApplicationCommand.ShowOssWatermark;
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
         //    Resources[SystemParameters.FocusVisualStyleKey]);

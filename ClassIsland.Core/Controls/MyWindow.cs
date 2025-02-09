@@ -21,6 +21,11 @@ public class MyWindow : Window
 {
     private bool _isAdornerAdded;
 
+    /// <summary>
+    /// 是否显示开源警告水印
+    /// </summary>
+    public static bool ShowOssWatermark { get; internal set; } = false;
+
     private IThemeService? ThemeService { get; }
 
     /// <summary>
@@ -45,10 +50,10 @@ public class MyWindow : Window
     {
         UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
 
-        if (AppBase.Current.IsDevelopmentBuild && Content is UIElement element && !_isAdornerAdded)
+        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is UIElement element && !_isAdornerAdded)
         {
             var layer = AdornerLayer.GetAdornerLayer(element);
-            layer?.Add(new DevelopmentBuildAdorner(element));
+            layer?.Add(new DevelopmentBuildAdorner(element, AppBase.Current.IsDevelopmentBuild, ShowOssWatermark));
             _isAdornerAdded = true;
         }
     }

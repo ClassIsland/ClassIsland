@@ -12,9 +12,19 @@
             <TextBlock VerticalAlignment="Bottom"
                        HorizontalAlignment="Left"
                        FontSize="12"
-                       Opacity="0.8">
+                       Opacity="0.8"
+                       Visibility="{Binding IsDevelopmentBuild, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Run Text="开发中画面，不代表最终品质。"/><LineBreak/>
                 <Run Text="{x:Static core:AppBase.AppVersionLong}"/>
+            </TextBlock>
+            <TextBlock VerticalAlignment="Bottom"
+                       HorizontalAlignment="Right"
+                       TextAlignment="Right"
+                       FontSize="12"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}"
+                       FontFamily="JetBrains Mono, Consolas,  黑体"
+                       Visibility="{Binding ShowOssWatermark, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Run Text="https://www.classisland.tech"/>
             </TextBlock>
         </Grid>
     </ControlTemplate>

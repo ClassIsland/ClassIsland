@@ -36,14 +36,17 @@
     },
     "ClassIsland_Pakaging": {
       "commandName": "MsixPackage",
-      "commandLineArgs": "", 
-      "alwaysReinstallApp": false, 
-      "remoteDebugEnabled": false, 
-      "allowLocalNetworkLoopbackProperty": true, 
-      "authenticationMode": "Windows", 
-      "doNotLaunchApp": false, 
-      "remoteDebugMachine": "", 
-      "nativeDebugging": false 
+      "alwaysReinstallApp": false,
+      "remoteDebugEnabled": false,
+      "allowLocalNetworkLoopbackProperty": true,
+      "authenticationMode": "Windows",
+      "doNotLaunchApp": false,
+      "remoteDebugMachine": "",
+      "nativeDebugging": false
+    },
+    "ClassIsland (水印)": {
+      "commandName": "Project",
+      "commandLineArgs": "-ossw"
     }
   }
 }

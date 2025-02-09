@@ -36,7 +36,8 @@ var command = new RootCommand
     new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。"),
     new Option<string>(["-externalPluginPath", "-epp"], "外部插件路径"),
     new Option<bool>(["--enableSentryDebug", "-esd"], "启用 Sentry 调试"),
-    new Option<bool>(["--verbose", "-v"], "启用详细输出")
+    new Option<bool>(["--verbose", "-v"], "启用详细输出"),
+    new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印")
 };
 command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
 command.Invoke(args);

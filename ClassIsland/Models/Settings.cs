@@ -2235,4 +2235,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
+
+    [JsonIgnore]
+    public bool ShowSellingAnnouncement
+    {
+        get => Environment.GetEnvironmentVariable("ClassIsland_ShowSellingAnnouncement") is "1" or null;
+        set
+        {
+            try
+            {
+                var envVar = value ? "1" : "0";
+                Environment.SetEnvironmentVariable("ClassIsland_ShowSellingAnnouncement", envVar);
+                // 因为 Environment.SetEnvironmentVariable 有时会执行很长时间，所以这里要直接修改注册表。
+                using var reg = Registry.CurrentUser.OpenSubKey(
+                    @"Environment", true);
+                reg?.SetValue("ClassIsland_ShowSellingAnnouncement", envVar, RegistryValueKind.String);
+                OnPropertyChanged();
+            }
+            catch (Exception ex)
+            {
+                IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 ShowSellingAnnouncement 启用状态。");
+            }
+
+        }
+    }
 }

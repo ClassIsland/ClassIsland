@@ -226,6 +226,23 @@
                                             <TextBlock Text="。" VerticalAlignment="Center" />
                                         </StackPanel>
                                     </CheckBox>
+                                    <materialDesign:ColorZone Background="#17800080"
+                                                              Margin="0 0 0 4"
+                                                              Panel.ZIndex="1">
+                                        <StackPanel Margin="8 4">
+                                            <DockPanel>
+                                                <materialDesign:PackIcon Kind="MessageAlertOutline"
+                                                                         Height="20" Width="20" />
+                                                <TextBlock TextWrapping="Wrap"
+                                                           VerticalAlignment="Center"
+                                                           Margin="4 0 0 0">
+                                                    <Run Text="ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在" />
+                                                    <commands:NavHyperlink CommandParameter="https://github.com/ClassIsland/ClassIsland/">https://github.com/ClassIsland/ClassIsland/</commands:NavHyperlink>
+                                                    <Run Text="。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。" />
+                                                </TextBlock>
+                                            </DockPanel>
+                                        </StackPanel>
+                                    </materialDesign:ColorZone>
                                 </StackPanel>
                                 <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Orientation="Horizontal"
                                             HorizontalAlignment="Right">

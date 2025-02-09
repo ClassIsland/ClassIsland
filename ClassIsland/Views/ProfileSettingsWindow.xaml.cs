@@ -1442,4 +1442,9 @@ public partial class ProfileSettingsWindow : MyWindow
             RefreshWeekScheduleRows();
         }
     }
+
+    private void ButtonHideSellingAnnouncementBanner_OnClick(object sender, RoutedEventArgs e)
+    {
+        MainViewModel.Settings.ShowSellingAnnouncement = false;
+    }
 }

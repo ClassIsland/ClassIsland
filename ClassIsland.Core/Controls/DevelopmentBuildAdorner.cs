@@ -10,14 +10,28 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public class DevelopmentBuildAdorner : Adorner
 {
+    /// <summary>
+    /// 是否是开发构建
+    /// </summary>
+    public bool IsDevelopmentBuild { get; }
+
+    /// <summary>
+    /// 是否显示开源水印
+    /// </summary>
+    public bool ShowOssWatermark { get; }
+
     /// <inheritdoc />
-    public DevelopmentBuildAdorner(UIElement adornedElement) : base(adornedElement)
+    public DevelopmentBuildAdorner(UIElement adornedElement, bool isDevelopmentBuild, bool showOssWatermark) : base(adornedElement)
     {
+        IsDevelopmentBuild = isDevelopmentBuild;
+        ShowOssWatermark = showOssWatermark;
         _visualCollection = new VisualCollection(this);
         _control = new Control()
         {
             Template = FindResource("DevelopmentBuildAdornerControlTemplate") as ControlTemplate,
-            ClipToBounds = false
+            ClipToBounds = false,
+            DataContext = this,
+            IsTabStop = false
         };
         ClipToBounds = false;
         _visualCollection.Add(_control);
