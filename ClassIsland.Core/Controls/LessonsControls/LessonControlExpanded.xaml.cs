@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -174,7 +174,6 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
             ExtraInfo4ShowSeconds = SettingsSource.ExtraInfoType == 4 &&
                                     LeftSeconds <= SettingsSource.ExtraInfo4ShowSecondsSeconds;
         }
-
     }
 
     #region INotifyPropertyChanged Impletion

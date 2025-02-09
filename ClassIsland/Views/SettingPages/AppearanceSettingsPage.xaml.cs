@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,6 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// AppearanceSettingsPage.xaml 的交互逻辑
 /// </summary>
-
 [SettingsPageInfo("appearance", "外观", PackIconKind.ThemeOutline, PackIconKind.Theme, SettingsPageCategory.Internal)]
 public partial class AppearanceSettingsPage : SettingsPageBase
 {

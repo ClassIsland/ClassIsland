@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -131,7 +131,7 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         {
             NtpClock = NtpClient.Query();
             var nowBase = SettingsService.Settings.IsExactTimeEnabled ? NtpClock.Now.LocalDateTime : DateTime.Now;
-            if (30 > Math.Abs((nowBase - prev).TotalSeconds) && nowBase < prev)
+            if (Math.Abs((nowBase - prev).TotalSeconds) < 30 && nowBase < prev)
             {
                 NeedWaiting = true;
                 PrevDateTime = prev;

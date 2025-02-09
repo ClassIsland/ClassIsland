@@ -1,4 +1,4 @@
-﻿using ClassIsland.Core.Abstractions.Controls;
+using ClassIsland.Core.Abstractions.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -64,7 +64,6 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "既然罗莎莉亚说足迹上有元素力，用元素视野应该能很清楚地看到吧。",
             GptSoVitsRefAudioPath = "template_audio/paimon.wav"
-
         },
         new GptSoVitsSpeechSettings
         {
@@ -76,7 +75,6 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "买东西那天还有一个人一起帮着看了款式，那个人好像叫",
             GptSoVitsRefAudioPath = "template_audio/klee.wav"
-
         },
         new GptSoVitsSpeechSettings
         {

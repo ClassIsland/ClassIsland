@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -29,7 +29,6 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public partial class RootAttachedSettingsDependencyControl : UserControl, INotifyPropertyChanged
 {
-    
     public static readonly DependencyProperty ControlInfoProperty = DependencyProperty.Register(
         nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(RootAttachedSettingsDependencyControl), new PropertyMetadata(default(AttachedSettingsControlInfo),
             (o, args) =>

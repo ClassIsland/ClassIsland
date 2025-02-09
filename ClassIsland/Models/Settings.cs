@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -504,7 +504,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             {
                 IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 Sentry 启用状态。");
             }
-
         }
     }
 
@@ -1219,7 +1218,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         get => _speechSource;
         set
         {
-
             if (value == _speechSource) return;
             if (!IsSystemSpeechSystemExist)
             {

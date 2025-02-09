@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,7 +39,6 @@ public partial class FeatureDebugWindow : MyWindow
 
     private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
-        
     }
 
     private async void ButtonTestFakeLoading_OnClick(object sender, RoutedEventArgs e)
@@ -47,7 +46,6 @@ public partial class FeatureDebugWindow : MyWindow
         LoadingMask.StartFakeLoading();
         await Task.Delay(TimeSpan.FromSeconds(5));
         LoadingMask.FinishFakeLoading();
-
     }
 
     private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)

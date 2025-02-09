@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -59,7 +59,6 @@ public class RulesetService : IRulesetService
             Logger.LogWarning("规则 {} 的处理程序没有注册，已默认其结果为 false.", rule.Id);
             return false;
         }
-
     }
 
     private bool? IsRulesetGroupSatisfied(RuleGroup ruleset)

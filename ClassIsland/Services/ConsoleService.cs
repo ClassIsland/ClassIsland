@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -39,6 +39,5 @@ public class ConsoleService
 
     public ConsoleService()
     {
-        
     }
 }

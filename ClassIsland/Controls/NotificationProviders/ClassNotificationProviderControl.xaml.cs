@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -92,7 +92,6 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         {
             Timer.Start();
         }
-
     }
 
     private void TimerOnTick(object? sender, EventArgs e)

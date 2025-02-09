@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -48,7 +48,6 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

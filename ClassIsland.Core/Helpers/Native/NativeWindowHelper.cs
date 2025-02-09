@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Windows.Win32;
@@ -13,7 +13,6 @@ namespace ClassIsland.Core.Helpers.Native;
 
 public static class NativeWindowHelper
 {
-
     #region 常量
     public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
     public static readonly HWND HWND_TOPMOST = new(-1);

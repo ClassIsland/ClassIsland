@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using ClassIsland.Core.Enums;
 using MaterialDesignThemes.Wpf;
 
@@ -37,7 +37,6 @@ public class AttachedSettingsControlInfo(
     /// <summary>
     /// 附加设置控件类型
     /// </summary>
-
     public Type AttachedSettingsControlType { get; internal set; } = null!;
 
     /// <summary>

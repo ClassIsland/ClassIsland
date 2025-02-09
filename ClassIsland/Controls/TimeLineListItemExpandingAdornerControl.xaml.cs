@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,7 +67,7 @@ public partial class TimeLineListItemExpandingAdornerControl
             s.StartSecond = s.EndSecond = newTime;
     }
 
-    static TimeSpan RoundTime(TimeSpan time) => TimeSpan.FromMinutes(time.TotalMinutes - time.TotalMinutes % 5);
+    static TimeSpan RoundTime(TimeSpan time) => TimeSpan.FromMinutes(time.TotalMinutes - (time.TotalMinutes % 5));
     TimeSpan GetDelta(TimeSpan raw, double v) => RoundTime(TimeSpan.FromSeconds(v * 100 / Scale) + raw) - raw;
 
     void ThumbTop_OnDragDelta(object _, DragDeltaEventArgs e)

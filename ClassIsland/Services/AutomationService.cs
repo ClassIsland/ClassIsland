@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services;
@@ -151,7 +151,6 @@ public class AutomationService : ObservableRecipient, IAutomationService
         {
             workflow.Unloading -= WorkflowOnUnloading;
             workflow.Triggers.CollectionChanged -= TriggersOnCollectionChanged;
-
         }
 
         void TriggersOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -236,7 +235,6 @@ public class AutomationService : ObservableRecipient, IAutomationService
         trigger.TriggerInstance.TriggeredRecover -= TriggerTriggeredRecover;
         trigger.TriggerInstance = null;
         Logger.LogDebug("成功卸载触发器 {}/{}", workflow.ActionSet.Name, trigger.Id);
-
     }
 
 

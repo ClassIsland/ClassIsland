@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -57,7 +57,6 @@ public class TimeLineBackgroundRulerControl : Control
 
     protected override void OnRender(DrawingContext drawingContext)
     {
-
         var ts = TimeSpan.Zero;
         var lastY = 0.0;
         var c = 0;
@@ -83,7 +82,7 @@ public class TimeLineBackgroundRulerControl : Control
             var y = ts.Ticks / BaseTicks * Scale;
             var yDelta = y - lastY;
             lastY = y;
-            if (c * 2 % p != 0)
+            if ((c * 2) % p != 0)
             {
                 goto done;
             }

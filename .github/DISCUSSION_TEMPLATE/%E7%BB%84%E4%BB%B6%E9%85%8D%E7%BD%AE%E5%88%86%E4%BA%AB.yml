@@ -1,6 +1,4 @@
 title: "【组件配置】（将这段话【替换】你的标题，删掉括号）"
-name: 组件配置分享
-description: 向大家分享你的组件配置。
 body:
   - type: markdown
     attributes:

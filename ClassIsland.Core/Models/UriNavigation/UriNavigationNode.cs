@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Core.Models.UriNavigation;
+namespace ClassIsland.Core.Models.UriNavigation;
 
 internal class UriNavigationNode(string name)
 {
@@ -16,7 +16,6 @@ internal class UriNavigationNode(string name)
 
     public bool Contains(string[] paths)
     {
-        
         if (paths.Length <= 0)
             return false;
         if (!Children.TryGetValue(paths[0], out var node))

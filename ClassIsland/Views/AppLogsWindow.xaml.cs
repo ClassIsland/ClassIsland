@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -55,7 +55,6 @@ public partial class AppLogsWindow : MyWindow
 
     private void LogsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        
     }
 
     private void AppLogsWindow_OnClosing(object? sender, CancelEventArgs e)
@@ -72,7 +71,6 @@ public partial class AppLogsWindow : MyWindow
         var o = e.AddedItems[0];
         if (o == null)
             return;
-        
     }
 
     private void Buttontest_ScrollIntoView_OnClick(object sender, RoutedEventArgs e)
@@ -84,12 +82,12 @@ public partial class AppLogsWindow : MyWindow
     {
         if (e.Item is not LogEntry i) 
             return;
-        bool c1 = ViewModel.IsFilteredCritical && i.LogLevel == LogLevel.Critical ||
-                  ViewModel.IsFilteredError && i.LogLevel == LogLevel.Error ||
-                  ViewModel.IsFilteredWarning && i.LogLevel == LogLevel.Warning ||
-                  ViewModel.IsFilteredInfo && i.LogLevel == LogLevel.Information ||
-                  ViewModel.IsFilteredDebug && i.LogLevel == LogLevel.Debug ||
-                  ViewModel.IsFilteredTrace && i.LogLevel == LogLevel.Trace;
+        bool c1 = (ViewModel.IsFilteredCritical && i.LogLevel == LogLevel.Critical) ||
+                  (ViewModel.IsFilteredError && i.LogLevel == LogLevel.Error) ||
+                  (ViewModel.IsFilteredWarning && i.LogLevel == LogLevel.Warning) ||
+                  (ViewModel.IsFilteredInfo && i.LogLevel == LogLevel.Information) ||
+                  (ViewModel.IsFilteredDebug && i.LogLevel == LogLevel.Debug) ||
+                  (ViewModel.IsFilteredTrace && i.LogLevel == LogLevel.Trace);
         if (string.IsNullOrWhiteSpace(ViewModel.FilterText))
         {
             e.Accepted = c1;

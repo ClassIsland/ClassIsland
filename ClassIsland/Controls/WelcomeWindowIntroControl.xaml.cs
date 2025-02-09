@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -33,10 +33,8 @@ public partial class WelcomeWindowIntroControl : UserControl
             HangService.AssumeHang();
             while (HangService.IsHang)
             {
-                
             }
             Play("Outro");
-
         });
         base.OnInitialized(e);
     }

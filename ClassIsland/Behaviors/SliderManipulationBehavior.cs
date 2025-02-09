@@ -1,4 +1,4 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 using Microsoft.Xaml.Behaviors;
@@ -32,6 +32,5 @@ public class SliderManipulationBehavior : Behavior<Slider>
 
     private void AssociatedObjectOnMouseDown(object sender, MouseButtonEventArgs e)
     {
-        
     }
 }

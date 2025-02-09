@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -45,7 +45,6 @@ public class Ruleset : ObservableRecipient
     /// <summary>
     /// 规则分组
     /// </summary>
-
     public ObservableCollection<RuleGroup> Groups
     {
         get => _groups;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -140,7 +140,6 @@ public partial class WelcomeWindow : MyWindow
 
     private async void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
     {
-        
     }
 
     private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)

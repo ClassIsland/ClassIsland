@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,7 +33,6 @@ public class ManagementService : IManagementService
 {
     static ManagementService()
     {
-        
     }
 
     public static void InitManagement()
@@ -171,7 +170,6 @@ public class ManagementService : IManagementService
         {
             Logger.LogError(e, "拉取集控清单与策略失败");
         }
-
     }
 
     public void SaveSettings()

@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace ClassIsland.Core.Controls;
@@ -16,6 +16,4 @@ public class MaterialProgressBar : ProgressBar
         get { return (double)GetValue(ForegroundScaleProperty); }
         set { SetValue(ForegroundScaleProperty, value); }
     }
-
-
 }

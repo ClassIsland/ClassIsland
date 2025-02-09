@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Shared;
@@ -45,5 +45,4 @@ public interface IProfileAnalyzeService : INotifyPropertyChanged
     /// <param name="requiresEnabled"></param>
     /// <returns></returns>
     List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id, bool requiresEnabled = true);
-
 }

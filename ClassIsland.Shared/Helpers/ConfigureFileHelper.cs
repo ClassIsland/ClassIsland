@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 
 namespace ClassIsland.Shared.Helpers;
@@ -50,7 +50,6 @@ public class ConfigureFileHelper
             File.Copy(path + ".bak", path, true);
             return r;
         }
-
     }
 
     /// <summary>

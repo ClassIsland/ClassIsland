@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -313,7 +313,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             var w = (int)dw % classPlan.TimeRule.WeekCountDivTotal;
             var baseOffset = (int)(classPlan.TimeRule.WeekDay - dow);
             var divOffset = (classPlan.TimeRule.WeekCountDiv + classPlan.TimeRule.WeekCountDivTotal - w) % classPlan.TimeRule.WeekCountDivTotal;
-            var finalOffset = baseOffset + divOffset * 7;
+            var finalOffset = baseOffset + (divOffset * 7);
             if (finalOffset < 0)
             {
                 finalOffset += 7;

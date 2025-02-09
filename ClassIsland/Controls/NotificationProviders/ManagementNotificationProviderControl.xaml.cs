@@ -28,7 +28,6 @@ public partial class ManagementNotificationProviderControl : UserControl
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
             Duration = new Duration(TimeSpan.FromSeconds(Payload.DurationSeconds)),
-
         };
         var storyboard = new Storyboard()
         {
