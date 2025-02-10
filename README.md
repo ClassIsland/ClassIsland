@@ -265,7 +265,14 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland?ref=badge_shield&style=flat-square)
 
-本项目基于 [MIT License](LICENSE.txt) 获得许可。
+本项目中的以下项目基于 GNU Lesser General Public License v3.0 获得许可：
+
+- [ClassIsland.PluginSdk](ClassIsland.PluginSdk)
+- [ClassIsland.Core](ClassIsland.Core)
+- [ClassIsland.Shared.Ipc](ClassIsland.Shared.Ipc)
+- [ClassIsland.Shared](ClassIsland.Shared)
+
+本项目的其余部分（包括但不限于应用本体）基于 [GNU General Public License v3.0](LICENSE.txt) 获得许可。
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FHelloWRC%2FClassIsland?ref=badge_large)
 

@@ -197,7 +197,7 @@
             </ListView>
         </Grid>
 
-        <Grid x:Key="OpenSourceLicense" Margin="16" Height="400" Width="550" MaxHeight="{Binding Height}">
+        <Grid x:Key="OpenSourceLicense" Margin="16" Height="450" Width="600" MaxHeight="{Binding Height}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition />

@@ -3,7 +3,7 @@
         <Authors>HelloWRC</Authors>
         <Company>HelloWRC.Dev</Company>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<PackageProjectUrl>https://classisland.tech</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/ClassIsland/ClassIsland</RepositoryUrl>
