@@ -29,6 +29,13 @@ public class RulesetService : IRulesetService
 
     public event EventHandler? StatusUpdated;
 
+    private int BoolToRuleObjectState(bool? v) => v switch
+    {
+        true => 2,
+        false => 1,
+        null => 0
+    };
+
     private bool? IsRuleSatisfied(Rule i)
     {
         if (i.Id == string.Empty)
@@ -68,14 +75,19 @@ public class RulesetService : IRulesetService
         {
             return null;
         }
+
         foreach (var i in ruleset.Rules)
         {
             bool? res = IsRuleSatisfied(i);
             if (res == null)
+            {
+                i.State = BoolToRuleObjectState(res);
                 continue;
+            }
 
             bool result = (bool)res;
             result ^= i.IsReversed;
+            i.State = BoolToRuleObjectState(result);
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
             {
                 rulesetSatisfied = false;
@@ -96,11 +108,21 @@ public class RulesetService : IRulesetService
         var isSatisfied = ruleset.Mode == RulesetLogicalMode.And;
         if (ruleset.Groups.Count <= 0)
         {
+            ruleset.State = BoolToRuleObjectState(false);
             return false;
+        }
+        foreach (var i in ruleset.Groups)
+        {
+            i.State = 0;
+            foreach (var j in i.Rules)
+            {
+                j.State = 0;
+            }
         }
         foreach (var group in ruleset.Groups.Where(x => x.IsEnabled))
         {
             bool? res = IsRulesetGroupSatisfied(group);
+            group.State = BoolToRuleObjectState(res);
             if (res == null)
                 continue;
 
@@ -118,6 +140,7 @@ public class RulesetService : IRulesetService
             }
         }
         isSatisfied ^= ruleset.IsReversed;
+        ruleset.State = BoolToRuleObjectState(isSatisfied);
         return isSatisfied;
     }
 

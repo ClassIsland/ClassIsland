@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
+using static System.Windows.Forms.AxHost;
 
 namespace ClassIsland.Core.Models.Ruleset;
 
@@ -13,6 +15,7 @@ public class RuleGroup : ObservableRecipient
     private RulesetLogicalMode _mode = RulesetLogicalMode.And;
     private bool _isReversed = false;
     private bool _isEnabled = true;
+    private int _state = 0;
 
     /// <summary>
     /// 规则条目。
@@ -66,6 +69,21 @@ public class RuleGroup : ObservableRecipient
         {
             if (value == _isEnabled) return;
             _isEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 满足状态
+    /// </summary>
+    [JsonIgnore]
+    public int State
+    {
+        get => _state;
+        set
+        {
+            if (value == _state) return;
+            _state = value;
             OnPropertyChanged();
         }
     }
