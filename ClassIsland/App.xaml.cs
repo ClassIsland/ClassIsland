@@ -620,12 +620,6 @@ public partial class App : AppBase, IAppHost
             spanCreateTaskbarIcon.Finish(ex);
         }
 
-        if (ApplicationCommand.UpdateDeleteTarget != null)
-        {
-            GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
-            GetService<ITaskBarIconService>().MainTaskBarIcon.ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。");
-        }
-
         if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
         {
             var spanCheckUpdate = spanLaunching.StartChild("startup-process-update");
@@ -700,6 +694,12 @@ public partial class App : AppBase, IAppHost
         catch (Exception ex)
         {
             Logger.LogError(ex, "无法创建自动备份。");
+        }
+
+        if (ApplicationCommand.UpdateDeleteTarget != null)
+        {
+            GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+            GetService<ITaskBarIconService>().ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。", clickedCallback:() => uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update")));
         }
     }
 

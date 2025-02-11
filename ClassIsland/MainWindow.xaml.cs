@@ -193,7 +193,6 @@ public partial class MainWindow : Window
         {
             LoadSettings();
         };
-        TaskBarIconService.MainTaskBarIcon.TrayBalloonTipClicked += TaskBarIconOnTrayBalloonTipClicked;
         DataContext = this;
         LessonsService.PreMainTimerTicked += LessonsServiceOnPreMainTimerTicked;
         LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
@@ -265,11 +264,6 @@ public partial class MainWindow : Window
         {
             SettingsService.Settings.DebugTimeOffsetSeconds += (SettingsService.Settings.DebugTimeSpeed - 1) * 0.05;
         }
-    }
-
-    private void TaskBarIconOnTrayBalloonTipClicked(object sender, RoutedEventArgs e)
-    {
-        App.GetService<SettingsWindowNew>().Open("update");
     }
 
     private Storyboard BeginStoryboard(string name)

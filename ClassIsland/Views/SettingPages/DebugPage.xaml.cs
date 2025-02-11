@@ -28,6 +28,7 @@ using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
@@ -251,5 +252,10 @@ public partial class DebugPage : SettingsPageBase
     {
         var thread = new Thread(() => throw new Exception());
         thread.Start();
+    }
+
+    private void MenuItemShowTestNotification_OnClick(object sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<ITaskBarIconService>().ShowNotification("Title", "Content", clickedCallback:() => CommonDialog.ShowInfo("Clicked!"));
     }
 }
