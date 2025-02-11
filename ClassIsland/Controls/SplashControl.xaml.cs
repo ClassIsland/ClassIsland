@@ -39,13 +39,10 @@ public partial class SplashControl : UserControl
     {
         Dispatcher.Invoke(() =>
         {
-            UpdateProgress(100, 0.5, ((o, args) =>
+            UpdateProgress(100, 0.2, (_, _) =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    App.GetService<SplashWindow>().Close();
-                });
-            }));
+                App.GetService<SplashWindow>().Close();
+            });
         });
     }
 
