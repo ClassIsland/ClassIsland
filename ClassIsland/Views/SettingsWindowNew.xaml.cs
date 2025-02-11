@@ -531,4 +531,9 @@ public partial class SettingsWindowNew : MyWindow
             UseShellExecute = true
         });
     }
+
+    private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
+    {
+        IAppHost.GetService<WindowRuleDebugWindow>().Show();
+    }
 }

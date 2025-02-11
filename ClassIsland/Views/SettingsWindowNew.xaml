@@ -398,6 +398,9 @@
                                             <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
                                                   Header="导出诊断数据"
                                                   Click="MenuItemExportDiagnosticInfo_OnClick"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon WindowMaximize}"
+                                                      Header="调试窗口规则…"
+                                                      Click="MenuItemDebugWindowRule_OnClick"/>
                                             <Separator/>
                                             <MenuItem Icon="{materialDesign:PackIcon FolderTextOutline}"
                                                       Header="打开日志目录…"
