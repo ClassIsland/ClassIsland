@@ -1265,6 +1265,7 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonRefreshScheduleAdjustmentView_OnClick(object sender, RoutedEventArgs e)
     {
         RefreshWeekScheduleRows();
+        ScheduleCalendarControl.UpdateSchedule();
     }
 
     private void DataGridWeekSchedule_OnPreparingCellForEdit(object? sender, DataGridPreparingCellForEditEventArgs e)
@@ -1350,6 +1351,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
 
         RefreshWeekScheduleRows();
+        ScheduleCalendarControl.UpdateSchedule();
     }
 
     private ClassPlan? GetTargetClassPlan(DateTime dateTime, bool overlay, out string? targetGuid)
@@ -1427,6 +1429,7 @@ public partial class ProfileSettingsWindow : MyWindow
             targetClassPlan.Classes[index].IsChangedClass = true;
         }
         RefreshWeekScheduleRows();
+        ScheduleCalendarControl.UpdateSchedule();
     }
 
     private void RootTabControlNavigator_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

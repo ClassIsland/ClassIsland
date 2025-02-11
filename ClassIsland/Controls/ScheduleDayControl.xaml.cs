@@ -77,6 +77,8 @@ public partial class ScheduleDayControl : UserControl
     public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>();
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
 
+    private ScheduleCalendarControl? _parentScheduleCalendarControl;
+
     public ScheduleDayControl()
     {
         InitializeComponent();
@@ -176,5 +178,29 @@ public partial class ScheduleDayControl : UserControl
         e.Handled = true;
         IsClassPlanSelectionPopupOpen = true;
         UpdateData();
+    }
+
+    private void ScheduleDayControl_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        _parentScheduleCalendarControl = VisualTreeUtils.FindParentVisuals<ScheduleCalendarControl>(this).FirstOrDefault();
+        if (_parentScheduleCalendarControl != null)
+        {
+            _parentScheduleCalendarControl.ScheduleUpdated += ParentScheduleCalendarControlOnScheduleUpdated;
+        }
+    }
+
+    private void ParentScheduleCalendarControlOnScheduleUpdated(object? sender, EventArgs e)
+    {
+        UpdateData();
+    }
+
+    private void ScheduleDayControl_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        if (_parentScheduleCalendarControl != null)
+        {
+            _parentScheduleCalendarControl.ScheduleUpdated -= ParentScheduleCalendarControlOnScheduleUpdated;
+        }
+
+        _parentScheduleCalendarControl = null;
     }
 }
