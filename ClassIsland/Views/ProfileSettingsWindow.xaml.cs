@@ -1426,6 +1426,7 @@ public partial class ProfileSettingsWindow : MyWindow
         {
             targetClassPlan.Classes[index].IsChangedClass = true;
         }
+        RefreshWeekScheduleRows();
     }
 
     private void RootTabControlNavigator_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

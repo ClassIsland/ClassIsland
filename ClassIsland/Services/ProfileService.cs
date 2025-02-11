@@ -214,7 +214,8 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         Logger.LogInformation("创建临时层：{}", id);
         var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
         if (Profile.OrderedSchedules.TryGetValue(date, out var orderedSchedule)
-            && Profile.ClassPlans.ContainsKey(orderedSchedule.ClassPlanId))
+            && Profile.ClassPlans.TryGetValue(orderedSchedule.ClassPlanId, out var cp1)
+            && cp1.IsOverlay)
         {
             return null;
         }
@@ -231,10 +232,10 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
         Profile.ClassPlans.Add(newId, newCp);
-        Profile.OrderedSchedules.Add(date, new OrderedSchedule()
+        Profile.OrderedSchedules[date] = new OrderedSchedule()
         {
             ClassPlanId = newId
-        });
+        };
         return newId;
     }
 
