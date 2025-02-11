@@ -189,6 +189,7 @@ public partial class MainWindow : Window
         WindowRuleService = windowRuleService;
         ManagementService = managementService;
 
+        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 1/2）");
         SettingsService.PropertyChanged += (sender, args) =>
         {
             LoadSettings();
@@ -458,7 +459,9 @@ public partial class MainWindow : Window
     {
         if (DesignerProperties.GetIsInDesignMode(this))
             return;
+        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
         UpdateTheme();
+        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
         var menu = (ContextMenu)FindResource("AppContextMenu");
         menu.DataContext = this;
         TaskBarIconService.MainTaskBarIcon.DataContext = this;
@@ -468,10 +471,6 @@ public partial class MainWindow : Window
         ViewModel.OverlayRemainTimePercents = 0.5;
         WindowRuleService.ForegroundWindowChanged += WindowRuleServiceOnForegroundWindowChanged;
         DiagnosticService.EndStartup();
-        if (ViewModel.Settings.IsSplashEnabled)
-        {
-            App.GetService<ISplashService>().EndSplash();
-        }
 
         if (!ViewModel.Settings.IsNotificationEffectRenderingScaleAutoSet)
         {
@@ -480,6 +479,10 @@ public partial class MainWindow : Window
 
         if (!ViewModel.Settings.IsWelcomeWindowShowed)
         {
+            if (ViewModel.Settings.IsSplashEnabled)
+            {
+                App.GetService<ISplashService>().EndSplash();
+            }
             var w = new WelcomeWindow()
             {
                 ViewModel =
@@ -501,6 +504,7 @@ public partial class MainWindow : Window
 
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
 
+        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化输入");
         if (SettingsService.Settings.UseRawInput)
         {
             try
@@ -716,6 +720,7 @@ public partial class MainWindow : Window
         LoadSettings();
         //ViewModel.CurrentProfilePath = ViewModel.Settings.SelectedProfile;
         LoadProfile();
+        IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（1）");
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
         SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;

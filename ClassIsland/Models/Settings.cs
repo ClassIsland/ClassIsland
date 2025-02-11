@@ -223,6 +223,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _mainWindowLineVerticalMargin = 5;
     private ObservableCollection<string> _trustedProfileIds = [];
     private bool _isNonExactCountdownEnabled = false;
+    private bool _showDetailedStatusOnSplash = false;
 
 
     public void NotifyPropertyChanged(string propertyName)
@@ -784,6 +785,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isCriticalSafeMode) return;
             _isCriticalSafeMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ShowDetailedStatusOnSplash
+    {
+        get => _showDetailedStatusOnSplash;
+        set
+        {
+            if (value == _showDetailedStatusOnSplash) return;
+            _showDetailedStatusOnSplash = value;
             OnPropertyChanged();
         }
     }

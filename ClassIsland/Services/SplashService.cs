@@ -23,6 +23,14 @@ public class SplashService: ObservableRecipient, ISplashService
         }
     }
 
+    public void SetDetailedStatus(string message)
+    {
+        if (SettingsService.Settings.ShowDetailedStatusOnSplash)
+        {
+            SplashStatus = message;
+        }
+    }
+
     public double CurrentProgress
     {
         get => _currentProgress;
@@ -56,6 +64,7 @@ public class SplashService: ObservableRecipient, ISplashService
         {
             SettingsService.Settings.SplashCustomLogoSource = "";
             SettingsService.Settings.SplashCustomText = "";
+            SettingsService.Settings.ShowDetailedStatusOnSplash = false;
         }
         ResetSplashText();
     }

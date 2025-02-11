@@ -596,15 +596,16 @@ public partial class App : AppBase, IAppHost
             {
                 GetService<SplashWindow>().Show();
             });
-            GetService<ISplashService>().CurrentProgress = 25;
             spanShowSplash.Finish();
         }
-        GetService<ISplashService>().CurrentProgress = 50;
+        GetService<ISplashService>().CurrentProgress = 30;
+        GetService<ISplashService>().SetDetailedStatus("正在启动挂起检查服务");
 
         var spanStartHangService = spanLaunching.StartChild("startup-start-hang-service");
         GetService<IHangService>();
         spanStartHangService.Finish();
 
+        GetService<ISplashService>().SetDetailedStatus("正在创建任务栏图标");
         var spanCreateTaskbarIcon = spanLaunching.StartChild("startup-create-taskbar-icon");
         try
         {
@@ -619,6 +620,7 @@ public partial class App : AppBase, IAppHost
 
         if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
         {
+            GetService<ISplashService>().SetDetailedStatus("正在进行更新服务启动操作");
             var spanCheckUpdate = spanLaunching.StartChild("startup-process-update");
             var r = await GetService<UpdateService>().AppStartup();
             spanCheckUpdate.Finish();
@@ -628,8 +630,9 @@ public partial class App : AppBase, IAppHost
                 return;
             }
         }
-        GetService<ISplashService>().CurrentProgress = 75;
+        GetService<ISplashService>().CurrentProgress = 45;
 
+        GetService<ISplashService>().SetDetailedStatus("正在加载档案");
         await GetService<IProfileService>().LoadProfileAsync();
         GetService<IWeatherService>();
         GetService<IExactTimeService>();
@@ -639,6 +642,8 @@ public partial class App : AppBase, IAppHost
 
         var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
         Logger.LogInformation("正在初始化MainWindow。");
+        GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
+        GetService<ISplashService>().CurrentProgress = 55;
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow init");
 #endif
@@ -646,6 +651,8 @@ public partial class App : AppBase, IAppHost
         MainWindow = mw;
         mw.StartupCompleted += (o, args) =>
         {
+            GetService<ISplashService>().CurrentProgress = 98;
+            GetService<ISplashService>().SetDetailedStatus("正在进行启动后操作");
             // 由于在应用启动时调用 WMI 会导致无法使用触摸，故在应用启动完成后再获取设备统计信息。
             // https://github.com/dotnet/wpf/issues/9752
             if (IsSentryEnabled)
@@ -665,13 +672,18 @@ public partial class App : AppBase, IAppHost
             SentrySdk.ConfigureScope(s => s.Transaction = null);
             GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
+            if (Settings.IsSplashEnabled)
+            {
+                App.GetService<ISplashService>().EndSplash();
+            }
             _isStartedCompleted = true;
         };
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow show");
 #endif
+        GetService<ISplashService>().CurrentProgress = 80;
+        GetService<ISplashService>().SetDetailedStatus("正在初始化主界面（步骤 2/2）");
         GetService<MainWindow>().Show();
-        GetService<ISplashService>().CurrentProgress = 90;
         GetService<IWindowRuleService>();
         GetService<SignalTriggerHandlerService>();
 
