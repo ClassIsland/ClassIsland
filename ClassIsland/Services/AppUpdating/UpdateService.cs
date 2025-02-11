@@ -284,7 +284,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 $"{Assembly.GetExecutingAssembly().GetName().Version} -> {version.Version}\n" +
                 "点击以查看详细信息。");
 
-            Settings.LastCheckUpdateTime = DateTime.Now;
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
         }
         catch (Exception ex)
@@ -295,6 +294,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         }
         finally
         {
+            Settings.LastCheckUpdateTime = DateTime.Now;
             UpdateInfoUpdated?.Invoke(this, EventArgs.Empty);
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
         }
