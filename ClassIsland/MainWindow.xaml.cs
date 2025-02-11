@@ -363,8 +363,7 @@ public partial class MainWindow : Window
                 ReCheckTopmostState();
             }
 
-            if (request.MaskDuration > TimeSpan.Zero &&
-                request.OverlayDuration > TimeSpan.Zero)
+            if (request.MaskDuration > TimeSpan.Zero)
             {
                 if (isSpeechEnabled)
                 {
@@ -403,7 +402,7 @@ public partial class MainWindow : Window
                     });
                 }
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
-                if (request.OverlayContent is null || cancellationToken.IsCancellationRequested)
+                if (request.OverlayContent is null || cancellationToken.IsCancellationRequested || request.OverlayDuration <= TimeSpan.Zero)
                 {
                     BeginStoryboardInLine("OverlayMaskOutDirect");
                 }
