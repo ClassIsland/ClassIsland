@@ -88,6 +88,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         RegistryNotifier = new RegistryNotifier(RegistryNotifier.HKEY_CURRENT_USER, "Control Panel\\Desktop");
         RegistryNotifier.RegistryKeyUpdated += RegistryNotifierOnRegistryKeyUpdated;
         RegistryNotifier.Start();
+        AppBase.Current.AppStopping += (sender, args) => RegistryNotifier.Stop();
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
         SettingsService.Settings.PropertyChanged += SettingsServiceOnPropertyChanged;

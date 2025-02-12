@@ -434,18 +434,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
                 services.AddTransient<FeatureDebugWindow>();
-                services.AddSingleton<TopmostEffectWindow>((x) =>
-                {
-                    var windowDispatcher = AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox")).Result;
-                    return windowDispatcher.Invoke(() =>
-                    {
-                        var window = new TopmostEffectWindow(
-                            x.GetRequiredService<ILogger<TopmostEffectWindow>>(),
-                            x.GetRequiredService<SettingsService>()
-                        );
-                        return window;
-                    });
-                });
+                services.AddSingleton<TopmostEffectWindow>(BuildTopmostEffectWindow);
                 services.AddSingleton<AppLogsWindow>();
                 services.AddSingleton<SettingsWindowNew>();
                 services.AddSingleton<ProfileSettingsWindow>((s) => new ProfileSettingsWindow()
@@ -742,6 +731,22 @@ public partial class App : AppBase, IAppHost
         }
     }
 
+    private TopmostEffectWindow BuildTopmostEffectWindow(IServiceProvider x)
+    {
+        
+        var windowDispatcherAwaiter = AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
+        while (!windowDispatcherAwaiter.IsCompleted)
+        {
+        }
+
+        return windowDispatcherAwaiter.Result.Invoke(() =>
+        {
+            var window = new TopmostEffectWindow(x.GetRequiredService<ILogger<TopmostEffectWindow>>(), x.GetRequiredService<SettingsService>());
+            return window;
+        });
+        
+    }
+
     private void UriNavigationCommandExecuted(object sender, ExecutedRoutedEventArgs e)
     {
         var uri = "";
@@ -877,7 +882,7 @@ public partial class App : AppBase, IAppHost
 
     public override void Stop()
     {
-        Dispatcher.Invoke(() =>
+        Dispatcher.Invoke(async () =>
         {
             AppStopping?.Invoke(this, EventArgs.Empty);
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
@@ -886,6 +891,14 @@ public partial class App : AppBase, IAppHost
             IAppHost.Host?.Services.GetService<IAutomationService>()?.SaveConfig("停止当前应用程序。");
             IAppHost.Host?.Services.GetService<IProfileService>()?.SaveProfile();
             Current.Shutdown();
+            if (AsyncBox.RelatedAsyncDispatchers.TryGetValue(Dispatcher, out var asyncDispatcherAwaiter))
+            {
+                var asyncDispatcher = await asyncDispatcherAwaiter;
+                if (!asyncDispatcher.HasShutdownStarted)
+                {
+                    asyncDispatcher.InvokeShutdown();
+                }
+            }
             try
             {
                 //ReleaseLock();
