@@ -8,9 +8,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
+using ClassIsland.Models.Rules;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -25,6 +27,7 @@ public class WeatherService : IHostedService, IWeatherService
     public List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; } = new();
 
     private ILogger<WeatherService> Logger { get; }
+    public IRulesetService RulesetService { get; }
 
     private DispatcherTimer UpdateTimer { get; } = new()
     {
@@ -33,14 +36,52 @@ public class WeatherService : IHostedService, IWeatherService
 
     public bool IsWeatherRefreshed { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger)
+    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService)
     {
         Logger = logger;
+        RulesetService = rulesetService;
         SettingsService = settingsService;
         LoadData();
+        RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
+        RulesetService.RegisterRuleHandler("classisland.weather.hasWeatherAlert", HasAlertRuleHandler);
+        RulesetService.RegisterRuleHandler("classisland.weather.rainTime", RainTimeRuleHandler);
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Start();
         _ = QueryWeatherAsync();
+    }
+
+    private bool RainTimeRuleHandler(object? o)
+    {
+        if (o is not RainTimeRuleSettings settings)
+        {
+            return false;
+        }
+
+        var baseTime = (settings.IsRemainingTime ? -1.0 : 1.0) * Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes;
+        return baseTime > 0 && baseTime <= settings.RainTimeMinutes;
+        
+    }
+
+    private bool HasAlertRuleHandler(object? o)
+    {
+        if (o is not StringMatchingSettings settings)
+        {
+            return false;
+        }
+
+        return IsWeatherRefreshed &&
+               Settings.LastWeatherInfo.Alerts.Exists(x => settings.IsMatching(x.Title));
+    }
+
+    private bool CurrentWeatherRuleHandler(object? o)
+    {
+        if (o is not CurrentWeatherRuleSettings settings)
+        {
+            return false;
+        }
+
+        return IsWeatherRefreshed &&
+               settings.WeatherId.ToString() == Settings.LastWeatherInfo.Current.Weather;
     }
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
@@ -100,6 +141,8 @@ public class WeatherService : IHostedService, IWeatherService
         {
             Logger.LogError(ex, "获取天气信息失败。");
         }
+
+        RulesetService.NotifyStatusChanged();
     }
 
     public string GetWeatherTextByCode(string code)

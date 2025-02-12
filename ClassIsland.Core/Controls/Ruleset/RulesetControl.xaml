@@ -80,7 +80,6 @@
         <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}"
                  HorizontalContentAlignment="Stretch"
                  materialDesign:ListBoxItemAssist.ShowSelection="False"
-                 PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
                  dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">

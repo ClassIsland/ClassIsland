@@ -13,8 +13,10 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
+using MahApps.Metro.Controls;
 using Microsoft.Extensions.Logging;
 using Sentry;
+using unvell.ReoGrid.IO.OpenXML.Schema;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ClassIsland.Services;
@@ -242,6 +244,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         IpcService.IpcProvider.CreateIpcJoint<IPublicLessonsService>(this);
         RulesetService.RegisterRuleHandler("classisland.lessons.timeState", TimeStateHandler);
         RulesetService.RegisterRuleHandler("classisland.lessons.currentSubject", CurrentSubjectHandler);
+        RulesetService.RegisterRuleHandler("classisland.lessons.nextSubject", NextSubjectHandler);
+        RulesetService.RegisterRuleHandler("classisland.lessons.previousSubject", PreviousSubjectHandler);
         CurrentTimeStateChanged += (sender, args) => RulesetService.NotifyStatusChanged();
         PropertyChanged += (sender, args) =>
         {
@@ -294,6 +298,58 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
 
         return CurrentSubject == subject;
+    }
+
+    private bool PreviousSubjectHandler(object? settings)
+    {
+        if (settings is not CurrentSubjectRuleSettings s)
+        {
+            return false;
+        }
+
+        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject))
+        {
+            return false;
+        }
+
+        var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        var layout = CurrentClassPlan?.TimeLayout;
+        if (layout == null)
+        {
+            return false;
+        }
+        var prevClassTimeItem = layout.Layouts
+            .Reverse()
+            .FirstOrDefault(i =>
+                i.TimeType == 0 &&
+                i.EndSecond.TimeOfDay < now);
+        if (prevClassTimeItem == null)
+        {
+            return false;
+        }
+        var i0 = GetClassIndex(layout.Layouts.IndexOf(prevClassTimeItem));
+        if (CurrentClassPlan?.Classes.Count > i0 &&
+            Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var prevSubject))
+        {
+            return prevSubject == subject;
+        }
+
+        return false;
+    }
+
+    private bool NextSubjectHandler(object? settings)
+    {
+        if (settings is not CurrentSubjectRuleSettings s)
+        {
+            return false;
+        }
+
+        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject))
+        {
+            return false;
+        }
+
+        return NextClassSubject == subject;
     }
 
     private bool TimeStateHandler(object? settings)
