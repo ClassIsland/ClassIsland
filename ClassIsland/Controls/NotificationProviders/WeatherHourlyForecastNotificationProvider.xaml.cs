@@ -23,11 +23,19 @@ public partial class WeatherHourlyForecastNotificationProvider : UserControl
 {
     public bool IsOverlay { get; }
     public WeatherInfo Info { get; }
+    public DateTime BaseTime { get; }
 
-    public WeatherHourlyForecastNotificationProvider(bool isOverlay, WeatherInfo info)
+    public List<DateTime> DateTimes { get; } = [];
+
+    public WeatherHourlyForecastNotificationProvider(bool isOverlay, WeatherInfo info, DateTime baseTime)
     {
         IsOverlay = isOverlay;
         Info = info;
+        BaseTime = baseTime;
+        for (var i = 0; i < 6; i++)
+        {
+            DateTimes.Add(baseTime.AddHours(i));
+        }
         InitializeComponent();
     }
 }

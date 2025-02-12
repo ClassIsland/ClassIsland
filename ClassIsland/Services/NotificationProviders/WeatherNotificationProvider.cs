@@ -131,12 +131,21 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         });
     }
 
+    private static DateTime RoundUpToHour(DateTime dateTime)
+    {
+        var ticksInHour = TimeSpan.TicksPerHour; // 每小时的Ticks数（3600,000,0000）
+        var remainder = dateTime.Ticks % ticksInHour;
+        return remainder == 0 ? dateTime : dateTime.AddTicks(ticksInHour - remainder);
+    }
+
     private void ShowWeatherForecastHourlyCore()
     {
+        var baseTime = SettingsService.Settings.LastWeatherInfo.UpdateTime;
+        baseTime = RoundUpToHour(baseTime);
         NotificationHostService.ShowNotification(new NotificationRequest()
         {
-            MaskContent = new WeatherHourlyForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
-            OverlayContent = new WeatherHourlyForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
+            MaskContent = new WeatherHourlyForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo, baseTime),
+            OverlayContent = new WeatherHourlyForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo, baseTime),
             OverlayDuration = TimeSpan.FromSeconds(15)
         });
     }
