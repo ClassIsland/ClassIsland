@@ -82,6 +82,7 @@ using ClassIsland.Models.Automation.Triggers;
 using MahApps.Metro.Controls;
 using Walterlv.Threading;
 using Walterlv.Windows;
+using static CommunityToolkit.Mvvm.ComponentModel.__Internals.__TaskExtensions.TaskAwaitableWithoutEndValidation;
 
 namespace ClassIsland;
 /// <summary>
@@ -592,11 +593,23 @@ public partial class App : AppBase, IAppHost
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             var spanShowSplash = spanLaunching.StartChild("startup-show-splash");
-            var splashDispatcher = await AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
-            splashDispatcher.Invoke(() =>
+            var splashDispatcherAwaiter = AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
+            splashDispatcherAwaiter.OnCompleted(() =>
             {
-                GetService<SplashWindow>().Show();
+                var dispatcher = splashDispatcherAwaiter.Result;
+                var showAwaiter = dispatcher.BeginInvoke(() =>
+                {
+                    GetService<SplashWindow>().Show();
+                });
+                if (!Settings.IsWaitForTransientDisabled)
+                {
+                    showAwaiter.Wait();
+                }
             });
+            if (!Settings.IsWaitForTransientDisabled)
+            {
+                await splashDispatcherAwaiter;
+            }
             spanShowSplash.Finish();
         }
         GetService<ISplashService>().CurrentProgress = 30;
