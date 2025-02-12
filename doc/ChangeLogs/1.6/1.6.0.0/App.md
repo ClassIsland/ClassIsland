@@ -1,51 +1,9 @@
-# 新增功能
-
-1.6 - Himeko 的新增功能。
-
-## 自动化
-
-![Image](https://github.com/user-attachments/assets/bc7fb422-266d-4fc3-90ae-25f64e97de20)
-
-您可以通过自动化让 ClassIsland 在一些特定的时间节点执行一些特定的操作，比如切换组件配置，运行程序等，显示提醒等等。总的来说，就是“当 XX 发生”，并且“满足 XX 规则”时“做什么”。
-
-![Image](https://github.com/user-attachments/assets/32ced745-848d-4e9e-b29e-b917ed693495)
-
-同时，【行动】也作为一种新的时间点类型加入到了时间表中。您可以通过【行动】时间点实现在一天的特定时间执行特定操作。
-
-## 预定调课
-
-![Image](https://github.com/user-attachments/assets/1814f254-00d9-4694-bdea-69dee0a76f14)
-
-![Image](https://github.com/user-attachments/assets/503098e6-27d5-4b74-97c5-505b8dd84e9e)
-
-您可以在[【档案编辑】](classisland://app/profile)的【调课】选项卡中预定调课安排，比如预定在某天临时启用的课表（包括临时层课表），以及跨天换课等等。
-
-## 本地集控
-
-![Image](https://github.com/user-attachments/assets/321b4305-560d-4ce4-bf15-d250f1eca661)
-
-您可以在[【应用设置】->【集控选项】](classisland://app/settings/management)中在不使用集控服务的情况下，为应用设置密码保护和限制策略。您可以通过【限制策略】功能来限制某些功能的使用，也可以通过【密码保护】功能为某些功能设置密码。
-
-## 组件
-
-本版本添加了【容器组件】和【多行组件】功能，增强了组件的自定义能力。
-
-![图片](https://github.com/user-attachments/assets/1cd29caf-dacf-436e-baa7-00fda187f004)
-
-容器组件是一种特殊的组件类型，可以容纳并展示其它组件。目前 ClassIsland 加入了轮播组件和分组组件等容器组件，您可以利用这些组件更好地自定义主界面上的内容。
-
-![Image](https://github.com/user-attachments/assets/2694ffa5-62e3-4812-a602-5c92767d2c66)
-
-【多行组件】功能可以让组件显示在不同的行上。当某一行上的组件全部隐藏时，这一行也会随之隐藏。您可以利用此功能在主界面展示更多的信息。
-
-***
-
 # 1.6.0.0
 
 1.6 - Himeko
 
 > [!important]
-> 从此版本起，ClassIsland 的开源协议更换为 GPLv3.关于此更变的详细信息，请见讨论[#697](https://github.com/ClassIsland/ClassIsland/discussions/697)。
+> 从此版本起，ClassIsland 的开源协议更换为 GPLv3.关于此更变的详细信息，请见讨论[#697](https://github.com/ClassIsland/ClassIsland/discussions/697)。继续使用即代表您同意更换后的开源协议。
 
 ## 🚀 新增功能与优化
 
