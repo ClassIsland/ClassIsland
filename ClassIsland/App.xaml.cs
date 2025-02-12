@@ -434,7 +434,18 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();
                 services.AddTransient<FeatureDebugWindow>();
-                services.AddSingleton<TopmostEffectWindow>();
+                services.AddSingleton<TopmostEffectWindow>((x) =>
+                {
+                    var windowDispatcher = AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox")).Result;
+                    return windowDispatcher.Invoke(() =>
+                    {
+                        var window = new TopmostEffectWindow(
+                            x.GetRequiredService<ILogger<TopmostEffectWindow>>(),
+                            x.GetRequiredService<SettingsService>()
+                        );
+                        return window;
+                    });
+                });
                 services.AddSingleton<AppLogsWindow>();
                 services.AddSingleton<SettingsWindowNew>();
                 services.AddSingleton<ProfileSettingsWindow>((s) => new ProfileSettingsWindow()

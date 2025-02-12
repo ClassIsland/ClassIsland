@@ -395,10 +395,14 @@ public partial class MainWindow : Window
                 if (settings.IsNotificationEffectEnabled && ViewModel.Settings.AllowNotificationEffect &&
                     GridRoot.IsVisible && ViewModel.Settings.IsMainWindowVisible && !IsRunningCompatibleMode)
                 {
-                    TopmostEffectWindow.PlayEffect(new RippleEffect()
+                    var center = GetCenter();
+                    TopmostEffectWindow.Dispatcher.Invoke(() =>
                     {
-                        CenterX = GetCenter().X,
-                        CenterY = GetCenter().Y
+                        TopmostEffectWindow.PlayEffect(new RippleEffect()
+                        {
+                            CenterX = center.X,
+                            CenterY = center.Y
+                        });
                     });
                 }
                 await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
@@ -969,8 +973,14 @@ public partial class MainWindow : Window
                 Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
                 break;
         }
+
         if (updateEffectWindow)
-            TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+        {
+            TopmostEffectWindow.Dispatcher.Invoke(() =>
+            {
+                TopmostEffectWindow.UpdateWindowPos(screen, 1 / dpiX);
+            });
+        }
     }
 
     public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
