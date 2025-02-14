@@ -602,14 +602,10 @@ public partial class App : AppBase, IAppHost
             splashDispatcherAwaiter.OnCompleted(() =>
             {
                 var dispatcher = splashDispatcherAwaiter.Result;
-                var showAwaiter = dispatcher.BeginInvoke(() =>
+                _ = dispatcher.InvokeAsync(() =>
                 {
                     GetService<SplashWindow>().Show();
                 });
-                if (!Settings.IsWaitForTransientDisabled)
-                {
-                    showAwaiter.Wait();
-                }
             });
             if (!Settings.IsWaitForTransientDisabled)
             {
