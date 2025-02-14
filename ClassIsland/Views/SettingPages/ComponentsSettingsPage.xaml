@@ -519,6 +519,15 @@
                                                 </Grid>
                                             </Expander>
                                         </materialDesign:Card>
+                                        <StackPanel Orientation="Horizontal" ToolTip="GUID" HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Code" VerticalAlignment="Center"/>
+                                            <TextBox Text="{Binding Id, Mode=OneWay}"
+                                                     Margin="4 0 0 0"
+                                                     IsReadOnly="True"
+                                                     VerticalAlignment="Center"
+                                                     materialDesign:TextFieldAssist.DecorationVisibility="Collapsed"
+                                                     BorderThickness="0"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </ScrollViewer>
                             </DataTemplate>
