@@ -792,9 +792,9 @@ public partial class ProfileSettingsWindow : MyWindow
     private void MenuItemProfileDuplicate_OnClick(object sender, RoutedEventArgs e)
     {
         SentrySdk.Metrics.Increment("views.ProfileSettingsWindow.profile.duplicate");
-        var raw = Path.Combine(Services.ProfileService.ProfilePath, $"./Profiles/{ViewModel.SelectedProfile}");
+        var raw = Path.Combine(Services.ProfileService.ProfilePath, $"{ViewModel.SelectedProfile}");
         var d = Path.GetFileNameWithoutExtension(ViewModel.SelectedProfile) + " - 副本.json";
-        var d1 = Path.Combine(Services.ProfileService.ProfilePath, $"./Profiles/{d}");
+        var d1 = Path.Combine(Services.ProfileService.ProfilePath, $"{d}");
         File.Copy(raw, d1);
         RefreshProfiles();
     }
