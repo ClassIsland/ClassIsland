@@ -597,8 +597,11 @@ public partial class App : AppBase, IAppHost
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             var spanShowSplash = spanLaunching.StartChild("startup-show-splash");
-            var splashDispatcher = await AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
-            splashDispatcher.Invoke(() =>
+            var splashDispatcherAwaiter = AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
+            while (!splashDispatcherAwaiter.IsCompleted)
+            {
+            }
+            splashDispatcherAwaiter.Result.Invoke(() =>
             {
                 GetService<SplashWindow>().Show();
             });
