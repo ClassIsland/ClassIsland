@@ -58,6 +58,7 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
         _crontab = Crontab.TryParse(Settings.CronExpression);
         if (_crontab != null)
         {
+            _stopCancellationTokenSource = new CancellationTokenSource();
             Task.Factory.StartNew(CronWorker, TaskCreationOptions.LongRunning);
         }
     }
