@@ -1248,7 +1248,7 @@ public partial class ProfileSettingsWindow : MyWindow
         }
 
         ViewModel.DataGridWeekRowsWeekIndex =
-            (int)Math.Ceiling((baseDate - MainViewModel.Settings.SingleWeekStartTime).TotalDays / 7);
+            (int)Math.Ceiling((baseDate.AddDays(6) - MainViewModel.Settings.SingleWeekStartTime).TotalDays / 7);
 
         return;
 
