@@ -581,5 +581,9 @@
             <Run Text="{x:Static local:App.AppVersionLong}"/>
         </TextBlock>
 
+        <!-- Reserved transforms -->
+        <Grid.RenderTransform>
+            <TranslateTransform/>
+        </Grid.RenderTransform>
     </Grid>
 </Window>
