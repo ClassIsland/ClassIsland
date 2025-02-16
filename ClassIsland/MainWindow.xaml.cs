@@ -49,7 +49,7 @@ using Linearstar.Windows.RawInput;
 using ProgressBar = System.Windows.Controls.ProgressBar;
 using WindowChrome = System.Windows.Shell.WindowChrome;
 using ClassIsland.Services.Management;
-
+using Point = System.Windows.Point;
 
 
 #if DEBUG
@@ -937,6 +937,8 @@ public partial class MainWindow : Window
             : Screen.PrimaryScreen;
         if (screen == null)
             return;
+        double offsetAreaTop = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds.Top : screen.WorkingArea.Top;
+        double offsetAreaBottom = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds.Bottom : screen.WorkingArea.Bottom;
         var aw = RenderSize.Width * dpiX;
         var ah = RenderSize.Height * dpiY;
         var c = (double)(screen.WorkingArea.Left + screen.WorkingArea.Right) / 2;
@@ -950,27 +952,27 @@ public partial class MainWindow : Window
         {
             case 0: //左上
                 //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                Top = (screen.WorkingArea.Top + oy) / dpiY;
+                Top = (offsetAreaTop + oy) / dpiY;
                 break;
             case 1: // 中上
                 //Left = (c - aw / 2 + ox) / dpiX;
-                Top = (screen.WorkingArea.Top + oy) / dpiY;
+                Top = (offsetAreaTop + oy) / dpiY;
                 break;
             case 2: // 右上
                 //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                Top = (screen.WorkingArea.Top + oy) / dpiY;
+                Top = (offsetAreaTop + oy) / dpiY;
                 break;
             case 3: // 左下
                 //Left = (screen.WorkingArea.Left + ox) / dpiX;
-                Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
+                Top = (offsetAreaBottom - ah + oy) / dpiY;
                 break;
             case 4: // 中下
                 //Left = (c - aw / 2 + ox) / dpiX;
-                Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
+                Top = (offsetAreaBottom - ah + oy) / dpiY;
                 break;
             case 5: // 右下
                 //Left = (screen.WorkingArea.Right - aw + ox) / dpiX;
-                Top = (screen.WorkingArea.Bottom - ah + oy) / dpiY;
+                Top = (offsetAreaBottom - ah + oy) / dpiY;
                 break;
         }
 

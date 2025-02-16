@@ -1650,6 +1650,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    bool _isIgnoreWorkAreaEnabled;
+    public bool IsIgnoreWorkAreaEnabled
+    {
+        get => _isIgnoreWorkAreaEnabled;
+        set
+        {
+            if (value == _isIgnoreWorkAreaEnabled) return;
+            _isIgnoreWorkAreaEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+    
     public int WindowDockingOffsetX
     {
         get => _windowDockingOffsetX;
