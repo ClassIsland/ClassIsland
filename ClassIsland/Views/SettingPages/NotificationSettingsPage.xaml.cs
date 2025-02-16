@@ -87,7 +87,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPromptText = "这里有别于神里家的布景，移步之间，处处都有新奇感。",
             GptSoVitsRefAudioPath = "template_audio/ayaka.wav"
         }
-        ],
+        ,
         new GptSoVitsSpeechSettings
         {
             PresetName = "爱莉希雅（崩坏3）",
