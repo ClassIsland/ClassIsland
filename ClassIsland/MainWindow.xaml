@@ -583,7 +583,12 @@
 
         <!-- Reserved transforms -->
         <Grid.RenderTransform>
-            <TranslateTransform/>
+            <TransformGroup>
+                <TranslateTransform/>
+                <ScaleTransform/>
+                <RotateTransform/>
+                <MatrixTransform/>
+            </TransformGroup>
         </Grid.RenderTransform>
     </Grid>
 </Window>
