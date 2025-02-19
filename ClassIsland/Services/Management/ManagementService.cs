@@ -192,7 +192,6 @@ public class ManagementService : IManagementService
             return;
         }
 
-
     }
 
     public void SaveSettings()
