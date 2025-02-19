@@ -121,9 +121,17 @@ public class ManagementService : IManagementService
 
     private void ConnectionOnCommandReceived(object? sender, ClientCommandEventArgs e)
     {
-        if (e.Type == CommandTypes.RestartApp)
+        switch (e.Type)
         {
-            AppBase.Current.Restart(true);
+            case CommandTypes.RestartApp:
+            {
+                AppBase.Current.Restart(true);
+                break;
+            }
+            case CommandTypes.DataUpdated:
+                Logger.LogInformation("Received DataUpdated command.");
+                SetupManagement();
+                break;
         }
     }
 
