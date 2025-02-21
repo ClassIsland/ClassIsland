@@ -253,9 +253,16 @@
 
             <!-- 兼容透明模式 -->
             <ci:SettingsCard IconGlyph="CogOutline"
-                                   Header="兼容透明模式"
-                                   Description="若启用，应用将使用资源占用更高的备选方法（AllowTransparency）而非默认方法（WindowChrome）实现窗口透明，且不支持全屏提醒特效等功能。可能会解决叠加异常、黑底等部分显示问题。"
-                                   IsOn="{Binding SettingsService.Settings.IsCompatibleWindowTransparentEnabled, Mode=TwoWay}"
+                             Header="兼容透明模式"
+                             Description="若启用，应用将使用资源占用更高的备选方法（AllowTransparency）而非默认方法（WindowChrome）实现窗口透明，且不支持全屏提醒特效等功能。可能会解决叠加异常、黑底等部分显示问题。"
+                             IsOn="{Binding SettingsService.Settings.IsCompatibleWindowTransparentEnabled, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
+            
+            <!-- 使用原始屏幕尺寸 -->
+            <ci:SettingsCard IconGlyph="DockWindow"
+                                   Header="使用原始屏幕尺寸"
+                                   Description="若启用，主界面调整位置时将忽略系统工作区设置（通常包括任务栏和部分顶栏应用）。"
+                                   IsOn="{Binding SettingsService.Settings.IsIgnoreWorkAreaEnabled, Mode=TwoWay}"
                                    Margin="0 0 0 6" />
 
             <!-- 指针穿透 --><!--

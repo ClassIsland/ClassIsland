@@ -16,6 +16,7 @@
             <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
                 <materialDesign:ColorZone Background="#204169e1" 
                                           Panel.ZIndex="1" 
+                                          CornerRadius="4"
                                           Margin="0 0 0 5">
                     <Grid>
                         <DockPanel Margin="8 4">
