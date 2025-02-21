@@ -87,7 +87,19 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPromptText = "这里有别于神里家的布景，移步之间，处处都有新奇感。",
             GptSoVitsRefAudioPath = "template_audio/ayaka.wav"
         }
-        ];
+        ,
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "爱莉希雅（崩坏3）",
+            GptSoVitsVoiceName = "elysia",
+            IsInternal = true,
+            GptSoVitsServerIp = "elysia.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "他这么向我说道，悲剧并非终结，而是希望的起始。",
+            GptSoVitsRefAudioPath = "template_audio/elysia.wav"
+        }
+        ];        
 
     public NotificationSettingsPage(SettingsService settingsService, INotificationHostService notificationHostService, ISpeechService speechService, IManagementService managementService)
     {
