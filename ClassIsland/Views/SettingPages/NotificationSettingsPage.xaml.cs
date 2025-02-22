@@ -86,8 +86,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "这里有别于神里家的布景，移步之间，处处都有新奇感。",
             GptSoVitsRefAudioPath = "template_audio/ayaka.wav"
-        }
-        ,
+        },
         new GptSoVitsSpeechSettings
         {
             PresetName = "爱莉希雅（崩坏3）",
@@ -98,6 +97,18 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "他这么向我说道，悲剧并非终结，而是希望的起始。",
             GptSoVitsRefAudioPath = "template_audio/elysia.wav"
+        }
+        ,
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "钟离（原神）",
+            GptSoVitsVoiceName = "zhongli",
+            IsInternal = true,
+            GptSoVitsServerIp = "zhongli.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "无事逢客休，席上校两棋…我们开局吧。",
+            GptSoVitsRefAudioPath = "template_audio/zhongli.wav"
         }
         ];        
 
