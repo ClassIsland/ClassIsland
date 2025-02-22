@@ -97,8 +97,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "他这么向我说道，悲剧并非终结，而是希望的起始。",
             GptSoVitsRefAudioPath = "template_audio/elysia.wav"
-        }
-        ,
+        },
         new GptSoVitsSpeechSettings
         {
             PresetName = "钟离（原神）",
@@ -109,6 +108,18 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "无事逢客休，席上校两棋…我们开局吧。",
             GptSoVitsRefAudioPath = "template_audio/zhongli.wav"
+        }
+        ,
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "流萤（崩坏）",
+            GptSoVitsVoiceName = "firefly",
+            IsInternal = true,
+            GptSoVitsServerIp = "firefly.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "因为你身上别着星穹列车的徽章呀，我在大银幕上见过！",
+            GptSoVitsRefAudioPath = "template_audio/firefly.wav"
         }
         ];        
 
