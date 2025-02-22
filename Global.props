@@ -28,6 +28,21 @@
 	<PropertyGroup Condition="'$(Configuration)'=='Release_MSIX'">
 		<IsMsix>true</IsMsix>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='x64'">
+		<DefineConstants>$(DefineConstants);PLATFORM_x64</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='x86'">
+		<DefineConstants>$(DefineConstants);PLATFORM_x86</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='arm64'">
+		<DefineConstants>$(DefineConstants);PLATFORM_ARM64</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='arm'">
+		<DefineConstants>$(DefineConstants);PLATFORM_ARM</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='Any CPU'">
+		<DefineConstants>$(DefineConstants);PLATFORM_Any</DefineConstants>
+	</PropertyGroup>
 	<!-- <PropertyGroup Condition="'$(IsMsix)'=='true'">
 		<Platform>AnyCPU</Platform>
 		<PlatformTarget>AnyCPU</PlatformTarget>

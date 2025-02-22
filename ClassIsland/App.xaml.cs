@@ -155,6 +155,22 @@ public partial class App : AppBase, IAppHost
 #endif
     ;
 
+    public override string OperatingSystem => "windows";
+    public override string Platform =>
+#if TARGET_x64
+    "x64"
+#elif PLATFORM_x86
+    "x86"
+#elif PLATFORM_ARM64
+    "arm64"
+#elif PLATFORM_ARM
+    "arm"
+#elif PLATFORM_Any
+    "any"
+#else
+    "unknown"
+#endif
+        ;
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);

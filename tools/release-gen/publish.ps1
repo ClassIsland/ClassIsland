@@ -1,4 +1,4 @@
-﻿param($is_trim)
+﻿param($is_trim, $arch)
 
 $ErrorActionPreference = "Stop"
 
@@ -11,7 +11,7 @@ if ($(Test-Path ./out) -eq $false) {
 }
 #dotnet clean
 
-dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded -p:TrimAssets=$is_trim
+dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded -p:TrimAssets=$is_trim -p:ClassIsland_PlatformTarget=$arch -p:RuntimeIdentifier="win-${arch}"
 
 Write-Host "Packaging..." -ForegroundColor Cyan
 

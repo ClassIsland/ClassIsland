@@ -26,12 +26,14 @@ jobs:
     runs-on: windows-latest  # For a list of available runner types, refer to
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
     env:
-      artifact_name: out_app_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+      artifact_name: out_app_windows_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
       isTestMode: ${{ github.event.inputs.is_test_mode }}
+      arch: ${{ matrix.arch }}
     strategy:
       matrix:
         trim_assets: ['true', 'false']
         package: ['singleFile']
+        arch: ['x64', 'x86', 'arm64']
         exclude:
           - package: wap
             trim_assets: 'true'
@@ -70,7 +72,7 @@ jobs:
             pwsh -ep Bypass -c ./tools/release-gen/publish-wap.ps1 false $env:is_release
           } else {  
             # Single File
-            pwsh -ep Bypass -c ./tools/release-gen/publish.ps1 $env:trim_assets
+            pwsh -ep Bypass -c ./tools/release-gen/publish.ps1 $env:trim_assets $env:arch
           }
 
       - name: Upload Unsigned APP to artifacts
