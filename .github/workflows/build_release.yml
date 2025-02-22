@@ -37,7 +37,7 @@ jobs:
         exclude:
           - package: wap
             trim_assets: 'true'
-    name: Build_windows_x64_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
+    name: Build_windows_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
