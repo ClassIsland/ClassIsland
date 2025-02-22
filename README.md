@@ -135,14 +135,8 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
-> 测试版包含最新的功能，但也可能包含未完善和不稳定的功能。
-
-| 下载渠道  | **🚀 正式版**<br/>[![正式版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=)](https://github.com/ClassIsland/ClassIsland/releases/latest) | 🚧 测试版<br/>[![测试版](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=)](https://github.com/ClassIsland/ClassIsland/releases/) |
-| :-------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|  GitHub   |                                                            [**下载**](https://github.com/ClassIsland/ClassIsland/releases/latest)                                                            |                                                              [下载](https://github.com/ClassIsland/ClassIsland/releases)                                                               |
-| AppCenter |                                    [**下载**](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/public/releases/latest)                                    |                                 [下载](https://install.appcenter.ms/users/hellowrc/apps/classisland/distribution_groups/publicbeta/releases/latest)                                 |
-
-如果以上链接无法使用，可以从 [镜像链接](https://docs.classisland.tech/app/setup#%E4%B8%8B%E8%BD%BD%E5%BA%94%E7%94%A8%E6%9C%AC%E4%BD%93) 下载。
+- [ClassIsland 官网（推荐）](https://classisland.tech/download)
+- [GitHub Releases](https://github.com/ClassIsland/ClassIsland/releases/)
 
 下载完成后，将软件压缩包解压到一个**独立的文件夹（运行路径不能有中文）**，运行软件即可开始使用。解压时请不要解压到网盘同步文件夹、【下载】文件夹中，否则可能会出现**文件无法读写、文件丢失**等问题。
 
@@ -173,6 +167,8 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
 - [Visual Studio](https://visualstudio.microsoft.com/)
+
+> 由于 ClassIsland 解决方案中存在 WAP 项目，在打开解决方案后 Visual Studio 可能会要求安装 Windows 应用程序开发工作负载。如果您不需要修改 WAP 相关功能，可以不用安装此工作负载。
 
 对于 Visual Studio，您需要在安装时勾选以下工作负载：
 
