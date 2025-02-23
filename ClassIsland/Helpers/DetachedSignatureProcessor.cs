@@ -4,6 +4,7 @@ using System.IO;
 using System;
 using PgpCore;
 using System.Text;
+using ClassIsland.Services.SpeechService;
 
 namespace ClassIsland.Helpers;
 
@@ -90,5 +91,42 @@ public static class DetachedSignatureProcessor
     private static MemoryStream GenerateStreamFromString(string s)
     {
         return new MemoryStream(Encoding.UTF8.GetBytes(s));
+    }
+
+
+    public static string CreateSignature(
+        string content,
+        string keyIn,
+        string passPhrase)
+    {
+        Stream outputStreamRaw = new MemoryStream();
+        Stream outputStream = new ArmoredOutputStream(outputStreamRaw);
+        
+
+        var pgpSec = new EncryptionKeys(keyIn, passPhrase);
+        PgpPrivateKey pgpPrivKey = pgpSec.PrivateKey;
+        PgpSignatureGenerator sGen = new PgpSignatureGenerator(
+            pgpSec.PrivateKey.PublicKeyPacket.Algorithm, HashAlgorithmTag.Sha1);
+
+        sGen.InitSign(PgpSignature.BinaryDocument, pgpPrivKey);
+
+        BcpgOutputStream bOut = new BcpgOutputStream(outputStream);
+
+        Stream fIn = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        int ch;
+        while ((ch = fIn.ReadByte()) >= 0)
+        {
+            sGen.Update((byte)ch);
+        }
+
+        fIn.Close();
+
+        sGen.Generate().Encode(bOut);
+
+        outputStream.Close();
+
+        outputStreamRaw.Seek(0, SeekOrigin.Begin);
+        return new StreamReader(outputStreamRaw).ReadToEnd();
     }
 }

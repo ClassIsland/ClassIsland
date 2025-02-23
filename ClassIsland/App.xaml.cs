@@ -89,6 +89,8 @@ namespace ClassIsland;
 /// </summary>
 public partial class App : AppBase, IAppHost
 {
+    internal Dispatcher? ThreadedUiDispatcher { get; set; }
+
     public static bool IsAssetsTrimmedInternal { get; } =
 #if TrimAssets 
         true;
@@ -155,6 +157,22 @@ public partial class App : AppBase, IAppHost
 #endif
     ;
 
+    public override string OperatingSystem => "windows";
+    public override string Platform =>
+#if TARGET_x64
+    "x64"
+#elif PLATFORM_x86
+    "x86"
+#elif PLATFORM_ARM64
+    "arm64"
+#elif PLATFORM_ARM
+    "arm"
+#elif PLATFORM_Any
+    "any"
+#else
+    "unknown"
+#endif
+        ;
     public App()
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
@@ -589,6 +607,15 @@ public partial class App : AppBase, IAppHost
         }
         spanLoadingSettings.Finish();
         //OverrideFocusVisualStyle();
+        var threadedUiDispatcherAwaiter =
+            AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
+        await Task.Run(() =>
+        {
+            while (!threadedUiDispatcherAwaiter.IsCompleted)
+            {
+            }
+        });
+        ThreadedUiDispatcher = threadedUiDispatcherAwaiter.Result;
         Logger.LogInformation("初始化应用。");
 
         TransitionAssist.DisableTransitionsProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(Settings.IsTransientDisabled));
@@ -597,11 +624,8 @@ public partial class App : AppBase, IAppHost
         if (Settings.IsSplashEnabled && !ApplicationCommand.Quiet)
         {
             var spanShowSplash = spanLaunching.StartChild("startup-show-splash");
-            var splashDispatcherAwaiter = AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
-            while (!splashDispatcherAwaiter.IsCompleted)
-            {
-            }
-            splashDispatcherAwaiter.Result.Invoke(() =>
+
+            ThreadedUiDispatcher.Invoke(() =>
             {
                 GetService<SplashWindow>().Show();
             });
@@ -723,13 +747,7 @@ public partial class App : AppBase, IAppHost
 
     private TopmostEffectWindow BuildTopmostEffectWindow(IServiceProvider x)
     {
-        
-        var windowDispatcherAwaiter = AsyncBox.RelatedAsyncDispatchers.GetOrAdd(Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
-        while (!windowDispatcherAwaiter.IsCompleted)
-        {
-        }
-
-        return windowDispatcherAwaiter.Result.Invoke(() =>
+        return ThreadedUiDispatcher!.Invoke(() =>
         {
             var window = new TopmostEffectWindow(x.GetRequiredService<ILogger<TopmostEffectWindow>>(), x.GetRequiredService<SettingsService>());
             return window;

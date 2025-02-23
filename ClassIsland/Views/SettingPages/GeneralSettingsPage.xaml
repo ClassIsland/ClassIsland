@@ -194,6 +194,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="自定义启动图标（留空将加载默认图标）"
                                                            VerticalAlignment="Center" />
@@ -240,6 +241,13 @@
                                 </DockPanel>
                             </Grid>
                         </materialDesign:ColorZone>
+
+                        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0">
+                            <Button Margin="0 6 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Left" Click="ButtonRefreshSplashPreview_OnClick">
+                                <ci:IconText Kind="EyeOutline" Text="预览"/>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                 </Expander>
             </materialDesign:Card>

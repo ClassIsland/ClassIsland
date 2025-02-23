@@ -45,6 +45,7 @@ using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.SettingsWindow;
 using Application = System.Windows.Application;
 using YamlDotNet.Core.Tokens;
+using ClassIsland.Helpers;
 
 namespace ClassIsland.Views;
 
@@ -535,5 +536,48 @@ public partial class SettingsWindowNew : MyWindow
     private void MenuItemDebugWindowRule_OnClick(object sender, RoutedEventArgs e)
     {
         IAppHost.GetService<WindowRuleDebugWindow>().Show();
+    }
+
+    private void MenuItemOpenDataFolder_OnClick(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo()
+        {
+            FileName = Path.GetFullPath(App.AppRootFolderPath) ?? "",
+            UseShellExecute = true
+        });
+    }
+
+    private async void MenuItemAddClassSwapShortcut_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!SettingsService.Settings.IsUrlProtocolRegistered)
+        {
+            var urlDialogResult = new CommonDialogBuilder()
+                .SetContent("快捷换课快捷方式需要启用【注册 Url 协议】选项才能工作。您要启用它吗？")
+                .AddCancelAction()
+                .AddAction("启用", PackIconKind.Check, true)
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .ShowDialog(this);
+            if (urlDialogResult == 0)
+            {
+                return;
+            }
+
+            SettingsService.Settings.IsUrlProtocolRegistered = true;
+        }
+        var dialog = new SaveFileDialog()
+        {
+            Filter = "快捷方式（*.url）|*.url",
+            FileName = "快捷换课.url",
+            InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)
+        };
+
+        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+        {
+            return;
+        }
+
+        await ShortcutHelpers.CreateClassSwapShortcutAsync(dialog.FileName);
+
+        ViewModel.SnackbarMessageQueue.Enqueue("快捷换课图标创建成功。");
     }
 }
