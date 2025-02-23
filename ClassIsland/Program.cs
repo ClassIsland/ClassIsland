@@ -80,6 +80,7 @@ void ConfigureSentry(SentryOptions options)
     // This option is recommended. It enables Sentry's "Release Health" feature.
     options.AutoSessionTracking = true;
     options.Release = App.AppVersion;
+    options.SendClientReports = false;
     // Enabling this option is recommended for client applications only. It ensures all threads use the same global scope.
     options.IsGlobalModeEnabled = true;
     // Example sample rate for your transactions: captures 10% of transactions
@@ -90,11 +91,10 @@ void ConfigureSentry(SentryOptions options)
     }
     else
     {
-        options.TracesSampleRate = 0.1;
+        options.TracesSampleRate = 0.05;
         // options.ProfilesSampleRate = 0.016;
     }
 
-    options.AutoSessionTracking = true;
     options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
 }
 
