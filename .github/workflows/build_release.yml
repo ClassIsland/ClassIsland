@@ -66,6 +66,8 @@ jobs:
           package: ${{ matrix.package }}
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
           test_signing_key: ${{ secrets.TEST_SIGNING_KEY }}
+          API_SIGNING_KEY: ${{ secrets.API_SIGNING_KEY}}
+          API_SIGNING_KEY_PS: ${{ secrets.API_SIGNING_KEY_PS }}
         run: |
           ls
           if ($env:package -eq "wap") {  
