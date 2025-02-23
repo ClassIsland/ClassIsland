@@ -108,11 +108,10 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "无事逢客休，席上校两棋…我们开局吧。",
             GptSoVitsRefAudioPath = "template_audio/zhongli.wav"
-        }
-        ,
+        },
         new GptSoVitsSpeechSettings
         {
-            PresetName = "流萤（崩坏）",
+            PresetName = "流萤（崩坏：星穹铁道）",
             GptSoVitsVoiceName = "firefly",
             IsInternal = true,
             GptSoVitsServerIp = "firefly.tts.wez.ink",
@@ -120,6 +119,29 @@ public partial class NotificationSettingsPage : SettingsPageBase
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "因为你身上别着星穹列车的徽章呀，我在大银幕上见过！",
             GptSoVitsRefAudioPath = "template_audio/firefly.wav"
+        },
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "高考听力男声",
+            GptSoVitsVoiceName = "highexam-male",
+            IsInternal = true,
+            GptSoVitsServerIp = "highexam-male.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "回答听力部分时，请先将答案标在试卷上。",
+            GptSoVitsRefAudioPath = "template_audio/highexam-male.wav"
+        }
+        ,
+        new GptSoVitsSpeechSettings
+        {
+            PresetName = "钟离（原神）",
+            GptSoVitsVoiceName = "zhongli",
+            IsInternal = true,
+            GptSoVitsServerIp = "zhongli.tts.wez.ink",
+            GptSoVitsBatchSize = 5,
+            GptSoVitsPort = "80",
+            GptSoVitsPromptText = "无事逢客休，席上校两棋…我们开局吧。",
+            GptSoVitsRefAudioPath = "template_audio/zhongli.wav"
         }
         ];        
 
