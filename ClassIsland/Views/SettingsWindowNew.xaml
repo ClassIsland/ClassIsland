@@ -376,18 +376,25 @@
                                         <Separator/>-->
                                             <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"
                                                   Click="MenuItemExperimentalSettings_OnClick" />
+                                            <MenuItem Icon="{materialDesign:PackIcon WindowMaximize}"
+                                                      Header="调试窗口规则…"
+                                                      Click="MenuItemDebugWindowRule_OnClick"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon SwapHorizontal}"
+                                                      Header="创建快捷换课图标"
+                                                      Click="MenuItemAddClassSwapShortcut_OnClick"/>
+                                            <Separator/>
                                             <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="集控选项…"
                                                       Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                                       CommandParameter="classisland://app/settings/management?ci_keepHistory=true">
                                             </MenuItem>
-                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="加入管理…"
+                                            <MenuItem Icon="{materialDesign:PackIcon BriefcaseAddOutline}" Header="加入管理…"
                                                   Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
                                                   Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                                 <MenuItem.CommandParameter>
                                                     <controls2:JoinManagementDialog/>
                                                 </MenuItem.CommandParameter>
                                             </MenuItem>
-                                            <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="退出管理…"
+                                            <MenuItem Icon="{materialDesign:PackIcon BriefcaseOffOutline}" Header="退出管理…"
                                                   Click="MenuItemExitManagement_OnClick" 
                                                   Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             </MenuItem>
@@ -398,14 +405,14 @@
                                             <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
                                                   Header="导出诊断数据"
                                                   Click="MenuItemExportDiagnosticInfo_OnClick"/>
-                                            <MenuItem Icon="{materialDesign:PackIcon WindowMaximize}"
-                                                      Header="调试窗口规则…"
-                                                      Click="MenuItemDebugWindowRule_OnClick"/>
                                             <Separator/>
                                             <MenuItem Icon="{materialDesign:PackIcon FolderTextOutline}"
                                                       Header="打开日志目录…"
                                                       Click="MenuItemOpenLogFolder_OnClick"/>
-                                            <MenuItem Icon="{materialDesign:PackIcon FolderOutline}"
+                                            <MenuItem Icon="{materialDesign:PackIcon FolderFileOutline}"
+                                                      Header="打开数据目录…"
+                                                      Click="MenuItemOpenDataFolder_OnClick"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon FolderDownloadOutline}"
                                                       Header="打开应用目录…"
                                                       Click="MenuItemOpenAppFolder_OnClick"/>
                                             

@@ -5,17 +5,17 @@ using System.Windows;
 
 namespace ClassIsland.Helpers;
 
-public class ShortcutHelpers
+public static class ShortcutHelpers
 {
-    public static async Task CreateClassSwapShortcutAsync()
+    public static async Task CreateClassSwapShortcutAsync(string path="")
     {
-        var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "快捷换课.url");
+        var desktopPath = string.IsNullOrEmpty(path) ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "快捷换课.url") : path;
         var stream = Application.GetResourceStream(new Uri("/Assets/ShortcutTemplates/ClassSwap.url", UriKind.Relative));
         if (stream == null)
         {
             return;
         }
 
-        await File.WriteAllTextAsync(desktopPath, new StreamReader(stream.Stream).ReadToEnd());
+        await File.WriteAllTextAsync(desktopPath, await new StreamReader(stream.Stream).ReadToEndAsync());
     }
 }
