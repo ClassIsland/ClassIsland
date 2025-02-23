@@ -112,7 +112,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
         ,
         new GptSoVitsSpeechSettings
         {
-            PresetName = "流萤（崩坏）",
+            PresetName = "流萤（崩坏：星穹铁道）",
             GptSoVitsVoiceName = "firefly",
             IsInternal = true,
             GptSoVitsServerIp = "firefly.tts.wez.ink",
