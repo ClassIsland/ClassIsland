@@ -31,11 +31,11 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        trim_assets: ['true', 'false']
+        trim_assets: ['false']
         package: ['singleFile']
         arch: ['x64', 'x86', 'arm64']
-        exclude:
-          - package: wap
+        include:
+          - arch: 'x64' 
             trim_assets: 'true'
     name: Build_windows_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
     steps:
