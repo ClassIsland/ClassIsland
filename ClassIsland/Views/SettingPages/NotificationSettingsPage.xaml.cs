@@ -134,14 +134,14 @@ public partial class NotificationSettingsPage : SettingsPageBase
         ,
         new GptSoVitsSpeechSettings
         {
-            PresetName = "钟离（原神）",
-            GptSoVitsVoiceName = "zhongli",
+            PresetName = "三月七（崩坏：星穹铁道）",
+            GptSoVitsVoiceName = "march7th",
             IsInternal = true,
-            GptSoVitsServerIp = "zhongli.tts.wez.ink",
+            GptSoVitsServerIp = "march7th.tts.wez.ink",
             GptSoVitsBatchSize = 5,
             GptSoVitsPort = "80",
-            GptSoVitsPromptText = "无事逢客休，席上校两棋…我们开局吧。",
-            GptSoVitsRefAudioPath = "template_audio/zhongli.wav"
+            GptSoVitsPromptText = "名字是我自己取的，大家也叫我三月、小三月…你呢？你想叫我什么？",
+            GptSoVitsRefAudioPath = "template_audio/march7th.wav"
         }
         ];        
 
