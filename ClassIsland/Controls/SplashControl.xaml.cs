@@ -41,7 +41,7 @@ public partial class SplashControl : UserControl
         {
             UpdateProgress(100, 0.1, (_, _) =>
             {
-                App.GetService<SplashWindow>().Close();
+                Window.GetWindow(this)?.Close();
             });
         });
     }

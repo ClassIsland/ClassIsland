@@ -36,10 +36,11 @@ public partial class GeneralSettingsPage : SettingsPageBase
     public IExactTimeService ExactTimeService { get; }
 
     public MiniInfoProviderHostService MiniInfoProviderHostService { get; }
+    public ISplashService SplashService { get; }
 
     public GeneralSettingsViewModel ViewModel { get; } = new();
 
-    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService)
+    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService, ISplashService splashService)
     {
         InitializeComponent();
         DataContext = this;
@@ -47,6 +48,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
         ManagementService = managementService;
         ExactTimeService = exactTimeService;
         MiniInfoProviderHostService = miniInfoProviderHostService;
+        SplashService = splashService;
 
         SettingsService.Settings.PropertyChanged+= SettingsOnPropertyChanged;
     }
@@ -86,5 +88,14 @@ public partial class GeneralSettingsPage : SettingsPageBase
     private void ButtonCloseSellingAnnouncementBanner_OnClick(object sender, RoutedEventArgs e)
     {
         SettingsService.Settings.ShowSellingAnnouncement = false;
+    }
+
+    private async void ButtonRefreshSplashPreview_OnClick(object sender, RoutedEventArgs e)
+    {
+        SplashService.ResetSplashText();
+        var splashWindow = new SplashWindow(SplashService);
+        splashWindow.Show();
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        SplashService.EndSplash();
     }
 }
