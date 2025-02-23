@@ -11,7 +11,9 @@ if ($(Test-Path ./out) -eq $false) {
 }
 #dotnet clean
 
-dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded -p:TrimAssets=$is_trim -p:ClassIsland_PlatformTarget=$arch -p:RuntimeIdentifier="win-${arch}"
+./tools/release-gen/generate-secrets.ps1
+
+dotnet publish .\ClassIsland\ClassIsland.csproj -c Release -p:PublishProfile=FolderProfile -p:PublishDir=$PUBLISH_TARGET -property:DebugType=embedded -p:TrimAssets=$is_trim -p:ClassIsland_PlatformTarget=$arch -p:RuntimeIdentifier="win-${arch}" -p:PublishBuilding=true
 
 Write-Host "Packaging..." -ForegroundColor Cyan
 

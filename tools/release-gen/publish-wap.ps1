@@ -35,6 +35,8 @@ $manifestRaw.Replace('Version="0.0.0.0"', 'Version="' + $ver + '"') | Set-Conten
 
 # clean
 msbuild ./ClassIsland.sln /t:Clean /p:Configuration="Release_MSIX" /p:RuntimeIdentifiers="win-x64" /p:Platform="x64" /p:PlatformTarget="x64"
+# generate codes
+./tools/release-gen/generate-secrets.ps1
 # restore
 msbuild ./ClassIsland.sln /t:Restore /p:Configuration="Release_MSIX" /p:RuntimeIdentifiers="win-x64" /p:Platform="x64" /p:PlatformTarget="x64"
 # build

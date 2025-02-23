@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using ClassIsland.Core;
+using ClassIsland.Helpers;
 using ClassIsland.Shared.Abstraction.Services;
 
 using Microsoft.Extensions.Logging;
 
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using PgpCore;
 
 namespace ClassIsland.Services.SpeechService;
 
@@ -33,12 +37,10 @@ public class GptSoVitsService : ISpeechService
 
     private IWavePlayer? CurrentWavePlayer { get; set; }
 
-    private readonly HttpClient httpClient;
-
     public GptSoVitsService()
     {
         Logger.LogInformation("初始化了 GPTSoVITS 服务。");
-        httpClient = new HttpClient();
+        
     }
 
     private string GetCachePath(string text)
@@ -102,7 +104,23 @@ public class GptSoVitsService : ISpeechService
 
     private async Task<bool> GenerateSpeechAsync(string text, string filePath, CancellationToken cancellationToken)
     {
+        var httpClient = new HttpClient();
         var settings = SettingsService.Settings.GptSoVitsSpeechSettings;
+
+        if (settings.IsInternal && GptSovitsSecrets.IsSecretsFilled)
+        {
+            var key = new EncryptionKeys(GptSovitsSecrets.PrivateKey, GptSovitsSecrets.PrivateKeyPassPhrase);
+            var pgp = new PGP(key);
+            var ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            var signData = new
+            {
+                ContentSHA256 = SHA256.HashData(Encoding.UTF8.GetBytes(text)),
+                Timestamp = Convert.ToInt64(ts.TotalMilliseconds)
+            };
+            var sign = await pgp.SignAsync(JsonSerializer.Serialize(signData));
+            httpClient.DefaultRequestHeaders.Add("X-ClassIsland-ApiSignature", Convert.ToBase64String(Encoding.UTF8.GetBytes(sign)));
+        }
+        httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("ClassIsland", AppBase.AppVersion));
         var serverIp = settings.GptSoVitsServerIp;
         var port = settings.GptSoVitsPort;
 

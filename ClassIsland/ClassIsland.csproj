@@ -112,6 +112,9 @@
 	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
 		<DefineConstants>$(DefineConstants);DevelopmentBuild</DefineConstants>
 	</PropertyGroup>
+	<PropertyGroup Condition="'$(PublishBuilding)' == 'true'">
+		<DefineConstants>$(DefineConstants);PublishBuilding</DefineConstants>
+	</PropertyGroup>
 	<PropertyGroup Condition="'$(IsMsix)' == 'true'">
 		<DefineConstants>$(DefineConstants);IsMsix</DefineConstants>
 	</PropertyGroup>
