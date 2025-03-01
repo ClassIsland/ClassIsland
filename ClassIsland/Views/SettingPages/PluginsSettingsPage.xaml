@@ -357,7 +357,7 @@
             </DataGrid>
         </Grid>
     </ci:SettingsPageBase.Resources>
-    <Grid>
+    <Grid AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter" DragLeave="Grid_DragLeave">
         <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
                                   IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}">
             <controls1:ListDetailView.TitleElement>
@@ -439,7 +439,7 @@
                                     IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
                                 <ci:IconText Kind="Refresh" Text="刷新"/>
                             </Button>
-                            
+
                         </DockPanel>
                         <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
                                                   Visibility="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -665,5 +665,20 @@
                     </Button>
                 </StackPanel></ScrollViewer>
         </Border>
+        <Grid Grid.Row="0"
+              Visibility="{Binding ViewModel.IsDragEntering, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="{DynamicResource MaterialDesignBackground}"
+                    Opacity="0.75"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <materialDesign:PackIcon Kind="FileImport"
+                                 HorizontalAlignment="Center"
+                                 Height="64" Width="64"
+                                 Margin="0 0 0 8"/>
+                <TextBlock Text="将插件拖入到此处，松手即可安装。"
+                   FontSize="14"
+                   VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+        <materialDesign:Snackbar VerticalAlignment="Bottom" MessageQueue="{Binding ViewModel.MessageQueue}"/>
     </Grid>
 </ci:SettingsPageBase>
