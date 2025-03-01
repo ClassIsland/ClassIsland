@@ -389,7 +389,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
                 var mfText = new StreamReader(mf.Open()).ReadToEnd();
                 var manifest = deserializer.Deserialize<PluginManifest>(mfText);
 
-                CommonDialog.ShowHint($"插件 {manifest.Name} 版本 {manifest.Version} 安装成功。");
+                ViewModel.MessageQueue.Enqueue($"插件 {manifest.Name} 版本 {manifest.Version} 安装成功。");
                 RequestRestart();
             }
             catch (Exception exception)
