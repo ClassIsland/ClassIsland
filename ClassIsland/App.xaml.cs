@@ -354,6 +354,40 @@ public partial class App : AppBase, IAppHost
             CommonDialog.ShowError("运行ClassIsland需要开启Aero效果。请在【控制面板】->【个性化】中启用Aero主题，然后再尝试运行ClassIsland。");
             Environment.Exit(0);
         }
+
+        var startupCountFilePath = Path.Combine(AppRootFolderPath, ".startup-count");
+        var startupCount = File.Exists(startupCountFilePath)
+            ? (int.TryParse(await File.ReadAllTextAsync(startupCountFilePath), out var count) ? count + 1 : 1)
+            : 1;
+        if (startupCount >= 3 && !ApplicationCommand.Recovery)
+        {
+            var enterRecovery = new CommonDialogBuilder()
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .SetContent("ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？")
+                .AddCancelAction()
+                .AddAction("进入恢复模式", PackIconKind.WrenchCheckOutline, true)
+                .ShowDialog();
+            if (enterRecovery == 1)
+            {
+                ApplicationCommand.Recovery = true;
+            }
+        }
+        if (ApplicationCommand.Recovery)
+        {
+            if (File.Exists(startupCountFilePath))
+            {
+                File.Delete(startupCountFilePath);
+            }
+            
+            var recoveryWindow = new RecoveryWindow();
+            recoveryWindow.Show();
+            transaction.Finish();
+            return;
+        }
+
+        
+        await File.WriteAllTextAsync(startupCountFilePath, startupCount.ToString());
+
         var spanProcessUpdate = spanPreInit.StartChild("startup-process-update");
 
         if (ApplicationCommand.UpdateReplaceTarget != null)
@@ -707,6 +741,7 @@ public partial class App : AppBase, IAppHost
             SentrySdk.ConfigureScope(s => s.Transaction = null);
             GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
+            File.Delete(startupCountFilePath);
             if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
             {
                 GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback:() => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
