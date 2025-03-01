@@ -79,6 +79,7 @@ using Windows.Storage;
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Models.Automation.Triggers;
+using ClassIsland.Shared.Helpers;
 using MahApps.Metro.Controls;
 using Walterlv.Threading;
 using Walterlv.Windows;
@@ -460,6 +461,7 @@ public partial class App : AppBase, IAppHost
                 });
                 services.AddTransient<ClassPlanDetailsWindow>();
                 services.AddTransient<WindowRuleDebugWindow>();
+                services.AddTransient<ConfigErrorsWindow>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
@@ -705,6 +707,10 @@ public partial class App : AppBase, IAppHost
             SentrySdk.ConfigureScope(s => s.Transaction = null);
             GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
+            if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
+            {
+                GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback:() => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
+            }
             if (Settings.IsSplashEnabled)
             {
                 App.GetService<ISplashService>().EndSplash();
@@ -727,6 +733,7 @@ public partial class App : AppBase, IAppHost
         uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
         uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));
         uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
+        uriNavigationService.HandleAppNavigation("config-errors", args => GetService<ConfigErrorsWindow>().ShowDialog());
 
         GetService<IIpcService>().IpcProvider.CreateIpcJoint<IFooService>(new FooService());
         try
