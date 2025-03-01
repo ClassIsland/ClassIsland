@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 ci_tmp/
+cipx/
+*.cipx
