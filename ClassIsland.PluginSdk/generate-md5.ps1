@@ -1,5 +1,7 @@
 param($path)
 
+$env:PSModulePath = "$PSHOME/Modules"
+
 echo $path
 cd $path
 rm $path/*.md5sum
