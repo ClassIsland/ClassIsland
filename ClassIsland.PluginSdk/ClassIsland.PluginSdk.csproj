@@ -19,8 +19,11 @@
 
 	<ItemGroup>
 		<Folder Include="Properties\" />
+		<None Include="ClassIsland.PluginSdk.targets" Pack="True" PackagePath="build/$(TargetFramework)" />
+		<None Include="generate-md5.ps1" Pack="True" PackagePath="build/$(TargetFramework)" />
 	</ItemGroup>
 	
 	<Import Project="..\GeneratePackage.props" />
 	<Import Project="..\Global.props" />
+	<Import Project=".\ClassIsland.PluginSdk.targets" />
 </Project>
