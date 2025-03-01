@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Shared.Models.Profile;
 
@@ -94,4 +95,8 @@ public partial class TimeLineListItemSeparatorAdornerControl : UserControl
         }
         RaiseEvent(new SeparatorLikeTimePointMovedEventArgs(TimePoint));
     }
+
+    void Thumb_OnMouseEnter(object _, MouseEventArgs e) => VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(static i => i.IsManipulationEnabled = false);
+    void Thumb_OnMouseUp(object _, MouseEventArgs e) => VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(static i => i.IsManipulationEnabled = true);
+    void Thumb_OnMouseLeave(object _, MouseEventArgs e) => VisualTreeUtils.FindParentVisuals<ScrollViewer>(this).ForEach(static i => i.IsManipulationEnabled = true);
 }
