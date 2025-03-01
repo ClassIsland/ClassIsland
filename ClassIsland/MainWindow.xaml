@@ -39,6 +39,7 @@
         Icon="/Assets/AppLogo.ico"
         Loaded="MainWindow_OnLoaded"
         SizeToContent="Height"
+        ShowActivated="False"
         materialDesign:ShadowAssist.CacheMode="{x:Null}">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:MainWindow.TrayIconLeftClickedCommand}"
