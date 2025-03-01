@@ -81,6 +81,10 @@ public class ActionService : IActionService
 
     public void Invoke(ActionSet actionSet)
     {
+        if (App.ApplicationCommand.Safe)
+        {
+            return;
+        }
         foreach (var action in actionSet.Actions)
             action.Exception = null;
         if (actionSet.IsRevertEnabled)
@@ -98,6 +102,10 @@ public class ActionService : IActionService
 
     public void Revert(ActionSet actionSet)
     {
+        if (App.ApplicationCommand.Safe)
+        {
+            return;
+        }
         foreach (var action in actionSet.Actions)
             action.Exception = null;
         actionSet.IsOn = false;

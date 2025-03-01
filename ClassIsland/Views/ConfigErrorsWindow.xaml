@@ -26,12 +26,12 @@
         </Grid.RowDefinitions>
 
         <ToolBar ToolBarTray.IsLocked="True" Grid.Row="0">
-            <Button>
-                <ci:IconText Kind="WrenchCheckOutline" Text="从先前的备份恢复配置"></ci:IconText>
+            <Button Click="ButtonRestoreBackups_OnClick">
+                <ci:IconText Kind="Restore" Text="恢复备份"></ci:IconText>
             </Button>
         </ToolBar>
 
-        <TextBlock Grid.Row="1" Text="下方的配置文件因意外断电等原因已损坏且无法加载，现已自动加载备份或使用默认值。"/>
+        <TextBlock Grid.Row="1" Text="下方的配置文件因意外断电等原因已损坏且无法加载，现已自动加载备份或使用默认值。您可以重启到恢复模式并从备份中恢复配置文件。"/>
 
         <DataGrid Grid.Row="2" IsReadOnly="True"
                   AutoGenerateColumns="False"

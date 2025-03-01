@@ -580,4 +580,13 @@ public partial class SettingsWindowNew : MyWindow
 
         ViewModel.SnackbarMessageQueue.Enqueue("快捷换课图标创建成功。");
     }
+
+    private async void MenuItemRestartToRecovery_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
+        {
+            return;
+        }
+        AppBase.Current.Restart(["-m", "-r"]);
+    }
 }

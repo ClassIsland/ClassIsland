@@ -110,7 +110,7 @@
                 </Expander>
             </materialDesign:Card>
             <!-- 备份 -->
-            <materialDesign:Card Padding="12 10 16 10">
+            <materialDesign:Card Padding="12 10 16 10" Margin="0 0 0 6">
                 <StackPanel>
                     <ci:SettingsControl IconGlyph="BackupRestore"
                                         Header="手动备份"
@@ -133,6 +133,25 @@
                                                  Visibility="{Binding ViewModel.IsBackupFinished, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                      Visibility="{Binding ViewModel.IsBackingUp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Padding="12 10 16 10">
+                <StackPanel>
+                    <ci:SettingsControl IconGlyph="BackupRestore"
+                                        Header="恢复备份"
+                                        Description="重启到恢复模式并恢复到指定的备份。"
+                                        Margin="0 0 0 6"
+                                        HasSwitcher="False"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                IsEnabled="{Binding ViewModel.IsBackingUp, Converter={StaticResource InvertBooleanConverter}}"
+                                Click="ButtonRecoverBackup_OnClick">
+                            <ci:IconText Kind="Restore" Text="恢复备份" />
+                        </Button>
+                        
+
                     </WrapPanel>
                 </StackPanel>
             </materialDesign:Card>

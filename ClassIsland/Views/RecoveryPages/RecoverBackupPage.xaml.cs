@@ -81,7 +81,7 @@ public partial class RecoverBackupPage : Page
 
         var result = new CommonDialogBuilder()
             .SetCaption("恢复备份")
-            .SetPackIcon(PackIconKind.GarbageCanEmpty)
+            .SetPackIcon(PackIconKind.Restore)
             .SetContent($"您确定要把应用配置恢复到备份 {ViewModel.SelectedBackupName} 的状态吗？此操作无法撤销。")
             .AddCancelAction()
             .AddConfirmAction()

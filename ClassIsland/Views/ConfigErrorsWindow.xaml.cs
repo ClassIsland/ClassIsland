@@ -11,6 +11,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Services.Management;
+using ClassIsland.Shared;
 using ClassIsland.Shared.Models;
 using CommunityToolkit.Mvvm.Input;
 
@@ -31,5 +35,15 @@ public partial class ConfigErrorsWindow
     private void CopyErrorDetails(ConfigError error)
     {
         Clipboard.SetDataObject(error.Exception.ToString(), false);
+    }
+
+    private async void ButtonRestoreBackups_OnClick(object sender, RoutedEventArgs e)
+    {
+        var managementService = IAppHost.GetService<IManagementService>();
+        if (!await managementService.AuthorizeByLevel(managementService.CredentialConfig.ExitApplicationAuthorizeLevel))
+        {
+            return;
+        }
+        AppBase.Current.Restart(["-m", "-r"]);
     }
 }

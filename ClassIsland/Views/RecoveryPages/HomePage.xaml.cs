@@ -59,7 +59,7 @@ public partial class HomePage : Page
 
     private void ButtonContinueDiagnostic_OnClick(object sender, RoutedEventArgs e)
     {
-        ContinueWithArguments(["--diagnostic"]);
+        ContinueWithArguments(["--diagnostic", "--verbose"]);
     }
 
     private void ButtonOpenLogFolder_OnClick(object sender, RoutedEventArgs e)

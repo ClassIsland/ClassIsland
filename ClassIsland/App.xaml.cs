@@ -604,7 +604,10 @@ public partial class App : AppBase, IAppHost
                 // 认证提供方
                 services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
                 // Plugins
-                PluginService.InitializePlugins(context, services);
+                if (!ApplicationCommand.Safe)
+                {
+                    PluginService.InitializePlugins(context, services);
+                }
             }).Build();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
@@ -966,16 +969,26 @@ public partial class App : AppBase, IAppHost
 
     public override void Restart(bool quiet=false)
     {
+        if (quiet)
+        {
+            Restart(["-m", "-q"]);
+        }
+        else
+        {
+            Restart(["-m"]);
+        }
+        
+    }
+
+    public override void Restart(string[] parameters)
+    {
         Stop();
         var path = Environment.ProcessPath;
-        var args = new List<string> { "-m" };
-        if (quiet)
-            args.Add("-q");
-        if (path == null) 
+        if (path == null)
             return;
         var replaced = path.Replace(".dll", ".exe");
         var startInfo = new ProcessStartInfo(replaced);
-        foreach (var i in args)
+        foreach (var i in parameters)
         {
             startInfo.ArgumentList.Add(i);
         }
