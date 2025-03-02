@@ -5,7 +5,7 @@ $env:PSModulePath = "$PSHOME/Modules"
 echo $path
 cd $path
 rm $path/*.md5sum
-rm $path/checksums.md
+
 $files = Get-ChildItem $path
 $hashes = [ordered]@{}
 $summary = ""

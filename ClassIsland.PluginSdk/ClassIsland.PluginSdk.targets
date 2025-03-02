@@ -20,8 +20,8 @@
 		       Text="插件清单 manifest.yml 在生成目录中不存在"/>
 		
 		<!-- Create CIPX -->
-		<Delete Files="$(CipxPackageOutputDirectory)"
-		        Condition="Exists($(CipxPackageOutputDirectory))"/>
+		<RemoveDir Directories="$(CipxPackageOutputDirectory)"
+		           Condition="Exists($(CipxPackageOutputDirectory))"/>
 		<MakeDir Condition="Exists($(CipxPackageOutputDirectory)) != 'true'"
 		         Directories="$(CipxPackageOutputDirectory)"/>
 		<ZipDirectory SourceDirectory="$(OutputPath)"
