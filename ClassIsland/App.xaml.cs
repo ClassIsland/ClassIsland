@@ -230,38 +230,12 @@ public partial class App : AppBase, IAppHost
             return;
         }
 #endif
-
+        Logger?.LogCritical(e, "发生严重错误");
         var safe = _isCriticalSafeModeEnabled && (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false));
-        if (safe)
-        {
-            Logger?.LogCritical(e, "发生严重错误（应用被教学安全模式退出）");
-            Task.Run(async () =>
-            {
-                await Task.Delay(4000);
-                AppBase.Current.Stop();
-                Application.Current.Shutdown();
-            });
-        }
-        else
-        {
-            Logger?.LogCritical(e, "发生严重错误。");
-        }
-
-        // wtf ↓
-        //if (CrashWindow != null)
-        //{
-        //    CrashWindow = null;
-        //    GC.Collect();
-        //}
 
         //Settings.DiagnosticCrashCount++;
         //Settings.DiagnosticLastCrashTime = DateTime.Now;
-        CrashWindow = new CrashWindow()
-        {
-            CrashInfo = e.ToString(),
-            AllowIgnore = _isStartedCompleted && !critical,
-            IsCritical = critical
-        };
+        
         if (!critical)  // 全局未捕获的异常应该由 SentrySdk 自行捕获。
         {
             SentrySdk.CaptureException(e, scope =>
@@ -269,12 +243,41 @@ public partial class App : AppBase, IAppHost
                 scope.Level = SentryLevel.Fatal;
             });
         }
+
         if (!safe)
-            CrashWindow.ShowDialog();
-        else
         {
-            AppBase.Current.Stop();
-            Application.Current.Shutdown();
+            CrashWindow = new CrashWindow()
+            {
+                CrashInfo = e.ToString(),
+                AllowIgnore = _isStartedCompleted && !critical,
+                IsCritical = critical
+            };
+            CrashWindow.ShowDialog();
+            return;
+        }
+
+        switch (Settings.CriticalSafeModeMethod)
+        {
+            case 2 when critical:
+            case 3 when critical:
+            case 0:
+                Logger?.LogInformation("因教学安全模式设定，应用将自动退出");
+                Stop();
+                break;
+            case 1:
+                Logger?.LogInformation("因教学安全模式设定，应用将自动静默重启");
+                Restart(["-q", "-m"]);
+                break;
+            case 2:
+                Logger?.LogInformation("因教学安全模式设定，应用将忽略异常并显示一条通知");
+                IAppHost.Host?.Services.GetService<ITaskBarIconService>()?.ShowNotification("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
+                break;
+            case 3:
+                Logger?.LogInformation("因教学安全模式设定，应用将直接忽略异常");
+                break;
+            default:
+                Logger?.LogWarning("无效的教学安全模式设置：{}", Settings.CriticalSafeModeMethod);
+                break;
         }
     }
 
@@ -324,6 +327,7 @@ public partial class App : AppBase, IAppHost
         {
             CommonDialog.ShowHint("ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
             Environment.Exit(0);
+            return;
         }
 
         // 检测桌面文件夹
@@ -331,7 +335,10 @@ public partial class App : AppBase, IAppHost
         {
             var r = CommonDialog.ShowHint("ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
             if (r == 0)
+            {
                 Environment.Exit(0);
+                return;
+            }
         }
 
         // 检测目录是否可以访问
@@ -345,6 +352,7 @@ public partial class App : AppBase, IAppHost
         {
             CommonDialog.ShowError($"ClassIsland无法写入当前目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行。");
             Environment.Exit(0);
+            return;
         }
 
         // 检测 DWM
@@ -353,13 +361,14 @@ public partial class App : AppBase, IAppHost
         {
             CommonDialog.ShowError("运行ClassIsland需要开启Aero效果。请在【控制面板】->【个性化】中启用Aero主题，然后再尝试运行ClassIsland。");
             Environment.Exit(0);
+            return;
         }
 
         var startupCountFilePath = Path.Combine(AppRootFolderPath, ".startup-count");
         var startupCount = File.Exists(startupCountFilePath)
             ? (int.TryParse(await File.ReadAllTextAsync(startupCountFilePath), out var count) ? count + 1 : 1)
             : 1;
-        if (startupCount >= 3 && !ApplicationCommand.Recovery)
+        if (startupCount >= 3 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
             var enterRecovery = new CommonDialogBuilder()
                 .SetIconKind(CommonDialogIconKind.Hint)

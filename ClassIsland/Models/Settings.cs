@@ -800,6 +800,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public int CriticalSafeModeMethod
+    {
+        get => _criticalSafeModeMethod;
+        set
+        {
+            if (value == _criticalSafeModeMethod) return;
+            _criticalSafeModeMethod = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
@@ -1651,6 +1662,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     }
 
     bool _isIgnoreWorkAreaEnabled;
+    private int _criticalSafeModeMethod = 0;
+
     public bool IsIgnoreWorkAreaEnabled
     {
         get => _isIgnoreWorkAreaEnabled;

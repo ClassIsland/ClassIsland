@@ -402,9 +402,25 @@
             <!-- 教学安全模式 -->
             <controls1:SettingsCard IconGlyph="CarBrakeAlert"
                                     Header="教学安全模式"
-                                    Description="启用后，如果 ClassIsland 发生意外崩溃，将自动退出而不弹出崩溃窗口，以确保教学不受到影响。您可以在日志目录查看崩溃详情。"
-                                    IsOn="{Binding SettingsService.Settings.IsCriticalSafeMode, Mode=TwoWay}"
-                                    Margin="0 0 0 6" />
+                                    Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志目录查看崩溃详情。"
+                                    Margin="0 0 0 6">
+                <controls1:SettingsCard.Switcher>
+                    <DockPanel>
+                        <ToggleButton DockPanel.Dock="Right"
+                                      Margin="8 0 0 0"
+                                      IsChecked="{Binding SettingsService.Settings.IsCriticalSafeMode}"/>
+                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                  Width="120"
+                                  Visibility="{Binding SettingsService.Settings.IsCriticalSafeMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                  SelectedIndex="{Binding SettingsService.Settings.CriticalSafeModeMethod}">
+                            <ComboBoxItem>退出应用</ComboBoxItem>
+                            <ComboBoxItem>静默重启应用</ComboBoxItem>
+                            <ComboBoxItem>显示通知</ComboBoxItem>
+                            <ComboBoxItem>忽略（不推荐）</ComboBoxItem>
+                        </ComboBox>
+                    </DockPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>
