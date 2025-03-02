@@ -293,6 +293,16 @@ public partial class ProfileSettingsWindow : MyWindow
                     return;
                 }
             }
+
+            if (timeType == 3)
+            {
+                baseSec = selected.EndSecond;
+                if ((from i in timeLayout.Layouts where i.TimeType == 3 select i.StartSecond).ToList().Contains(baseSec))
+                {
+                    ViewModel.MessageQueue.Enqueue("这里已经存在一个行动。");
+                    return;
+                }
+            }
         }
         var newItem = new TimeLayoutItem()
         {
