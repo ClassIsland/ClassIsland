@@ -34,10 +34,12 @@
 
     <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
     </Style>
 
     <Style TargetType="ListView" BasedOn="{StaticResource MaterialDesignListView}">
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+        <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
     </Style>
 
     <Style TargetType="StackPanel" x:Key="SettingsPageStackPanelStyle">

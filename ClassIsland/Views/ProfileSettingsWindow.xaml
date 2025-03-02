@@ -2179,6 +2179,7 @@
                                          ItemsSource="{Binding ProfileService.Profile.OrderedSchedules}"
                                          SelectedValue="{Binding ViewModel.ScheduleCalendarSelectedDate}"
                                          SelectedValuePath="Key"
+                                         Validation.ErrorTemplate="{x:Null}"
                                          Style="{StaticResource NavigationListBox}">
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
