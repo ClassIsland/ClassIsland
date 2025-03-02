@@ -42,6 +42,7 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
 using Path = System.IO.Path;
 using TabControl = System.Windows.Controls.TabControl;
+using unvell.ReoGrid.IO.OpenXML.Schema;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -1316,6 +1317,11 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
         var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        if (GetClassInfoFromRow(row, cell.Column.DisplayIndex) == null)
+        {
+            ViewModel.MessageQueue.Enqueue("选择课程区域无效。");
+            return;
+        }
         ViewModel.ClassSwapStartPosition = new ScheduleClassPosition(date, index);
         ViewModel.IsInScheduleSwappingMode = true;
     }
@@ -1342,6 +1348,11 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         var date = ViewModel.ScheduleWeekViewBaseDate.AddDays(cell.Column.DisplayIndex);
         var index = ViewModel.WeekClassPlanRows.IndexOf(row);
+        if (GetClassInfoFromRow(row, cell.Column.DisplayIndex) == null)
+        {
+            ViewModel.MessageQueue.Enqueue("选择课程区域无效。");
+            return;
+        }
         ViewModel.ClassSwapEndPosition = new ScheduleClassPosition(date, index);
 
         var startOverlay = GetTargetClassPlan(ViewModel.ClassSwapStartPosition.Date, ViewModel.IsTempSwapMode, out _);
@@ -1406,9 +1417,14 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonEditClassInfoTemp_OnClick(object sender, RoutedEventArgs e)
     {
         var cell = DataGridWeekSchedule.SelectedCells.FirstOrDefault();
-        if (cell.Item is not WeekClassPlanRow)
+        if (cell.Item is not WeekClassPlanRow row)
         {
             ViewModel.MessageQueue.Enqueue("请先选择要修改的课程。");
+            return;
+        }
+        if (GetClassInfoFromRow(row, cell.Column.DisplayIndex) == null)
+        {
+            ViewModel.MessageQueue.Enqueue("选择课程区域无效。");
             return;
         }
 
