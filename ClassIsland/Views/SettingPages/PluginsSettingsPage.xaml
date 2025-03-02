@@ -478,6 +478,7 @@
                                                Margin="4 0 0 0" >
                                         <Run Text="刷新插件失败："/>
                                         <Run Text="{Binding PluginMarketService.Exception.Message, Mode=OneWay}"/>
+                                        <Hyperlink Click="MenuItemManagePluginSources_OnClick">更换插件镜像源</Hyperlink><Run Text="可能可以解决此问题。"/>
                                     </TextBlock>
                                 </DockPanel>
                             </Grid>
