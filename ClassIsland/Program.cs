@@ -79,7 +79,7 @@ void ConfigureSentry(SentryOptions options)
     // A Sentry Data Source Name (DSN) is required.
     // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
     // You can set it in the SENTRY_DSN environment variable, or you can set it in code here.
-    options.Dsn = "https://16f66314173eb09592b08a5ee80f7352@sentry.classisland.tech/2";
+    options.Dsn = "https://16f66314173eb09592b08a5ee80f7352@todayeatsentry.classisland.tech:21815/2";
     // When debug is enabled, the Sentry client will emit detailed debugging information to the console.
     // This might be helpful, or might interfere with the normal operation of your application.
     // We enable it here for demonstration purposes when first trying Sentry.
