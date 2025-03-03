@@ -16,9 +16,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
+using ClassIsland.Services.Management;
 using ClassIsland.ViewModels.SettingsPages;
 using Grpc.Core.Logging;
 using MaterialDesignThemes.Wpf;
@@ -39,12 +42,14 @@ public partial class StorageSettingsPage
     public FileFolderService FileFolderService { get; }
     public SettingsService SettingsService { get; }
     public ILogger<StorageSettingsPage> Logger { get; }
+    public IManagementService ManagementService { get; }
 
-    public StorageSettingsPage(FileFolderService fileFolderService, SettingsService settingsService, ILogger<StorageSettingsPage> logger)
+    public StorageSettingsPage(FileFolderService fileFolderService, SettingsService settingsService, ILogger<StorageSettingsPage> logger, IManagementService managementService)
     {
         FileFolderService = fileFolderService;
         SettingsService = settingsService;
         Logger = logger;
+        ManagementService = managementService;
         DataContext = this;
         InitializeComponent();
     }
@@ -81,5 +86,14 @@ public partial class StorageSettingsPage
             Logger.LogError(exception, "无法浏览备份文件。");
             CommonDialog.ShowError($"无法浏览备份文件：{exception.Message}");
         }
+    }
+
+    private async void ButtonRecoverBackup_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
+        {
+            return;
+        }
+        AppBase.Current.Restart(["-m", "-r"]);
     }
 }

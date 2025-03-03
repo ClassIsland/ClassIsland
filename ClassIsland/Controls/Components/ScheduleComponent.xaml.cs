@@ -87,10 +87,20 @@ public partial class ScheduleComponent : INotifyPropertyChanged
 
         Loaded += (_, _) => LessonsService.PostMainTimerTicked += LessonsServiceOnPostMainTimerTicked;
         Loaded += (_, _) => LessonsService.CurrentTimeStateChanged += OnLessonsServiceOnCurrentTimeStateChanged;
+        Loaded += (_, _) => LessonsService.PropertyChanged += LessonsServiceOnPropertyChanged;
         Unloaded += (_, _) => LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
         Unloaded += (_, _) => LessonsService.CurrentTimeStateChanged -= OnLessonsServiceOnCurrentTimeStateChanged;
+        Unloaded += (_, _) => LessonsService.PropertyChanged -= LessonsServiceOnPropertyChanged;
         InitializeComponent();
         CurrentTimeStateChanged();
+    }
+
+    private void LessonsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(LessonsService.CurrentClassPlan))
+        {
+            CurrentTimeStateChanged();
+        }
     }
 
     private void OnLessonsServiceOnCurrentTimeStateChanged(object? o, EventArgs eventArgs)
@@ -126,7 +136,6 @@ public partial class ScheduleComponent : INotifyPropertyChanged
                 LessonsService.CurrentClassPlan?.TimeLayout) ??
             Settings;
         ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
-        //IsAfterSchool = CheckIsAfterSchool();
         TomorrowClassPlan = LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
     }
 

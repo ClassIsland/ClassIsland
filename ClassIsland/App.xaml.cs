@@ -79,6 +79,7 @@ using Windows.Storage;
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Models.Automation.Triggers;
+using ClassIsland.Shared.Helpers;
 using MahApps.Metro.Controls;
 using Walterlv.Threading;
 using Walterlv.Windows;
@@ -229,38 +230,12 @@ public partial class App : AppBase, IAppHost
             return;
         }
 #endif
-
+        Logger?.LogCritical(e, "发生严重错误");
         var safe = _isCriticalSafeModeEnabled && (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false));
-        if (safe)
-        {
-            Logger?.LogCritical(e, "发生严重错误（应用被教学安全模式退出）");
-            Task.Run(async () =>
-            {
-                await Task.Delay(4000);
-                AppBase.Current.Stop();
-                Application.Current.Shutdown();
-            });
-        }
-        else
-        {
-            Logger?.LogCritical(e, "发生严重错误。");
-        }
-
-        // wtf ↓
-        //if (CrashWindow != null)
-        //{
-        //    CrashWindow = null;
-        //    GC.Collect();
-        //}
 
         //Settings.DiagnosticCrashCount++;
         //Settings.DiagnosticLastCrashTime = DateTime.Now;
-        CrashWindow = new CrashWindow()
-        {
-            CrashInfo = e.ToString(),
-            AllowIgnore = _isStartedCompleted && !critical,
-            IsCritical = critical
-        };
+        
         if (!critical)  // 全局未捕获的异常应该由 SentrySdk 自行捕获。
         {
             SentrySdk.CaptureException(e, scope =>
@@ -268,12 +243,41 @@ public partial class App : AppBase, IAppHost
                 scope.Level = SentryLevel.Fatal;
             });
         }
+
         if (!safe)
-            CrashWindow.ShowDialog();
-        else
         {
-            AppBase.Current.Stop();
-            Application.Current.Shutdown();
+            CrashWindow = new CrashWindow()
+            {
+                CrashInfo = e.ToString(),
+                AllowIgnore = _isStartedCompleted && !critical,
+                IsCritical = critical
+            };
+            CrashWindow.ShowDialog();
+            return;
+        }
+
+        switch (Settings.CriticalSafeModeMethod)
+        {
+            case 2 when critical:
+            case 3 when critical:
+            case 0:
+                Logger?.LogInformation("因教学安全模式设定，应用将自动退出");
+                Stop();
+                break;
+            case 1:
+                Logger?.LogInformation("因教学安全模式设定，应用将自动静默重启");
+                Restart(["-q", "-m"]);
+                break;
+            case 2:
+                Logger?.LogInformation("因教学安全模式设定，应用将忽略异常并显示一条通知");
+                IAppHost.Host?.Services.GetService<ITaskBarIconService>()?.ShowNotification("崩溃报告", $"ClassIsland 发生了一个无法处理的错误：{e.Message}");
+                break;
+            case 3:
+                Logger?.LogInformation("因教学安全模式设定，应用将直接忽略异常");
+                break;
+            default:
+                Logger?.LogWarning("无效的教学安全模式设置：{}", Settings.CriticalSafeModeMethod);
+                break;
         }
     }
 
@@ -323,6 +327,7 @@ public partial class App : AppBase, IAppHost
         {
             CommonDialog.ShowHint("ClassIsland正在临时目录下运行，应用设置、课表等数据很可能无法保存，或在应用退出后被自动删除。在使用本应用前，请务必将本应用解压到一个适合的位置。");
             Environment.Exit(0);
+            return;
         }
 
         // 检测桌面文件夹
@@ -330,7 +335,10 @@ public partial class App : AppBase, IAppHost
         {
             var r = CommonDialog.ShowHint("ClassIsland正在桌面上运行，应用设置、课表等数据将会直接存放到桌面上。在使用本应用前，请将本应用移动到一个单独的文件夹中。");
             if (r == 0)
+            {
                 Environment.Exit(0);
+                return;
+            }
         }
 
         // 检测目录是否可以访问
@@ -344,6 +352,7 @@ public partial class App : AppBase, IAppHost
         {
             CommonDialog.ShowError($"ClassIsland无法写入当前目录：{ex.Message}\n\n请将本软件解压到一个合适的位置后再运行。");
             Environment.Exit(0);
+            return;
         }
 
         // 检测 DWM
@@ -352,7 +361,42 @@ public partial class App : AppBase, IAppHost
         {
             CommonDialog.ShowError("运行ClassIsland需要开启Aero效果。请在【控制面板】->【个性化】中启用Aero主题，然后再尝试运行ClassIsland。");
             Environment.Exit(0);
+            return;
         }
+
+        var startupCountFilePath = Path.Combine(AppRootFolderPath, ".startup-count");
+        var startupCount = File.Exists(startupCountFilePath)
+            ? (int.TryParse(await File.ReadAllTextAsync(startupCountFilePath), out var count) ? count + 1 : 1)
+            : 1;
+        if (startupCount >= 3 && ApplicationCommand is { Recovery: false, Quiet: false })
+        {
+            var enterRecovery = new CommonDialogBuilder()
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .SetContent("ClassIsland 多次启动失败，您需要进入恢复模式以尝试修复 ClassIsland 吗？")
+                .AddCancelAction()
+                .AddAction("进入恢复模式", PackIconKind.WrenchCheckOutline, true)
+                .ShowDialog();
+            if (enterRecovery == 1)
+            {
+                ApplicationCommand.Recovery = true;
+            }
+        }
+        if (ApplicationCommand.Recovery)
+        {
+            if (File.Exists(startupCountFilePath))
+            {
+                File.Delete(startupCountFilePath);
+            }
+            
+            var recoveryWindow = new RecoveryWindow();
+            recoveryWindow.Show();
+            transaction.Finish();
+            return;
+        }
+
+        
+        await File.WriteAllTextAsync(startupCountFilePath, startupCount.ToString());
+
         var spanProcessUpdate = spanPreInit.StartChild("startup-process-update");
 
         if (ApplicationCommand.UpdateReplaceTarget != null)
@@ -460,6 +504,7 @@ public partial class App : AppBase, IAppHost
                 });
                 services.AddTransient<ClassPlanDetailsWindow>();
                 services.AddTransient<WindowRuleDebugWindow>();
+                services.AddTransient<ConfigErrorsWindow>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
@@ -568,7 +613,10 @@ public partial class App : AppBase, IAppHost
                 // 认证提供方
                 services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
                 // Plugins
-                PluginService.InitializePlugins(context, services);
+                if (!ApplicationCommand.Safe)
+                {
+                    PluginService.InitializePlugins(context, services);
+                }
             }).Build();
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
@@ -705,6 +753,11 @@ public partial class App : AppBase, IAppHost
             SentrySdk.ConfigureScope(s => s.Transaction = null);
             GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
+            File.Delete(startupCountFilePath);
+            if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
+            {
+                GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback:() => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
+            }
             if (Settings.IsSplashEnabled)
             {
                 App.GetService<ISplashService>().EndSplash();
@@ -727,6 +780,7 @@ public partial class App : AppBase, IAppHost
         uriNavigationService.HandleAppNavigation("profile", args => GetService<MainWindow>().OpenProfileSettingsWindow());
         uriNavigationService.HandleAppNavigation("helps", args => uriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/")));
         uriNavigationService.HandleAppNavigation("profile/import-excel", args => GetService<ExcelImportWindow>().Show());
+        uriNavigationService.HandleAppNavigation("config-errors", args => GetService<ConfigErrorsWindow>().ShowDialog());
 
         GetService<IIpcService>().IpcProvider.CreateIpcJoint<IFooService>(new FooService());
         try
@@ -924,16 +978,26 @@ public partial class App : AppBase, IAppHost
 
     public override void Restart(bool quiet=false)
     {
+        if (quiet)
+        {
+            Restart(["-m", "-q"]);
+        }
+        else
+        {
+            Restart(["-m"]);
+        }
+        
+    }
+
+    public override void Restart(string[] parameters)
+    {
         Stop();
         var path = Environment.ProcessPath;
-        var args = new List<string> { "-m" };
-        if (quiet)
-            args.Add("-q");
-        if (path == null) 
+        if (path == null)
             return;
         var replaced = path.Replace(".dll", ".exe");
         var startInfo = new ProcessStartInfo(replaced);
-        foreach (var i in args)
+        foreach (var i in parameters)
         {
             startInfo.ArgumentList.Add(i);
         }

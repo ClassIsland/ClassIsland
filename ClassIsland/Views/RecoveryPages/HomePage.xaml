@@ -1,0 +1,243 @@
+﻿<Page x:Class="ClassIsland.Views.RecoveryPages.HomePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.RecoveryPages"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="HomePage"
+      Margin="8"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto">
+
+    <Page.Resources>
+        <Style x:Key="LinkButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+            <Style.Resources>
+                <Style TargetType="materialDesign:PackIcon">
+                    <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}"></Setter>
+                </Style>
+            </Style.Resources>
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="materialDesign:RippleAssist.Feedback" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="8 6"/>
+            <Setter Property="TextElement.FontSize" Value="14"/>
+            <Setter Property="Height" Value="NaN"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+    </Page.Resources>
+    <ScrollViewer>
+        <StackPanel>
+            <StackPanel.Resources>
+                <Style TargetType="Button" BasedOn="{StaticResource LinkButtonStyle}"/>
+            </StackPanel.Resources>
+            <TextBlock Text="选择一个选项" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+            <TextBlock Text="选择一个操作以继续。" Margin="0 8 0 16"/>
+
+            <Button Click="ButtonContinue_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="ArrowRight" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="继续使用 ClassIsland" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                </Grid>
+            </Button>
+            <Button Click="ButtonContinueSafe_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="ArrowRight" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="以安全模式继续使用 ClassIsland" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               Text="禁用所有插件和自动化功能。" 
+                               TextWrapping="Wrap"
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>
+            <Button Click="ButtonContinueDiagnostic_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="ArrowRight" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="以诊断模式继续使用 ClassIsland" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               Text="在日志中记录详细的信息，并启用控制台输出。" 
+                               TextWrapping="Wrap"
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>
+            <Button Click="ButtonOpenLogFolder_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="FolderTextOutline" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="打开日志目录" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                </Grid>
+            </Button>
+
+            <Separator Margin="0 8"/>
+
+            <Button Click="ButtonRecoverBackup_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="Restore" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="恢复备份" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               Text="从先前的备份恢复处于正确状态的配置文件。" 
+                               TextWrapping="Wrap"
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>
+            <!--<Button >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="Upload" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="更新应用" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               TextWrapping="Wrap"
+                               Text="将应用本体更新到其它版本。" 
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>-->
+
+            <Separator Margin="0 8"/>
+
+            <Button Click="ButtonCleanTempFiles_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="GarbageCanEmpty" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="清除临时文件" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               Text="删除所有缓存和临时文件。" 
+                               TextWrapping="Wrap"
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>
+            <Button Click="ButtonResetSettings_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="SettingsRefreshOutline" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="重置应用设置" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               TextWrapping="Wrap"
+                               Text="重置应用的设置信息，不影响档案、组件、自动化、插件等的配置。" 
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>
+            <Button Click="ButtonResetConfigs_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="FileRemoveOutline" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="重置全部配置" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               TextWrapping="Wrap"
+                               Text="重置应用的所有配置，包括应用设置、组件配置、自动化配置、插件设置等，不影响档案配置。" 
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>
+            <Button Click="ButtonResetAll_OnClick">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Grid.Row="0" Kind="Remove" Grid.Column="0" Margin="8 0 16 0"
+                                             VerticalAlignment="Center"
+                                             Foreground="Red"/>
+                    <TextBlock Grid.Row="0" Text="重置全部信息" Grid.Column="1" FontWeight="Medium" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" 
+                               TextWrapping="Wrap"
+                               Text="重置应用的所有信息，恢复到安装前的状态。" 
+                               Grid.Column="1" FontWeight="Regular" FontSize="12" Margin="0 2 0 0"
+                               Opacity="0.75"/>
+                </Grid>
+            </Button>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

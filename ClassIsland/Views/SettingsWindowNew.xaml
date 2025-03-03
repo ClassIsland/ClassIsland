@@ -405,6 +405,9 @@
                                             <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
                                                   Header="导出诊断数据"
                                                   Click="MenuItemExportDiagnosticInfo_OnClick"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon WrenchCheckOutline}"
+                                                      Header="重启到恢复模式"
+                                                      Click="MenuItemRestartToRecovery_OnClick"/>
                                             <Separator/>
                                             <MenuItem Icon="{materialDesign:PackIcon FolderTextOutline}"
                                                       Header="打开日志目录…"

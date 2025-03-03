@@ -21,6 +21,12 @@ public abstract class AppBase : Application, IAppHost
     public abstract void Restart(bool quiet=false);
 
     /// <summary>
+    /// 重启应用程序。
+    /// </summary>
+    /// <param name="parameters">重启应用时使用的参数</param>
+    public abstract void Restart(string[] parameters);
+
+    /// <summary>
     /// 停止当前应用程序。
     /// </summary>
     public abstract void Stop();

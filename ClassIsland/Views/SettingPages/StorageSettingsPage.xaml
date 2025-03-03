@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
       xmlns:ci="http://classisland.tech/schemas/xaml/core"
       xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:helpers="clr-namespace:ClassIsland.Shared.Helpers;assembly=ClassIsland.Shared"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -20,6 +21,38 @@
 
     <ScrollViewer>
         <StackPanel MaxWidth="750" Style="{StaticResource SettingsPageStackPanelStyle}">
+            <materialDesign:ColorZone Background="#17ee7700"
+                                      Margin="0 0 0 4"
+                                      Panel.ZIndex="1">
+                <materialDesign:ColorZone.Style>
+                    <Style TargetType="materialDesign:ColorZone">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Count, Source={x:Static helpers:ConfigureFileHelper.Errors}}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </materialDesign:ColorZone.Style>
+                <StackPanel Margin="8 4">
+                    <DockPanel>
+                        <materialDesign:PackIcon Kind="WarningOutline"
+                                                 Height="20" Width="20" />
+                        <TextBlock TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Margin="4 0 0 0">
+                            <Run Text="ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。"/>
+                        </TextBlock>
+                    </DockPanel>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                            Margin="24 6 0 0" Foreground="{DynamicResource MaterialDesignBody}"
+                            materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
+                            Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}"
+                            CommandParameter="classisland://app/config-errors">
+                        <ci:IconText Kind="OpenInNew" Text="详细信息…"/>
+                    </Button>
+                </StackPanel>
+            </materialDesign:ColorZone>
+
             <!--<Separator Margin="0 16 0 8" />
             <ci:IconText Kind="DatabaseOutline" Text="存储空间" Margin="0 0 0 8" />
             <TextBlock Text="以下是 应用内 产生的各个类型文件的空间占用情况，您可以在此处清理部分临时和缓存文件。" 
@@ -77,7 +110,7 @@
                 </Expander>
             </materialDesign:Card>
             <!-- 备份 -->
-            <materialDesign:Card Padding="12 10 16 10">
+            <materialDesign:Card Padding="12 10 16 10" Margin="0 0 0 6">
                 <StackPanel>
                     <ci:SettingsControl IconGlyph="BackupRestore"
                                         Header="手动备份"
@@ -100,6 +133,25 @@
                                                  Visibility="{Binding ViewModel.IsBackupFinished, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                      Visibility="{Binding ViewModel.IsBackingUp, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Padding="12 10 16 10">
+                <StackPanel>
+                    <ci:SettingsControl IconGlyph="BackupRestore"
+                                        Header="恢复备份"
+                                        Description="重启到恢复模式并恢复到指定的备份。"
+                                        Margin="0 0 0 6"
+                                        HasSwitcher="False"/>
+                    <WrapPanel>
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                IsEnabled="{Binding ViewModel.IsBackingUp, Converter={StaticResource InvertBooleanConverter}}"
+                                Click="ButtonRecoverBackup_OnClick">
+                            <ci:IconText Kind="Restore" Text="恢复备份" />
+                        </Button>
+                        
+
                     </WrapPanel>
                 </StackPanel>
             </materialDesign:Card>

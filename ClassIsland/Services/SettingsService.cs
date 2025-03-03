@@ -191,14 +191,13 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             Logger.LogInformation("成功迁移了 1.4.3.0 以前的设置。");
         }
 
-        if (Settings.LastAppVersion < Version.Parse("1.5.2.2"))
+        // 旧城市Id 迁移到 新城市Id
+        if (int.TryParse(Settings.CityId, out var oldCityId))
         {
-            // 旧城市Id 迁移到 新城市Id
-            if (!int.TryParse(Settings.CityId, out var oldCityId)) return;
             Settings.CityId = $"weathercn:{oldCityId}";
             Logger.LogInformation("新格式城市Id转换完成！");
-            Logger.LogInformation("成功迁移了 1.5.2.2 以前的设置。");
         }
+        
         if (Settings.LastAppVersion < Version.Parse("1.5.3.0"))
         {
             Settings.SelectedUpdateChannelV2 = Settings.SelectedChannel switch

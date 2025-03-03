@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -29,6 +31,8 @@ using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using Sentry;
 using WebSocketSharp;
+using YamlDotNet.Serialization.NamingConventions;
+using YamlDotNet.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Path = System.IO.Path;
@@ -343,5 +347,60 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
 
         ViewModel.IsDetailsShown = true;
+    }
+    private void Grid_DragEnter(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            ViewModel.IsDragEntering = true;
+            e.Effects = DragDropEffects.Link;
+        }
+        else
+        {
+            ViewModel.IsDragEntering = false;
+            e.Effects = DragDropEffects.None;
+        }
+    }
+    private void Grid_Drop(object sender, DragEventArgs e)
+    {
+        ViewModel.IsDragEntering = false;
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            var fileName = ((System.Array)e.Data.GetData(DataFormats.FileDrop))?.GetValue(0)?.ToString();
+            if (fileName == null)
+                return;
+            if (Path.GetExtension(fileName) != ".cipx")
+            {
+                ViewModel.MessageQueue.Enqueue($"不支持的文件：{fileName}");
+                return;
+            }
+            try
+            {
+                File.Copy(fileName, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(fileName)), true);
+
+                var deserializer = new DeserializerBuilder()
+                    .IgnoreUnmatchedProperties()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .Build();
+                using var pkg = ZipFile.OpenRead(fileName);
+                var mf = pkg.GetEntry("manifest.yml");
+                if (mf == null)
+                    return;
+                var mfText = new StreamReader(mf.Open()).ReadToEnd();
+                var manifest = deserializer.Deserialize<PluginManifest>(mfText);
+
+                ViewModel.MessageQueue.Enqueue($"插件 {manifest.Name} 版本 {manifest.Version} 安装成功。");
+                RequestRestart();
+            }
+            catch (Exception exception)
+            {
+                CommonDialog.ShowError($"无法安装插件：{exception.Message}");
+            }
+        }
+    }
+
+    private void Grid_DragLeave(object sender, DragEventArgs e)
+    {
+        ViewModel.IsDragEntering = false;
     }
 }

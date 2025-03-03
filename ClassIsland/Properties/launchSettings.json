@@ -47,6 +47,10 @@
     "ClassIsland (水印)": {
       "commandName": "Project",
       "commandLineArgs": "-ossw"
+    },
+    "ClassIsland Recovery": {
+      "commandName": "Project",
+      "commandLineArgs": "--recovery"
     }
   }
 }

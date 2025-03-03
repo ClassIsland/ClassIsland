@@ -127,7 +127,6 @@ public class RulesetService : IRulesetService
                 continue;
 
             bool result = (bool)res;
-            result ^= group.IsReversed;
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
             {
                 isSatisfied = false;

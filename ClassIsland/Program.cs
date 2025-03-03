@@ -37,10 +37,18 @@ var command = new RootCommand
     new Option<string>(["-externalPluginPath", "-epp"], "外部插件路径"),
     new Option<bool>(["--enableSentryDebug", "-esd"], "启用 Sentry 调试"),
     new Option<bool>(["--verbose", "-v"], "启用详细输出"),
-    new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印")
+    new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印"),
+    new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
+    new Option<bool>(["--diagnostic", "-d"], "启用诊断模式"),
+    new Option<bool>(["--safe", "-s"], "启用安全模式"),
 };
 command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
 command.Invoke(args);
+
+if (App.ApplicationCommand.Diagnostic)
+{
+    AllocConsole();
+}
 
 var mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
 

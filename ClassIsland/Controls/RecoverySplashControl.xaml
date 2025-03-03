@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="ClassIsland.Controls.RecoverySplashControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             mc:Ignorable="d" 
+             Loaded="RecoverySplashControl_OnLoaded"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="MyBackground" Color="#2e2e2e"/>
+        <SolidColorBrush x:Key="MyForeground" Color="#fafafa"/>
+    </UserControl.Resources>
+    <Border Background="{DynamicResource MyBackground}"
+            TextElement.Foreground="{DynamicResource MyForeground}">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Image Source="/Assets/AppLogo.png" Width="72" Height="72"/>
+            <ProgressBar
+                IsIndeterminate="True"
+                Style="{StaticResource MaterialDesignCircularProgressBar}"
+                Value="0" 
+                Height="28" Width="28"
+                HorizontalAlignment="Center"
+                Margin="0 20 0 0"/>
+
+            <TextBlock Text="请稍候" HorizontalAlignment="Center"
+                       FontSize="16"
+                       Margin="0 16 0 0"/>
+        </StackPanel>
+    </Border>
+</UserControl>
