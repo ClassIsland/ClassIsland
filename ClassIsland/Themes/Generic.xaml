@@ -190,6 +190,7 @@
                         <!-- 档案编辑 > 时间线视图 > 分割线装饰器 -->
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="2">
                             <Setter Property="Height" Value="Auto"/>
+                            <Setter Property="Panel.ZIndex" Value="9999"/>
                             <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                                 <Setter.Value>
                                     <materialDesign:BehaviorCollection>
@@ -239,6 +240,7 @@
                         <!-- 档案编辑 > 时间线视图 > 行动装饰器 -->
                         <DataTrigger Binding="{Binding TimeType, Mode=OneWay}" Value="3">
                             <Setter Property="Height" Value="Auto"/>
+                            <Setter Property="Panel.ZIndex" Value="9999"/>
                             <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
                                 <Setter.Value>
                                     <materialDesign:BehaviorCollection>
