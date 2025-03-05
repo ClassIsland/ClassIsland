@@ -138,6 +138,8 @@ public partial class App : AppBase, IAppHost
 
     private bool _isStartedCompleted = false;
 
+    internal static bool IsCrashed { get; set; } = false;
+
     internal static bool _isCriticalSafeModeEnabled = false;
 
     public override bool IsDevelopmentBuild =>
@@ -180,6 +182,27 @@ public partial class App : AppBase, IAppHost
     {
         //AppContext.SetSwitch("Switch.System.Windows.Input.Stylus.EnablePointerSupport", true);
         //TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+    }
+
+    private static void CurrentDomainOnProcessExit(object? sender, EventArgs e)
+    {
+        if (IsCrashed)
+        {
+            return;
+        }
+
+        try
+        {
+            var startupCountFilePath = Path.Combine(AppRootFolderPath, ".startup-count");
+            if (File.Exists(startupCountFilePath))
+            {
+                File.Delete(startupCountFilePath);
+            }
+        }
+        catch (Exception exception)
+        {
+            // ignored
+        }
     }
 
     static App()
@@ -233,6 +256,7 @@ public partial class App : AppBase, IAppHost
         }
 #endif
         Logger?.LogCritical(e, "发生严重错误");
+        IsCrashed = true;
         var safe = _isCriticalSafeModeEnabled && (!(IAppHost.TryGetService<IWindowRuleService>()?.IsForegroundWindowClassIsland() ?? false));
 
         //Settings.DiagnosticCrashCount++;
@@ -370,7 +394,7 @@ public partial class App : AppBase, IAppHost
         var startupCount = File.Exists(startupCountFilePath)
             ? (int.TryParse(await File.ReadAllTextAsync(startupCountFilePath), out var count) ? count + 1 : 1)
             : 1;
-        if (startupCount >= 3 && ApplicationCommand is { Recovery: false, Quiet: false })
+        if (startupCount >= 5 && ApplicationCommand is { Recovery: false, Quiet: false })
         {
             var enterRecovery = new CommonDialogBuilder()
                 .SetIconKind(CommonDialogIconKind.Hint)
@@ -398,6 +422,7 @@ public partial class App : AppBase, IAppHost
 
         
         await File.WriteAllTextAsync(startupCountFilePath, startupCount.ToString());
+        AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
 
         var spanProcessUpdate = spanPreInit.StartChild("startup-process-update");
 

@@ -152,6 +152,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
 
     public static void ProcessDomainUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
     {
+        App.IsCrashed = true;
         if (App._isCriticalSafeModeEnabled)  // 教学安全模式
         {
             return;
