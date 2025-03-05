@@ -160,7 +160,7 @@ public partial class App : AppBase, IAppHost
 
     public override string OperatingSystem => "windows";
     public override string Platform =>
-#if TARGET_x64
+#if PLATFORM_x64
     "x64"
 #elif PLATFORM_x86
     "x86"
@@ -170,6 +170,8 @@ public partial class App : AppBase, IAppHost
     "arm"
 #elif PLATFORM_Any
     "any"
+#elif RELEASE
+#error "在发布构建中不应出现未知架构"
 #else
     "unknown"
 #endif
