@@ -11,6 +11,7 @@
       xmlns:models="clr-namespace:ClassIsland.Models"
       xmlns:commands="http://classisland.tech/schemas/xaml/core"
       xmlns:controls2="clr-namespace:ClassIsland.Controls"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="关于"
@@ -256,44 +257,40 @@
                                     <Run Text="(Codename" />
                                     <Run Text="{x:Static ci:App.AppCodeName}" /><Run Text=")" />
                                     <LineBreak />
-                                    <Run Text="Copyright (c) 2024 HelloWRC" />
+                                    <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" />
+                                    <Run Text="HelloWRC"/>
                                 </TextBlock>
+                            </StackPanel>
+                            <!-- Links -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Content="{materialDesign:PackIcon Web, Size=20}"
+                                        Margin="0 0 4 0"
+                                        ToolTip="项目主页"
+                                        Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                        CommandParameter="https://classisland.tech"/>
+                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Content="{materialDesign:PackIcon BookOpenVariant, Size=20}"
+                                        Margin="0 0 4 0"
+                                        ToolTip="文档"
+                                        Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                        CommandParameter="https://docs.classisland.tech"/>
+                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Content="{materialDesign:PackIcon GitHub, Size=20}"
+                                        Margin="0 0 4 0"
+                                        ToolTip="GitHub"
+                                        Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                        CommandParameter="https://github.com/ClassIsland/ClassIsland"/>
+                                <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                        Content="{materialDesign:PackIcon ForumOutline, Size=20}"
+                                        ToolTip="加入社区"
+                                        Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
+                                        CommandParameter="https://docs.classisland.tech/community/"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
-
-            <materialDesign:Card Margin="0 12 0 0" ClipContent="True">
-                <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
-                    <Button Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="https://classisland.tech">
-                        <Grid>
-                            <TextBlock Text="项目主页" />
-                            <materialDesign:PackIcon Kind="ExternalLink" HorizontalAlignment="Right"
-                                                     VerticalAlignment="Center"/>
-                        </Grid>
-                    </Button>
-                    <Separator Margin="0 -0.5" Opacity="0.5"/>
-                    <Button Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="https://github.com/ClassIsland/ClassIsland">
-                        <Grid>
-                            <TextBlock Text="GitHub" />
-                            <materialDesign:PackIcon Kind="ExternalLink" HorizontalAlignment="Right"
-                                                     VerticalAlignment="Center"/>
-                        </Grid>
-                    </Button>
-                    <Separator Margin="0 -0.5" Opacity="0.5"/>
-                    <Button Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                            CommandParameter="https://docs.classisland.tech/community/">
-                        <Grid>
-                            <TextBlock Text="加入社区" />
-                            <materialDesign:PackIcon Kind="ExternalLink" HorizontalAlignment="Right"
-                                                     VerticalAlignment="Center"/>
-                        </Grid>
-                    </Button>
-                </StackPanel>
-            </materialDesign:Card>
 
             <materialDesign:Card Margin="0 12 0 0" ClipContent="True">
                 <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
