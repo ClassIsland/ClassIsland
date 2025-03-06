@@ -21,11 +21,14 @@ $versionInfo = @{
 }
 $versionInfo.Channels = $tagInfo.Channels
 
+Write-Host "Version: $version"
+
 foreach ($artifact in $(Get-ChildItem ./out)) {
     Move-Item $artifact.FullName -Destination $artifact.FullName.Replace("out_app_", "ClassIsland_app_") -Force
 }
 # Move-Item ./out/out_app_windows_x64_full_wap.msix -Destination ./out/out_app_windows_x64_full_wap.appx
 $artifacts = $(Get-ChildItem ./out)
+$uploadJobs = @()
 $hashSummary = "
 
 ***
@@ -59,16 +62,32 @@ foreach ($artifact in $artifacts){
     $downloadInfo = @{
         "DeployMethod" = $deployMethodId
         "ArchiveDownloadUrls" = @{
-            "main" = "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/${version}/$($artifact.Name)"
+            "main" = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/${version}/$($artifact.Name)"
             "github-origin" = "https://github.com/ClassIsland/ClassIsland/releases/download/${version}/$($artifact.Name)"
         }
         "ArchiveSHA256"= $(Get-FileHash $artifact -Algorithm SHA256).Hash
     }
-    Write-Output "Uploading artifact $artifactId"
-    UploadFile $artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/${version}/"
+    $taskInput = @{
+        artifactId = $artifactId
+        artifact = $artifact
+        version = $version
+    }
     $versionInfo.DownloadInfos[$artifactId] = $downloadInfo
     $hashSummary +=  "| $($artifact.Name) | ``$($downloadInfo.ArchiveSHA256)`` |`n"
     $legaceyMD5Hashes.Add($artifact.Name, (Get-FileHash $artifact -Algorithm MD5).Hash)
+    $uploadJobs += Start-ThreadJob -Name $artifact.FullName -StreamingHost $Host -ScriptBlock {
+        $inputs = $using:taskInput
+        Import-Module ./tools/release-gen/alist-utils.psm1
+        Write-Host "Uploading artifact $($inputs.artifactId)"
+        UploadFile $inputs.artifact.FullName "ClassIsland-Ningbo-S3/classisland/disturb/$($inputs.version)/"
+        Write-Host "Uploading artifact $($inputs.artifactId) COMPLETED"
+    }
+}
+
+Wait-Job -Job $uploadJobs
+
+foreach ($job in $uploadJobs) {
+    Receive-Job -Job $job
 }
 
 # 兼容旧版更新系统 （<1.5.3）
@@ -79,6 +98,8 @@ $legaceyMD5Hashes."ClassIsland_AssetsTrimmed.zip" = (Get-FileHash ./out/ClassIsl
 # 兼容旧版更新系统 (<1.5.3.1)
 $versionInfo.DownloadInfos["windows;x86_64;singleFile;full"] = $versionInfo.DownloadInfos["windows_x64_full_singleFile"]
 $versionInfo.DownloadInfos["windows;x86_64;singleFile;trimmed"] = $versionInfo.DownloadInfos["windows_x64_trimmed_singleFile"]
+# 兼容 1.6.0.2
+$versionInfo.DownloadInfos["windows_unknown_full_singleFile"] = $versionInfo.DownloadInfos["windows_x64_full_singleFile"]
 
 Copy-Item ./doc/ChangeLogs/$($tagInfo.PrimaryVersion)/$version/App.md -Destination ./out/ChangeLogs.md -Force
 
@@ -105,7 +126,7 @@ $globalIndex.Versions.Add(@{
     Version = $version
     Title = $version
     Channels = $tagInfo.Channels
-    VersionInfoUrl = "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/${version}/index.json"
+    VersionInfoUrl = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/${version}/index.json"
 })
 ConvertTo-Json $globalIndex -Depth 99 | Out-File ./metadata/disturb/index.json
 git add .

@@ -12,7 +12,7 @@ function UploadFile {
         "File-Path" = $targetPath
     }
 
-    Invoke-WebRequest -Uri "${env:ALIST_HOST}/api/fs/form" -Method Put -Headers $headers -Form $form > $null
+    Invoke-WebRequest -Uri "${env:ALIST_HOST}/api/fs/form" -Method Put -Headers $headers -Form $form -MaximumRetryCount 5 -RetryIntervalSec 15 > $null
     # echo "Uploading $path -> $targetPath"
 }
 
