@@ -19,4 +19,17 @@ public class WeatherAlert
         or "http://f5.market.xiaomi.com/download/Weather/06db501333e6d4075a3364a66cdf23ba5733111b3/a.webp" // 橙色预警默认图标
         or "http://f3.market.xiaomi.com/download/Weather/03e3e096d3d9e485fa33bbf833fc3b3c96c23d014/a.webp" // 红色预警默认图标
         ? 1 : 0;
+
+    public void TitleFix()
+    {
+        var publishIndex = Title.IndexOf("发布", StringComparison.Ordinal);
+        if (publishIndex > 0)
+        {
+            Title = Title.Substring(publishIndex + 2);
+        }
+
+        var detailEndIndex = Detail.IndexOf("气象", StringComparison.Ordinal);
+        var detailPart = detailEndIndex > 0 ? Detail.Substring(0, detailEndIndex) : Detail;
+        Title = $"{detailPart}发布{Title}";
+    }
 }

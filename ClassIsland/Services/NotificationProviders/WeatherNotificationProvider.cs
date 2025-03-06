@@ -182,6 +182,7 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
             if (t >= 90) t = 90.0;
             var ts = TimeSpan.FromSeconds(t);
             IAppHost.GetService<ILogger<WeatherNotificationProvider>>().LogTrace("单次预警显示时长：{}", ts);
+            i.TitleFix();
             NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskContent = new WeatherNotificationProviderControl(true, i, ts),
@@ -203,3 +204,4 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
     {
     }
 }
+
