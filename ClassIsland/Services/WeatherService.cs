@@ -134,6 +134,21 @@ public class WeatherService : IHostedService, IWeatherService
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
             info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
                 (!string.IsNullOrWhiteSpace(x)) && i.Title.Contains(x)) != null);
+            
+            // Apply TitleFix logic to each alert
+            foreach (var alert in info.Alerts)
+            {
+                var publishIndex = alert.Title.IndexOf("发布", StringComparison.Ordinal);
+                if (publishIndex > 0)
+                {
+                    alert.Title = alert.Title.Substring(publishIndex + 2);
+                }
+
+                var detailEndIndex = alert.Detail.IndexOf("气象", StringComparison.Ordinal);
+                var detailPart = detailEndIndex > 0 ? alert.Detail.Substring(0, detailEndIndex) : alert.Detail;
+                alert.Title = $"{detailPart}发布{alert.Title}";
+            }
+
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
         }
@@ -195,3 +210,4 @@ public class WeatherService : IHostedService, IWeatherService
     {
     }
 }
+

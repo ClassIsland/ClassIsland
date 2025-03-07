@@ -182,7 +182,18 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
             if (t >= 90) t = 90.0;
             var ts = TimeSpan.FromSeconds(t);
             IAppHost.GetService<ILogger<WeatherNotificationProvider>>().LogTrace("单次预警显示时长：{}", ts);
-            i.TitleFix();
+
+            // TitleFix logic moved here
+            var publishIndex = i.Title.IndexOf("发布", StringComparison.Ordinal);
+            if (publishIndex > 0)
+            {
+                i.Title = i.Title.Substring(publishIndex + 2);
+            }
+
+            var detailEndIndex = i.Detail.IndexOf("气象", StringComparison.Ordinal);
+            var detailPart = detailEndIndex > 0 ? i.Detail.Substring(0, detailEndIndex) : i.Detail;
+            i.Title = $"{detailPart}发布{i.Title}";
+
             NotificationHostService.ShowNotification(new NotificationRequest()
             {
                 MaskContent = new WeatherNotificationProviderControl(true, i, ts),
