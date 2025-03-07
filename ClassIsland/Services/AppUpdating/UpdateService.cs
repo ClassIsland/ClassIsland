@@ -58,7 +58,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     internal static string UpdateCachePath { get; } = Path.Combine(App.AppCacheFolderPath, "Update");
 
     internal const string UpdateMetadataUrl =
-        "https://get.classisland.tech/p/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
+        "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/disturb/index.json";
 
     public static string UpdateTempPath =>
 #if IsMsix
