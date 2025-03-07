@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Linq;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Views;
+using MahApps.Metro.Controls;
 namespace ClassIsland.Controls;
 
 public partial class TimeLineListItemExpandingAdornerControl
@@ -34,9 +35,13 @@ public partial class TimeLineListItemExpandingAdornerControl
 /// <returns>如果不存在，将返回 null。</returns>
     TimeLayoutItem? PrevTimePoint(int[]? type = null)
     {
-        for (var index = TimeLayout.IndexOf(TimePoint) - 1; index >= 0; index--)
-            if (type?.Contains(TimeLayout[index].TimeType) ?? TimeLayout[index].TimeType != 2)
-                return TimeLayout[index];
+        type ??= [0, 1];
+        var validTimePoints = TimeLayout.Where(x => type.Contains(x.TimeType)).ToList();
+        var index = validTimePoints.IndexOf(TimePoint) - 1;
+        if (index >= 0 && index < validTimePoints.Count )
+        {
+            return validTimePoints[index];
+        }
         return null;
     }
     TimeLayoutItem? PrevTimePoint(int type) => PrevTimePoint([type]);
@@ -48,9 +53,13 @@ public partial class TimeLineListItemExpandingAdornerControl
 /// <returns>如果不存在，将返回 null。</returns>
     TimeLayoutItem? NextTimePoint(int[]? type = null)
     {
-        for (var index = TimeLayout.IndexOf(TimePoint) + 1; index < TimeLayout.Count; index++)
-            if (type?.Contains(TimeLayout[index].TimeType) ?? TimeLayout[index].TimeType != 2)
-                return TimeLayout[index];
+        type ??= [0, 1];
+        var validTimePoints = TimeLayout.Where(x => type.Contains(x.TimeType)).ToList();
+        var index = validTimePoints.IndexOf(TimePoint) + 1;
+        if (index >= 0 && index < validTimePoints.Count)
+        {
+            return validTimePoints[index];
+        }
         return null;
     }
     TimeLayoutItem? NextTimePoint(int type) => NextTimePoint([type]);
