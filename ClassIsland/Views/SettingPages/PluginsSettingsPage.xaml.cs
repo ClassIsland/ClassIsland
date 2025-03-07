@@ -63,8 +63,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         PluginService = pluginService;
         PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
-        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
-        PluginMarketService.RestartRequested += (sender, args) => RequestRestart();
+        
         if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = PluginMarketService.RefreshPluginSourceAsync();
@@ -409,5 +408,22 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void Grid_DragLeave(object sender, DragEventArgs e)
     {
         ViewModel.IsDragEntering = false;
+    }
+
+    private void PluginsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        PluginMarketService.RestartRequested += OnPluginMarketServiceOnRestartRequested;
+    }
+
+    private void OnPluginMarketServiceOnRestartRequested(object? sender, EventArgs args)
+    {
+        RequestRestart();
+    }
+
+    private void PluginsSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
+        PluginMarketService.RestartRequested -= OnPluginMarketServiceOnRestartRequested;
     }
 }

@@ -15,7 +15,7 @@
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
       TextOptions.TextRenderingMode="Auto"
-      >
+      Unloaded="TestSettingsPage_OnUnloaded">
     <Grid>
         <StackPanel>
 

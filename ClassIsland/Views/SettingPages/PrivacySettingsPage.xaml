@@ -16,7 +16,9 @@
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
       TextOptions.TextRenderingMode="Auto"
-      d:DataContext="{d:DesignInstance local:PrivacySettingsPage}">
+      d:DataContext="{d:DesignInstance local:PrivacySettingsPage}"
+      Loaded="PrivacySettingsPage_OnLoaded"
+      Unloaded="PrivacySettingsPage_OnUnloaded">
 
     <ScrollViewer>
         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">

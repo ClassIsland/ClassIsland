@@ -24,7 +24,9 @@
       TextElement.FontWeight="Regular"
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
-      TextOptions.TextRenderingMode="Auto">
+      TextOptions.TextRenderingMode="Auto"
+      Loaded="PluginsSettingsPage_OnLoaded"
+      Unloaded="PluginsSettingsPage_OnUnloaded">
 
     <ci:SettingsPageBase.Resources>
         <CollectionViewSource x:Key="PluginSource" 

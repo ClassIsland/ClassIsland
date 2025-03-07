@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -48,19 +49,21 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         SettingsService = settingsService;
         ComponentsService = componentsService;
         InitializeComponent();
-        SettingsService.Settings.PropertyChanged += (sender, args) =>
-        {
-            if (args.PropertyName == nameof(SettingsService.Settings.CurrentComponentConfig))
-            {
-                CloseComponentChildrenView();
-            }
-        };
+        
         DataContext = this;
         var mainHandler = FindResource("MainComponentsSettingsPageDropHandler") as ComponentsSettingsPageDropHandler;
         var childHandler = FindResource("ChildComponentsSettingsPageDropHandler") as ComponentsSettingsPageDropHandler;
         if (mainHandler is not null)
         {
             mainHandler.Components = ComponentsService.CurrentComponents;
+        }
+    }
+
+    private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(SettingsService.Settings.CurrentComponentConfig))
+        {
+            CloseComponentChildrenView();
         }
     }
 
@@ -280,5 +283,15 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
     {
         if (ViewModel.SelectedComponentSettings != null)
             ViewModel.SelectedComponentSettings.RelativeLineNumber++;
+    }
+
+    private void ComponentsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
+    }
+
+    private void ComponentsSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
     }
 }

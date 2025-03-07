@@ -33,12 +33,22 @@ public partial class TestSettingsPage : SettingsPageBase
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         var navigationService = NavigationService.GetNavigationService(this);
-        navigationService!.Navigated += (sender, args) => NavigationUri =
-            (args.ExtraData as SettingsWindowNavigationData)?.NavigateUri;
+        navigationService!.Navigated += OnNavigated;
+    }
+
+    private void OnNavigated(object sender, NavigationEventArgs args)
+    {
+        NavigationUri = (args.ExtraData as SettingsWindowNavigationData)?.NavigateUri;
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
         NavigationService!.Navigate(new Page());
+    }
+
+    private void TestSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        var navigationService = NavigationService.GetNavigationService(this);
+        navigationService!.Navigated -= OnNavigated;
     }
 }

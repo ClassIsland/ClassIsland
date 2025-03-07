@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -35,13 +36,15 @@ public partial class PrivacySettingsPage : SettingsPageBase
         InitializeComponent();
         DataContext = this;
         SettingsService = settingsService;
-        SettingsService.Settings.PropertyChanged += (sender, args) =>
+        SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
+    }
+
+    private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled))
         {
-            if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled))
-            {
-                RequestRestart();
-            }
-        };
+            RequestRestart();
+        }
     }
 
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
@@ -52,5 +55,15 @@ public partial class PrivacySettingsPage : SettingsPageBase
             Owner = Window.GetWindow(this),
             Title = "ClassIsland 隐私政策"
         }.ShowDialog();
+    }
+
+    private void PrivacySettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
+    }
+
+    private void PrivacySettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
     }
 }

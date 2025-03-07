@@ -49,8 +49,6 @@ public partial class GeneralSettingsPage : SettingsPageBase
         ExactTimeService = exactTimeService;
         MiniInfoProviderHostService = miniInfoProviderHostService;
         SplashService = splashService;
-
-        SettingsService.Settings.PropertyChanged+= SettingsOnPropertyChanged;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -97,5 +95,15 @@ public partial class GeneralSettingsPage : SettingsPageBase
         splashWindow.Show();
         await Task.Delay(TimeSpan.FromSeconds(3));
         SplashService.EndSplash();
+    }
+
+    private void GeneralSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+    }
+
+    private void GeneralSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
     }
 }

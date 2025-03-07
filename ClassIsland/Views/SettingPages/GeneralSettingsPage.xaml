@@ -23,7 +23,9 @@
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
       TextOptions.TextRenderingMode="Auto"
-      d:DataContext="{d:DesignInstance local:GeneralSettingsPage}">
+      d:DataContext="{d:DesignInstance local:GeneralSettingsPage}"
+      Loaded="GeneralSettingsPage_OnLoaded"
+      Unloaded="GeneralSettingsPage_OnUnloaded">
 
     <controls:SettingsPageBase.Resources>
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />

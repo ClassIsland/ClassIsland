@@ -24,7 +24,9 @@
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
       TextOptions.TextRenderingMode="Auto"
-      d:DataContext="{d:DesignInstance local:ComponentsSettingsPage}">
+      d:DataContext="{d:DesignInstance local:ComponentsSettingsPage}"
+      Loaded="ComponentsSettingsPage_OnLoaded"
+      Unloaded="ComponentsSettingsPage_OnUnloaded">
 
     <controls:SettingsPageBase.Resources>
         <ci:BindingProxy x:Key="DataProxy" Data="{Binding Mode=OneWay}"/>
