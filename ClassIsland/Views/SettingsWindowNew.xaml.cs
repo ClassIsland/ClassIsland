@@ -589,4 +589,100 @@ public partial class SettingsWindowNew : MyWindow
         }
         AppBase.Current.Restart(["-m", "-r"]);
     }
+
+    private void ButtonDoNotClickVeryDangerous_OnClick(object sender, RoutedEventArgs e)
+    {
+        var result = new CommonDialogBuilder()
+            .SetIconKind(CommonDialogIconKind.Hint)
+            .SetContent("警告！ClassIsland 开发者不对应用接下来的行为造成的任何后果负责，并且不接受有关这些行为的任何 Bug 反馈。您确定要继续吗？")
+            .AddAction("OK", PackIconKind.HandOkay)
+            .AddAction("搞定", PackIconKind.ThumbUpOutline)
+            .AddAction("继续", PackIconKind.ArrowRight)
+            .AddAction("确定", PackIconKind.Check, true)
+            .ShowDialog();
+
+        var random = new Random();
+        var value = random.Next(0, 65535) % 4;
+        Console.WriteLine(value);
+        switch (value)
+        {
+            case 0:
+                BeginScaleEffect(0.25);
+                break;
+            case 1:
+                BeginScaleEffect(2);
+                break;
+            case 2:
+                BeginRotateEffect();
+                break;
+            case 3:
+                BeginFlipEffect();
+                break;
+        }
+        
+    }
+
+    private void BeginScaleEffect(double scale)
+    {
+        MinWidth = 0;
+        var sb = new Storyboard();
+        var daX = new DoubleAnimation(1, scale, TimeSpan.FromSeconds(1))
+        {
+            EasingFunction = new CircleEase()
+        };
+        Storyboard.SetTarget(daX, RootGrid);
+        Storyboard.SetTargetProperty(daX, new PropertyPath("(0).(1)[0].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, ScaleTransform.ScaleXProperty]));
+        var daY = new DoubleAnimation(1, scale, TimeSpan.FromSeconds(1))
+        {
+            EasingFunction = new CircleEase()
+        };
+        Storyboard.SetTarget(daY, RootGrid);
+        Storyboard.SetTargetProperty(daY, new PropertyPath("(0).(1)[0].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, ScaleTransform.ScaleYProperty]));
+
+        var wX = new DoubleAnimation(ActualWidth, ActualWidth * scale, TimeSpan.FromSeconds(1))
+        {
+            EasingFunction = new CircleEase()
+        };
+        Storyboard.SetTarget(wX, this);
+        Storyboard.SetTargetProperty(wX, new PropertyPath(WidthProperty));
+        var wY = new DoubleAnimation(ActualHeight, ActualHeight * scale, TimeSpan.FromSeconds(1))
+        {
+            EasingFunction = new CircleEase()
+        };
+        Storyboard.SetTarget(wY, this);
+        Storyboard.SetTargetProperty(wY, new PropertyPath(HeightProperty));
+        sb.Children.Add(daX);
+        sb.Children.Add(daY);
+        sb.Children.Add(wX);
+        sb.Children.Add(wY);
+        sb.Begin(this);
+    }
+
+    private void BeginRotateEffect()
+    {
+        var sb = new Storyboard();
+        var daX = new DoubleAnimation(0, Random.Shared.Next(0, 3600) / 10.0, TimeSpan.FromSeconds(1))
+        {
+            EasingFunction = new CircleEase()
+        };
+        Storyboard.SetTarget(daX, RootGrid);
+        Storyboard.SetTargetProperty(daX, new PropertyPath("(0).(1)[2].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, RotateTransform.AngleProperty]));
+        
+        sb.Children.Add(daX);
+        sb.Begin(this);
+    }
+
+    private void BeginFlipEffect()
+    {
+        var sb = new Storyboard();
+        var daX = new DoubleAnimation(1, -1, TimeSpan.FromSeconds(1))
+        {
+            EasingFunction = new CircleEase()
+        };
+        Storyboard.SetTarget(daX, RootGrid);
+        Storyboard.SetTargetProperty(daX, new PropertyPath("(0).(1)[0].(2)", [LayoutTransformProperty, TransformGroup.ChildrenProperty, ScaleTransform.ScaleXProperty]));
+
+        sb.Children.Add(daX);
+        sb.Begin(this);
+    }
 }

@@ -83,7 +83,23 @@
                     <ComboBoxItem>一直保留页面缓存</ComboBoxItem>
                 </ComboBox>
                 <TextBlock Text="设置页面缓存可以提升之前打开过的设置页面的加载速度，但会增加一定的内存占用。" TextWrapping="Wrap"
-                           Opacity="0.75"/>  
+                           Opacity="0.75"
+                           />
+
+                <Expander materialDesign:ExpanderAssist.VerticalHeaderPadding="0"
+                          materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
+                          Foreground="Transparent"
+                          Margin="0 24 0 0"
+                          Visibility="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource InverseBoolToVisConverter}}">
+                    
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Click="ButtonDoNotClickVeryDangerous_OnClick"
+                            Foreground="Red"
+                            materialDesign:RippleAssist.Feedback="Red"
+                            HorizontalAlignment="Left"
+                            >
+                        <commands:IconText Kind="WarningOutline" Text="千万别点" />
+                    </Button></Expander>
             </StackPanel>
         </ScrollViewer>
 
@@ -146,7 +162,15 @@
         <CommandBinding Command="{x:Static controls1:SettingsPageBase.CloseDrawerCommand}" Executed="CommandBindingCloseDrawer_OnExecuted"/>
         <CommandBinding Command="{x:Static controls1:SettingsPageBase.RequestRestartCommand}" Executed="CommandBindingRestartApp_OnExecuted"></CommandBinding>
     </controls:MyWindow.CommandBindings>
-    <Grid>
+    <Grid x:Name="RootGrid">
+        <Grid.LayoutTransform>
+            <TransformGroup>
+                <ScaleTransform />
+                <SkewTransform />
+                <RotateTransform />
+                <TranslateTransform/>
+            </TransformGroup>
+        </Grid.LayoutTransform>
         <materialDesign:DialogHost Identifier="{x:Static controls1:SettingsPageBase.DialogHostIdentifier}">
             <materialDesign:DrawerHost IsRightDrawerOpen="{Binding ViewModel.IsDrawerOpen}"
                                        RightDrawerContent="{Binding ViewModel.DrawerContent}">
