@@ -23,7 +23,9 @@
                            TextElement.FontSize="14"
                            TextOptions.TextFormattingMode="Ideal"
                            TextOptions.TextRenderingMode="Auto"
-                           d:DataContext="{d:DesignInstance local:NotificationSettingsPage}">
+                           d:DataContext="{d:DesignInstance local:NotificationSettingsPage}"
+                           Loaded="NotificationSettingsPage_OnLoaded"
+                           Unloaded="NotificationSettingsPage_OnUnloaded">
 
     <controls:SettingsPageBase.Resources>
         <converters:GuidToNotificationProviderConverter x:Key="GuidToNotificationProviderConverter" />
@@ -448,6 +450,7 @@
                                             
                                             <!-- 提醒特效渲染精度 -->
                                             <controls2:SettingsControl IconGlyph="LayersOutline" Header="提醒特效渲染精度"
+                                                                       Margin="0 0 0 6"
                                                                        Foreground="{DynamicResource MaterialDesignBody}"
                                                                        Description="提醒特效渲染时的精度，使用较低的精度性能可以获得较好的性能。">
                                                 <controls2:SettingsControl.Switcher>
@@ -459,6 +462,13 @@
                                                             AutoToolTipPrecision="2"
                                                             IsSnapToTickEnabled="True" />
                                                 </controls2:SettingsControl.Switcher>
+                                            </controls2:SettingsControl>
+
+                                            <!-- 在独立线程上呈现特效 -->
+                                            <controls2:SettingsControl IconGlyph="ViewQuiltOutline" Header="在独立线程上呈现特效"
+                                                                       Foreground="{DynamicResource MaterialDesignBody}"
+                                                                       IsOn="{Binding SettingsService.Settings.NotificationUseStandaloneEffectUiThread, Mode=TwoWay}"
+                                                                       Description="启用后，将使用独立的 UI 线程呈现提醒特效，可能可以提升特效流畅性。如果出现呈现问题，可以尝试关闭此选项。">
                                             </controls2:SettingsControl>
                                         </StackPanel>
                                     </Expander>

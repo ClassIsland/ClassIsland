@@ -828,7 +828,9 @@ public partial class App : AppBase, IAppHost
 
     private TopmostEffectWindow BuildTopmostEffectWindow(IServiceProvider x)
     {
-        return ThreadedUiDispatcher!.Invoke(() =>
+        var dispatcher = (Settings.NotificationUseStandaloneEffectUiThread ? ThreadedUiDispatcher : Dispatcher) 
+                         ?? Dispatcher;
+        return dispatcher.Invoke(() =>
         {
             var window = new TopmostEffectWindow(x.GetRequiredService<ILogger<TopmostEffectWindow>>(), x.GetRequiredService<SettingsService>());
             return window;

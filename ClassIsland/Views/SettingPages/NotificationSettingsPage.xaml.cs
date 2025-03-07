@@ -271,4 +271,22 @@ public partial class NotificationSettingsPage : SettingsPageBase
         GptSoVitsSpeechSettingsPresets.Add(newPreset);
         ViewModel.SelectedGptSoVitsSpeechPreset = newPreset;
     }
+
+    private void NotificationSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += Settings_PropertyChanged;
+    }
+
+    private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName is nameof(SettingsService.Settings.NotificationUseStandaloneEffectUiThread))
+        {
+            RequestRestart();
+        }
+    }
+
+    private void NotificationSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= Settings_PropertyChanged;
+    }
 }

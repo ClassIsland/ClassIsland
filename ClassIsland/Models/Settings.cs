@@ -1418,6 +1418,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool NotificationUseStandaloneEffectUiThread
+    {
+        get => _notificationUseStandaloneEffectUiThread;
+        set
+        {
+            if (value == _notificationUseStandaloneEffectUiThread) return;
+            _notificationUseStandaloneEffectUiThread = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Automations
@@ -1663,6 +1674,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     bool _isIgnoreWorkAreaEnabled;
     private int _criticalSafeModeMethod = 0;
+    private bool _notificationUseStandaloneEffectUiThread = true;
 
     public bool IsIgnoreWorkAreaEnabled
     {
