@@ -57,7 +57,7 @@ public class ActionNotificationProvider : INotificationProvider, IHostedService
                     new TextBlock(new Run(settings.Mask)){FontSize = 18, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 0, 0)}
                 }
             },
-            OverlayContent = string.IsNullOrWhiteSpace(settings.Content) ? null : new TextBlock(new Run(settings.Content)) { FontSize = 18, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
+            OverlayContent = string.IsNullOrWhiteSpace(settings.Content) || settings.ContentDurationSeconds <= 0 ? null : new TextBlock(new Run(settings.Content)) { FontSize = 18, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
             IsSpeechEnabled = settings.IsContentSpeechEnabled || settings.IsMaskSpeechEnabled,
             MaskSpeechContent = settings.IsMaskSpeechEnabled ? settings.Mask : "",
             OverlaySpeechContent = settings.IsContentSpeechEnabled ? settings.Content : "",

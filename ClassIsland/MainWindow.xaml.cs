@@ -322,6 +322,8 @@ public partial class MainWindow : Window
         }
         ViewModel.IsOverlayOpened = true;  // 上锁
 
+        var notificationsShowed = false;
+
         if (ViewModel.FirstProcessNotifications == DateTime.MinValue)
             ViewModel.FirstProcessNotifications = ExactTimeService.GetCurrentLocalDateTime();
         if (!ViewModel.Settings.IsNotificationEnabled ||
@@ -363,8 +365,11 @@ public partial class MainWindow : Window
                 ReCheckTopmostState();
             }
 
-            if (request.MaskDuration > TimeSpan.Zero)
+            if (request.MaskDuration > TimeSpan.Zero &&
+                request.OverlayDuration > TimeSpan.Zero)
             {
+                notificationsShowed = true;
+
                 if (isSpeechEnabled)
                 {
                     SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
@@ -440,7 +445,7 @@ public partial class MainWindow : Window
                 SpeechService.ClearSpeechQueue();
             }
 
-            if (NotificationHostService.RequestQueue.Count < 1)
+            if (NotificationHostService.RequestQueue.Count < 1 && notificationsShowed)
             {
                 BeginStoryboardInLine("OverlayOut");
             }
