@@ -97,10 +97,11 @@ public class TimeLineListControl : ListBox
         }
 
         var isSorted = true;
-        for (var index = 0; index < layout.Count - 1; index++)
+        var timeLikeTimePoints = layout.Where(x => x.TimeType is 0 or 1 or 2).ToList();
+        for (var index = 0; index < timeLikeTimePoints.Count - 1; index++)
         {
-            var i = layout[index + 1];
-            if (layout[index].StartSecond.TimeOfDay < layout[index + 1].StartSecond.TimeOfDay) continue;
+            var i = timeLikeTimePoints[index + 1];
+            if (timeLikeTimePoints[index].StartSecond.TimeOfDay < timeLikeTimePoints[index + 1].StartSecond.TimeOfDay) continue;
             isSorted = false;
             break;
         }
