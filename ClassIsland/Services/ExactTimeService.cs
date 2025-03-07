@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Abstraction.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -76,6 +77,7 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
             Sync();
             UpdateTimerStatus();
             SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
+            AppBase.Current.AppStopping += (sender, args) => SystemEvents.TimeChanged -= SystemEventsOnTimeChanged; ;
         });
 
         if (SettingsService.Settings.IsTimeAutoAdjustEnabled)

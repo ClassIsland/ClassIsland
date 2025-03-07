@@ -727,6 +727,7 @@ public partial class MainWindow : Window
         UpdateTheme();
         UserPrefrenceUpdateStopwatch.Start();
         SystemEvents.UserPreferenceChanged += OnSystemEventsOnUserPreferenceChanged;
+        AppBase.Current.AppStopping += (sender, args) => SystemEvents.UserPreferenceChanged -= OnSystemEventsOnUserPreferenceChanged;
         span?.Finish();
     }
 
