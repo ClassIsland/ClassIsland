@@ -636,7 +636,7 @@
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                             Width="28" Height="28"
                                             Click="ButtonRestart_OnClick"
-                                            Content="{materialDesign:PackIcon Restart"
+                                            Content="{materialDesign:PackIcon Restart}"
                                             Visibility="{Binding Value.RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         </Button>
 

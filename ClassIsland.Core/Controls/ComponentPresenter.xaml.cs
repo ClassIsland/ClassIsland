@@ -261,9 +261,13 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
 
     private void UpdateComponentHidState()
     {
+        var visibleStatePrev = Settings?.IsVisible;
         _isAllComponentsHid = Settings?.Children != null && Settings.Children.FirstOrDefault(x => x.IsVisible) == null;
         if (Settings != null) Settings.IsVisible = Visibility == Visibility.Visible && !_isAllComponentsHid;
-        RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
+        if (Settings?.IsVisible != visibleStatePrev)
+        {
+            RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
+        }
     }
 
     private void ComponentPresenter_OnLoaded(object sender, RoutedEventArgs e)
