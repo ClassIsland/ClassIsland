@@ -78,7 +78,9 @@ using Windows.Storage;
 #endif
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
+using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Models.Automation.Triggers;
+using ClassIsland.Services.Metadata;
 using ClassIsland.Shared.Helpers;
 using MahApps.Metro.Controls;
 using Walterlv.Threading;
@@ -518,6 +520,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IAuthorizeService, AuthorizeService>();
                 services.AddSingleton<UriTriggerHandlerService>();
                 services.AddSingleton<SignalTriggerHandlerService>();
+                services.AddSingleton<IAnnouncementService, AnnouncementService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();

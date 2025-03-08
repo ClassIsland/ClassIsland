@@ -122,7 +122,7 @@ public class ManagementServerConnection : IManagementServerConnection
         {
             Logger.LogInformation("正在连接到命令流");
             var client = new ClientCommandDeliver.ClientCommandDeliverClient(GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc));
-            var call = client.ListenCommand(new Metadata()
+            var call = client.ListenCommand(new Grpc.Core.Metadata()
             {
                 { "cuid", ClientGuid.ToString() }
             });

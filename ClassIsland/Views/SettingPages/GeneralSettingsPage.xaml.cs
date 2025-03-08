@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
@@ -37,10 +38,11 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     public MiniInfoProviderHostService MiniInfoProviderHostService { get; }
     public ISplashService SplashService { get; }
+    public IAnnouncementService AnnouncementService { get; }
 
     public GeneralSettingsViewModel ViewModel { get; } = new();
 
-    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService, ISplashService splashService)
+    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService, ISplashService splashService, IAnnouncementService announcementService)
     {
         InitializeComponent();
         DataContext = this;
@@ -49,6 +51,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
         ExactTimeService = exactTimeService;
         MiniInfoProviderHostService = miniInfoProviderHostService;
         SplashService = splashService;
+        AnnouncementService = announcementService;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)

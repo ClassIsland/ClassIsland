@@ -60,6 +60,17 @@
                 </StackPanel>
             </materialDesign:ColorZone>
 
+            <!-- Announcements -->
+            <ItemsControl ItemsSource="{Binding AnnouncementService.Announcements, Mode=OneWay}"
+                          Margin="0 0 0 8"
+                          Visibility="{Binding HasItems, RelativeSource={RelativeSource Self}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ci:AnnouncementControl Announcement="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <controls1:IconText Kind="LightningBoltOutline" Text="行为" Margin="0 0 0 8" />
             <!-- 开机自启 -->
             <controls1:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
