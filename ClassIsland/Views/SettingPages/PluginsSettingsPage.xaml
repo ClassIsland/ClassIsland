@@ -189,6 +189,7 @@
                                                Margin="4 0 0 0" >
                                         <Run Text="无法安装插件，请检查您的网络连接："/>
                                         <Run Text="{Binding DownloadProgress.Exception.Message, Mode=OneWay}"/>
+                                        <Hyperlink Click="MenuItemManagePluginSources_OnClick">更换插件镜像源</Hyperlink><Run Text="可能可以解决此问题。"/>
                                     </TextBlock>
                                 </DockPanel>
                             </Grid>
