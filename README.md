@@ -163,6 +163,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 | 分支 | 开发状态 | 信息 |
 | --- | --- | --- |
+| [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) | 正在此分支上开发版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=dev&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/dev)](https://www.codefactor.io/repository/github/classisland/classisland/overview/dev) |
 | [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上维护版本 [1.6 - Himeko](https://github.com/ClassIsland/ClassIsland/milestone/7)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master) |
 
 要在本地编译应用，您需要安装以下负载和工具：
