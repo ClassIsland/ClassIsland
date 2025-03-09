@@ -89,8 +89,9 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用版本代号
     /// </summary>
-    // ReSharper disable once StringLiteralTypo
-    public static string AppCodeName => "Himeko";
+    // ReSharper disable StringLiteralTypo
+    public static string AppCodeName => "RyouYamada";
+    // ReSharper restore StringLiteralTypo
 
     /// <summary>
     /// 应用长版本号
