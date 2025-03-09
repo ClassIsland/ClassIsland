@@ -1,78 +1,41 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Threading;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.ViewModels;
-
 namespace ClassIsland.Controls.NotificationProviders;
 
-public partial class ClassNotificationProviderControl : UserControl, INotifyPropertyChanged
+public partial class ClassNotificationProviderControl : UserControl, INotifyPropertyChanged, IDisposable
 {
-    private object? _element;
+    private FrameworkElement? _element;
     private string _message = "";
     private int _slideIndex = 0;
     private bool _showTeacherName = false;
     private string _maskMessage = "";
 
-    public object? Element
+    public FrameworkElement? Element
     {
         get => _element;
-        set
-        {
-            if (Equals(value, _element)) return;
-            _element = value;
-            OnPropertyChanged();
-        }
+        set => SetField(ref _element, value);
     }
 
     public string Message
     {
         get => _message;
-        set
-        {
-            if (value == _message) return;
-            _message = value;
-            OnPropertyChanged();
-        }
+        set => SetField(ref _message, value);
     }
 
     public int SlideIndex
     {
         get => _slideIndex;
-        set
-        {
-            if (value == _slideIndex) return;
-            _slideIndex = value;
-            OnPropertyChanged();
-        }
+        set => SetField(ref _slideIndex, value);
     }
 
     public bool ShowTeacherName
     {
         get => _showTeacherName;
-        set
-        {
-            if (value == _showTeacherName) return;
-            _showTeacherName = value;
-            OnPropertyChanged();
-        }
+        set => SetField(ref _showTeacherName, value);
     }
 
     public string MaskMessage
     {
         get => _maskMessage;
-        set
-        {
-            if (value == _maskMessage) return;
-            _maskMessage = value;
-            OnPropertyChanged();
-        }
+        set => SetField(ref _maskMessage, value);
     }
 
     public ILessonsService LessonsService { get; } = App.GetService<ILessonsService>();
@@ -85,9 +48,9 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     public ClassNotificationProviderControl(string key)
     {
         InitializeComponent();
-        var visual = FindResource(key) as FrameworkElement;
-        Element = visual;
+        Element = FindResource(key) as FrameworkElement;
         Timer.Tick += TimerOnTick;
+
         if (key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
         {
             Timer.Start();
@@ -96,24 +59,10 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(Message))
-            return;
-        SlideIndex = SlideIndex == 1 ? 0 : 1;
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-    {
-        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;
-        OnPropertyChanged(propertyName);
-        return true;
+        if (!string.IsNullOrWhiteSpace(Message))
+        {
+            SlideIndex = SlideIndex == 1 ? 0 : 1;
+        }
     }
 
     public string NextTimeLayoutDurationHumanized
@@ -123,12 +72,28 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
             TimeSpan span = LessonsService.CurrentTimeLayoutItem.Last;
             if (span.TotalSeconds <= 0) return "0 分钟";
 
-            StringBuilder sb = new();
-            if (span.Hours > 0) sb.Append($"{span.Hours} 小时");
-            if (span.Minutes > 0) sb.Append($" {span.Minutes} 分钟");
-            if (span.Seconds > 0) sb.Append($" {span.Seconds} 秒");
-            var s = sb.ToString();
-            return s.StartsWith(' ') ? s[1..] : s;
+            var parts = new List<string>();
+            if (span.Hours > 0) parts.Add($"{span.Hours} 小时");
+            if (span.Minutes > 0) parts.Add($"{span.Minutes} 分钟");
+            if (span.Seconds > 0) parts.Add($"{span.Seconds} 秒");
+
+            return string.Join(" ", parts);
         }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+        field = value;ClassIsland/Controls/NotificationProviders/ClassNotificationProviderControl.xaml.cs
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        return true;
+    }
+
+    public void Dispose()
+    {
+        Timer.Stop();
+        Timer.Tick -= TimerOnTick;
     }
 }
