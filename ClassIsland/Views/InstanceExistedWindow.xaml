@@ -1,0 +1,54 @@
+﻿<ci:MyWindow x:Class="ClassIsland.Views.InstanceExistedWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+        xmlns:demo="clr-namespace:ClassIsland.Controls.Demo"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        mc:Ignorable="d"
+        Title="ClassIsland 正在运行" Width="800" Height="450"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center"
+                   Margin="12 16 12 16"
+                   TextWrapping="Wrap">
+            <Run Text="ClassIsland 已经启动，请通过任务栏托盘图标进行修改设置等操作。" />
+            <LineBreak />
+            <Run Text="如果您无法看到应用主界面，这有可能是您在托盘图标菜单中选择了【隐藏主界面】，或者【按规则隐藏主界面】设置正在生效，也有可能是自动化功能修改了上述设置。"/>
+        </TextBlock>
+        <demo:OpenTaskBarMenuDemo Grid.Row="1" />
+        <StackPanel Grid.Row="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Margin="16 0 16 0">
+            <Button Click="ButtonRestart_OnClick"
+                    Margin="0 0 6 0">
+                <controls1:IconText Kind="Restart" Text="重启应用" IconMargin="3 0 0 0"/>
+            </Button>
+            <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
+                    Click="ButtonExit_OnClick">
+                <controls1:IconText Kind="Close" Text="我知道了" IconMargin="3 0 0 0"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</ci:MyWindow>
