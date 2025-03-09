@@ -54,7 +54,7 @@ public class ActionNotificationProvider : INotificationProvider, IHostedService
                 Children =
                 {
                     new PackIcon(){ Kind = PackIconKind.InfoCircleOutline, Width = 22, Height = 22, VerticalAlignment = VerticalAlignment.Center},
-                    new TextBlock(new Run(settings.Mask)){FontSize = 18, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 0, 0)}
+                    new TextBlock(new Run(settings.Mask)){FontSize = 18, VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 0, 0), FontWeight = FontWeights.Bold}
                 }
             },
             OverlayContent = string.IsNullOrWhiteSpace(settings.Content) || settings.ContentDurationSeconds <= 0 ? null : new TextBlock(new Run(settings.Content)) { FontSize = 18, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
