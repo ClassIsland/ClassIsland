@@ -86,7 +86,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     protected bool SetField<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-        field = value;ClassIsland/Controls/NotificationProviders/ClassNotificationProviderControl.xaml.cs
+        field = value;
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         return true;
     }
