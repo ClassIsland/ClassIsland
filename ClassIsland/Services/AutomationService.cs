@@ -44,7 +44,6 @@ public class AutomationService : ObservableRecipient, IAutomationService
         RefreshConfigs();
 
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
-        Workflows.CollectionChanged += (_, _) => SaveConfig();
         SettingsService.Settings.PropertyChanged += (_, e) => {
             if (e.PropertyName == nameof(SettingsService.Settings.CurrentAutomationConfig))
             {
@@ -317,8 +316,8 @@ public class AutomationService : ObservableRecipient, IAutomationService
     public void SaveConfig(string note = "")
     {
         Logger.LogInformation(note == "" ?
-            $"写入自动化配置（{SettingsService.Settings.CurrentAutomationConfig}.json）" :
-            $"写入自动化配置（{SettingsService.Settings.CurrentAutomationConfig}.json）：{note}");
+            $"写入自动化配置（{CurrentConfig}.json）" :
+            $"写入自动化配置（{CurrentConfig}.json）：{note}");
         ConfigureFileHelper.SaveConfig(CurrentConfigPath, Workflows);
     }
 
