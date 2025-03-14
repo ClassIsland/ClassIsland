@@ -28,7 +28,7 @@ namespace ClassIsland.Services;
 public class AutomationService : ObservableRecipient, IAutomationService
 {
     public static readonly string AutomationConfigsFolderPath = Path.Combine(App.AppConfigPath, "Automations/");
-    public string CurrentConfig { get; set; };
+    public string CurrentConfig { get; set; }
     public string CurrentConfigPath => Path.GetFullPath(Path.Combine(AutomationConfigsFolderPath, CurrentConfig + ".json"));
 
     public AutomationService(ILogger<AutomationService> logger, IRulesetService rulesetService, SettingsService settingsService, IActionService actionService, IWindowRuleService windowRuleService)
