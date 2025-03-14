@@ -59,7 +59,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 - [x] 丝滑、流畅的过渡动画
 - [x] 自动获取与系统配色搭配的主题色
 - [x] 自动软件更新
-- [ ] [集控管理](https://docs.classisland.tech/management)_（即将发布）_
+- [ ] [集控管理](https://docs.classisland.tech/management),由社区[开发者](https://github.com/kaokao221)开发的[集控服务器](https://github.com/kaokao221/ClassIslandManagementServer.py)_全新发布_
 - [ ] ……
 
 [^1]: 需要更新到 1.5.3.1 或以上版本的 ClassIsland，并安装 [ClassIsland 主题加载器](https://github.com/ClassIsland/ClassIsland.ThemeLoader) 插件。
