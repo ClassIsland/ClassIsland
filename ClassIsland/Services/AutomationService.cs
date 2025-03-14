@@ -245,7 +245,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         var workflow = trigger.AssociatedWorkflow;
 
         if (!workflow.ActionSet.IsEnabled) return;
-        if (workflow.ActionSet.IsOn)
+        if (workflow.ActionSet.IsRevertEnabled && workflow.ActionSet.IsOn)
         {
             return;
         }
