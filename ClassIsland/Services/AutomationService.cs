@@ -28,7 +28,8 @@ namespace ClassIsland.Services;
 public class AutomationService : ObservableRecipient, IAutomationService
 {
     public static readonly string AutomationConfigsFolderPath = Path.Combine(App.AppConfigPath, "Automations/");
-    string CurrentConfigPath => Path.GetFullPath(Path.Combine(AutomationConfigsFolderPath, SettingsService.Settings.CurrentAutomationConfig + ".json"));
+    public string CurrentConfig { get; set; } = SettingsService.Settings.CurrentAutomationConfig;
+    public string CurrentConfigPath => Path.GetFullPath(Path.Combine(AutomationConfigsFolderPath, CurrentConfig + ".json"));
 
     public AutomationService(ILogger<AutomationService> logger, IRulesetService rulesetService, SettingsService settingsService, IActionService actionService, IWindowRuleService windowRuleService)
     {
@@ -46,7 +47,11 @@ public class AutomationService : ObservableRecipient, IAutomationService
         Workflows.CollectionChanged += (_, _) => SaveConfig();
         SettingsService.Settings.PropertyChanged += (_, e) => {
             if (e.PropertyName == nameof(SettingsService.Settings.CurrentAutomationConfig))
+            {
+                SaveConfig();
+                CurrentConfig = SettingsService.Settings.CurrentAutomationConfig;
                 LoadConfig();
+            }
         };
     }
 
