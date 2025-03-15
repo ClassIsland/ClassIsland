@@ -94,8 +94,8 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         }
         
         Unloaded += (_, _) => {
-            Timer.Tick -= TimerOnTick;
             Timer.Stop();
+            Timer.Tick -= TimerOnTick;
         };
     }
 
@@ -128,12 +128,12 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
     {
         if (span.TotalSeconds <= 0) return "0 分钟";
 
-        var sb = new List<string>(3);
+        var parts = new List<string>(3);
         
-        if (span.Hours > 0) sb.Add($"{span.Hours} 小时");
-        if (span.Minutes > 0) sb.Add($"{span.Minutes} 分钟");
-        if (span.Seconds > 0) sb.Add($"{span.Seconds} 秒");
+        if (span.Hours > 0) parts.Add($"{span.Hours} 小时");
+        if (span.Minutes > 0) parts.Add($"{span.Minutes} 分钟");
+        if (span.Seconds > 0) parts.Add($"{span.Seconds} 秒");
     
-        return string.Join(" ", sb);
+        return string.Join(" ", parts);
     }
 }
