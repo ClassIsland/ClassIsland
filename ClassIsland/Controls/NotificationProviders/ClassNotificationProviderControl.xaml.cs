@@ -116,19 +116,19 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         return true;
     }
 
-    public string NextTimeLayoutDurationHumanized
-    {
-        get
-        {
-            TimeSpan span = LessonsService.CurrentTimeLayoutItem.Last;
-            if (span.TotalSeconds <= 0) return "0 分钟";
+    public string NextTimeLayoutDurationHumanized =>
+        FormatTimeSpan(LessonsService.CurrentTimeLayoutItem.Last);
 
-            StringBuilder sb = new();
-            if (span.Hours > 0) sb.Append($"{span.Hours} 小时");
-            if (span.Minutes > 0) sb.Append($" {span.Minutes} 分钟");
-            if (span.Seconds > 0) sb.Append($" {span.Seconds} 秒");
-            var s = sb.ToString();
-            return s.StartsWith(' ') ? s[1..] : s;
-        }
+    public static string FormatTimeSpan(TimeSpan span)
+    {
+        if (span.TotalSeconds <= 0) return "0 分钟";
+
+        var sb = new List<string>(3);
+        
+        if (span.Hours > 0) sb.Add($"{span.Hours} 小时");
+        if (span.Minutes > 0) sb.Add($"{span.Minutes} 分钟");
+        if (span.Seconds > 0) sb.Add($"{span.Seconds} 秒");
+    
+        return string.Join(" ", sb);
     }
 }
