@@ -92,6 +92,11 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         {
             Timer.Start();
         }
+        
+        Unloaded += (_, _) => {
+            Timer.Tick -= TimerOnTick;
+            Timer.Stop();
+        }
     }
 
     private void TimerOnTick(object? sender, EventArgs e)
