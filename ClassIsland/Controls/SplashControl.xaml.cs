@@ -39,13 +39,10 @@ public partial class SplashControl : UserControl
     {
         Dispatcher.Invoke(() =>
         {
-            UpdateProgress(100, 0.5, ((o, args) =>
+            UpdateProgress(100, 0.1, (_, _) =>
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    App.GetService<SplashWindow>().Close();
-                });
-            }));
+                Window.GetWindow(this)?.Close();
+            });
         });
     }
 
@@ -53,7 +50,7 @@ public partial class SplashControl : UserControl
     {
         Dispatcher.Invoke(() =>
         {
-            UpdateProgress(e, Math.Max((e - _lastProgress ) / 5, 0.5));
+            UpdateProgress(e, Math.Max((e - _lastProgress ) / 8, 0.5));
         });
         _lastProgressDelta = e - _lastProgress;
         _lastProgress = e;

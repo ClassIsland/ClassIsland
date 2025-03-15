@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Windows.Data;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Shared;
@@ -35,6 +35,6 @@ public abstract class DictionaryValueAccessConverter<T> : IMultiValueConverter
     /// <inheritdoc />
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
-        return new object[] { };
+        return Array.Empty<object>();
     }
 }

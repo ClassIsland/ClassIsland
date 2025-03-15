@@ -93,6 +93,8 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         {
             if (!ComponentRegistryService.MigrationPairs.TryGetValue(new Guid(i.Id), out var targetGuid))
             {
+                if (i.AssociatedComponentInfo.ComponentType != null)
+                    LoadComponentSettings(i, i.AssociatedComponentInfo.ComponentType.BaseType!);
                 continue;
             }
             
@@ -172,16 +174,26 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         } 
         if (baseType?.GetGenericArguments().Length > 0 && !migrated)
         {
-            var settingsType = baseType.GetGenericArguments().First();
-            var componentSettings = settings.Settings ?? Activator.CreateInstance(settingsType);
-            if (componentSettings is JsonElement json)
-            {
-                componentSettings = json.Deserialize(settingsType);
-            }
-            settings.Settings = componentSettings;
+            var componentSettings = LoadComponentSettings(settings, baseType);
 
             component.SettingsInternal = componentSettings;
         }
         return component;
+    }
+
+    internal static object? LoadComponentSettings(ComponentSettings settings, Type baseType)
+    {
+        var settingsType = baseType.GetGenericArguments().FirstOrDefault();
+        if (settingsType == null)
+        {
+            return null;
+        }
+        var componentSettings = settings.Settings ?? Activator.CreateInstance(settingsType);
+        if (componentSettings is JsonElement json)
+        {
+            componentSettings = json.Deserialize(settingsType);
+        }
+        settings.Settings = componentSettings;
+        return componentSettings;
     }
 }

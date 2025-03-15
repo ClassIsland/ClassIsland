@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -261,7 +261,7 @@ public class NumbericTextBox : TextBox
                 int minusPos = this.Text.IndexOf('-');
 
                 // 未输入负号且负号在第一位
-                if ((minusPos == -1) && (0 == this.SelectionStart))
+                if ((minusPos == -1) && (this.SelectionStart == 0))
                 {
                     return;
                 }

@@ -5,6 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Title>ClassIsland Plugin SDK</Title>
+		<Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -18,8 +19,11 @@
 
 	<ItemGroup>
 		<Folder Include="Properties\" />
+		<None Include="ClassIsland.PluginSdk.targets" Pack="True" PackagePath="build/net8.0" />
+		<None Include="generate-md5.ps1" Pack="True" PackagePath="build/net8.0" />
 	</ItemGroup>
 	
 	<Import Project="..\GeneratePackage.props" />
 	<Import Project="..\Global.props" />
+	<Import Project=".\ClassIsland.PluginSdk.targets" />
 </Project>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +24,6 @@ public partial class JoinManagementDialog : UserControl
     public JoinManagementDialog()
     {
         InitializeComponent();
-        
     }
 
     protected override void OnInitialized(EventArgs e)

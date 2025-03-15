@@ -7,6 +7,7 @@ namespace ClassIsland.ViewModels.SettingsPages;
 public class WeatherSettingsViewModel : ObservableRecipient
 {
     private List<City> _citySearchResults = new();
+    private bool _isSearchingWeather = false;
 
     public List<City> CitySearchResults
     {
@@ -15,6 +16,17 @@ public class WeatherSettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _citySearchResults)) return;
             _citySearchResults = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsSearchingWeather
+    {
+        get => _isSearchingWeather;
+        set
+        {
+            if (value == _isSearchingWeather) return;
+            _isSearchingWeather = value;
             OnPropertyChanged();
         }
     }

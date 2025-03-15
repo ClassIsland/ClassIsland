@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -168,13 +168,12 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
         if (SettingsSource != null)
         {
-            MasterTabIndex = LeftSeconds < SettingsSource.CountdownSeconds &&
+            MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
                              SettingsSource.IsCountdownEnabled &&
                              IsLiveUpdatingEnabled ? 1 : 0;
             ExtraInfo4ShowSeconds = SettingsSource.ExtraInfoType == 4 &&
-                                    LeftSeconds < SettingsSource.ExtraInfo4ShowSecondsSeconds;
+                                    LeftSeconds <= SettingsSource.ExtraInfo4ShowSecondsSeconds;
         }
-
     }
 
     #region INotifyPropertyChanged Impletion

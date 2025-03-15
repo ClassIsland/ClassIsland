@@ -1,7 +1,9 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
+using static System.Windows.Forms.AxHost;
 
 namespace ClassIsland.Core.Models.Ruleset;
 
@@ -12,8 +14,8 @@ public class Ruleset : ObservableRecipient
 {
     private RulesetLogicalMode _mode = RulesetLogicalMode.Or;
     private bool _isReversed = false;
-    private ObservableCollection<Rule> _rules = new ObservableCollection<Rule>();
-    private ObservableCollection<RuleGroup> _groups = new();
+    private ObservableCollection<RuleGroup> _groups = [new() { Rules = [new()] }];
+    private int _state = 0;
 
     /// <summary>
     /// 逻辑模式。
@@ -46,7 +48,6 @@ public class Ruleset : ObservableRecipient
     /// <summary>
     /// 规则分组
     /// </summary>
-
     public ObservableCollection<RuleGroup> Groups
     {
         get => _groups;
@@ -54,6 +55,21 @@ public class Ruleset : ObservableRecipient
         {
             if (Equals(value, _groups)) return;
             _groups = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 满足状态
+    /// </summary>
+    [JsonIgnore]
+    public int State
+    {
+        get => _state;
+        set
+        {
+            if (value == _state) return;
+            _state = value;
             OnPropertyChanged();
         }
     }

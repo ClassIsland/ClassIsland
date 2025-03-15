@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
@@ -36,10 +37,12 @@ public partial class GeneralSettingsPage : SettingsPageBase
     public IExactTimeService ExactTimeService { get; }
 
     public MiniInfoProviderHostService MiniInfoProviderHostService { get; }
+    public ISplashService SplashService { get; }
+    public IAnnouncementService AnnouncementService { get; }
 
     public GeneralSettingsViewModel ViewModel { get; } = new();
 
-    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService)
+    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService, ISplashService splashService, IAnnouncementService announcementService)
     {
         InitializeComponent();
         DataContext = this;
@@ -47,8 +50,8 @@ public partial class GeneralSettingsPage : SettingsPageBase
         ManagementService = managementService;
         ExactTimeService = exactTimeService;
         MiniInfoProviderHostService = miniInfoProviderHostService;
-
-        SettingsService.Settings.PropertyChanged+= SettingsOnPropertyChanged;
+        SplashService = splashService;
+        AnnouncementService = announcementService;
     }
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -81,5 +84,29 @@ public partial class GeneralSettingsPage : SettingsPageBase
     private void ButtonWeekOffsetSettingsOpen_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.IsWeekOffsetSettingsOpen = true;
+    }
+
+    private void ButtonCloseSellingAnnouncementBanner_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.ShowSellingAnnouncement = false;
+    }
+
+    private async void ButtonRefreshSplashPreview_OnClick(object sender, RoutedEventArgs e)
+    {
+        SplashService.ResetSplashText();
+        var splashWindow = new SplashWindow(SplashService);
+        splashWindow.Show();
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        SplashService.EndSplash();
+    }
+
+    private void GeneralSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
+    }
+
+    private void GeneralSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
     }
 }

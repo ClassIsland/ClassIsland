@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -20,8 +20,7 @@ public class RulesetService : IRulesetService
     public RulesetService(ILogger<RulesetService> logger)
     {
         Logger = logger;
-
-        
+        NotifyStatusChanged();
     }
 
     
@@ -29,44 +28,66 @@ public class RulesetService : IRulesetService
     public event EventHandler? ForegroundWindowChanged;
 
     public event EventHandler? StatusUpdated;
-    private bool IsRulesetGroupSatisfied(RuleGroup ruleset)
+
+    private int BoolToRuleObjectState(bool? v) => v switch
     {
-        var rulesetSatisfied = ruleset.Mode == RulesetLogicalMode.And;
-        if (ruleset.Rules.Count <= 0)
+        true => 2,
+        false => 1,
+        null => 0
+    };
+
+    private bool? IsRuleSatisfied(Rule i)
+    {
+        if (i.Id == string.Empty)
+            return null;
+
+        if (!IRulesetService.Rules.TryGetValue(i.Id, out var rule))
         {
+            Logger.LogWarning("找不到规则 {} 的注册信息，已默认其结果为 false.", i.Id);
             return false;
         }
+
+        object? settings = null;
+        var settingsType = rule.SettingsType;
+        if (settingsType != null)
+        {
+            settings = i.Settings ?? Activator.CreateInstance(settingsType);
+            if (settings is JsonElement json)
+            {
+                settings = json.Deserialize(settingsType);
+            }
+        }
+        if (rule.Handle != null)
+        {
+            return rule.Handle(settings);
+        }
+        else
+        {
+            Logger.LogWarning("规则 {} 的处理程序没有注册，已默认其结果为 false.", rule.Id);
+            return false;
+        }
+    }
+
+    private bool? IsRulesetGroupSatisfied(RuleGroup ruleset)
+    {
+        var rulesetSatisfied = ruleset.Mode == RulesetLogicalMode.And;
+        if (ruleset.Rules.Where(r => r.Id != "").ToList().Count <= 0)
+        {
+            return null;
+        }
+
         foreach (var i in ruleset.Rules)
         {
-            if (!IRulesetService.Rules.TryGetValue(i.Id, out var rule))
+            bool? res = IsRuleSatisfied(i);
+            if (res == null)
             {
-                Logger.LogWarning("找不到规则 {} 的注册信息。", i.Id);
+                i.State = BoolToRuleObjectState(res);
                 continue;
             }
 
-            bool result;
-            object? settings = null;
-            var settingsType = rule.SettingsType;
-            if (settingsType != null)
-            {
-                settings = i.Settings ?? Activator.CreateInstance(settingsType);
-                if (settings is JsonElement json)
-                {
-                    settings = json.Deserialize(settingsType);
-                }
-            }
-            if (rule.Handle != null)
-            {
-                result = rule.Handle(settings);
-            }
-            else
-            {
-                result = false;
-                Logger.LogWarning("规则 {} 的处理程序没有注册，已默认其结果为 false.", rule.Id);
-            }
-            
-
+            bool result = (bool)res;
             result ^= i.IsReversed;
+            i.State = BoolToRuleObjectState(result);
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
             {
                 rulesetSatisfied = false;
@@ -87,12 +108,25 @@ public class RulesetService : IRulesetService
         var isSatisfied = ruleset.Mode == RulesetLogicalMode.And;
         if (ruleset.Groups.Count <= 0)
         {
+            ruleset.State = BoolToRuleObjectState(false);
             return false;
+        }
+        foreach (var i in ruleset.Groups)
+        {
+            i.State = 0;
+            foreach (var j in i.Rules)
+            {
+                j.State = 0;
+            }
         }
         foreach (var group in ruleset.Groups.Where(x => x.IsEnabled))
         {
-            var result = IsRulesetGroupSatisfied(group);
-            result ^= group.IsReversed;
+            bool? res = IsRulesetGroupSatisfied(group);
+            group.State = BoolToRuleObjectState(res);
+            if (res == null)
+                continue;
+
+            bool result = (bool)res;
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
             {
                 isSatisfied = false;
@@ -105,6 +139,7 @@ public class RulesetService : IRulesetService
             }
         }
         isSatisfied ^= ruleset.IsReversed;
+        ruleset.State = BoolToRuleObjectState(isSatisfied);
         return isSatisfied;
     }
 

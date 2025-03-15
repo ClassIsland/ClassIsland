@@ -26,19 +26,27 @@
                     <Grid>
                         <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" x:Name="Text"
                                Text="{Binding Initial}">
-                            <!--<TextBlock.Style>
+                            <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}" Value="True">
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlMinimized}}"
+                                                           Value="True" />
+                                                <Condition Binding="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
+                                                           Value="True" />
+                                            </MultiDataTrigger.Conditions>
                                             <Setter Property="Effect">
                                                 <Setter.Value>
-                                                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="{DynamicResource LuminousClass}"/>
+                                                    <DropShadowEffect BlurRadius="3"
+                                                                      ShadowDepth="0"
+                                                                      Color="#FF0" />
                                                 </Setter.Value>
                                             </Setter>
-                                        </DataTrigger>
+                                        </MultiDataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </TextBlock.Style>-->
+                            </TextBlock.Style>
                         </TextBlock>
                     </Grid>
                 </DataTemplate>

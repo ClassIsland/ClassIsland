@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Core.Models.UriNavigation;
+namespace ClassIsland.Core.Models.UriNavigation;
 
 internal class UriNavigationNode(string name)
 {
@@ -16,7 +16,6 @@ internal class UriNavigationNode(string name)
 
     public bool Contains(string[] paths)
     {
-        
         if (paths.Length <= 0)
             return false;
         if (!Children.TryGetValue(paths[0], out var node))
@@ -66,7 +65,7 @@ internal class UriNavigationNode(string name)
         children = [];
         if (paths.Length <= 0)
             throw new ArgumentException("给定的节点不存在。");
-        children = paths[1..];
+        children = paths[..];
         if (!Children.TryGetValue(paths[0], out var node))
             return this;
 

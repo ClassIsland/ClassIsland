@@ -15,7 +15,7 @@
             DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TextComponentSettingsControl}}">
             <ci:SettingsCard IconGlyph="Text"
                     Header="文本内容"
-                    Description="要显示的文本...">
+                    Description="要显示的文本。">
                 <ci:SettingsCard.Switcher>
                     <TextBox MinWidth="200" Margin="10 4 0 0"
                              Text="{Binding Settings.TextContent,UpdateSourceTrigger=PropertyChanged}" />
@@ -24,7 +24,7 @@
 
             <ci:SettingsCard IconGlyph="PaintBucket"
                              Header="字体颜色"
-                             Description="选择要显示文本的颜色">
+                             Description="选择要显示文本的颜色。">
                 <ci:SettingsCard.Switcher>
                     <ci:ColorPicker Width="auto" Margin="10 8 0 0"
                                     Color="{Binding Settings.FontColor, Mode=TwoWay}" />
@@ -33,7 +33,7 @@
 
             <ci:SettingsCard IconGlyph="FontSize"
                              Header="字体大小"
-                             Description="修改要显示的文本的大小">
+                             Description="修改要显示的文本的大小。">
                 <ci:SettingsCard.Switcher>
                     <Slider Width="200" Margin="10 8 0 0"
                             Maximum="30" Minimum="16" IsSnapToTickEnabled="True" AutoToolTipPlacement="BottomRight"

@@ -1,5 +1,4 @@
 using ClassIsland.Core.Models.Weather;
-using Microsoft.Data.Sqlite;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -9,17 +8,9 @@ namespace ClassIsland.Core.Abstractions.Services;
 public interface IWeatherService
 {
     /// <summary>
-    /// 城市数据库sqlite连接
-    /// </summary>
-    SqliteConnection CitiesDatabaseConnection { get; }
-    /// <summary>
     /// 天气状态列表
     /// </summary>
     List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; }
-    /// <summary>
-    /// 城市数据库是否已经加载
-    /// </summary>
-    bool IsDatabaseLoaded { get; set; }
     /// <summary>
     /// 天气是否已经刷新
     /// </summary>
@@ -39,5 +30,5 @@ public interface IWeatherService
     /// </summary>
     /// <param name="name">搜索字符串</param>
     /// <returns>匹配搜索的城市列表</returns>
-    List<City> GetCitiesByName(string name);
+    Task<List<City>> GetCitiesByName(string name);
 }

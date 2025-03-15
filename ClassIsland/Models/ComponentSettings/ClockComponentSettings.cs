@@ -16,4 +16,30 @@ public class ClockComponentSettings: ObservableRecipient
             OnPropertyChanged();
         }
     }
+
+    private bool _showRealTime = false;
+
+    public bool ShowRealTime
+    {
+        get => _showRealTime;
+        set
+        {
+            if (value == _showRealTime) return;
+            _showRealTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private bool _flashTimeSeparator = true;
+
+    public bool FlashTimeSeparator
+    {
+        get => _flashTimeSeparator;
+        set
+        {
+            if (value == _flashTimeSeparator) return;
+            _flashTimeSeparator = value;
+            OnPropertyChanged();
+        }
+    }
 }

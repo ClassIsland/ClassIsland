@@ -4,6 +4,8 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using ClassIsland.Core.Commands;
 using MdXaml;
+using MdXaml.Html;
+using MdXaml.Plugins;
 
 namespace ClassIsland.Core.Helpers;
 
@@ -12,6 +14,8 @@ namespace ClassIsland.Core.Helpers;
 /// </summary>
 public static class MarkdownConvertHelper
 {
+    private static Markdown? _markdownEngine;
+
     /// <summary>
     /// 转换 Markdown 为 FlowDocument
     /// </summary>
@@ -25,21 +29,30 @@ public static class MarkdownConvertHelper
         {
             throw new InvalidOperationException("Application.Current is null!");
         }
+
+        _markdownEngine ??= CreateEngine(app);
+        var fd = _markdownEngine.Transform(document);
+        fd.FontFamily = app?.FindResource("HarmonyOsSans") as FontFamily;
+        fd.IsOptimalParagraphEnabled = true;
+        return fd;
+    }
+
+    private static Markdown CreateEngine(Application app)
+    {
         var e = new Markdown
         {
             Heading1Style = app?.FindResource("MarkdownHeadline1Style") as Style,
             Heading2Style = app?.FindResource("MarkdownHeadline2Style") as Style,
             Heading3Style = app?.FindResource("MarkdownHeadline3Style") as Style,
-            Heading4Style = app?.FindResource("MarkdownHeadline4Style") as Style,  
+            Heading4Style = app?.FindResource("MarkdownHeadline4Style") as Style,
             //CodeBlockStyle = (Style)FindResource("MarkdownCodeBlockStyle"),
             //NoteStyle = (Style)FindResource("MarkdownNoteStyle"),
             BlockquoteStyle = app?.FindResource("MarkdownQuoteStyle") as Style,
             ImageStyle = app?.FindResource("MarkdownImageStyle") as Style,
+            HyperlinkCommand = UriNavigationCommands.UriNavigationCommand,
+            DisabledContextMenu = true
         };
-        e.HyperlinkCommand = UriNavigationCommands.UriNavigationCommand;
-        var fd = e.Transform(document);
-        fd.FontFamily = app?.FindResource("HarmonyOsSans") as FontFamily;
-        fd.IsOptimalParagraphEnabled = true;
-        return fd;
+        e.Plugins?.Setups.Add(new HtmlPluginSetup());
+        return e;
     }
 }

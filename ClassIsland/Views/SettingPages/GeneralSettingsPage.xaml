@@ -23,7 +23,9 @@
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
       TextOptions.TextRenderingMode="Auto"
-      d:DataContext="{d:DesignInstance local:GeneralSettingsPage}">
+      d:DataContext="{d:DesignInstance local:GeneralSettingsPage}"
+      Loaded="GeneralSettingsPage_OnLoaded"
+      Unloaded="GeneralSettingsPage_OnUnloaded">
 
     <controls:SettingsPageBase.Resources>
         <converters:MiniInfoGuidToMiniInfoProviderMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderMultiConverter" />
@@ -33,6 +35,42 @@
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
+            <materialDesign:ColorZone Background="#17800080"
+                                      Margin="0 0 0 4"
+                                      Panel.ZIndex="1"
+                                      Visibility="{Binding SettingsService.Settings.ShowSellingAnnouncement, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Margin="8 4">
+                    <DockPanel>
+                        <materialDesign:PackIcon Kind="MessageAlertOutline"
+                                                 Height="20" Width="20" />
+                        <TextBlock TextWrapping="Wrap"
+                                   VerticalAlignment="Center"
+                                   Margin="4 0 0 0">
+                            <Run Text="ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在" />
+                            <ci:NavHyperlink CommandParameter="https://github.com/ClassIsland/ClassIsland/">https://github.com/ClassIsland/ClassIsland/</ci:NavHyperlink>
+                            <Run Text="。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。" />
+                        </TextBlock>
+                    </DockPanel>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" HorizontalAlignment="Left"
+                            Margin="24 6 0 0" Foreground="{DynamicResource MaterialDesignBody}"
+                            materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
+                            Click="ButtonCloseSellingAnnouncementBanner_OnClick">
+                        <ci:IconText Kind="Close" Text="不再显示"/>
+                    </Button>
+                </StackPanel>
+            </materialDesign:ColorZone>
+
+            <!-- Announcements -->
+            <ItemsControl ItemsSource="{Binding AnnouncementService.Announcements, Mode=OneWay}"
+                          Margin="0 0 0 8"
+                          Visibility="{Binding HasItems, RelativeSource={RelativeSource Self}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ci:AnnouncementControl Announcement="{Binding}"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
             <controls1:IconText Kind="LightningBoltOutline" Text="行为" Margin="0 0 0 8" />
             <!-- 开机自启 -->
             <controls1:SettingsCard IconGlyph="AutomaticStart" Header="开机自启"
@@ -92,11 +130,11 @@
                                 <StackPanel.Resources>
                                     <Style TargetType="CheckBox"
                                            BasedOn="{StaticResource MaterialDesignCheckBox}">
-                                        <Setter Property="Margin" Value="0 3" />
+                                        <Setter Property="Margin" Value="0 2" />
                                     </Style>
                                 </StackPanel.Resources>
-                                <CheckBox Content="上课时" IsChecked="{Binding SettingsService.Settings.HideOnClass}"
-                                          Style="{StaticResource MaterialDesignCheckBox}" />
+                                <CheckBox Content="上课时"
+                                          IsChecked="{Binding SettingsService.Settings.HideOnClass}"/>
                                 <CheckBox Content="前台是最大化窗口时"
                                           IsChecked="{Binding SettingsService.Settings.HideOnMaxWindow}" />
                                 <CheckBox Content="前台是全屏窗口时"
@@ -168,6 +206,8 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Grid.Column="0" Text="自定义启动图标（留空将加载默认图标）"
                                                            VerticalAlignment="Center" />
@@ -191,7 +231,14 @@
                                                              VerticalAlignment="Center" />
                         </StackPanel>
 
-                        <materialDesign:ColorZone Grid.Row="2"
+                        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                    Margin="0 4 0 0" Orientation="Horizontal">
+                            <ToggleButton IsChecked="{Binding SettingsService.Settings.ShowDetailedStatusOnSplash}"
+                                          Margin="0 0 6 0"/>
+                            <TextBlock Text="在启动屏幕显示详细的状态信息" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <materialDesign:ColorZone Grid.Row="3"
                                                   Grid.Column="0" Grid.ColumnSpan="2"
                                                   Background="#22FF0000"
                                                   Margin="0 6 0 0"
@@ -207,6 +254,13 @@
                                 </DockPanel>
                             </Grid>
                         </materialDesign:ColorZone>
+
+                        <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0">
+                            <Button Margin="0 6 0 0" Style="{StaticResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Left" Click="ButtonRefreshSplashPreview_OnClick">
+                                <ci:IconText Kind="EyeOutline" Text="预览"/>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                 </Expander>
             </materialDesign:Card>
@@ -273,18 +327,18 @@
                                                   TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
                     <Expander.Header>
                         <controls1:SettingsControl IconGlyph="ClockArrow"
-                                                                          Header="时间偏移"
-                                                                          Foreground="{DynamicResource MaterialDesignBody}"
-                                                                          Description="设定课程时间与实际时间的偏移值。如果您需要更精确地同步时间，建议您同时开启【使用精确时间】选项。"
-                                                                          IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
-                                                                          Margin="-12 0">
+                                                   Header="时间偏移"
+                                                   Foreground="{DynamicResource MaterialDesignBody}"
+                                                   Description="设定课程时间与实际时间的偏移值。增大偏移以抵消铃声提前，减小偏移以抵消铃声滞后。"
+                                                   IsOn="{Binding SettingsService.Settings.IsExactTimeEnabled, Mode=TwoWay}"
+                                                   Margin="-12 0">
                             <controls1:SettingsControl.Switcher>
                                 <TextBox Grid.Column="1" Grid.Row="1"
-                                                                 VerticalAlignment="Center"
-                                                                 MinWidth="150"
-                                                                 Foreground="{DynamicResource MaterialDesignBody}"
-                                                                 materialDesign:TextFieldAssist.SuffixText="秒"
-                                                                 Text="{Binding SettingsService.Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
+                                         VerticalAlignment="Center"
+                                         MinWidth="147"
+                                         Foreground="{DynamicResource MaterialDesignBody}"
+                                         materialDesign:TextFieldAssist.SuffixText="秒"
+                                         Text="{Binding SettingsService.Settings.TimeOffsetSeconds, Converter={StaticResource IntToStringConverter}}"/>
                             </controls1:SettingsControl.Switcher>
                         </controls1:SettingsControl>
                     </Expander.Header>
@@ -361,9 +415,25 @@
             <!-- 教学安全模式 -->
             <controls1:SettingsCard IconGlyph="CarBrakeAlert"
                                     Header="教学安全模式"
-                                    Description="启用后，ClassIsland 会在崩溃时自动退出而不弹出崩溃窗口，以确保教学不受到影响。"
-                                    IsOn="{Binding SettingsService.Settings.IsCriticalSafeMode, Mode=TwoWay}"
-                                    Margin="0 0 0 6" />
+                                    Description="启用后，如果 ClassIsland 发生意外崩溃，将自动按照右侧选择的方法处理崩溃，以确保教学不受到影响。如果发生的是不可忽略的异常，应用将自动退出。您可以在日志目录查看崩溃详情。"
+                                    Margin="0 0 0 6">
+                <controls1:SettingsCard.Switcher>
+                    <DockPanel>
+                        <ToggleButton DockPanel.Dock="Right"
+                                      Margin="8 0 0 0"
+                                      IsChecked="{Binding SettingsService.Settings.IsCriticalSafeMode}"/>
+                        <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
+                                  Width="120"
+                                  Visibility="{Binding SettingsService.Settings.IsCriticalSafeMode, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                  SelectedIndex="{Binding SettingsService.Settings.CriticalSafeModeMethod}">
+                            <ComboBoxItem>退出应用</ComboBoxItem>
+                            <ComboBoxItem>静默重启应用</ComboBoxItem>
+                            <ComboBoxItem>显示通知</ComboBoxItem>
+                            <ComboBoxItem>忽略（不推荐）</ComboBoxItem>
+                        </ComboBox>
+                    </DockPanel>
+                </controls1:SettingsCard.Switcher>
+            </controls1:SettingsCard>
         </StackPanel>
     </ScrollViewer>
 </controls:SettingsPageBase>

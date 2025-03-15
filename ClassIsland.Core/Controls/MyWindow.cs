@@ -3,12 +3,14 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Interop;
+using System.Windows.Media;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.Graphics.Dwm;
 using ClassIsland.Shared;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
+using Adorner = System.Windows.Forms.Design.Behavior.Adorner;
 
 namespace ClassIsland.Core.Controls;
 
@@ -17,6 +19,13 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public class MyWindow : Window
 {
+    private bool _isAdornerAdded;
+
+    /// <summary>
+    /// 是否显示开源警告水印
+    /// </summary>
+    public static bool ShowOssWatermark { get; internal set; } = false;
+
     private IThemeService? ThemeService { get; }
 
     /// <summary>
@@ -40,8 +49,13 @@ public class MyWindow : Window
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         UpdateImmersiveDarkMode(ThemeService?.CurrentRealThemeMode ?? 1);
-        var layer = AdornerLayer.GetAdornerLayer(this);
-        Debug.WriteLine(layer);
+
+        if ((AppBase.Current.IsDevelopmentBuild || ShowOssWatermark)&& Content is UIElement element && !_isAdornerAdded)
+        {
+            var layer = AdornerLayer.GetAdornerLayer(element);
+            layer?.Add(new DevelopmentBuildAdorner(element, AppBase.Current.IsDevelopmentBuild, ShowOssWatermark));
+            _isAdornerAdded = true;
+        }
     }
 
     private void ThemeServiceOnThemeUpdated(object? sender, ThemeUpdatedEventArgs e)

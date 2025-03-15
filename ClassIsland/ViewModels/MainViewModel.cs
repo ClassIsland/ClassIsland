@@ -19,6 +19,7 @@ public class MainViewModel : ObservableRecipient
     private object? _currentOverlayElement;
     private bool _isOverlayOpened = false;
     private bool _isMouseIn = false;
+    private bool _isMainWindowFaded = false;
     private bool _isForegroundFullscreen = false;
     private bool _isForegroundMaxWindow = false;
     private string _currentProfilePath = "Profile.json";
@@ -96,6 +97,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isMouseIn) return;
             _isMouseIn = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsMainWindowFaded
+    {
+        get => _isMainWindowFaded;
+        set
+        {
+            if (value == _isMainWindowFaded) return;
+            _isMainWindowFaded = value;
             OnPropertyChanged();
         }
     }

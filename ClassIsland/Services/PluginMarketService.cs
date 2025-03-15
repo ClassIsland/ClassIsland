@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -29,7 +29,7 @@ public class PluginMarketService(SettingsService settingsService, IPluginService
     public ObservableDictionary<string, PluginIndex> Indexes { get; } = new();
     public ILogger<PluginMarketService> Logger { get; } = logger;
 
-    public Dictionary<string, string> FallbackMirrors { get; } = new()
+    public ObservableDictionary<string, string> FallbackMirrors { get; } = new()
     {
         { "github", "https://github.com" },
         { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
@@ -95,22 +95,28 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
         Logger.LogInformation("正在刷新插件源……");
         try
         {
+            if (SettingsService.Settings.OfficialIndexMirrors.Count <= 0)
+            {
+                SettingsService.Settings.OfficialIndexMirrors = ConfigureFileHelper.CopyObject(FallbackMirrors);
+            }
             var indexes = GetIndexInfos().ToList();
             var i = 0.0;
             var total = Math.Max(1, indexes.Count);
             foreach (var indexInfo in indexes)
             {
-                Logger.LogDebug("正在刷新插件源：{}（{}）", indexInfo.Id, indexInfo.Url);
+                var url = indexInfo.Url.Replace("{time}",
+                    ((long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds).ToString());
+                Logger.LogDebug("正在刷新插件源：{}（{}）", indexInfo.Id, url);
                 var archive = Path.GetTempFileName();
                 var download = DownloadBuilder.New()
-                    .WithUrl(indexInfo.Url)
+                    .WithUrl(url)
                     .WithFileLocation(archive)
                     .WithConfiguration(new DownloadConfiguration())
                     .Build();
                 var i1 = i;
                 download.DownloadProgressChanged +=
                     (sender, args) =>
-                        PluginSourceDownloadProgress = args.ProgressPercentage / total + i1 / total * 100.0;
+                        PluginSourceDownloadProgress = (args.ProgressPercentage / total) + (i1 / total * 100.0);
                 download.DownloadFileCompleted += (sender, args) =>
                 {
                     if (args.Error != null)
@@ -129,7 +135,6 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
                 await download.StartAsync();
 
                 i++;
-                
             }
 
             LoadPluginSource();
@@ -149,7 +154,7 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
         var mirrors = SettingsService.Settings.OfficialIndexMirrors.Count == 0
             ? FallbackMirrors
             : SettingsService.Settings.OfficialIndexMirrors;
-        var repo = "{root}/ClassIsland/PluginIndex/releases/download/latest/index.zip".Replace("{root}", mirrors[SettingsService.Settings.OfficialSelectedMirror ?? "github"]);
+        const string repo = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/plugin/index.zip?time={time}";
         return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo()
         {
             Id = DefaultPluginIndexKey,
@@ -229,7 +234,6 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
         }
         task.IsDownloading = false;
         DownloadTasks.Remove(id);
-
     }
 
     public event EventHandler? RestartRequested;
@@ -303,7 +307,6 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
             if (!b || v == null)
                 continue;
             v.DownloadProgress = i.Value;
-            
         }
 
         foreach (var plugin in MergedPlugins.Where(plugin => File.Exists(Path.Combine(Services.PluginService.PluginsPkgRootPath, plugin.Value.Manifest.Id + ".cipx"))))

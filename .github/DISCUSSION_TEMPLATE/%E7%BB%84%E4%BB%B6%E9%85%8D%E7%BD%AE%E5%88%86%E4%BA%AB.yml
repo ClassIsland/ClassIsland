@@ -1,0 +1,33 @@
+title: "【组件配置】（将这段话【替换】你的标题，删掉括号）"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        欢迎您分享组件配置！请在上面的文本框⬆️起一个能够清晰地概括您的组件配置特性，能吸引其他用户使用您的配置的标题。
+  - type: textarea
+    id: config
+    attributes:
+      label: 配置文件
+      description: 将组件配置文件（*.json）上传到这个输入框中。
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 配置介绍
+      description: 介绍一下您的配置
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图
+      description: 在这里附上您的组件配置的截图。
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: 配置需求
+      description: 使用此配置文件的前置要求，如最低应用版本、需要安装的插件等。
+

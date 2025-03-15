@@ -24,7 +24,9 @@
       TextElement.FontWeight="Regular"
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
-      TextOptions.TextRenderingMode="Auto">
+      TextOptions.TextRenderingMode="Auto"
+      Loaded="PluginsSettingsPage_OnLoaded"
+      Unloaded="PluginsSettingsPage_OnUnloaded">
 
     <ci:SettingsPageBase.Resources>
         <CollectionViewSource x:Key="PluginSource" 
@@ -187,6 +189,7 @@
                                                Margin="4 0 0 0" >
                                         <Run Text="无法安装插件，请检查您的网络连接："/>
                                         <Run Text="{Binding DownloadProgress.Exception.Message, Mode=OneWay}"/>
+                                        <Hyperlink Click="MenuItemManagePluginSources_OnClick">更换插件镜像源</Hyperlink><Run Text="可能可以解决此问题。"/>
                                     </TextBlock>
                                 </DockPanel>
                             </Grid>
@@ -357,7 +360,7 @@
             </DataGrid>
         </Grid>
     </ci:SettingsPageBase.Resources>
-    <Grid>
+    <Grid AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter" DragLeave="Grid_DragLeave">
         <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
                                   IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}">
             <controls1:ListDetailView.TitleElement>
@@ -439,7 +442,7 @@
                                     IsEnabled="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
                                 <ci:IconText Kind="Refresh" Text="刷新"/>
                             </Button>
-                            
+
                         </DockPanel>
                         <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
                                                   Visibility="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -478,6 +481,7 @@
                                                Margin="4 0 0 0" >
                                         <Run Text="刷新插件失败："/>
                                         <Run Text="{Binding PluginMarketService.Exception.Message, Mode=OneWay}"/>
+                                        <Hyperlink Click="MenuItemManagePluginSources_OnClick">更换插件镜像源</Hyperlink><Run Text="可能可以解决此问题。"/>
                                     </TextBlock>
                                 </DockPanel>
                             </Grid>
@@ -539,27 +543,27 @@
                                                    FontSize="12" />
                                     <!-- 错误标志 -->
                                     <WrapPanel Grid.Column="2"
-                                                       Grid.Row="0"
-                                                       Grid.RowSpan="2" 
-                                                       Orientation="Horizontal"
-                                                       VerticalAlignment="Center">
+                                               Grid.Row="0"
+                                               Grid.RowSpan="2" 
+                                               Orientation="Horizontal"
+                                               VerticalAlignment="Top" HorizontalAlignment="Right">
                                         <materialDesign:PackIcon ToolTip="此插件将在重启后被卸载。"
                                                                  Foreground="Orange"
-                                                                         Width="20" Height="20"
+                                                                         Width="16" Height="16"
                                                                          VerticalAlignment="Center"
                                                                          Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                          Margin="2 0 0 0"
                                                                          Kind="Delete"/>
                                         <materialDesign:PackIcon ToolTip="插件需要重启以应用更改。"
                                                                  Foreground="Orange"
-                                                                 Width="20" Height="20"
+                                                                 Width="16" Height="16"
                                                                  VerticalAlignment="Center"
                                                                  Visibility="{Binding Value.RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                  Margin="2 0 0 0"
                                                                  Kind="Restart"/>
                                         <materialDesign:PackIcon Foreground="Red"
                                                                          ToolTip="加载此插件时出现错误。"
-                                                                         Width="20" Height="20"
+                                                                         Width="16" Height="16"
                                                                          Margin="2 0 0 0"
                                                                          VerticalAlignment="Center"
                                                                          Kind="Alert">
@@ -574,18 +578,76 @@
                                             </materialDesign:PackIcon.Style>
                                         </materialDesign:PackIcon>
                                         <materialDesign:PackIcon ToolTip="更新可用。"
-                                                                 Width="20" Height="20"
+                                                                 Width="16" Height="16"
                                                                  VerticalAlignment="Center"
                                                                  Visibility="{Binding Value.IsUpdateAvailable, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                  Margin="2 0 0 0"
                                                                  Kind="Upload"/>
                                         <materialDesign:PackIcon ToolTip="此插件已安装。"
-                                                                 Width="20" Height="20"
+                                                                 Width="16" Height="16"
                                                                  VerticalAlignment="Center"
                                                                  Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                                  Margin="2 0 0 0"
                                                                  Kind="CheckUnderline"/>
                                     </WrapPanel>
+                                    
+                                    <!-- 操作按钮 -->
+                                    <StackPanel Grid.Column="2"
+                                          Grid.Row="0"
+                                          Grid.RowSpan="2" 
+                                          Orientation="Horizontal"
+                                          Margin="4 0 0 0"
+                                          IsEnabled="{Binding Value.DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
+                                          VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                                        <Button
+                                            ToolTip="安装"
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                            Width="28" Height="28"
+                                            CommandParameter="{Binding Value.Manifest.Id}"
+                                            Command="{Binding InstallPluginCommand, RelativeSource={RelativeSource AncestorType=local:PluginsSettingsPage}}"
+                                            materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding Value.DownloadProgress.IsDownloading}"
+                                            materialDesign:ButtonProgressAssist.Value="{Binding Value.DownloadProgress.Progress}"
+                                            Content="{materialDesign:PackIcon MonitorDownload}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                                    <Binding Path="Value.IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                    <Binding Path="Value.IsAvailableOnMarket"/>
+                                                    <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
+                                        </Button>
+                                        <Button
+                                            ToolTip="更新"
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                            Width="28" Height="28"
+                                            CommandParameter="{Binding Value.Manifest.Id}"
+                                            Command="{Binding InstallPluginCommand, RelativeSource={RelativeSource AncestorType=local:PluginsSettingsPage}}"
+                                            materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding Value.DownloadProgress.IsDownloading}"
+                                            materialDesign:ButtonProgressAssist.Value="{Binding Value.DownloadProgress.Progress}"
+                                            Content="{materialDesign:PackIcon Upload}">
+                                            <Button.Visibility>
+                                                <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                                    <Binding Path="Value.IsLocal"/>
+                                                    <Binding Path="Value.IsAvailableOnMarket"/>
+                                                    <Binding Path="Value.IsUpdateAvailable"/>
+                                                    <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                </MultiBinding>
+                                            </Button.Visibility>
+                                        </Button>
+                                        <Button
+                                            ToolTip="重启以应用更改"
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                            Width="28" Height="28"
+                                            Click="ButtonRestart_OnClick"
+                                            Content="{materialDesign:PackIcon Restart}"
+                                            Visibility="{Binding Value.RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        </Button>
+
+                                        <CheckBox Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                  ToolTip="启用插件"
+                                                  Margin="4 0 0 0"
+                                                  IsChecked="{Binding Value.IsEnabled}"/>
+                                    </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
@@ -665,5 +727,20 @@
                     </Button>
                 </StackPanel></ScrollViewer>
         </Border>
+        <Grid Grid.Row="0"
+              Visibility="{Binding ViewModel.IsDragEntering, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="{DynamicResource MaterialDesignBackground}"
+                    Opacity="0.75"/>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <materialDesign:PackIcon Kind="FileImport"
+                                 HorizontalAlignment="Center"
+                                 Height="64" Width="64"
+                                 Margin="0 0 0 8"/>
+                <TextBlock Text="将插件拖入到此处，松手即可安装。"
+                   FontSize="14"
+                   VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+        <materialDesign:Snackbar VerticalAlignment="Bottom" MessageQueue="{Binding ViewModel.MessageQueue}"/>
     </Grid>
 </ci:SettingsPageBase>

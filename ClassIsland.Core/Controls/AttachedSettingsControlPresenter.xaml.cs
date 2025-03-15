@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -183,7 +183,6 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     private void PopupBox_OnOpened(object sender, RoutedEventArgs e)
     {
-
     }
 
     private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
@@ -193,7 +192,6 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     private async void ButtonShowDetails_OnClick(object sender, RoutedEventArgs e)
     {
-        
         IsPopupOpened = true;
         await AnalyzeAsync();
     }
@@ -323,8 +321,6 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
                 DependencyItemTitle = "???";
                 break;
         }
-
-
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

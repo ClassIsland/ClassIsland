@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -76,17 +76,14 @@ public partial class WeekOffsetSettingsControl : UserControl, INotifyPropertyCha
         var dd = (ExactTimeService.GetCurrentLocalDateTime().Date - settings.SingleWeekStartTime).TotalDays;
         for (int i = 2; i < 5; i++)
         {
-            
             int dw = (int)Math.Floor(dd / 7);
             int w = (dw - (CurrentWeeks[i] - 1) + i) % i;
             settings.MultiWeekRotationOffset[i] = w;
         }
-        
     }
 
     private void ButtonClear_OnClick(object sender, RoutedEventArgs e)
     {
         SettingsService.Settings.MultiWeekRotationOffset = [-1, -1, 0, 0, 0];
-        
     }
 }

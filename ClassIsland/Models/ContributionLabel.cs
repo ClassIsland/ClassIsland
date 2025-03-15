@@ -1,4 +1,4 @@
-﻿namespace ClassIsland.Models;
+namespace ClassIsland.Models;
 
 public class ContributionLabel
 {
@@ -36,5 +36,4 @@ public class ContributionLabel
         get;
         set;
     } = "";
-
 }

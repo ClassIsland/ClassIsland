@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -166,7 +166,6 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private async void Sayings_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-
         if (ViewModel.IsSayingBusy)
         {
             return;

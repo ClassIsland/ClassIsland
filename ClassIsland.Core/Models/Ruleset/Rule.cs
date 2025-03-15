@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Text.Json.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Ruleset;
 
@@ -10,6 +11,7 @@ public class Rule : ObservableRecipient
     private bool _isReversed = false;
     private string _id = "";
     private object? _settings;
+    private int _state = 0;
 
     /// <summary>
     /// 是否反转判断。
@@ -49,6 +51,21 @@ public class Rule : ObservableRecipient
         {
             if (Equals(value, _settings)) return;
             _settings = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 满足状态
+    /// </summary>
+    [JsonIgnore]
+    public int State
+    {
+        get => _state;
+        set
+        {
+            if (value == _state) return;
+            _state = value;
             OnPropertyChanged();
         }
     }

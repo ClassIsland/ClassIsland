@@ -1,4 +1,4 @@
-﻿using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -14,6 +14,7 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
     private int _extraInfo4ShowSecondsSeconds = 0;
     private double _scheduleSpacing = 1;
     private bool _showCurrentLessonOnlyOnClass = false;
+    private bool _isNonExactCountdownEnabled = false;
 
     /// <inheritdoc />
     public bool IsAttachSettingsEnabled
@@ -93,7 +94,9 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         get => _scheduleSpacing;
         set
         {
-            if (value.Equals(_scheduleSpacing)) ;
+            if (value.Equals(_scheduleSpacing))
+            {
+            }
             _scheduleSpacing = value;
             OnPropertyChanged();
         }
@@ -107,6 +110,18 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
         {
             if (value == _showCurrentLessonOnlyOnClass) return;
             _showCurrentLessonOnlyOnClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <inheritdoc />
+    public bool IsNonExactCountdownEnabled
+    {
+        get => _isNonExactCountdownEnabled;
+        set
+        {
+            if (value == _isNonExactCountdownEnabled) return;
+            _isNonExactCountdownEnabled = value;
             OnPropertyChanged();
         }
     }

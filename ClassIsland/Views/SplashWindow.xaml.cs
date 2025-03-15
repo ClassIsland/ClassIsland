@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
@@ -39,15 +39,12 @@ public partial class SplashWindow : Window
         _isInit1 = true;
     }
 
-    private void AsyncBox_OnLoadingViewLoaded(object? sender, EventArgs e)
-    {
-        _isInit2 = true;
-        Console.WriteLine("splash loading view loaded.");
-        Console.WriteLine(new StackTrace());
-    }
-
     private void SplashWindow_OnClosed(object? sender, EventArgs e)
     {
-        
+    }
+
+    private void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        _isInit2 = true;
     }
 }

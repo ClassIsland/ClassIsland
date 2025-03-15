@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Windows;
 
 namespace ClassIsland;
@@ -26,7 +26,6 @@ public static class DependencyPropertyHelper
             {
                 return ss;
             }
-            
         }
         return null;
     }

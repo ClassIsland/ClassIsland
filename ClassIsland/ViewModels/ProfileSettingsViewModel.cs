@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-
+using ClassIsland.Models;
 using ClassIsland.Shared.Models.Profile;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -34,6 +34,19 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isClassPlanEditComplete = false;
     private bool _isWeekOffsetSettingsOpen = false;
     private TimeLayoutItem? _previousTrackedTimeLayoutItem;
+    private DateTime _scheduleCalendarSelectedDate = DateTime.Today;
+    private DateTime _overlayEnableDateTime = DateTime.Today;
+    private ObservableCollection<WeekClassPlanRow> _weekClassPlanRows = [];
+    private bool _isProfileImportMenuOpened = false;
+    private bool _isInScheduleSwappingMode = false;
+    private WeekClassPlanRow? _selectedWeekClassPlanRow;
+    private ScheduleClassPosition _classSwapEndPosition = ScheduleClassPosition.Zero;
+    private ScheduleClassPosition _classSwapStartPosition = ScheduleClassPosition.Zero;
+    private DateTime _scheduleWeekViewBaseDate = DateTime.Now;
+    private bool _isTempSwapMode = true;
+    private int _dataGridWeekRowsWeekIndex = 0;
+    private bool _isClassPlanTempEditPopupOpen = false;
+    private string _targetSubjectIndex = "";
 
     public object DrawerContent
     {
@@ -289,6 +302,149 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (Equals(value, _previousTrackedTimeLayoutItem)) return;
             _previousTrackedTimeLayoutItem = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime ScheduleCalendarSelectedDate
+    {
+        get => _scheduleCalendarSelectedDate;
+        set
+        {
+            if (value.Equals(_scheduleCalendarSelectedDate)) return;
+            _scheduleCalendarSelectedDate = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime OverlayEnableDateTime
+    {
+        get => _overlayEnableDateTime;
+        set
+        {
+            if (value.Equals(_overlayEnableDateTime)) return;
+            _overlayEnableDateTime = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<WeekClassPlanRow> WeekClassPlanRows
+    {
+        get => _weekClassPlanRows;
+        set
+        {
+            if (Equals(value, _weekClassPlanRows)) return;
+            _weekClassPlanRows = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsProfileImportMenuOpened
+    {
+        get => _isProfileImportMenuOpened;
+        set
+        {
+            if (value == _isProfileImportMenuOpened) return;
+            _isProfileImportMenuOpened = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsInScheduleSwappingMode
+    {
+        get => _isInScheduleSwappingMode;
+        set
+        {
+            if (value == _isInScheduleSwappingMode) return;
+            _isInScheduleSwappingMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public WeekClassPlanRow? SelectedWeekClassPlanRow
+    {
+        get => _selectedWeekClassPlanRow;
+        set
+        {
+            if (Equals(value, _selectedWeekClassPlanRow)) return;
+            _selectedWeekClassPlanRow = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ScheduleClassPosition ClassSwapStartPosition
+    {
+        get => _classSwapStartPosition;
+        set
+        {
+            if (Equals(value, _classSwapStartPosition)) return;
+            _classSwapStartPosition = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ScheduleClassPosition ClassSwapEndPosition
+    {
+        get => _classSwapEndPosition;
+        set
+        {
+            if (Equals(value, _classSwapEndPosition)) return;
+            _classSwapEndPosition = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public DateTime ScheduleWeekViewBaseDate
+    {
+        get => _scheduleWeekViewBaseDate;
+        set
+        {
+            if (value.Equals(_scheduleWeekViewBaseDate)) return;
+            _scheduleWeekViewBaseDate = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTempSwapMode
+    {
+        get => _isTempSwapMode;
+        set
+        {
+            if (value == _isTempSwapMode) return;
+            _isTempSwapMode = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int DataGridWeekRowsWeekIndex
+    {
+        get => _dataGridWeekRowsWeekIndex;
+        set
+        {
+            if (value == _dataGridWeekRowsWeekIndex) return;
+            _dataGridWeekRowsWeekIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsClassPlanTempEditPopupOpen
+    {
+        get => _isClassPlanTempEditPopupOpen;
+        set
+        {
+            if (value == _isClassPlanTempEditPopupOpen) return;
+            _isClassPlanTempEditPopupOpen = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string TargetSubjectIndex
+    {
+        get => _targetSubjectIndex;
+        set
+        {
+            if (value == _targetSubjectIndex) return;
+            _targetSubjectIndex = value;
             OnPropertyChanged();
         }
     }

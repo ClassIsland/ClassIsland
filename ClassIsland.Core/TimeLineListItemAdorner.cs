@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -25,7 +25,6 @@ public class TimeLineListItemAdorner : Adorner
 
     protected override void OnRender(DrawingContext drawingContext)
     {
-        
         base.OnRender(drawingContext);
     }
 

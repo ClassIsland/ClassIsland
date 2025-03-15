@@ -16,10 +16,11 @@
         <converters:SecondsToFormatTimeMultiConverter x:Key="SecondsToFormatTimeMultiConverter" />
         <converters:TimeLongToPercentMultiConverter x:Key="TimeLongToPercentMultiConverter" />
         <converters:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
+        <converters:BooleanToVisibilityReConverter x:Key="InverseBooleanToVisConverter" />
     </local:LessonControlBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:LessonControlExpanded}}}">
-        <StackPanel Orientation="Horizontal" Margin="4 0" VerticalAlignment="Center">
-            <Border Width="12">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Border Width="16">
                 <Border.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
                 </Border.LayoutTransform>
@@ -49,13 +50,15 @@
                                                      Value="1">
                                             <Setter Property="Text" Value="{Binding CurrentTimeLayoutItem.BreakNameText, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}, Mode=OneWay}"/>
                                         </DataTrigger>
-                                        <!--<DataTrigger Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}" Value="True">
-                                            <Setter Property="Effect">
-                                                <Setter.Value>
-                                                    <DropShadowEffect BlurRadius="5" ShadowDepth="0" Color="{DynamicResource LuminousClass}"/>
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>-->
+                                        <MultiDataTrigger>
+                                            <MultiDataTrigger.Conditions>
+                                                <Condition Binding="{Binding ClassInfo.IsChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonControlExpanded}}"
+                                                           Value="True" />
+                                                <Condition Binding="{Binding HighlightChangedClass, RelativeSource={RelativeSource FindAncestor, AncestorType=local:LessonsListBox}}"
+                                                           Value="True" />
+                                            </MultiDataTrigger.Conditions>
+                                            <Setter Property="Effect" Value="{DynamicResource LuminousClass}"/>
+                                        </MultiDataTrigger>
                                     </Style.Triggers>
                                     <Setter Property="Text" Value="{Binding Name}"/>
                                 </Style>
@@ -165,11 +168,17 @@
                                     VerticalAlignment="Bottom"
                                     CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                                 <Grid>
-                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center">
-                                        <Run Text="-" FontSize="{DynamicResource MainWindowSecondaryFontSize}">
+                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
+                                               Visibility="{Binding SettingsSource.IsNonExactCountdownEnabled, Converter={StaticResource InverseBooleanToVisConverter}}">
+                                        <Run Text="-">
                                         </Run><Run Text="{Binding LeftSeconds,
                                                    Converter={StaticResource SecondsToFormatTimeConverter},
                                                    ConverterParameter={StaticResource TrueValue}}"/>
+                                    </TextBlock>
+                                    <TextBlock FontSize="{DynamicResource MainWindowBodyFontSize}" VerticalAlignment="Center"
+                                               Visibility="{Binding SettingsSource.IsNonExactCountdownEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                        <Run Text="&lt;">
+                                        </Run><Run Text="{Binding SettingsSource.CountdownSeconds, Mode=OneWay, Converter={StaticResource SecondsToFormatTimeConverterCeiling}}"/>
                                     </TextBlock>
                                 </Grid>
                             </Border>
@@ -179,7 +188,7 @@
 
             </StackPanel>
 
-            <Border Width="12">
+            <Border Width="16">
                 <Border.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding DefaultLessonControlSettings.ScheduleSpacing, Mode=OneWay}"/>
                 </Border.LayoutTransform>

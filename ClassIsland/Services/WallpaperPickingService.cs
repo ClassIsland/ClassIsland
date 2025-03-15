@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -88,6 +88,8 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         RegistryNotifier = new RegistryNotifier(RegistryNotifier.HKEY_CURRENT_USER, "Control Panel\\Desktop");
         RegistryNotifier.RegistryKeyUpdated += RegistryNotifierOnRegistryKeyUpdated;
         RegistryNotifier.Start();
+        AppBase.Current.AppStopping += (sender, args) => RegistryNotifier.Stop();
+        AppBase.Current.AppStopping += (sender, args) => SystemEvents.UserPreferenceChanged -= SystemEventsOnUserPreferenceChanged;
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
         SettingsService.Settings.PropertyChanged += SettingsServiceOnPropertyChanged;
@@ -110,7 +112,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
     private void UpdateUpdateTimerEnableState()
     {
-        if (SettingsService.Settings.ColorSource == 1 && SettingsService.Settings.IsWallpaperAutoUpdateEnabled ||
+        if ((SettingsService.Settings.ColorSource == 1 && SettingsService.Settings.IsWallpaperAutoUpdateEnabled) ||
             SettingsService.Settings.ColorSource == 3)
         {
             UpdateTimer.Start();
@@ -269,7 +271,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                 {
                     var c = (Color)ColorConverter.ConvertFromString(i.Key);
                     WallpaperPickingService.ColorToHsv(c, out var h, out var s, out var v);
-                    return (s + v * (-(v - right) * (v - left) * 4)) * Math.Log2(i.Value);
+                    return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
                 })
                 .ThenByDescending(i => i.Value)
                 .ToList();

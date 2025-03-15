@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -162,7 +162,6 @@ public class EdgeTtsService : ISpeechService
             {
                 Logger.LogError(ex, "无法播放语音。");
             }
-
         }
 
         CurrentWavePlayer?.Dispose();

@@ -1,0 +1,66 @@
+﻿<UserControl x:Class="ClassIsland.Controls.CsesImportControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ci:IntToRadioButtonSelectionConverter x:Key="IntToRadioButtonSelectionConverter" />
+    </UserControl.Resources>
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:CsesImportControl}}">
+        <StackPanel VerticalAlignment="Stretch" Margin="16" Width="300">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       Margin="0 0 0 8">
+                <Run Text="从 CSES 导入"/>
+            </TextBlock>
+            <TextBlock Text="支持导入 CSES v1 格式的课表。" Margin="0 0 0 6"/>
+            <TextBlock Text="导入目标" Margin="0 0 0 2"/>
+            <RadioButton Content="合并到当前档案" Margin="0 0 0 2" 
+                         IsChecked="{Binding ImportType, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=0}"/>
+            <RadioButton Content="导入到新的档案" Margin="0 0 0 2"
+                         IsChecked="{Binding ImportType, Converter={StaticResource IntToRadioButtonSelectionConverter}, ConverterParameter=1}"/>
+            <TextBox materialDesign:HintAssist.Hint="新档案名称"
+                     VerticalAlignment="Center"
+                     materialDesign:TextFieldAssist.SuffixText=".json"
+                     Text="{Binding NewProfileName}">
+                <TextBox.Style>
+                    <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ImportType, Mode=OneWay}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+            <Grid Margin="0 4 0 6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox materialDesign:HintAssist.Hint="CSES 文件路径" Grid.Column="0"
+                         VerticalAlignment="Center"
+                         Text="{Binding SourceFilePath}"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                <local:FileBrowserButton Grid.Column="1" VerticalAlignment="Center"
+                                         CurrentPath="{Binding SourceFilePath, Mode=TwoWay}"
+                                         Filter="CSES 课表文件(*.yml, *.yaml)|*.yml;*.yaml"/>
+            </Grid>
+            <WrapPanel HorizontalAlignment="Right">
+                <Button Content="取消"  Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="导入" IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}" 
+                        Click="ButtonOk_OnClick"/>
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

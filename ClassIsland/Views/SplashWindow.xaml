@@ -24,7 +24,5 @@
         ShowActivated="False"
         Closed="SplashWindow_OnClosed"
         Height="100" Width="400">
-    <windows:AsyncBox LoadingViewType="controls:SplashControl"
-                      LoadingViewLoaded="AsyncBox_OnLoadingViewLoaded"
-                      x:Name="AsyncBox"/>
+    <controls:SplashControl Loaded="FrameworkElement_OnLoaded"/>
 </Window>

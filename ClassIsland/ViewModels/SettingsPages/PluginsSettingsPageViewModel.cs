@@ -1,6 +1,7 @@
 ﻿using System.Windows.Documents;
 using ClassIsland.Core.Models.Plugin;
 using CommunityToolkit.Mvvm.ComponentModel;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
@@ -15,6 +16,8 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
     private string _pluginFilterText = "";
     private bool _isLoadingDocument = false;
     private bool _isDetailsShown = false;
+    private SnackbarMessageQueue _messageQueue = new();
+    private bool _isDragEntering = false;
 
     public PluginInfo? SelectedPluginInfo
     {
@@ -111,6 +114,28 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
         {
             if (value == _isDetailsShown) return;
             _isDetailsShown = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public SnackbarMessageQueue MessageQueue
+    {
+        get => _messageQueue;
+        set
+        {
+            if (value == _messageQueue) return;
+            _messageQueue = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsDragEntering
+    {
+        get => _isDragEntering;
+        set
+        {
+            if (value == _isDragEntering) return;
+            _isDragEntering = value;
             OnPropertyChanged();
         }
     }

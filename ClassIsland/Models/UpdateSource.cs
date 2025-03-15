@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using ClassIsland.Core.Models;
 using ClassIsland.Shared.Enums;
 
 using CommunityToolkit.Mvvm.ComponentModel;

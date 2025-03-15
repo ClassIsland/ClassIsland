@@ -11,6 +11,7 @@
       xmlns:mdXaml="clr-namespace:MdXaml;assembly=MdXaml"
       xmlns:converters="clr-namespace:ClassIsland.Converters"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      xmlns:ci="http://classisland.tech/schemas/xaml/core"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="更新"
@@ -21,6 +22,8 @@
       TextElement.FontSize="14"
       TextOptions.TextFormattingMode="Ideal"
       TextOptions.TextRenderingMode="Auto"
+      Loaded="UpdatesSettingsPage_OnLoaded"
+      Unloaded="UpdatesSettingsPage_OnUnloaded"
       d:DataContext="{d:DesignInstance local:UpdatesSettingsPage}">
 
     <controls:SettingsPageBase.Resources>
@@ -97,6 +100,7 @@
                 </Grid>
             </ScrollViewer>
         </Grid>
+        <ci:PreventNullConverter x:Key="PreventNullConverter" />
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
@@ -222,7 +226,7 @@
                         </TextBlock.Style>
                         <Run Text="新版本：">
                         </Run>
-                        <Run Text="{Binding SettingsService.Settings.UpdateVersion, Mode=OneWay}" />
+                        <Run Text="{Binding UpdateService.SelectedVersionInfo.Version, Mode=OneWay}" />
                     </TextBlock>
                 </StackPanel>
 
@@ -547,37 +551,29 @@
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </Style>
                             </StackPanel.Style>
-                            <Image Source="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
+                            <ci:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_遨游.png" Width="81"
                                    Height="81"
-                                   ToolTip="光辉矢愿_遨游" />
+                                   StickerToolTip="光辉矢愿_遨游"
+                                   PackIconKind="UploadOutline"/>
 
-                            <TextBlock Text="已经是最新版啦，真棒，夸夸你哦♪" TextWrapping="Wrap"
+                            <TextBlock TextWrapping="Wrap"
+                                       HorizontalAlignment="Center"
                                        Margin="0 8 0 0" >
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger
                                                 Binding="{Binding IsEasterEggTriggered}"
-                                                Value="false">
-                                                <Setter Property="Visibility" Value="Visible" />
+                                                Value="True">
+                                                <Setter Property="Text" Value="头抬起，请坐和放宽，好东西就要来了。" />
                                             </DataTrigger>
-                                        </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                            <TextBlock Text="头抬起，请坐和放宽，好东西就要来了" TextWrapping="Wrap"
-                                       Margin="0 8 0 0" >
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
                                             <DataTrigger
-                                                Binding="{Binding IsEasterEggTriggered}"
-                                                Value="true">
-                                                <Setter Property="Visibility" Value="Visible" />
+                                                Binding="{Binding ManagementService.Policy.DisableEasterEggs}"
+                                                Value="True">
+                                                <Setter Property="Text" Value="已经是最新版本。" />
                                             </DataTrigger>
                                         </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Setter Property="Text" Value="已经是最新版啦，真棒，夸夸你哦♪" />
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
@@ -674,12 +670,12 @@
                                         <Grid>
                                             <ComboBox Width="150"
                                                       Foreground="{DynamicResource MaterialDesignBody}"
-                                                      ItemsSource="{x:Static appUpdating:UpdateService.UpdateChannels}"
-                                                      SelectedValue="{Binding SettingsService.Settings.SelectedChannel}"
-                                                      SelectedValuePath="RootUrl">
+                                                      ItemsSource="{Binding UpdateService.Index.Channels}"
+                                                      SelectedValue="{Binding SettingsService.Settings.SelectedUpdateChannelV2, Converter={StaticResource PreventNullConverter}}"
+                                                      SelectedValuePath="Key">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Text="{Binding Name}" />
+                                                        <TextBlock Text="{Binding Value.Name}" />
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>
@@ -710,11 +706,11 @@
                                 </Expander.Header>
                                 <StackPanel Margin="36 0 64 12">
                                     <ListBox
-                                        ItemsSource="{x:Static appUpdating:UpdateService.UpdateSources}"
+                                        ItemsSource="{Binding UpdateService.Index.Mirrors}"
                                         Margin="-36 0 -64 0"
                                         PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
                                         SelectedValuePath="Key"
-                                        SelectedValue="{Binding SettingsService.Settings.SelectedUpgradeMirror}">
+                                        SelectedValue="{Binding SettingsService.Settings.SelectedUpdateMirrorV2, Converter={StaticResource PreventNullConverter}}">
                                         <ListBox.ItemTemplate>
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal"

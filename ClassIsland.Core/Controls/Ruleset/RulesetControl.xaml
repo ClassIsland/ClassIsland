@@ -8,6 +8,7 @@
              xmlns:converters="clr-namespace:ClassIsland.Core.Abstractions.Converters"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.CommandBindings>
@@ -18,17 +19,40 @@
     </UserControl.CommandBindings>
     <UserControl.Resources>
         <converters:RuleLogicalModeToIntConverter x:Key="RuleLogicalModeToIntConverter" />
+
+        <Style TargetType="Ellipse" x:Key="RuleObjectStateIndicatorStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="2">
+                    <Setter Property="Fill" Value="Green"/>
+                    <Setter Property="ToolTip" Value="已满足"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding State, Mode=OneWay}" Value="1">
+                    <Setter Property="Fill" Value="IndianRed"/>
+                    <Setter Property="ToolTip" Value="不满足"/>
+                </DataTrigger>
+            </Style.Triggers>
+            <Setter Property="Fill" Value="DarkGray"/>
+            <Setter Property="ToolTip" Value="未知"/>
+        </Style>
     </UserControl.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RulesetControl}}"
-          Margin="16"
-          Width="500">
+          MinWidth="450">
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ShowTitle}" Value="True">
+                        <Setter Property="Margin" Value="16"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <TextBlock Text="规则集" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                           Margin="0 0 0 8" />
+                           Margin="0 0 0 8" Visibility="{Binding ShowTitle, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <WrapPanel Orientation="Horizontal">
                 <ComboBox SelectedIndex="{Binding Ruleset.Mode, Converter={StaticResource RuleLogicalModeToIntConverter}}"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
@@ -45,14 +69,31 @@
                         Click="ButtonAddRule_OnClick">
                     <controls:IconText Kind="Add" Text="添加组"/>
                 </Button>
+                <Ellipse Grid.Column="1" Width="8" Height="8" 
+                         Margin="4 0 4 0"
+                         DataContext="{Binding Ruleset}"
+                         Style="{StaticResource RuleObjectStateIndicatorStyle}"/>
             </WrapPanel>
             
         </StackPanel>
         <!-- Main list box -->
         <ListBox Grid.Row="1" ItemsSource="{Binding Ruleset.Groups}"
                  HorizontalContentAlignment="Stretch"
-                 materialDesign:ListBoxItemAssist.ShowSelection="False">
-
+                 materialDesign:ListBoxItemAssist.ShowSelection="False"
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
+            <dd:DragDrop.EffectMoveAdornerTemplate>
+                <DataTemplate>
+                    <materialDesign:ColorZone Mode="PrimaryMid" Height="24" CornerRadius="12">
+                        <controls:IconText Kind="ArrowUpDown" Text="移动"
+                                           Margin="4 0"
+                                           IconMargin="2"
+                                           TextElement.FontWeight="Medium"
+                                           VerticalAlignment="Center"/>
+                    </materialDesign:ColorZone>
+                </DataTemplate>
+            </dd:DragDrop.EffectMoveAdornerTemplate>
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Border Background="{DynamicResource MaterialDesignToolBarBackground}"
@@ -81,12 +122,15 @@
                                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                                         Command="{x:Static local:RulesetControl.AddRuleCommand}"
                                         CommandParameter="{Binding}">
-                                    <controls:IconText Kind="Add" Text="添加规则"/>
+                                    <controls:IconText Kind="Add" Text="规则"/>
                                 </Button>
                             </WrapPanel>
 
                             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center"
                                         HorizontalAlignment="Right">
+                                <Ellipse Width="8" Height="8" 
+                                         Margin="0 0 4 0"
+                                         Style="{StaticResource RuleObjectStateIndicatorStyle}"/>
                                 <ToggleButton ToolTip="启用规则集"
                                               IsChecked="{Binding IsEnabled}"
                                               Margin="0 0 4 0"/>
@@ -105,11 +149,26 @@
                                 />
                             </StackPanel>
 
-                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Rules}">
+                            <ItemsControl Grid.Row="1" ItemsSource="{Binding Rules}"
+                                          dd:DragDrop.IsDragSource="True"
+                                          dd:DragDrop.IsDropTarget="True"
+                                          dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}">
+                                <dd:DragDrop.EffectMoveAdornerTemplate>
+                                    <DataTemplate>
+                                        <materialDesign:ColorZone Mode="PrimaryMid" Height="24" CornerRadius="12">
+                                            <controls:IconText Kind="ArrowUpDown" Text="移动"
+                                                               Margin="4 0"
+                                                               IconMargin="2"
+                                                               TextElement.FontWeight="Medium"
+                                                               VerticalAlignment="Center"/>
+                                        </materialDesign:ColorZone>
+                                    </DataTemplate>
+                                </dd:DragDrop.EffectMoveAdornerTemplate>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Grid Margin="0 4">
+                                        <Grid Margin="0 2">
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="2*" />
@@ -121,9 +180,12 @@
                                                     Command="{x:Static local:RulesetControl.RemoveRuleCommand}"
                                                     CommandParameter="{Binding}"
                                                     />
-                                            <CheckBox Grid.Column="1"
+                                            <Ellipse Grid.Column="1" Width="8" Height="8" 
+                                                     Margin="0 0 4 0"
+                                                     Style="{StaticResource RuleObjectStateIndicatorStyle}"/>
+                                            <CheckBox Grid.Column="2"
                                                       Content="反转" IsChecked="{Binding IsReversed}" />
-                                            <ComboBox Grid.Column="2"
+                                            <ComboBox Grid.Column="3"
                                                       SelectedValue="{Binding Id}"
                                                       SelectedValuePath="Key"
                                                       ItemsSource="{x:Static services:IRulesetService.Rules}">
@@ -134,7 +196,7 @@
                                                     </DataTemplate>
                                                 </ComboBox.ItemTemplate>
                                             </ComboBox>
-                                            <local:RulesetSettingsControlPresenter Grid.Column="3"
+                                            <local:RulesetSettingsControlPresenter Grid.Column="4"
                                                 Rule="{Binding Mode=OneWay}"
                                                 RuleId="{Binding Id, Mode=OneWay}" />
                                         </Grid>

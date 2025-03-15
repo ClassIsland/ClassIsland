@@ -9,4 +9,6 @@ public class ForecastDaily
 
     [JsonPropertyName("temperature")] public StatusValueBase<List<RangedValue>> Temperature { get; set; } = new();
     [JsonPropertyName("weather")] public StatusValueBase<List<RangedValue>> Weather { get; set; } = new();
+    
+    [JsonPropertyName("sunRiseSet")] public StatusValueBase<List<RangedValue>> SunRiseSet { get; set; } = new();
 }

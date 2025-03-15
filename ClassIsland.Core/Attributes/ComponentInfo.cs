@@ -52,22 +52,28 @@ public class ComponentInfo : Attribute
     /// <summary>
     /// 空组件信息
     /// </summary>
-    public static ComponentInfo Empty { get; } = new(System.Guid.Empty.ToString(), "？？？");
+    public static ComponentInfo Empty { get; } = new(Guid.Empty.ToString(), "？？？");
+
+    /// <summary>
+    /// 组件是否是组件容器
+    /// </summary>
+    public bool IsComponentContainer { get; internal set; } = false;
 
     internal List<string> MigrateSources { get; } = new();
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name, PackIconKind icon, string description="") : this(guid, name, description)
+    public ComponentInfo(string guid, string name, PackIconKind icon, string description = "") : this(guid, name,
+        description)
     {
         PackIcon = icon;
     }
 
     /// <inheritdoc />
-    public ComponentInfo(string guid, string name, string bitmapIconUri, string description = "") : this(guid, name, description)
+    public ComponentInfo(string guid, string name, string bitmapIconUri, string description = "") : this(guid, name,
+        description)
     {
         BitmapIconUri = bitmapIconUri;
         UseBitmapIcon = true;
-        
     }
 
     /// <inheritdoc />

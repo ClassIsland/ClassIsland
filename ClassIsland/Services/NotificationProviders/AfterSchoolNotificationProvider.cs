@@ -12,7 +12,7 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
-
+using ClassIsland.Shared.Models.Profile;
 using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Hosting;
@@ -58,19 +58,18 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
         NotificationHostService.RegisterNotificationProvider(this);
         Settings =
             NotificationHostService.GetNotificationProviderSettings<AfterSchoolNotificationProviderSettings>(ProviderGuid);
-        LessonsService.CurrentTimeStateChanged += NotificationHostServiceOnCurrentStateChanged;
+        LessonsService.OnAfterSchool += OnAfterSchool;
         SettingsElement = new AfterSchoolNotificationProviderSettingsControl(Settings);
     }
 
-    private void NotificationHostServiceOnCurrentStateChanged(object? sender, EventArgs e)
+    private void OnAfterSchool(object? sender, EventArgs e)
     {
         var settings = (IAfterSchoolNotificationProviderSettingsBase?)GetAttachedSettings() ?? Settings;
-        if (!settings.IsEnabled || LessonsService.CurrentState != TimeState.None || !LessonsService.IsClassPlanLoaded ||
-            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentClassPlan?.TimeLayout.Layouts.LastOrDefault()?.EndSecond.TimeOfDay > TimeSpan.FromSeconds(5)||
-            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay < LessonsService.CurrentClassPlan?.TimeLayout.Layouts.LastOrDefault()?.EndSecond.TimeOfDay)
-        {
+        var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        var afterSchoolTime = LessonsService.CurrentClassPlan?.TimeLayout.Layouts.LastOrDefault(i => i.TimeType is 0 or 1)?.EndSecond.TimeOfDay;
+        if (!settings.IsEnabled ||
+            (now - afterSchoolTime) > TimeSpan.FromSeconds(10))
             return;
-        }
 
         NotificationHostService.ShowNotification(new NotificationRequest()
         {

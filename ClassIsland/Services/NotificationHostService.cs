@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -191,7 +191,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             request.CompletedTokenSource.Token.WaitHandle.WaitOne();
         });
-
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

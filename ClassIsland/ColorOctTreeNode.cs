@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -114,7 +114,7 @@ public class ColorOctTreeNode
             var b = Convert.ToString(~~(node.b / node.ChildrenCount), 16).PadLeft(2, '0')!;
 
             var color = $"#{r}{g}{b}";
-            if (record.Keys.Contains(color))
+            if (record.ContainsKey(color))
             {
                 record[color] += node.ChildrenCount;
             }

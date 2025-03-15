@@ -1,0 +1,34 @@
+<Project>
+	<PropertyGroup>
+
+	</PropertyGroup>
+
+	<Target Name="CreateCipx"
+	        AfterTargets="Build"
+	        Condition="'$(CreateCipx)'=='true'">
+		<PropertyGroup>
+			<CipxPackageOutputDirectory>$(MSBuildProjectDirectory)/cipx</CipxPackageOutputDirectory>
+			<CipxPackageOutputName>$(MSBuildProjectName).cipx</CipxPackageOutputName>
+
+			<ClassIslandSdk_PackageRoot>$([MSBuild]::NormalizePath('$(MSBuildThisFileDirectory)'))</ClassIslandSdk_PackageRoot>
+			<ClassIslandSdk_CipxOutputPath>$(CipxPackageOutputDirectory)/$(CipxPackageOutputName)</ClassIslandSdk_CipxOutputPath>
+		</PropertyGroup>
+
+		<Message Text="正在创建插件包 $(ClassIslandSdk_CipxOutputPath)" Importance="high"/>
+		<Error Condition="Exists('$(OutputPath)/manifest.yml') != 'true'"
+		       Code="CISDK0001"
+		       Text="插件清单 manifest.yml 在生成目录中不存在"/>
+		
+		<!-- Create CIPX -->
+		<RemoveDir Directories="$(CipxPackageOutputDirectory)"
+		           Condition="Exists($(CipxPackageOutputDirectory))"/>
+		<MakeDir Condition="Exists($(CipxPackageOutputDirectory)) != 'true'"
+		         Directories="$(CipxPackageOutputDirectory)"/>
+		<ZipDirectory SourceDirectory="$(OutputPath)"
+		              Overwrite="true"
+		              DestinationFile="$(ClassIslandSdk_CipxOutputPath)"/>
+		
+		<!-- Generate MD5 -->
+		<Exec Command="powershell -ep bypass -NoLogo -File &quot;$(ClassIslandSdk_PackageRoot)generate-md5.ps1&quot; &quot;$(CipxPackageOutputDirectory)&quot;"/>
+	</Target>
+</Project>

@@ -69,4 +69,9 @@ public interface ILessonControlSettings : INotifyPropertyChanged
         get;
         set;
     }
+
+    /// <summary>
+    /// 是否启用模糊倒计时
+    /// </summary>
+    public bool IsNonExactCountdownEnabled { get; set; }
 }

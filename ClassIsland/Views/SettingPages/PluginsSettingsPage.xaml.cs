@@ -1,8 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -25,10 +27,13 @@ using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
+using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Win32;
 using Sentry;
 using WebSocketSharp;
+using YamlDotNet.Serialization.NamingConventions;
+using YamlDotNet.Serialization;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Path = System.IO.Path;
@@ -58,8 +63,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
         PluginService = pluginService;
         PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
-        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
-        PluginMarketService.RestartRequested += (sender, args) => RequestRestart();
+        
         if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = PluginMarketService.RefreshPluginSourceAsync();
@@ -240,7 +244,13 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         if (ViewModel.SelectedPluginInfo == null)
             return;
-        PluginMarketService.RequestDownloadPlugin(ViewModel.SelectedPluginInfo.Manifest.Id);
+        InstallPlugin(ViewModel.SelectedPluginInfo.Manifest.Id);
+    }
+
+    [RelayCommand]
+    private void InstallPlugin(string id)
+    {
+        PluginMarketService.RequestDownloadPlugin(id);
     }
 
     private void MenuItemReloadFromCache_OnClick(object sender, RoutedEventArgs e)
@@ -309,9 +319,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
         var filter = ViewModel.PluginFilterText;
         if (string.IsNullOrWhiteSpace(filter))
             return;
-        e.Accepted = info.Manifest.Id.Contains(filter) ||
-                     info.Manifest.Name.Contains(filter) ||
-                     info.Manifest.Description.Contains(filter);
+        e.Accepted = info.Manifest.Id.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                     info.Manifest.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
+                     info.Manifest.Description.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
 
     private void TextBoxFilter_OnKeyDown(object sender, KeyEventArgs e)
@@ -322,7 +332,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
         {
             source.View.Refresh();
         }
-
     }
 
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
@@ -344,5 +353,77 @@ public partial class PluginsSettingsPage : SettingsPageBase
         }
 
         ViewModel.IsDetailsShown = true;
+    }
+    private void Grid_DragEnter(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            ViewModel.IsDragEntering = true;
+            e.Effects = DragDropEffects.Link;
+        }
+        else
+        {
+            ViewModel.IsDragEntering = false;
+            e.Effects = DragDropEffects.None;
+        }
+    }
+    private void Grid_Drop(object sender, DragEventArgs e)
+    {
+        ViewModel.IsDragEntering = false;
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            var fileName = ((System.Array)e.Data.GetData(DataFormats.FileDrop))?.GetValue(0)?.ToString();
+            if (fileName == null)
+                return;
+            if (Path.GetExtension(fileName) != ".cipx")
+            {
+                ViewModel.MessageQueue.Enqueue($"不支持的文件：{fileName}");
+                return;
+            }
+            try
+            {
+                File.Copy(fileName, Path.Combine(Services.PluginService.PluginsPkgRootPath, Path.GetFileName(fileName)), true);
+
+                var deserializer = new DeserializerBuilder()
+                    .IgnoreUnmatchedProperties()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .Build();
+                using var pkg = ZipFile.OpenRead(fileName);
+                var mf = pkg.GetEntry("manifest.yml");
+                if (mf == null)
+                    return;
+                var mfText = new StreamReader(mf.Open()).ReadToEnd();
+                var manifest = deserializer.Deserialize<PluginManifest>(mfText);
+
+                ViewModel.MessageQueue.Enqueue($"插件 {manifest.Name} 版本 {manifest.Version} 安装成功。");
+                RequestRestart();
+            }
+            catch (Exception exception)
+            {
+                CommonDialog.ShowError($"无法安装插件：{exception.Message}");
+            }
+        }
+    }
+
+    private void Grid_DragLeave(object sender, DragEventArgs e)
+    {
+        ViewModel.IsDragEntering = false;
+    }
+
+    private void PluginsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
+        PluginMarketService.RestartRequested += OnPluginMarketServiceOnRestartRequested;
+    }
+
+    private void OnPluginMarketServiceOnRestartRequested(object? sender, EventArgs args)
+    {
+        RequestRestart();
+    }
+
+    private void PluginsSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
+        PluginMarketService.RestartRequested -= OnPluginMarketServiceOnRestartRequested;
     }
 }

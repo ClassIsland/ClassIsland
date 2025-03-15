@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -24,5 +24,4 @@ public class AttachableObjectNode : ObservableRecipient
     public AttachableObjectNodeDictionary RelatedLessons { get; set; } = new();
 
     public AttachableObjectAddress Address { get; set; } = new AttachableObjectAddress();
-
 }

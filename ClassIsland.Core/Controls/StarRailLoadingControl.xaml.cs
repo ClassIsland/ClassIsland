@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
@@ -23,7 +23,6 @@ public partial class StarRailLoadingControl : UserControl
 
     private void PART_ControlRoot_Loaded(object sender, RoutedEventArgs e)
     {
-
     }
 
     protected override async void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
@@ -44,7 +43,6 @@ public partial class StarRailLoadingControl : UserControl
                     _isPlayed = true;
                     //Debug.WriteLine("LOADED.");
                 }
-
             }
             else
             {
@@ -66,7 +64,6 @@ public partial class StarRailLoadingControl : UserControl
         sb.Seek(TimeSpan.Zero);
 
         BeginStoryBoard("Loop");
-
     }
 }
 

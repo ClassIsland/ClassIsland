@@ -45,6 +45,12 @@
                                 Value="ArrowSplitHorizontal" />
                             <Setter Property="ToolTip" Value="分割线" />
                         </DataTrigger>
+                        <DataTrigger Binding="{Binding TimePoint.TimeType}"
+                                     Value="3">
+                            <Setter Property="Kind"
+                                    Value="Airplane" />
+                            <Setter Property="ToolTip" Value="行动" />
+                        </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </materialDesign:PackIcon.Style>

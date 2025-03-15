@@ -141,10 +141,12 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             : Settings.IsClassOffNotificationEnabled;
 
 
-        if (!settingsIsClassOffNotificationEnabled || ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
-        {
+        if (!settingsIsClassOffNotificationEnabled ||
+            LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
             return;
-        }
+        var overlayText = settings?.ClassOffOverlayText ?? Settings.ClassOffOverlayText;
+        var showOverlayText = !string.IsNullOrWhiteSpace(overlayText);
 
         if (LessonsService.NextClassSubject != Subject.Empty)
         {
@@ -158,10 +160,11 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
                 MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
                 OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay")
                 {
-                    ShowTeacherName = Settings.ShowTeacherName
+                    ShowTeacherName = Settings.ShowTeacherName,
+                    Message = overlayText
                 },
-                OverlayDuration = TimeSpan.FromSeconds(10),
-                OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
+                OverlayDuration = showOverlayText ? TimeSpan.FromSeconds(20) : TimeSpan.FromSeconds(10),
+                OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。{overlayText}",
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
             });
         }
@@ -189,18 +192,11 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             : Settings.IsClassOnNotificationEnabled;
         var settingsSource = (IClassNotificationSettings?)(settings?.IsAttachSettingsEnabled == true ? settings : Settings) ?? Settings;
 
-        if (!settingsIsClassOnNotificationEnabled)
-        {
+        if (!settingsIsClassOnNotificationEnabled ||
+            IsClassOnNotified ||
+            LessonsService.CurrentTimeLayoutItem == TimeLayoutItem.Empty ||
+            ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
             return;
-        }
-        if (IsClassOnNotified)
-        {
-            return;
-        }
-        if (ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
-        {
-            return;
-        }
 
         if (IsClassPreparingNotified)
         {

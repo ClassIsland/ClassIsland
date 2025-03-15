@@ -11,6 +11,12 @@ public interface ISplashService : INotifyPropertyChanged, INotifyPropertyChangin
     /// 启动屏幕状态文字
     /// </summary>
     string SplashStatus { get; set; }
+
+    /// <summary>
+    /// 设置详细状态信息。当启用显示详细状态信息时，调用此函数会设置 <see cref="SplashStatus"/> 属性为传入的消息。其他情况不会产生任何效果。
+    /// </summary>
+    /// <param name="message">要设置的详细状态消息</param>
+    void SetDetailedStatus(string message);
     
     /// <summary>
     /// 当前启动进度

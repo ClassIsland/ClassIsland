@@ -1,4 +1,4 @@
-﻿using ClassIsland.Shared.Abstraction.Models;
+using ClassIsland.Shared.Abstraction.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Notification;
@@ -113,6 +113,4 @@ public class NotificationSettings : ObservableRecipient, INotificationSettings
             OnPropertyChanged();
         }
     }
-
-    
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +19,7 @@ public class AsyncBox : FrameworkElement
     /// 保存外部 UI 线程和与其关联的异步 UI 线程。
     /// 例如主 UI 线程对应一个 AsyncBox 专用的 UI 线程；外面可能有另一个 UI 线程，那么对应另一个 AsyncBox 专用的 UI 线程。
     /// </summary>
-    private static readonly DispatcherDictionary RelatedAsyncDispatchers = new DispatcherDictionary();
+    internal static readonly DispatcherDictionary RelatedAsyncDispatchers = new DispatcherDictionary();
 
     private UIElement _child;
 
@@ -122,7 +122,6 @@ public class AsyncBox : FrameworkElement
     {
         if (DesignerProperties.GetIsInDesignMode(this))
         {
-
             AddVisualChild(_contentPresenter);
             AddVisualChild(_hostVisual);
             ActivateChild();

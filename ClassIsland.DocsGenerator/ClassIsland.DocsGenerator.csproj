@@ -7,7 +7,15 @@
     <Nullable>enable</Nullable>
     <UseWPF>False</UseWPF>
     <StartupObject>ClassIsland.DocsGenerator.Program</StartupObject>
+    <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
   </PropertyGroup>
+
+	<PropertyGroup Condition="'$(IsMsix)'=='true'">
+		<TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(IsMsix)'!='true'">
+		<TargetFramework>net8.0-windows</TargetFramework>
+	</PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />

@@ -14,6 +14,7 @@
         xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
         xmlns:windows1="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
+        xmlns:stickerControl="http://classisland.tech/schemas/xaml/core"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:ExcelImportWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -358,9 +359,10 @@
                     <materialDesign:TransitionerSlide ForwardWipe="{x:Null}" BackwardWipe="{x:Null}">
                         <StackPanel VerticalAlignment="Center"
                                     HorizontalAlignment="Center">
-                            <Image Source="/Assets/HoYoStickers/帕姆_点赞.png" 
+                            <stickerControl:StickerControl ImageSource="/Assets/HoYoStickers/帕姆_点赞.png" 
                                    Width="81" Height="81"
-                                   ToolTip="帕姆_点赞"
+                                   StickerToolTip="帕姆_点赞"
+                                   PackIconKind="FileExcelOutline"
                                    Margin="0 0 0 24"/>
 
                             <TextBlock Text="正在加载你的表格……" HorizontalAlignment="Center"
@@ -933,11 +935,11 @@
                         <StackPanel>
                             <TextBlock Text="完成" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                        Margin="0 0 0 12"/>
-                            <Image Source="/Assets/HoYoStickers/光辉矢愿_回眸.png"
-                                   ToolTip="光辉矢愿_回眸"
+                            <stickerControl:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_回眸.png"
+                                   StickerToolTip="光辉矢愿_回眸"
                                    Focusable="True"
                                    Width="63"
-                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   PackIconKind="CheckCircleOutline"
                                    HorizontalAlignment="Left"/>
                             <TextBlock>
                                 <Run Text="恭喜！您已经完成了课表导入！现在您可以关闭本页面了。"/>

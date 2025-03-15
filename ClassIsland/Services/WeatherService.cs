@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -9,10 +8,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
-using Microsoft.Data.Sqlite;
+using ClassIsland.Models.Rules;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -20,19 +20,14 @@ namespace ClassIsland.Services;
 
 public class WeatherService : IHostedService, IWeatherService
 {
-    public const string CitiesDatabasePath = "./Temp/xiaomi_weather.db";
-
     private SettingsService SettingsService { get; }
 
     private Settings Settings => SettingsService.Settings;
 
-    public SqliteConnection CitiesDatabaseConnection { get; } = new($"Data Source={CitiesDatabasePath}");
-
     public List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; } = new();
 
     private ILogger<WeatherService> Logger { get; }
-
-    public bool IsDatabaseLoaded { get; set; } = false;
+    public IRulesetService RulesetService { get; }
 
     private DispatcherTimer UpdateTimer { get; } = new()
     {
@@ -41,15 +36,52 @@ public class WeatherService : IHostedService, IWeatherService
 
     public bool IsWeatherRefreshed { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, FileFolderService fileFolderService, IHostApplicationLifetime hostApplicationLifetime, ILogger<WeatherService> logger)
+    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService)
     {
         Logger = logger;
+        RulesetService = rulesetService;
         SettingsService = settingsService;
-        hostApplicationLifetime.ApplicationStopping.Register(AppStopping);
         LoadData();
+        RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
+        RulesetService.RegisterRuleHandler("classisland.weather.hasWeatherAlert", HasAlertRuleHandler);
+        RulesetService.RegisterRuleHandler("classisland.weather.rainTime", RainTimeRuleHandler);
         UpdateTimer.Tick += UpdateTimerOnTick;
         UpdateTimer.Start();
         _ = QueryWeatherAsync();
+    }
+
+    private bool RainTimeRuleHandler(object? o)
+    {
+        if (o is not RainTimeRuleSettings settings)
+        {
+            return false;
+        }
+
+        var baseTime = (settings.IsRemainingTime ? -1.0 : 1.0) * Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes;
+        return baseTime > 0 && baseTime <= settings.RainTimeMinutes;
+        
+    }
+
+    private bool HasAlertRuleHandler(object? o)
+    {
+        if (o is not StringMatchingSettings settings)
+        {
+            return false;
+        }
+
+        return IsWeatherRefreshed &&
+               Settings.LastWeatherInfo.Alerts.Exists(x => settings.IsMatching(x.Title));
+    }
+
+    private bool CurrentWeatherRuleHandler(object? o)
+    {
+        if (o is not CurrentWeatherRuleSettings settings)
+        {
+            return false;
+        }
+
+        return IsWeatherRefreshed &&
+               settings.WeatherId.ToString() == Settings.LastWeatherInfo.Current.Weather;
     }
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
@@ -57,41 +89,47 @@ public class WeatherService : IHostedService, IWeatherService
         await QueryWeatherAsync();
     }
 
-    private async void AppStopping()
-    {
-        if (!IsDatabaseLoaded)
-            return;
-        await CitiesDatabaseConnection.CloseAsync();
-    }
-
     private async void LoadData()
     {
-        var s = Application.GetResourceStream(new Uri("/Assets/XiaomiWeather/xiaomi_weather.db", UriKind.Relative));
-        if (s != null)
-        {
-            var bytes = new byte[s.Stream.Length];
-            var r = await s.Stream.ReadAsync(bytes);
-            await File.WriteAllBytesAsync(CitiesDatabasePath, bytes);
-            await CitiesDatabaseConnection.OpenAsync();
-            IsDatabaseLoaded = true;
-        }
-
-
         var w = Application.GetResourceStream(new Uri("/Assets/XiaomiWeather/xiaomi_weather_status.json",
             UriKind.Relative));
-        if (w != null)
-        {
-            var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w.Stream);
-            WeatherStatusList = codes!.WeatherInfo;
-        }
+        if (w == null) return;
+        var codes = await JsonSerializer.DeserializeAsync<XiaomiWeatherStatusCodes>(w.Stream);
+        WeatherStatusList = codes!.WeatherInfo;
     }
 
     public async Task QueryWeatherAsync()
     {
+        var cityLatitude = string.Empty;
+        var cityLongitude = string.Empty;
+        
+        // 获取城市信息
         try
         {
             using var http = new HttpClient();
-            var uri = $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude=110&longitude=112&locationKey=weathercn%3A{Settings.CityId}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
+            var uri =
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn";
+            Logger.LogInformation("获取城市信息： {}", uri);
+            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(new Uri(uri));
+            // 取第一个城市信息
+            var cityInfo = cityInfoList.FirstOrDefault();
+            if (cityInfo != null && cityInfo.LocationKey == Settings.CityId)
+            {
+                cityLatitude = cityInfo.Latitude;
+                cityLongitude = cityInfo.Longitude;       
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "获取城市信息失败。");
+        }
+        
+        // 请求天气信息
+        try
+        {
+            using var http = new HttpClient();
+            var uri =
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/weather/all?latitude={cityLatitude}&longitude={cityLongitude}&locationKey={Uri.EscapeDataString(Settings.CityId)}&days=15&appKey=weather20151024&sign=zUFJoAR2ZVrDy1vF3D07&isGlobal=false&locale=zh_cn";
             Logger.LogInformation("获取天气信息： {}", uri);
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
             info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
@@ -103,52 +141,54 @@ public class WeatherService : IHostedService, IWeatherService
         {
             Logger.LogError(ex, "获取天气信息失败。");
         }
+
+        RulesetService.NotifyStatusChanged();
     }
 
     public string GetWeatherTextByCode(string code)
     {
-        var c = (from i in WeatherStatusList 
-                    where i.Code.ToString() == code
-                    select i.Weather)
+        var c = (from i in WeatherStatusList
+                where i.Code.ToString() == code
+                select i.Weather)
             .ToList();
         return c.Count > 0 ? c[0] : "未知";
     }
 
-    public List<City> GetCitiesByName(string name)
+    public async Task<List<City>> GetCitiesByName(string name)
     {
-        if (!IsDatabaseLoaded)
-            return [];
-        var cmd = CitiesDatabaseConnection.CreateCommand();
-        cmd.CommandText = @"
-            SELECT
-                citys.name,
-                citys.city_num,
-                citys.province_id,
-                provinces.name 
-            FROM
-                citys
-                JOIN provinces ON citys.province_id = provinces._id - 1 
-            WHERE
-                citys.name LIKE $name
-                OR provinces.name LIKE $name
-            ";
-        cmd.Parameters.AddWithValue("name", $"%{name}%");
-        using var reader = cmd.ExecuteReader();
-        var l = new List<City>();
-        while (reader.Read())
+        var uri = new Uri("https://weatherapi.market.xiaomi.com/wtr-v3/location/city/hots?locale=zh_cn");
+        var logText = "获取热门城市信息";
+
+        if (name != string.Empty)
         {
-            l.Add(new City()
-            {
-                Name = reader.GetString(0),
-                CityId = reader.GetString(1)
-            });
+            uri = new Uri(
+                $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/search?name={Uri.EscapeDataString(name)}&locale=zh_cn");
+            logText = logText.Replace("热门", "");
         }
-        return l;
+
+        try
+        {
+            Logger.LogInformation("{}： {}", logText, uri);
+
+            var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(uri);
+            
+            var cities = cityInfoList?.Select(cityInfo => new City
+            {
+                Name = $"{cityInfo.Name} ({cityInfo.Affiliation})",
+                CityId = cityInfo.LocationKey
+            }).ToList() ?? new List<City>();
+
+            return cities;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "{}失败。", logText);
+            return [];
+        }
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
-        
     }
 
     public async Task StopAsync(CancellationToken cancellationToken)

@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:lessonsControls="clr-namespace:ClassIsland.Core.Controls.LessonsControls"
-                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared">
+                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
@@ -97,7 +98,7 @@
                                 <Binding/>
                                 <Binding Path="DiscardHidingDefault" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                                 <Binding Path="ShowCurrentTimeLayoutItemOnlyOnClass" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
-
+                                <Binding Path="HideFinishedClass" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                             </MultiBinding>
                         </ContentPresenter.ContentTemplate>
                     </ContentPresenter>

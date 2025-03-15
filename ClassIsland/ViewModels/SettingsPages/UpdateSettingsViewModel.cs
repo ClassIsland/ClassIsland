@@ -1,4 +1,5 @@
 ﻿using System.Windows.Documents;
+using ClassIsland.Core.Models.Updating;
 using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -7,7 +8,7 @@ namespace ClassIsland.ViewModels.SettingsPages;
 public class UpdateSettingsViewModel : ObservableRecipient
 {
     private FlowDocument _currentMarkdownDocument = new();
-    private UpdateChannel _selectedChannelModel = new();
+    private ChannelInfo _selectedChannelModel = new();
     private FlowDocument _changeLogs = new();
 
     public FlowDocument CurrentMarkdownDocument
@@ -20,7 +21,7 @@ public class UpdateSettingsViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
-    public UpdateChannel SelectedChannelModel
+    public ChannelInfo SelectedChannelModel
     {
         get => _selectedChannelModel;
         set

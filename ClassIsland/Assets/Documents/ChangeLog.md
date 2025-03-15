@@ -1,299 +1,201 @@
 # 新增功能
 
-1.5-Griseo 的新增功能。
+1.6 - Himeko 的新增功能。
 
+## 自动化
 
-## 插件系统
+![Image](https://github.com/user-attachments/assets/bc7fb422-266d-4fc3-90ae-25f64e97de20)
 
-![1722823221695](https://github.com/user-attachments/assets/7464a90d-ef66-47e1-8083-3edbdea603aa)
+您可以通过自动化让 ClassIsland 在一些特定的时间节点执行一些特定的操作，比如切换组件配置，运行程序等，显示提醒等等。总的来说，就是“当 XX 发生”，并且“满足 XX 规则”时“做什么”。
 
-您可以通过插件扩展 ClassIsland 的功能，比如获取新的组件、提醒提供方等等。您可以在[插件市场](classisland://app/settings/classisland.plugins)浏览插件。如果您对开发 ClassIsland 插件感兴趣，不妨看看[开发文档](https://docs.classisland.tech/dev)来了解如何开发插件。
+![Image](https://github.com/user-attachments/assets/32ced745-848d-4e9e-b29e-b917ed693495)
 
-## 规则集
+同时，【行动】也作为一种新的时间点类型加入到了时间表中。您可以通过【行动】时间点实现在一天的特定时间执行特定操作。
 
-![1723953554739](https://github.com/user-attachments/assets/6491fc26-202d-4d0e-a91a-2dbd7d0f4cf4)
+## 预定调课
 
-目前 ClassIsland 支持通过【规则集】功能，更详细地设定规则，并支持插件注册自定义的规则。
+![Image](https://github.com/user-attachments/assets/1814f254-00d9-4694-bdea-69dee0a76f14)
 
-## 附加设置分析
+![Image](https://github.com/user-attachments/assets/503098e6-27d5-4b74-97c5-505b8dd84e9e)
 
-![1723953043655](https://github.com/user-attachments/assets/ae1985e0-1997-4a1d-ba4a-928579eebb26)
+您可以在[【档案编辑】](classisland://app/profile)的【调课】选项卡中预定调课安排，比如预定在某天临时启用的课表（包括临时层课表），以及跨天换课等等。
 
-![1723953105695](https://github.com/user-attachments/assets/377341c2-9379-413e-a766-cc4da72f7b74)
+## 本地集控
 
-目前档案编辑器支持对各个节点的附加设置覆盖/继承情况进行分析，并支持查看某一课表中各个时间点的附加设置启用情况。
+![Image](https://github.com/user-attachments/assets/321b4305-560d-4ce4-bf15-d250f1eca661)
 
-## 课表组件
-
-目前课表相关控件已经被重构，大幅提升了应用和【换课】界面的加载速度。要体验重构后的课表组件，请向主界面添加“课程表”（原“课程表（实验）”）组件。
-
-原来在【设置】->【基本】中的课表设置将被迁移到“课程表”组件下的设置中，您也可以在“课程表”组件设置的最下方通过“导入旧版设置”按钮手动迁移。原来的课表组件（“课程表（旧）”）将计划在 1.5 正式发布时彻底移除，届时还没有迁移到新课程表组件上的用户将自动迁移。
-
-此外，重构后的课表控件支持在课表已加载时调整对应的时间表。此功能需要在【应用设置】->【更多选项…（右上角三个点）】->【实验性功能】中手动启用
-
-## 精简模式
-
-ClassIsland 目前推出了【精简模式】，精简模式的 ClassIsland 裁剪了不必要的资源文件，大幅减小了应用体积。详细请见[文档](https://docs.classisland.tech/app/setup/)。
-
-## 课表群
-
-您可以通过课表群对课表分组，同时可以划分不同启用条件的课表。ClassIsland 只会自动加载启用的课表群和全局课表群中的课表。您可以在 [【档案编辑】](classisland://app/profile) 中编辑课表群。
-
-此外，您可以临时启用某个课表群。临时启用的课表群的失效时间默认是完整轮换完课表群中课表的时间，您可以手动更改失效时间。
-
-> 已知问题：在调整课表所属的课表群后，课表列表界面不能及时反映更改，需要手动进行刷新。
-
-[(#136)](https://github.com/ClassIsland/ClassIsland/issues/136)
-
-![1721193302305](https://github.com/user-attachments/assets/400e3aa8-4a97-456a-9a1e-e45496eefca4)
-
-## Url 导航
-
-目前应用可支持通过 Url 协议（ `classisland://` ）从外部调用应用的功能。要启用此功能，请在[【应用设置】->【基本】](classisland://app/settings/general)中启用“注册 Url 协议”
-
-您可以在【运行】中运行 [classisland://app/test](classisland://app/test) 来验证 Url 协议是否注册成功。
+您可以在[【应用设置】->【集控选项】](classisland://app/settings/management)中在不使用集控服务的情况下，为应用设置密码保护和限制策略。您可以通过【限制策略】功能来限制某些功能的使用，也可以通过【密码保护】功能为某些功能设置密码。
 
 ## 组件
 
-![1718443026319](https://github.com/user-attachments/assets/a7b1a888-33a5-4163-9ae9-b23726c9eca0)
+本版本添加了【容器组件】和【多行组件】功能，增强了组件的自定义能力。
 
-新增的【组件】功能目前取代了原有的【快速信息】功能。您可以在主界面上任意排列、添加或删除组件。
+![图片](https://github.com/user-attachments/assets/1cd29caf-dacf-436e-baa7-00fda187f004)
 
-如果您从旧版本升级，您的【快速信息】设置会被迁移到【组件】上。
+容器组件是一种特殊的组件类型，可以容纳并展示其它组件。目前 ClassIsland 加入了轮播组件和分组组件等容器组件，您可以利用这些组件更好地自定义主界面上的内容。
 
-## 设置窗口更新
+![Image](https://github.com/user-attachments/assets/2694ffa5-62e3-4812-a602-5c92767d2c66)
 
-![1718443093077](https://github.com/user-attachments/assets/9cdf6e9a-0c47-42d6-b76b-a4789f2136e1)
-
-应用设置窗口目前经过了重构，并且加入了导航动画。此外，在重构设置界面之后，应用的启动速度也得到了一定的提升。
+【多行组件】功能可以让组件显示在不同的行上。当某一行上的组件全部隐藏时，这一行也会随之隐藏。您可以利用此功能在主界面展示更多的信息。
 
 ***
 
-# 1.5.0.4
+# 1.6.0.2
 
-1.5 - Griseo
+## 🚀 新增功能与优化
 
-本版本包含了对 1.5 的一些 Bug 修复和改进。
+- 【主界面】允许主界面位置判定时直接使用屏幕原始尺寸
+- 【主界面】为主界面添加平移变化
+- 【主界面】在启动时不自动激活主界面
+- 【应用设置】启动界面预览 ([#694](https://github.com/ClassIsland/ClassIsland/issues/694))
+- 【应用设置/插件】支持拖入 cipx 到窗口安装插件
+- 【应用设置/插件】在插件源刷新失败时提示切换插件源
+- 【档案编辑】重复添加行动提示
+- 【精确时间服务】在系统时间突变时暂停更新时间
+- 【构建】ARM64、x86 架构打包支持
+- 【应用】重新创建快捷换课图标 ([#695](https://github.com/ClassIsland/ClassIsland/issues/695))
+- 【应用】添加安全模式与诊断模式
+- 【应用】为教学安全模式添加更多处理方式 ([#768](https://github.com/ClassIsland/ClassIsland/issues/768))
+- 【恢复】添加恢复菜单
+- 【配置】自动处理配置文件加载异常 ([#736](https://github.com/ClassIsland/ClassIsland/issues/736))
+- 【UI】为天气组件界面提示增加圆角
+- 【提醒】增加爱莉希雅、钟离、流萤、高考英语听力男声、三月七 TTS 选项
+- 【API/插件 SDK】支持在构建时自动生成插件包
 
-## 新增功能和优化
+## 🐛 Bug 修复
 
-- 【构建】为 Nuget 包启用源代码链接
+- 【配置】修复天气城市 ID 不会自动迁移的问题 ([#745](https://github.com/ClassIsland/ClassIsland/issues/745))
+- 【组件/课表】修复当前课表变化后不更新明天课表显示状态的问题
+- 【应用】修复在 x64 以外的架构中出现启动时卡住无法加载的问题
+- 【规则集】修复规则集中条件组反转无效的问题
+- 【档案编辑】修复时间线视图中分割线和行动时间点无法被拖动的问题 ([#775](https://github.com/ClassIsland/ClassIsland/issues/775))
+- 【档案编辑】修复在调课界面可以选择无效课程的问题 ([#779](https://github.com/ClassIsland/ClassIsland/issues/779))
+- 【档案编辑】修复调课课表安排 ListBox 出现验证失败红框的问题 ([#778](https://github.com/ClassIsland/ClassIsland/issues/778))
 
-### Bug 修复
+***
 
-- 【提醒/语音】修复 EdgeTTS 无法使用的问题 ([#489](https://github.com/ClassIsland/ClassIsland/issues/489))
-- 【插件】修复插件无法加载依赖的问题
+# 1.6.0.1
 
+## 🚀 新增功能与优化
 
-# 1.5.0.3
+- 在组件设置显示组件 GUID ([#710](https://github.com/ClassIsland/ClassIsland/issues/710))
+- 撤销使开始界面的`注册Url协议`不默认勾选"的行为
+
+## 🐛 Bug 修复
+
+- 修复在启动时卡死的问题 ([#702](https://github.com/ClassIsland/ClassIsland/issues/702))
+- 修复复制档案时档案路径错误的问题 ([#705](https://github.com/ClassIsland/ClassIsland/issues/705))
+- 修复 cron 触发器无法工作的问题 ([#715](https://github.com/ClassIsland/ClassIsland/issues/715))
+- 修复在调课周视图中显示“第 0 周”的问题 ([#724](https://github.com/ClassIsland/ClassIsland/issues/724))
+
+[查看 1.6.0.0 的更新日志](https://github.com/ClassIsland/ClassIsland/releases/tag/1.6.0.0)
+
+***
+
+# 1.6.0.0
+
+1.6 - Himeko
 
 > [!important]
-> 目前已知通过 RawInput 检测光标位置在部分设备兼容性不好，现已默认禁用此模式。如果在您的设备上课表无法在鼠标移入/触屏点击时正常隐藏，请尝试在[【应用设置】->【窗口】](classisland://app/settings/window)禁用此功能。
+> 从此版本起，ClassIsland 的开源协议更换为 GPLv3.关于此更变的详细信息，请见讨论[#697](https://github.com/ClassIsland/ClassIsland/discussions/697)。
 
-## 新增功能和优化
+## 🚀 新增功能与优化
 
-- 【主界面】默认禁用通过 RawInput 检测光标位置
-- 【主界面】自定义背景颜色 ([#404](https://github.com/ClassIsland/ClassIsland/issues/404)) (by @LiuYan-xwx)
-- 【主界面】优化置顶检测逻辑
-- 【档案编辑】允许编辑已启用的时间表
-- 【组件】组件迁移
-- 【组件/课表】附加设置添加显示精确倒计时剩余时长字段，修改附加设置显示精确倒计时剩余时长的默认值为 0
-- 【应用设置】优化设置页面加载动画
-- 【应用设置】_在设置加载界面显示回声洞_（实验性功能，默认禁用） ([#406](https://github.com/ClassIsland/ClassIsland/issues/406))
-- 【应用设置】_设置页面缓存_（实验性功能，默认禁用）
-- 【应用设置/插件】在插件下载/插件源刷新失败时显示真正的错误原因
-- 【应用设置/插件】优化插件概览文档加载流程
-- 【应用设置/关于】修正关于页面链接
-- 【日志】改进文件日志模块稳定性 ([#418](https://github.com/ClassIsland/ClassIsland/issues/418))
+- **【自动化】自动化：** 支持通过自动化功能，在特定时间、特定事件触发时运行自定义操作。
+- **【组件】容器组件：**容纳并展示其它组件
+- **【组件】多行组件：**支持为主界面设置多行组件 ([#181](https://github.com/ClassIsland/ClassIsland/issues/181))
+- **【档案】调课面板：** 支持提前预定换课课表和跨课表换课 [#321](https://github.com/ClassIsland/ClassIsland/issues/321) [#373](https://github.com/ClassIsland/ClassIsland/issues/373) [#617](https://github.com/ClassIsland/ClassIsland/issues/617)
+- **【集控】本地集控：**允许在不使用集控服务的情况下在本地设置密码和限制策略
+- **【集控】密码保护功能：**允许为某些功能设置访问密码 ([#311](https://github.com/ClassIsland/ClassIsland/issues/311))
+- 【档案编辑器】优化档案编辑器行动编辑外观
+- 【档案编辑器】分割线、行动时间点拖动功能 [#153](https://github.com/ClassIsland/ClassIsland/issues/153)
+- 【档案编辑器】改进时间点添加体验
+- 【档案编辑器】标记活动时间表
+- 【档案】预定启用临时层课表 [#321](https://github.com/ClassIsland/ClassIsland/issues/321)
+- 【档案】支持 CSES 课表格式转换 [#642](https://github.com/ClassIsland/ClassIsland/issues/642)
+- 【档案/自动化】添加档案信任机制
+- 【组件】加入轮播组件和分组组件 ([#310](https://github.com/ClassIsland/ClassIsland/issues/310))
+- 【组件】自定义组件宽度和对齐方式 ([#501](https://github.com/ClassIsland/ClassIsland/issues/501))
+- 【组件】支持时钟组件显示未偏移的真实时间 ([#464](https://github.com/ClassIsland/ClassIsland/issues/464))
+- 【组件】支持时间组件小圆点不跳动 ([#446](https://github.com/ClassIsland/ClassIsland/issues/446))
+- 【组件】在组件被卸载后自动取消订阅事件 ([#541](https://github.com/ClassIsland/ClassIsland/issues/541))
+- 【组件/课表】隐藏上过的课程 [#193](https://github.com/ClassIsland/ClassIsland/issues/193) ([#648](https://github.com/ClassIsland/ClassIsland/issues/648) by @itsHenry35)
+- 【组件/课表】模糊倒计时 [#313](https://github.com/ClassIsland/ClassIsland/issues/313)
+- 【组件/课表】显示次日课表 ([#288](https://github.com/ClassIsland/ClassIsland/issues/288)) ([#290](https://github.com/ClassIsland/ClassIsland/issues/290))
+- 【档案/课表】优化标记换课课程
+- 【组件/天气简报】气象预警图标增加预警类型表示 [#568](https://github.com/ClassIsland/ClassIsland/issues/568)
+- 【组件/天气简报】显示降水提示 [#176](https://github.com/ClassIsland/ClassIsland/issues/176)
+- 【提醒】下课提醒文字自定义 [#341](https://github.com/ClassIsland/ClassIsland/issues/341)
+- 【提醒】将顶层特效窗口移动到单独的 UI 线程，提升呈现性能 [#666](https://github.com/ClassIsland/ClassIsland/issues/666)
+- 【提醒/天气】支持按小时显示天气预报 [#184](https://github.com/ClassIsland/ClassIsland/issues/184)
+- 【提醒/天气】将天气预报中分割最高与最低气温间的符号改为“~” ([#470](https://github.com/ClassIsland/ClassIsland/issues/470))
+- 【提醒/天气】逐小时天气预报显示绝对时间 [#693](https://github.com/ClassIsland/ClassIsland/issues/693)
+- 【提醒/语音】添加 GPT-SoVITS 语音支持 ([#590](https://github.com/ClassIsland/ClassIsland/issues/590))
+- 【更新】重构更新系统，支持从内地源下载应用更新 ([#401](https://github.com/ClassIsland/ClassIsland/issues/401))
+- 【天气】天气的搜索城市不再使用本地数据库，改为在线获取城市信息
+- 【天气】添加对非中国内地城市的支持
+- 【天气】获取日出日落数据
+- 【天气】搜索城市时使用小米天气 API 获取城市信息 (by @mcAmiya)
+- 【主界面】移除 MainWindow 中重复的 Settings.json 保存
+- 【主界面】反转指针移入淡化 ([#462](https://github.com/ClassIsland/ClassIsland/issues/462))
+- 【规则集】应用启动时，重新进行规则判断
+- 【规则集】优化空规则判断逻辑、区分最大化和全屏判定
+- 【规则集】添加窗口规则测试工具 [#688](https://github.com/ClassIsland/ClassIsland/issues/688)
+- 【规则集】扩充规则集规则 [#457](https://github.com/ClassIsland/ClassIsland/issues/457) [#575](https://github.com/ClassIsland/ClassIsland/issues/575)
+- 【规则集】规则集满足状态显示 [#688](https://github.com/ClassIsland/ClassIsland/issues/688)
+- 【应用设置】为天气组件设置添加 Uri 跳转，并调整 UI 风格 (by @LiPolymer)
+- 【应用设置】统一部分倒计时日和文本组件设置页面风格 (by @LiPolymer)
+- 【应用设置】调整外观界面字体预览文本
+- 【应用设置】微调自动化、调试时间、时间偏移、课程表文本间距等设置页面
+- 【UI】将启动 UI 移动到单独的线程，优化启动过程动画，支持显示启动详细信息
+- 【UI】修改崩溃窗口文字
+- 【UI】添加开发中画面水印
+- 【UI】升级 MdXaml 版本，优化 Markdown 转换方式
+- 【日志】日志、插件搜索忽略大小写
+- 【调试】不保存调试时间和时间流速对时间偏移的改动
+- 【应用】在出现未捕获的错误时显示提示
+- 【构建】引入数字签名
+- 【精确时间服务】异步时间同步，避免阻塞应用启动
+- 【诊断】详细输出模式
+- 【API/主界面】引入行高度 IslandContainerHeight 资源值
+- 【API/主界面/组件】为 ContentPresenter 引入表示组件为根组件的 IsRootComponent 属性
+- 【API/认证】认证提供方注册功能
+- 【API/Uri 导航】允许在通过 Uri 导航应用设置页面时保留历史记录
+- 【API/通用对话框】添加 CommonDialogBuilder.SetIconKind 方法以按照对话框类型设置图标
+- 【API/应用设置】支持隐藏特定设置页面
+- 【API/应用设置】支持设置页面在导航时获取完整 Uri
+- 【API/课程服务】实现放学事件和时间状态
+- 【API/课程服务】通过`IPublicLessonService.GetClassPlanByDate`获取特定日期的课表
+- 【API/托盘】添加自定义通知点击回调接口
 
-## 移除的功能
+## ♻ 移除的功能
 
-- 【组件】移除“课程表（旧）”组件，如果您还在使用此组件，会自动迁移到新的课程表组件上
+- 【调试】移除调试中集控策略选项
 
-### Bug 修复
+## 🐛 Bug 修复
 
-- 【精确时间服务】修复概率性无法自动调整时间偏移的问题 ([#397](https://github.com/ClassIsland/ClassIsland/issues/397))
-- 【应用设置】修复在设置页面导航时出现 TaskCanceledException 的问题
-- 【主界面】修复在置底时显示置顶提醒抢夺焦点的问题 ([#417](https://github.com/ClassIsland/ClassIsland/issues/417))
-- 【主界面】修复获取鼠标位置时可能造成 PointFromScreen 方法因 Visual 没有连接到 PresentationSource 导致异常的问题
-- 【UI】修复在一些特定情况下出现 `在指定子级连接到新的父 Visual 之前必须断开与当前父 Visual 的连接。` 错误的问题 ([#413](https://github.com/ClassIsland/ClassIsland/issues/413))
-
-***
-
-# 1.5.0.2
-
-1.5 - Griseo
-
-本版本包含了对 1.5 的一些 Bug 修复和改进。
-
-## 新增功能和优化
-
-- 【组件/倒计时】修改倒计时数字与汉字之间的 margin
-- 【应用设置】更新功能投票链接
-- 【诊断】日志记录到文件
-- 【API/提醒】通过提醒请求取消提醒
-
-## 破坏性更改
-
-- 【API/提醒】优化提醒请求封装，将`NotificationRequest`的`CancellationTokenSource`和`CompletedTokenSource`属性的可见性修改为`internal`，并公开暴露其对应的`Token`和取消事件。
-
-## Bug 修复
-
-- 【组件】修复部分组件无法局部覆盖 MainWindowBodyFontSize 的问题 ([#343](https://github.com/ClassIsland/ClassIsland/issues/343))
-- 【组件/课表】修复时间点附加信息【XX/持续时间】中时间格式不统一的问题
-- 【主界面】修复当窗口宽度为 0 时回弹动画产生负值宽度导致崩溃的问题 ([#386](https://github.com/ClassIsland/ClassIsland/issues/386))
-- 【主界面】修复概率丢失置顶属性的问题 ([#358](https://github.com/ClassIsland/ClassIsland/issues/358))
-- 【档案编辑器】修复在课表编辑界面选中含有正在删除科目的课程时，使 SubjectId 为 null 导致主循环异常的问题 ([#376](https://github.com/ClassIsland/ClassIsland/issues/376))
-- 【档案编辑器】修复设置课表的同时设置科目，导致软件崩溃的问题 ([#375](https://github.com/ClassIsland/ClassIsland/issues/375))
-- 【档案】修复在时间表顶部变更一个“课间休息”为“上课”时，整个课程表会向前错位的问题 ([#387](https://github.com/ClassIsland/ClassIsland/issues/387))
-- 【组件/课表】修复在删除临时层课表的源课表后应用崩溃的问题
-- 【提醒】修复换课时如果下节课是户外课程换成室内课程倒计时显示时间不正常的问题 ([#385](https://github.com/ClassIsland/ClassIsland/issues/385))
-
-***
-
-# 1.5.0.1
-
-1.5 - Griseo
-
-本版本包含了对 1.5 的一些重要 Bug 的修复，请尽快更新。
-
-## 新增功能与优化
-
-- 【组件/课表】支持修改课程表文字间距
-- 【组件/课表】时间点附加信息「剩余时间」支持在结束时显示精确倒计时
-- 【组件/课表】优化「时间点结束倒计时」显示样式
-- 【档案编辑】手动刷新时间表
-- 【表格导入向导】从表格导入向导无法打开文件对话框添加权限提示  ([#327](https://github.com/ClassIsland/ClassIsland/issues/327))
-- 【调试】调试选项添加「时间流速」功能  
-
-## 移除的功能
-
-- 【应用】删除 ClassIsland 移动向导
-
-### Bug 修复
-
-- 【系统】修复触摸冻结问题，并替换无法使用触摸问题的修复实现 ([#326](https://github.com/ClassIsland/ClassIsland/issues/326))
-- 【UI/UX】修复文档坏链的问题
-- 【UI/UX】修复部分 SettingsControl 中的 Switcher 控件出现绑定错误的问题
-- 【应用设置】修复插件管理 ListDetailView 在紧凑视图中无法展开详细的问题
-- 【更新】修复在更新下载错误后显示更新下载完成的问题
-- 【组件/课表】修复临时层时间表与源时间表不对应导致应用崩溃的错误 ([#328](https://github.com/ClassIsland/ClassIsland/issues/328))
-- 【组件】修复倒计日组件不能自定义全局字体大小的问题 ([#335](https://github.com/ClassIsland/ClassIsland/issues/335))
-- 【组件】修复在组件加载时不判断是否满足隐藏规则的问题
-- 【提醒】修复放学前的课间提醒中，下节课显示为过去课程的问题 ([#322](https://github.com/ClassIsland/ClassIsland/issues/322))
-
-
-## 新增功能与优化
-
-# 1.5.0.0
-
-1.5 - Griseo
-
-## 新增功能与优化
-
-- **【组件】组件功能：** 您可以在主界面上任意排列、添加或删除组件。
-- **【插件】加入插件系统**：支持通过插件扩展 ClassIsland 的功能，比如获取新的组件、提醒提供方等等。
-- **【课表服务】多周轮换**：课表支持设置多周轮换，手动设置轮换偏移
-- **【组件/课表】重构课表组件：** 目前课表相关控件已经被重构，大幅提升了应用和【换课】界面的加载速度。要体验重构后的课表组件，请向主界面添加“课程表（实验）”组件。
-- **【档案编辑】附加设置分析**：目前档案编辑器支持对各个节点的附加设置覆盖/继承情况进行分析，并支持查看某一课表中各个时间点的附加设置启用情况。([#97](https://github.com/ClassIsland/ClassIsland/issues/97))
-- **【档案编辑】课表群：** 通过课表群对课表分组，同时可以划分不同启用条件的课表。 [(#136)](https://github.com/ClassIsland/ClassIsland/issues/136)
-- **【应用】Url 协议：** 目前应用可支持通过 Url 协议（ `classisland://` ）从外部调用应用的功能。要启用此功能，请在[【应用设置】->【基本】](classisland://app/settings/general)中启用“注册 Url 协议”
-- **【规则集】规则集**：目前 ClassIsland 支持通过【规则集】功能，更详细地设定窗口隐藏规则。([#96](https://github.com/ClassIsland/ClassIsland/issues/96)) ([#179](https://github.com/ClassIsland/ClassIsland/issues/179))
-- 【课表服务】重构课表服务
-- 【IPC】跨进程获取 ClassIsland 应用信息，接收 ClassIsland 事件广播
-- 【换课】记忆上次换课/调课模式
-- 【换课】换课窗口“要换课的课表”按钮支持点击前往更换课表
-- 【换课】支持在欢迎向导添加快捷换课快捷方式
-- 【主界面】记忆隐藏主界面状态
-- 【主界面】圆角课表 ([#81](https://github.com/ClassIsland/ClassIsland/issues/81))
-- 【主界面】优化鼠标移入淡化课表功能 ([#82](https://github.com/ClassIsland/ClassIsland/issues/82))
-- 【主界面】透明兼容模式
-- 【主界面】主界面字体大小调整 ([#80](https://github.com/ClassIsland/ClassIsland/issues/80)) ([#26](https://github.com/ClassIsland/ClassIsland/issues/26))
-- 【组件】时钟组件，支持显示到秒
-- 【组件】为天气图标赋予颜色
-- 【组件】自定义全局/组件字体大小和颜色 ([#80](https://github.com/ClassIsland/ClassIsland/issues/80))
-- 【组件/课表】上课时仅显示当前时间点
-- 【组件/课表】新增“倒计时”类型的附加信息 [(#191)](https://github.com/ClassIsland/ClassIsland/pull/191) (by [@DryIce-cc](https://github.com/DryIce-cc))
-- 【组件/课表】将课表附加信息中时间段格式改为时分制 [(#191)](https://github.com/ClassIsland/ClassIsland/pull/191) (by [@DryIce-cc](https://github.com/DryIce-cc))
-- 【档案】允许自定义课间名称 ([#63](https://github.com/ClassIsland/ClassIsland/issues/63)) ([#227](https://github.com/ClassIsland/ClassIsland/pull/227)) (by [@RoboMico](https://github.com/RoboMico))
-- 【档案编辑】将默认时间点时长挪到档案编辑
-- 【档案编辑】优化附加设置外观
-- 【档案编辑】简化课表编辑方式
-- 【档案编辑】自动填写科目简称
-- 【档案编辑】粘贴批量导入科目
-- 【档案编辑】优化时间线视图编辑体验
-- 【档案编辑】优化课表列表界面，在课表列表界面显示触发规则及启用状态
-- 【档案编辑】允许在课表启用时编辑对应的时间表 _（需要在【应用设置】->【更多选项…（右上角三个点）】->【实验性功能】中手动启用）_
-- 【提醒】课间时长以自然语言显示
-- 【提醒】课程提醒现在只在时间点开始时提醒
-- 【提醒】提醒音效音量调节 ([#89](https://github.com/ClassIsland/ClassIsland/issues/89))
-- 【提醒】自定义上下课提醒遮罩文字 ([#69](https://github.com/ClassIsland/ClassIsland/issues/69))
-- 【提醒】显示提醒时，主界面也以半透明显示
-- 【提醒】自定义天气预警显示速度 [#173](https://github.com/ClassIsland/ClassIsland/issues/173)
-- 【提醒】极端天气提醒文字从预警信号图标背后消失
-- 【应用设置】重构设置界面
-- 【应用设置】优化关于界面
-- 【应用设置】优化提醒音效音量调节边距大小
-- 【应用】缩小应用体积
-- 【应用】启动时检测并提醒用户启用 Aero 效果
-- 【应用】配置文件备份，更新时自动备份
-- 【应用】检测程序目录是否为桌面，并提示移动
-- 【应用】新增托盘图标点击操作“打开换课界面 [(#191)](https://github.com/ClassIsland/ClassIsland/pull/191) (by [@DryIce-cc](https://github.com/DryIce-cc))
-- 【倒计时组件】使`倒计时`组件的`倒计时名称`设置对绑定源即时更新 [(#213)](https://github.com/ClassIsland/ClassIsland/pull/213) (by [@LiuYan-xwx](https://github.com/LiuYan-xwx))
-- 【调试】调整【调试】选项卡，为【调试】标签页添加集控选项
-- 【UI】优化人机交互
-- 【UI】使用本地化日期选择控件
-- 【UI】从屏幕上提取主题色
-- 【UI】仅在可用时显示托盘菜单项目
-- 【UI】应用设置小选项调整
-- 【UI】日志现在只在监视时自动滚动到最下
-- 【UI】优化调试页面外观
-- 【UI】崩溃窗口文本自动换行
-- 【UI/UX】优化进度条加载动画
-- 【欢迎向导】欢迎向导完成页面加入快速链接
-- 【API/提醒】优化提醒提供方 API
-
-## 移除的功能
-
-- 【应用帮助】删除应用内置的帮助文档，现改为提供[在线文档](https://docs.classisland.tech)。
-- 【调试】移除了在 Release 配置的构建中的调试终端。要使用调试终端，请切换到 Debug 配置进行构建。
-
-## Bug 修复
-
-- 【主界面】修复启动加载时主界面显示 System.Object 的问题
-- 【档案编辑】修复退出课表编辑时崩溃的问题
-- 【档案编辑】修复集控禁用科目编辑后，仍能通过粘贴添加科目的漏洞
-- 【档案编辑】删除日期选择器中的失效日期逻辑
-- 【档案编辑】修复在课表编辑界面中科目下拉框科目名变为 GUID 的问题
-- 【更新】修复部分更新节点无法测速的问题
-- 【更新】修复更新完成后无法删除更新临时文件的问题 ([#269](https://github.com/ClassIsland/ClassIsland/issues/269))
-- 【提醒】修复提醒队列顺序混乱的问题 ([#250](https://github.com/ClassIsland/ClassIsland/issues/250))
-- 【提醒】修复第一节课没有准备上课提醒的问题
-- 【提醒】修复在准备上课提醒结束时显示下节课的问题
-- 【提醒】修复提醒强调特效会导致托盘菜单关闭的问题
-- 【应用】修复文件占用判断不支持中文的问题
-- 【应用】修复迁移设置后在重启时覆盖默认档案的问题 ([#251](https://github.com/ClassIsland/ClassIsland/issues/251))
-- 【应用】修复不能正常判断是否处于放学状态的问题
-- 【应用】修复在有时间偏移时，同步时间时对当前时间判断错误的问题
-- 【应用】修复在显示主窗口前通过 `CommonDialog` 显示对话框导致应用退出的问题
-- 【应用】修复在调整显示器缩放时报错的问题 [#217](https://github.com/ClassIsland/ClassIsland/issues/217)
-- 【应用】修复内存溢出后无法正常重启的问题 [#230](https://github.com/ClassIsland/ClassIsland/issues/230)
-- 【应用】修复在保存配置文件时配置文件会意外丢失的问题
-- 【应用】修复频繁触发配置文件保存的问题
-- 【应用】修复左键点击托盘图标显示主菜单有延迟的问题 [(#199)](https://github.com/ClassIsland/ClassIsland/issues/199)
-- 【主题色提取】修复在选择的取色色盘索引为 -1 时无法提取主题色的问题
-- 【调试】修复调试时间中网络时间相关问题
-- 【UI】修复自定义启动加载界面文本输入框不等长的细节
-- 【UI】修复在点击正常的 `Hyperlink` 时也会触发应用内导航的问题 [#216](https://github.com/ClassIsland/ClassIsland/issues/216)
-- 【UI】加回应用窗口设置中的任务栏实时时间
-- 【UI】修复加载指示条不随主题色变化的问题
-- 【UI】修复应用设置窗口最大化时不取消折叠的问题
-- 【组件/课表】修复在永久换课时课表不更新课程信息的问题 ([#265](https://github.com/ClassIsland/ClassIsland/issues/265))
-- 【组件/课表】修复在课间休息时无法显示时间点持续时间的问题
-- 【组件/课表】修复一些字体导致课表组件出现滚动条的问题 [#196](https://github.com/ClassIsland/ClassIsland/issues/196) 
-- 【组件/课表】修复课程表组件小时时间部分向上取整导致显示错误的问题 [(#209)](https://github.com/ClassIsland/ClassIsland/issues/209)
-- 【时间同步】修复在有时间偏移时同步时间会导致时间错误的问题
-- 【系统】修复释放 Mutex 时报错的问题
-
-> [!note]
-> 如果您正在从 1.4 升级到此版本，您的【快速信息】设置会被自动迁移到【组件】上。
+- 【档案编辑器】[#684](https://github.com/ClassIsland/ClassIsland/issues/684) 修复使用「调课」功能切换临时课表后无法调课的问题
+- 【档案编辑器】[#685](https://github.com/ClassIsland/ClassIsland/issues/685) 修复「调课」功能日历视图不能响应修改课程造成的课程表变动的问题
+- 【档案编辑器】修复删除时间点时卡顿的问题
+- 【档案编辑器】修复时间线视图拖动时间点会自动拉动非相邻时间点的问题
+- 【组件】修复时钟组件在拉伸对齐时显示不正常的问题
+- 【组件/课表】修复时间点附加信息 - 持续时间可能出现小数的问题 ([#430](https://github.com/ClassIsland/ClassIsland/issues/430))
+- 【组件/课表】[#677](https://github.com/ClassIsland/ClassIsland/issues/677) 修复课程表组件<显示的课程>与<当日课程结束的占位符内容>重叠的问题
+- 【档案】修复删除临时层时间表中的时间点时可能出错的问题
+- 【主界面】修复置底失效的问题
+- 【插件】修复加载损坏的插件配置导致应用无法启动的问题 ([#565](https://github.com/ClassIsland/ClassIsland/issues/565))
+- 【课程服务】修复在启动时课程服务因没有更新课表，导致获取到错误的信息的问题
+- 【应用设置】修复应用设置导航栏排序可能不正常的问题
+- 【应用设置】修复隐藏窗口选项 CheckBox 间距不一的问题
+- 【应用设置】修复组件界面拖拽插入位置异常的问题
+- 【应用设置/调试】修复特定情况下特性调试窗口打开报错的问题 ([#455](https://github.com/ClassIsland/ClassIsland/issues/455))
+- 【构建】修复 Edge_tts_sharp 项目还原问题
+- 【主菜单】缓解托盘菜单弹出偏移的问题
+- 【IPC】修复同时打开多个 ClassIsland 导致 IPC 广播消息时崩溃的问题 ([#475](https://github.com/ClassIsland/ClassIsland/issues/475))
+- 【UI】修复托盘菜单弹出位置可能偏移的问题
+- 【UI】修复天气图标可能与主题色相近的问题
+- 【提醒】[#667](https://github.com/ClassIsland/ClassIsland/issues/667) 修复提醒的正文显示时间为 0 时无法执行的问题
+- 【提醒】修复空时间段没有准备上课提醒的问题
+- 【应用更新】修复检查更新后上次检查更新时间不刷新的问题
+- 【插件市场】[#654](https://github.com/ClassIsland/ClassIsland/issues/654) 修复官方插件源丢失的问题
+- 【API/UI】修复 SolidColorBrushToColorConverter 可能发生空值转换的问题

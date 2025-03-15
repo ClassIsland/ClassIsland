@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -88,11 +88,10 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         var visual = FindResource(key) as FrameworkElement;
         Element = visual;
         Timer.Tick += TimerOnTick;
-        if (key == "ClassPrepareNotifyOverlay")
+        if (key is "ClassPrepareNotifyOverlay" or "ClassOffOverlay")
         {
             Timer.Start();
         }
-
     }
 
     private void TimerOnTick(object? sender, EventArgs e)
@@ -129,7 +128,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
             if (span.Minutes > 0) sb.Append($" {span.Minutes} 分钟");
             if (span.Seconds > 0) sb.Append($" {span.Seconds} 秒");
             var s = sb.ToString();
-            return s.StartsWith(" ") ? s[1..] : s;
+            return s.StartsWith(' ') ? s[1..] : s;
         }
     }
 }

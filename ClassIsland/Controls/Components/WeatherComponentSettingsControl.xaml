@@ -16,6 +16,7 @@
             <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}">
                 <materialDesign:ColorZone Background="#204169e1" 
                                           Panel.ZIndex="1" 
+                                          CornerRadius="4"
                                           Margin="0 0 0 5">
                     <Grid>
                         <DockPanel Margin="8 4">
@@ -35,8 +36,26 @@
                     </Grid>
                 </materialDesign:ColorZone>
                 <ci:SettingsCard IconGlyph="AlertCircleCheckOutline" Header="显示预警信号"
-                                 Description="启用后,预警将以图标形式显示在天气组件上"
+                                 Description="启用后，预警将以图标形式显示在天气组件上。"
+                                 Margin="0 0 0 6"
                                  IsOn="{Binding Settings.ShowAlerts, Mode=TwoWay}"/>
+                <ci:SettingsCard IconGlyph="MessageAlertOutline"
+                                 Header="显示预警类型"
+                                 Description="设置何种情况下显示预警类型。"
+                                 Margin="0 0 0 6">
+                    <ci:SettingsCard.Switcher>
+                        <Grid>
+                            <ComboBox SelectedIndex="{Binding Settings.AlertsTitleShowMode}">
+                                <ComboBoxItem>不显示</ComboBoxItem>
+                                <ComboBoxItem>当使用默认图标时</ComboBoxItem>
+                                <ComboBoxItem>总是显示</ComboBoxItem>
+                            </ComboBox>
+                        </Grid>
+                    </ci:SettingsCard.Switcher>
+                </ci:SettingsCard>
+                <ci:SettingsCard IconGlyph="WeatherPouring" Header="显示降水提示"
+                                 Description="启用后，将显示降水即将到来的时间和降水剩余时间。正数代表降水即将到来的时间，负数代表剩余时间。"
+                                 IsOn="{Binding Settings.ShowRainTime, Mode=TwoWay}"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>
