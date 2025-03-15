@@ -900,6 +900,11 @@ public partial class MainWindow : Window
         ViewModel.IsClosing = true;
         Close();
     }
+    private void MenuItemRestartApp_OnClick(object sender, RoutedEventArgs e)
+    {
+        
+        AppBase.Current.Restart();
+    }
 
     private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
     {
