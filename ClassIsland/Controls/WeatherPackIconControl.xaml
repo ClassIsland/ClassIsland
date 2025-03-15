@@ -164,7 +164,7 @@
                          Value="28">
                             <Setter Property="Kind" Value="WeatherSnowyHeavy"/>
                         </DataTrigger>
-                        <!-- 浮沉 -->
+                        <!-- 浮尘 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="29">
                             <Setter Property="Kind" Value="WeatherDust"/>
@@ -189,7 +189,7 @@
                          Value="33">
                             <Setter Property="Kind" Value="WeatherTornado"/>
                         </DataTrigger>
-                        <!-- 若高吹雪 -->
+                        <!-- 弱高吹雪 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="34">
                             <Setter Property="Kind" Value="WeatherSnowy"/>
@@ -203,6 +203,16 @@
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="53">
                             <Setter Property="Kind" Value="WeatherHazy"/>
+                        </DataTrigger>
+                        <!-- 雨 -->
+                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                         Value="301">
+                            <Setter Property="Kind" Value="WeatherRainy"/>
+                        </DataTrigger>
+                        <!-- 雪 -->
+                        <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                         Value="302">
+                            <Setter Property="Kind" Value="WeatherSnowy"/>
                         </DataTrigger>
                         <!-- 未知 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
