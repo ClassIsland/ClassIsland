@@ -921,7 +921,6 @@ public partial class MainWindow : Window
     }
     private void MenuItemRestartApp_OnClick(object sender, RoutedEventArgs e)
     {
-        
         AppBase.Current.Restart();
     }
 
