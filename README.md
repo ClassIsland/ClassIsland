@@ -182,7 +182,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-21-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-22-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -220,6 +220,9 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://itshenryz.com"><img src="https://avatars.githubusercontent.com/u/58730749?v=4?s=100" width="100px;" alt="itsHenry"/><br /><sub><b>itsHenry</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=itsHenry35" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://blog.tsxc.xyz"><img src="https://avatars.githubusercontent.com/u/94750616?v=4?s=100" width="100px;" alt="星澜曦光"/><br /><sub><b>星澜曦光</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=tsxc-github" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kaokao221"><img src="https://avatars.githubusercontent.com/u/88539021?v=4?s=100" width="100px;" alt="kaokao221"/><br /><sub><b>kaokao221</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=kaokao221" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AWDNDWindowsXP"><img src="https://avatars.githubusercontent.com/u/132193112?v=4?s=100" width="100px;" alt="爱玩电脑的WindowsXP"/><br /><sub><b>爱玩电脑的WindowsXP</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=AWDNDWindowsXP" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
