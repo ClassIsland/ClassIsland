@@ -86,7 +86,15 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var settingsOutDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ?
                 settings!.ClassPreparingDeltaTime
                 : Settings.OutDoorClassPreparingDeltaTime;
-        var message = IsOutDoor ? settingsSource.OutdoorClassOnPreparingText : settingsSource.ClassOnPreparingText;
+        string message;
+        if (IsOutDoor)
+        {
+            message = settingsSource.OutdoorClassOnPreparingText;
+        }
+        else
+        {
+            message = settingsSource.ClassOnPreparingText;
+        }
         var settingsDeltaTime = LessonsService.NextClassSubject.IsOutDoor
             ? settingsOutDoorClassPreparingDeltaTime
             : settingsInDoorClassPreparingDeltaTime;
