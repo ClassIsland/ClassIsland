@@ -174,9 +174,10 @@ public partial class App : AppBase, IAppHost
     "arm"
 #elif PLATFORM_Any
     "any"
-#elif RELEASE
-#error "在发布构建中不应出现未知架构"
 #else
+    #if PublishBuilding
+    #error "在发布构建中不应出现未知架构"
+    #endif
     "unknown"
 #endif
         ;
