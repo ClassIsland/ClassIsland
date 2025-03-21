@@ -44,6 +44,8 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         Interval = TimeSpan.FromMinutes(10)
     };
 
+    private bool _isSyncingTime = false;
+
     public string SyncStatusMessage
     {
         get => _syncStatusMessage;
@@ -139,6 +141,12 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
             return;
         }
 
+        if (_isSyncingTime)
+        {
+            return;
+        }
+        _isSyncingTime = true;
+
         Logger.LogInformation("正在从 {} 同步时间", SettingsService.Settings.ExactTimeServer);
         SyncStatusMessage = $"正在同步时间……";
         var prev = SettingsService.Settings.IsExactTimeEnabled ? NtpClock.Now.LocalDateTime : DateTime.Now;
@@ -165,6 +173,7 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
             LastSystemTime = DateTime.Now;
             TimeGetStopwatch.Restart();
             WaitingForSystemTimeChanged = false;
+            _isSyncingTime = false;
         }
     }
 
@@ -176,7 +185,8 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
             if (Math.Abs((LastSystemTime - systemTime).TotalMilliseconds - TimeGetStopwatch.ElapsedMilliseconds) > 30_000.0 && !WaitingForSystemTimeChanged)
             {
                 WaitingForSystemTimeChanged = true;
-                Logger.LogInformation("检测到系统时间突变，已暂停返回的时间");
+                Logger.LogInformation("检测到系统时间突变，已暂停返回的时间并重新同步时间");
+                Task.Run(Sync);
             }
             if (WaitingForSystemTimeChanged)
             {
