@@ -96,16 +96,28 @@
                             </controls1:SettingsControl>
                             <!-- 准备上课提醒文字 -->
                             <TextBox Text="{Binding Settings.ClassOnPreparingText}"
-                                     materialDesign:HintAssist.Hint="准备上课提醒文字（留空以禁用）"
+                                     materialDesign:HintAssist.Hint="室内课程准备上课提醒文字（留空以禁用）"
                                      Foreground="{DynamicResource MaterialDesignBody}"
                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                      Margin="0 0 0 6" />
                             <!-- 准备上课遮罩文字 -->
                             <TextBox Text="{Binding Settings.ClassOnPreparingMaskText}"
-                                     materialDesign:HintAssist.Hint="准备上课遮罩文字"
+                                     materialDesign:HintAssist.Hint="室内课程准备上课遮罩文字"
                                      Foreground="{DynamicResource MaterialDesignBody}"
                                      Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                      Margin="0 0 0 6" />
+                            <!-- 户外课程准备上课提醒文字 -->
+                            <TextBox Text="{Binding Settings.OutdoorClassOnPreparingText}"
+                                    materialDesign:HintAssist.Hint="户外课程准备上课提醒文字（留空以禁用）"
+                                    Foreground="{DynamicResource MaterialDesignBody}"
+                                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Margin="0 0 0 6" />
+                            <!-- 户外课程准备上课遮罩文字 -->
+                            <TextBox Text="{Binding Settings.OutdoorClassOnPreparingMaskText}"
+                                     materialDesign:HintAssist.Hint="户外课程准备上课遮罩文字"
+                                    Foreground="{DynamicResource MaterialDesignBody}"
+                                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                    Margin="0 0 0 6" />
                         </StackPanel>
                     </Expander>
                 </materialDesign:Card>
