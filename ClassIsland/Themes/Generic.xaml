@@ -335,6 +335,7 @@
                                                     Margin="20"
                                                     VerticalAlignment="Stretch"
                                                     HorizontalAlignment="Stretch"
+                                                    IsSticky="{Binding IsSticky, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     TimePoint="{Binding SelectedItem, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"
                                                     TimeLayout="{Binding ItemsSource, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:TimeLineListControl}}"

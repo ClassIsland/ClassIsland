@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -121,10 +122,19 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         if (oldSettings != null)
         {
             oldSettings.PropertyChanged -= SettingsOnPropertyChanged;
+            if (oldSettings.Children != null)
+            {
+                oldSettings.Children.CollectionChanged -= ChildrenOnCollectionChanged;
+            }
         }
+        RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
         if (Settings == null)
             return;
         Settings.PropertyChanged += SettingsOnPropertyChanged;
+        if (Settings.Children != null)
+        {
+            Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
+        }
         var content = IAppHost.GetService<IComponentsService>().GetComponent(Settings, IsPresentingSettings);
         // 理论上展示的内容的数据上下文应为MainWindow，这里不便用前端xaml绑定，故在后台设置。
         if (content != null && IsOnMainWindow)
@@ -136,9 +146,18 @@ public partial class ComponentPresenter : UserControl, INotifyPropertyChanged
         UpdateTheme();
     }
 
+    private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
+    }
+
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         UpdateTheme();
+        if (e.PropertyName == nameof(Settings.RelativeLineNumber))
+        {
+            RaiseEvent(new RoutedEventArgs(ComponentVisibilityChangedEvent));
+        }
     }
 
     private void UpdateTheme()

@@ -238,67 +238,74 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         IsWorking = true;
         Logger.LogInformation("正在提取壁纸主题色。");
 
-        await Task.Run(() =>
+        try
         {
-            var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
-                : SettingsService.Settings.IsFallbackModeEnabled ?
-                (GetFallbackWallpaper())
-                :
-                (GetScreenShot(
-                    SettingsService.Settings.WallpaperClassName == ""
-                    ? DesktopWindowClassName
-                    : SettingsService.Settings.WallpaperClassName
-                ));
-            if (bitmap is null)
+            await Task.Run(() =>
             {
-                Logger.LogError("获取壁纸失败。");
-                return;
-            }
-
-            double dpiX = 1, dpiY = 1;
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                var mw = (MainWindow)Application.Current.MainWindow!;
-                mw.GetCurrentDpi(out dpiX, out dpiY);
-            });
-            WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap, bitmap.Width);
-            var w = new Stopwatch();
-            w.Start();
-            var right = SettingsService.Settings.TargetLightValue - 0.5;
-            var left = SettingsService.Settings.TargetLightValue + 0.5;
-            var r = ColorOctTreeNode.ProcessImage(bitmap)
-                .OrderByDescending(i =>
+                var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
+                    : SettingsService.Settings.IsFallbackModeEnabled ?
+                        (GetFallbackWallpaper())
+                        :
+                        (GetScreenShot(
+                            SettingsService.Settings.WallpaperClassName == ""
+                                ? DesktopWindowClassName
+                                : SettingsService.Settings.WallpaperClassName
+                        ));
+                if (bitmap is null)
                 {
-                    var c = (Color)ColorConverter.ConvertFromString(i.Key);
-                    WallpaperPickingService.ColorToHsv(c, out var h, out var s, out var v);
-                    return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
-                })
-                .ThenByDescending(i => i.Value)
-                .ToList();
-            WallpaperColorPlatte.Clear();
-            for (var i = 0; i < Math.Min(r.Count, 5); i++)
-            {
-                WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
-            }
-        });
+                    Logger.LogError("获取壁纸失败。");
+                    return;
+                }
 
-        // Update cached platte
-        if (SettingsService.Settings.WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
-            WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
-            SettingsService.Settings.SelectedPlatteIndex < 0 ||
-            SettingsService.Settings.WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex] !=
-            WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex])
-        {
-            SettingsService.Settings.WallpaperColorPlatte.Clear();
-            foreach (var i in WallpaperColorPlatte)
+                double dpiX = 1, dpiY = 1;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    var mw = (MainWindow)Application.Current.MainWindow!;
+                    mw.GetCurrentDpi(out dpiX, out dpiY);
+                });
+                WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap, bitmap.Width);
+                var w = new Stopwatch();
+                w.Start();
+                var right = SettingsService.Settings.TargetLightValue - 0.5;
+                var left = SettingsService.Settings.TargetLightValue + 0.5;
+                var r = ColorOctTreeNode.ProcessImage(bitmap)
+                    .OrderByDescending(i =>
+                    {
+                        var c = (Color)ColorConverter.ConvertFromString(i.Key);
+                        ColorToHsv(c, out var h, out var s, out var v);
+                        return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
+                    })
+                    .ThenByDescending(i => i.Value)
+                    .ToList();
+                WallpaperColorPlatte.Clear();
+                for (var i = 0; i < Math.Min(r.Count, 5); i++)
+                {
+                    WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
+                }
+            });
+
+            // Update cached platte
+            if (SettingsService.Settings.WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
+                WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
+                SettingsService.Settings.SelectedPlatteIndex < 0 ||
+                SettingsService.Settings.WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex] !=
+                WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex])
             {
-                SettingsService.Settings.WallpaperColorPlatte.Add(i);
+                SettingsService.Settings.WallpaperColorPlatte.Clear();
+                foreach (var i in WallpaperColorPlatte)
+                {
+                    SettingsService.Settings.WallpaperColorPlatte.Add(i);
+                }
+                SettingsService.Settings.SelectedPlatteIndex = 0;
             }
-            SettingsService.Settings.SelectedPlatteIndex = 0;
-        }
         
-        IsWorking = false;
-        GC.Collect();
+            IsWorking = false;
+            GC.Collect();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "无法提取壁纸主题色");
+        }
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

@@ -47,6 +47,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private int _dataGridWeekRowsWeekIndex = 0;
     private bool _isClassPlanTempEditPopupOpen = false;
     private string _targetSubjectIndex = "";
+    private bool _isTimeLineSticky = true;
 
     public object DrawerContent
     {
@@ -445,6 +446,17 @@ public class ProfileSettingsViewModel : ObservableRecipient
         {
             if (value == _targetSubjectIndex) return;
             _targetSubjectIndex = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsTimeLineSticky
+    {
+        get => _isTimeLineSticky;
+        set
+        {
+            if (value == _isTimeLineSticky) return;
+            _isTimeLineSticky = value;
             OnPropertyChanged();
         }
     }

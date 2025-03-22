@@ -112,7 +112,7 @@ public class PluginService : IPluginService
             if (info.IsUninstalling)
             {
                 Directory.Delete(pluginDir, true);
-                return;
+                continue;
             }
             if (IPluginService.LoadedPluginsIds.Contains(manifest.Id))
                 continue;
