@@ -121,9 +121,17 @@ public class ManagementService : IManagementService
 
     private void ConnectionOnCommandReceived(object? sender, ClientCommandEventArgs e)
     {
-        if (e.Type == CommandTypes.RestartApp)
+        switch (e.Type)
         {
-            AppBase.Current.Restart(true);
+            case CommandTypes.RestartApp:
+            {
+                AppBase.Current.Restart(true);
+                break;
+            }
+            case CommandTypes.DataUpdated:
+                Logger.LogInformation("Received DataUpdated command.");
+                ReloadManagementAsync();
+            break;
         }
     }
 
@@ -143,21 +151,30 @@ public class ManagementService : IManagementService
             SetupLocalManagement();
             return;
         }
-        
-        Logger.LogInformation("正在初始化集控");
-        // 读取集控清单
-        Manifest = LoadConfig<ManagementManifest>(ManagementManifestPath);
-        Policy = LoadConfig<ManagementPolicy>(ManagementPolicyPath);
-        Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
 
+        Logger.LogInformation("正在初始化集控");
+
+        await ReloadManagementAsync();
+    }
+
+    public async Task ReloadManagementAsync()
+    {
+        Logger.LogInformation("正在重载集控配置");
         if (Connection == null)
         {
             return;
         }
 
+        //Load old config
+        ManagementManifest oldManifest = Manifest;
+        ManagementPolicy oldPolicy = Policy;
+        ManagementVersions oldVersions = Versions;
+
         try
         {
-            // 拉取集控清单
+            Manifest = LoadConfig<ManagementManifest>(ManagementManifestPath);
+            Policy = LoadConfig<ManagementPolicy>(ManagementPolicyPath);
+            Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
             Manifest = await Connection.GetManifest();
             SaveConfig(ManagementManifestPath, Manifest);
             // 拉取策略
@@ -168,8 +185,13 @@ public class ManagementService : IManagementService
         }
         catch (Exception e)
         {
+            Manifest = oldManifest;
+            Policy = oldPolicy;
+            Versions = oldVersions;
             Logger.LogError(e, "拉取集控清单与策略失败");
+            return;
         }
+
     }
 
     public void SaveSettings()
@@ -219,6 +241,7 @@ public class ManagementService : IManagementService
         }
         SaveConfig(ManagementSettingsPath, w);
         CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
+        await SetupManagement();
 
         AppBase.Current.Restart();
     }
