@@ -275,6 +275,50 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public double WeatherLongitude
+    {
+        get => _weatherLongitude;
+        set
+        {
+            if (value.Equals(_weatherLongitude)) return;
+            _weatherLongitude = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double WeatherLatitude
+    {
+        get => _weatherLatitude;
+        set
+        {
+            if (value.Equals(_weatherLatitude)) return;
+            _weatherLatitude = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WeatherLocationSource
+    {
+        get => _weatherLocationSource;
+        set
+        {
+            if (value == _weatherLocationSource) return;
+            _weatherLocationSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AutoRefreshWeatherLocation
+    {
+        get => _autoRefreshWeatherLocation;
+        set
+        {
+            if (value == _autoRefreshWeatherLocation) return;
+            _autoRefreshWeatherLocation = value;
+            OnPropertyChanged();
+        }
+    }
+
     #region Gerneral
 
     public DateTime SingleWeekStartTime
@@ -1674,6 +1718,10 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     bool _isIgnoreWorkAreaEnabled;
     private int _criticalSafeModeMethod = 0;
     private bool _notificationUseStandaloneEffectUiThread = true;
+    private double _weatherLongitude = 0.0;
+    private double _weatherLatitude = 0.0;
+    private int _weatherLocationSource = 0;
+    private bool _autoRefreshWeatherLocation = false;
 
     public bool IsIgnoreWorkAreaEnabled
     {

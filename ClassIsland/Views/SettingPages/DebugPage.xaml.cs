@@ -53,12 +53,13 @@ public partial class DebugPage : SettingsPageBase
     private ILessonsService LessonsService { get; }
 
     public IProfileAnalyzeService ProfileAnalyzeService { get; }
+    public ILocationService LocationService { get; }
 
     private IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
 
     public DebugPageViewModel ViewModel { get; } = new();
 
-    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService)
+    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService, ILocationService locationService)
     {
         InitializeComponent();
         DataContext = this;
@@ -67,6 +68,7 @@ public partial class DebugPage : SettingsPageBase
         ConsoleService = consoleService;
         LessonsService = lessonsService;
         ProfileAnalyzeService = profileAnalyzeService;
+        LocationService = locationService;
     }
 
     private void ButtonCloseDebug_OnClick(object sender, RoutedEventArgs e)
@@ -257,5 +259,11 @@ public partial class DebugPage : SettingsPageBase
     private void MenuItemShowTestNotification_OnClick(object sender, RoutedEventArgs e)
     {
         IAppHost.GetService<ITaskBarIconService>().ShowNotification("Title", "Content", clickedCallback:() => CommonDialog.ShowInfo("Clicked!"));
+    }
+
+    private async void MenuItemTryGetLocation_OnClick(object sender, RoutedEventArgs e)
+    {
+        var location = await LocationService.GetLocationAsync();
+        CommonDialog.ShowInfo(location.ToString());
     }
 }

@@ -522,6 +522,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<UriTriggerHandlerService>();
                 services.AddSingleton<SignalTriggerHandlerService>();
                 services.AddSingleton<IAnnouncementService, AnnouncementService>();
+                services.AddSingleton<ILocationService, LocationService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddSingleton<SplashWindow>();

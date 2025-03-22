@@ -8,6 +8,7 @@ public class WeatherSettingsViewModel : ObservableRecipient
 {
     private List<City> _citySearchResults = new();
     private bool _isSearchingWeather = false;
+    private bool _hideLocationPos = true;
 
     public List<City> CitySearchResults
     {
@@ -27,6 +28,17 @@ public class WeatherSettingsViewModel : ObservableRecipient
         {
             if (value == _isSearchingWeather) return;
             _isSearchingWeather = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool HideLocationPos
+    {
+        get => _hideLocationPos;
+        set
+        {
+            if (value == _hideLocationPos) return;
+            _hideLocationPos = value;
             OnPropertyChanged();
         }
     }

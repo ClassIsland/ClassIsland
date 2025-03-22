@@ -11,6 +11,7 @@ using ClassIsland.Core.Models.Weather;
 using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -25,6 +26,8 @@ public partial class WeatherSettingsPage : SettingsPageBase
     public SettingsService SettingsService { get; }
 
     public IWeatherService WeatherService { get; }
+    public ILocationService LocationService { get; }
+    public ILogger<WeatherSettingsPage> Logger { get; }
 
     // [搜索城市或地区] TextBox的全局变量 用于防抖
     private TextBox GlobalTextBoxSearchCity { get; set; } = null!;
@@ -32,11 +35,13 @@ public partial class WeatherSettingsPage : SettingsPageBase
     // [搜索城市或地区] 防抖定时器
     private DispatcherTimer SearchDebounceTimer { get; set; } = null!;
 
-    public WeatherSettingsPage(SettingsService settingsService, IWeatherService weatherService)
+    public WeatherSettingsPage(SettingsService settingsService, IWeatherService weatherService, ILocationService locationService, ILogger<WeatherSettingsPage> logger)
     {
         InitializeComponent();
         DataContext = this;
         WeatherService = weatherService;
+        LocationService = locationService;
+        Logger = logger;
         SettingsService = settingsService;
         // [搜索城市或地区] 初始化防抖定时器
         Loaded += WeatherSettingsPage_Loaded;
@@ -112,5 +117,24 @@ public partial class WeatherSettingsPage : SettingsPageBase
         }
         SettingsService.Settings.CityName = city.Name;
         await WeatherService.QueryWeatherAsync();
+    }
+
+    private async void ButtonGetCurrentPos_OnClick(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var pos = await LocationService.GetLocationAsync();
+            SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
+            SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
+        }
+        catch (Exception exception)
+        {
+            Logger.LogError(exception, "无法获取当前位置");
+        }
+    }
+
+    private void ButtonShowPos_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.HideLocationPos = false;
     }
 }

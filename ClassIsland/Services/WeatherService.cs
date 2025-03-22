@@ -28,6 +28,7 @@ public class WeatherService : IHostedService, IWeatherService
 
     private ILogger<WeatherService> Logger { get; }
     public IRulesetService RulesetService { get; }
+    public ILocationService LocationService { get; }
 
     private DispatcherTimer UpdateTimer { get; } = new()
     {
@@ -36,10 +37,11 @@ public class WeatherService : IHostedService, IWeatherService
 
     public bool IsWeatherRefreshed { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService)
+    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService, ILocationService locationService)
     {
         Logger = logger;
         RulesetService = rulesetService;
+        LocationService = locationService;
         SettingsService = settingsService;
         LoadData();
         RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
