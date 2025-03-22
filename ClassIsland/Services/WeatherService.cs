@@ -137,7 +137,8 @@ public class WeatherService : IHostedService, IWeatherService
             var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(new Uri(uri));
             // 取第一个城市信息
             var cityInfo = cityInfoList.FirstOrDefault();
-            if (cityInfo != null && (Settings.WeatherLocationSource != 0 || cityInfo.LocationKey == Settings.CityId))
+            if (cityInfo != null && (Settings.WeatherLocationSource != 0 || cityInfo.LocationKey == Settings.CityId)
+                && !string.IsNullOrWhiteSpace(cityInfo.LocationKey))
             {
                 cityLatitude = cityInfo.Latitude;
                 cityLongitude = cityInfo.Longitude;

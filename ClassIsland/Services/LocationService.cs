@@ -26,11 +26,16 @@ public class LocationService : ILocationService
                 }
             }, cancel.Token);
             var coord = watcher.Position.Location;
-            return new LocationCoordinate()
+            var locationCoordinate = new LocationCoordinate()
             {
                 Longitude = coord.Longitude,
                 Latitude = coord.Latitude
             };
+            if (double.IsNaN(locationCoordinate.Latitude) || double.IsNaN(locationCoordinate.Longitude))
+            {
+                throw new InvalidOperationException("获取的位置信息无效，可能是定位服务未开启或系统不支持");
+            }
+            return locationCoordinate;
         }
         finally
         {
