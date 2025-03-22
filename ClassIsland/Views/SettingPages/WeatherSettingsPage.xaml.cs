@@ -126,6 +126,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
             var pos = await LocationService.GetLocationAsync();
             SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
             SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
+            await WeatherService.QueryWeatherAsync();
         }
         catch (Exception exception)
         {

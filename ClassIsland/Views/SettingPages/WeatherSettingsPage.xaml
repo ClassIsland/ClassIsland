@@ -166,29 +166,30 @@
                     </Expander.Header>
                     <StackPanel Margin="36 0 48 12">
                         <!-- 城市选择 -->
-                        <controls1:SettingsControl IconGlyph="MapOutline" Header="城市选择"
+                        <controls1:SettingsControl IconGlyph="HomeCityOutline" Header="城市选择"
                                                 Description="选择当前所在的城市，以用于天气查询。"
                                                 Margin="0 0 0 6"
                                                 IsCompact="True">
-                            <controls1:SettingsControl.Style>
-                                <Style TargetType="controls1:SettingsControl">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.WeatherLocationSource}"
-                                                     Value="0">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </Style>
-                            </controls1:SettingsControl.Style>
                             <controls1:SettingsControl.Switcher>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="{Binding SettingsService.Settings.CityName}"
                                                VerticalAlignment="Center" />
                                     <Button Content="{materialDesign:PackIcon EditOutline}" ToolTip="编辑"
                                             Margin="6 0 0 0"
-                                            Style="{StaticResource MaterialDesignFlatButton}"
-                                            Click="ButtonEditCurrentCity_OnClick" />
+                                            Click="ButtonEditCurrentCity_OnClick"
+                                            Foreground="{DynamicResource PrimaryHueMidBrush}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SettingsService.Settings.WeatherLocationSource}"
+                                                                     Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
                                 </StackPanel>
                             </controls1:SettingsControl.Switcher>
                         </controls1:SettingsControl>
