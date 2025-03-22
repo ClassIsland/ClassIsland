@@ -646,6 +646,7 @@
                                         <CheckBox Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                   ToolTip="启用插件"
                                                   Margin="4 0 0 0"
+                                                  VerticalAlignment="Bottom"
                                                   IsChecked="{Binding Value.IsEnabled}"/>
                                     </StackPanel>
                                 </Grid>
