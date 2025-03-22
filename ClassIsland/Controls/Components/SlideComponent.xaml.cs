@@ -40,9 +40,9 @@ public partial class SlideComponent
         set { SetValue(SelectedIndexProperty, value); }
     }
 
-    private List<int> _randomPlaylist = [];
+    private Queue<int> _randomPlaylist = [];
 
-    private bool _isPlayingReversed = false;
+    private int _playingDirection = 1;
 
     private DispatcherTimer Timer { get; } = new()
     {
@@ -65,53 +65,54 @@ public partial class SlideComponent
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
+        if (Settings.Children.Count <= 1)    // 没有或只有一个组件时不轮播
+        {
+            SelectedIndex = 0;
+            return;
+        }
+        bool[] flag = new bool[Settings.Children.Count];
+        int count = 0;
+        // flag用于避免重复检查，count用于记录已检查的组件数
+        do
+        {
+            // 不断尝试下一个组件直到找到一个可见的
+            ShowNext();
+            if (!flag[SelectedIndex]
+                && Settings.Children[SelectedIndex].HideOnRule
+                && RulesetService.IsRulesetSatisfied(Settings.Children[SelectedIndex].HidingRules))
+            {
+                flag[SelectedIndex] = true;
+                count++;
+            }
+            if (count >= Settings.Children.Count)
+            {   // 所有组件均不可见，退出循环
+                break;
+            }
+        }
+        while (flag[SelectedIndex]);
+    }
+
+    private void ShowNext()
+    {
         switch (Settings.SlideMode)
         {
+            case 0:  // 循环
+                SelectedIndex = SelectedIndex + 1 >= Settings.Children.Count ? 0 : SelectedIndex + 1;
+                break;
             case 1:  // 随机
-                if (Settings.Children.Count <= 0)
-                {
-                    break;
-                }
-
                 if (_randomPlaylist.Count <= 0)
                 {
                     CreateRandomPlaylist();
                 }
-
-                var i = _randomPlaylist[0];
-                _randomPlaylist.RemoveAt(0);
-                SelectedIndex = i;
+                SelectedIndex = _randomPlaylist.Dequeue();
                 break;
-            case 2:  //  往复
-                if (Settings.Children.Count <= 0)
-                {
-                    break;
+            case 2:  // 往复
+                int t = SelectedIndex + _playingDirection;
+                if (t < 0 || t >= Settings.Children.Count)
+                {    // 碰到边界时反向播放
+                    _playingDirection = -_playingDirection;
                 }
-
-                if (Settings.Children.Count <= 1)
-                {
-                    SelectedIndex = 0;
-                    break;
-                }
-                if (SelectedIndex + 1 >= Settings.Children.Count)
-                {
-                    _isPlayingReversed = true;
-                }
-                if (SelectedIndex - 1 < 0)
-                {
-                    _isPlayingReversed = false;
-                }
-                SelectedIndex += _isPlayingReversed ? -1 : 1;
-                break;
-            case 0:  // 循环
-                if (SelectedIndex + 1 >= Settings.Children.Count)
-                {
-                    SelectedIndex = 0;
-                }
-                else
-                {
-                    SelectedIndex++;
-                }
+                SelectedIndex += _playingDirection;
                 break;
         }
     }
@@ -133,23 +134,21 @@ public partial class SlideComponent
 
     private void CreateRandomPlaylist()
     {
-        _randomPlaylist.Clear();
         if (Settings.Children.Count <= 0)
         {
             return;
         }
-
-        Collection<int> list = [];
-        for (var i = 0; i < Settings.Children.Count; i++)
+        _randomPlaylist.Clear();
+        int[] list = new int[Settings.Children.Count];
+        for (int i = 0; i < Settings.Children.Count; i++)
         {
-            list.Add(i);
+            list[i] = i;
         }
-
-        while (list.Count > 0)
+        Random rand = new();
+        rand.Shuffle(list);
+        foreach (var i in list)
         {
-            var i = list[Random.Shared.Next(0, list.Count - 1)];
-            list.RemoveAt(Random.Shared.Next(0, list.Count - 1));
-            _randomPlaylist.Add(i);
+            _randomPlaylist.Enqueue(i);
         }
     }
 

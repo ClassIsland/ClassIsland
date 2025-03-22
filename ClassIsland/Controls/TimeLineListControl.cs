@@ -74,6 +74,15 @@ public class TimeLineListControl : ListBox
         set { SetValue(IsPanningModeEnabledProperty, value); }
     }
 
+    public static readonly DependencyProperty IsStickyProperty = DependencyProperty.Register(
+        nameof(IsSticky), typeof(bool), typeof(TimeLineListControl), new PropertyMetadata(default(bool)));
+
+    public bool IsSticky
+    {
+        get { return (bool)GetValue(IsStickyProperty); }
+        set { SetValue(IsStickyProperty, value); }
+    }
+
     public TimeLineListControl()
     {
         AddHandler(TimeLineListItemSeparatorAdornerControl.SeparatorLikeTimePointMovedEvent, new RoutedEventHandler(SeparatorLikeTimePointMovedEventHandler));

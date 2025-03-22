@@ -1450,7 +1450,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _currentAutomationConfig) return;
-            App.GetService<IAutomationService>().SaveConfig();
             _currentAutomationConfig = value;
             OnPropertyChanged();
         }

@@ -174,9 +174,10 @@ public partial class App : AppBase, IAppHost
     "arm"
 #elif PLATFORM_Any
     "any"
-#elif RELEASE
-#error "在发布构建中不应出现未知架构"
 #else
+    #if PublishBuilding
+    #error "在发布构建中不应出现未知架构"
+    #endif
     "unknown"
 #endif
         ;
@@ -866,17 +867,12 @@ public partial class App : AppBase, IAppHost
 
     private void ProcessInstanceExisted()
     {
-        var r = new CommonDialogBuilder()
-            .SetContent("ClassIsland已经在运行中，请勿重复启动第二个实例。\n\n要访问应用主菜单，请点击任务栏托盘中的应用图标。")
-            .SetIconKind(CommonDialogIconKind.Hint)
-            .AddAction("退出应用", PackIconKind.ExitToApp)
-            .AddAction("重启现有实例", PackIconKind.Restart, true)
-            .ShowDialog();
-        if (r != 1)
+        InstanceExistedWindow popup = new();
+        bool needRestart = popup.ShowDialog() ?? false;
+        if (!needRestart)
         {
             return;
         }
-
         try
         {
             var proc = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(Environment.ProcessPath)).Where(x=>x.Id != Environment.ProcessId);

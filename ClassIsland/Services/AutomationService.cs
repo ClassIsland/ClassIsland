@@ -28,7 +28,8 @@ namespace ClassIsland.Services;
 public class AutomationService : ObservableRecipient, IAutomationService
 {
     public static readonly string AutomationConfigsFolderPath = Path.Combine(App.AppConfigPath, "Automations/");
-    string CurrentConfigPath => Path.GetFullPath(Path.Combine(AutomationConfigsFolderPath, SettingsService.Settings.CurrentAutomationConfig + ".json"));
+    public string CurrentConfig { get; set; }
+    public string CurrentConfigPath => Path.GetFullPath(Path.Combine(AutomationConfigsFolderPath, CurrentConfig + ".json"));
 
     public AutomationService(ILogger<AutomationService> logger, IRulesetService rulesetService, SettingsService settingsService, IActionService actionService, IWindowRuleService windowRuleService)
     {
@@ -43,10 +44,12 @@ public class AutomationService : ObservableRecipient, IAutomationService
         RefreshConfigs();
 
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
-        Workflows.CollectionChanged += (_, _) => SaveConfig();
         SettingsService.Settings.PropertyChanged += (_, e) => {
             if (e.PropertyName == nameof(SettingsService.Settings.CurrentAutomationConfig))
+            {
+                SaveConfig();
                 LoadConfig();
+            }
         };
     }
 
@@ -77,6 +80,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         }
         Workflows.CollectionChanged -= WorkflowsOnCollectionChanged;
 
+        CurrentConfig = SettingsService.Settings.CurrentAutomationConfig;
         if (File.Exists(CurrentConfigPath))
         {
             Workflows = ConfigureFileHelper.LoadConfig<ObservableCollection<Workflow>>(CurrentConfigPath);
@@ -245,7 +249,7 @@ public class AutomationService : ObservableRecipient, IAutomationService
         var workflow = trigger.AssociatedWorkflow;
 
         if (!workflow.ActionSet.IsEnabled) return;
-        if (workflow.ActionSet.IsOn)
+        if (workflow.ActionSet.IsRevertEnabled && workflow.ActionSet.IsOn)
         {
             return;
         }
@@ -312,8 +316,8 @@ public class AutomationService : ObservableRecipient, IAutomationService
     public void SaveConfig(string note = "")
     {
         Logger.LogInformation(note == "" ?
-            $"写入自动化配置（{SettingsService.Settings.CurrentAutomationConfig}.json）" :
-            $"写入自动化配置（{SettingsService.Settings.CurrentAutomationConfig}.json）：{note}");
+            $"写入自动化配置（{CurrentConfig}.json）" :
+            $"写入自动化配置（{CurrentConfig}.json）：{note}");
         ConfigureFileHelper.SaveConfig(CurrentConfigPath, Workflows);
     }
 

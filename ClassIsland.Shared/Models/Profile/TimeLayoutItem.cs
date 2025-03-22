@@ -29,6 +29,10 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
             //EnsureTime(value, EndSecond);
             OnPropertyChanging();
             _startSecond = value;
+            if (TimeType is 2 or 3)
+            {
+                EndSecond = value;
+            }
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
         }

@@ -156,6 +156,7 @@
                 </MenuItem.Style>
             </MenuItem>
             <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon Restart}"  Header="重启" Click="MenuItemRestartApp_OnClick"/>
             <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
             <Separator Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试"

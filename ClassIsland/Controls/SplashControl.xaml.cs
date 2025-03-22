@@ -37,7 +37,7 @@ public partial class SplashControl : UserControl
 
     private void SplashServiceOnSplashEnded(object? sender, EventArgs e)
     {
-        Dispatcher.Invoke(() =>
+        Dispatcher.InvokeAsync(() =>
         {
             UpdateProgress(100, 0.1, (_, _) =>
             {
@@ -48,12 +48,13 @@ public partial class SplashControl : UserControl
 
     private void SplashServiceOnProgressChanged(object? sender, double e)
     {
-        Dispatcher.Invoke(() =>
+        Dispatcher.InvokeAsync(() =>
         {
             UpdateProgress(e, Math.Max((e - _lastProgress ) / 8, 0.5));
+            _lastProgressDelta = e - _lastProgress;
+            _lastProgress = e;
         });
-        _lastProgressDelta = e - _lastProgress;
-        _lastProgress = e;
+        
     }
 
     private void UpdateProgress(double e, double seconds, EventHandler? callBack = null)
