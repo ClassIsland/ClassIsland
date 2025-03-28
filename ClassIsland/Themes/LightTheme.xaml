@@ -5,4 +5,12 @@
                       BlurRadius="6"
                       ShadowDepth="0"
                       Color="#FF0" />
+
+    <!-- AQI 颜色 -->
+    <SolidColorBrush x:Key="AqiLevel1Brush">ForestGreen</SolidColorBrush>
+    <SolidColorBrush x:Key="AqiLevel2Brush">#cc0</SolidColorBrush>
+    <SolidColorBrush x:Key="AqiLevel3Brush">DarkOrange</SolidColorBrush>
+    <SolidColorBrush x:Key="AqiLevel4Brush">IndianRed</SolidColorBrush>
+    <SolidColorBrush x:Key="AqiLevel5Brush">DarkRed</SolidColorBrush>
+    <SolidColorBrush x:Key="AqiLevel6Brush">Purple</SolidColorBrush>
 </ResourceDictionary>

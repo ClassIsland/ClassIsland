@@ -18,4 +18,6 @@ public class WeatherInfo
     [JsonPropertyName("minutely")] public Minutely Minutely { get; set; } = new();
 
     [JsonIgnore] public DateTime UpdateTime => DateTimeOffset.FromUnixTimeMilliseconds(UpdateTimeUnix).LocalDateTime;
+
+    [JsonPropertyName("aqi")] public AqiInfo Aqi { get; set; } = new();
 }
