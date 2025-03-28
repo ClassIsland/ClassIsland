@@ -47,7 +47,7 @@
                         <Grid>
                             <ComboBox SelectedIndex="{Binding Settings.AlertsTitleShowMode}">
                                 <ComboBoxItem>不显示</ComboBoxItem>
-                                <ComboBoxItem>当使用默认图标时</ComboBoxItem>
+                                <ComboBoxItem>仅当没有对应图标时</ComboBoxItem>
                                 <ComboBoxItem>总是显示</ComboBoxItem>
                             </ComboBox>
                         </Grid>
