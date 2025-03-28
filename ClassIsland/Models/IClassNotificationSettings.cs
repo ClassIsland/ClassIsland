@@ -8,6 +8,8 @@ public interface IClassNotificationSettings : INotifyPropertyChanged
     bool IsClassOnPreparingNotificationEnabled { get; set; }
     bool IsClassOffNotificationEnabled { get; set; }
     string ClassOnPreparingText { get; set; }
+    string OutdoorClassOnPreparingText { get; set; }
+
 
     string ClassOnPreparingMaskText { get; set; }
     string ClassOnMaskText { get; set; }
