@@ -84,5 +84,12 @@
                     </StackPanel>
                 </ci:SettingsCard.Switcher>
             </ci:SettingsCard>
-        </StackPanel></ScrollViewer>
+            <!-- 使用旧版轮播行为 -->
+            <ci:SettingsCard IconGlyph="UndoVariant"
+                               Header="使用旧版轮播行为"
+                               Description="启用后，将使用旧版的轮播行为，只在轮播到对应组件时加载组件内容。如果当前的轮播组件出现问题，可尝试启用此选项回滚到旧版的行为。"
+                               IsOn="{Binding Settings.UseOldPresentingBehavior, Mode=TwoWay}"
+                               Margin="0 0 0 6" />
+        </StackPanel>
+    </ScrollViewer>
 </ci:ComponentBase>

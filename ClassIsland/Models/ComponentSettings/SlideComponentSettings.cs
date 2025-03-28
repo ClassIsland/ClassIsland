@@ -28,4 +28,6 @@ public partial class SlideComponentSettings : ObservableObject, IComponentContai
     [ObservableProperty] private bool _isStopOnRuleEnabled = false;
 
     [ObservableProperty] private Ruleset _stopRule = new();
+
+    [ObservableProperty] private bool _useOldPresentingBehavior = false;
 }
