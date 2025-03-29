@@ -210,7 +210,7 @@
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                    VerticalAlignment="Center" FontWeight="Regular">
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}">
-                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="m"/>
+                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="min"/>
                         </TextBlock>
                     </StackPanel>
                 </Border>
