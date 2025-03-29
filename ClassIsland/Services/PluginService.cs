@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -29,6 +31,8 @@ public class PluginService : IPluginService
     public static readonly string PluginManifestFileName = "manifest.yml";
 
     public static readonly string PluginConfigsFolderPath = Path.Combine(App.AppConfigPath, "Plugins");
+
+    internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 
     public static void ProcessPluginsInstall()
     {
@@ -86,6 +90,7 @@ public class PluginService : IPluginService
 
         var pluginDirs = Directory.EnumerateDirectories(PluginsRootPath)
             .Append(App.ApplicationCommand.ExternalPluginPath);
+        // 预处理插件信息
         foreach (var pluginDir in pluginDirs)
         {
             if (string.IsNullOrWhiteSpace(pluginDir))
@@ -121,13 +126,22 @@ public class PluginService : IPluginService
             if (!info.IsEnabled)
             {
                 info.LoadStatus = PluginLoadStatus.Disabled;
-                continue;
             }
+        }
+        var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
+        Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
 
+        // 加载插件
+        foreach (var id in loadOrder)
+        {
+            var info = IPluginService.LoadedPluginsInternal.First(x => x.Manifest.Id == id);
+            var manifest = info.Manifest;
+            var pluginDir = info.PluginFolderPath;
             try
             {
                 var fullPath = Path.GetFullPath(Path.Combine(pluginDir, manifest.EntranceAssembly));
-                var loadContext = new PluginLoadContext(fullPath);
+                var loadContext = new PluginLoadContext(info, fullPath);
+                PluginLoadContexts[info.Manifest.Id] = loadContext;
                 var asm = loadContext.LoadFromAssemblyName(
                     new AssemblyName(Path.GetFileNameWithoutExtension(fullPath)));
                 var entrance = asm.ExportedTypes.FirstOrDefault(x =>
@@ -176,5 +190,86 @@ public class PluginService : IPluginService
                 File.Delete(outputPath);
             ZipFile.CreateFromDirectory(plugin.PluginFolderPath, outputPath);
         });
+    }
+
+    private static List<string> ResolveLoadOrder(List<PluginInfo> plugins)
+    {
+        ValidateDependencies(plugins);
+        var filteredPlugins = plugins.Where(p => p.LoadStatus == PluginLoadStatus.NotLoaded).ToList();
+        return TopologicalSort(filteredPlugins);
+    }
+
+    private static void ValidateDependencies(List<PluginInfo> plugins)
+    {
+        foreach (var plugin in plugins)
+        {
+            foreach (var dep in plugin.Manifest.Dependencies.Where(x => x.IsRequired))
+            {
+                if (plugins.FirstOrDefault(x => x.Manifest.Id == dep.Id) != null) 
+                    continue;
+                plugin.Exception = new InvalidOperationException($"缺失插件依赖：{dep.Id}");
+                plugin.LoadStatus = PluginLoadStatus.Error;
+            }
+        }
+    }
+
+    private static List<string> TopologicalSort(
+        List<PluginInfo> plugins)
+    {
+        var pluginDict = plugins.ToDictionary(p => p.Manifest.Id);
+
+        var adjacency = new Dictionary<string, List<string>>();
+        var inDegree = new Dictionary<string, int>();
+
+        // 初始化图数据结构
+        foreach (var plugin in plugins)
+        {
+            adjacency[plugin.Manifest.Id] = [];
+            inDegree[plugin.Manifest.Id] = 0;
+        }
+
+        // 构建依赖图
+        foreach (var plugin in plugins)
+        {
+            foreach (var dep in plugin.Manifest.Dependencies.Where(dep => pluginDict.ContainsKey(dep.Id)))
+            {
+                AddEdge(dep.Id, plugin.Manifest.Id, adjacency, inDegree);
+            }
+        }
+
+        // Kahn算法进行拓扑排序
+        var queue = new Queue<string>(inDegree.Where(kv => kv.Value == 0).Select(kv => kv.Key));
+        var result = new List<string>();
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            result.Add(current);
+
+            foreach (var neighbor in adjacency[current].Where(neighbor => --inDegree[neighbor] == 0))
+            {
+                queue.Enqueue(neighbor);
+            }
+        }
+
+        // 检查循环依赖
+        if (result.Count != pluginDict.Count)
+        {
+            var cyclicPlugins = pluginDict.Keys.Except(result).ToList();
+            throw new InvalidOperationException(
+                $"出现循环引用: {string.Join(", ", cyclicPlugins)}");
+        }
+
+        return result;
+    }
+
+    private static void AddEdge(
+        string from,
+        string to,
+        Dictionary<string, List<string>> adjacency,
+        Dictionary<string, int> inDegree)
+    {
+        adjacency[from].Add(to);
+        inDegree[to]++;
     }
 }
