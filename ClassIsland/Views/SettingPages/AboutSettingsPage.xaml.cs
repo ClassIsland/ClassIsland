@@ -140,7 +140,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         {
             SettingsService.Settings.ContributorsCache =
                 await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
-                    "https://mirror.ghproxy.com/?q=https%3A%2F%2Fraw.githubusercontent.com%2FClassIsland%2FClassIsland%2Fmaster%2F.all-contributorsrc"));
+                    "https://github.moeyy.xyz/https://raw.githubusercontent.com/ClassIsland/ClassIsland/master/.all-contributorsrc"));
         }
         catch (Exception ex)
         {
