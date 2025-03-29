@@ -76,65 +76,83 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
     private void UpdateTimerTick(object? sender, EventArgs e)
     {
         var tClassDelta = LessonsService.OnClassLeftTime;
-        var settings = GetAttachedSettingsNext();
-        var isAttachedSettingsEnabled = settings?.IsAttachSettingsEnabled == true;
-        var settingsSource = (IClassNotificationSettings?)(isAttachedSettingsEnabled ? settings : Settings) ?? Settings;
-        var settingsIsClassOnPreparingNotificationEnabled = settingsSource.IsClassOnPreparingNotificationEnabled;
-        var settingsInDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ? 
-                settings!.ClassPreparingDeltaTime
-                : Settings.InDoorClassPreparingDeltaTime;
-        var settingsOutDoorClassPreparingDeltaTime = isAttachedSettingsEnabled ?
-                settings!.ClassPreparingDeltaTime
-                : Settings.OutDoorClassPreparingDeltaTime;
-        var message = isAttachedSettingsEnabled && settings?.ClassOnPreparingText != null
-            ? settings.ClassOnPreparingText
-            : LessonsService.NextClassSubject.IsOutDoor
-                ? settingsSource.OutdoorClassOnPreparingText
-                : settingsSource.ClassOnPreparingText;
-        var settingsDeltaTime = LessonsService.NextClassSubject.IsOutDoor
-            ? settingsOutDoorClassPreparingDeltaTime
-            : settingsInDoorClassPreparingDeltaTime;
-        if (!settingsIsClassOnPreparingNotificationEnabled ||
-            LessonsService.CurrentState is not (TimeState.Breaking or TimeState.None)) 
+        var settingsSource = GetEffectiveSettings();
+
+        if (!settingsSource.IsClassOnPreparingNotificationEnabled ||
+            LessonsService.CurrentState is not (TimeState.Breaking or TimeState.None))
             return;
-        if (tClassDelta > TimeSpan.Zero &&
-            tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime))
+
+        var settingsDeltaTime = GetSettingsDeltaTime(settingsSource);
+        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime))
         {
             if (IsClassPreparingNotified)
-            {
                 return;
-            }
-            var deltaTime = TimeSpan.FromSeconds(settingsDeltaTime) - tClassDelta > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpan.FromSeconds(settingsDeltaTime);
+
             IsClassPreparingNotified = true;
-            var onClassPrepareRequest = _onClassNotificationRequest = new NotificationRequest
-            {
-                MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
-                MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask")
-                {
-                    MaskMessage = settingsSource.ClassOnPreparingMaskText
-                },
-                MaskDuration = TimeSpan.FromSeconds(3),
-                OverlaySpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
-                OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
-                {
-                    Message = message,
-                    ShowTeacherName = Settings.ShowTeacherName
-                },
-                TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
-                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
-            };
-            NotificationHostService.ShowNotification(onClassPrepareRequest);
+            var deltaTime = CalculateDeltaTime(settingsDeltaTime, tClassDelta);
+            var notificationRequest = BuildNotificationRequest(settingsSource, deltaTime);
+            NotificationHostService.ShowNotification(notificationRequest);
         }
-        else
+        else if (IsClassPreparingNotified)
         {
-            if (!IsClassPreparingNotified)
-            {
-                return;
-            }
             _onClassNotificationRequest?.CancellationTokenSource.Cancel();
             IsClassPreparingNotified = false;
         }
     }
+
+    private IClassNotificationSettings GetEffectiveSettings()
+    {
+        var settings = GetAttachedSettingsNext();
+        var isAttachedSettingsEnabled = settings?.IsAttachSettingsEnabled == true;
+        return isAttachedSettingsEnabled ? settings! : Settings;
+    }
+
+    private int GetSettingsDeltaTime(IClassNotificationSettings settingsSource)
+    {
+        var isOutDoor = LessonsService.NextClassSubject.IsOutDoor;
+        return isOutDoor ? Settings.OutDoorClassPreparingDeltaTime : Settings.InDoorClassPreparingDeltaTime;
+    }
+
+    private TimeSpan CalculateDeltaTime(int settingsDeltaTime, TimeSpan tClassDelta)
+    {
+        var deltaTime = TimeSpan.FromSeconds(settingsDeltaTime) - tClassDelta;
+        return deltaTime > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpan.FromSeconds(settingsDeltaTime);
+    }
+
+    private NotificationRequest BuildNotificationRequest(IClassNotificationSettings settingsSource, TimeSpan deltaTime)
+    {
+        var message = GetNotificationMessage(settingsSource);
+
+        return _onClassNotificationRequest = new NotificationRequest
+        {
+            MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
+            MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask")
+            {
+                MaskMessage = settingsSource.ClassOnPreparingMaskText
+            },
+            MaskDuration = TimeSpan.FromSeconds(3),
+            OverlaySpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
+            OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
+            {
+                Message = message,
+                ShowTeacherName = Settings.ShowTeacherName
+            },
+            TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
+            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
+        };
+    }
+
+    private string GetNotificationMessage(IClassNotificationSettings settingsSource)
+    {
+        if (settingsSource is null)
+            return string.Empty;
+
+        if (LessonsService.NextClassSubject.IsOutDoor)
+            return settingsSource.OutdoorClassOnPreparingText;
+
+        return settingsSource.ClassOnPreparingText;
+    }
+
 
     private void OnBreakingTime(object? sender, EventArgs e)
     {
