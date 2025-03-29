@@ -52,7 +52,6 @@
         <None Remove="Assets\TrustedPublicKeys\ClassIsland.MetadataPublisher.asc" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <PackageReference Include="ColorHelper" Version="1.8.1" />
         <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug_MSIX'">
@@ -90,7 +89,8 @@
         <PackageReference Include="System.Speech" Version="8.0.0" />
         <PackageReference Include="TimeCrontab" Version="3.5.1" />
         <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
-    </ItemGroup>
+        <PackageReference Include="ColorHelper" Version="1.8.1" />
+	</ItemGroup>
     <ItemGroup>
         <Folder Include="Models\Logging\" />
         <Folder Include="Models\Native\" />
