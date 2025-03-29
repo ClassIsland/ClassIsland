@@ -974,6 +974,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool UseExperimentColorPickingMethod
+    {
+        get => _useExperimentColorPickingMethod;
+        set
+        {
+            if (value == _useExperimentColorPickingMethod) return;
+            _useExperimentColorPickingMethod = value;
+            OnPropertyChanged();
+        }
+    }
+
     public double TargetLightValue
     {
         get => _targetLightValue;
@@ -1722,6 +1733,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _weatherLatitude = 0.0;
     private int _weatherLocationSource = 0;
     private bool _autoRefreshWeatherLocation = false;
+    private bool _useExperimentColorPickingMethod = false;
 
     public bool IsIgnoreWorkAreaEnabled
     {

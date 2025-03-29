@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Helpers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -242,7 +243,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         {
             await Task.Run(() =>
             {
-                var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
+                using var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
                     : SettingsService.Settings.IsFallbackModeEnabled ?
                         (GetFallbackWallpaper())
                         :
@@ -264,23 +265,13 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                     mw.GetCurrentDpi(out dpiX, out dpiY);
                 });
                 WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap, bitmap.Width);
-                var w = new Stopwatch();
-                w.Start();
-                var right = SettingsService.Settings.TargetLightValue - 0.5;
-                var left = SettingsService.Settings.TargetLightValue + 0.5;
-                var r = ColorOctTreeNode.ProcessImage(bitmap)
-                    .OrderByDescending(i =>
-                    {
-                        var c = (Color)ColorConverter.ConvertFromString(i.Key);
-                        ColorToHsv(c, out var h, out var s, out var v);
-                        return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
-                    })
-                    .ThenByDescending(i => i.Value)
-                    .ToList();
-                WallpaperColorPlatte.Clear();
-                for (var i = 0; i < Math.Min(r.Count, 5); i++)
+                if (SettingsService.Settings.UseExperimentColorPickingMethod)
                 {
-                    WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
+                    NewColorPickingImpl(bitmap);
+                }
+                else
+                {
+                    OldColorPickingImpl(bitmap);
                 }
             });
 
@@ -306,6 +297,36 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         {
             Logger.LogError(e, "无法提取壁纸主题色");
         }
+    }
+
+    private void OldColorPickingImpl(Bitmap bitmap)
+    {
+        var w = new Stopwatch();
+        w.Start();
+        var right = SettingsService.Settings.TargetLightValue - 0.5;
+        var left = SettingsService.Settings.TargetLightValue + 0.5;
+        var r = ColorOctTreeNode.ProcessImage(bitmap)
+            .OrderByDescending(i =>
+            {
+                var c = (Color)ColorConverter.ConvertFromString(i.Key);
+                ColorToHsv(c, out var h, out var s, out var v);
+                return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
+            })
+            .ThenByDescending(i => i.Value)
+            .ToList();
+        WallpaperColorPlatte.Clear();
+        for (var i = 0; i < Math.Min(r.Count, 5); i++)
+        {
+            WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
+        }
+    }
+
+    private void NewColorPickingImpl(Bitmap bitmap)
+    {
+        var bytes = BitmapConveters.BitmapToByteArray(bitmap);
+        var back = AccentColorHelper.GetAccentColor(bytes, bitmap.Width, bitmap.Height);
+        WallpaperColorPlatte.Clear();
+        WallpaperColorPlatte.Add(back ?? new Color());
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
