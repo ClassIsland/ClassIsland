@@ -84,6 +84,13 @@
                     </StackPanel>
                 </ci:SettingsCard.Switcher>
             </ci:SettingsCard>
+            <!-- 启用动画 -->
+            <ci:SettingsCard IconGlyph="AnimationPlayOutline"
+                             Header="启用动画"
+                             Description="启用后，将在切换组件时播放过渡动画。"
+                             Visibility="{Binding Settings.UseOldPresentingBehavior, Converter={StaticResource InverseBoolToVisConverter}}"
+                             IsOn="{Binding Settings.IsAnimationEnabled, Mode=TwoWay}"
+                             Margin="0 0 0 6" />
             <!-- 使用旧版轮播行为 -->
             <ci:SettingsCard IconGlyph="UndoVariant"
                                Header="使用旧版轮播行为"
