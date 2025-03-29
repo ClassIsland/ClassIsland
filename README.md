@@ -11,16 +11,19 @@
 [![Stars](https://img.shields.io/github/stars/ClassIsland/ClassIsland?label=Stars)](https://github.com/ClassIsland/ClassIsland)
 [![正式版 Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=正式版)](https://github.com/ClassIsland/ClassIsland/releases/latest)
 [![测试版 Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=测试版)](https://github.com/ClassIsland/ClassIsland/releases/)
-[![下载量](https://img.shields.io/github/downloads/ClassIsland/ClassIsland/total?style=social&label=下载量&logo=github)](https://github.com/ClassIsland/ClassIsland/releases/latest)
+[![下载量](https://img.shields.io/github/downloads/ClassIsland/ClassIsland/total?style=social&label=下载量&logo=github)](https://github.com/ClassIsland/ClassIsland/releases/latest)<br/>
+![.NET 版本](https://img.shields.io/badge/.NET-8-512bd4?style=flat-square)
+![GitHub Repo size](https://img.shields.io/github/repo-size/ClassIsland/ClassIsland?style=flat-square&color=3cb371)
+[![GitHub Repo Languages](https://img.shields.io/github/languages/top/ClassIsland/ClassIsland?style=flat-square)](https://github.com/ClassIsland/ClassIsland/search?l=c%23)
 
 ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具，可以在 Windows 屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
 
 #### 💬[Classlsland QQ 频道](https://pd.qq.com/s/grr6qwqwj) | [Classlsland QQ 群组](https://qm.qq.com/q/4NsDQKiAuQ)
 
-#### [🌐 官方网站](https://classisland.tech/)｜[📚 项目文档](https://docs.classisland.tech)｜[🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
+#### [🌐 官方网站](https://classisland.tech/) | [🚀 软件下载](https://classisland.tech/download)｜[📚 项目文档](https://docs.classisland.tech)｜[🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop) 
 
-###### [观看介绍视频，快速了解突破创新 →](https://bilibili.com/video/BV1Lt421n7op/)
+###### [观看介绍视频，快速了解突破创新 →](https://www.bilibili.com/video/BV12fFoefEGn/)
 
 </div>
 
@@ -72,7 +75,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ##### 1. 软件效果
 
-![软件截图 - 整体效果](https://github.com/ClassIsland/ClassIsland/assets/55006226/784a2f8c-a9e2-4656-b66d-9f8105f0600c)
+![软件截图 - 整体效果](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-28_11-47-04.png)
 
 ##### 2. 演示上课提醒视频
 
@@ -81,43 +84,35 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 <details>
 <summary>查看更多软件截图……</summary>
 
-### 提醒
-
-##### 1. 上课提醒
-
-![上课](https://github.com/user-attachments/assets/965815a0-9e2a-49bb-85b2-18398e3a16bf)
-
-##### 2. 下课提醒
-
-![下课](https://github.com/user-attachments/assets/c6059b99-f06e-442d-b73e-80d63b7e06aa)
-
-##### 3. 天气预报
-
-![天气预报](https://github.com/user-attachments/assets/d8b308d3-986f-4768-93ac-f6d634394f98)
-
 ### 档案编辑器
 
 ##### 1. 课表编辑
 
-![软件截图 - 课表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/29d91bf2-4c8a-4cbd-a778-a9034e7d7420)
+![软件截图 - 课表编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/1.png)
 
 ##### 2. 时间表编辑
 
-![软件截图 - 时间表编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/2b3b5c87-c8bb-46f0-8470-01edf3ca52a2)
+![软件截图 - 时间表编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/3.png)
 
 ##### 3. 科目编辑
 
-![软件截图 - 科目编辑](https://github.com/ClassIsland/ClassIsland/assets/55006226/a2e64983-dfa0-4565-a45a-31c9f9c298a8)
+![软件截图 - 科目编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/4.png)
+
+##### 4. 预定调课
+
+![软件截图 - 跨天换课](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/5.png)
+
+![软件截图 - 预定课表](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/6.png)
 
 ### 设置界面
 
 ##### 1. 基本设置
 
-![软件截图 - 应用设置](https://github.com/ClassIsland/ClassIsland/assets/55006226/063123a1-1bf2-4b41-bef7-1dc731631d08)
+![软件截图 - 应用设置](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-29_09-33-56.png)
 
 ##### 2. 组件设置
 
-![软件截图 - 组件设置](https://github.com/user-attachments/assets/e6185858-ae21-4fc4-8e08-2dc253075f66)
+![软件截图 - 组件设置](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-28_11-47-25.png)
 
 </details>
 
@@ -137,7 +132,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
-- [ClassIsland 官网（推荐）](https://classisland.tech/download)
+- [**ClassIsland 官网（推荐）**](https://classisland.tech/download)
 - [GitHub Releases](https://github.com/ClassIsland/ClassIsland/releases/)
 
 下载完成后，将软件压缩包解压到一个**独立的文件夹（运行路径不能有中文）**，运行软件即可开始使用。解压时请不要解压到网盘同步文件夹、【下载】文件夹中，否则可能会出现**文件无法读写、文件丢失**等问题。
@@ -159,6 +154,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 ## 开发
 
+![Repobeat dev](https://repobeats.axiom.co/api/embed/ace0a0609166a47b16a58bb7d2d0d5e20968d4d1.svg "Repobeats analytics image")
+
 本项目目前开发状态：
 
 | 分支 | 开发状态 | 信息 |
@@ -166,16 +163,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 | [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) | 正在此分支上开发版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=dev&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/dev)](https://www.codefactor.io/repository/github/classisland/classisland/overview/dev) |
 | [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上维护版本 [1.6 - Himeko](https://github.com/ClassIsland/ClassIsland/milestone/7)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master) |
 
-要在本地编译应用，您需要安装以下负载和工具：
-
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/zh-cn/download/dotnet/8.0)
-- [Visual Studio](https://visualstudio.microsoft.com/)
-
-> 由于 ClassIsland 解决方案中存在 WAP 项目，在打开解决方案后 Visual Studio 可能会要求安装 Windows 应用程序开发工作负载。如果您不需要修改 WAP 相关功能，可以不用安装此工作负载。
-
-对于 Visual Studio，您需要在安装时勾选以下工作负载：
-
-- .NET 桌面开发
+要在本地编译应用，请参考文档[配置 ClassIsland 本体开发环境](https://docs.classisland.tech/dev/get-started/devlopment.html)。
 
 如果您有意愿为 ClassIsland 做出代码贡献，请先阅读 [贡献指南](CONTRIBUTING.md) 来了解如何为 ClassIsland 做代码贡献。我们欢迎想要为本应用实现新功能或进行改进的同学提交 [Pull Request](https://github.com/ClassIsland/ClassIsland/pulls)。
 
@@ -189,6 +177,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 感谢以下同学为本项目为本项目的开发提供支持（[✨](https://allcontributors.org/docs/zh-cn/emoji-key)）：
 
+<!-- autocorrect-disable -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -201,19 +190,19 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://fossa.com/"><img src="https://avatars.githubusercontent.com/u/29791463?v=4?s=100" width="100px;" alt="fossabot"/><br /><sub><b>fossabot</b></sub></a><br /><a href="#infra-fossabot" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://allcontributors.org/"><img src="https://avatars.githubusercontent.com/u/46410174?v=4?s=100" width="100px;" alt="All Contributors"/><br /><sub><b>All Contributors</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=all-contributors" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TV-ZHU"><img src="https://avatars.githubusercontent.com/u/88492699?v=4?s=100" width="100px;" alt="DSZDev"/><br /><sub><b>DSZDev</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=TV-ZHU" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiuYan-xwx"><img src="https://avatars.githubusercontent.com/u/66517348?v=4?s=100" width="100px;" alt="流焰xwx"/><br /><sub><b>流焰xwx</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Documentation">📖</a> <a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/LiuYan-xwx"><img src="https://avatars.githubusercontent.com/u/66517348?v=4?s=100" width="100px;" alt="流焰 xwx"/><br /><sub><b>流焰 xwx</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Documentation">📖</a> <a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiuYan-xwx" title="Code">💻</a></td>
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/TuanZiGit"><img src="https://avatars.githubusercontent.com/u/46892455?v=4?s=100" width="100px;" alt="团子"/><br /><sub><b>团子</b></sub></a><br /><a href="#example-TuanZiGit" title="Examples">💡</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.gusui.site/"><img src="https://avatars.githubusercontent.com/u/170245818?v=4?s=100" width="100px;" alt="吕璟辰"/><br /><sub><b>吕璟辰</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=GusuiCommunity" title="Documentation">📖</a> <a href="#promotion-GusuiCommunity" title="Promotion">📣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jizilin6732"><img src="https://avatars.githubusercontent.com/u/162853646?v=4?s=100" width="100px;" alt="jizilin6732"/><br /><sub><b>jizilin6732</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=jizilin6732" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.khyan.top/"><img src="https://avatars.githubusercontent.com/u/56215525?v=4?s=100" width="100px;" alt="clover_yan"/><br /><sub><b>clover_yan</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=clover-yan" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/DryIce-cc"><img src="https://avatars.githubusercontent.com/u/165131008?v=4?s=100" width="100px;" alt="干冰DryIce"/><br /><sub><b>干冰DryIce</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=DryIce-cc" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/DryIce-cc"><img src="https://avatars.githubusercontent.com/u/165131008?v=4?s=100" width="100px;" alt="干冰 DryIce"/><br /><sub><b>干冰 DryIce</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=DryIce-cc" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/RoboMico"><img src="https://avatars.githubusercontent.com/u/59791306?v=4?s=100" width="100px;" alt="RoboMico"/><br /><sub><b>RoboMico</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=RoboMico" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/user111192"><img src="https://avatars.githubusercontent.com/u/67212831?v=4?s=100" width="100px;" alt="user111192"/><br /><sub><b>user111192</b></sub></a><br /><a href="#example-user111192" title="Examples">💡</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://lyrin-owo.top/"><img src="https://avatars.githubusercontent.com/u/141834038?v=4?s=100" width="100px;" alt="零音LyRin"/><br /><sub><b>零音LyRin</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LyRin-owo" title="Documentation">📖</a> <a href="#promotion-LyRin-owo" title="Promotion">📣</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://lyrin-owo.top/"><img src="https://avatars.githubusercontent.com/u/141834038?v=4?s=100" width="100px;" alt="零音 LyRin"/><br /><sub><b>零音 LyRin</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LyRin-owo" title="Documentation">📖</a> <a href="#promotion-LyRin-owo" title="Promotion">📣</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://lipoly.ink"><img src="https://avatars.githubusercontent.com/u/110595296?v=4?s=100" width="100px;" alt="LiPolymer"/><br /><sub><b>LiPolymer</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=LiPolymer" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://www.mczhiguang.icoc.me/"><img src="https://avatars.githubusercontent.com/u/53519310?v=4?s=100" width="100px;" alt="Amiya"/><br /><sub><b>Amiya</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=mcAmiya" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://xiaowuap.com"><img src="https://avatars.githubusercontent.com/u/44547885?v=4?s=100" width="100px;" alt="Enzo Wu"/><br /><sub><b>Enzo Wu</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=xiaowuap" title="Code">💻</a></td>
@@ -222,7 +211,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kaokao221"><img src="https://avatars.githubusercontent.com/u/88539021?v=4?s=100" width="100px;" alt="kaokao221"/><br /><sub><b>kaokao221</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=kaokao221" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AWDNDWindowsXP"><img src="https://avatars.githubusercontent.com/u/132193112?v=4?s=100" width="100px;" alt="爱玩电脑的WindowsXP"/><br /><sub><b>爱玩电脑的WindowsXP</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=AWDNDWindowsXP" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/AWDNDWindowsXP"><img src="https://avatars.githubusercontent.com/u/132193112?v=4?s=100" width="100px;" alt="爱玩电脑的 WindowsXP"/><br /><sub><b>爱玩电脑的 WindowsXP</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=AWDNDWindowsXP" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/FengzihangCode"><img src="https://avatars.githubusercontent.com/u/91676896?v=4?s=100" width="100px;" alt="DannyFeng"/><br /><sub><b>DannyFeng</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=FengzihangCode" title="Code">💻</a></td>
     </tr>
   </tbody>
@@ -232,6 +221,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- autocorrect-enable -->
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
 
 本项目使用了[这些第三方库和框架](./doc/Dependencies.md)。
