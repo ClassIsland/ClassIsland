@@ -110,7 +110,7 @@
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="ListBoxItem">
-                                                <ContentPresenter>
+                                                <ContentPresenter HorizontalAlignment="{Binding Settings.HorizontalAlignment, RelativeSource={RelativeSource AncestorType=ci:ComponentPresenter}}">
                                                     <ContentPresenter.RenderTransform>
                                                         <TransformGroup>
                                                             <ScaleTransform/>
@@ -151,10 +151,11 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListBoxItem">
-                                        <ContentPresenter />
+                                        <ContentPresenter HorizontalAlignment="{Binding Settings.HorizontalAlignment, RelativeSource={RelativeSource AncestorType=ci:ComponentPresenter}}"/>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.ItemTemplate>
