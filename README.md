@@ -11,7 +11,10 @@
 [![Stars](https://img.shields.io/github/stars/ClassIsland/ClassIsland?label=Stars)](https://github.com/ClassIsland/ClassIsland)
 [![正式版 Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&color=%233fb950&label=正式版)](https://github.com/ClassIsland/ClassIsland/releases/latest)
 [![测试版 Release](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=测试版)](https://github.com/ClassIsland/ClassIsland/releases/)
-[![下载量](https://img.shields.io/github/downloads/ClassIsland/ClassIsland/total?style=social&label=下载量&logo=github)](https://github.com/ClassIsland/ClassIsland/releases/latest)
+[![下载量](https://img.shields.io/github/downloads/ClassIsland/ClassIsland/total?style=social&label=下载量&logo=github)](https://github.com/ClassIsland/ClassIsland/releases/latest)<br/>
+![.NET 版本](https://img.shields.io/badge/.NET-8-512bd4?style=flat-square)
+![GitHub Repo size](https://img.shields.io/github/repo-size/ClassIsland/ClassIsland?style=flat-square&color=3cb371)
+[![GitHub Repo Languages](https://img.shields.io/github/languages/top/ClassIsland/ClassIsland?style=flat-square)](https://github.com/ClassIsland/ClassIsland/search?l=c%23)
 
 ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具，可以在 Windows 屏幕上显示各种信息。<br/>
 本应用的名字灵感源于 iOS 灵动岛（Dynamic Island）功能。
@@ -72,7 +75,7 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ##### 1. 软件效果
 
-![软件截图 - 整体效果](https://github.com/user-attachments/assets/57b5fce7-16a2-4928-8a56-da0164b36f24)
+![软件截图 - 整体效果](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-28_11-47-04.png)
 
 ##### 2. 演示上课提醒视频
 
@@ -81,49 +84,35 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 <details>
 <summary>查看更多软件截图……</summary>
 
-### 提醒
-
-##### 1. 上课提醒
-
-![上课](https://github.com/user-attachments/assets/965815a0-9e2a-49bb-85b2-18398e3a16bf)
-
-##### 2. 下课提醒
-
-![下课](https://github.com/user-attachments/assets/c6059b99-f06e-442d-b73e-80d63b7e06aa)
-
-##### 3. 天气预报
-
-![天气预报](https://github.com/user-attachments/assets/d8b308d3-986f-4768-93ac-f6d634394f98)
-
 ### 档案编辑器
 
 ##### 1. 课表编辑
 
-![软件截图 - 课表编辑](https://github.com/user-attachments/assets/844153c9-8247-4a67-8b77-865029cf9bd6)
+![软件截图 - 课表编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/1.png)
 
 ##### 2. 时间表编辑
 
-![软件截图 - 时间表编辑](https://github.com/user-attachments/assets/47ab5160-0c08-459d-9dd5-d7f3e8b80491)
+![软件截图 - 时间表编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/3.png)
 
 ##### 3. 科目编辑
 
-![软件截图 - 科目编辑](https://github.com/user-attachments/assets/f7648e48-855c-4d90-aaf6-f89683ce0a17)
+![软件截图 - 科目编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/4.png)
 
 ##### 4. 预定调课
 
-![软件截图 - 跨天换课](https://github.com/user-attachments/assets/0bf7a030-4cb1-4170-aff1-814f7c5d4c96)
+![软件截图 - 跨天换课](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/5.png)
 
-![软件截图 - 预定课表](https://github.com/user-attachments/assets/52c66b3e-26a8-415b-942d-28a0a28177af)
+![软件截图 - 预定课表](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/6.png)
 
 ### 设置界面
 
 ##### 1. 基本设置
 
-![软件截图 - 应用设置](https://github.com/user-attachments/assets/0895c08a-c561-4d8c-82dd-48b8d97f6af4)
+![软件截图 - 应用设置](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-29_09-33-56.png)
 
 ##### 2. 组件设置
 
-![软件截图 - 组件设置](https://github.com/user-attachments/assets/e6185858-ae21-4fc4-8e08-2dc253075f66)
+![软件截图 - 组件设置](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-28_11-47-25.png)
 
 </details>
 
@@ -165,6 +154,8 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 ## 开发
 
+![Repobeat dev](https://repobeats.axiom.co/api/embed/ace0a0609166a47b16a58bb7d2d0d5e20968d4d1.svg "Repobeats analytics image")
+
 本项目目前开发状态：
 
 | 分支 | 开发状态 | 信息 |
@@ -186,6 +177,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 感谢以下同学为本项目为本项目的开发提供支持（[✨](https://allcontributors.org/docs/zh-cn/emoji-key)）：
 
+<!-- autocorrect-disable -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -229,6 +221,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+<!-- autocorrect-enable -->
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
 
 本项目使用了[这些第三方库和框架](./doc/Dependencies.md)。
