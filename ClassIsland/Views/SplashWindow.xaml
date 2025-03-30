@@ -1,4 +1,4 @@
-﻿<views1:SplashWindowBase x:Class="ClassIsland.Views.SplashWindow"
+﻿<ci:SplashWindowBase x:Class="ClassIsland.Views.SplashWindow"
                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -7,7 +7,7 @@
                   xmlns:views="clr-namespace:ClassIsland.Views"
                   xmlns:controls="clr-namespace:ClassIsland.Controls"
                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
-                  xmlns:views1="clr-namespace:ClassIsland.Core.Abstractions.Views;assembly=ClassIsland.Core"
+                  xmlns:ci="http://classisland.tech/schemas/xaml/core"
                   mc:Ignorable="d"
                   Title="ClassIsland 正在启动……" 
                   WindowStartupLocation="CenterScreen"
@@ -26,4 +26,4 @@
                   Closed="SplashWindow_OnClosed"
                   Height="100" Width="400">
     <controls:SplashControl Loaded="FrameworkElement_OnLoaded"/>
-</views1:SplashWindowBase>
+</ci:SplashWindowBase>

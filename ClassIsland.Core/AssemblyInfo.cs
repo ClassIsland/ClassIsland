@@ -24,3 +24,4 @@ using System.Windows.Markup;
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Commands", AssemblyName = "ClassIsland.Core")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Controls", AssemblyName = "ClassIsland.Core")]
 [assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Controls.StickerControl", AssemblyName = "ClassIsland.Core")]
+[assembly: XmlnsDefinition("http://classisland.tech/schemas/xaml/core", "ClassIsland.Core.Abstractions.Views", AssemblyName = "ClassIsland.Core")]
