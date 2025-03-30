@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Interop;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Views;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Services;
 
@@ -12,7 +13,7 @@ namespace ClassIsland.Views;
 /// <summary>
 /// SplashWindow.xaml 的交互逻辑
 /// </summary>
-public partial class SplashWindow : Window
+public partial class SplashWindow : SplashWindowBase
 {
     public ISplashService SplashService { get; }
 

@@ -79,6 +79,7 @@ using Windows.Storage;
 using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Core.Abstractions.Services.Metadata;
+using ClassIsland.Core.Abstractions.Views;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Services.Metadata;
 using ClassIsland.Shared.Helpers;
@@ -525,7 +526,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILocationService, LocationService>();
                 // Views
                 services.AddSingleton<MainWindow>();
-                services.AddSingleton<SplashWindow>();
+                services.AddTransient<SplashWindowBase, SplashWindow>();
                 services.AddTransient<FeatureDebugWindow>();
                 services.AddSingleton<TopmostEffectWindow>(BuildTopmostEffectWindow);
                 services.AddSingleton<AppLogsWindow>();
@@ -707,7 +708,7 @@ public partial class App : AppBase, IAppHost
 
             ThreadedUiDispatcher.Invoke(() =>
             {
-                GetService<SplashWindow>().Show();
+                GetService<SplashWindowBase>().Show();
             });
             spanShowSplash.Finish();
         }
