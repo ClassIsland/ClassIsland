@@ -9,7 +9,6 @@
     <Description>ClassIsland 的核心共享库。</Description>
 	  <LangVersion>12</LangVersion>
 	  <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>

@@ -8,7 +8,6 @@
     <UseWPF>False</UseWPF>
     <StartupObject>ClassIsland.DocsGenerator.Program</StartupObject>
     <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
-    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
 	<PropertyGroup Condition="'$(IsMsix)'=='true'">
