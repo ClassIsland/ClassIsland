@@ -17,9 +17,11 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Abstractions.Services.Metadata;
+using ClassIsland.Core.Abstractions.Views;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Services;
+using ClassIsland.Shared;
 using ClassIsland.ViewModels.SettingsPages;
 
 namespace ClassIsland.Views.SettingPages;
@@ -94,7 +96,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
     private async void ButtonRefreshSplashPreview_OnClick(object sender, RoutedEventArgs e)
     {
         SplashService.ResetSplashText();
-        var splashWindow = new SplashWindow(SplashService);
+        var splashWindow = IAppHost.GetService<SplashWindowBase>();
         splashWindow.Show();
         await Task.Delay(TimeSpan.FromSeconds(3));
         SplashService.EndSplash();
