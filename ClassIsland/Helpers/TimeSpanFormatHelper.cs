@@ -17,7 +17,14 @@ public static class TimeSpanFormatHelper
         }
         if (m >= 1)
         {
-            r += $"{m}分钟";
+            if (s >= 1)
+            {
+                r += $"{m}分";
+            }
+            else
+            {
+                r += $"{m}分钟";
+            }
         }
         if (s >= 1)
         {
