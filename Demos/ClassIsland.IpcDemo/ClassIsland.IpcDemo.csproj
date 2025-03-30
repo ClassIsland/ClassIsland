@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
 	  <LangVersion>12</LangVersion>
 	  <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+	<EnableWindowsTargeting>true</EnableWindowsTargeting>
     <ImplicitUsings>enable</ImplicitUsings>
 	  <EnableDynamicLoading>true</EnableDynamicLoading>
 	  <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>

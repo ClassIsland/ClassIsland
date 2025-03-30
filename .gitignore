@@ -365,3 +365,6 @@ FodyWeavers.xsd
 ci_tmp/
 cipx/
 *.cipx
+
+# macOS Desktop Services Store
+.DS_Store
