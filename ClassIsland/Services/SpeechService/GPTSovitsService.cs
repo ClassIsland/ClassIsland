@@ -10,7 +10,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
-using ClassIsland.Helpers;
 using ClassIsland.Shared.Abstraction.Services;
 
 using Microsoft.Extensions.Logging;

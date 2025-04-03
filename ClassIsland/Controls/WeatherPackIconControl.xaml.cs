@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Services;
 
 namespace ClassIsland.Controls;
 

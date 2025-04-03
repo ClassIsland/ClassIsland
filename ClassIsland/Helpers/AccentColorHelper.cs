@@ -1,12 +1,9 @@
-﻿using ControlzEx.Theming;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System;
 using System.Windows.Media;
 using ColorHelper;
 using ColorConverter = ColorHelper.ColorConverter;
-using MaterialDesignColors.ColorManipulation;
-using dotnetCampus.Ipc.Messages;
 
 namespace ClassIsland.Helpers;
 

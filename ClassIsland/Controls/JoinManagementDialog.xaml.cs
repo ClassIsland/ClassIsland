@@ -7,7 +7,6 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Management;
-using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 
 namespace ClassIsland.Controls;

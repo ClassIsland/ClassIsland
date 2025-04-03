@@ -2,8 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Web;
 using System.Windows;
-
-using ClassIsland.Controls;
 using ClassIsland.Core;
 using ClassIsland.Core.Controls;
 

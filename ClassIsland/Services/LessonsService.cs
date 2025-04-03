@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models;
@@ -13,11 +11,7 @@ using ClassIsland.Shared.IPC.Abstractions.Services;
 using ClassIsland.Shared.Models.Profile;
 using CommunityToolkit.Mvvm.ComponentModel;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
-using MahApps.Metro.Controls;
 using Microsoft.Extensions.Logging;
-using Sentry;
-using unvell.ReoGrid.IO.OpenXML.Schema;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ClassIsland.Services;
 

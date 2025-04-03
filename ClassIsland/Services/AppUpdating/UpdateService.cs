@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -9,17 +8,13 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 #if IsMsix
 using Windows.Storage;
 #endif
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Models.Updating;
@@ -32,12 +27,9 @@ using ClassIsland.Views;
 using Downloader;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Bcpg.OpenPgp;
-using PgpCore;
 using Application = System.Windows.Application;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
-using ProductHeaderValue = Octokit.ProductHeaderValue;
 
 namespace ClassIsland.Services.AppUpdating;
 

@@ -2,14 +2,11 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
-using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
-using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;

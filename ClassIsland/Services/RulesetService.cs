@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Windows.Threading;
-using Windows.Win32.UI.Accessibility;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Enums;

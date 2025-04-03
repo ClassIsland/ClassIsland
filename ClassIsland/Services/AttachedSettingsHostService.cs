@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Threading;
-using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Shared;
-using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Profile;
-
-using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services;
 

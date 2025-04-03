@@ -6,8 +6,6 @@ using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Models.SettingsWindow;
-using ClassIsland.Shared;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace ClassIsland.Views.SettingPages;
 

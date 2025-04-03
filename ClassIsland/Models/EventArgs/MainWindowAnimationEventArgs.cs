@@ -1,6 +1,4 @@
-﻿using System.Windows.Media.Animation;
-
-namespace ClassIsland.Models.EventArgs;
+﻿namespace ClassIsland.Models.EventArgs;
 
 public class MainWindowAnimationEventArgs(string? storyboardName) : System.EventArgs
 {

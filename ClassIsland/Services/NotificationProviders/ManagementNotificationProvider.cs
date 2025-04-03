@@ -10,7 +10,6 @@ using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Protobuf.Command;
 using ClassIsland.Shared.Protobuf.Enum;
-using ClassIsland.Services.Management;
 
 using MaterialDesignThemes.Wpf;
 

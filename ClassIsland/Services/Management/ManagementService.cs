@@ -3,20 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
-using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
-using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Helpers;
-using ClassIsland.Models;
 
 using MaterialDesignThemes.Wpf;
 
@@ -25,7 +21,6 @@ using Microsoft.Extensions.Logging;
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
-using ControlzEx.Standard;
 
 namespace ClassIsland.Services.Management;
 
