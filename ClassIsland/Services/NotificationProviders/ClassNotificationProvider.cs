@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
@@ -91,13 +92,19 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             IsClassPreparingNotified = true;
             var deltaTime = CalculateDeltaTime(settingsDeltaTime, tClassDelta);
             var notificationRequest = BuildNotificationRequest(settingsSource, deltaTime);
-            NotificationHostService.ShowNotification(notificationRequest);
+            AppBase.Current.Dispatcher.InvokeAsync(() => ShowNotification(notificationRequest));
+
         }
         else if (IsClassPreparingNotified)
         {
             _onClassNotificationRequest?.CancellationTokenSource.Cancel();
             IsClassPreparingNotified = false;
         }
+    }
+
+    private void ShowNotification(NotificationRequest notificationRequest)
+    {
+        NotificationHostService.ShowNotification(notificationRequest);
     }
 
     private IClassNotificationSettings GetEffectiveSettings()
