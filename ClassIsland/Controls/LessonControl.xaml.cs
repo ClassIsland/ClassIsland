@@ -13,7 +13,6 @@ using ClassIsland.Core.Models.AttachedSettings;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
-using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Services;
 
 namespace ClassIsland.Controls;

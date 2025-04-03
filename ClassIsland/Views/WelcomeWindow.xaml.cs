@@ -10,7 +10,6 @@ using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Helpers;
 using ClassIsland.Services;
-using ClassIsland.Services.Management;
 using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;

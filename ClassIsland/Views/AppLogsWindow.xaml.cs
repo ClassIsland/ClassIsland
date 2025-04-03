@@ -5,8 +5,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-
-using ClassIsland.Controls;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Logging;
 using ClassIsland.Services.Logging;

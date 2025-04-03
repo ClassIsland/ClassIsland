@@ -1,18 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Interop;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services.Logging;
@@ -20,7 +16,6 @@ using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
 using Clipboard = System.Windows.Forms.Clipboard;
-using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace ClassIsland.Services;
 

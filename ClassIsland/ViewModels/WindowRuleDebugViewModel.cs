@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using ClassIsland.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;
 

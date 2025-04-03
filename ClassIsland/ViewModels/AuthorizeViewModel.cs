@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Models;
 using ClassIsland.Models.Authorize;
 using CommunityToolkit.Mvvm.ComponentModel;
 using AuthorizeProviderDisplayingModel = ClassIsland.Models.Authorize.AuthorizeProviderDisplayingModel;

@@ -1,6 +1,5 @@
 ﻿using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
-using ClassIsland.Services.Management;
 
 namespace ClassIsland.Controls;
 

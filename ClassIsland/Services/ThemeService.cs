@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Media;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
-using ClassIsland.Models;
 
 using MaterialDesignThemes.Wpf;
 

@@ -6,8 +6,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Linq;
 using ClassIsland.Shared.Models.Profile;
-using ClassIsland.Views;
-using MahApps.Metro.Controls;
 
 namespace ClassIsland.Controls;
 

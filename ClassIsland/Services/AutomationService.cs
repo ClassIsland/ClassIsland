@@ -9,18 +9,12 @@ using System.IO;
 using System.Linq;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
-using ClassIsland.Core.Models;
-using ClassIsland.Core;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Shared;
 using System.Text.Json;
-using ClassIsland.Core.Abstractions.Automation;
 using Microsoft.Extensions.DependencyInjection;
-using System.Windows;
 using ClassIsland.Core.Models.Action;
 using TriggerBase = ClassIsland.Core.Abstractions.Automation.TriggerBase;
-using Octokit;
 using Workflow = ClassIsland.Core.Models.Workflow;
 
 namespace ClassIsland.Services;

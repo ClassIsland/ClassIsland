@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;

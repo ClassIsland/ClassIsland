@@ -1,5 +1,4 @@
 ﻿using ClassIsland.Core.Abstractions.Controls;
-using ClassIsland.Models;
 using ClassIsland.Models.ComponentSettings;
 
 namespace ClassIsland.Controls.Components;

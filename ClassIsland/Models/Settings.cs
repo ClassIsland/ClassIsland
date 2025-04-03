@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
-using Windows.Win32;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -20,8 +15,6 @@ using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AllContributors;
-using ClassIsland.Services;
-using ClassIsland.Services.AppUpdating;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.Extensions.Logging;
@@ -31,7 +24,6 @@ using Octokit;
 using WindowsShortcutFactory;
 
 using File = System.IO.File;
-using System.Runtime.InteropServices;
 using ClassIsland.Core.Models;
 
 namespace ClassIsland.Models;

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace ClassIsland.Services.Logging;
 

@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 
 using ClassIsland.Controls;
-using ClassIsland.Converters;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -24,7 +23,6 @@ using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Models;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
-using ClassIsland.Services.Management;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Extensions;
 using ClassIsland.Shared.Models.Action;
@@ -42,7 +40,6 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
 using Path = System.IO.Path;
 using TabControl = System.Windows.Controls.TabControl;
-using unvell.ReoGrid.IO.OpenXML.Schema;
 
 namespace ClassIsland.Views;
 /// <summary>

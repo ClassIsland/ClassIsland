@@ -14,14 +14,12 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 using ClassIsland.Controls;
-using ClassIsland.Converters;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Converters;
 using ClassIsland.Core.Models.Theming;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
-using ClassIsland.Services;
 using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;
@@ -39,7 +37,6 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
 using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
-using Sentry;
 
 namespace ClassIsland.Views;
 

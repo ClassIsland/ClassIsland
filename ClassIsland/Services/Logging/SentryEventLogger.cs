@@ -1,5 +1,4 @@
 ﻿using System;
-using ClassIsland.Core.Models.Logging;
 using Microsoft.Extensions.Logging;
 using Sentry;
 

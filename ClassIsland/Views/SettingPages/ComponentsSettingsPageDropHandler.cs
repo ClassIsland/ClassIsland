@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;

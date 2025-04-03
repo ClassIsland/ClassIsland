@@ -1,7 +1,5 @@
 ﻿using System.Windows;
-using System;
 using System.Windows.Controls;
-using System.Windows.Data;
 using ClassIsland.Core;
 using System.Windows.Documents;
 using Microsoft.Xaml.Behaviors;

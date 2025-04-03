@@ -1,17 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 
 using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using Org.BouncyCastle.Security;
-using PgpCore;
 using Sentry;
 
 namespace ClassIsland.Helpers;
