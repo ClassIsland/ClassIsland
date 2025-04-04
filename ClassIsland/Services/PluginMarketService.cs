@@ -163,17 +163,17 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
         });
     }
 
+    public PluginIndexItem? ResolveMarketPlugin(string id)
+    {
+        return Indexes.Select(i => i.Value.Plugins
+            .FirstOrDefault(x => x.Manifest.Id == id))
+            .OfType<PluginIndexItem>()
+            .FirstOrDefault();
+    }
+
     public async void RequestDownloadPlugin(string id)
     {
-        PluginIndexItem? item = null;
-        foreach (var i in Indexes)
-        {
-            item = i.Value.Plugins.FirstOrDefault(x => x.Manifest.Id == id);
-            if (item != null)
-            {
-                break;
-            }
-        }
+        var item = ResolveMarketPlugin(id);
 
         if (item == null)
         {

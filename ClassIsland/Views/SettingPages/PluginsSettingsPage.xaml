@@ -283,6 +283,22 @@
                                                  TextAlignment="Left" TextWrapping="Wrap"
                                                  Text="{Binding Exception, Mode=OneWay}"/>
                     </TabItem>
+                    <TabItem Header="依赖项">
+                        <DataGrid ItemsSource="{Binding Manifest.Dependencies, Mode=OneWay}"
+                                  IsReadOnly="True"
+                                  CanUserReorderColumns="False"
+                                  AutoGenerateColumns="False">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="*"
+                                                    Binding="{Binding Id}"
+                                                    Header="插件 ID"/>
+                                <DataGridCheckBoxColumn Width="75"
+                                                    Binding="{Binding IsRequired}"
+                                                    Header="必选？"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
                 </TabControl>
             </Grid>
         </DataTemplate>
