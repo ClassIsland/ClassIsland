@@ -8,13 +8,11 @@ using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
-using ClassIsland.Models;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using Linearstar.Windows.RawInput;
 using Microsoft.Extensions.Logging;
-using ILogger = Grpc.Core.Logging.ILogger;
 
 namespace ClassIsland.Controls;
 

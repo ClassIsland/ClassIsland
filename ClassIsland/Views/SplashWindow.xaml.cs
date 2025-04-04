@@ -1,12 +1,9 @@
 using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Interop;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Views;
 using ClassIsland.Core.Helpers.Native;
-using ClassIsland.Services;
 
 namespace ClassIsland.Views;
 

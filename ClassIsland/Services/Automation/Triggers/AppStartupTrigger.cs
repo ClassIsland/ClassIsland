@@ -1,7 +1,5 @@
-using System;
 using System.Diagnostics;
 using System.Linq;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Attributes;
 using MaterialDesignThemes.Wpf;

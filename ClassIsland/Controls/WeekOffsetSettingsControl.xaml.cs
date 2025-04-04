@@ -5,11 +5,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
-using ControlzEx;
 
 namespace ClassIsland.Controls;
 

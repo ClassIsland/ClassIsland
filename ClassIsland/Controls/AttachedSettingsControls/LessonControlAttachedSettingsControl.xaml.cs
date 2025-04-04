@@ -1,10 +1,5 @@
-﻿using System;
-using System.Windows.Controls;
-using ClassIsland.Core.Attributes;
+﻿using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
-using ClassIsland.Core.Models.AttachedSettings;
-using ClassIsland.Shared.Interfaces;
-using ClassIsland.Models.AttachedSettings;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.AttachedSettingsControls;

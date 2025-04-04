@@ -14,7 +14,6 @@ using ClassIsland.Core.Models;
 using System.Windows.Controls;
 using System.Diagnostics;
 using System.IO;
-using ClassIsland.Core.Models.Action;
 using ClassIsland.Shared.Models.Action;
 
 namespace ClassIsland.Views.SettingPages;

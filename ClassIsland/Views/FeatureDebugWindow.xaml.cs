@@ -8,7 +8,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Controls.CommonDialog;
-using ClassIsland.Helpers;
 using ClassIsland.Models.Authorize;
 
 namespace ClassIsland.Views;

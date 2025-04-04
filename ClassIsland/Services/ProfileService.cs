@@ -7,19 +7,15 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Animation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
-using ClassIsland.Shared.Helpers;
 using ClassIsland.Shared.Models.Profile;
-using ClassIsland.Services.Management;
 
 using Microsoft.Extensions.Logging;
 
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
-using System.Windows.Input;
 using ClassIsland.Shared;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;

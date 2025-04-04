@@ -4,7 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Services;
-using ClassIsland.Views;
 
 namespace ClassIsland.Controls;
 
