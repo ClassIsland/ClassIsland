@@ -17,6 +17,8 @@ public class PluginInfo() : ObservableRecipient
     private PluginManifest _manifest = new();
     private bool _restartRequired = false;
     private bool _isUpdateAvailable = false;
+    private long _downloadCount = 0;
+    private long _starsCount = 0;
 
     /// <summary>
     /// 插件元数据
@@ -178,6 +180,34 @@ public class PluginInfo() : ObservableRecipient
         {
             if (value == _isUpdateAvailable) return;
             _isUpdateAvailable = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件下载量
+    /// </summary>
+    public long DownloadCount
+    {
+        get => _downloadCount;
+        set
+        {
+            if (value == _downloadCount) return;
+            _downloadCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件 Stars 数量
+    /// </summary>
+    public long StarsCount
+    {
+        get => _starsCount;
+        set
+        {
+            if (value == _starsCount) return;
+            _starsCount = value;
             OnPropertyChanged();
         }
     }

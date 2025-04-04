@@ -14,6 +14,7 @@
       xmlns:views="clr-namespace:ClassIsland.Views"
       xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      xmlns:converters="clr-namespace:ClassIsland.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="插件"
@@ -375,6 +376,7 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
+        <converters:LargeNumberToFriendlyNumberConverter x:Key="LargeNumberToFriendlyNumberConverter" />
     </ci:SettingsPageBase.Resources>
     <Grid AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter" DragLeave="Grid_DragLeave">
         <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
@@ -563,13 +565,25 @@
                                                Grid.RowSpan="2" 
                                                Orientation="Horizontal"
                                                VerticalAlignment="Top" HorizontalAlignment="Right">
+                                        <StackPanel Orientation="Horizontal" ToolTip="下载量" Margin="2 0 0 0">
+                                            <materialDesign:PackIcon Width="16" Height="16"
+                                                                     Kind="Download" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Value.DownloadCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
+                                                       FontSize="12" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" ToolTip="Stars" Margin="4 0 0 0">
+                                            <materialDesign:PackIcon Width="16" Height="16"
+                                                                     Kind="Star" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Value.StarsCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
+                                                       FontSize="12" VerticalAlignment="Center"/>
+                                        </StackPanel>
                                         <materialDesign:PackIcon ToolTip="此插件将在重启后被卸载。"
                                                                  Foreground="Orange"
-                                                                         Width="16" Height="16"
-                                                                         VerticalAlignment="Center"
-                                                                         Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                                         Margin="2 0 0 0"
-                                                                         Kind="Delete"/>
+                                                                 Width="16" Height="16"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="4 0 0 0"
+                                                                 Kind="Delete"/>
                                         <materialDesign:PackIcon ToolTip="插件需要重启以应用更改。"
                                                                  Foreground="Orange"
                                                                  Width="16" Height="16"

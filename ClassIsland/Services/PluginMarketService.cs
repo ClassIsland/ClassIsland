@@ -275,6 +275,8 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
                 {
                     var pluginLocal = MergedPlugins[id];
                     pluginLocal.IsAvailableOnMarket = true;
+                    pluginLocal.DownloadCount = plugin.DownloadCount;
+                    pluginLocal.StarsCount = plugin.StarsCount;
                     if (Version.TryParse(pluginLocal.Manifest.Version, out var versionLocal) &&
                         Version.TryParse(plugin.Manifest.Version, out var versionRemote) &&
                         versionRemote > versionLocal)
