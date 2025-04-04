@@ -12,6 +12,7 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
+using ClassIsland.Models.Plugins;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using YamlDotNet.Serialization;
@@ -194,82 +195,54 @@ public class PluginService : IPluginService
 
     private static List<string> ResolveLoadOrder(List<PluginInfo> plugins)
     {
-        ValidateDependencies(plugins);
-        var filteredPlugins = plugins.Where(p => p.LoadStatus == PluginLoadStatus.NotLoaded).ToList();
-        return TopologicalSort(filteredPlugins);
+        var nodes = plugins
+            .Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded)
+            .ToDictionary(
+            x => x.Manifest.Id, 
+            x => new DependencyNode(x));
+        foreach (var i in nodes)
+        {
+            ResolveDependencyNode(nodes, i.Value, []);
+        }
+        return nodes
+            .Where(x => x.Value.Plugin.LoadStatus == PluginLoadStatus.NotLoaded)
+            .OrderBy(x => x.Value.DependencyTreeDepth)
+            .Select(x => x.Key)
+            .ToList();
     }
 
-    private static void ValidateDependencies(List<PluginInfo> plugins)
+    private static void ResolveDependencyNode(Dictionary<string, DependencyNode> allNodes, DependencyNode node, List<DependencyNode> walkingNodes)
     {
-        foreach (var plugin in plugins)
+        if (node.IsDiscovered)
         {
-            foreach (var dep in plugin.Manifest.Dependencies.Where(x => x.IsRequired))
-            {
-                if (plugins.FirstOrDefault(x => x.Manifest.Id == dep.Id) != null) 
-                    continue;
-                plugin.Exception = new InvalidOperationException($"缺失插件依赖：{dep.Id}");
-                plugin.LoadStatus = PluginLoadStatus.Error;
-            }
-        }
-    }
-
-    private static List<string> TopologicalSort(
-        List<PluginInfo> plugins)
-    {
-        var pluginDict = plugins.ToDictionary(p => p.Manifest.Id);
-
-        var adjacency = new Dictionary<string, List<string>>();
-        var inDegree = new Dictionary<string, int>();
-
-        // 初始化图数据结构
-        foreach (var plugin in plugins)
-        {
-            adjacency[plugin.Manifest.Id] = [];
-            inDegree[plugin.Manifest.Id] = 0;
+            return;
         }
 
-        // 构建依赖图
-        foreach (var plugin in plugins)
+        if (walkingNodes.Contains(node))
         {
-            foreach (var dep in plugin.Manifest.Dependencies.Where(dep => pluginDict.ContainsKey(dep.Id)))
-            {
-                AddEdge(dep.Id, plugin.Manifest.Id, adjacency, inDegree);
-            }
-        }
-
-        // Kahn算法进行拓扑排序
-        var queue = new Queue<string>(inDegree.Where(kv => kv.Value == 0).Select(kv => kv.Key));
-        var result = new List<string>();
-
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-            result.Add(current);
-
-            foreach (var neighbor in adjacency[current].Where(neighbor => --inDegree[neighbor] == 0))
-            {
-                queue.Enqueue(neighbor);
-            }
-        }
-
-        // 检查循环依赖
-        if (result.Count != pluginDict.Count)
-        {
-            var cyclicPlugins = pluginDict.Keys.Except(result).ToList();
             throw new InvalidOperationException(
-                $"出现循环引用: {string.Join(", ", cyclicPlugins)}");
+                $"检测到循环依赖：{string.Join(" -> ", walkingNodes.Select(x => x.Plugin.Manifest.Id))}");
         }
 
-        return result;
-    }
+        node.IsDiscovered = true;
+        var depth = 0;
+        foreach (var i in node.Plugin.Manifest.Dependencies)
+        {
+            if (!allNodes.TryGetValue(i.Id, out var dependency) || dependency.Plugin.LoadStatus != PluginLoadStatus.NotLoaded)
+            {
+                if (i.IsRequired)
+                {
+                    node.Plugin.LoadStatus = PluginLoadStatus.Error;
+                    node.Plugin.Exception = new InvalidOperationException($"插件 {node.Plugin.Manifest.Id} 依赖的必选插件 {i.Id} 不存在或处于无法加载状态。");
+                    return;
+                }
+                continue;
+            }
 
-    private static void AddEdge(
-        string from,
-        string to,
-        Dictionary<string, List<string>> adjacency,
-        Dictionary<string, int> inDegree)
-    {
-        adjacency[from].Add(to);
-        inDegree[to]++;
+            ResolveDependencyNode(allNodes, dependency, walkingNodes);
+            depth = Math.Max(depth, dependency.DependencyTreeDepth);
+        }
+        node.DependencyTreeDepth = depth + 1;
+
     }
 }
