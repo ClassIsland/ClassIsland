@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Speech.Synthesis;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -66,9 +67,12 @@ using ClassIsland.Services.Automation.Triggers;
 using ClassIsland.Controls.TriggerSettingsControls;
 using ClassIsland.Core.Abstractions.Services.Metadata;
 using ClassIsland.Core.Abstractions.Views;
+using ClassIsland.Core.Helpers;
+using ClassIsland.Core.Models.Logging;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Services.Metadata;
 using ClassIsland.Shared.Helpers;
+using Microsoft.Extensions.Logging.Console;
 using Walterlv.Threading;
 using Walterlv.Windows;
 
@@ -564,7 +568,14 @@ public partial class App : AppBase, IAppHost
                 // Logging
                 services.AddLogging(builder =>
                 {
-                    builder.AddConsole();
+                    LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(latitude=)(\d*\.?\d*)"), 2));
+                    LogMaskingHelper.Rules.Add(new LogMaskRule(new(@"(longitude=)(\d*\.?\d*)"), 2));
+
+                    builder.AddConsoleFormatter<ClassIslandConsoleFormatter, ConsoleFormatterOptions>();
+                    builder.AddConsole(console =>
+                    {
+                        console.FormatterName = "classisland";
+                    });
                     builder.AddSentry(o =>
                     {
                         o.InitializeSdk = false;

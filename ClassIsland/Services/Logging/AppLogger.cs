@@ -1,6 +1,8 @@
 ﻿using System;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Logging;
 using Microsoft.Extensions.Logging;
+using Pastel;
 
 namespace ClassIsland.Services.Logging;
 
@@ -12,10 +14,11 @@ public class AppLogger(AppLogService appLogService, string categoryName) : ILogg
     
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
+        var message = formatter(state, exception) + (exception != null ? "\n" + exception : "");
         AppLogService.AddLog(new LogEntry()
         {
             LogLevel = logLevel,
-            Message = formatter(state, exception) + (exception != null ? "\n" + exception : ""),
+            Message = LogMaskingHelper.MaskLog(message),
             CategoryName = CategoryName,
             Exception = exception
         });
