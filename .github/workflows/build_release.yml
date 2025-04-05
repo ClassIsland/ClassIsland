@@ -235,14 +235,4 @@ jobs:
           ls
           cd out
           dotnet nuget push *.nupkg -k $env:NUGET_KEY -s https://api.nuget.org/v3/index.json --skip-duplicate
-          
-      - name: Upload to AppCenter
-        env:
-          APPCENTER_TOKEN: ${{ secrets.APPCENTER_TOKEN }}
-        run: |
-          $env:app_ver = (git describe --abbrev=0 --tags)
-          Write-Host "Uploading to AppCenter..." -ForegroundColor Cyan
-          pwsh -ep Bypass -c .\tools\release-gen\pre-appcenter-upload.ps1
-          pwsh -ep Bypass -c .\tools\release-gen\appcenter-upload.ps1 $env:APPCENTER_TOKEN $env:app_ver
-
 

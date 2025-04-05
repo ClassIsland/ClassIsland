@@ -69,7 +69,8 @@ public class ActionNotificationProvider : INotificationProvider, IHostedService
                 IsNotificationEffectEnabled = settings.IsEffectEnabled,
                 IsNotificationSoundEnabled = settings.IsSoundEffectEnabled,
                 IsNotificationTopmostEnabled = settings.IsTopmostEnabled,
-                NotificationSoundPath = settings.CustomSoundEffectPath
+                NotificationSoundPath = settings.CustomSoundEffectPath,
+                IsSpeechEnabled = true
             }
         });
     }

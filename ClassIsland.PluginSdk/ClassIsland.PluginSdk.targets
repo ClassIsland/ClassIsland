@@ -1,6 +1,7 @@
 <Project>
 	<PropertyGroup>
-
+		<PowershellBinaryName>pwsh</PowershellBinaryName>
+		<GenerateHashSummary>true</GenerateHashSummary>
 	</PropertyGroup>
 
 	<Target Name="CreateCipx"
@@ -29,6 +30,7 @@
 		              DestinationFile="$(ClassIslandSdk_CipxOutputPath)"/>
 		
 		<!-- Generate MD5 -->
-		<Exec Command="powershell -ep bypass -NoLogo -File &quot;$(ClassIslandSdk_PackageRoot)generate-md5.ps1&quot; &quot;$(CipxPackageOutputDirectory)&quot;"/>
+		<Exec Command="$(PowershellBinaryName) -ep bypass -NoLogo -File &quot;$(ClassIslandSdk_PackageRoot)generate-md5.ps1&quot; &quot;$(CipxPackageOutputDirectory)&quot;"
+		      Condition="'$(GenerateHashSummary)'=='true'"/>
 	</Target>
 </Project>

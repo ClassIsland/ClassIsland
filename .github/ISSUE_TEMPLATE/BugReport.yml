@@ -20,8 +20,9 @@ body:
       label: 检查清单
       description: 在开始反馈这个问题之前，请先检查：
       options:
-        - label: 我已更新到最新版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=) 或 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&label=) 测试，并看过[最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/)，确认这一 Bug 还没有修复。我也已在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=type%3ABug) 中检索，确认这一 Bug 未被提交过，并且在[常见问题](https://docs.classisland.tech/app/faq/faq.html)中没有解决方案。
+        - label: 我已更新到最新版 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?include_prereleases&style=flat-square&label=) 或 ![最新的版本号](https://img.shields.io/github/v/release/ClassIsland/ClassIsland?style=flat-square&label=) 测试，并看过 [最新提交](https://github.com/ClassIsland/ClassIsland/commits/dev/)，确认这一 Bug 还没有修复。我也已在 [Issues](https://github.com/ClassIsland/ClassIsland/issues?q=type%3ABug) 中检索，确认这一 Bug 未被提交过，并且在 [常见问题](https://docs.classisland.tech/app/faq/faq.html) 中没有解决方案。
           required: true
+        - label: 我已经仔细阅读过选项里的内容，并且知道这个选项不用勾选。
         - label: 我已知晓并同意，此处仅用于汇报程序中存在的问题（关于其他非程序本身的问题应当在 Discussion 板块提出）。
           required: true
   - type: markdown
@@ -29,7 +30,7 @@ body:
       value: |
         ### Bug 信息
 
-        描述您遇到的 Bug。您可以附上截图、录屏、堆栈跟踪、日志等材料，便于开发者追踪问题。**您可以阅读[此处的文档](https://docs.classisland.tech/app/reporting-issue)来了解如何收集跟踪错误需要的信息。**
+        描述您遇到的 Bug。您可以附上截图、录屏、堆栈跟踪、日志等材料，便于开发者追踪问题。**您可以阅读[此处的文档](https://docs.classisland.tech/app/reporting-issue) 来了解如何收集跟踪错误需要的信息。**
   - type: textarea
     id: excepted
     attributes:
