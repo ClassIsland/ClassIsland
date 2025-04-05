@@ -359,9 +359,19 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private void MainTimerOnTick(object? sender, EventArgs e)
     {
-        PreMainTimerTicked?.Invoke(this, EventArgs.Empty);
-        ProcessLessons();
-        PostMainTimerTicked?.Invoke(this, EventArgs.Empty);
+        using var scope = Logger.BeginScope("MainTimerTicked");
+        using (Logger.BeginScope("PreTicked"))
+        {
+            PreMainTimerTicked?.Invoke(this, EventArgs.Empty);
+        }
+        using (Logger.BeginScope("ProcessLessons"))
+        {
+            ProcessLessons();
+        }
+        using (Logger.BeginScope("PostTicked"))
+        {
+            PostMainTimerTicked?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void ProcessLessons()

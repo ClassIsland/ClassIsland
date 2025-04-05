@@ -98,6 +98,7 @@
         <Folder Include="Enums\" />
         <Folder Include="Models\Ipc\" />
         <Folder Include="Models\AuthorizeProviderSettings\" />
+        <Folder Include="Models\Logging\" />
         <Folder Include="Services\Metadata\" />
     </ItemGroup>
     <ItemGroup>
