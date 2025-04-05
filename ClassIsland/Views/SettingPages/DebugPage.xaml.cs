@@ -236,9 +236,13 @@ public partial class DebugPage : SettingsPageBase
             .SetContent("文档 Uri")
             .HasInput(true)
             .ShowDialog(out var result);
+        if (!Uri.TryCreate(result, UriKind.Absolute, out var uri))
+        {
+            return;
+        }
         var reader = new DocumentReaderWindow()
         {
-            Source = new Uri(result)
+            Source = uri
         };
         reader.Show();
     }
