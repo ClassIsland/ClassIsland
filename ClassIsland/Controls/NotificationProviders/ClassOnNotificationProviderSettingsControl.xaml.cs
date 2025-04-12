@@ -12,15 +12,15 @@ namespace ClassIsland.Controls.NotificationProviders;
 /// <summary>
 /// ClassNotificationProviderSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class ClassNotificationProviderSettingsControl : UserControl
+public partial class ClassOnNotificationProviderSettingsControl : UserControl
 {
-    public ClassNotificationSettings Settings
+    public ClassOnNotificationSettings Settings
     {
         get;
         set;
     }
 
-    public ClassNotificationProviderSettingsControl(ClassNotificationSettings settings)
+    public ClassOnNotificationProviderSettingsControl(ClassOnNotificationSettings settings)
     {
         Settings = settings;
         InitializeComponent();
@@ -28,6 +28,6 @@ public partial class ClassNotificationProviderSettingsControl : UserControl
 
     private void ButtonShowAttachedSettingsInfo_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("08F0D9C3-C770-4093-A3D0-02F3D90C24BC"))));
+        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("C308812E-3C3A-6E75-99A1-E6FC0D41B04A"))));
     }
 }

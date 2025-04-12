@@ -10,10 +10,10 @@ namespace ClassIsland.Controls.AttachedSettingsControls;
 [AttachedSettingsUsage(AttachedSettingsTargets.ClassPlan | AttachedSettingsTargets.TimeLayout |
                        AttachedSettingsTargets.Lesson | AttachedSettingsTargets.Subject |
                        AttachedSettingsTargets.TimePoint)]
-[AttachedSettingsControlInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上课提醒设置", PackIconKind.BellNotificationOutline)]
-public partial class ClassNotificationAttachedSettingsControl
+[AttachedSettingsControlInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "准备上课提醒设置", PackIconKind.BellNotificationOutline)]
+public partial class ClassPreparingNotificationAttachedSettingsControl
 {
-    public ClassNotificationAttachedSettingsControl()
+    public ClassPreparingNotificationAttachedSettingsControl()
     {
         InitializeComponent();
     }

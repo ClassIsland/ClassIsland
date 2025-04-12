@@ -1,0 +1,35 @@
+﻿<ci:AttachedSettingsControlBase x:TypeArguments="attachedSettings:ClassOffNotificationAttachedSettings"
+                                x:Class="ClassIsland.Controls.AttachedSettingsControls.ClassOffNotificationAttachedSettingsControl"
+                                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                                xmlns:local="clr-namespace:ClassIsland.Controls.AttachedSettingsControls"
+                                xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                                xmlns:controls="clr-namespace:ClassIsland.Controls"
+                                xmlns:converters="clr-namespace:ClassIsland.Converters"
+                                xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                                xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                                xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                                xmlns:attachedSettings="clr-namespace:ClassIsland.Models.AttachedSettings"
+                                mc:Ignorable="d"
+                                d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters1:IntToStringConverter x:Key="IntToStringConverter" />
+    </UserControl.Resources>
+    <StackPanel
+        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ClassOffNotificationAttachedSettingsControl}}">
+
+        <!-- 启用下课提醒 -->
+        <CheckBox IsChecked="{Binding Settings.IsClassOffNotificationEnabled}"
+                  Content="启用下课提醒。"
+                  Margin="0 0 0 6" />
+        <!-- 下课提醒文字 -->
+        <TextBox Text="{Binding Settings.ClassOffOverlayText}"
+                 materialDesign:HintAssist.Hint="下课提醒文字（留空以禁用）"
+                 Foreground="{DynamicResource MaterialDesignBody}"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 0 0 6" />
+
+    </StackPanel>
+</ci:AttachedSettingsControlBase>

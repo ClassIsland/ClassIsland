@@ -557,7 +557,9 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
                 services.AddComponent<GroupComponent>();
                 // 提醒提供方
-                services.AddHostedService<ClassNotificationProvider>();
+                services.AddHostedService<ClassPreparingNotificationProvider>();
+                services.AddHostedService<ClassOnNotificationProvider>();
+                services.AddHostedService<ClassOffNotificationProvider>();
                 services.AddHostedService<AfterSchoolNotificationProvider>();
                 services.AddHostedService<WeatherNotificationProvider>();
                 services.AddHostedService<ManagementNotificationProvider>();
@@ -595,7 +597,9 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
                 // AttachedSettings
                 services.AddAttachedSettingsControl<AfterSchoolNotificationAttachedSettingsControl>();
-                services.AddAttachedSettingsControl<ClassNotificationAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<ClassPreparingNotificationAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<ClassOnNotificationAttachedSettingsControl>();
+                services.AddAttachedSettingsControl<ClassOffNotificationAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<LessonControlAttachedSettingsControl>();
                 services.AddAttachedSettingsControl<WeatherNotificationAttachedSettingsControl>();
                 // 触发器

@@ -9,12 +9,12 @@ using ClassIsland.Core.Abstractions.Services;
 
 namespace ClassIsland.Controls.NotificationProviders;
 
-public partial class ClassNotificationProviderControl : UserControl, INotifyPropertyChanged
+public partial class ClassPreparingNotificationProviderControl : UserControl, INotifyPropertyChanged
 {
     private object? _element;
     private string _message = "";
     private int _slideIndex = 0;
-    private bool _showTeacherName = false;
+    private bool _showTeacherNameWhenClassPreparing = false;
     private string _maskMessage = "";
 
     public object? Element
@@ -50,13 +50,13 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         }
     }
 
-    public bool ShowTeacherName
+    public bool ShowTeacherNameWhenClassPreparing
     {
-        get => _showTeacherName;
+        get => _showTeacherNameWhenClassPreparing;
         set
         {
-            if (value == _showTeacherName) return;
-            _showTeacherName = value;
+            if (value == _showTeacherNameWhenClassPreparing) return;
+            _showTeacherNameWhenClassPreparing = value;
             OnPropertyChanged();
         }
     }
@@ -79,7 +79,7 @@ public partial class ClassNotificationProviderControl : UserControl, INotifyProp
         Interval = TimeSpan.FromSeconds(10)
     };
 
-    public ClassNotificationProviderControl(string key)
+    public ClassPreparingNotificationProviderControl(string key)
     {
         InitializeComponent();
         var visual = FindResource(key) as FrameworkElement;
