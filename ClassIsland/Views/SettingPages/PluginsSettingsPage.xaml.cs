@@ -254,6 +254,8 @@ public partial class PluginsSettingsPage : SettingsPageBase
             Logger.LogWarning("未找到插件：{}", id);
             return;
         }
+
+        resolvedPlugins.Add(plugin);
         ResolveDependencies(plugin, resolvedPlugins, missingPlugins);
         if (missingPlugins.Count > 0)
         {
@@ -277,7 +279,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private void ResolveDependencies(PluginInfo plugin, List<PluginInfo> resolvedPlugins, List<string> missingPlugins)
     {
-        if (IPluginService.LoadedPluginsIds.Contains(plugin.Manifest.Id))
+        if (IPluginService.LoadedPluginsIds.Contains(plugin.Manifest.Id) || resolvedPlugins.Contains(plugin))
         {
             return;
         }
