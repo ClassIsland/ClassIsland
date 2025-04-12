@@ -91,7 +91,6 @@ public class ClassPreparingNotificationProvider : INotificationProvider, IHosted
             var deltaTime = CalculateDeltaTime(settingsDeltaTime, tClassDelta);
             var notificationRequest = BuildNotificationRequest(settingsSource, deltaTime);
             AppBase.Current.Dispatcher.InvokeAsync(() => ShowNotification(notificationRequest));
-
         }
         else if (IsClassPreparingNotified)
         {
