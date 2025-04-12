@@ -255,12 +255,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
             return;
         }
 
-        var rootPlugin = PluginMarketService.ResolveMarketPlugin(id);
-        if (rootPlugin == null)
-        {
-            return;
-        }
-        resolvedPlugins.Add(rootPlugin);
+        resolvedPlugins.Add(plugin);
         ResolveDependencies(plugin, resolvedPlugins, missingPlugins);
         if (missingPlugins.Count > 0)
         {
