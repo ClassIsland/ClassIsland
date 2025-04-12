@@ -265,9 +265,18 @@ public partial class App : AppBase, IAppHost
 
         if (!safe)
         {
+            var crashInfo = e.ToString();
+            var plugins = DiagnosticService.GetPluginsByStacktrace(e);
+            if (plugins.Count > 0)
+            {
+                var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
+                    + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
+                    + "\n================================\n\n";
+                crashInfo = pluginsWarning + crashInfo;
+            }
             CrashWindow = new CrashWindow()
             {
-                CrashInfo = e.ToString(),
+                CrashInfo = crashInfo,
                 AllowIgnore = _isStartedCompleted && !critical,
                 IsCritical = critical
             };
