@@ -10,7 +10,7 @@ public class ClassNotificationSettings : ObservableRecipient, IClassNotification
     private int _inDoorClassPreparingDeltaTime = 60;
     private int _outDoorClassPreparingDeltaTime = 600;
     private string _classOnPreparingText = "准备上课，请回到座位并保持安静，做好上课准备。";
-    private string _outdoorClassOnPreparingText = "下节课程为户外课程，请合理规划，做好上课准备。";
+    private string _outdoorClassOnPreparingText = "下节课程为户外课程，请合理规划时间，做好上课准备。";
     private bool _isSpeechEnabledOnClassPreparing = true;
     private bool _isSpeechEnabledOnClassOn = true;
     private bool _isSpeechEnabledOnClassOff = true;

@@ -12,7 +12,7 @@ public class ClassNotificationAttachedSettings : ObservableRecipient, IAttachedS
     private int _classPreparingDeltaTime = 60;
     private string _classOnPreparingText = "准备上课，请回到座位并保持安静，做好上课准备。";
     private bool _isAttachSettingsEnabled;
-    private string _outdoorClassOnPreparingText = "下节课程为户外课程，请合理规划，做好上课准备。";
+    private string _outdoorClassOnPreparingText = "下节课程为户外课程，请合理规划时间，做好上课准备。";
     private string _classOnPreparingMaskText = "即将上课";
     private string _outdoorClassOnPreparingMaskText = "即将上课";
     private string _classOnMaskText = "上课";
