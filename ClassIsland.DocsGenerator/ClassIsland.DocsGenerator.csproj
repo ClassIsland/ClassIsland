@@ -25,4 +25,7 @@
 		<PackageReference Include="XmlDocMarkdown.Core" Version="2.9.0" />
 	</ItemGroup>
 	<Import Project="..\Global.props" />
+	<ItemGroup>
+	  <PackageReference Update="GitInfo" Version="3.5.0" />
+	</ItemGroup>
 </Project>

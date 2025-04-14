@@ -26,4 +26,7 @@
 	<Import Project="..\GeneratePackage.props" />
 	<Import Project="..\Global.props" />
 	<Import Project=".\ClassIsland.PluginSdk.targets" />
+	<ItemGroup>
+	  <PackageReference Update="GitInfo" Version="3.5.0" />
+	</ItemGroup>
 </Project>
