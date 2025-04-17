@@ -21,7 +21,7 @@
         <Grid HorizontalAlignment="Center" Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12 0">
                 <!-- Today -->
-                <TextBlock Text="{Binding DateTimes[0], StringFormat={}{0:HH:00}}" FontWeight="Medium" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="{Binding DateTimes[0], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[0], Converter={StaticResource IntToStringConverter}}"
                                                  Height="22"
                                                  VerticalAlignment="Center"
@@ -40,7 +40,7 @@
                     </Separator.LayoutTransform>
                 </Separator>
 
-                <TextBlock Text="{Binding DateTimes[1], StringFormat={}{0:HH:00}}" FontWeight="Medium" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="{Binding DateTimes[1], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[1], Converter={StaticResource IntToStringConverter}}"
                                                  Height="22"
                                                  VerticalAlignment="Center"
@@ -59,7 +59,7 @@
                     </Separator.LayoutTransform>
                 </Separator>
 
-                <TextBlock Text="{Binding DateTimes[2], StringFormat={}{0:HH:00}}" FontWeight="Medium" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="{Binding DateTimes[2], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[2], Converter={StaticResource IntToStringConverter}}"
                                                   Height="22"
                                                   VerticalAlignment="Center"
@@ -78,7 +78,7 @@
                     </Separator.LayoutTransform>
                 </Separator>
 
-                <TextBlock Text="{Binding DateTimes[3], StringFormat={}{0:HH:00}}" FontWeight="Medium" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="{Binding DateTimes[3], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[3], Converter={StaticResource IntToStringConverter}}"
                                                  Height="22"
                                                  VerticalAlignment="Center"
@@ -97,7 +97,7 @@
                     </Separator.LayoutTransform>
                 </Separator>
 
-                <TextBlock Text="{Binding DateTimes[4], StringFormat={}{0:HH:00}}" FontWeight="Medium" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="{Binding DateTimes[4], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[4], Converter={StaticResource IntToStringConverter}}"
                                                  Height="22"
                                                  VerticalAlignment="Center"
@@ -116,7 +116,7 @@
                     </Separator.LayoutTransform>
                 </Separator>
 
-                <TextBlock Text="{Binding DateTimes[5], StringFormat={}{0:HH:00}}" FontWeight="Medium" VerticalAlignment="Center" Margin="0 0 4 0"/>
+                <TextBlock Text="{Binding DateTimes[5], StringFormat={}{0:HH:00}}" FontWeight="Bold" VerticalAlignment="Center" Margin="0 0 4 0"/>
                 <controls:WeatherPackIconControl Code="{Binding Info.ForecastHourly.Weather.Value[5], Converter={StaticResource IntToStringConverter}}"
                                                  Height="22"
                                                  VerticalAlignment="Center"
