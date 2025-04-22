@@ -54,7 +54,7 @@
                                                       Height="22"
                                                       VerticalAlignment="Center"
                                                       Margin="0 0 2 0"/>
-                <TextBlock VerticalAlignment="Center">
+                <TextBlock VerticalAlignment="Center" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastDaily.Temperature.Value[1].From}"/><Run Text="℃">
                     </Run><Run Text="~">
                     </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[1].To}"/><Run Text="℃"/>
@@ -82,7 +82,7 @@
                                                       Height="22"
                                                       VerticalAlignment="Center"
                                                       Margin="0 0 2 0"/>
-                <TextBlock VerticalAlignment="Center" Margin="0 0 6 0">
+                <TextBlock VerticalAlignment="Center" Margin="0 0 6 0" FontWeight="Medium">
                     <Run Text="{Binding Info.ForecastDaily.Temperature.Value[2].From}"/><Run Text="℃">
                     </Run><Run Text="~">
                     </Run><Run Text="{Binding Info.ForecastDaily.Temperature.Value[2].To}"/><Run Text="℃"/>
