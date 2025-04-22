@@ -134,6 +134,21 @@ public partial class App : AppBase, IAppHost
 
     internal static bool _isCriticalSafeModeEnabled = false;
 
+    internal static bool AutoDisableCorruptPlugins
+    {
+        get
+        {
+            try
+            {
+                return ((App)Current).Settings.AutoDisableCorruptPlugins;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+    }
+
     public override bool IsDevelopmentBuild =>
 #if DevelopmentBuild
         true
@@ -263,14 +278,18 @@ public partial class App : AppBase, IAppHost
             });
         }
 
+        var plugins = DiagnosticService.GetPluginsByStacktrace(e);
+        var disabled = DiagnosticService.DisableCorruptPlugins(plugins);
         if (!safe)
         {
             var crashInfo = e.ToString();
-            var plugins = DiagnosticService.GetPluginsByStacktrace(e);
             if (plugins.Count > 0)
             {
                 var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
-                    + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
+                                     + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
+                                     + (disabled
+                                         ? "\n以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
+                                         : "")
                     + "\n================================\n\n";
                 crashInfo = pluginsWarning + crashInfo;
             }
@@ -795,6 +814,11 @@ public partial class App : AppBase, IAppHost
             if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
             {
                 GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback:() => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
+            }
+            if (Settings.CorruptPluginsDisabledLastSession)
+            {
+                Settings.CorruptPluginsDisabledLastSession = false;
+                GetService<ITaskBarIconService>().ShowNotification("已自动禁用异常插件", "ClassIsland 已自动禁用导致上次崩溃的插件。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。", clickedCallback: () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins")));
             }
             if (Settings.IsSplashEnabled)
             {

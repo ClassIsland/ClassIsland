@@ -847,6 +847,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool AutoDisableCorruptPlugins
+    {
+        get => _autoDisableCorruptPlugins;
+        set
+        {
+            if (value == _autoDisableCorruptPlugins) return;
+            _autoDisableCorruptPlugins = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CorruptPluginsDisabledLastSession
+    {
+        get => _corruptPluginsDisabledLastSession;
+        set
+        {
+            if (value == _corruptPluginsDisabledLastSession) return;
+            _corruptPluginsDisabledLastSession = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
@@ -1726,6 +1748,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _weatherLocationSource = 0;
     private bool _autoRefreshWeatherLocation = false;
     private bool _useExperimentColorPickingMethod = false;
+    private bool _autoDisableCorruptPlugins = true;
+    private bool _corruptPluginsDisabledLastSession = false;
 
     public bool IsIgnoreWorkAreaEnabled
     {

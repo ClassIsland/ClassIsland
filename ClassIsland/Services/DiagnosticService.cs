@@ -189,6 +189,8 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         {
             plugins = GetPluginsByStacktrace(ex);
         }
+
+        DisableCorruptPlugins(plugins);
         var pluginsWarning = "\n\n此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
                              + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"));
         var message = $"""
@@ -246,5 +248,38 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         }
 
         return plugins;
+    }
+
+    public static bool DisableCorruptPlugins(List<PluginInfo> plugins)
+    {
+        var isPluginAutoDisabled = false;
+        if (App.AutoDisableCorruptPlugins && plugins.Count > 0)
+        {
+            foreach (var plugin in plugins)
+            {
+                try
+                {
+                    plugin.IsEnabled = false;
+                    isPluginAutoDisabled = true;
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
+        if (!isPluginAutoDisabled) 
+            return isPluginAutoDisabled;
+        try
+        {
+            ((App)AppBase.Current).Settings.CorruptPluginsDisabledLastSession = true;
+        }
+        catch
+        {
+            // ignored
+        }
+
+        return isPluginAutoDisabled;
     }
 }
