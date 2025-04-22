@@ -83,7 +83,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
             LessonsService.CurrentState is not (TimeState.Breaking or TimeState.None))
             return;
 
-        var settingsDeltaTime = GetSettingsDeltaTime(settingsSource);
+        var settingsDeltaTime = GetSettingsDeltaTime();
         if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime))
         {
             if (IsClassPreparingNotified)
@@ -114,10 +114,19 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         return isAttachedSettingsEnabled ? settings! : Settings;
     }
 
-    private int GetSettingsDeltaTime(IClassNotificationSettings settingsSource)
+    private int GetSettingsDeltaTime()
     {
+        var settings = GetAttachedSettingsNext();
         var isOutDoor = LessonsService.NextClassSubject.IsOutDoor;
-        return isOutDoor ? Settings.OutDoorClassPreparingDeltaTime : Settings.InDoorClassPreparingDeltaTime;
+        var isAttachedSettingsEnabled = settings?.IsAttachSettingsEnabled == true;
+        if (isAttachedSettingsEnabled && settings?.ClassPreparingDeltaTime != null)
+        {
+            return settings.ClassPreparingDeltaTime;
+        }
+        else
+        {
+            return isOutDoor ? Settings.OutDoorClassPreparingDeltaTime : Settings.InDoorClassPreparingDeltaTime;
+        }
     }
 
     private TimeSpan CalculateDeltaTime(int settingsDeltaTime, TimeSpan tClassDelta)
