@@ -1,6 +1,10 @@
-﻿using System.Windows;
+﻿using System.Runtime.InteropServices;
+using System.Windows;
+using ClassIsland.Core.Controls.NotificationTemplates;
+using ClassIsland.Core.Models.Notification.Templates;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Google.Protobuf.WellKnownTypes;
+using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Core.Models.Notification;
 
@@ -27,17 +31,23 @@ public class NotificationContent : ObservableRecipient
     }
 
     /// <summary>
-    /// 提醒内容模板。如果此值不为 null，将在呈现提醒内容 <see cref="Content"/> 时使用。
+    /// 提醒内容模板，可选。如果此值不为 null，将在呈现提醒内容 <see cref="Content"/> 时使用。
     /// </summary>
-    public DataTemplate? ContentTemplate
+    /// <remarks>
+    /// 即使不设置此属性，ContentPresenter 也会根据设置的数据类型选择资源中对应的数据模板进行呈现。
+    /// </remarks>
+   public DataTemplate? ContentTemplate
     {
         get => _contentTemplate;
         set => SetProperty(ref _contentTemplate, value);
     }
 
     /// <summary>
-    /// 提醒内容模板资源键。如果此值不为 null，将使用此值来查找并覆盖 <see cref="ContentTemplate"/>。
+    /// 提醒内容模板资源键，可选。如果此值不为 null，将使用此值来查找并覆盖 <see cref="ContentTemplate"/>。
     /// </summary>
+    /// <remarks>
+    /// 即使不设置此属性，ContentPresenter 也会根据设置的数据类型选择资源中对应的数据模板进行呈现。
+    /// </remarks>
     public object? ContentTemplateResourceKey
     {
         get => _contentTemplateResourceKey;
@@ -84,4 +94,84 @@ public class NotificationContent : ObservableRecipient
     /// 代表空内容
     /// </summary>
     public static readonly NotificationContent Empty = new ();
+
+    #region Templates
+
+    /// <summary>
+    /// 从模板创建双图标提醒遮罩内容。
+    /// </summary>
+    /// <param name="text">遮罩文本</param>
+    /// <param name="leftIcon">左侧图标</param>
+    /// <param name="rightIcon">右侧图标</param>
+    /// <param name="factory">提醒内容处理工厂</param>
+    /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
+    public static NotificationContent CreateTwoIconsMask(string text,
+        PackIconKind leftIcon = PackIconKind.AlertCircleOutline, PackIconKind rightIcon = PackIconKind.BellAlert,
+        Action<NotificationContent>? factory = null)
+    {
+        var content = new NotificationContent
+        {
+            Content = new TwoIconsMaskTemplateData()
+            {
+                LeftIconKind = leftIcon,
+                RightIconKind = rightIcon,
+                Text = text
+            },
+            ContentTemplateResourceKey = TwoIconsMaskTemplateData.TemplateResourceKey,
+            SpeechContent = text,
+        };
+        factory?.Invoke(content);
+        return content;
+    }
+
+    /// <summary>
+    /// 从模板创建简单文本内容。
+    /// </summary>
+    /// <param name="text">文本</param>
+    /// <param name="factory">提醒内容处理工厂</param>
+    /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
+    public static NotificationContent CreateSimpleTextContent(string text,
+        Action<NotificationContent>? factory = null)
+    {
+        var content = new NotificationContent
+        {
+            Content = new SimpleTextTemplateData()
+            {
+                Text = text
+            },
+            ContentTemplateResourceKey = SimpleTextTemplateData.TemplateResourceKey,
+            SpeechContent = text,
+        };
+        factory?.Invoke(content);
+        return content;
+    }
+
+    /// <summary>
+    /// 从模板创建简单文本内容。
+    /// </summary>
+    /// <param name="text">文本</param>
+    /// <param name="repeatCount">滚动重复次数</param>
+    /// <param name="factory">提醒内容处理工厂</param>
+    /// <param name="duration">提醒显示时长</param>
+    /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
+    public static NotificationContent CreateRollingTextContent(string text, TimeSpan? duration=null, int repeatCount=2,
+        Action<NotificationContent>? factory = null)
+    {
+        duration ??= TimeSpan.FromSeconds(20);
+        var content = new NotificationContent
+        {
+            Content = new RollingTextTemplate(new RollingTextTemplateData
+            {
+                Text = text,
+                Duration = duration.Value,
+                RepeatCount = repeatCount
+            }),
+            SpeechContent = text,
+            Duration = duration.Value
+        };
+        factory?.Invoke(content);
+        return content;
+    }
+
+    #endregion
 }

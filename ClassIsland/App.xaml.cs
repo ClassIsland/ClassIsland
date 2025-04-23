@@ -75,6 +75,7 @@ using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging.Console;
 using Walterlv.Threading;
 using Walterlv.Windows;
+using ClassIsland.Controls.NotificationProviders;
 
 namespace ClassIsland;
 /// <summary>
@@ -567,7 +568,7 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<GroupComponent>();
                 // 提醒提供方
                 services.AddHostedService<ClassNotificationProvider>();
-                services.AddHostedService<AfterSchoolNotificationProvider>();
+                services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
                 services.AddHostedService<WeatherNotificationProvider>();
                 services.AddHostedService<ManagementNotificationProvider>();
                 services.AddHostedService<ActionNotificationProvider>();

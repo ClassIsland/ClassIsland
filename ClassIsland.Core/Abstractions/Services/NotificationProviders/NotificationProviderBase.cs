@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
@@ -34,7 +35,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
 
     [NotNull] internal object SettingsInternal { get; set; } = null;
 
-    private INotificationHostService NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
+    internal INotificationHostService NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
 
     private NotificationProviderInfo Info { get; }
 
@@ -98,6 +99,25 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
         SettingsElement = NotificationProviderControlBase.GetInstance(Info, ref settings);
         NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, settings);
     }
+
+    /// <summary>
+    /// 显示一个提醒。
+    /// </summary>
+    /// <param name="request">提醒请求</param>
+    protected void ShowNotification(NotificationRequest request)
+    {
+        NotificationHostService.ShowNotification(request, ProviderGuid);
+    }
+
+    /// <summary>
+    /// 显示一个提醒，并等待提醒显示完成。
+    /// </summary>
+    /// <param name="request">提醒请求</param>
+    protected async Task ShowNotificationAsync(NotificationRequest request)
+    {
+        await NotificationHostService.ShowNotificationAsync(request, ProviderGuid);
+    }
+
 }
 
 /// <inheritdoc />
@@ -111,6 +131,7 @@ public abstract class NotificationProviderBase<TSettings> : NotificationProvider
     /// <inheritdoc />
     protected NotificationProviderBase()
     {
+        SettingsInternal = NotificationHostService.GetNotificationProviderSettings<TSettings>(ProviderGuid);
         SetupSettingsControl(true);
     }
 }

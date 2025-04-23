@@ -166,6 +166,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
                 continue;
             Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
             var newRequest = NotificationRequest.ConvertFromOldNotificationRequest(request);
+            Logger.LogWarning("提醒提供方 {} 当前调用的提醒 API 已弃用，请使用 v2 提醒 API", provider.ProviderGuid);
             ShowNotification(newRequest, provider.ProviderGuid);
             return;
         }
@@ -173,7 +174,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         throw new ArgumentException("此方法只能由 INotificationProvider 调用。");
     }
 
-    private void ShowNotification(NotificationRequest request, Guid providerGuid)
+    public void ShowNotification(NotificationRequest request, Guid providerGuid)
     {
         request.NotificationSourceGuid = providerGuid;
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
@@ -190,6 +191,15 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public async Task ShowNotificationAsync(Shared.Models.Notification.NotificationRequest request)
     {
         ShowNotification(request);
+        await Task.Run(() =>
+        {
+            request.CompletedTokenSource.Token.WaitHandle.WaitOne();
+        });
+    }
+
+    public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid)
+    {
+        ShowNotification(request, providerGuid);
         await Task.Run(() =>
         {
             request.CompletedTokenSource.Token.WaitHandle.WaitOne();

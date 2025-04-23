@@ -50,6 +50,10 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     [EditorBrowsable(EditorBrowsableState.Never)]
     Task ShowNotificationAsync(ClassIsland.Shared.Models.Notification.NotificationRequest request);
 
+    internal void ShowNotification(NotificationRequest request, Guid providerGuid);
+
+    internal Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid);
+
     /// <summary>
     /// 获取提醒服务设置实例。如果此提醒提供方设置不存在，则会新建并保存一个实例指定的设置实例。
     /// </summary>
