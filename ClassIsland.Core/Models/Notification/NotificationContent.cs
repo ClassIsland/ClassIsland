@@ -147,7 +147,7 @@ public class NotificationContent : ObservableRecipient
     }
 
     /// <summary>
-    /// 从模板创建简单文本内容。
+    /// 从模板创建滚动文本内容。
     /// </summary>
     /// <param name="text">文本</param>
     /// <param name="repeatCount">滚动重复次数</param>
