@@ -1,4 +1,5 @@
-﻿using ClassIsland.Shared.Models.Notification;
+﻿using System.ComponentModel.DataAnnotations;
+using ClassIsland.Shared.Models.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Core.Models.Notification;
@@ -12,7 +13,7 @@ public class NotificationRequest : ObservableRecipient
     private NotificationSettings _requestNotificationSettings = new();
     private CancellationTokenSource _completedTokenSource = new();
     private NotificationContent? _overlayContent;
-    private NotificationContent _maskContent = new();
+    private NotificationContent _maskContent = NotificationContent.Empty;
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationRequest"/> 实例。
@@ -32,6 +33,7 @@ public class NotificationRequest : ObservableRecipient
     /// <summary>
     /// 提醒遮罩内容
     /// </summary>
+    [Required]
     public NotificationContent MaskContent
     {
         get => _maskContent;
@@ -153,14 +155,14 @@ public class NotificationRequest : ObservableRecipient
                 EndTime = oldRequest.TargetMaskEndTime,
                 IsSpeechEnabled = oldRequest.IsSpeechEnabled
             },
-            OverlayContent = new NotificationContent()
+            OverlayContent = oldRequest.OverlayContent != null ? new NotificationContent()
             {
                 Content = oldRequest.OverlayContent,
                 SpeechContent = oldRequest.OverlaySpeechContent,
                 Duration = oldRequest.OverlayDuration,
                 EndTime = oldRequest.TargetOverlayEndTime,
                 IsSpeechEnabled = oldRequest.IsSpeechEnabled
-            },
+            } : null,
             IsPriorityOverride = oldRequest.IsPriorityOverride,
             RequestNotificationSettings = oldRequest.RequestNotificationSettings,
             CancellationTokenSource = oldRequest.CancellationTokenSource,

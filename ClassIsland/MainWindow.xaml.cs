@@ -20,6 +20,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Abstraction.Services;
@@ -41,6 +42,8 @@ using NAudio.Wave.SampleProviders;
 using Linearstar.Windows.RawInput;
 using WindowChrome = System.Windows.Shell.WindowChrome;
 using Point = System.Windows.Point;
+using YamlDotNet.Core;
+
 
 
 #if DEBUG
@@ -305,6 +308,19 @@ public partial class MainWindow : Window
         return p;
     }
 
+    private void PreProcessNotificationContent(NotificationContent content)
+    {
+        if (content.EndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
+        {
+            content.Duration = content.EndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
+        }
+
+        if (content.ContentTemplateResourceKey != null)
+        {
+            content.ContentTemplate = ResourceLoaderBorder.FindResource(content.ContentTemplateResourceKey) as DataTemplate;
+        }
+    }
+
     private async Task ProcessNotification()
     {
         if (ViewModel.IsOverlayOpened)
@@ -335,19 +351,18 @@ public partial class MainWindow : Window
                 settings = i;
                 break;
             }
-            var isSpeechEnabled = settings.IsSpeechEnabled && request.IsSpeechEnabled && ViewModel.Settings.AllowNotificationSpeech;
+            var mask = request.MaskContent;
+            var overlay = request.OverlayContent;
+            var isMaskSpeechEnabled = settings.IsSpeechEnabled && request.MaskContent.IsSpeechEnabled && ViewModel.Settings.AllowNotificationSpeech;
+            var isOverlaySpeechEnabled = request.OverlayContent != null && settings.IsSpeechEnabled && request.OverlayContent.IsSpeechEnabled && ViewModel.Settings.AllowNotificationSpeech;
             Logger.LogInformation("处理通知请求：{} {}", request.MaskContent.GetType(), request.OverlayContent?.GetType());
-            if (request.TargetMaskEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
+            PreProcessNotificationContent(mask);
+            if (overlay != null)
             {
-                request.MaskDuration = request.TargetMaskEndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
+                PreProcessNotificationContent(overlay);
             }
 
-            if (request.TargetOverlayEndTime != null)  // 如果目标结束时间为空，那么就计算持续时间
-            {
-                request.OverlayDuration = request.TargetOverlayEndTime.Value - ExactTimeService.GetCurrentLocalDateTime() - request.MaskDuration;
-            }
-
-            ViewModel.CurrentMaskElement = request.MaskContent;  // 加载Mask元素
+            ViewModel.CurrentMaskContent = request.MaskContent;  // 加载Mask元素
             var cancellationToken = request.CancellationTokenSource.Token;
             ViewModel.IsNotificationWindowExplicitShowed = settings.IsNotificationTopmostEnabled && ViewModel.Settings.AllowNotificationTopmost;
             if (ViewModel.IsNotificationWindowExplicitShowed && ViewModel.Settings.WindowLayer == 0)  // 如果处于置底状态，还需要激活窗口来强制显示窗口。
@@ -356,14 +371,13 @@ public partial class MainWindow : Window
                 ReCheckTopmostState();
             }
 
-            if (request.MaskDuration > TimeSpan.Zero &&
-                request.OverlayDuration > TimeSpan.Zero)
+            if (request.MaskContent.Duration > TimeSpan.Zero)
             {
                 notificationsShowed = true;
 
-                if (isSpeechEnabled)
+                if (isMaskSpeechEnabled)
                 {
-                    SpeechService.EnqueueSpeechQueue(request.MaskSpeechContent);
+                    SpeechService.EnqueueSpeechQueue(request.MaskContent.SpeechContent);
                 }
                 BeginStoryboardInLine("OverlayMaskIn");
                 // 播放提醒音效
@@ -401,17 +415,17 @@ public partial class MainWindow : Window
                         });
                     });
                 }
-                await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskDuration), cancellationToken);
-                if (request.OverlayContent is null || cancellationToken.IsCancellationRequested || request.OverlayDuration <= TimeSpan.Zero)
+                await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.MaskContent.Duration), cancellationToken);
+                if (request.OverlayContent is null || cancellationToken.IsCancellationRequested || request.OverlayContent.Duration <= TimeSpan.Zero)
                 {
                     BeginStoryboardInLine("OverlayMaskOutDirect");
                 }
                 else
                 {
-                    ViewModel.CurrentOverlayElement = request.OverlayContent;
-                    if (isSpeechEnabled)
+                    ViewModel.CurrentOverlayContent = request.OverlayContent;
+                    if (isOverlaySpeechEnabled)
                     {
-                        SpeechService.EnqueueSpeechQueue(request.OverlaySpeechContent);
+                        SpeechService.EnqueueSpeechQueue(request.OverlayContent.SpeechContent);
                     }
                     BeginStoryboardInLine("OverlayMaskOut");
                     ViewModel.OverlayRemainStopwatch.Restart();
@@ -420,7 +434,7 @@ public partial class MainWindow : Window
                     {
                         From = 1.0,
                         To = 0.0,
-                        Duration = new Duration(request.OverlayDuration),
+                        Duration = new Duration(request.OverlayContent.Duration),
                     };
                     var storyboard = new Storyboard()
                     {
@@ -429,7 +443,7 @@ public partial class MainWindow : Window
                     Storyboard.SetTargetProperty(da, new PropertyPath(NotificationProgressBarValueProperty));
                     storyboard.Children.Add(da);
                     storyboard.Begin();
-                    await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.OverlayDuration),
+                    await Task.Run(() => cancellationToken.WaitHandle.WaitOne(request.OverlayContent.Duration),
                         cancellationToken);
                     ViewModel.OverlayRemainStopwatch.Stop();
                 }
@@ -443,8 +457,8 @@ public partial class MainWindow : Window
             await request.CompletedTokenSource.CancelAsync();
         }
 
-        ViewModel.CurrentOverlayElement = null;
-        ViewModel.CurrentMaskElement = null;
+        ViewModel.CurrentOverlayContent = null;
+        ViewModel.CurrentMaskContent = null;
         ViewModel.IsOverlayOpened = false;
         if (ViewModel.IsNotificationWindowExplicitShowed)
         {
@@ -876,30 +890,6 @@ public partial class MainWindow : Window
         App.GetService<SettingsWindowNew>().Open();
     }
 
-    private void MenuItemDebugOverlayMaskIn_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.CurrentMaskElement = new TextBlock(new Run("Mask"));
-        ViewModel.CurrentOverlayElement = new TextBlock(new Run("Overlay"));
-        var a = (Storyboard)FindResource("OverlayMaskIn");
-        a.Begin();
-    }
-
-    private void MenuItemDebugOverlayMaskOut_OnClick(object sender, RoutedEventArgs e)
-    {
-        var a = (Storyboard)FindResource("OverlayMaskOut");
-        a.Begin();
-    }
-
-    private void MenuItemDebugOverlayOut_OnClick(object sender, RoutedEventArgs e)
-    {
-        var a = (Storyboard)FindResource("OverlayOut");
-        a.Begin();
-    }
-
-    private void MenuItemDebugOverlayMaskOutDirect_OnClick(object sender, RoutedEventArgs e)
-    {
-        BeginStoryboard("OverlayMaskOutDirect");
-    }
 
     private async void MenuItemExitApp_OnClick(object sender, RoutedEventArgs e)
     {

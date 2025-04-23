@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
-
+using ClassIsland.Shared.Models.Notification;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Services;
 
@@ -151,7 +151,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         });
     }
 
-    public void ShowNotification(NotificationRequest request)
+    [Obsolete]
+    public void ShowNotification(Shared.Models.Notification.NotificationRequest request)
     {
         var trace = new StackTrace();
         Logger.LogDebug("准备显示提醒\n{}", trace);
@@ -164,7 +165,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             if (provider == null)
                 continue;
             Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
-            ShowNotification(request, provider.ProviderGuid);
+            var newRequest = NotificationRequest.ConvertFromOldNotificationRequest(request);
+            ShowNotification(newRequest, provider.ProviderGuid);
             return;
         }
 
@@ -184,7 +186,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
     }
 
-    public async Task ShowNotificationAsync(NotificationRequest request)
+    [Obsolete]
+    public async Task ShowNotificationAsync(Shared.Models.Notification.NotificationRequest request)
     {
         ShowNotification(request);
         await Task.Run(() =>

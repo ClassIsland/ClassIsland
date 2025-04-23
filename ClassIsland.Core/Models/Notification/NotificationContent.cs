@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ClassIsland.Core.Models.Notification;
 
@@ -14,6 +15,7 @@ public class NotificationContent : ObservableRecipient
     private string _speechContent = "";
     private TimeSpan _duration = TimeSpan.FromSeconds(5);
     private DateTime? _endTime;
+    private object? _contentTemplateResourceKey;
 
     /// <summary>
     /// 提醒内容。
@@ -31,6 +33,15 @@ public class NotificationContent : ObservableRecipient
     {
         get => _contentTemplate;
         set => SetProperty(ref _contentTemplate, value);
+    }
+
+    /// <summary>
+    /// 提醒内容模板资源键。如果此值不为 null，将使用此值来查找并覆盖 <see cref="ContentTemplate"/>。
+    /// </summary>
+    public object? ContentTemplateResourceKey
+    {
+        get => _contentTemplateResourceKey;
+        set => SetProperty(ref _contentTemplateResourceKey, value);
     }
 
     /// <summary>
@@ -68,4 +79,9 @@ public class NotificationContent : ObservableRecipient
         get => _endTime;
         set => SetProperty(ref _endTime, value);
     }
+
+    /// <summary>
+    /// 代表空内容
+    /// </summary>
+    public static readonly NotificationContent Empty = new ();
 }
