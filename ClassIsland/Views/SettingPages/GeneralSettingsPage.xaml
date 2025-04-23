@@ -358,6 +358,13 @@
                                 </DockPanel>
                             </controls1:SettingsControl.Switcher>
                         </controls1:SettingsControl>
+
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                HorizontalAlignment="Left"
+                                Margin="0 6 0 0"
+                                Click="ButtonAdjustTime_OnClick">
+                            <ci:IconText Kind="ClockCheckOutline" Text="对齐铃声…"/>
+                        </Button>
                     </StackPanel>
                 </Expander>
             </materialDesign:Card>

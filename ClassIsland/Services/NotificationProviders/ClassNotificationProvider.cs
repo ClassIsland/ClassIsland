@@ -114,7 +114,7 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         return isAttachedSettingsEnabled ? settings! : Settings;
     }
 
-    private int GetSettingsDeltaTime()
+    internal int GetSettingsDeltaTime()
     {
         var settings = GetAttachedSettingsNext();
         var isOutDoor = LessonsService.NextClassSubject.IsOutDoor;
