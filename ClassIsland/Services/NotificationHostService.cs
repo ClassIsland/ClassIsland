@@ -51,20 +51,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public void OnCurrentStateChanged(object sender, EventArgs args) => CurrentStateChanged?.Invoke(sender, args);
 
     #endregion
-    private TimeSpan _onClassDeltaTime = TimeSpan.Zero;
-    private TimeSpan _onBreakingTimeDeltaTime = TimeSpan.Zero;
-    private Subject _nextClassSubject = new Subject();
-    private TimeLayoutItem _nextClassTimeLayoutItem = new();
-    private TimeLayoutItem _nextBreakingTimeLayoutItem = new();
-    private bool _isClassPlanLoaded = false;
-    private bool _isClassConfirmed = false;
-    private TimeState _currentState = TimeState.None;
-
-    public TimeSpan OnClassDeltaTime
-    {
-        get => _onClassDeltaTime;
-        set => SetField(ref _onClassDeltaTime, value);
-    }
 
     public NotificationRequest? CurrentRequest { get; set; }
 
@@ -161,6 +147,44 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         await Task.Run(() =>
         {
             request.CompletedTokenSource.Token.WaitHandle.WaitOne();
+        });
+    }
+
+    public void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid)
+    {
+        if (requests.Length <= 0)
+        {
+            return;
+        }
+
+        var rootCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(requests.Select(x => x.CancellationTokenSource.Token).ToArray());
+        var rootCompletedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(requests.Select(x => x.CompletedTokenSource.Token).ToArray());
+        rootCancellationTokenSource.Token.Register(() =>
+        {
+            foreach (var request in requests.Where(x => !x.CancellationToken.IsCancellationRequested))
+            {
+                request.CancellationTokenSource.Cancel();
+            }
+        });
+        foreach (var request in requests)
+        {
+            request.RootCancellationTokenSource = rootCancellationTokenSource;
+            request.RootCompletedTokenSource = rootCompletedTokenSource;
+            
+            ShowNotification(request, providerGuid);
+        }
+    }
+
+    public async Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid)
+    {
+        if (requests.Length <= 0)
+        {
+            return;
+        }
+        ShowChainedNotifications(requests, providerGuid);
+        await Task.Run(() =>
+        {
+            requests.Last().CompletedTokenSource.Token.WaitHandle.WaitOne();
         });
     }
 

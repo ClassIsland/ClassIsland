@@ -54,6 +54,10 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
 
     internal Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid);
 
+    internal void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid);
+
+    internal Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid);
+
     /// <summary>
     /// 获取提醒服务设置实例。如果此提醒提供方设置不存在，则会新建并保存一个实例指定的设置实例。
     /// </summary>

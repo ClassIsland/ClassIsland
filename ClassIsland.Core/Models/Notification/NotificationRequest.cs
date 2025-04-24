@@ -123,6 +123,9 @@ public class NotificationRequest : ObservableRecipient
 
     internal int PriorityOverride { get; set; } = -1;
 
+    internal CancellationTokenSource? RootCancellationTokenSource { get; set; }
+    internal CancellationTokenSource? RootCompletedTokenSource { get; set; }
+
     /// <summary>
     /// 取消当前提醒。
     /// </summary>

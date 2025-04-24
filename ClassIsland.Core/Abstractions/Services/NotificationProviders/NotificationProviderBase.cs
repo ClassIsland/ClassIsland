@@ -118,6 +118,24 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
         await NotificationHostService.ShowNotificationAsync(request, ProviderGuid);
     }
 
+    /// <summary>
+    /// 显示链式提醒。链式显示的提醒会按照传入的顺序显示，并且当其中一个提醒被取消时，所有后续的提醒都会被取消。
+    /// </summary>
+    /// <param name="requests">提醒请求</param>
+    protected void ShowChainedNotifications(params NotificationRequest[] requests)
+    {
+        NotificationHostService.ShowChainedNotifications(requests, ProviderGuid);
+    }
+
+    /// <summary>
+    /// 显示链式提醒，并等待最后一个提醒显示完成。链式显示的提醒会按照传入的顺序显示，并且当其中一个提醒被取消时，所有后续的提醒都会被取消。
+    /// </summary>
+    /// <param name="requests">提醒请求</param>
+    protected async Task ShowChainedNotificationsAsync(NotificationRequest[] requests)
+    {
+        await NotificationHostService.ShowChainedNotificationsAsync(requests, ProviderGuid);
+    }
+
 }
 
 /// <inheritdoc />
