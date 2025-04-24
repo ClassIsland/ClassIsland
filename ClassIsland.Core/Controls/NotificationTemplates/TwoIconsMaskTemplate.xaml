@@ -11,7 +11,7 @@
             <TextBlock Text="{Binding Text}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" 
                        Margin="8 0" FontWeight="Bold"/>
             <materialDesign:PackIcon Kind="{Binding RightIconKind}" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+                                     Height="20" Width="20" Visibility="{Binding HasRightIcon, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </StackPanel>
     </DataTemplate>
 </ResourceDictionary>

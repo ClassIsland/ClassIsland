@@ -567,11 +567,11 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
                 services.AddComponent<GroupComponent>();
                 // 提醒提供方
-                services.AddHostedService<ClassNotificationProvider>();
+                services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
                 services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
-                services.AddHostedService<WeatherNotificationProvider>();
-                services.AddHostedService<ManagementNotificationProvider>();
-                services.AddHostedService<ActionNotificationProvider>();
+                services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
+                services.AddNotificationProvider<ManagementNotificationProvider>();
+                services.AddNotificationProvider<ActionNotificationProvider>();
                 // Transients
                 services.AddTransient<ExcelImportWindow>();
                 services.AddTransient<WallpaperPreviewWindow>();

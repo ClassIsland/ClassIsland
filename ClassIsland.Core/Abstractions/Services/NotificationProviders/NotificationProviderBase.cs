@@ -35,7 +35,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
 
     [NotNull] internal object SettingsInternal { get; set; } = null;
 
-    internal INotificationHostService NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
+    internal INotificationHostService __NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
 
     private NotificationProviderInfo Info { get; }
 
@@ -52,7 +52,14 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     /// <summary>
     /// 初始化一个 <see cref="NotificationProviderBase"/> 类的新实例。
     /// </summary>
-    protected NotificationProviderBase()
+    protected NotificationProviderBase() : this(true)
+    {
+    }
+
+    /// <summary>
+    /// 初始化一个 <see cref="NotificationProviderBase"/> 类的新实例。
+    /// </summary>
+    protected NotificationProviderBase(bool autoRegister)
     {
         var info = NotificationProviderRegistryService.RegisteredProviders.FirstOrDefault(x => x.ProviderType == GetType());
 
@@ -85,7 +92,11 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
             };
         }
 
-        NotificationHostService.RegisterNotificationProvider(this);
+        if (!autoRegister)
+        {
+            return;
+        }
+        __NotificationHostService.RegisterNotificationProvider(this);
 
         if (!Info.HasSettings)
         {
@@ -97,7 +108,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     {
         var settings = hasSettings ? SettingsInternal : null;
         SettingsElement = NotificationProviderControlBase.GetInstance(Info, ref settings);
-        NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, settings);
+        __NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, settings);
     }
 
     /// <summary>
@@ -106,7 +117,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     /// <param name="request">提醒请求</param>
     protected void ShowNotification(NotificationRequest request)
     {
-        NotificationHostService.ShowNotification(request, ProviderGuid);
+        __NotificationHostService.ShowNotification(request, ProviderGuid);
     }
 
     /// <summary>
@@ -115,7 +126,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     /// <param name="request">提醒请求</param>
     protected async Task ShowNotificationAsync(NotificationRequest request)
     {
-        await NotificationHostService.ShowNotificationAsync(request, ProviderGuid);
+        await __NotificationHostService.ShowNotificationAsync(request, ProviderGuid);
     }
 
     /// <summary>
@@ -124,7 +135,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     /// <param name="requests">提醒请求</param>
     protected void ShowChainedNotifications(params NotificationRequest[] requests)
     {
-        NotificationHostService.ShowChainedNotifications(requests, ProviderGuid);
+        __NotificationHostService.ShowChainedNotifications(requests, ProviderGuid);
     }
 
     /// <summary>
@@ -133,7 +144,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     /// <param name="requests">提醒请求</param>
     protected async Task ShowChainedNotificationsAsync(NotificationRequest[] requests)
     {
-        await NotificationHostService.ShowChainedNotificationsAsync(requests, ProviderGuid);
+        await __NotificationHostService.ShowChainedNotificationsAsync(requests, ProviderGuid);
     }
 
 }
@@ -147,9 +158,18 @@ public abstract class NotificationProviderBase<TSettings> : NotificationProvider
     public TSettings Settings => (SettingsInternal as TSettings)!;
 
     /// <inheritdoc />
-    protected NotificationProviderBase()
+    protected NotificationProviderBase() : this(true)
     {
-        SettingsInternal = NotificationHostService.GetNotificationProviderSettings<TSettings>(ProviderGuid);
+    }
+
+    /// <inheritdoc />
+    protected NotificationProviderBase(bool autoRegister)
+    {
+        if (!autoRegister)
+        {
+            return;
+        }
+        SettingsInternal = __NotificationHostService.GetNotificationProviderSettings<TSettings>(ProviderGuid);
         SetupSettingsControl(true);
     }
 }

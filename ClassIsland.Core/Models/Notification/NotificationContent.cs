@@ -95,6 +95,23 @@ public class NotificationContent : ObservableRecipient
     /// </summary>
     public static readonly NotificationContent Empty = new ();
 
+    /// <summary>
+    /// 初始化一个 <see cref="NotificationContent"/> 对象
+    /// </summary>
+    public NotificationContent()
+    {
+        
+    }
+
+    /// <summary>
+    /// 初始化一个 <see cref="NotificationContent"/> 对象
+    /// </summary>
+    /// <param name="content">提醒内容对象</param>
+    public NotificationContent(object? content) : this()
+    {
+        Content = content;
+    }
+
     #region Templates
 
     /// <summary>
@@ -103,10 +120,11 @@ public class NotificationContent : ObservableRecipient
     /// <param name="text">遮罩文本</param>
     /// <param name="leftIcon">左侧图标</param>
     /// <param name="rightIcon">右侧图标</param>
+    /// <param name="hasRightIcon">是否拥有右侧图标</param>
     /// <param name="factory">提醒内容处理工厂</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
     public static NotificationContent CreateTwoIconsMask(string text,
-        PackIconKind leftIcon = PackIconKind.AlertCircleOutline, PackIconKind rightIcon = PackIconKind.BellAlert,
+        PackIconKind leftIcon = PackIconKind.AlertCircleOutline, PackIconKind rightIcon = PackIconKind.BellRing, bool hasRightIcon=true,
         Action<NotificationContent>? factory = null)
     {
         var content = new NotificationContent
@@ -115,6 +133,7 @@ public class NotificationContent : ObservableRecipient
             {
                 LeftIconKind = leftIcon,
                 RightIconKind = rightIcon,
+                HasRightIcon = hasRightIcon,
                 Text = text
             },
             ContentTemplateResourceKey = TwoIconsMaskTemplateData.TemplateResourceKey,

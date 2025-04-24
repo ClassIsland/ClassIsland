@@ -16,7 +16,12 @@ public partial class TwoIconsMaskTemplateData : ObservableObject
     /// <summary>
     /// 右侧图标类型
     /// </summary>
-    [ObservableProperty] private PackIconKind _rightIconKind = PackIconKind.BellAlert;
+    [ObservableProperty] private PackIconKind _rightIconKind = PackIconKind.BellRing;
+
+    /// <summary>
+    /// 是否拥有右侧图标
+    /// </summary>
+    [ObservableProperty] private bool _hasRightIcon = true;
 
     /// <summary>
     /// 遮罩文本

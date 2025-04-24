@@ -6,9 +6,11 @@ using ClassIsland.Controls.AttachedSettingsControls;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Helpers;
 using ClassIsland.Models;
 using ClassIsland.Models.AttachedSettings;
@@ -20,25 +22,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-public class ClassNotificationProvider : INotificationProvider, IHostedService
+[NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上课提醒", PackIconKind.Notifications, "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
+public class ClassNotificationProvider : NotificationProviderBase<ClassNotificationSettings>
 {
-    public string Name { get; set; } = "上课提醒";
-    public string Description { get; set; } = "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。";
-    public Guid ProviderGuid { get; set; } = new Guid("08F0D9C3-C770-4093-A3D0-02F3D90C24BC");
-    public object? SettingsElement { get; set; }
-    public object? IconElement { get; set; } = new PackIcon()
-    {
-        Kind = PackIconKind.Notifications,
-        Width = 24,
-        Height = 24
-    };
-
-    private ClassNotificationSettings Settings
-    {
-        get;
-        set;
-    } = new();
-
     private bool IsClassPreparingNotified { get; set; } = false;
 
     private bool IsClassOnNotified { get; set; } = false;
@@ -63,15 +49,9 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
 
-        NotificationHostService.RegisterNotificationProvider(this);
         LessonsService.OnClass += OnClass;
         LessonsService.OnBreakingTime += OnBreakingTime;
         LessonsService.PostMainTimerTicked += UpdateTimerTick;
-        Settings = NotificationHostService.GetNotificationProviderSettings
-                       <ClassNotificationSettings>(ProviderGuid);
-        SettingsElement = new ClassNotificationProviderSettingsControl(Settings);
-
-        var item = typeof(ClassNotificationAttachedSettingsControl);
     }
 
     private void UpdateTimerTick(object? sender, EventArgs e)
@@ -102,10 +82,6 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         }
     }
 
-    private void ShowNotification(NotificationRequest notificationRequest)
-    {
-        NotificationHostService.ShowNotification(notificationRequest);
-    }
 
     private IClassNotificationSettings GetEffectiveSettings()
     {
@@ -141,20 +117,23 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
 
         return _onClassNotificationRequest = new NotificationRequest
         {
-            MaskSpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。",
-            MaskContent = new ClassNotificationProviderControl("ClassPrepareNotifyMask")
-            {
-                MaskMessage = settingsSource.ClassOnPreparingMaskText
-            },
-            MaskDuration = TimeSpan.FromSeconds(3),
-            OverlaySpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
-            OverlayContent = new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
+            MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnPreparingMaskText, rightIcon: PackIconKind.Class, factory:
+                x =>
+                {
+                    x.SpeechContent = $"距上课还剩{TimeSpanFormatHelper.Format(deltaTime)}。";
+                    x.Duration = TimeSpan.FromSeconds(3);
+                    x.IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing;
+                }),
+            OverlayContent = new NotificationContent(new ClassNotificationProviderControl("ClassPrepareNotifyOverlay")
             {
                 Message = message,
                 ShowTeacherName = Settings.ShowTeacherName
+            })
+            {
+                SpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
+                EndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             },
-            TargetOverlayEndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
-            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
         };
     }
 
@@ -186,39 +165,30 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         var overlayText = settings?.ClassOffOverlayText ?? Settings.ClassOffOverlayText;
         var showOverlayText = !string.IsNullOrWhiteSpace(overlayText);
 
-        if (LessonsService.NextClassSubject != Subject.Empty)
+        var isNextClassEmpty = LessonsService.NextClassSubject == Subject.Empty;
+        ShowNotification(new NotificationRequest()
         {
-            NotificationHostService.ShowNotification(new NotificationRequest()
+            MaskContent = new NotificationContent(new ClassNotificationProviderControl("ClassOffNotification")
             {
-                MaskContent = new ClassNotificationProviderControl("ClassOffNotification")
-                {
-                    ShowTeacherName = Settings.ShowTeacherName
-                },
-                MaskDuration = TimeSpan.FromSeconds(2),
-                MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
-                OverlayContent = new ClassNotificationProviderControl("ClassOffOverlay")
-                {
-                    ShowTeacherName = Settings.ShowTeacherName,
-                    Message = overlayText
-                },
-                OverlayDuration = showOverlayText ? TimeSpan.FromSeconds(20) : TimeSpan.FromSeconds(10),
-                OverlaySpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。{overlayText}",
-                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
-            });
-        }
-        else
-        {
-            NotificationHostService.ShowNotification(new NotificationRequest()
+                ShowTeacherName = Settings.ShowTeacherName
+            })
             {
-                MaskContent = new ClassNotificationProviderControl("ClassOffNotification")
-                {
-                    ShowTeacherName = Settings.ShowTeacherName
-                },
-                MaskDuration = TimeSpan.FromSeconds(5),
-                MaskSpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
+                Duration = isNextClassEmpty? TimeSpan.FromSeconds(5) : TimeSpan.FromSeconds(2),
+                SpeechContent = LessonsService.CurrentTimeLayoutItem.BreakNameText,
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
-            });
-        }
+            },
+            OverlayContent = isNextClassEmpty ? null : new NotificationContent(new ClassNotificationProviderControl("ClassOffOverlay")
+            {
+                ShowTeacherName = Settings.ShowTeacherName,
+                Message = overlayText
+            })
+            {
+                Duration = showOverlayText ? TimeSpan.FromSeconds(20) : TimeSpan.FromSeconds(10),
+                SpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。{overlayText}",
+                IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
+            }
+        });
+        
     }
 
     private void OnClass(object? sender, EventArgs e)
@@ -240,14 +210,13 @@ public class ClassNotificationProvider : INotificationProvider, IHostedService
         {
             IsClassPreparingNotified = false;
         }
-        NotificationHostService.ShowNotification(new NotificationRequest()
+        ShowNotification(new NotificationRequest()
         {
-            MaskContent = new ClassNotificationProviderControl("ClassOnNotification")
-            {
-                MaskMessage = settingsSource.ClassOnMaskText
-            },
-            MaskSpeechContent = settingsSource.ClassOnMaskText,
-            IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn
+            MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnMaskText, rightIcon: PackIconKind.Class, factory:
+                x =>
+                {
+                    x.IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn;
+                }),
         });
     }
 

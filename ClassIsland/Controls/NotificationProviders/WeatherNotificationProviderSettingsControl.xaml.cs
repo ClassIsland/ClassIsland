@@ -12,13 +12,11 @@ namespace ClassIsland.Controls.NotificationProviders;
 /// <summary>
 /// WeatherNotificationProviderSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class WeatherNotificationProviderSettingsControl : UserControl
+public partial class WeatherNotificationProviderSettingsControl
 {
-    public WeatherNotificationProviderSettings Settings { get; }
 
-    public WeatherNotificationProviderSettingsControl(WeatherNotificationProviderSettings settings)
+    public WeatherNotificationProviderSettingsControl()
     {
-        Settings = settings;
         InitializeComponent();
     }
 
