@@ -66,48 +66,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         set => SetField(ref _onClassDeltaTime, value);
     }
 
-    public TimeSpan OnBreakingTimeDeltaTime
-    {
-        get => _onBreakingTimeDeltaTime;
-        set => SetField(ref _onBreakingTimeDeltaTime, value);
-    }
-
-    public Subject NextClassSubject
-    {
-        get => _nextClassSubject;
-        set => SetField(ref _nextClassSubject, value);
-    }
-
-    public TimeLayoutItem NextClassTimeLayoutItem
-    {
-        get => _nextClassTimeLayoutItem;
-        set => SetField(ref _nextClassTimeLayoutItem, value);
-    }
-
-    public TimeLayoutItem NextBreakingTimeLayoutItem
-    {
-        get => _nextBreakingTimeLayoutItem;
-        set => SetField(ref _nextBreakingTimeLayoutItem, value);
-    }
-
-    public bool IsClassPlanLoaded
-    {
-        get => _isClassPlanLoaded;
-        set => SetField(ref _isClassPlanLoaded, value);
-    }
-
-    public bool IsClassConfirmed
-    {
-        get => _isClassConfirmed;
-        set => SetField(ref _isClassConfirmed, value);
-    }
-
-    public TimeState CurrentState
-    {
-        get => _currentState;
-        set => SetField(ref _currentState, value);
-    }
-
     public NotificationRequest? CurrentRequest { get; set; }
 
     public NotificationRequest GetRequest()
