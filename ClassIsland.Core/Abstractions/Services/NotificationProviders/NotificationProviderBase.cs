@@ -35,6 +35,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
 
     [NotNull] internal object SettingsInternal { get; set; } = null;
 
+    // ReSharper disable once InconsistentNaming
     internal INotificationHostService __NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
 
     private NotificationProviderInfo Info { get; }

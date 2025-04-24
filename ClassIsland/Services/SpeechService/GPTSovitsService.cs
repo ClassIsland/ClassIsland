@@ -90,9 +90,16 @@ public class GptSoVitsService : ISpeechService
     public void ClearSpeechQueue()
     {
         requestingCancellationTokenSource?.Cancel();
-        CurrentWavePlayer?.Stop();
-        CurrentWavePlayer?.Dispose();
-        CurrentWavePlayer = null;
+        try
+        {
+            CurrentWavePlayer?.Stop();
+            CurrentWavePlayer?.Dispose();
+            CurrentWavePlayer = null;
+        }
+        catch (Exception e)
+        {
+            // ignored
+        }
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();

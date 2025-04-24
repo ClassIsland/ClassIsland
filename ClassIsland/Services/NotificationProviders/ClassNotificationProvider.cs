@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +37,9 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
     }
 
     private NotificationRequest? _onClassNotificationRequest;
-    
+
+    private NotificationRequest? _prepareOnClassNotificationRequest;
+
     private INotificationHostService NotificationHostService { get; }
 
     private ILessonsService LessonsService { get; }
@@ -59,25 +62,36 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         var tClassDelta = LessonsService.OnClassLeftTime;
         var settingsSource = GetEffectiveSettings();
 
-        if (!settingsSource.IsClassOnPreparingNotificationEnabled ||
-            LessonsService.CurrentState is not (TimeState.Breaking or TimeState.None))
+        if (LessonsService.CurrentState is not (TimeState.Breaking or TimeState.None))
+        {
             return;
+        }
 
         var settingsDeltaTime = GetSettingsDeltaTime();
-        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime))
+        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) && settingsSource.IsClassOnPreparingNotificationEnabled)
         {
             if (IsClassPreparingNotified)
                 return;
 
             IsClassPreparingNotified = true;
             var deltaTime = CalculateDeltaTime(settingsDeltaTime, tClassDelta);
-            var notificationRequest = BuildNotificationRequest(settingsSource, deltaTime);
-            AppBase.Current.Dispatcher.InvokeAsync(() => ShowNotification(notificationRequest));
+            var notificationRequest = _prepareOnClassNotificationRequest = BuildNotificationRequest(settingsSource, deltaTime);
+            List<NotificationRequest> requests = [notificationRequest];
+            if (settingsSource.IsClassOnNotificationEnabled)
+            {
+                var onClassNotificationRequest = _onClassNotificationRequest = BuildOnClassNotificationRequest(settingsSource);
+
+                IsClassOnNotified = true;
+                requests.Add(onClassNotificationRequest);
+            }
+            ShowChainedNotifications(requests.ToArray());
 
         }
         else if (IsClassPreparingNotified)
         {
-            _onClassNotificationRequest?.CancellationTokenSource.Cancel();
+            _prepareOnClassNotificationRequest?.Cancel();
+            _prepareOnClassNotificationRequest = null;
+            _onClassNotificationRequest = null;
             IsClassPreparingNotified = false;
         }
     }
@@ -115,7 +129,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
     {
         var message = GetNotificationMessage(settingsSource);
 
-        return _onClassNotificationRequest = new NotificationRequest
+        var prepareOnClassNotificationRequest = new NotificationRequest
         {
             MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnPreparingMaskText, rightIcon: PackIconKind.Class, factory:
                 x =>
@@ -135,6 +149,18 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             },
         };
+        //prepareOnClassNotificationRequest.CancellationToken.Register(prepareClassOnEndCallback);
+        prepareOnClassNotificationRequest.CompletedToken.Register(PrepareClassOnEndCallback);
+        return prepareOnClassNotificationRequest;
+
+        void PrepareClassOnEndCallback()
+        {
+            if (prepareOnClassNotificationRequest.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+            IsClassPreparingNotified = false;
+        }
     }
 
     private string GetNotificationMessage(IClassNotificationSettings settingsSource)
@@ -151,7 +177,6 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     private void OnBreakingTime(object? sender, EventArgs e)
     {
-        IsClassPreparingNotified = false;
         var settings = GetAttachedSettings();
         var settingsIsClassOffNotificationEnabled = settings?.IsAttachSettingsEnabled == true ?
             settings.IsClassOffNotificationEnabled
@@ -193,7 +218,11 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     private void OnClass(object? sender, EventArgs e)
     {
-        IsClassPreparingNotified = false;
+        ShowOnClassNotificationCore();
+    }
+
+    private void ShowOnClassNotificationCore()
+    {
         var settings = GetAttachedSettings();
         var settingsIsClassOnNotificationEnabled = settings?.IsAttachSettingsEnabled == true ? 
             settings.IsClassOnNotificationEnabled 
@@ -206,18 +235,27 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
             return;
 
-        if (IsClassPreparingNotified)
+        ShowNotification(BuildOnClassNotificationRequest(settingsSource));
+    }
+
+    private NotificationRequest BuildOnClassNotificationRequest(IClassNotificationSettings settingsSource)
+    {
+        var classOnEndCallback = () =>
         {
-            IsClassPreparingNotified = false;
-        }
-        ShowNotification(new NotificationRequest()
+            IsClassOnNotified = false;
+        };
+        var onClassNotificationRequest = new NotificationRequest()
         {
-            MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnMaskText, rightIcon: PackIconKind.Class, factory:
+            MaskContent = NotificationContent.CreateTwoIconsMask(settingsSource.ClassOnMaskText,
+                rightIcon: PackIconKind.Class, factory:
                 x =>
                 {
                     x.IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn;
                 }),
-        });
+        };
+        onClassNotificationRequest.CancellationToken.Register(classOnEndCallback);
+        onClassNotificationRequest.CompletedToken.Register(classOnEndCallback);
+        return onClassNotificationRequest;
     }
 
     private ClassNotificationAttachedSettings? GetAttachedSettings()
