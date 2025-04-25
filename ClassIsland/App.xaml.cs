@@ -282,6 +282,7 @@ public partial class App : AppBase, IAppHost
         var disabled = DiagnosticService.DisableCorruptPlugins(plugins);
         if (!safe)
         {
+            var traceId = SentrySdk.GetTraceHeader()?.TraceId;
             var crashInfo = e.ToString();
             if (plugins.Count > 0)
             {
@@ -290,8 +291,18 @@ public partial class App : AppBase, IAppHost
                                      + (disabled
                                          ? "\n以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
                                          : "")
-                    + "\n================================\n\n";
+                    + "\n================================\n";
                 crashInfo = pluginsWarning + crashInfo;
+            }
+            if (traceId != null)
+            {
+                var traceInfo = $"""
+                                 在向开发者提交问题时请保留以下信息：
+                                 TraceID: {traceId}
+                                 ================================
+                                 
+                                 """;
+                crashInfo = traceInfo + crashInfo;
             }
             CrashWindow = new CrashWindow()
             {
