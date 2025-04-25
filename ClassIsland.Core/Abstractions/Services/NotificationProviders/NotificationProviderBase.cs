@@ -18,6 +18,8 @@ namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 /// </summary>
 public abstract class NotificationProviderBase : INotificationProvider, IHostedService
 {
+    private object? _settingsElement;
+
     /// <inheritdoc />
     public string Name { get; set; }
 
@@ -28,7 +30,18 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     public Guid ProviderGuid { get; set; }
 
     /// <inheritdoc />
-    public object? SettingsElement { get; set; }
+    public object? SettingsElement
+    {
+        get
+        {
+            if (_settingsElement == null && Info.SettingsType != null)
+            {
+                SetupSettingsControl(Info.HasSettings);
+            }
+            return _settingsElement;
+        }
+        set => _settingsElement = value;
+    }
 
     /// <inheritdoc />
     public object? IconElement { get; set; }
@@ -98,17 +111,12 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
             return;
         }
         __NotificationHostService.RegisterNotificationProvider(this);
-
-        if (!Info.HasSettings)
-        {
-            SetupSettingsControl(false);
-        }
     }
 
-    internal void SetupSettingsControl(bool hasSettings)
+    private void SetupSettingsControl(bool hasSettings)
     {
         var settings = hasSettings ? SettingsInternal : null;
-        SettingsElement = NotificationProviderControlBase.GetInstance(Info, ref settings);
+        _settingsElement = NotificationProviderControlBase.GetInstance(Info, ref settings);
         __NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, settings);
     }
 
@@ -171,6 +179,5 @@ public abstract class NotificationProviderBase<TSettings> : NotificationProvider
             return;
         }
         SettingsInternal = __NotificationHostService.GetNotificationProviderSettings<TSettings>(ProviderGuid);
-        SetupSettingsControl(true);
     }
 }
