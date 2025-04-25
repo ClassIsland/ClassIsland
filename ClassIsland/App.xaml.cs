@@ -638,6 +638,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTrigger<OnBreakingTimeTrigger>();
                 services.AddTrigger<OnAfterSchoolTrigger>();
                 services.AddTrigger<CurrentTimeStateChangedTrigger>();
+                services.AddTrigger<PreTimePointTrigger, PreTimePointTriggerSettingsControl>();
                 // 规则
                 services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
                 services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
