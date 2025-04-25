@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Xml.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Models.EventArgs;
@@ -31,6 +32,24 @@ public class MainWindowLine : Control
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindowLine), new PropertyMetadata(default(double)));
+
+    public static readonly DependencyProperty LastStoryboardNameProperty = DependencyProperty.Register(
+        nameof(LastStoryboardName), typeof(string), typeof(MainWindowLine), new PropertyMetadata(default(string)));
+
+    public string? LastStoryboardName
+    {
+        get { return (string)GetValue(LastStoryboardNameProperty); }
+        set { SetValue(LastStoryboardNameProperty, value); }
+    }
+
+    public static readonly DependencyProperty IsOverlayOpenProperty = DependencyProperty.Register(
+        nameof(IsOverlayOpen), typeof(bool), typeof(MainWindowLine), new PropertyMetadata(default(bool)));
+
+    public bool IsOverlayOpen
+    {
+        get { return (bool)GetValue(IsOverlayOpenProperty); }
+        set { SetValue(IsOverlayOpenProperty, value); }
+    }
 
     public double BackgroundWidth
     {
@@ -133,6 +152,13 @@ public class MainWindowLine : Control
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateFadeStatus();
+
+
+        Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
+        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
+        {
+            BeginStoryboard(LastStoryboardName);
+        }
     }
 
 
@@ -233,11 +259,18 @@ public class MainWindowLine : Control
 
     public override void OnApplyTemplate()
     {
+        Logger.LogTrace("已应用控件模板");
         if (GetTemplateChild("PART_GridWrapper") is Grid wrapper)
         {
             GridWrapper = wrapper;
             wrapper.SizeChanged += WrapperOnSizeChanged;
-        } 
+        }
+
+        Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
+        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
+        {
+            BeginStoryboard(LastStoryboardName);
+        }
         base.OnApplyTemplate();
     }
 

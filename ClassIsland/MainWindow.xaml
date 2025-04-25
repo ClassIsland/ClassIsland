@@ -518,8 +518,10 @@
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="{x:Type GroupItem}">
                                                     <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                                             LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                              IsMainLine="{Binding Converter={StaticResource MainWindowIsMainLineConverter}, ConverterParameter={StaticResource ComponentsCollectionViewSource}}"
-                                                                             LineNumber="{Binding Name}">
+                                                                             LineNumber="{Binding Name}"
+                                                                             IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
                                                         <ItemsPresenter/>
                                                     </controls:MainWindowLine>
                                                 </ControlTemplate>

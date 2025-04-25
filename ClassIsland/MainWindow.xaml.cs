@@ -267,6 +267,7 @@ public partial class MainWindow : Window
 
     private void BeginStoryboardInLine(string name)
     {
+        ViewModel.LastStoryboardName = name;
         MainWindowAnimationEvent?.Invoke(this, new MainWindowAnimationEventArgs(name));
     }
 

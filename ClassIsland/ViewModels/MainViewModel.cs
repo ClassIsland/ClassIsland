@@ -33,6 +33,7 @@ public class MainViewModel : ObservableRecipient
     private DateTime _debugCurrentTime = DateTime.Now;
     private bool _isNotificationWindowExplicitShowed = false;
     private bool _isHideRuleSatisfied = false;
+    private string? _lastStoryboardName;
 
     public Profile Profile
     {
@@ -256,6 +257,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isNotificationWindowExplicitShowed) return;
             _isNotificationWindowExplicitShowed = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? LastStoryboardName
+    {
+        get => _lastStoryboardName;
+        set
+        {
+            if (value == _lastStoryboardName) return;
+            _lastStoryboardName = value;
             OnPropertyChanged();
         }
     }
