@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -240,19 +241,30 @@ public partial class App : AppBase, IAppHost
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
+        // COMException: UCEERR_RENDERTHREADFAILURE (0x88980406)
+        if (e.Exception is COMException comException && (uint)comException.HResult == 0x88980406)
+        {
+            ProcessWpfCriticalException(e.Exception);
+            return;
+        }
         try
         {
             ProcessUnhandledException(e.Exception);
         }
         catch
         {
-            Exit += (_, _) =>
-            {
-                DiagnosticService.ProcessCriticalException(e.Exception);
-            };
-            Stop();
+            ProcessWpfCriticalException(e.Exception);
         }
         e.Handled = true;
+    }
+
+    private void ProcessWpfCriticalException(Exception ex)
+    {
+        Exit += (_, _) =>
+        {
+            DiagnosticService.ProcessCriticalException(ex);
+        };
+        Stop();
     }
 
     internal void ProcessUnhandledException(Exception e, bool critical=false)
