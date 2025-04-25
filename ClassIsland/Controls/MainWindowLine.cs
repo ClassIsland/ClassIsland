@@ -118,6 +118,8 @@ public class MainWindowLine : Control
         set { SetValue(IsLineFadedProperty, value); }
     }
 
+    private bool _isLoadCompleted = false;
+
     public MainWindow MainWindow { get; } = IAppHost.GetService<MainWindow>();
 
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
@@ -153,6 +155,7 @@ public class MainWindowLine : Control
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateFadeStatus();
 
+        _isLoadCompleted = true;
 
         Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
         if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
@@ -186,8 +189,12 @@ public class MainWindowLine : Control
             (IsMouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
     }
 
-    private Storyboard BeginStoryboard(string name)
+    private Storyboard? BeginStoryboard(string name)
     {
+        if (!_isLoadCompleted)
+        {
+            return null;
+        }
         var a = (Storyboard)FindResource(name);
         GridWrapper?.BeginStoryboard(a);
         return a;
