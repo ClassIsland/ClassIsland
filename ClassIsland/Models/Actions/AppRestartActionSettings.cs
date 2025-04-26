@@ -3,14 +3,14 @@ namespace ClassIsland.Models.Actions;
 
 public class AppRestartActionSettings : ObservableRecipient
 {
-    bool _silent = false;
-    public bool Silent
+    bool _value = false;
+    public bool Value
     {
-        get => _silent;
+        get => _value;
         set
         {
-            if (value == _silent) return;
-            _silent = value;
+            if (value == _value) return;
+            _value = value;
             OnPropertyChanged();
         }
     }

@@ -21,7 +21,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <CheckBox IsChecked="{Binding Settings.Silent}" Content="静默重启"></CheckBox>
+        <CheckBox IsChecked="{Binding Settings.Value}" Content="静默重启"></CheckBox>
         
     </Grid>
 </ci:ActionSettingsControlBase>
