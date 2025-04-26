@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Shared.Models.Notification;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -113,11 +114,18 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public CancellationToken CompletedToken => CompletedTokenSource.Token;
 
+    /// <summary>
+    /// 发送提醒的提醒渠道 ID
+    /// </summary>
+    public Guid ChannelId { get; set; }
+
     internal NotificationProviderRegisterInfo? NotificationSource { get; set; } = null;
 
     internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
 
     internal NotificationSettings ProviderSettings { get; set; } = new NotificationSettings();
+
+    internal NotificationSettings? ChannelSettings { get; set; }
 
     internal bool IsPriorityOverride { get; set; } = false;
 

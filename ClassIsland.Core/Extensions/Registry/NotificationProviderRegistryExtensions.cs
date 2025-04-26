@@ -62,6 +62,12 @@ public static class NotificationProviderRegistryExtensions
             info.HasSettings = true;
         }
 
+        foreach (var i in notificationProvider.GetCustomAttributes(false).OfType<NotificationChannelInfo>().ToList())
+        {
+            i.AssociatedProviderGuid = info.Guid;
+            info.RegisteredChannels.Add(i);
+        }
+
         if (settings != null)
         {
             info.SettingsType = settings;

@@ -23,9 +23,16 @@ using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上课提醒", PackIconKind.Notifications, "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
+[NotificationProviderInfo("08F0D9C3-C770-4093-A3D0-02F3D90C24BC", "上下课提醒", PackIconKind.Notifications, "在准备上课、上课和下课时发出醒目提醒，并预告下一节课程。")]
+[NotificationChannelInfo(PrepareOnClassChannelId, "准备上课提醒", PackIconKind.Class, description:"在上课前指定时间发出提醒。")]
+[NotificationChannelInfo(OnClassChannelId, "上课提醒", PackIconKind.Class, description: "在上课时发出提醒。")]
+[NotificationChannelInfo(OnBreakingChannelId, "下课提醒", PackIconKind.Class, description: "在下课时发出提醒。")]
 public class ClassNotificationProvider : NotificationProviderBase<ClassNotificationSettings>
 {
+    private const string PrepareOnClassChannelId = "CDDFE7FF-B904-4C73-B458-82793B2F66E9";
+    private const string OnClassChannelId = "AFF5B9A4-037C-4A71-8563-C9EA87DDA75C";
+    private const string OnBreakingChannelId = "77C9F3FB-0A2A-4B22-BDDF-3C333462B2F9";
+
     private bool IsClassPreparingNotified { get; set; } = false;
 
     private bool IsClassOnNotified { get; set; } = false;
@@ -148,6 +155,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 EndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             },
+            ChannelId = Guid.Parse(PrepareOnClassChannelId)
         };
         //prepareOnClassNotificationRequest.CancellationToken.Register(prepareClassOnEndCallback);
         prepareOnClassNotificationRequest.CompletedToken.Register(PrepareClassOnEndCallback);
@@ -191,7 +199,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         var showOverlayText = !string.IsNullOrWhiteSpace(overlayText);
 
         var isNextClassEmpty = LessonsService.NextClassSubject == Subject.Empty;
-        ShowNotification(new NotificationRequest()
+        Channel(OnBreakingChannelId).ShowNotification(new NotificationRequest()
         {
             MaskContent = new NotificationContent(new ClassNotificationProviderControl("ClassOffNotification")
             {
@@ -235,7 +243,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - LessonsService.CurrentTimeLayoutItem.StartSecond.TimeOfDay > TimeSpan.FromSeconds(5))
             return;
 
-        ShowNotification(BuildOnClassNotificationRequest(settingsSource));
+        Channel(OnClassChannelId).ShowNotification(BuildOnClassNotificationRequest(settingsSource));
     }
 
     private NotificationRequest BuildOnClassNotificationRequest(IClassNotificationSettings settingsSource)
@@ -252,6 +260,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 {
                     x.IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOn;
                 }),
+            ChannelId = Guid.Parse(OnClassChannelId)
         };
         onClassNotificationRequest.CancellationToken.Register(classOnEndCallback);
         onClassNotificationRequest.CompletedToken.Register(classOnEndCallback);

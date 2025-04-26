@@ -117,7 +117,7 @@
 
         <controls1:ListDetailView.TitleElement>
             <Grid>
-                <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                <Grid DataContext="{Binding ViewModel.SelectedRegisterInfo, Mode=OneWay}"
                       d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
                     <TextBlock Text="{Binding Name}"
                                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
@@ -149,12 +149,10 @@
                                  SelectionMode="Single"
                                  dd:DragDrop.IsDragSource="True"
                                  dd:DragDrop.IsDropTarget="True"
-                                 SelectionChanged="Selector_OnSelected"
+                                 SelectionChanged="SelectorMain_OnSelected"
                                  HorizontalContentAlignment="Stretch"
                                  dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
-                                 SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}"
-                                 ItemContainerStyle="{StaticResource MaterialDesignListBoxItem}"
-                                 Style="{StaticResource MaterialDesignNavigationPrimaryListBox}">
+                                 SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}">
 
                             <dd:DragDrop.EffectMoveAdornerTemplate>
                                 <DataTemplate>
@@ -177,6 +175,7 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition />
                                             <RowDefinition />
+                                            <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto" />
@@ -202,6 +201,49 @@
                                                    TextWrapping="Wrap"
                                                    Text="{Binding Description}"
                                                    FontSize="12" />
+
+                                        <ListBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+                                                 ItemsSource="{Binding NotificationChannels}"
+                                                 SelectedValuePath="ProviderGuid"
+                                                 SelectionChanged="SelectorChannel_OnSelectionChanged"
+                                                 SelectedValue="{Binding ViewModel.NotificationSettingsSelectedChannel, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=local:NotificationSettingsPage}}">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Background="Transparent">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition />
+                                                            <RowDefinition />
+                                                            <RowDefinition Height="Auto" />
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition />
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- 图标 -->
+                                                        <ContentPresenter Grid.Column="0" Grid.Row="0"
+                                                                          Grid.RowSpan="2"
+                                                                          Width="24" Height="24"
+                                                                          VerticalAlignment="Center"
+                                                                          ClipToBounds="True" Margin="6"
+                                                                          Content="{Binding ProviderInstance.IconElement}" />
+
+                                                        <!-- 标题 -->
+                                                        <TextBlock Grid.Column="1" Grid.Row="0"
+                                                                   TextWrapping="Wrap"
+                                                                   Text="{Binding Name}"
+                                                                   FontSize="14" FontWeight="Medium" />
+
+                                                        <!-- 描述 -->
+                                                        <TextBlock Grid.Column="1" Grid.Row="1"
+                                                                   TextWrapping="Wrap"
+                                                                   Text="{Binding Description}"
+                                                                   FontSize="12" />
+
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
@@ -589,7 +631,7 @@
                             </Style.Triggers>
                         </Style>
                     </Grid.Style>
-                    <Grid DataContext="{Binding ViewModel.NotificationSettingsSelectedProvider, Converter={StaticResource GuidToNotificationProviderConverter}, Mode=OneWay}"
+                    <Grid DataContext="{Binding ViewModel.SelectedRegisterInfo, Mode=OneWay}"
                           d:DataContext="{d:DesignInstance notification:NotificationProviderRegisterInfo}">
                         <ContentPresenter ClipToBounds="True"
                                           Margin="0 48 0 0"

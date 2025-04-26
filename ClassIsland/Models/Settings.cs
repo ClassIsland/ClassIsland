@@ -1227,6 +1227,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public ObservableDictionary<string, NotificationSettings> NotificationChannelsNotifySettings
+    {
+        get => _notificationChannelsNotifySettings;
+        set
+        {
+            if (Equals(value, _notificationChannelsNotifySettings)) return;
+            _notificationChannelsNotifySettings = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsSystemSpeechSystemExist
     {
         get => _isSystemSpeechSystemExist;
@@ -1726,6 +1737,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _weatherLocationSource = 0;
     private bool _autoRefreshWeatherLocation = false;
     private bool _useExperimentColorPickingMethod = false;
+    private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
 
     public bool IsIgnoreWorkAreaEnabled
     {

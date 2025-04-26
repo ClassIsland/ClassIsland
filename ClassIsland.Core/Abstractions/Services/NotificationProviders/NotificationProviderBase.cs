@@ -16,7 +16,7 @@ namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 /// <summary>
 /// 提醒提供方基类。
 /// </summary>
-public abstract class NotificationProviderBase : INotificationProvider, IHostedService
+public abstract class NotificationProviderBase : INotificationProvider, INotificationSender, IHostedService
 {
     private object? _settingsElement;
 
@@ -38,6 +38,7 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
             {
                 SetupSettingsControl(Info.HasSettings);
             }
+
             return _settingsElement;
         }
         set => _settingsElement = value;
@@ -49,7 +50,8 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     [NotNull] internal object SettingsInternal { get; set; } = null;
 
     // ReSharper disable once InconsistentNaming
-    internal INotificationHostService __NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
+    internal INotificationHostService __NotificationHostService { get; } =
+        IAppHost.GetService<INotificationHostService>();
 
     private NotificationProviderInfo Info { get; }
 
@@ -62,6 +64,8 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
     public async Task StopAsync(CancellationToken cancellationToken)
     {
     }
+
+    internal Dictionary<Guid, NotificationChannel> Channels { get; } = new();
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationProviderBase"/> 类的新实例。
@@ -120,42 +124,54 @@ public abstract class NotificationProviderBase : INotificationProvider, IHostedS
         __NotificationHostService.WriteNotificationProviderSettings(ProviderGuid, settings);
     }
 
-    /// <summary>
-    /// 显示一个提醒。
-    /// </summary>
-    /// <param name="request">提醒请求</param>
-    protected void ShowNotification(NotificationRequest request)
+    /// <inheritdoc />
+    public void ShowNotification(NotificationRequest request)
     {
-        __NotificationHostService.ShowNotification(request, ProviderGuid);
+        __NotificationHostService.ShowNotification(request, ProviderGuid, Guid.Empty);
+    }
+
+    /// <inheritdoc />
+    public async Task ShowNotificationAsync(NotificationRequest request)
+    {
+        await __NotificationHostService.ShowNotificationAsync(request, ProviderGuid, Guid.Empty);
+    }
+
+    /// <inheritdoc />
+    public void ShowChainedNotifications(params NotificationRequest[] requests)
+    {
+        __NotificationHostService.ShowChainedNotifications(requests, ProviderGuid, Guid.Empty);
+    }
+
+    /// <inheritdoc />
+    public async Task ShowChainedNotificationsAsync(NotificationRequest[] requests)
+    {
+        await __NotificationHostService.ShowChainedNotificationsAsync(requests, ProviderGuid, Guid.Empty);
     }
 
     /// <summary>
-    /// 显示一个提醒，并等待提醒显示完成。
+    /// 获取指定的提醒渠道
     /// </summary>
-    /// <param name="request">提醒请求</param>
-    protected async Task ShowNotificationAsync(NotificationRequest request)
+    /// <param name="id">提醒渠道 GUID</param>
+    /// <returns>对应的提醒渠道 <see cref="NotificationChannel"/></returns>
+    protected NotificationChannel Channel(string id)
     {
-        await __NotificationHostService.ShowNotificationAsync(request, ProviderGuid);
+        return Channel(Guid.Parse(id));
     }
 
     /// <summary>
-    /// 显示链式提醒。链式显示的提醒会按照传入的顺序显示，并且当其中一个提醒被取消时，所有后续的提醒都会被取消。
+    /// 获取指定的提醒渠道
     /// </summary>
-    /// <param name="requests">提醒请求</param>
-    protected void ShowChainedNotifications(params NotificationRequest[] requests)
+    /// <param name="id">提醒渠道 GUID</param>
+    /// <returns>对应的提醒渠道 <see cref="NotificationChannel"/></returns>
+    protected NotificationChannel Channel(Guid id)
     {
-        __NotificationHostService.ShowChainedNotifications(requests, ProviderGuid);
-    }
+        if (Channels.TryGetValue(id, out var value))
+        {
+            return value;
+        }
 
-    /// <summary>
-    /// 显示链式提醒，并等待最后一个提醒显示完成。链式显示的提醒会按照传入的顺序显示，并且当其中一个提醒被取消时，所有后续的提醒都会被取消。
-    /// </summary>
-    /// <param name="requests">提醒请求</param>
-    protected async Task ShowChainedNotificationsAsync(NotificationRequest[] requests)
-    {
-        await __NotificationHostService.ShowChainedNotificationsAsync(requests, ProviderGuid);
+        throw new InvalidOperationException($"无效的提醒提供方 ID {id}");
     }
-
 }
 
 /// <inheritdoc />

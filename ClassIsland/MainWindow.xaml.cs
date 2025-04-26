@@ -346,8 +346,8 @@ public partial class MainWindow : Window
         {
             using var player = new DirectSoundOut();
             var request = ViewModel.CurrentNotificationRequest = NotificationHostService.GetRequest();  // 获取当前的通知请求
-            var settings = ViewModel.Settings as INotificationSettings;
-            foreach (var i in new List<NotificationSettings>([request.ProviderSettings, request.RequestNotificationSettings]).Where(i => i.IsSettingsEnabled))
+            INotificationSettings settings = ViewModel.Settings;
+            foreach (var i in new List<NotificationSettings?>([request.ChannelSettings, request.ProviderSettings, request.RequestNotificationSettings]).OfType<NotificationSettings>().Where(i => i.IsSettingsEnabled))
             {
                 settings = i;
                 break;

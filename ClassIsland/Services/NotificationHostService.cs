@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Profile;
@@ -93,6 +95,17 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             ProviderSettings = Settings.NotificationProvidersNotifySettings[provider.ProviderGuid.ToString()]
         });
+
+        if (provider is not NotificationProviderBase providerBase)
+        {
+            return;
+        }
+
+        var providerInfo = NotificationProviderRegistryService.RegisteredProviders.First(x => x.Guid == provider.ProviderGuid);
+        foreach (var channelInfo in providerInfo.RegisteredChannels)
+        {
+            providerBase.Channels[channelInfo.Guid] = new NotificationChannel(providerInfo, channelInfo);
+        }
     }
 
     [Obsolete]
@@ -111,14 +124,14 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
             var newRequest = NotificationRequest.ConvertFromOldNotificationRequest(request);
             Logger.LogWarning("提醒提供方 {} 当前调用的提醒 API 已弃用，请使用 v2 提醒 API", provider.ProviderGuid);
-            ShowNotification(newRequest, provider.ProviderGuid);
+            ShowNotification(newRequest, provider.ProviderGuid, Guid.Empty);
             return;
         }
 
         throw new ArgumentException("此方法只能由 INotificationProvider 调用。");
     }
 
-    public void ShowNotification(NotificationRequest request, Guid providerGuid)
+    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
         request.NotificationSourceGuid = providerGuid;
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
@@ -128,6 +141,15 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             _queueIndex = 0;
         }
+
+        if (channelGuid != Guid.Empty && request.ChannelId == Guid.Empty)
+        {
+            request.ChannelId = channelGuid;
+        }
+
+        var channel =
+            request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
+        request.ChannelSettings = channel?.ProviderSettings;
         RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
     }
 
@@ -141,16 +163,16 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         });
     }
 
-    public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid)
+    public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
-        ShowNotification(request, providerGuid);
+        ShowNotification(request, providerGuid, channelGuid);
         await Task.Run(() =>
         {
             request.CompletedTokenSource.Token.WaitHandle.WaitOne();
         });
     }
 
-    public void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid)
+    public void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid)
     {
         if (requests.Length <= 0)
         {
@@ -171,21 +193,31 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             request.RootCancellationTokenSource = rootCancellationTokenSource;
             request.RootCompletedTokenSource = rootCompletedTokenSource;
             
-            ShowNotification(request, providerGuid);
+            ShowNotification(request, providerGuid, channelGuid);
         }
     }
 
-    public async Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid)
+    public async Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid)
     {
         if (requests.Length <= 0)
         {
             return;
         }
-        ShowChainedNotifications(requests, providerGuid);
+        ShowChainedNotifications(requests, providerGuid, channelGuid);
         await Task.Run(() =>
         {
             requests.Last().CompletedTokenSource.Token.WaitHandle.WaitOne();
         });
+    }
+
+    public void RegisterNotificationChannel(NotificationChannel channel)
+    {
+        Logger.LogInformation("注册提醒渠道：{}（{}）", channel.ChannelInfo.Guid, channel.ChannelInfo.Name);
+        if (!Settings.NotificationChannelsNotifySettings.ContainsKey(channel.ChannelInfo.Guid.ToString()))
+        {
+            Settings.NotificationChannelsNotifySettings.Add(channel.ChannelInfo.Guid.ToString(), new());
+        }
+        NotificationProviders.FirstOrDefault(x => x.ProviderGuid == channel.ChannelInfo.AssociatedProviderGuid)?.NotificationChannels.Add(new NotificationChannelRegisterInfo(channel));
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

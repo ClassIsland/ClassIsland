@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Notification;
@@ -50,13 +51,15 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
     [EditorBrowsable(EditorBrowsableState.Never)]
     Task ShowNotificationAsync(ClassIsland.Shared.Models.Notification.NotificationRequest request);
 
-    internal void ShowNotification(NotificationRequest request, Guid providerGuid);
+    internal void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid);
 
-    internal Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid);
+    internal Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid);
 
-    internal void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid);
+    internal void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid);
 
-    internal Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid);
+    internal Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid);
+
+    internal void RegisterNotificationChannel(NotificationChannel channel);
 
     /// <summary>
     /// 获取提醒服务设置实例。如果此提醒提供方设置不存在，则会新建并保存一个实例指定的设置实例。

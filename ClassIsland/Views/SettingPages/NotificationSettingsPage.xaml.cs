@@ -180,14 +180,24 @@ public partial class NotificationSettingsPage : SettingsPageBase
         e.Accepted = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == i) != null;
     }
 
-    private void Selector_OnSelected(object sender, SelectionChangedEventArgs e)
+    private void SelectorMain_OnSelected(object sender, SelectionChangedEventArgs e)
     {
         if (e.AddedItems.Count == 0)
         {
             ViewModel.IsNotificationSettingsPanelOpened = false;
             return;
         }
+
+        if (e.RemovedItems.Count >= 1 && e.RemovedItems[0] == e.AddedItems[0])
+        {
+            return;
+        }
         ViewModel.IsNotificationSettingsPanelOpened = true;
+        if (ViewModel.NotificationSettingsSelectedProvider == null)
+        {
+            return;
+        }
+        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider);
     }
 
     private void ButtonTestSpeeching_OnClick(object sender, RoutedEventArgs e)
@@ -278,5 +288,16 @@ public partial class NotificationSettingsPage : SettingsPageBase
     private void NotificationSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         SettingsService.Settings.PropertyChanged -= Settings_PropertyChanged;
+    }
+
+    private void SelectorChannel_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        e.Handled = true;
+        ViewModel.IsNotificationSettingsPanelOpened = true;
+        if (ViewModel.NotificationSettingsSelectedChannel == null)
+        {
+            return;
+        }
+        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider)?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedChannel);
     }
 }

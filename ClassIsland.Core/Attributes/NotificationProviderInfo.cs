@@ -21,7 +21,7 @@ public class NotificationProviderInfo : Attribute
     /// <summary>
     /// 提醒提供方图标
     /// </summary>
-    public PackIconKind PackIcon { get; } = PackIconKind.WidgetsOutline;
+    public PackIconKind PackIcon { get; } = PackIconKind.BellRing;
 
     /// <summary>
     /// 提醒提供方位图图标uri
@@ -52,6 +52,11 @@ public class NotificationProviderInfo : Attribute
     /// 是否注册了设置类型
     /// </summary>
     public bool HasSettings { get; internal set; }
+
+    /// <summary>
+    /// 已注册的提醒渠道
+    /// </summary>
+    public List<NotificationChannelInfo> RegisteredChannels { get; } = [];
 
 
     /// <inheritdoc />
