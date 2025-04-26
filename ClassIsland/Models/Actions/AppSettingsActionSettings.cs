@@ -60,3 +60,33 @@ public class WindowLayerActionSettings : ObservableRecipient
         }
     }
 }
+
+public class WindowDockingOffsetXActionSettings : ObservableRecipient
+{
+    int _value = 0;
+    public int Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            OnPropertyChanged();
+        }
+    }
+}
+
+public class WindowDockingOffsetYActionSettings : ObservableRecipient
+{
+    int _value = 0;
+    public int Value
+    {
+        get => _value;
+        set
+        {
+            if (value == _value) return;
+            _value = value;
+            OnPropertyChanged();
+        }
+    }
+}

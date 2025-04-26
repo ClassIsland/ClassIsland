@@ -22,6 +22,10 @@ public class AppSettingsActionHandler : IHostedService
             Add(g, "WindowDockingLocation", ((WindowDockingLocationActionSettings)s!).Value));
         Reg("classisland.settings.windowLayer", (s, g) =>
             Add(g, "WindowLayer", ((WindowLayerActionSettings)s!).Value));
+        Reg("classisland.settings.windowDockingOffsetX", (s, g) =>
+            Add(g, "WindowDockingOffsetX", ((WindowDockingOffsetXActionSettings)s!).Value));
+        Reg("classisland.settings.windowDockingOffsetY", (s, g) =>
+            Add(g, "WindowDockingOffsetY", ((WindowDockingOffsetYActionSettings)s!).Value));
 
         RegRevert("classisland.settings.currentComponentConfig", (s, g) => 
             Remove(g, "CurrentComponentConfig"));
@@ -31,6 +35,10 @@ public class AppSettingsActionHandler : IHostedService
             Remove(g, "WindowDockingLocation"));
         RegRevert("classisland.settings.windowLayer", (s, g) =>
             Remove(g, "WindowLayer"));
+        RegRevert("classisland.settings.windowDockingOffsetX", (s, g) =>
+            Remove(g, "WindowDockingOffsetX"));
+        RegRevert("classisland.settings.windowDockingOffsetY", (s, g) =>
+            Remove(g, "WindowDockingOffsetY"));
 
         void Add(string g, string binding, dynamic value)
         {
