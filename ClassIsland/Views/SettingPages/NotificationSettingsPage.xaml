@@ -151,6 +151,7 @@
                                  dd:DragDrop.IsDropTarget="True"
                                  SelectionChanged="SelectorMain_OnSelected"
                                  HorizontalContentAlignment="Stretch"
+                                 materialDesign:RippleAssist.IsDisabled="True"
                                  dd:DragDrop.DropTargetAdornerBrush="{DynamicResource PrimaryHueMidBrush}"
                                  SelectedItem="{Binding ViewModel.NotificationSettingsSelectedProvider, Mode=TwoWay}">
 
@@ -202,48 +203,68 @@
                                                    Text="{Binding Description}"
                                                    FontSize="12" />
 
-                                        <ListBox Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
-                                                 ItemsSource="{Binding NotificationChannels}"
-                                                 SelectedValuePath="ProviderGuid"
-                                                 SelectionChanged="SelectorChannel_OnSelectionChanged"
-                                                 SelectedValue="{Binding ViewModel.NotificationSettingsSelectedChannel, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=local:NotificationSettingsPage}}">
-                                            <ListBox.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Grid Background="Transparent">
-                                                        <Grid.RowDefinitions>
-                                                            <RowDefinition />
-                                                            <RowDefinition />
-                                                            <RowDefinition Height="Auto" />
-                                                        </Grid.RowDefinitions>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto" />
-                                                            <ColumnDefinition />
-                                                        </Grid.ColumnDefinitions>
+                                        <Expander Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
+                                                  materialDesign:ExpanderAssist.VerticalHeaderPadding="2"
+                                                  materialDesign:ExpanderAssist.HorizontalHeaderPadding="2"
+                                                  Background="{x:Null}"
+                                                  Collapsed="Expander_OnCollapsed"
+                                                  Header="提醒渠道">
+                                            <Expander.Style>
+                                                <Style TargetType="Expander" BasedOn="{StaticResource MaterialDesignExpander}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding NotificationChannels.Count}" Value="0">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="False">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Expander.Style>
+                                            <ListBox ItemsSource="{Binding NotificationChannels}"
+                                                     SelectedValuePath="ProviderGuid"
+                                                     SelectionChanged="SelectorChannel_OnSelectionChanged"
+                                                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel"
+                                                     MouseDown="UIElement_OnMouseDown"
+                                                     SelectedValue="{Binding ViewModel.NotificationSettingsSelectedChannel, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=local:NotificationSettingsPage}}">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid Background="Transparent">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                                <RowDefinition Height="Auto" />
+                                                            </Grid.RowDefinitions>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition />
+                                                            </Grid.ColumnDefinitions>
 
-                                                        <!-- 图标 -->
-                                                        <ContentPresenter Grid.Column="0" Grid.Row="0"
-                                                                          Grid.RowSpan="2"
-                                                                          Width="24" Height="24"
-                                                                          VerticalAlignment="Center"
-                                                                          ClipToBounds="True" Margin="6"
-                                                                          Content="{Binding ProviderInstance.IconElement}" />
+                                                            <!-- 图标 -->
+                                                            <ContentPresenter Grid.Column="0" Grid.Row="0"
+                                                                              Grid.RowSpan="2"
+                                                                              Width="24" Height="24"
+                                                                              VerticalAlignment="Center"
+                                                                              ClipToBounds="True" Margin="6"
+                                                                              Content="{Binding ProviderInstance.IconElement}" />
 
-                                                        <!-- 标题 -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="0"
-                                                                   TextWrapping="Wrap"
-                                                                   Text="{Binding Name}"
-                                                                   FontSize="14" FontWeight="Medium" />
+                                                            <!-- 标题 -->
+                                                            <TextBlock Grid.Column="1" Grid.Row="0"
+                                                                       TextWrapping="Wrap"
+                                                                       Text="{Binding Name}"
+                                                                       FontSize="14" FontWeight="Medium" />
 
-                                                        <!-- 描述 -->
-                                                        <TextBlock Grid.Column="1" Grid.Row="1"
-                                                                   TextWrapping="Wrap"
-                                                                   Text="{Binding Description}"
-                                                                   FontSize="12" />
+                                                            <!-- 描述 -->
+                                                            <TextBlock Grid.Column="1" Grid.Row="1"
+                                                                       TextWrapping="Wrap"
+                                                                       Text="{Binding Description}"
+                                                                       FontSize="12" />
 
-                                                    </Grid>
-                                                </DataTemplate>
-                                            </ListBox.ItemTemplate>
-                                        </ListBox>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                            </ListBox></Expander>
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

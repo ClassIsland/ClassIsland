@@ -13,6 +13,7 @@ using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using System.Diagnostics;
+using System.Windows.Input;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Models;
 using ClassIsland.Shared.Helpers;
@@ -193,10 +194,16 @@ public partial class NotificationSettingsPage : SettingsPageBase
             return;
         }
         ViewModel.IsNotificationSettingsPanelOpened = true;
+        SetCurrentNotificationProvider();
+    }
+
+    private void SetCurrentNotificationProvider()
+    {
         if (ViewModel.NotificationSettingsSelectedProvider == null)
         {
             return;
         }
+
         ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider);
     }
 
@@ -299,5 +306,35 @@ public partial class NotificationSettingsPage : SettingsPageBase
             return;
         }
         ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider)?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedChannel);
+    }
+
+    private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (!e.Handled)
+        {
+            // ListView拦截鼠标滚轮事件
+            e.Handled = true;
+
+            // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.Source = sender;
+            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
+        }
+    }
+
+    private void UIElement_OnMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        //e.Handled = true;
+    }
+
+    private void Expander_OnCollapsed(object sender, RoutedEventArgs e)
+    {
+        ViewModel.NotificationSettingsSelectedChannel = null;
+        SetCurrentNotificationProvider();
     }
 }
