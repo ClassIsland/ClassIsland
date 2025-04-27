@@ -330,7 +330,8 @@
                           SnapsToDevicePixels="True"
                           ClipToBounds="True">
                         <Border CornerRadius="20"
-                                ClipToBounds="True">
+                                ClipToBounds="True"
+                                IsHitTestVisible="False">
 
                             <ProgressBar VerticalAlignment="Stretch"
                                          Maximum="1"
