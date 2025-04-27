@@ -251,7 +251,7 @@
                         <Grid HorizontalAlignment="Stretch" Margin="12">
                             <!-- about -->
                             <StackPanel Margin="12 0 0 0">
-                                <TextBlock>
+                                <TextBlock Background="Transparent" MouseDown="UIElementAppInfo_OnMouseDown">
                                     <Run Text="ClassIsland" FontSize="24" />
                                     <Run Text="{x:Static ci:App.AppVersion}" />
                                     <Run Text="(Codename" />

@@ -14,6 +14,7 @@ public class AboutSettingsViewModel : ObservableRecipient
     private ObservableCollection<string> _sayingsCollection = [];
     private bool _isSayingBusy = false;
     private int _clickCount = 0;
+    private int _appInfoClickCount = 0;
 
     public int AppIconClickCount
     {
@@ -101,6 +102,17 @@ public class AboutSettingsViewModel : ObservableRecipient
         {
             if (value == _clickCount) return;
             _clickCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int AppInfoClickCount
+    {
+        get => _appInfoClickCount;
+        set
+        {
+            if (value == _appInfoClickCount) return;
+            _appInfoClickCount = value;
             OnPropertyChanged();
         }
     }
