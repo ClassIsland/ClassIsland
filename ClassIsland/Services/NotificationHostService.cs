@@ -104,7 +104,7 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         var providerInfo = NotificationProviderRegistryService.RegisteredProviders.First(x => x.Guid == provider.ProviderGuid);
         foreach (var channelInfo in providerInfo.RegisteredChannels)
         {
-            providerBase.Channels[channelInfo.Guid] = new NotificationChannel(providerInfo, channelInfo);
+            providerBase.Channels[channelInfo.Guid] = new NotificationChannel(providerBase, providerInfo, channelInfo);
         }
     }
 

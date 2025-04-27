@@ -7,6 +7,7 @@ using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using MaterialDesignThemes.Wpf;
 using System.Windows.Media.Imaging;
+using ClassIsland.Core.Abstractions.Controls;
 
 namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 
@@ -54,7 +55,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
     // ReSharper disable once InconsistentNaming
     internal INotificationHostService __NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
 
-    internal NotificationChannel(NotificationProviderInfo providerInfo, NotificationChannelInfo channelInfo)
+    internal NotificationChannel(NotificationProviderBase provider, NotificationProviderInfo providerInfo, NotificationChannelInfo channelInfo)
     {
         ProviderInfo = providerInfo;
         ChannelInfo = channelInfo;
@@ -71,6 +72,12 @@ public class NotificationChannel : INotificationSender, INotificationProvider
         };
 
         __NotificationHostService.RegisterNotificationChannel(this);
+
+        if (info.SettingsControlType == null) 
+            return;
+        var settings = provider.SettingsInternal;
+        SettingsElement = NotificationProviderControlBase.GetInstance(info, ref settings);
+        provider.SettingsInternal = settings!;
     }
 
     /// <inheritdoc />
