@@ -682,6 +682,9 @@ public partial class App : AppBase, IAppHost
                 services.AddAction<CurrentComponentConfigActionSettings, CurrentComponentConfigActionSettingsControl>("classisland.settings.currentComponentConfig", "组件配置方案", PackIconKind.WidgetsOutline);
                 services.AddAction<ThemeActionSettings, ThemeActionSettingsControl>("classisland.settings.theme", "应用主题", PackIconKind.ThemeLightDark);
                 services.AddAction<WindowDockingLocationActionSettings, WindowDockingLocationActionSettingsControl>("classisland.settings.windowDockingLocation", "窗口停靠位置", PackIconKind.Monitor);
+                services.AddAction<WindowLayerActionSettings, WindowLayerActionSettingsControl>("classisland.settings.windowLayer", "窗口层级", PackIconKind.LayersOutline);
+                services.AddAction<WindowDockingOffsetXActionSettings, WindowDockingOffsetXActionSettingsControl>("classisland.settings.windowDockingOffsetX", "窗口向右偏移", PackIconKind.ArrowCollapseRight);
+                services.AddAction<WindowDockingOffsetYActionSettings, WindowDockingOffsetYActionSettingsControl>("classisland.settings.windowDockingOffsetY", "窗口向下偏移", PackIconKind.ArrowCollapseDown);
                 services.AddAction<RunActionSettings, RunActionSettingsControl>("classisland.os.run", "运行", PackIconKind.OpenInApp);
                 services.AddAction<NotificationActionSettings, NotificationActionSettingsControl>(
                     "classisland.showNotification", "显示提醒", PackIconKind.BellOutline);
@@ -689,7 +692,9 @@ public partial class App : AppBase, IAppHost
                 services.AddAction<WeatherNotificationActionSettings, WeatherNotificationActionSettingControl>(
                     "classisland.notification.weather", "显示天气提醒", PackIconKind.SunWirelessOutline);
                 services.AddAction("classisland.app.quit", "退出 ClassIsland", PackIconKind.ExitToApp, (_, _) => Current.Stop());
+                services.AddAction<AppRestartActionSettings,AppRestartActionSettingsControl>("classisland.app.restart", "重启 ClassIsland", PackIconKind.Restart);
                 // 行动处理
+                services.AddHostedService<AppRestartActionHandler>();
                 services.AddHostedService<RunActionHandler>();
                 services.AddHostedService<AppSettingsActionHandler>();
                 services.AddHostedService<SleepActionHandler>();
