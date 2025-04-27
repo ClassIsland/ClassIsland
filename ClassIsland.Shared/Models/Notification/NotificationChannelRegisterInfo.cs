@@ -1,9 +1,8 @@
 ﻿#if !NETFRAMEWORK
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using ClassIsland.Shared.Abstraction.Models.Notification;
 using ClassIsland.Shared.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace ClassIsland.Shared.Models.Notification;
 
@@ -11,7 +10,7 @@ namespace ClassIsland.Shared.Models.Notification;
 /// 提醒提供方注册信息
 /// </summary>
 /// <param name="providerInstance">提醒提供方实例</param>
-public class NotificationProviderRegisterInfo(INotificationProvider providerInstance) : ObservableRecipient, INotificationSenderRegisterInfo
+public class NotificationChannelRegisterInfo(INotificationProvider providerInstance) : ObservableRecipient, INotificationSenderRegisterInfo
 {
     private string _name = providerInstance.Name;
     private string _description = providerInstance.Description;
@@ -41,11 +40,6 @@ public class NotificationProviderRegisterInfo(INotificationProvider providerInst
 
     /// <inheritdoc/>
     public INotificationProvider ProviderInstance { get; } = providerInstance;
-
-    /// <summary>
-    /// 包含的提醒渠道实例
-    /// </summary>
-    public ObservableCollection<NotificationChannelRegisterInfo> NotificationChannels { get; } = [];
 
     /// <inheritdoc/>
     public NotificationSettings ProviderSettings

@@ -4,42 +4,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Abstraction.Models;
-using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using MaterialDesignThemes.Wpf;
 
-using Microsoft.Extensions.Hosting;
+using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-public class AfterSchoolNotificationProvider : INotificationProvider, IHostedService
+[NotificationProviderInfo("8FBC3A26-6D20-44DD-B895-B9411E3DDC51", "放学提醒", PackIconKind.HumanRunFast, "在当天的课程结束后发出提醒。")]
+public class AfterSchoolNotificationProvider : NotificationProviderBase<AfterSchoolNotificationProviderSettings>
 {
     public INotificationHostService NotificationHostService { get; }
-    public string Name { get; set; } = "放学提醒";
-    public string Description { get; set; } = "在当天的课程结束后发出提醒。";
-    public Guid ProviderGuid { get; set; } = new Guid("8FBC3A26-6D20-44DD-B895-B9411E3DDC51");
-    public object? SettingsElement { get; set; }
-    public object? IconElement { get; set; } = new PackIcon()
-    {
-        Kind = PackIconKind.HumanRunFast,
-        Width = 24,
-        Height = 24
-    };
-    public async Task StartAsync(CancellationToken cancellationToken)
-    {
-    }
-
-    public async Task StopAsync(CancellationToken cancellationToken)
-    {
-    }
-
-    private AfterSchoolNotificationProviderSettings Settings
-    {
-        get;
-    }
 
     private ILessonsService LessonsService { get; }
 
@@ -50,12 +30,8 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
         NotificationHostService = notificationHostService;
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
-
-        NotificationHostService.RegisterNotificationProvider(this);
-        Settings =
-            NotificationHostService.GetNotificationProviderSettings<AfterSchoolNotificationProviderSettings>(ProviderGuid);
         LessonsService.OnAfterSchool += OnAfterSchool;
-        SettingsElement = new AfterSchoolNotificationProviderSettingsControl(Settings);
+
     }
 
     private void OnAfterSchool(object? sender, EventArgs e)
@@ -67,13 +43,10 @@ public class AfterSchoolNotificationProvider : INotificationProvider, IHostedSer
             (now - afterSchoolTime) > TimeSpan.FromSeconds(10))
             return;
 
-        NotificationHostService.ShowNotification(new NotificationRequest()
+        ShowNotification(new NotificationRequest
         {
-            MaskContent = new AfterSchoolNotificationProviderControl(settings.NotificationMsg, "AfterSchoolMask"),
-            MaskSpeechContent = "放学",
-            OverlayContent = new AfterSchoolNotificationProviderControl(settings.NotificationMsg, "AfterSchoolOverlay"),
-            OverlaySpeechContent = settings.NotificationMsg,
-            OverlayDuration = TimeSpan.FromSeconds(30)
+            MaskContent = NotificationContent.CreateTwoIconsMask("放学", rightIcon: PackIconKind.ExitRun),
+            OverlayContent = NotificationContent.CreateSimpleTextContent(settings.NotificationMsg, x => x.Duration=TimeSpan.FromSeconds(30))
         });
     }
 

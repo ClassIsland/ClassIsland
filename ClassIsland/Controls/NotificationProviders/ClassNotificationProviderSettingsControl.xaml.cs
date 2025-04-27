@@ -12,17 +12,10 @@ namespace ClassIsland.Controls.NotificationProviders;
 /// <summary>
 /// ClassNotificationProviderSettingsControl.xaml 的交互逻辑
 /// </summary>
-public partial class ClassNotificationProviderSettingsControl : UserControl
+public partial class ClassNotificationProviderSettingsControl
 {
-    public ClassNotificationSettings Settings
+    public ClassNotificationProviderSettingsControl()
     {
-        get;
-        set;
-    }
-
-    public ClassNotificationProviderSettingsControl(ClassNotificationSettings settings)
-    {
-        Settings = settings;
         InitializeComponent();
     }
 

@@ -4,7 +4,8 @@
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
                     xmlns:classIsland="clr-namespace:ClassIsland"
-                    xmlns:system="clr-namespace:System;assembly=System.Runtime">
+                    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+                    xmlns:notification="clr-namespace:ClassIsland.Core.Models.Notification;assembly=ClassIsland.Core">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Assets/Fonts/Fonts.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
@@ -329,7 +330,8 @@
                           SnapsToDevicePixels="True"
                           ClipToBounds="True">
                         <Border CornerRadius="20"
-                                ClipToBounds="True">
+                                ClipToBounds="True"
+                                IsHitTestVisible="False">
 
                             <ProgressBar VerticalAlignment="Stretch"
                                          Maximum="1"
@@ -344,7 +346,8 @@
                             </ProgressBar>
                         </Border>
                         <ContentPresenter
-                            Content="{Binding ViewModel.CurrentOverlayElement, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" />
+                            Content="{Binding ViewModel.CurrentOverlayContent.Content, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" 
+                            ContentTemplate="{Binding ViewModel.CurrentOverlayContent.ContentTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"/>
 
                     </Grid>
 
@@ -362,7 +365,8 @@
                             </TransformGroup>
                         </materialDesign:ColorZone.RenderTransform>
                         <ContentPresenter x:Name="OverlayMaskContent"
-                                          Content="{Binding ViewModel.CurrentMaskElement, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" />
+                                          Content="{Binding ViewModel.CurrentMaskContent.Content, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}" 
+                                          ContentTemplate="{Binding ViewModel.CurrentMaskContent.ContentTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType=classIsland:MainWindow}}"/>
                     </materialDesign:ColorZone>
                 </Grid>
             </Grid>

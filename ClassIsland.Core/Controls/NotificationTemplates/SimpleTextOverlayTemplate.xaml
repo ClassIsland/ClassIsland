@@ -1,0 +1,14 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:templates="clr-namespace:ClassIsland.Core.Models.Notification.Templates">
+    <DataTemplate x:Key="{x:Static templates:SimpleTextTemplateData.TemplateResourceKey}"
+                  DataType="{x:Type templates:SimpleTextTemplateData}">
+        <Grid>
+            <TextBlock Text="{Binding Text, Mode=OneWay}"
+                       Margin="24 0"
+                       VerticalAlignment="Center" 
+                       HorizontalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"/>
+        </Grid>
+    </DataTemplate>
+</ResourceDictionary>
