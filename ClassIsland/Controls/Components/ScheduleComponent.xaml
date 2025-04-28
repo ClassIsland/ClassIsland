@@ -64,7 +64,7 @@
                                 <Condition Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="1"/>
                             </MultiDataTrigger.Conditions>
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
-                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=TwoWay}"/>
                             <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
                             <Setter Property="IsLiveUpdatingEnabled" Value="True"/>
                         </MultiDataTrigger>
@@ -87,13 +87,13 @@
                         </MultiDataTrigger>
                         <DataTrigger Binding="{Binding TomorrowClassPlan}" Value="{x:Null}">
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
-                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=TwoWay}"/>
                             <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
                             <Setter Property="IsLiveUpdatingEnabled" Value="True"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0">
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
-                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
+                            <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=TwoWay}"/>
                             <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
                             <Setter Property="IsLiveUpdatingEnabled" Value="True"/>
                         </DataTrigger>
