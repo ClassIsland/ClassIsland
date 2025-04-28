@@ -114,6 +114,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
         RefreshClassesList(true);
+        NotifyClassesChanged();
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -131,6 +132,7 @@ public class ClassPlan : AttachableSettingsObject
                     TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
                 }
 
+                NotifyClassesChanged();
                 break;
             }
             case nameof(Classes):

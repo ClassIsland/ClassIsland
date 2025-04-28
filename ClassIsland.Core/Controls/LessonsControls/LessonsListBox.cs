@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Models.Profile;
@@ -115,6 +116,11 @@ public class LessonsListBox : ListBox
         get { return (bool)GetValue(HideFinishedClassProperty); }
         set { SetValue(HideFinishedClassProperty, value); }
     }
+
+    /// <summary>
+    /// 课程服务
+    /// </summary>
+    public ILessonsService? LessonsService => IAppHost.TryGetService<ILessonsService>();
 
     static LessonsListBox()
     {

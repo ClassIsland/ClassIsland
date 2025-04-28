@@ -52,7 +52,6 @@
         <ci:LessonsListBox Grid.Column="1" 
                            Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
                            LessonControlSettings="{Binding Settings, Mode=OneWay}"
-                           IsLiveUpdatingEnabled="True"
                            ShowCurrentTimeLayoutItemOnlyOnClass="{Binding ShowCurrentLessonOnlyOnClass, Mode=OneWay}"
                            HighlightChangedClass="{Binding Settings.HighlightChangedClass, Mode=OneWay}">
 
@@ -67,6 +66,7 @@
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
                             <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
                             <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
+                            <Setter Property="IsLiveUpdatingEnabled" Value="True"/>
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -89,11 +89,13 @@
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
                             <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
                             <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
+                            <Setter Property="IsLiveUpdatingEnabled" Value="True"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="0">
                             <Setter Property="ClassPlan" Value="{Binding LessonsService.CurrentClassPlan, Mode=OneWay}"/>
                             <Setter Property="SelectedIndex" Value="{Binding LessonsService.CurrentSelectedIndex, Mode=OneWay}"/>
                             <Setter Property="HideFinishedClass" Value="{Binding Settings.HideFinishedClass, Mode=OneWay}"/>
+                            <Setter Property="IsLiveUpdatingEnabled" Value="True"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Settings.TomorrowScheduleShowMode}" Value="2">
                             <Setter Property="ClassPlan" Value="{Binding TomorrowClassPlan, Mode=OneWay}"/>

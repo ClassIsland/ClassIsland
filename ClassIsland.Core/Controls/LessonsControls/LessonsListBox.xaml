@@ -99,6 +99,8 @@
                                 <Binding Path="DiscardHidingDefault" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                                 <Binding Path="ShowCurrentTimeLayoutItemOnlyOnClass" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                                 <Binding Path="HideFinishedClass" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                <Binding Path="LessonsService.ValidTimeLayoutItems" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
+                                <Binding Path="IsLiveUpdatingEnabled" RelativeSource="{RelativeSource FindAncestor, AncestorType=lessonsControls:LessonsListBox}" Mode="OneWay"/>
                             </MultiBinding>
                         </ContentPresenter.ContentTemplate>
                     </ContentPresenter>

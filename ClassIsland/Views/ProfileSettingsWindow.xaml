@@ -1157,6 +1157,8 @@
                                                       SelectedIndex="{Binding ViewModel.SelectedClassIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
                                                       SelectedItem="{Binding ViewModel.SelectedClassInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                                 <DataGrid.Columns>
+                                                    <DataGridCheckBoxColumn Header="启用"
+                                                                            Binding="{Binding IsEnabled}"/>
                                                     <DataGridTemplateColumn Header="时间" IsReadOnly="True">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
