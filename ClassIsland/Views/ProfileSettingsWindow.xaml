@@ -43,6 +43,9 @@
                    Drop="ProfileSettingsWindow_OnDrop"
                    Button.Click="GlobalUpdated"
                    ListBox.SelectionChanged="GlobalUpdated">
+    <controls1:MyWindow.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveProfileCommand}"/>
+    </controls1:MyWindow.InputBindings>
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}" Executed="ButtonEditTimePoint_OnClick"/>
         <CommandBinding Command="{x:Static local:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}" Executed="ButtonRemoveTimePoint_OnClick"/>
