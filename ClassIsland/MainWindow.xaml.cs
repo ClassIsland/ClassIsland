@@ -501,6 +501,7 @@ public partial class MainWindow : Window
             return;
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在加载界面主题（2）");
         UpdateTheme();
+        IAppHost.GetService<IXamlThemeService>().LoadAllThemes();
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化托盘菜单");
         var menu = (ContextMenu)FindResource("AppContextMenu");
         menu.DataContext = this;

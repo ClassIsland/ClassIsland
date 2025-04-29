@@ -1,0 +1,125 @@
+﻿<ci:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.ThemesSettingsPage"
+                     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                     xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+                     xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                     mc:Ignorable="d"
+                     d:DesignHeight="450" d:DesignWidth="800"
+                     Title="ThemesSettingsPage"
+                     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                     Background="{DynamicResource MaterialDesignPaper}"
+                     FontFamily="{StaticResource HarmonyOsSans}"
+                     TextElement.FontWeight="Regular"
+                     TextElement.FontSize="14"
+                     TextOptions.TextFormattingMode="Ideal"
+                     TextOptions.TextRenderingMode="Auto"
+                     d:DataContext="{d:DesignInstance local:ThemesSettingsPage}">
+
+    <ci:SettingsPageBase.Resources>
+        <Grid x:Key="ErrorInfoDrawer" Margin="16" Width="450">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Text="错误信息" Grid.Row="0"
+                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <TextBox Grid.Row="1"
+                     VerticalContentAlignment="Top"
+                     materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
+                     BorderThickness="0"
+                     Text="{Binding Mode=OneTime}" />
+        </Grid>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </ci:SettingsPageBase.Resources>
+    <Grid MaxWidth="750" Margin="0,6,0,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ci:IconText Grid.Column="0" Kind="FileCode" Text="主题" Height="40" />
+            <materialDesign:ColorZone Grid.Column="1"
+                                      CornerRadius="4"
+                                      Background="{DynamicResource MaterialDesignCardBackground}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Click="ButtonLoadThemes_OnClick">
+                        <ci:IconText Kind="Restart" Text="重载主题" />
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Click="ButtonOpenThemeFolder_OnClick">
+                        <ci:IconText Kind="FolderOutline" Text="打开主题文件夹…" />
+                    </Button>
+                </StackPanel>
+            </materialDesign:ColorZone>
+        </Grid>
+
+        <StackPanel Grid.Row="1">
+            <materialDesign:Card Padding="7">
+                <materialDesign:ColorZone CornerRadius="4"
+                                          Padding="4,4,4,-3"
+                                          ClipToBounds="True">
+                    <ListBox HorizontalContentAlignment="Stretch"
+                             Background="{DynamicResource MaterialDesignPaper}"
+                             ItemsSource="{Binding XamlThemeService.Themes}" SelectedItem="{Binding SelectedTheme}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Vertical">
+                                    <Grid>
+                                        <Grid.Style>
+                                            <Style TargetType="Grid">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsLoaded}"
+                                                                 Value="False">
+                                                        <Setter Property="Opacity" Value="0.75"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Grid.Style>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ToggleButton Grid.Column="0" IsChecked="{Binding IsEnabled}"
+                                                      VerticalAlignment="Center"
+                                                      Margin="0 0 4 0" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Manifest.Name}"
+                                                   VerticalAlignment="Center" />
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                    HorizontalAlignment="Right"
+                                                    VerticalAlignment="Center"
+                                                    Margin="0 -8">
+                                            <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                    Content="{materialDesign:PackIcon Error}"
+                                                    Visibility="{Binding IsError, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                    Margin="2 0"
+                                                    Foreground="Red"
+                                                    ToolTip="加载此主题时发生错误"
+                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                            <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                    Content="{materialDesign:PackIcon FolderOutline}"
+                                                    Margin="2 0"
+                                                    ToolTip="打开主题文件夹…"
+                                                    CommandParameter="{Binding}"
+                                                    Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                        </StackPanel>
+                                    </Grid>
+                                    <Separator Margin="0,8,0,-6" Background="{DynamicResource MaterialDesignDivider}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </materialDesign:ColorZone>
+            </materialDesign:Card>
+        </StackPanel>
+    </Grid>
+</ci:SettingsPageBase>
