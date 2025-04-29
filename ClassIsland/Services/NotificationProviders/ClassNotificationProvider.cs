@@ -176,10 +176,12 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         if (settingsSource is null)
             return string.Empty;
 
-        if (LessonsService.NextClassSubject.IsOutDoor)
-            return settingsSource.OutdoorClassOnPreparingText;
-
-        return settingsSource.ClassOnPreparingText;
+        var message = Settings != settingsSource && settingsSource?.ClassOnPreparingText != null
+            ? settingsSource!.ClassOnPreparingText
+            : (LessonsService.NextClassSubject.IsOutDoor
+                ? Settings.OutdoorClassOnPreparingText
+                : Settings.ClassOnPreparingText);
+        return message;
     }
 
 
