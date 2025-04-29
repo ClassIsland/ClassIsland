@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -109,7 +110,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         }        
     }
 
-    public static async Task CreateBackupAsync(bool isAuto=false, string? filename=null, string? rootPath=null)
+    public static async Task CreateBackupAsync(bool isAuto = false, string? filename = null, string? rootPath = null)
     {
         string[] backupFolders =
         [
@@ -122,7 +123,7 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         ];
         rootPath ??= App.AppRootFolderPath;
         var backupFolder = Path.Combine(rootPath, "Backups/");
-        var backupFilename = string.IsNullOrWhiteSpace(filename) ? $"Backup_{DateTime.Now:yy-MMM-dd_HH-mm-ss}" : filename;
+        var backupFilename = string.IsNullOrWhiteSpace(filename) ? $"Backup_{DateTime.Now:yy-MMM-dd_HH-mm-ss}.zip" : filename + ".zip";
         if (isAuto)
         {
             backupFilename = "Auto_" + backupFilename;
@@ -135,31 +136,31 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
             Directory.CreateDirectory(backupFolder);
         }
 
-        if (Directory.Exists(backupTarget))
-        {
-            Directory.Delete(backupTarget, true);
-        }
-
-        Directory.CreateDirectory(backupTarget);
-
         await Task.Run(() =>
         {
-            foreach (var i in backupFiles)
+            using var zipStream = new FileStream(backupTarget, FileMode.Create);
+            using var archive = new ZipArchive(zipStream, ZipArchiveMode.Create);
+
+            foreach (var file in backupFiles)
             {
-                if (!Path.Exists(Path.Combine(rootPath, i)))
+                var filePath = Path.Combine(rootPath, file);
+                if (File.Exists(filePath))
                 {
-                    continue;
+                    archive.CreateEntryFromFile(filePath, file);
                 }
-                File.Copy(Path.Combine(rootPath, i), Path.Combine(backupTarget, i));
             }
 
-            foreach (var i in backupFolders)
+            foreach (var folder in backupFolders)
             {
-                if (!Path.Exists(Path.Combine(rootPath, i)))
+                var folderPath = Path.Combine(rootPath, folder);
+                if (Directory.Exists(folderPath))
                 {
-                    continue;
+                    foreach (var file in Directory.EnumerateFiles(folderPath, "*", SearchOption.AllDirectories))
+                    {
+                        var relativePath = Path.GetRelativePath(rootPath, file);
+                        archive.CreateEntryFromFile(file, relativePath);
+                    }
                 }
-                CopyFolder(Path.Combine(rootPath, i), Path.Combine(backupTarget, i));
             }
         });
     }
