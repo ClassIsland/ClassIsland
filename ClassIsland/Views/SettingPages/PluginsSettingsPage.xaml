@@ -377,6 +377,55 @@
             </DataGrid>
         </Grid>
         <converters:LargeNumberToFriendlyNumberConverter x:Key="LargeNumberToFriendlyNumberConverter" />
+
+        <ControlTemplate x:Key="BlankListBoxTemplate">
+            <Grid>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ci:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_不可以看.png"
+                                       Height="72" Width="72"
+                                       StickerToolTip="光辉矢愿_不可以看"
+                                       FallbackPackIconKind="ToyBrickSearch"
+                                       Margin="0 0 0 8" />
+                    <TextBlock Margin="0 0 0 6">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ViewModel.PluginCategoryIndex}" Value="1" />
+                                            <Condition
+                                                Binding="{Binding Count, Source={x:Static services:IPluginService.LoadedPlugins}}"
+                                                Value="0" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Text" Value="还没有安装任何插件，不妨去插件市场看看吧" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Text" Value="找不到符合条件的插件，请调整筛选条件后重试" />
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Button HorizontalAlignment="Center" Click="ButtonOpenMarket_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ViewModel.PluginCategoryIndex}" Value="1" />
+                                            <Condition
+                                                Binding="{Binding Count, Source={x:Static services:IPluginService.LoadedPlugins}}"
+                                                Value="0" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </Button.Style>
+                        <ci:IconText Kind="MarketplaceOutline" Text="前往插件市场" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </ControlTemplate>
     </ci:SettingsPageBase.Resources>
     <Grid AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter" DragLeave="Grid_DragLeave">
         <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
@@ -511,6 +560,17 @@
                              SelectedValuePath="Value"
                              SelectionChanged="Selector_OnSelectionChanged"
                              HorizontalContentAlignment="Stretch">
+                        <ListBox.Style>
+                            <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
+                                <Style.Triggers>
+                                    <Trigger Property="HasItems" Value="False">
+                                        <Setter Property="Template" Value="{StaticResource BlankListBoxTemplate}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+                                <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+                            </Style>
+                        </ListBox.Style>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid Background="Transparent">
@@ -683,6 +743,8 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+
+                    
                 </Grid>
             </controls1:ListDetailView.LeftContent>
             <controls1:ListDetailView.RightContent>

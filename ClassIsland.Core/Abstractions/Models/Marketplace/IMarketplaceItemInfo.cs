@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using ClassIsland.Core.Models;
 using Newtonsoft.Json;
 
 namespace ClassIsland.Core.Abstractions.Models.Marketplace;
@@ -18,5 +19,17 @@ public interface IMarketplaceItemInfo : INotifyPropertyChanged
     /// 是否在市场上可用
     /// </summary>
     [JsonIgnore]
-    public bool IsAvailableOnMarket { get; set; }
+    public bool IsAvailableOnMarket { get; }
+
+    /// <summary>
+    /// 是否存在于本地
+    /// </summary>
+    [JsonIgnore] 
+    public bool IsLocal { get; }
+
+    /// <summary>
+    /// 关联的下栽进度
+    /// </summary>
+    [JsonIgnore]
+    public DownloadProgress? DownloadProgress { get; set; }
 }

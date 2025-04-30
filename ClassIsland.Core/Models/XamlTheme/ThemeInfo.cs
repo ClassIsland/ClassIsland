@@ -17,6 +17,9 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     private string _path = "";
     private ThemeManifest _manifest = new();
     private bool _isAvailableOnMarket = false;
+    private bool _isLocal = false;
+    private DownloadProgress? _downloadProgress;
+    private string _realBannerPath = "";
 
     /// <summary>
     /// 主题清单
@@ -37,7 +40,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     /// 主题安装路径
     /// </summary>
 
-    [YamlIgnore]
+    [JsonIgnore]
     public string Path
     {
         get => _path;
@@ -52,7 +55,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     /// <summary>
     /// 主题是否已加载
     /// </summary>
-    [YamlIgnore]
+    [JsonIgnore]
     public bool IsLoaded
     {
         get => _isLoaded;
@@ -67,7 +70,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     /// <summary>
     /// 主题是否出错
     /// </summary>
-    [YamlIgnore]
+    [JsonIgnore]
     public bool IsError
     {
         get => _isError;
@@ -82,7 +85,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     /// <summary>
     /// 主题错误信息
     /// </summary>
-    [YamlIgnore]
+    [JsonIgnore]
     public Exception? Error
     {
         get => _error;
@@ -97,7 +100,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     /// <summary>
     /// 主题是否已启用
     /// </summary>
-    [YamlIgnore]
+    [JsonIgnore]
     public bool IsEnabled
     {
         get => File.Exists(System.IO.Path.Combine(Path, ".enabled"));
@@ -135,6 +138,50 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
         {
             if (value == _isAvailableOnMarket) return;
             _isAvailableOnMarket = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 主题是否存在于本地
+    /// </summary>
+    [JsonIgnore]
+    public bool IsLocal
+    {
+        get => _isLocal;
+        internal set
+        {
+            if (value == _isLocal) return;
+            _isLocal = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 关联的下载进度
+    /// </summary>
+    [JsonIgnore]
+    public DownloadProgress? DownloadProgress
+    {
+        get => _downloadProgress;
+        set
+        {
+            if (Equals(value, _downloadProgress)) return;
+            _downloadProgress = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Banner 真实路径
+    /// </summary>
+    public string RealBannerPath
+    {
+        get => _realBannerPath;
+        set
+        {
+            if (value == _realBannerPath) return;
+            _realBannerPath = value;
             OnPropertyChanged();
         }
     }
