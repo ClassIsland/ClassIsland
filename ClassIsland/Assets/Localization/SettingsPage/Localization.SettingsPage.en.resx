@@ -117,84 +117,85 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Hide_MainInterface_string" xml:space="preserve">
-    <value>Hide Main Interface</value>
-    <comment>右键托盘菜单“隐藏主界面”</comment>
-  </data>
   <data name="LangName_string" xml:space="preserve">
     <value>English</value>
-    <comment>设置中显示的语言名称</comment>
   </data>
   <data name="Startup_string" xml:space="preserve">
     <value>Starting</value>
-    <comment>启动界面“正在启动”</comment>
-  </data>
-  <data name="Help_string" xml:space="preserve">
-    <value>Help</value>
-    <comment>右键托盘菜单的“帮助”</comment>
-  </data>
-  <data name="EditProfile_string" xml:space="preserve">
-    <value>Edit profile</value>
-    <comment>右键托盘菜单"编辑档案"</comment>
   </data>
   <data name="Settings_string" xml:space="preserve">
     <value>Settings</value>
-    <comment>右键托盘菜单“应用设置”</comment>
   </data>
   <data name="Restart_string" xml:space="preserve">
     <value>Restart</value>
-    <comment>右键托盘菜单"重启"</comment>
   </data>
   <data name="Quit_string" xml:space="preserve">
     <value>Quit</value>
-    <comment>右键托盘菜单"退出"</comment>
   </data>
   <data name="General_string" xml:space="preserve">
     <value>General</value>
-    <comment>设置"基本"</comment>
   </data>
   <data name="Components_string" xml:space="preserve">
     <value>Components</value>
-    <comment>设置"组件"</comment>
   </data>
   <data name="Appearance_string" xml:space="preserve">
     <value>Appearance</value>
-    <comment>设置“外观”</comment>
   </data>
   <data name="Notification_string" xml:space="preserve">
     <value>Notification</value>
-    <comment>设置“通知”</comment>
   </data>
   <data name="Window_string" xml:space="preserve">
     <value>Window</value>
-    <comment>设置“窗口”</comment>
   </data>
   <data name="Weather_string" xml:space="preserve">
     <value>Weather</value>
-    <comment>设置“天气”</comment>
   </data>
   <data name="Update_string" xml:space="preserve">
     <value>Update</value>
-    <comment>设置“更新”</comment>
   </data>
   <data name="Automation_string" xml:space="preserve">
     <value>Automation</value>
-    <comment>设置“自动化”</comment>
   </data>
   <data name="Storage_string" xml:space="preserve">
     <value>Storage</value>
-    <comment>设置“存储”</comment>
   </data>
   <data name="Privacy_string" xml:space="preserve">
     <value>Privacy</value>
-    <comment>设置“隐私”</comment>
   </data>
   <data name="Plugins_string" xml:space="preserve">
     <value>Plugins</value>
-    <comment>设置“插件”</comment>
   </data>
   <data name="About_string" xml:space="preserve">
     <value>About ClassIsland</value>
-    <comment>设置“关于ClassIsland”</comment>
+  </data>
+  <data name="Theme_string" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="LoadOnBoot_string" xml:space="preserve">
+    <value>Start on Boot</value>
+  </data>
+  <data name="RegURLProto_string" xml:space="preserve">
+    <value>Register URL Protocol</value>
+  </data>
+  <data name="LoadOnBoot_Description" xml:space="preserve">
+    <value>Automatically run this application when your system starts.</value>
+  </data>
+  <data name="RegURLProto_Description" xml:space="preserve">
+    <value>Allows third-party applications or web pages to call some functions of this application through the URL protocol classisland://. See the help documentation for details.</value>
+  </data>
+  <data name="Behavior_string" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="SemesterStartDate_string" xml:space="preserve">
+    <value>Semester Start Date</value>
+  </data>
+  <data name="SemesterStartDate_Description" xml:space="preserve">
+    <value>This date will be considered the first day of the semester, used for calculating multiple-week rotating schedules. It should be set as the first day of the week.</value>
+  </data>
+  <data name="HideWindow_string" xml:space="preserve">
+    <value>Hide window</value>
+  </data>
+  <data name="HideWindow_Description" xml:space="preserve">
+    <value>Hide the main interface in the selected situations to prevent it from obstructing the screen and affecting teaching.</value>
   </data>
 </root>

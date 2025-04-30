@@ -117,64 +117,85 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Hide_MainInterface_string" xml:space="preserve">
-    <value>Hide Main Interface</value>
-  </data>
   <data name="LangName_string" xml:space="preserve">
-    <value>English</value>
+    <value>中文(繁體)</value>
   </data>
   <data name="Startup_string" xml:space="preserve">
-    <value>Starting</value>
-  </data>
-  <data name="Help_string" xml:space="preserve">
-    <value>Help</value>
-  </data>
-  <data name="EditProfile_string" xml:space="preserve">
-    <value>Edit profile</value>
+    <value>正在啓動</value>
   </data>
   <data name="Settings_string" xml:space="preserve">
-    <value>Settings</value>
+    <value>應用設置</value>
   </data>
   <data name="Restart_string" xml:space="preserve">
-    <value>Restart</value>
+    <value>重啓</value>
   </data>
   <data name="Quit_string" xml:space="preserve">
-    <value>Quit</value>
+    <value>退出</value>
   </data>
   <data name="General_string" xml:space="preserve">
-    <value>General</value>
+    <value>基本</value>
   </data>
   <data name="Components_string" xml:space="preserve">
-    <value>Components</value>
+    <value>組件</value>
   </data>
   <data name="Appearance_string" xml:space="preserve">
-    <value>Appearance</value>
+    <value>外觀</value>
   </data>
   <data name="Notification_string" xml:space="preserve">
-    <value>Notification</value>
+    <value>通知</value>
   </data>
   <data name="Window_string" xml:space="preserve">
-    <value>Window</value>
+    <value>窗口</value>
   </data>
   <data name="Weather_string" xml:space="preserve">
-    <value>Weather</value>
+    <value>天氣</value>
   </data>
   <data name="Update_string" xml:space="preserve">
-    <value>Update</value>
+    <value>更新</value>
   </data>
   <data name="Automation_string" xml:space="preserve">
-    <value>Automation</value>
+    <value>自動化</value>
   </data>
   <data name="Storage_string" xml:space="preserve">
-    <value>Storage</value>
+    <value>存儲</value>
   </data>
   <data name="Privacy_string" xml:space="preserve">
-    <value>Privacy</value>
+    <value>隱私</value>
   </data>
   <data name="Plugins_string" xml:space="preserve">
-    <value>Plugins</value>
+    <value>插件</value>
   </data>
   <data name="About_string" xml:space="preserve">
-    <value>About ClassIsland</value>
+    <value>關於 ClassIsland</value>
+  </data>
+  <data name="Theme_string" xml:space="preserve">
+    <value>主題</value>
+  </data>
+  <data name="LoadOnBoot_string" xml:space="preserve">
+    <value>開機自啓</value>
+  </data>
+  <data name="RegURLProto_string" xml:space="preserve">
+    <value>註冊URL協議</value>
+  </data>
+  <data name="Behavior_string" xml:space="preserve">
+    <value>行为</value>
+  </data>
+  <data name="RegURLProto_Description" xml:space="preserve">
+    <value>允許第三方應用或網頁通過URL協議(classisland://)調用本應用的部分功能，詳見幫助文檔</value>
+  </data>
+  <data name="LoadOnBoot_Description" xml:space="preserve">
+    <value>在您的系統啓動時自動運行本應用</value>
+  </data>
+  <data name="SemesterStartDate_string" xml:space="preserve">
+    <value>学期开始时间</value>
+  </data>
+  <data name="SemesterStartDate_Description" xml:space="preserve">
+    <value>此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。</value>
+  </data>
+  <data name="HideWindow_string" xml:space="preserve">
+    <value>隱藏窗口</value>
+  </data>
+  <data name="HideWindow_Description" xml:space="preserve">
+    <value>將在以下選定的情況隱藏主界面，以防止遮擋屏幕影響授課。</value>
   </data>
 </root>
