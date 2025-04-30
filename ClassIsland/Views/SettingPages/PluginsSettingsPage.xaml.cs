@@ -476,4 +476,9 @@ public partial class PluginsSettingsPage : SettingsPageBase
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
         PluginMarketService.RestartRequested -= OnPluginMarketServiceOnRestartRequested;
     }
+
+    private void ButtonOpenMarket_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PluginCategoryIndex = 0;
+    }
 }

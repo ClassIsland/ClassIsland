@@ -18,6 +18,7 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
     private bool _isDetailsShown = false;
     private SnackbarMessageQueue _messageQueue = new();
     private bool _isDragEntering = false;
+    private bool _pluginListBoxHasItems = false;
 
     public PluginInfo? SelectedPluginInfo
     {
@@ -136,6 +137,17 @@ public class PluginsSettingsPageViewModel : ObservableRecipient
         {
             if (value == _isDragEntering) return;
             _isDragEntering = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool PluginListBoxHasItems
+    {
+        get => _pluginListBoxHasItems;
+        set
+        {
+            if (value == _pluginListBoxHasItems) return;
+            _pluginListBoxHasItems = value;
             OnPropertyChanged();
         }
     }
