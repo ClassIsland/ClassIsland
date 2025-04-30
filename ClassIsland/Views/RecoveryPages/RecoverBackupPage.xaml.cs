@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -31,11 +32,11 @@ public partial class RecoverBackupPage : Page
         {
             ViewModel.Backups =
                 new ObservableCollection<string>(
-                    Directory.GetDirectories(Path.Combine(App.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName)!);
+                    Directory.GetFiles(Path.Combine(App.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName)!);
         }
     }
 
-    private async Task RecoverBackupAsync(string backupRoot)
+    private async Task RecoverBackupAsync(string backupZipPath)
     {
         if (ViewModel.RecoverMode == 1)
         {
@@ -59,7 +60,7 @@ public partial class RecoverBackupPage : Page
 
         await Task.Run(() =>
         {
-            FileFolderService.CopyFolder(backupRoot, App.AppRootFolderPath, true);
+            ZipFile.ExtractToDirectory(backupZipPath, App.AppRootFolderPath, true);
         });
     }
 
@@ -82,12 +83,12 @@ public partial class RecoverBackupPage : Page
             return;
         }
 
-        var backupRoot = Path.Combine(App.AppRootFolderPath, "Backups", ViewModel.SelectedBackupName);
+        var backupZipPath = Path.Combine(App.AppRootFolderPath, "Backups", ViewModel.SelectedBackupName);
 
         try
         {
             ViewModel.IsWorking = true;
-            await RecoverBackupAsync(backupRoot);
+            await RecoverBackupAsync(backupZipPath);
             ViewModel.IsWorking = false;
             CommonDialog.ShowInfo($"操作成功完成。");
         }
