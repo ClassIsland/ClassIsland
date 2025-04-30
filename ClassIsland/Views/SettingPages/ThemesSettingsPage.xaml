@@ -6,6 +6,10 @@
                      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
                      xmlns:ci="http://classisland.tech/schemas/xaml/core"
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                     xmlns:controls="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+                     xmlns:controls1="clr-namespace:ClassIsland.Controls"
+                     xmlns:classIsland="clr-namespace:ClassIsland"
+                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                      mc:Ignorable="d"
                      d:DesignHeight="450" d:DesignWidth="800"
                      Title="ThemesSettingsPage"
@@ -33,11 +37,14 @@
                      Text="{Binding Mode=OneTime}" />
         </Grid>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <system:Int32 x:Key="ClipMode">0</system:Int32>
+        <system:Double x:Key="ClipRadius">4</system:Double>
     </ci:SettingsPageBase.Resources>
-    <Grid MaxWidth="750" Margin="0,6,0,0">
+    <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid Row="0">
             <Grid.ColumnDefinitions>
@@ -61,65 +68,101 @@
             </materialDesign:ColorZone>
         </Grid>
 
-        <StackPanel Grid.Row="1">
-            <materialDesign:Card Padding="7">
-                <materialDesign:ColorZone CornerRadius="4"
-                                          Padding="4,4,4,-3"
-                                          ClipToBounds="True">
-                    <ListBox HorizontalContentAlignment="Stretch"
-                             Background="{DynamicResource MaterialDesignPaper}"
-                             ItemsSource="{Binding XamlThemeService.Themes}" SelectedItem="{Binding SelectedTheme}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Vertical">
-                                    <Grid>
-                                        <Grid.Style>
-                                            <Style TargetType="Grid">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsLoaded}"
-                                                                 Value="False">
-                                                        <Setter Property="Opacity" Value="0.75"></Setter>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Grid.Style>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <ToggleButton Grid.Column="0" IsChecked="{Binding IsEnabled}"
-                                                      VerticalAlignment="Center"
-                                                      Margin="0 0 4 0" />
-                                        <TextBlock Grid.Column="1" Text="{Binding Manifest.Name}"
-                                                   VerticalAlignment="Center" />
-                                        <StackPanel Grid.Column="2" Orientation="Horizontal"
-                                                    HorizontalAlignment="Right"
-                                                    VerticalAlignment="Center"
-                                                    Margin="0 -8">
-                                            <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                    Content="{materialDesign:PackIcon Error}"
-                                                    Visibility="{Binding IsError, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                    Margin="2 0"
-                                                    Foreground="Red"
-                                                    ToolTip="加载此主题时发生错误"
-                                                    CommandParameter="{Binding}"
-                                                    Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
-                                            <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                    Content="{materialDesign:PackIcon FolderOutline}"
-                                                    Margin="2 0"
-                                                    ToolTip="打开主题文件夹…"
-                                                    CommandParameter="{Binding}"
-                                                    Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
-                                        </StackPanel>
-                                    </Grid>
-                                    <Separator Margin="0,8,0,-6" Background="{DynamicResource MaterialDesignDivider}" />
+        <ListBox Grid.Row="1" HorizontalContentAlignment="Stretch"
+                     Background="{DynamicResource MaterialDesignPaper}"
+                     ItemsSource="{Binding XamlThemeService.Themes}"
+                     materialDesign:ListBoxItemAssist.ShowSelection="False">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="2"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <controls:VirtualizingWrapPanel IsItemsHost="True" 
+                                                    Orientation="Horizontal"
+                                                    StretchItems="True">
+                        <controls:VirtualizingWrapPanel.ItemSize>
+                            <Size Width="264" Height="150"/>
+                        </controls:VirtualizingWrapPanel.ItemSize>
+                    </controls:VirtualizingWrapPanel>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <materialDesign:Card Background="{DynamicResource MaterialDesignBackground}">
+                        <Grid >
+                            <Border>
+                                <Border.OpacityMask>
+                                    <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
+                                        <LinearGradientBrush.GradientStops>
+                                            <GradientStop Color="#ffffffff" Offset="0"/>
+                                            <GradientStop Color="#ffffffff" Offset="0.65"/>
+                                            <GradientStop Color="#00ffffff" Offset="1.0"/>
+                                        </LinearGradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+                                </Border.OpacityMask>
+                                <Border.Clip>
+                                    <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
+                                        <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                        <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                        <Binding Path="ActualHeight" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                        <Binding Source="{StaticResource ClipMode}"/>
+                                        <Binding Source="{StaticResource ClipRadius}"/>
+                                        <Binding Source="{StaticResource ClipRadius}"/>
+                                    </MultiBinding>
+                                </Border.Clip>
+                                <Image Source="/Assets/Banner.png" Stretch="UniformToFill"
+                                       StretchDirection="Both" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <Grid VerticalAlignment="Bottom" Margin="8">
+                                <Grid.Style>
+                                    <Style TargetType="Grid">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsLoaded}"
+                                                             Value="False">
+                                                <Setter Property="Opacity" Value="0.8"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Grid.Style>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton Grid.Column="0" IsChecked="{Binding IsEnabled}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="0 0 4 0" />
+                                <TextBlock Grid.Column="1" Text="{Binding Manifest.Name}"
+                                               VerticalAlignment="Center" FontWeight="Medium" FontSize="14"/>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Center"
+                                                Margin="0 -8">
+                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Content="{materialDesign:PackIcon Error}"
+                                                Visibility="{Binding IsError, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                Margin="2 0"
+                                                Foreground="Red"
+                                                ToolTip="加载此主题时发生错误"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                                Content="{materialDesign:PackIcon FolderOutline}"
+                                                Margin="2 0"
+                                                ToolTip="打开主题文件夹…"
+                                                CommandParameter="{Binding}"
+                                                Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
                                 </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </materialDesign:ColorZone>
-            </materialDesign:Card>
-        </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </materialDesign:Card>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <TextBlock Grid.Row="2" Text="⚠ Under Construction" HorizontalAlignment="Right"/>
     </Grid>
 </ci:SettingsPageBase>

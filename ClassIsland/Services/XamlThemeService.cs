@@ -60,6 +60,8 @@ public class XamlThemeService : IXamlThemeService
 
                 themeInfo.Manifest = manifest;
                 themeInfo.Path = Path.GetFullPath(i);
+                themeInfo.IsLocal = true;
+                themeInfo.RealBannerPath = Path.GetFullPath(Path.Combine(themeInfo.Path, themeInfo.Manifest.Banner));
                 if (themeInfo.IsEnabled)
                 {
                     LoadTheme(Path.Combine(i, "Theme.xaml"));

@@ -14,8 +14,9 @@ public class ThemeManifest : ObservableRecipient, IMarketplaceItemManifest
     private string _author = "";
     private string _url = "";
     private string _id = "";
-    private string _description;
-    private string _version;
+    private string _description = "";
+    private string _version = "0.0.0.0";
+    private string _banner = "";
 
     /// <summary>
     /// 主题 ID
@@ -97,6 +98,20 @@ public class ThemeManifest : ObservableRecipient, IMarketplaceItemManifest
         {
             if (value == _url) return;
             _url = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 主题 Banner 路径
+    /// </summary>
+    public string Banner
+    {
+        get => _banner;
+        set
+        {
+            if (value == _banner) return;
+            _banner = value;
             OnPropertyChanged();
         }
     }
