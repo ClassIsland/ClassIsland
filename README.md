@@ -170,7 +170,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 ## 致谢
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-26-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-27-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 本项目受到 [DuguSand/class_form](https://github.com/DuguSand/class_form) 的启发而开发。
@@ -216,6 +216,7 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/garyxxxx2021"><img src="https://avatars.githubusercontent.com/u/106256371?v=4?s=100" width="100px;" alt="garyxxxx2021"/><br /><sub><b>garyxxxx2021</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=garyxxxx2021" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/wjj-8283"><img src="https://avatars.githubusercontent.com/u/82750345?v=4?s=100" width="100px;" alt="wjj"/><br /><sub><b>wjj</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=wjj-8283" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/diann34"><img src="https://avatars.githubusercontent.com/u/95152427?v=4?s=100" width="100px;" alt="Nikoa"/><br /><sub><b>Nikoa</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=diann34" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Griseo-bh3rd"><img src="https://avatars.githubusercontent.com/u/121101691?v=4?s=100" width="100px;" alt="【繁星】格蕾修"/><br /><sub><b>【繁星】格蕾修</b></sub></a><br /><a href="https://github.com/ClassIsland/ClassIsland/commits?author=Griseo-bh3rd" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
