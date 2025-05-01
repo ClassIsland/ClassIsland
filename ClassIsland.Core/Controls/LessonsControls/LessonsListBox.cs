@@ -117,11 +117,6 @@ public class LessonsListBox : ListBox
         set { SetValue(HideFinishedClassProperty, value); }
     }
 
-    /// <summary>
-    /// 课程服务
-    /// </summary>
-    public ILessonsService? LessonsService => IAppHost.TryGetService<ILessonsService>();
-
     static LessonsListBox()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(LessonsListBox), new FrameworkPropertyMetadata(typeof(LessonsListBox)));

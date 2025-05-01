@@ -35,7 +35,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private TimeSpan _onBreakingTimeLeftTime = TimeSpan.Zero;
     private TimeLayoutItem _nextClassTimeLayoutItem = TimeLayoutItem.Empty;
     private ObservableCollection<int> _multiWeekRotation = [0, 0, 1, 1, 1];
-    private ObservableCollection<TimeLayoutItem> _validTimeLayoutItems = [];
 
     private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [0, 0, 1, 1, 1];
 
@@ -147,58 +146,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
     }
 
     public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
-
-    public ObservableCollection<TimeLayoutItem> ValidTimeLayoutItems
-    {
-        get => _validTimeLayoutItems;
-        set => SetProperty(ref _validTimeLayoutItems, value);
-    }
-
-    private ObservableCollection<TimeLayoutItem> GetValidTimeLayoutItems()
-    {
-        if (CurrentClassPlan?.TimeLayout == null) 
-            return [];
-        var timeLayoutMap = CurrentClassPlan.Classes.ToDictionary(x => x.CurrentTimeLayoutItem, x => x);
-        var displayTimePoints = CurrentClassPlan.TimeLayout.Layouts
-            .Where(x => x.TimeType is 0 or 1 or 2)
-            .ToList();
-        ObservableCollection<TimeLayoutItem> items = [..displayTimePoints.Select(x => x)];
-        List<TimeLayoutItem> remove = [];
-        // 正向搜索
-        var isPrevEnabled = true;
-        for (var i = 0; i < displayTimePoints.Count; i++)
-        {
-            if (timeLayoutMap.TryGetValue(items[i], out var info))
-            {
-                isPrevEnabled = info.IsEnabled;
-            }
-
-            if (!isPrevEnabled)
-            {
-                remove.Add(displayTimePoints[i]);
-            }
-        }
-        // 反向搜索
-        isPrevEnabled = true;
-        for (var i = displayTimePoints.Count - 1; i >= 0; i--)
-        {
-            if (timeLayoutMap.TryGetValue(items[i], out var info))
-            {
-                isPrevEnabled = info.IsEnabled;
-            }
-
-            if (!isPrevEnabled)
-            {
-                remove.Add(displayTimePoints[i]);
-            }
-        }
-
-        foreach (var i in remove)
-        {
-            items.Remove(i);
-        }
-        return items;
-    }
 
     public ClassPlan? GetClassPlanByDate(DateTime date, out string? guid)
     {
@@ -336,7 +283,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
         {
             CurrentClassPlan.ClassesChanged += CurrentClassPlanOnClassesChanged;
             CurrentClassPlan.RefreshIsChangedClass();
-            ValidTimeLayoutItems = GetValidTimeLayoutItems();
         }
     }
 
@@ -350,7 +296,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private void CurrentClassPlanOnClassesChanged(object? sender, EventArgs e)
     {
-        ValidTimeLayoutItems = GetValidTimeLayoutItems();
+        
     }
 
     private bool CurrentSubjectHandler(object? settings)
@@ -487,9 +433,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         CurrentClassPlan.TimeLayout.IsActivated = true;
 
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        var validTimeLayoutItems = CurrentClassPlan.ValidTimeLayoutItems;
 
         // 获取当前时间点信息
-        currentTimeLayoutItem = ValidTimeLayoutItems.FirstOrDefault(i =>
+        currentTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType is 0 or 1 &&
             i.StartSecond.TimeOfDay <= now &&
             i.EndSecond.TimeOfDay >= now);
@@ -516,7 +463,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
 
         // 获取下节时间点信息
-        nextClassTimeLayoutItem = ValidTimeLayoutItems.FirstOrDefault(i =>
+        nextClassTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 0 &&
             i.EndSecond.TimeOfDay >= now);
         if (nextClassTimeLayoutItem != null)
@@ -526,7 +473,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
                 nextClassSubject = subject;
         }
-        nextBreakingTimeLayoutItem = ValidTimeLayoutItems.FirstOrDefault(i =>
+        nextBreakingTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 1 &&
             i.EndSecond.TimeOfDay >= now);
 

@@ -102,9 +102,4 @@ public interface IPublicLessonsService
     /// <param name="date">要获取课表的日期</param>
     /// <returns>获取到的课表</returns>
     ClassPlan? GetClassPlanByDate(DateTime date);
-
-    /// <summary>
-    /// 有效的时间点列表。
-    /// </summary>
-    ObservableCollection<TimeLayoutItem> ValidTimeLayoutItems { get; set; }
 }
