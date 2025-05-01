@@ -486,11 +486,11 @@
                                                                         Text="系统文本转语音设置" />
                                                     <Button.Style>
                                                         <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-                                                            <Setter Property="Visibility" Value="Visible" />
+                                                            <Setter Property="Visibility" Value="Collapsed" />
                                                             <Style.Triggers>
-                                                                <!-- 假设 GPTSoVITS 在 ListBox 中的索引为 2 -->
-                                                                <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}" Value="2">
-                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                <!-- 假设 系统TTS 在 ListBox 中的索引为 0 -->
+                                                                <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}" Value="0">
+                                                                    <Setter Property="Visibility" Value="Visible" />
                                                                 </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
