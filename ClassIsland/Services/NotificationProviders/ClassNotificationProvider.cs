@@ -151,7 +151,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
                 ShowTeacherName = Settings.ShowTeacherName
             })
             {
-                SpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。",
+                SpeechContent = $"{message} 下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $"，{FormatTeacher(LessonsService.NextClassSubject)}" : "")}。",
                 EndTime = DateTimeToCurrentDateTimeConverter.Convert(LessonsService.NextClassTimeLayoutItem.StartSecond),
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassPreparing
             },
@@ -219,7 +219,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             })
             {
                 Duration = showOverlayText ? TimeSpan.FromSeconds(20) : TimeSpan.FromSeconds(10),
-                SpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name} {(Settings.ShowTeacherName ? FormatTeacher(LessonsService.NextClassSubject) : "")}。{overlayText}",
+                SpeechContent = $"本节{LessonsService.CurrentTimeLayoutItem.BreakNameText}常{TimeSpanFormatHelper.Format(LessonsService.CurrentTimeLayoutItem.Last)}，下节课是：{LessonsService.NextClassSubject.Name}{(Settings.ShowTeacherName ? $"，{FormatTeacher(LessonsService.NextClassSubject)}" : "")}。{overlayText}",
                 IsSpeechEnabled = Settings.IsSpeechEnabledOnClassOff
             }
         });
