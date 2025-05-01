@@ -160,7 +160,7 @@ public class GptSoVitsService : ISpeechService
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                Logger.LogError("TTS 请求失败，状态码：{StatusCode}, 内容：{ErrorContent}", response.StatusCode, errorContent);
+                Logger.LogError("TTS 请求失败，状态码：{StatusCode}, 内容：{ErrorContent}，URL：{URL}", response.StatusCode, errorContent, requestUri);
                 return false;
             }
         }
