@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -60,7 +60,7 @@ public class EdgeTtsService : ISpeechService
         return path;
     }
 
-    public void EnqueueSpeechQueue(string text)
+    public void EnqueueSpeechQueue(string text,bool isTest = false)
     {
         Logger.LogInformation("以{}朗读文本：{}", SettingsService.Settings.EdgeTtsVoiceName, text);
         var r = requestingCancellationTokenSource;
@@ -102,7 +102,7 @@ public class EdgeTtsService : ISpeechService
         if (requestingCancellationTokenSource.IsCancellationRequested)
             return;
         PlayingQueue.Enqueue(new EdgeTtsPlayInfo(cache, new CancellationTokenSource(), task));
-        _ = ProcessPlayerList();
+        _ = ProcessPlayerList(isTest);
     }
 
     public void ClearSpeechQueue()
@@ -118,7 +118,7 @@ public class EdgeTtsService : ISpeechService
         //IsPlaying = false;
     }
 
-    private async Task ProcessPlayerList()
+    private async Task ProcessPlayerList(bool isTest)
     {
         if (IsPlaying)
             return;
@@ -133,6 +133,19 @@ public class EdgeTtsService : ISpeechService
                 Logger.LogDebug("等待下载完成");
                 await playInfo.DownloadTask;
                 Logger.LogDebug("等待下载完成结束");
+            }
+
+           if (!File.Exists(playInfo.FilePath))
+            {
+                if(isTest==false)
+                {
+                    Logger.LogError("语音文件不存在：{FilePath}", playInfo.FilePath);
+                }
+                else
+                {
+                    Logger.LogWarning("因启用测试模式，将要播放的语音文件已删除。");
+                }
+                continue;
             }
 
             CurrentWavePlayer?.Dispose();
@@ -161,6 +174,19 @@ public class EdgeTtsService : ISpeechService
             catch (Exception ex)
             {
                 Logger.LogError(ex, "无法播放语音。");
+            }
+            if (isTest)
+            {
+                Logger.LogInformation("由于为测试模式，尝试删除缓存");
+                try
+                {
+                    Logger.LogTrace("删除缓存 {}", playInfo.FilePath);
+                    File.Delete(playInfo.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex,"无法删除缓存，路径：{}", playInfo.FilePath);
+                }
             }
         }
 
