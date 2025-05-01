@@ -481,10 +481,20 @@
                                                                         Text="测试语音" />
                                                 </Button>
                                                 <Button Click="ButtonOpenSpeechSettings_OnClick"
-                                                        HorizontalAlignment="Left"
-                                                        Style="{StaticResource MaterialDesignFlatButton}">
+                                                        HorizontalAlignment="Left">
                                                     <controls2:IconText Kind="ExternalLink"
                                                                         Text="系统文本转语音设置" />
+                                                    <Button.Style>
+                                                        <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                            <Style.Triggers>
+                                                                <!-- 假设 GPTSoVITS 在 ListBox 中的索引为 2 -->
+                                                                <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}" Value="2">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
                                                 </Button>
                                             </WrapPanel>
                                         </Grid>
