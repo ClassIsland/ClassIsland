@@ -14,6 +14,7 @@
         xmlns:mdXaml="https://github.com/whistyun/MdXaml"
         xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
         xmlns:action1="clr-namespace:ClassIsland.Shared.Models.Action;assembly=ClassIsland.Shared"
+        xmlns:services="clr-namespace:ClassIsland.Services"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -26,6 +27,22 @@
         Title="FeatureDebugWindow" Height="450" Width="800">
     <Grid>
         <TabControl HorizontalContentAlignment="Left">
+            <TabItem Header="WeatherIcon">
+                <Grid>
+                    <ListBox ItemsSource="{Binding WeatherService.WeatherStatusList}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <controls:WeatherPackIconControl Code="{Binding Code}"
+                                                                     Width="24" Height="24"/>
+                                    <TextBlock Text="{Binding Weather}" VerticalAlignment="Center"/>
+
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </TabItem>
             <TabItem Header="ScheduleCalendar">
                 <Grid>
                     <controls:ScheduleCalendarControl/>
@@ -155,6 +172,16 @@
                                     Width="64" Height="64"
                                     StickerToolTip="帕姆_点赞"
                                     ImageSource="/Assets/HoYoStickers/帕姆_点赞.png"/>
+                    <Image>
+                        <Image.Source>
+                            <DrawingImage>
+                                <DrawingImage.Drawing>
+                                    <GeometryDrawing Geometry="">
+                                    </GeometryDrawing>
+                                </DrawingImage.Drawing>
+                            </DrawingImage>
+                        </Image.Source>
+                    </Image>
                 </StackPanel>
             </TabItem>
             <TabItem Header="LessonsListBox">

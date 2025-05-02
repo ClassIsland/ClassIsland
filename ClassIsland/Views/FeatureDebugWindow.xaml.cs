@@ -21,13 +21,15 @@ public partial class FeatureDebugWindow : MyWindow
 
     public IProfileService ProfileService { get; }
     public IAuthorizeService AuthorizeService { get; }
+    public IWeatherService WeatherService { get; }
 
-    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService, IAuthorizeService authorizeService)
+    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService, IAuthorizeService authorizeService, IWeatherService weatherService)
     {
         DataContext = this;
         LessonsService = lessonsService;
         ProfileService = profileService;
         AuthorizeService = authorizeService;
+        WeatherService = weatherService;
         InitializeComponent();
     }
 
