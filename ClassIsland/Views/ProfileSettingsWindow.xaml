@@ -570,7 +570,7 @@
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="课表群" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
                     <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
-                        您可以通过课表群对课表进行分组，并灵活地启用一批课表。<ci:NavHyperlink CommandParameter="https://docs.classisland.tech/app/classplan#%E8%AF%BE%E8%A1%A8%E7%BE%A4">了解更多…</ci:NavHyperlink>
+                        您可以通过课表群对课表进行分组，并灵活地启用一批课表。<ci:NavHyperlink CommandParameter="https://docs.classisland.tech/app/profile/classplan#%E8%AF%BE%E8%A1%A8%E7%BE%A4">了解更多…</ci:NavHyperlink>
                     </TextBlock>
                     <StackPanel>
                         <StackPanel.Style>
