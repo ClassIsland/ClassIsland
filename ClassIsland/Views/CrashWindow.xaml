@@ -47,7 +47,6 @@
                  FontSize="13"
                  BorderThickness="0"
                  Padding="0"
-                 FontFamily="SimHei"
                  materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
                  Margin="0 6 0 0" AcceptsReturn="True"
                  VerticalContentAlignment="Top"

@@ -201,4 +201,13 @@ public partial class AboutSettingsPage : SettingsPageBase
         }
         SentrySdk.Metrics.Increment("views.settings.about.sayings.click");
     }
+
+    private void UIElementAppInfo_OnMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        ViewModel.AppIconClickCount++;
+        if (ViewModel.AppIconClickCount >= 20 && !ManagementService.Policy.DisableEasterEggs)
+        {
+            Clipboard.SetDataObject("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC", false);
+        }
+    }
 }

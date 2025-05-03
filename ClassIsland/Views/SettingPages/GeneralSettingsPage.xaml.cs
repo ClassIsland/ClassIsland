@@ -101,4 +101,11 @@ public partial class GeneralSettingsPage : SettingsPageBase
     {
         SettingsService.Settings.PropertyChanged -= SettingsOnPropertyChanged;
     }
+
+    private void ButtonAdjustTime_OnClick(object sender, RoutedEventArgs e)
+    {
+        var window = IAppHost.GetService<TimeAdjustmentWindow>();
+        window.Owner = Window.GetWindow(this);
+        window.ShowDialog();
+    }
 }

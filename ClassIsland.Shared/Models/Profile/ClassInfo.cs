@@ -13,6 +13,7 @@ public class ClassInfo : AttachableSettingsObject
     private int _index = 0;
     private TimeLayout _currentTimeLayout = new();
     private bool _isChangedClass = false;
+    private bool _isEnabled = true;
 
     /// <summary>
     /// 课程在课程表中的位置
@@ -76,6 +77,20 @@ public class ClassInfo : AttachableSettingsObject
         {
             if (value == _isChangedClass) return;
             _isChangedClass = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 这节课是否已启用
+    /// </summary>
+    public bool IsEnabled
+    {
+        get => _isEnabled;
+        set
+        {
+            if (value == _isEnabled) return;
+            _isEnabled = value;
             OnPropertyChanged();
         }
     }

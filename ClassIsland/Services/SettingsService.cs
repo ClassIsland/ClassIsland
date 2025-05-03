@@ -83,7 +83,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             // ignored
         }
 
-        if (!Settings.IsSystemSpeechSystemExist)
+        if (Settings is { IsSystemSpeechSystemExist: false, SpeechSource: 0 })
         {
             Settings.SpeechSource = 1;
         }

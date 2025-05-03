@@ -27,6 +27,7 @@ using ClassIsland.Shared;
 using ClassIsland.Shared.Extensions;
 using ClassIsland.Shared.Models.Action;
 using ClassIsland.ViewModels;
+using CommunityToolkit.Mvvm.Input;
 using CsesSharp;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
@@ -990,6 +991,12 @@ public partial class ProfileSettingsWindow : MyWindow
     }
 
     private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
+    {
+        SaveProfile();
+    }
+
+    [RelayCommand]
+    private void SaveProfile()
     {
         ProfileService.SaveProfile();
         ViewModel.MessageQueue.Enqueue($"已保存到{ProfileService.CurrentProfilePath}。");

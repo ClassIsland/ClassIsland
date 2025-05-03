@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:templates="clr-namespace:ClassIsland.Core.Models.Notification.Templates"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <DataTemplate x:Key="{x:Static templates:TwoIconsMaskTemplateData.TemplateResourceKey}"
+                  DataType="{x:Type templates:TwoIconsMaskTemplateData}">
+        <StackPanel Orientation="Horizontal" 
+                    VerticalAlignment="Center" HorizontalAlignment="Center">
+            <materialDesign:PackIcon Kind="{Binding LeftIconKind}" VerticalAlignment="Center"
+                                     Height="20" Width="20"/>
+            <TextBlock Text="{Binding Text}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" 
+                       Margin="8 0" FontWeight="Bold"/>
+            <materialDesign:PackIcon Kind="{Binding RightIconKind}" VerticalAlignment="Center"
+                                     Height="20" Width="20" Visibility="{Binding HasRightIcon, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </StackPanel>
+    </DataTemplate>
+</ResourceDictionary>

@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Speech.Synthesis;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -75,6 +76,7 @@ using ClassIsland.Shared.Helpers;
 using Microsoft.Extensions.Logging.Console;
 using Walterlv.Threading;
 using Walterlv.Windows;
+using ClassIsland.Controls.NotificationProviders;
 
 namespace ClassIsland;
 /// <summary>
@@ -133,6 +135,21 @@ public partial class App : AppBase, IAppHost
     internal static bool IsCrashed { get; set; } = false;
 
     internal static bool _isCriticalSafeModeEnabled = false;
+
+    internal static bool AutoDisableCorruptPlugins
+    {
+        get
+        {
+            try
+            {
+                return ((App)Current).Settings.AutoDisableCorruptPlugins;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+    }
 
     public override bool IsDevelopmentBuild =>
 #if DevelopmentBuild
@@ -225,19 +242,30 @@ public partial class App : AppBase, IAppHost
 
     private void App_OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
+        // COMException: UCEERR_RENDERTHREADFAILURE (0x88980406)
+        if (e.Exception is COMException comException && (uint)comException.HResult == 0x88980406)
+        {
+            ProcessWpfCriticalException(e.Exception);
+            return;
+        }
         try
         {
             ProcessUnhandledException(e.Exception);
         }
         catch
         {
-            Exit += (_, _) =>
-            {
-                DiagnosticService.ProcessCriticalException(e.Exception);
-            };
-            Stop();
+            ProcessWpfCriticalException(e.Exception);
         }
         e.Handled = true;
+    }
+
+    private void ProcessWpfCriticalException(Exception ex)
+    {
+        Exit += (_, _) =>
+        {
+            DiagnosticService.ProcessCriticalException(ex);
+        };
+        Stop();
     }
 
     internal void ProcessUnhandledException(Exception e, bool critical=false)
@@ -263,11 +291,35 @@ public partial class App : AppBase, IAppHost
             });
         }
 
+        var plugins = DiagnosticService.GetPluginsByStacktrace(e);
+        var disabled = DiagnosticService.DisableCorruptPlugins(plugins);
         if (!safe)
         {
+            var traceId = SentrySdk.GetTraceHeader()?.TraceId;
+            var crashInfo = e.ToString();
+            if (plugins.Count > 0)
+            {
+                var pluginsWarning = "此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
+                                     + string.Join("\n", plugins.Select(x => $"- {x.Manifest.Name} [{x.Manifest.Id}]"))
+                                     + (disabled
+                                         ? "\n以上异常插件已自动禁用，重启应用后生效。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。"
+                                         : "")
+                    + "\n================================\n";
+                crashInfo = pluginsWarning + crashInfo;
+            }
+            if (traceId != null)
+            {
+                var traceInfo = $"""
+                                 在向开发者提交问题时请保留以下信息：
+                                 TraceID: {traceId}
+                                 ================================
+                                 
+                                 """;
+                crashInfo = traceInfo + crashInfo;
+            }
             CrashWindow = new CrashWindow()
             {
-                CrashInfo = e.ToString(),
+                CrashInfo = crashInfo,
                 AllowIgnore = _isStartedCompleted && !critical,
                 IsCritical = critical
             };
@@ -513,6 +565,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<SignalTriggerHandlerService>();
                 services.AddSingleton<IAnnouncementService, AnnouncementService>();
                 services.AddSingleton<ILocationService, LocationService>();
+                services.AddSingleton<IXamlThemeService, XamlThemeService>();
                 // Views
                 services.AddSingleton<MainWindow>();
                 services.AddTransient<SplashWindowBase, SplashWindow>();
@@ -527,6 +580,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<ClassPlanDetailsWindow>();
                 services.AddTransient<WindowRuleDebugWindow>();
                 services.AddTransient<ConfigErrorsWindow>();
+                services.AddTransient<TimeAdjustmentWindow>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();
@@ -539,6 +593,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSettingsPage<StorageSettingsPage>();
                 services.AddSettingsPage<PrivacySettingsPage>();
                 services.AddSettingsPage<PluginsSettingsPage>();
+                services.AddSettingsPage<ThemesSettingsPage>();
                 services.AddSettingsPage<TestSettingsPage>();
                 services.AddSettingsPage<DebugPage>();
                 services.AddSettingsPage<DebugBrushesSettingsPage>();
@@ -557,11 +612,11 @@ public partial class App : AppBase, IAppHost
                 services.AddComponent<SlideComponent, SlideComponentSettingsControl>();
                 services.AddComponent<GroupComponent>();
                 // 提醒提供方
-                services.AddHostedService<ClassNotificationProvider>();
-                services.AddHostedService<AfterSchoolNotificationProvider>();
-                services.AddHostedService<WeatherNotificationProvider>();
-                services.AddHostedService<ManagementNotificationProvider>();
-                services.AddHostedService<ActionNotificationProvider>();
+                services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
+                services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
+                services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
+                services.AddNotificationProvider<ManagementNotificationProvider>();
+                services.AddNotificationProvider<ActionNotificationProvider>();
                 // Transients
                 services.AddTransient<ExcelImportWindow>();
                 services.AddTransient<WallpaperPreviewWindow>();
@@ -609,6 +664,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTrigger<OnBreakingTimeTrigger>();
                 services.AddTrigger<OnAfterSchoolTrigger>();
                 services.AddTrigger<CurrentTimeStateChangedTrigger>();
+                services.AddTrigger<PreTimePointTrigger, PreTimePointTriggerSettingsControl>();
                 // 规则
                 services.AddRule("classisland.test.true", "总是为真", onHandle: _ => true);
                 services.AddRule("classisland.test.false", "总是为假", onHandle: _ => false);
@@ -628,6 +684,9 @@ public partial class App : AppBase, IAppHost
                 services.AddAction<CurrentComponentConfigActionSettings, CurrentComponentConfigActionSettingsControl>("classisland.settings.currentComponentConfig", "组件配置方案", PackIconKind.WidgetsOutline);
                 services.AddAction<ThemeActionSettings, ThemeActionSettingsControl>("classisland.settings.theme", "应用主题", PackIconKind.ThemeLightDark);
                 services.AddAction<WindowDockingLocationActionSettings, WindowDockingLocationActionSettingsControl>("classisland.settings.windowDockingLocation", "窗口停靠位置", PackIconKind.Monitor);
+                services.AddAction<WindowLayerActionSettings, WindowLayerActionSettingsControl>("classisland.settings.windowLayer", "窗口层级", PackIconKind.LayersOutline);
+                services.AddAction<WindowDockingOffsetXActionSettings, WindowDockingOffsetXActionSettingsControl>("classisland.settings.windowDockingOffsetX", "窗口向右偏移", PackIconKind.ArrowCollapseRight);
+                services.AddAction<WindowDockingOffsetYActionSettings, WindowDockingOffsetYActionSettingsControl>("classisland.settings.windowDockingOffsetY", "窗口向下偏移", PackIconKind.ArrowCollapseDown);
                 services.AddAction<RunActionSettings, RunActionSettingsControl>("classisland.os.run", "运行", PackIconKind.OpenInApp);
                 services.AddAction<NotificationActionSettings, NotificationActionSettingsControl>(
                     "classisland.showNotification", "显示提醒", PackIconKind.BellOutline);
@@ -635,7 +694,9 @@ public partial class App : AppBase, IAppHost
                 services.AddAction<WeatherNotificationActionSettings, WeatherNotificationActionSettingControl>(
                     "classisland.notification.weather", "显示天气提醒", PackIconKind.SunWirelessOutline);
                 services.AddAction("classisland.app.quit", "退出 ClassIsland", PackIconKind.ExitToApp, (_, _) => Current.Stop());
+                services.AddAction<AppRestartActionSettings,AppRestartActionSettingsControl>("classisland.app.restart", "重启 ClassIsland", PackIconKind.Restart);
                 // 行动处理
+                services.AddHostedService<AppRestartActionHandler>();
                 services.AddHostedService<RunActionHandler>();
                 services.AddHostedService<AppSettingsActionHandler>();
                 services.AddHostedService<SleepActionHandler>();
@@ -786,6 +847,11 @@ public partial class App : AppBase, IAppHost
             if (ConfigureFileHelper.Errors.FirstOrDefault(x => x.Critical) != null)
             {
                 GetService<ITaskBarIconService>().ShowNotification("配置文件损坏", "ClassIsland 部分配置文件已损坏且无法加载，这些配置文件已恢复至默认值。点击此消息以查看详细信息和从过往备份中恢复配置文件。", clickedCallback:() => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/config-errors")));
+            }
+            if (Settings.CorruptPluginsDisabledLastSession)
+            {
+                Settings.CorruptPluginsDisabledLastSession = false;
+                GetService<ITaskBarIconService>().ShowNotification("已自动禁用异常插件", "ClassIsland 已自动禁用导致上次崩溃的插件。您可以在排除问题后前往【应用设置】->【插件】中重新启用这些插件，或在【应用设置】->【基本】中调整是否自动禁用异常插件。", clickedCallback: () => GetService<IUriNavigationService>().NavigateWrapped(new Uri("classisland://app/settings/classisland.plugins")));
             }
             if (Settings.IsSplashEnabled)
             {

@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
@@ -241,17 +243,8 @@ public class LessonsService : ObservableRecipient, ILessonsService
         RulesetService.RegisterRuleHandler("classisland.lessons.nextSubject", NextSubjectHandler);
         RulesetService.RegisterRuleHandler("classisland.lessons.previousSubject", PreviousSubjectHandler);
         CurrentTimeStateChanged += (sender, args) => RulesetService.NotifyStatusChanged();
-        PropertyChanged += (sender, args) =>
-        {
-            if (args.PropertyName == nameof(CurrentSubject))
-            {
-                RulesetService.NotifyStatusChanged();
-            }
-            if (args.PropertyName == nameof(CurrentClassPlan))
-            {
-                CurrentClassPlan?.RefreshIsChangedClass();
-            }
-        };
+        PropertyChanged += OnPropertyChanged;
+        PropertyChanging += OnPropertyChanging;
 
 
         CurrentTimeStateChanged += async (_, _) =>
@@ -277,6 +270,33 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
         ProcessLessons();  // 防止在课程服务初始化后因没有更新课表获取到错误的信息
         StartMainTimer();
+    }
+
+    private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(CurrentSubject))
+        {
+            RulesetService.NotifyStatusChanged();
+        }
+
+        if (args.PropertyName == nameof(CurrentClassPlan) && CurrentClassPlan != null)
+        {
+            CurrentClassPlan.ClassesChanged += CurrentClassPlanOnClassesChanged;
+            CurrentClassPlan.RefreshIsChangedClass();
+        }
+    }
+
+    private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
+    {
+        if (e.PropertyName == nameof(CurrentClassPlan) && CurrentClassPlan != null)
+        {
+            CurrentClassPlan.ClassesChanged -= CurrentClassPlanOnClassesChanged;
+        }
+    }
+
+    private void CurrentClassPlanOnClassesChanged(object? sender, EventArgs e)
+    {
+        
     }
 
     private bool CurrentSubjectHandler(object? settings)
@@ -413,9 +433,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         CurrentClassPlan.TimeLayout.IsActivated = true;
 
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
+        var validTimeLayoutItems = CurrentClassPlan.ValidTimeLayoutItems;
 
         // 获取当前时间点信息
-        currentTimeLayoutItem = layout.FirstOrDefault(i =>
+        currentTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType is 0 or 1 &&
             i.StartSecond.TimeOfDay <= now &&
             i.EndSecond.TimeOfDay >= now);
@@ -442,7 +463,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
 
         // 获取下节时间点信息
-        nextClassTimeLayoutItem = layout.FirstOrDefault(i =>
+        nextClassTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 0 &&
             i.EndSecond.TimeOfDay >= now);
         if (nextClassTimeLayoutItem != null)
@@ -452,7 +473,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
                 nextClassSubject = subject;
         }
-        nextBreakingTimeLayoutItem = layout.FirstOrDefault(i =>
+        nextBreakingTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 1 &&
             i.EndSecond.TimeOfDay >= now);
 

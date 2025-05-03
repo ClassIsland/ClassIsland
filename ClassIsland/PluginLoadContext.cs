@@ -6,9 +6,9 @@ using ClassIsland.Services;
 
 namespace ClassIsland;
 
-class PluginLoadContext(PluginInfo info, string fullPath) : AssemblyLoadContext("ClassIsland.PluginLoadContext")
+class PluginLoadContext(PluginInfo info, string fullPath) : AssemblyLoadContext($"ClassIsland.PluginLoadContext[{info.Manifest.Id}]")
 {
-    private PluginInfo Info { get; } = info;
+    public PluginInfo Info { get; } = info;
 
     private AssemblyDependencyResolver Resolver { get; } = new(fullPath);
 

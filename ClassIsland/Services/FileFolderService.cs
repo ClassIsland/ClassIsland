@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using ClassIsland.Services.AppUpdating;
 using ClassIsland.Services.Management;
 using ClassIsland.Services.SpeechService;
-
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Path = System.IO.Path;
@@ -34,7 +33,8 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         Path.Combine(App.AppRootFolderPath, "Backups"),
         App.AppLogFolderPath,
         AutomationService.AutomationConfigsFolderPath,
-        ManagementService.LocalManagementConfigureFolderPath
+        ManagementService.LocalManagementConfigureFolderPath,
+        XamlThemeService.ThemesPath
     ];
 
     public static void CreateFolders()

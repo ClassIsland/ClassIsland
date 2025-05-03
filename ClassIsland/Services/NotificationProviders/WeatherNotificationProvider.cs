@@ -10,7 +10,6 @@ using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared;
@@ -18,27 +17,19 @@ using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Models.Notification;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-public class WeatherNotificationProvider : INotificationProvider, IHostedService
+[NotificationProviderInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气预警", PackIconKind.CloudWarning, "当有降雨或者极端天气时发出提醒。")]
+public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotificationProviderSettings>
 {
-    public string Name { get; set; } = "天气预警";
-    public string Description { get; set; } = "当有降雨或者极端天气时发出提醒。";
-    public Guid ProviderGuid { get; set; } = new Guid("7625DE96-38AA-4B71-B478-3F156DD9458D");
-    public object? SettingsElement { get; set; }
-    public object? IconElement { get; set; } = new PackIcon()
-    {
-        Kind = PackIconKind.CloudWarning,
-        Width = 24,
-        Height = 24
-    };
 
     private IWeatherService WeatherService { get; }
 
     private SettingsService SettingsService { get; }
-
-    private WeatherNotificationProviderSettings Settings { get; }
 
     private INotificationHostService NotificationHostService { get; }
 
@@ -62,12 +53,6 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
         AttachedSettingsHostService = attachedSettingsHostService;
         LessonsService = lessonsService;
         ActionService = actionService;
-
-        NotificationHostService.RegisterNotificationProvider(this);
-
-        Settings = NotificationHostService.GetNotificationProviderSettings
-                       <WeatherNotificationProviderSettings>(ProviderGuid);
-        SettingsElement = new WeatherNotificationProviderSettingsControl(Settings);
 
         LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
         LessonsService.OnClass += NotificationHostServiceOnOnClass;
@@ -121,11 +106,13 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
 
     private void ShowWeatherForecastCore()
     {
-        NotificationHostService.ShowNotification(new NotificationRequest()
+        ShowNotification(new Core.Models.Notification.NotificationRequest()
         {
-            MaskContent = new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo),
-            OverlayContent = new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo),
-            OverlayDuration = TimeSpan.FromSeconds(15)
+            MaskContent = new NotificationContent(new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo)),
+            OverlayContent = new NotificationContent(new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo))
+            {
+                Duration = TimeSpan.FromSeconds(15)
+            }
         });
     }
 
@@ -140,11 +127,13 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
     {
         var baseTime = SettingsService.Settings.LastWeatherInfo.UpdateTime;
         baseTime = RoundUpToHour(baseTime);
-        NotificationHostService.ShowNotification(new NotificationRequest()
+        ShowNotification(new Core.Models.Notification.NotificationRequest()
         {
-            MaskContent = new WeatherHourlyForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo, baseTime),
-            OverlayContent = new WeatherHourlyForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo, baseTime),
-            OverlayDuration = TimeSpan.FromSeconds(15)
+            MaskContent = new NotificationContent(new WeatherHourlyForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo, baseTime)),
+            OverlayContent = new NotificationContent(new WeatherHourlyForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo, baseTime))
+            {
+                Duration = TimeSpan.FromSeconds(15)
+            }
         });
     }
 
@@ -180,14 +169,19 @@ public class WeatherNotificationProvider : INotificationProvider, IHostedService
             if (t >= 90) t = 90.0;
             var ts = TimeSpan.FromSeconds(t);
             IAppHost.GetService<ILogger<WeatherNotificationProvider>>().LogTrace("单次预警显示时长：{}", ts);
-            NotificationHostService.ShowNotification(new NotificationRequest()
+            ShowNotification(new Core.Models.Notification.NotificationRequest()
             {
-                MaskContent = new WeatherNotificationProviderControl(true, i, ts),
-                MaskSpeechContent = i.Title,
-                OverlayContent = new WeatherNotificationProviderControl(false, i, ts),
-                OverlaySpeechContent = i.Detail,
-                OverlayDuration = ts * 2,
-                MaskDuration = TimeSpan.FromSeconds(5)
+                MaskContent = new NotificationContent(new WeatherNotificationProviderControl(true, i, ts))
+                {
+                    SpeechContent = i.Title,
+                    Duration = TimeSpan.FromSeconds(5)
+                },
+                OverlayContent = new NotificationContent(new WeatherNotificationProviderControl(false, i, ts))
+                {
+                    Duration = ts * 2,
+                    SpeechContent = i.Detail,
+
+                }
             });
             ShownAlerts.Add(i.Detail);
         }

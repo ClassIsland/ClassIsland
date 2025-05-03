@@ -51,6 +51,10 @@
     "ClassIsland Recovery": {
       "commandName": "Project",
       "commandLineArgs": "--recovery"
+    },
+    "配置文件 2": {
+      "commandName": "Project",
+      "commandLineArgs": "--safe"
     }
   }
 }
