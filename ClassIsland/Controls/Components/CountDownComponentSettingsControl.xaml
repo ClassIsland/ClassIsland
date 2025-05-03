@@ -61,7 +61,7 @@
                     <controls1:SettingsCard.Switcher>
                         <StackPanel>
                             <ComboBox SelectedItem="{Binding Settings.CountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      Margin="10 8 0 0" MinWidth="180">
+                                      Margin="10 8 0 0" MinWidth="180" SelectedIndex="0">
                                 <ComboBoxItem Content="还有" />
                                 <ComboBoxItem Content="仅剩" />
                                 <ComboBoxItem Content="自定义" />
