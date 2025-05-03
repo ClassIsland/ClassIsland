@@ -88,6 +88,10 @@ public class CountDownComponentSettings : ObservableRecipient
         set
         {
             if (value == null) return;
+            if (value.StartsWith("System.Windows.Controls.ComboBoxItem: "))
+            {
+                value = value.Replace("System.Windows.Controls.ComboBoxItem: ", "");
+            }
             if (value.Equals(_countDownMessage)) return;
             _countDownMessage = value;
             OnPropertyChanged();

@@ -68,7 +68,7 @@
                             </ComboBox>
                             <TextBox Text="{Binding Settings.CustomCountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                      Margin="10 8 0 0" MinWidth="180"
-                                     Visibility="{Binding Settings.CountDownMessage, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=自定义}"/>
+                                     Visibility="Collapsed"/>
                         </StackPanel>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
