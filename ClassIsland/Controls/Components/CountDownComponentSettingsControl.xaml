@@ -59,12 +59,17 @@
                 <controls1:SettingsCard IconGlyph="Text" Header="提示语种类"
                                         Description="选择倒计时的提示语种类。">
                     <controls1:SettingsCard.Switcher>
-                        <ComboBox SelectedItem="{Binding Settings.CountDownMessageType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  Margin="10 8 0 0" MinWidth="180">
-                            <ComboBoxItem Content="还有" />
-                            <ComboBoxItem Content="仅剩" />
-                            <ComboBoxItem Content="自定义" />
-                        </ComboBox>
+                        <StackPanel>
+                            <ComboBox SelectedItem="{Binding Settings.CountDownMessageType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                      Margin="10 8 0 0" MinWidth="180">
+                                <ComboBoxItem Content="还有" />
+                                <ComboBoxItem Content="仅剩" />
+                                <ComboBoxItem Content="自定义" />
+                            </ComboBox>
+                            <TextBox Text="{Binding Settings.CustomCountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="10 8 0 0" MinWidth="180"
+                                     Visibility="{Binding Settings.CountDownMessageType, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter=自定义}"/>
+                        </StackPanel>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
             </StackPanel>
