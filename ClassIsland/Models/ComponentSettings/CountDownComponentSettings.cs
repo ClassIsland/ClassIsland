@@ -13,6 +13,7 @@ public class CountDownComponentSettings : ObservableRecipient
     private Color _fontColor = Color.FromRgb(255,0,0);
     private int _fontSize = 16;
     private bool _isCompactModeEnabled = false;
+    private string _countDownMessageType = "还有";
 
     public string CountDownName
     {
@@ -80,6 +81,18 @@ public class CountDownComponentSettings : ObservableRecipient
         {
             if (value == _isCompactModeEnabled) return;
             _isCompactModeEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string CountDownMessageType
+    {
+        get => _countDownMessageType;
+        set
+        {
+            if (value == null) return;
+            if (value.Equals(_countDownMessageType)) return;
+            _countDownMessageType = value;
             OnPropertyChanged();
         }
     }
