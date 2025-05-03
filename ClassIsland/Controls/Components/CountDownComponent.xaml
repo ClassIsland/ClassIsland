@@ -24,7 +24,6 @@
                        VerticalAlignment="Center" Margin="0 0 2 0"/>
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="Black" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Settings.CountDownMessageType}" Value="仅剩">
                                 <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}" />
@@ -42,7 +41,6 @@
                        Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}">
                 <TextBlock.Style>
                     <Style TargetType="TextBlock">
-                        <Setter Property="Foreground" Value="Black" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding Settings.CountDownMessageType}" Value="仅剩">
                                 <Setter Property="Foreground" Value="{Binding Settings.FontColor, Converter={StaticResource ColorToColorPickerBrushConverter}}" />
