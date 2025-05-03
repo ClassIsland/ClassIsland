@@ -63,6 +63,7 @@
                                   Margin="10 8 0 0" MinWidth="180">
                             <ComboBoxItem Content="还有" />
                             <ComboBoxItem Content="仅剩" />
+                            <ComboBoxItem Content="自定义" />
                         </ComboBox>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
