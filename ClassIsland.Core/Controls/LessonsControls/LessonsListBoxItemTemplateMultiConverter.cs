@@ -51,14 +51,13 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         // [6]: bool             HideFinishedClass
         // [7]: ICollection<...> ValidTimePoints
         // [8]: bool             IsLiveUpdatingEnabled
-        if (values.Length < 9)
+        if (values.Length < 8)
             return BlankDataTemplate;
         if (values[0] is not int timeType ||
             values[1] is not bool isHideDefault ||
             values[4] is not bool discardHidingDefault ||
             values[5] is not bool showCurrentTimeLayoutItemOnlyOnClass ||
-            values[6] is not bool hideFinishedClass ||
-            values[8] is not bool isLiveUpdateEnabled)
+            values[6] is not bool hideFinishedClass)
         {
             return BlankDataTemplate;
         }
@@ -73,7 +72,7 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
         if (currentItem != selectedItem && selectedItem?.TimeType == 0 && showCurrentTimeLayoutItemOnlyOnClass)
             return BlankDataTemplate;
 
-        if (isLiveUpdateEnabled && values[7] is ICollection<TimeLayoutItem> validTimePoints &&
+        if (values[7] is ICollection<TimeLayoutItem> validTimePoints &&
             (currentItem == null || !validTimePoints.Contains(currentItem)))
         {
             return BlankDataTemplate;

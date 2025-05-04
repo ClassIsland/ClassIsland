@@ -11,6 +11,7 @@ public class Subject : AttachableSettingsObject
     private string _initial = "";
     private string _teacherName = "";
     private bool _isOutDoor = false;
+    private static readonly HashSet<string> commonCompoundSurnames = new() { "万俟", "司马", "上官", "欧阳", "夏侯", "诸葛", "闻人", "东方", "赫连", "皇甫", "尉迟", "公羊", "澹台", "公冶", "宗政", "濮阳", "淳于", "单于", "太叔", "申屠", "公孙", "仲孙", "轩辕", "令狐", "钟离", "宇文", "长孙", "慕容", "鲜于", "闾丘", "司徒", "司空", "亓官", "司寇", "子车", "颛孙", "端木", "巫马", "公西", "漆雕", "乐正", "壤驷", "公良", "拓跋", "夹谷", "宰父", "谷梁", "段干", "百里", "东郭", "南门", "呼延", "羊舌", "微生", "梁丘", "左丘", "东门", "西门", "南宫", "第五" };
 
     /// <summary>
     /// 科目名
@@ -87,7 +88,7 @@ public class Subject : AttachableSettingsObject
         Initial = "休",
         Name = "课间休息"
     };
-    
+
     /// <summary>
     /// 获取当前科目任课老师姓名的姓氏，如果没有填写任课老师信息，则返回空字符串。
     /// </summary>
@@ -104,6 +105,16 @@ public class Subject : AttachableSettingsObject
 
         if (containsChinese)
         {
+            // 中文姓名，处理复姓
+            if (TeacherName.Length >= 2)
+            {
+                var teacherSurname = TeacherName.Substring(0, 2);
+                if (commonCompoundSurnames.Contains(teacherSurname))
+                {
+                    return teacherSurname;
+                }
+            }
+
             // 中文姓名，假设姓氏为第一个字符
             if (TeacherName.Length >= 1) return TeacherName.Substring(0, 1);
         }
