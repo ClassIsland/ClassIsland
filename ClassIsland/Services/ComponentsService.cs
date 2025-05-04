@@ -13,6 +13,7 @@ using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
+using Sentry;
 
 namespace ClassIsland.Services;
 
@@ -144,39 +145,54 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     public ComponentBase? GetComponent(ComponentSettings settings, bool isSettings)
     {
-        var type = isSettings ? settings.AssociatedComponentInfo.SettingsType : settings.AssociatedComponentInfo.ComponentType;
-        if (type == null)
+        var transaction = SentrySdk.StartTransaction("Get Component Instance", "component.getInstance");
+        transaction.SetTag("component", settings.AssociatedComponentInfo.Name);
+        transaction.SetTag("component.isSettings", isSettings.ToString());
+        transaction.SetTag("component.Id", settings.AssociatedComponentInfo.Guid.ToString());
+        try
         {
-            return null;
-        }
-
-        var c = IAppHost.Host?.Services.GetService(type);
-        if (c is not ComponentBase component)
-        {
-            return null;
-        }
-
-
-        var baseType = type.BaseType;
-        var migrated = settings.IsMigrated && !isSettings;
-        if (migrated)
-        {
-            if (baseType?.GetGenericArguments().Length > 0)
+            var type = isSettings ? settings.AssociatedComponentInfo.SettingsType : settings.AssociatedComponentInfo.ComponentType;
+            if (type == null)
             {
-                var settingsType = baseType.GetGenericArguments().First();
-                var componentSettings = Activator.CreateInstance(settingsType);
-                settings.Settings = componentSettings;
+                transaction.Finish(SpanStatus.NotFound);
+                return null;
+            }
+
+            var c = IAppHost.Host?.Services.GetService(type);
+            if (c is not ComponentBase component)
+            {
+                transaction.Finish(SpanStatus.NotFound);
+                return null;
+            }
+
+
+            var baseType = type.BaseType;
+            var migrated = settings.IsMigrated && !isSettings;
+            if (migrated)
+            {
+                if (baseType?.GetGenericArguments().Length > 0)
+                {
+                    var settingsType = baseType.GetGenericArguments().First();
+                    var componentSettings = Activator.CreateInstance(settingsType);
+                    settings.Settings = componentSettings;
+                    component.SettingsInternal = componentSettings;
+                }
+                component.OnMigrated(settings.MigrationSource, settings.Settings);
+            } 
+            if (baseType?.GetGenericArguments().Length > 0 && !migrated)
+            {
+                var componentSettings = LoadComponentSettings(settings, baseType);
+
                 component.SettingsInternal = componentSettings;
             }
-            component.OnMigrated(settings.MigrationSource, settings.Settings);
-        } 
-        if (baseType?.GetGenericArguments().Length > 0 && !migrated)
-        {
-            var componentSettings = LoadComponentSettings(settings, baseType);
-
-            component.SettingsInternal = componentSettings;
+            transaction.Finish(SpanStatus.Ok);
+            return component;
         }
-        return component;
+        catch (Exception ex)
+        {
+            transaction.Finish(ex, SpanStatus.InternalError);
+            throw;
+        }
     }
 
     internal static object? LoadComponentSettings(ComponentSettings settings, Type baseType)
