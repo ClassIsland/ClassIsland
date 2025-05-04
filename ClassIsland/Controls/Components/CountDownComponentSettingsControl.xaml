@@ -59,26 +59,24 @@
                 <controls1:SettingsCard IconGlyph="Text" Header="提示语种类"
                                         Description="选择倒计时的提示语种类。">
                     <controls1:SettingsCard.Switcher>
-                        <StackPanel>
-                            <ComboBox SelectedItem="{Binding Settings.CountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                      Margin="10 8 0 0" MinWidth="180" SelectedIndex="0">
-                                <ComboBoxItem Content="还有" />
-                                <ComboBoxItem Content="仅剩" />
-                                <ComboBoxItem Content="自定义" />
-                            </ComboBox>
+                        <ComboBox SelectedItem="{Binding Settings.CountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="10 8 0 0" MinWidth="180" SelectedIndex="0">
+                            <ComboBoxItem Content="还有" />
+                            <ComboBoxItem Content="仅剩" />
+                            <ComboBoxItem Content="自定义" />
+                        </ComboBox>
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
 
-                            <!-- 只有当选中“自定义”时才显示 -->
-                            <controls1:SettingsCard IconGlyph="Text" Header="自定义提示语"
-                                                    Description="编辑自定义的倒计时提示语。">
-                                <controls1:SettingsCard.Switcher>
-                                    <TextBox x:Name="CustomMessageBox"
-                                             Margin="10 5 0 0"
-                                             MinWidth="180"
-                                             Visibility="{Binding Settings.CountDownMessage, Converter={StaticResource MessageToVisibilityConverter}}"
-                                             Text="{Binding Settings.CountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                </controls1:SettingsCard.Switcher>
-                            </controls1:SettingsCard>
-                        </StackPanel>
+                <!-- 只有当选中“自定义”时才显示 -->
+                <controls1:SettingsCard IconGlyph="Text" Header="自定义提示语"
+                                        Description="编辑自定义的倒计时提示语。">
+                    <controls1:SettingsCard.Switcher>
+                        <TextBox x:Name="CustomMessageBox"
+                                 Margin="10 5 0 0"
+                                 MinWidth="180"
+                                 Visibility="{Binding Settings.CountDownMessage, Converter={StaticResource MessageToVisibilityConverter}}"
+                                 Text="{Binding Settings.CountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
             </StackPanel>
