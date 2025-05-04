@@ -1,7 +1,7 @@
 ﻿using System.IO;
+using System.Text.Json.Serialization;
 using ClassIsland.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
 namespace ClassIsland.Core.Models.XamlTheme;
@@ -20,6 +20,8 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     private bool _isLocal = false;
     private DownloadProgress? _downloadProgress;
     private string _realBannerPath = "";
+    private long _downloadCount = 0;
+    private long _starsCount = 0;
 
     /// <summary>
     /// 主题清单
@@ -182,6 +184,34 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
         {
             if (value == _realBannerPath) return;
             _realBannerPath = value;
+            OnPropertyChanged();
+        }
+    }
+    
+    /// <summary>
+    /// 主题下载量
+    /// </summary>
+    public long DownloadCount
+    {
+        get => _downloadCount;
+        set
+        {
+            if (value == _downloadCount) return;
+            _downloadCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 主题 Stars 数量
+    /// </summary>
+    public long StarsCount
+    {
+        get => _starsCount;
+        set
+        {
+            if (value == _starsCount) return;
+            _starsCount = value;
             OnPropertyChanged();
         }
     }

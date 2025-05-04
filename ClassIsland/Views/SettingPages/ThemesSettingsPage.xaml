@@ -71,7 +71,8 @@
         <ListBox Grid.Row="1" HorizontalContentAlignment="Stretch"
                      Background="{DynamicResource MaterialDesignPaper}"
                      ItemsSource="{Binding XamlThemeService.Themes}"
-                     materialDesign:ListBoxItemAssist.ShowSelection="False">
+                     materialDesign:ListBoxItemAssist.ShowSelection="False"
+                     VerticalContentAlignment="Stretch">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="Padding" Value="0"/>
@@ -113,7 +114,7 @@
                                         <Binding Source="{StaticResource ClipRadius}"/>
                                     </MultiBinding>
                                 </Border.Clip>
-                                <Image Source="/Assets/Banner.png" Stretch="UniformToFill"
+                                <Image Source="{Binding RealBannerPath, Mode=OneWay}" Stretch="UniformToFill"
                                        StretchDirection="Both" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Border>
                             <Grid VerticalAlignment="Bottom" Margin="8">
@@ -122,25 +123,45 @@
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding IsLoaded}"
                                                              Value="False">
-                                                <Setter Property="Opacity" Value="0.8"></Setter>
+                                                <Setter Property="Opacity" Value="0.8"/>
                                             </DataTrigger>
+
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Trigger.EnterActions>
+                                                    
+                                                </Trigger.EnterActions>
+                                            </Trigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <ToggleButton Grid.Column="0" IsChecked="{Binding IsEnabled}"
-                                                  VerticalAlignment="Center"
-                                                  Margin="0 0 4 0" />
-                                <TextBlock Grid.Column="1" Text="{Binding Manifest.Name}"
-                                               VerticalAlignment="Center" FontWeight="Medium" FontSize="14"/>
-                                <StackPanel Grid.Column="2" Orientation="Horizontal"
-                                                HorizontalAlignment="Right"
-                                                VerticalAlignment="Center"
-                                                Margin="0 -8">
+
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Manifest.Name}"
+                                           VerticalAlignment="Center" FontWeight="Medium" FontSize="16"/>
+                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
+                                    <TextBlock Text="{Binding Manifest.Author}"
+                                               VerticalAlignment="Center" FontSize="12"
+                                               HorizontalAlignment="Left" />
+                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                            Content="{materialDesign:PackIcon Web, Size=14}"
+                                            Margin="2 -8 0 -8"
+                                            ToolTip="网站…"
+                                            CommandParameter="{Binding Manifest.Url}"
+                                            Command="{x:Static ci:UriNavigationCommands.UriNavigationCommand}" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center"
+                                            Margin="0 -8">
                                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                                 Content="{materialDesign:PackIcon Error}"
                                                 Visibility="{Binding IsError, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -155,6 +176,9 @@
                                                 ToolTip="打开主题文件夹…"
                                                 CommandParameter="{Binding}"
                                                 Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                    <ToggleButton IsChecked="{Binding IsEnabled}"
+                                                  VerticalAlignment="Center"
+                                                  Margin="4 0 0 0" />
                                 </StackPanel>
                             </Grid>
                         </Grid>

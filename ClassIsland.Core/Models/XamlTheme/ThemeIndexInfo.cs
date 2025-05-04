@@ -5,7 +5,7 @@ namespace ClassIsland.Core.Models.XamlTheme;
 /// <summary>
 /// 代表一个主题的索引信息。
 /// </summary>
-public class ThemeIndexInfo : ThemeInfo
+public class ThemeIndexItem : ThemeInfo
 {
     /// <summary>
     /// 插件最新版本下载链接

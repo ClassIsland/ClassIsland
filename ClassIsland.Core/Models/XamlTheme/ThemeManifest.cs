@@ -16,7 +16,7 @@ public class ThemeManifest : ObservableRecipient, IMarketplaceItemManifest
     private string _id = "";
     private string _description = "";
     private string _version = "0.0.0.0";
-    private string _banner = "";
+    private string _banner = "banner.png";
 
     /// <summary>
     /// 主题 ID

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Text.Json.Serialization;
 using ClassIsland.Core.Models;
-using Newtonsoft.Json;
 
 namespace ClassIsland.Core.Abstractions.Models.Marketplace;
 
