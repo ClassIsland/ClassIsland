@@ -66,6 +66,18 @@
                                 <ComboBoxItem Content="仅剩" />
                                 <ComboBoxItem Content="自定义" />
                             </ComboBox>
+
+                            <!-- 只有当选中“自定义”时才显示 -->
+                            <controls1:SettingsCard IconGlyph="Text" Header="自定义提示语"
+                                                    Description="编辑自定义的倒计时提示语。">
+                                <controls1:SettingsCard.Switcher>
+                                    <TextBox x:Name="CustomMessageBox"
+                                             Margin="10 5 0 0"
+                                             MinWidth="180"
+                                             Visibility="{Binding Settings.CountDownMessage, Converter={StaticResource MessageToVisibilityConverter}}"
+                                             Text="{Binding Settings.CountDownMessage, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                </controls1:SettingsCard.Switcher>
+                            </controls1:SettingsCard>
                         </StackPanel>
                     </controls1:SettingsCard.Switcher>
                 </controls1:SettingsCard>
