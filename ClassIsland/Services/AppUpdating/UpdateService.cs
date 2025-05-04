@@ -27,6 +27,7 @@ using ClassIsland.Views;
 using Downloader;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sentry;
 using Application = System.Windows.Application;
 using DownloadProgressChangedEventArgs = Downloader.DownloadProgressChangedEventArgs;
 using File = System.IO.File;
@@ -256,8 +257,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
+        var transaction = SentrySdk.StartTransaction("Get Update Info", "appUpdating.getMetadata");
         try
         {
+            var spanGetIndex = transaction.StartChild("getIndex");
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
             Index = await WebRequestHelper.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"), verifySign:true, publicKey:MetadataPublisherPublicKey);
             SyncSpeedTestResults();
@@ -265,12 +268,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 .Where(x => Version.TryParse(x.Version, out _) && x.Channels.Contains(Settings.SelectedUpdateChannelV2))
                 .OrderByDescending(x => Version.Parse(x.Version))
                 .FirstOrDefault();
+            spanGetIndex.Finish(SpanStatus.Ok);
             if (version == null || !IsNewerVersion(isForce, isCancel, Version.Parse(version.Version)))
             {
                 Settings.LastUpdateStatus = UpdateStatus.UpToDate;
+                transaction.Finish(SpanStatus.Ok);
                 return;
             }
 
+            var spanGetDetail = transaction.StartChild("getDetail");
             SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             TaskBarIconService.ShowNotification("发现新版本",
@@ -278,11 +284,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 "点击以查看详细信息。", clickedCallback:UpdateNotificationClickedCallback);
 
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
+            spanGetDetail.Finish(SpanStatus.Ok);
+            transaction.Finish(SpanStatus.Ok);
         }
         catch (Exception ex)
         {
             Settings.LastUpdateStatus = UpdateStatus.UpToDate;
             NetworkErrorException = ex;
+            transaction.GetLastActiveSpan()?.Finish(ex, SpanStatus.InternalError);
+            transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "检查应用更新失败。");
         }
         finally
@@ -307,17 +317,23 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task DownloadUpdateAsync()
     {
+        var transaction = SentrySdk.StartTransaction("Download Update", "appUpdating.download");
+        var spanDeletePreviousFile = transaction.StartChild("deletePreviousFile");
         try
         {
             if (Directory.Exists(UpdateTempPath))
             {
                 Directory.Delete(UpdateTempPath, true);
             }
+            spanDeletePreviousFile.Finish(SpanStatus.Ok);
         }
         catch (Exception ex)
         {
+            spanDeletePreviousFile.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "移除下载临时文件失败。");
         }
+
+        var spanDownload = transaction.StartChild("download");
         try
         {
             var downloadInfo = SelectedVersionInfo.DownloadInfos[AppBase.Current.AppSubChannel];
@@ -328,6 +344,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             DownloadSpeed = 0;
             DownloadStatusUpdateStopwatch.Start();
             CurrentWorkingStatus = UpdateWorkingStatus.DownloadingUpdates;
+            transaction.SetExtra("download.url", downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2]);
 
             Downloader = DownloadBuilder.New()
                 .WithUrl(downloadInfo.ArchiveDownloadUrls[Settings.SelectedUpdateMirrorV2])
@@ -345,16 +362,31 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             Downloader.DownloadFileCompleted += (sender, args) =>
             {
                 DownloadStatusUpdateStopwatch.Stop();
+                transaction.SetExtra("download.size", Downloader.TotalFileSize);
+                var speed = DownloadStatusUpdateStopwatch.Elapsed.TotalSeconds == 0
+                    ? 0.0
+                    : Downloader.TotalFileSize / DownloadStatusUpdateStopwatch.Elapsed.TotalSeconds;
+                transaction.SetExtra("download.bytesPerSecond", speed);
                 DownloadStatusUpdateStopwatch.Reset();
                 if (IsCanceled)
                 {
                     IsCanceled = false;
+                    spanDownload.Finish(SpanStatus.Cancelled);
+                    transaction.Finish(SpanStatus.Cancelled);
                     return;
                 }
 
                 if (!File.Exists(Path.Combine(UpdateTempPath, @"update.zip")) || args.Error != null)
                 {
                     //await RemoveDownloadedFiles();
+                    if (args.Error != null)
+                    {
+                        spanDownload.Finish(args.Error, SpanStatus.InternalError);
+                    }
+                    else
+                    {
+                        spanDownload.Finish(SpanStatus.InternalError);
+                    }
                     throw new Exception("更新下载失败。", args.Error);
                 }
                 else
@@ -363,6 +395,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                     {
                         Settings.LastUpdateStatus = UpdateStatus.UpdateDownloaded;
                     });
+                    spanDownload.Finish(SpanStatus.Ok);
+                    transaction.Finish(SpanStatus.Ok);
                 }
             };
             await Downloader.StartAsync();
@@ -370,6 +404,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         catch (Exception ex)
         {
             NetworkErrorException = ex;
+            transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "下载应用更新失败。");
             await RemoveDownloadedFiles();
         }
@@ -451,13 +486,21 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     public async Task<bool> RestartAppToUpdateAsync()
     {
         var success = true;
+        var transaction = SentrySdk.StartTransaction("Reboot to Update Mode", "appUpdating.rebootToUpdate");
         Logger.LogInformation("正在重启至升级模式。");
         TaskBarIconService.ShowNotification("正在安装应用更新", "这可能需要10-30秒的时间，请稍后……");
         CurrentWorkingStatus = UpdateWorkingStatus.ExtractingUpdates;
         try
         {
+            var spanValidate = transaction.StartChild("validate");
             await ValidateUpdateAsync();
+            spanValidate.Finish(SpanStatus.Ok);
+
+            var spanExtract = transaction.StartChild("extract");
             await ExtractUpdateAsync();
+            spanExtract.Finish(SpanStatus.Ok);
+
+            var spanReboot = transaction.StartChild("reboot");
             Process.Start(new ProcessStartInfo()
             {
                 FileName = Path.Combine(UpdateTempPath, @"extracted/ClassIsland.exe"),
@@ -468,10 +511,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 }
             });
             AppBase.Current.Stop();
+            spanReboot.Finish(SpanStatus.Ok);
+            transaction.Finish(SpanStatus.Ok);
         }
         catch (Exception ex)
         {
             success = false;
+            transaction.GetLastActiveSpan()?.Finish(ex, SpanStatus.InternalError);
+            transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "无法安装更新");
             TaskBarIconService.ShowNotification("安装更新失败", ex.Message, clickedCallback:UpdateNotificationClickedCallback);
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
