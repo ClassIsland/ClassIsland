@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
@@ -108,11 +109,26 @@ public partial class SlideComponent
     private void SlideComponent_OnLoaded(object sender, RoutedEventArgs e)
     {
         LoadSettings();
-        Settings.PropertyChanged += (o, args) => LoadSettings();
+        Settings.PropertyChanged += OnSettingsOnPropertyChanged;
         Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         Timer.Start();
+        Timer.Tick -= TimerOnTick;  // 防止重复触发
         Timer.Tick += TimerOnTick;
+    }
+
+    private void OnSettingsOnPropertyChanged(object? o, PropertyChangedEventArgs args)
+    {
+        LoadSettings();
+    }
+
+    private void SlideComponent_OnUnloaded(object sender, RoutedEventArgs e)
+    {
+        Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
+        Settings.Children.CollectionChanged -= ChildrenOnCollectionChanged;
+        RulesetService.StatusUpdated -= RulesetServiceOnStatusUpdated;
+        Timer.Stop();
+        Timer.Tick -= TimerOnTick;
     }
 
     private void ChildrenOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

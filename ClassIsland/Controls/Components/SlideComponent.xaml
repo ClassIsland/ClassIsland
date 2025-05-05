@@ -9,7 +9,8 @@
              xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-                  Loaded="SlideComponent_OnLoaded"
+             Loaded="SlideComponent_OnLoaded"
+                  Unloaded="SlideComponent_OnUnloaded"
              d:DesignHeight="450" d:DesignWidth="800">
     <ci:ComponentBase.Resources>
         <Storyboard x:Key="SlideInAnimation">
