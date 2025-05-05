@@ -336,6 +336,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         {
             WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
         }
+        Logger.LogInformation("提取到的主题色:{Color}", string.Join(",", WallpaperColorPlatte));
     }
 
     private void NewColorPickingImpl(Bitmap bitmap)
@@ -344,6 +345,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         var back = AccentColorHelper.GetAccentColor(bytes, bitmap.Width, bitmap.Height);
         WallpaperColorPlatte.Clear();
         WallpaperColorPlatte.Add(back ?? new Color());
+        Logger.LogInformation("实验性取色算法:提取到的主题色:{Color}", back?.ToString());
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
