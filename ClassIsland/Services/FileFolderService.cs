@@ -34,7 +34,8 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         App.AppLogFolderPath,
         AutomationService.AutomationConfigsFolderPath,
         ManagementService.LocalManagementConfigureFolderPath,
-        XamlThemeService.ThemesPath
+        XamlThemeService.ThemesPath,
+        XamlThemeService.ThemesPkgRootPath
     ];
 
     public static void CreateFolders()

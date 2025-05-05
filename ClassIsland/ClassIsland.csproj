@@ -61,7 +61,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-        <PackageReference Include="Downloader" Version="3.0.6" />
+        <PackageReference Include="Downloader" Version="3.3.4" />
         <PackageReference Include="EPPlus" Version="7.0.8" />
         <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />

@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.XamlTheme;
+using ClassIsland.Shared;
 
 namespace ClassIsland.Core.Abstractions.Services;
 
@@ -26,4 +28,26 @@ public interface IXamlThemeService
     /// </summary>
     /// <param name="themePath">主题路径</param>
     void LoadTheme(string themePath);
+
+    /// <summary>
+    /// 已将主题仓库与本地主题合并的全部主题
+    /// </summary>
+    public ObservableDictionary<string, ThemeInfo> MergedThemes { get; }
+
+
+    /// <summary>
+    /// 请求下载主题
+    /// </summary>
+    /// <param name="id">要下载的主题id</param>
+    public void RequestDownloadTheme(string id);
+
+    /// <summary>
+    /// 请求重启事件
+    /// </summary>
+    public event EventHandler? RestartRequested;
+
+    /// <summary>
+    /// 重载本地主题源
+    /// </summary>
+    public void LoadThemeSource();
 }
