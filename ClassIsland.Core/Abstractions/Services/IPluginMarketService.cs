@@ -66,4 +66,10 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// 已加载的插件源
     /// </summary>
     public ObservableDictionary<string, PluginIndex> Indexes { get; }
+
+    /// <summary>
+    /// 获取索引信息
+    /// </summary>
+    /// <returns>获取到的索引信息</returns>
+    public IEnumerable<PluginIndexInfo> GetIndexInfos();
 }

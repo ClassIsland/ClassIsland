@@ -22,6 +22,8 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     private string _realBannerPath = "";
     private long _downloadCount = 0;
     private long _starsCount = 0;
+    private bool _isUpdateAvailable = false;
+    private bool _restartRequired = false;
 
     /// <summary>
     /// 主题清单
@@ -212,6 +214,34 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
         {
             if (value == _starsCount) return;
             _starsCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 更新可用
+    /// </summary>
+    public bool IsUpdateAvailable
+    {
+        get => _isUpdateAvailable;
+        set
+        {
+            if (value == _isUpdateAvailable) return;
+            _isUpdateAvailable = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 是否需要重启
+    /// </summary>
+    public bool RestartRequired
+    {
+        get => _restartRequired;
+        set
+        {
+            if (value == _restartRequired) return;
+            _restartRequired = value;
             OnPropertyChanged();
         }
     }

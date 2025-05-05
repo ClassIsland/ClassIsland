@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Helpers;
@@ -114,7 +115,10 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
                 var download = DownloadBuilder.New()
                     .WithUrl(url)
                     .WithFileLocation(archive)
-                    .WithConfiguration(new DownloadConfiguration())
+                    .WithConfiguration(new DownloadConfiguration()
+                    {
+                        Timeout = 10_000
+                    })
                     .Build();
                 var i1 = i;
                 download.DownloadProgressChanged +=
@@ -153,7 +157,7 @@ private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
         IsLoadingPluginSource = false;
     }
 
-    private IEnumerable<PluginIndexInfo> GetIndexInfos()
+    public IEnumerable<PluginIndexInfo> GetIndexInfos()
     {
         var mirrors = SettingsService.Settings.OfficialIndexMirrors.Count == 0
             ? FallbackMirrors
