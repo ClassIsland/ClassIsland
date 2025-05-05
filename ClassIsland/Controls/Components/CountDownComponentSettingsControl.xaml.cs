@@ -16,5 +16,4 @@ public partial class CountDownComponentSettingsControl : ComponentBase<CountDown
         InitializeComponent();
         CustomMessageBox = new System.Windows.Controls.Control(); // Initialize the control
     }
-    
 }
