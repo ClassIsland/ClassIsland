@@ -94,13 +94,14 @@ public partial class RollingComponent
         var width = (InnerContainerWidth + 16.0);
         var pausePos = _pausePos = !Settings.IsPauseEnabled || Settings.PauseOffsetX > width ? 0.0 : Settings.PauseOffsetX;
         var durationSeconds = width / Math.Max(1, Settings.SpeedPixelPerSecond);
+        var pauseSeconds = Settings.IsPauseEnabled ? Settings.PauseSeconds : 0.0;
         var animation = new DoubleAnimationUsingKeyFrames()
         {
             KeyFrames = [
                 //new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpan.FromSeconds(Settings.PauseSeconds + durationSeconds))),
                 new LinearDoubleKeyFrame(-pausePos),
-                new LinearDoubleKeyFrame(-pausePos, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(Settings.IsPauseEnabled ?  Settings.PauseSeconds : 0.0))),
-                new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpan.FromSeconds(Settings.PauseSeconds + durationSeconds))),
+                new LinearDoubleKeyFrame(-pausePos, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(pauseSeconds))),
+                new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpan.FromSeconds(pauseSeconds + durationSeconds))),
 
             ]
         };
