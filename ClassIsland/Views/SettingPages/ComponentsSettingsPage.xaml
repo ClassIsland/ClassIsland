@@ -32,6 +32,9 @@
         <ci:BindingProxy x:Key="DataProxy" Data="{Binding Mode=OneWay}"/>
         <CollectionViewSource x:Key="RegisteredComponentsSource" 
                               Source="{x:Static registry:ComponentRegistryService.Registered}"/>
+        <CollectionViewSource x:Key="ContainerComponentsSource" 
+                              Source="{x:Static registry:ComponentRegistryService.Registered}"
+                              Filter="ContainerComponentsSource_OnFilter"/>
 
         <StackPanel x:Key="CreateProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
             <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="新建档案"/>
@@ -53,6 +56,24 @@
         <local:ComponentsSettingsPageDropHandler x:Key="ChildComponentsSettingsPageDropHandler" 
                                                  Components="{Binding Data.ViewModel.SelectedComponentContainerChildren, Mode=OneWay, Source={StaticResource DataProxy}}"
                                                  CurrentSelectedContainerComponentSettings="{Binding Data.ViewModel.SelectedContainerComponent, Mode=OneWay, Source={StaticResource DataProxy}}"/>
+        <ContextMenu x:Key="ComponentContextMenu" FontFamily="{StaticResource HarmonyOsSans}">
+            <MenuItem Icon="{materialDesign:PackIcon Group}"  Header="包裹到容器"
+                      ItemsSource="{Binding Source={StaticResource ContainerComponentsSource}}">
+                <MenuItem.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </MenuItem.ItemTemplate>
+                <MenuItem.ItemContainerStyle>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                        <Setter Property="Command" Value="{Binding CreateContainerComponentCommand, RelativeSource={RelativeSource AncestorType=local:ComponentsSettingsPage}}"/>
+                        <Setter Property="CommandParameter" Value="{Binding}"/>
+                    </Style>
+                </MenuItem.ItemContainerStyle>
+            </MenuItem>
+            <MenuItem Icon="{materialDesign:PackIcon ContentDuplicate}"  Header="创建副本"
+                      Click="MenuItemDuplicateComponent_OnClick"/>
+        </ContextMenu>
 
         <Style x:Key="ComponentListBoxStyle" BasedOn="{StaticResource MaterialDesignListBox}"
                TargetType="ListBox">
@@ -81,6 +102,13 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource ComponentContextMenu}"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate DataType="{x:Type components:ComponentSettings}">
@@ -90,8 +118,16 @@
                                                      />
                             <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
                                        VerticalAlignment="Center"/>
+                            <Button Content="{materialDesign:PackIcon MoreHoriz}"
+                                    Margin="4 -16 0 -16"
+                                    VerticalAlignment="Center"
+                                    ToolTip="更多选项…"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                    Command="{Binding OpenContextMenuCommand, RelativeSource={RelativeSource AncestorType=local:ComponentsSettingsPage}}"
+                                    Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Style="{StaticResource MaterialDesignToolForegroundButton}"/>
                             <Button Content="{materialDesign:PackIcon OpenInBrowser}"
-                                    Margin="4 -16 -4 -16"
+                                    Margin="0 -16 0 -16"
                                     VerticalAlignment="Center"
                                     ToolTip="查看子组件"
                                     Click="ButtonShowChildrenComponents_OnClick"
@@ -105,7 +141,7 @@
                             </Button>
                             <Button Content="{materialDesign:PackIcon Remove}"
                                     Foreground="IndianRed"
-                                    Margin="4 -16 -4 -16"
+                                    Margin="0 -16 -4 -16"
                                     VerticalAlignment="Center"
                                     ToolTip="删除"
                                     Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
