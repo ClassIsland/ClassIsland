@@ -117,64 +117,102 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Hide_MainInterface_string" xml:space="preserve">
-    <value>隐藏主界面</value>
-  </data>
   <data name="LangName_string" xml:space="preserve">
-    <value>中文(简体)</value>
+    <value>English</value>
+    <comment>设置中显示的语言名称</comment>
   </data>
   <data name="Startup_string" xml:space="preserve">
-    <value>正在启动</value>
-  </data>
-  <data name="Help_string" xml:space="preserve">
-    <value>帮助</value>
-  </data>
-  <data name="EditProfile_string" xml:space="preserve">
-    <value>编辑档案</value>
+    <value>Starting</value>
+    <comment>启动界面“正在启动”</comment>
   </data>
   <data name="Settings_string" xml:space="preserve">
-    <value>应用设置</value>
+    <value>Settings</value>
+    <comment>右键托盘菜单“应用设置”</comment>
   </data>
   <data name="Restart_string" xml:space="preserve">
-    <value>重启</value>
+    <value>Restart</value>
+    <comment>右键托盘菜单"重启"</comment>
   </data>
   <data name="Quit_string" xml:space="preserve">
-    <value>退出</value>
+    <value>Quit</value>
+    <comment>右键托盘菜单"退出"</comment>
   </data>
   <data name="General_string" xml:space="preserve">
-    <value>基本</value>
+    <value>General</value>
+    <comment>设置"基本"</comment>
   </data>
   <data name="Components_string" xml:space="preserve">
-    <value>组件</value>
+    <value>Components</value>
+    <comment>设置"组件"</comment>
   </data>
   <data name="Appearance_string" xml:space="preserve">
-    <value>外观</value>
+    <value>Appearance</value>
+    <comment>设置“外观”</comment>
   </data>
   <data name="Notification_string" xml:space="preserve">
-    <value>通知</value>
+    <value>Notification</value>
+    <comment>设置“通知”</comment>
   </data>
   <data name="Window_string" xml:space="preserve">
-    <value>窗口</value>
+    <value>Window</value>
+    <comment>设置“窗口”</comment>
   </data>
   <data name="Weather_string" xml:space="preserve">
-    <value>天气</value>
+    <value>Weather</value>
+    <comment>设置“天气”</comment>
   </data>
   <data name="Update_string" xml:space="preserve">
-    <value>更新</value>
+    <value>Update</value>
+    <comment>设置“更新”</comment>
   </data>
   <data name="Automation_string" xml:space="preserve">
-    <value>自动化</value>
+    <value>Automation</value>
+    <comment>设置“自动化”</comment>
   </data>
   <data name="Storage_string" xml:space="preserve">
-    <value>存储</value>
+    <value>Storage</value>
+    <comment>设置“存储”</comment>
   </data>
   <data name="Privacy_string" xml:space="preserve">
-    <value>隐私</value>
+    <value>Privacy</value>
+    <comment>设置“隐私”</comment>
   </data>
   <data name="Plugins_string" xml:space="preserve">
-    <value>插件</value>
+    <value>Plugins</value>
+    <comment>设置“插件”</comment>
   </data>
   <data name="About_string" xml:space="preserve">
-    <value>关于 ClassIsland</value>
+    <value>About ClassIsland</value>
+    <comment>设置“关于ClassIsland”</comment>
+  </data>
+  <data name="Theme_string" xml:space="preserve">
+    <value>Theme</value>
+  </data>
+  <data name="LoadOnBoot_string" xml:space="preserve">
+    <value>Start on Boot</value>
+  </data>
+  <data name="RegURLProto_string" xml:space="preserve">
+    <value>Register URL Protocol</value>
+  </data>
+  <data name="LoadOnBoot_Description" xml:space="preserve">
+    <value>Automatically run this application when your system starts.</value>
+  </data>
+  <data name="RegURLProto_Description" xml:space="preserve">
+    <value>Allows third-party applications or web pages to call some functions of this application through the URL protocol classisland://. See the help documentation for details.</value>
+  </data>
+  <data name="Behavior_string" xml:space="preserve">
+    <value>Behavior</value>
+  </data>
+  <data name="SemesterStartDate_string" xml:space="preserve">
+    <value>Semester Start Date</value>
+  </data>
+  <data name="SemesterStartDate_Description" xml:space="preserve">
+    <value>This date will be considered the first day of the semester, used for calculating multiple-week rotating schedules. It should be set as the first day of the week.</value>
+  </data>
+  <data name="HideWindow_string" xml:space="preserve">
+    <value>Hide window</value>
+  </data>
+  <data name="HideWindow_Description" xml:space="preserve">
+    <value>Hide the main interface in the selected situations to prevent it from obstructing the screen and affecting teaching.</value>
   </data>
 </root>
