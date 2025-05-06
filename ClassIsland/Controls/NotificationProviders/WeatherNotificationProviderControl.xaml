@@ -34,7 +34,8 @@
                    Margin="10 0 16 0"
                    Opacity="1"/>
             <Grid Grid.Column="0" Grid.ColumnSpan="2" ClipToBounds="True">
-                <Canvas VerticalAlignment="Stretch"
+                <Canvas VerticalAlignment="Center"
+                        Height="{Binding ActualHeight, ElementName=Description}"
                         HorizontalAlignment="Stretch"
                         Margin="27 0 16 0"
                         x:Name="RootCanvas"
@@ -46,8 +47,7 @@
                                Text="{Binding Alert.Detail}"
                                FontSize="17"
                                Canvas.Right="0"
-                               VerticalAlignment="Center"
-                               Canvas.Top="9">
+                               VerticalAlignment="Center">
                         <TextBlock.RenderTransform>
                             <TranslateTransform x:Name="AnimatedTranslateTransform" />
                         </TextBlock.RenderTransform>

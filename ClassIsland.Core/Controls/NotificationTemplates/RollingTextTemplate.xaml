@@ -10,7 +10,8 @@
              d:DataContext="{d:DesignInstance templates:RollingTextTemplateData}"
              Loaded="RollingTextTemplate_OnLoaded">
     <Grid Grid.Column="1" ClipToBounds="True">
-        <Canvas VerticalAlignment="Stretch"
+        <Canvas VerticalAlignment="Center"
+                Height="{Binding ActualHeight, ElementName=Description}"
                 HorizontalAlignment="Stretch"
                 Margin="0 0 16 0"
                 x:Name="RootCanvas"
@@ -22,8 +23,7 @@
                        Text="{Binding Text}"
                        FontSize="17"
                        Canvas.Right="0"
-                       VerticalAlignment="Center"
-                       Canvas.Top="9">
+                       VerticalAlignment="Center">
                 <TextBlock.RenderTransform>
                     <TranslateTransform x:Name="AnimatedTranslateTransform" />
                 </TextBlock.RenderTransform>
