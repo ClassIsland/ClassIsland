@@ -12,11 +12,10 @@
                   Loaded="RollingComponent_OnLoaded"
                   Unloaded="RollingComponent_OnUnloaded">
     <Border SizeChanged="OuterContainerStackPanel_OnSizeChanged"
-            x:Name="OuterContainerStackPanel" ClipToBounds="True">
+            x:Name="OuterContainerStackPanel" ClipToBounds="True"
+            Margin="-6 0">
         <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
-                Width="{Binding ActualWidth, ElementName=ItemsControlCore}"
-                
-                >
+                Width="{Binding ActualWidth, ElementName=ItemsControlCore}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
