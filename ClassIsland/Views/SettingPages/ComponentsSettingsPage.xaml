@@ -269,12 +269,12 @@
                         </dd:DragDrop.EffectCopyAdornerTemplate>
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                <Setter Property="Width" Value="180"></Setter>
+                                
                             </Style>
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
+                                <Grid HorizontalAlignment="Stretch" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>
@@ -300,13 +300,21 @@
                                                FontSize="12"
                                                FontWeight="Regular"
                                                TextWrapping="Wrap"
-                                               TextTrimming="CharacterEllipsis"/>
+                                               HorizontalAlignment="Stretch"
+                                               TextAlignment="Left"
+                                               TextTrimming="CharacterEllipsis"
+                                               />
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <controls1:VirtualizingWrapPanel IsItemsHost="True"/>
+                                <controls1:VirtualizingWrapPanel IsItemsHost="True"
+                                                                 StretchItems="True">
+                                    <controls1:VirtualizingWrapPanel.ItemSize>
+                                        <Size Width="170" Height="67"/>
+                                    </controls1:VirtualizingWrapPanel.ItemSize>
+                                </controls1:VirtualizingWrapPanel>
                             </ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
                     </ListBox>
