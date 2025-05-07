@@ -56,24 +56,6 @@
         <local:ComponentsSettingsPageDropHandler x:Key="ChildComponentsSettingsPageDropHandler" 
                                                  Components="{Binding Data.ViewModel.SelectedComponentContainerChildren, Mode=OneWay, Source={StaticResource DataProxy}}"
                                                  CurrentSelectedContainerComponentSettings="{Binding Data.ViewModel.SelectedContainerComponent, Mode=OneWay, Source={StaticResource DataProxy}}"/>
-        <ContextMenu x:Key="ComponentContextMenu" FontFamily="{StaticResource HarmonyOsSans}">
-            <MenuItem Icon="{materialDesign:PackIcon Group}"  Header="包裹到容器"
-                      ItemsSource="{Binding Source={StaticResource ContainerComponentsSource}}">
-                <MenuItem.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}"/>
-                    </DataTemplate>
-                </MenuItem.ItemTemplate>
-                <MenuItem.ItemContainerStyle>
-                    <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                        <Setter Property="Command" Value="{Binding CreateContainerComponentCommand, RelativeSource={RelativeSource AncestorType=local:ComponentsSettingsPage}}"/>
-                        <Setter Property="CommandParameter" Value="{Binding}"/>
-                    </Style>
-                </MenuItem.ItemContainerStyle>
-            </MenuItem>
-            <MenuItem Icon="{materialDesign:PackIcon ContentDuplicate}"  Header="创建副本"
-                      Click="MenuItemDuplicateComponent_OnClick"/>
-        </ContextMenu>
 
         <Style x:Key="ComponentListBoxStyle" BasedOn="{StaticResource MaterialDesignListBox}"
                TargetType="ListBox">
@@ -105,7 +87,29 @@
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                        <Setter Property="ContextMenu" Value="{StaticResource ComponentContextMenu}"/>
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
+                                    <MenuItem Icon="{materialDesign:PackIcon Group}"  Header="包裹到容器"
+                                              ItemsSource="{Binding Source={StaticResource ContainerComponentsSource}}">
+                                        <MenuItem.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </MenuItem.ItemTemplate>
+                                        <MenuItem.ItemContainerStyle>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                                <Setter Property="Command" Value="{Binding CreateContainerComponentCommand, RelativeSource={RelativeSource AncestorType=local:ComponentsSettingsPage}}"/>
+                                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                                            </Style>
+                                        </MenuItem.ItemContainerStyle>
+                                    </MenuItem>
+                                    <MenuItem Icon="{materialDesign:PackIcon ContentDuplicate}"  Header="创建副本"
+                                              Command="{Binding Data.DuplicateComponentCommand, Source={StaticResource DataProxy}}"
+                                              CommandParameter="{Binding}"/>
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </Setter.Value>
             </Setter>
