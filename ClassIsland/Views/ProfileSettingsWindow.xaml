@@ -2742,6 +2742,9 @@
                                                 <MenuItem Header="导出到 CSES…"
                                                           Click="MenuItemExportCses_OnClick"
                                                           Icon="{materialDesign:PackIcon FileCodeOutline}" />
+                                                <MenuItem Header="导出到 Excel 表格…"
+                                                          Click="MenuItemExportExcel_OnClick"
+                                                          Icon="{materialDesign:PackIcon FileExcelOutline}" />
                                             </StackPanel>
                                         </materialDesign:Card>
                                     </materialDesign:PopupEx>

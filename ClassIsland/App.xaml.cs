@@ -581,6 +581,7 @@ public partial class App : AppBase, IAppHost
                 services.AddTransient<WindowRuleDebugWindow>();
                 services.AddTransient<ConfigErrorsWindow>();
                 services.AddTransient<TimeAdjustmentWindow>();
+                services.AddTransient<ExcelExportWindow>();
                 // 设置页面
                 services.AddSettingsPage<GeneralSettingsPage>();
                 services.AddSettingsPage<ComponentsSettingsPage>();

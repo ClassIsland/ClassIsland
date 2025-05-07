@@ -1,0 +1,164 @@
+﻿<ci:MyWindow x:Class="ClassIsland.Views.ExcelExportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        xmlns:reoGrid="clr-namespace:unvell.ReoGrid;assembly=unvell.ReoGrid"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:ClassIsland.Converters"
+        mc:Ignorable="d"
+        Title="导出到 Excel 表格" Height="700" Width="1400"
+        WindowState="Maximized"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Loaded="ExcelExportWindow_OnLoaded"
+        Closed="ExcelExportWindow_OnClosed"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <ci:MyWindow.Resources>
+        <converters:ReoHorAlignmentToIntConverter x:Key="ReoHorAlignmentToIntConverter"/>
+    </ci:MyWindow.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="360" MaxWidth="400" MinWidth="300"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <!-- Grid -->
+        <reoGrid:ReoGridControl Grid.Row="2" Grid.Column="0" x:Name="Grid"
+                                Readonly="False"
+                                SheetTabVisible="True"
+                                SheetTabWidth="500"
+                                TextElement.Foreground="Black"
+                                ActionPerformed="Grid_OnActionPerformed"
+                                CurrentWorksheetChanged="Grid_OnCurrentWorksheetChanged"
+                                WorkbookLoaded="Grid_OnWorkbookLoaded">
+            <reoGrid:ReoGridControl.Style>
+                <Style TargetType="reoGrid:ReoGridControl">
+                    <Style.Resources>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignTextBox}"/>
+                        <Style TargetType="ScrollBar">
+                        </Style>
+                        <Style TargetType="TabControl">
+
+                        </Style>
+                        <Style TargetType="TextBlock" >
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Style>
+                    </Style.Resources>
+                </Style>
+            </reoGrid:ReoGridControl.Style>
+            <reoGrid:ReoGridControl.CellsContextMenu>
+                <ContextMenu FontFamily="{DynamicResource HarmonyOsSans}">
+                    <MenuItem Icon="{materialDesign:PackIcon ContentCopy}" Header="复制" Click="MenuItemCopy_OnClick" InputGestureText="Ctrl+C"/>
+                    <MenuItem Icon="{materialDesign:PackIcon ContentPaste}" Header="粘贴" Click="MenuItemPaste_OnClick" InputGestureText="Ctrl+V"/>
+                    <MenuItem Icon="{materialDesign:PackIcon ContentCut}" Header="剪切" Click="MenuItemCut_OnClick" InputGestureText="Ctrl+X"/>
+                    <MenuItem Icon="{materialDesign:PackIcon ClearOutline}" Header="清除内容" Click="MenuItemClearContent_OnClick" InputGestureText="Del"/>
+                    <Separator/>
+                    <MenuItem Icon="{materialDesign:PackIcon TableMergeCells}" Header="合并单元格" Click="MenuItemCellMerge_OnClick"/>
+                    <MenuItem Icon="{materialDesign:PackIcon Cancel}" Header="取消单元格合并" Click="MenuItemCancelCellMerge_OnClick"/>
+                </ContextMenu>
+            </reoGrid:ReoGridControl.CellsContextMenu>
+        </reoGrid:ReoGridControl>
+
+        <ToolBar Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
+                 ToolBarTray.IsLocked="True">
+            <Button Content="{materialDesign:PackIcon FolderFileOutline}" ToolTip="打开…"/>
+            <Button Content="{materialDesign:PackIcon ContentSaveOutline}" ToolTip="保存…"/>
+            <Button Content="{materialDesign:PackIcon MicrosoftExcel}" ToolTip="保存并在默认 Excel 文件编辑器中打开…"/>
+            <Separator/>
+            <Button Content="{materialDesign:PackIcon Undo}" ToolTip="撤销" Click="ButtonUndo_OnClick"
+                    IsEnabled="{Binding ViewModel.CanUndo}"/>
+            <Button Content="{materialDesign:PackIcon Redo}" ToolTip="重做" Click="ButtonRedo_OnClick"
+                    IsEnabled="{Binding ViewModel.CanRedo}"/>
+            <Separator/>
+            <ComboBox materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                      materialDesign:TextFieldAssist.LeadingIcon="FormatFont"
+                      ToolTip="字体"
+                      ItemsSource="{Binding ViewModel.FontFamilies}"
+                      Width="150"
+                      Text="{Binding ViewModel.SelectedRange.Style.FontName}"
+                      IsEditable="True">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding }"
+                                   ToolTip="{Binding }"
+                                   FontFamily="{Binding}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <TextBox materialDesign:TextFieldAssist.HasLeadingIcon="True"
+                     materialDesign:TextFieldAssist.LeadingIcon="FontSize"
+                     materialDesign:TextFieldAssist.SuffixText="px"
+                     Text="{Binding ViewModel.SelectedRange.Style.FontSize, Converter={StaticResource IntToStringConverter}}"
+                     ToolTip="字号"
+                     Width="75"/>
+            <Button Content="{materialDesign:PackIcon FormatFontSizeDecrease}" ToolTip="减小字号"
+                    Click="ButtonBaseFontSizeDecrease_OnClick"/>
+            <Button Content="{materialDesign:PackIcon FormatFontSizeIncrease}" ToolTip="增大字号"
+                    Click="ButtonBaseFontSizeIncrease_OnClick"/>
+            <ListBox SelectionMode="Multiple" SelectionChanged="SelectorFontFormat_OnSelectionChanged">
+                <ListBoxItem Content="{materialDesign:PackIcon FormatBold}" ToolTip="加粗"
+                             IsSelected="{Binding ViewModel.SelectedRange.Style.Bold}"/>
+                <ListBoxItem Content="{materialDesign:PackIcon FormatItalic}" ToolTip="斜体"
+                             IsSelected="{Binding ViewModel.SelectedRange.Style.Italic}"/>
+                <ListBoxItem Content="{materialDesign:PackIcon FormatUnderline}" ToolTip="下划线"
+                             IsSelected="{Binding ViewModel.SelectedRange.Style.Underline}"/>
+            </ListBox>
+            <Button ToolTip="字体颜色">
+                <Grid>
+                    <materialDesign:PackIcon Kind="FormatColourText"/>
+                </Grid>
+            </Button>
+            <Separator/>
+            <ListBox SelectionMode="Single" SelectedIndex="{Binding ViewModel.SelectedRange.Style.HorizontalAlign, Converter={StaticResource ReoHorAlignmentToIntConverter}}">
+                <ListBoxItem Content="{materialDesign:PackIcon Cancel}" ToolTip="无对齐" Visibility="Collapsed"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalLeft}" ToolTip="左对齐"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalCenter}" ToolTip="居中"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalRight}" ToolTip="右对齐"/>
+                <ListBoxItem Content="{materialDesign:PackIcon AlignHorizontalDistribute}" ToolTip="两端对齐"/>
+            </ListBox>
+            <Separator/>
+            <Button Content="{materialDesign:PackIcon TableMergeCells}" ToolTip="合并单元格" Click="ButtonMergeCells_OnClick"/>
+            <Button Content="{materialDesign:PackIcon TableSplitCell}" ToolTip="取消单元格合并" Click="ButtonUnMergeCells_OnClick"/>
+            <Button Content="{materialDesign:PackIcon BorderAll}" ToolTip="设置边框"/>
+
+        </ToolBar>
+
+        <TabControl Grid.Column="2" Grid.Row="2" 
+                    TabStripPlacement="Right"
+                    materialDesign:TabAssist.HasUniformTabWidth="False"
+                    >
+            <TabControl.Resources>
+                
+            </TabControl.Resources>
+            <TabItem Header="{materialDesign:PackIcon FileChartOutline, Size=18}" Padding="4" 
+                     MinWidth="42" Height="42"
+                     ToolTip="课表" ToolTipService.Placement="Left">
+                
+            </TabItem>
+            <TabItem Header="{materialDesign:PackIcon StyleOutline, Size=18}" Padding="4" 
+                     MinWidth="42" Height="42"
+                     ToolTip="样式" ToolTipService.Placement="Left">
+
+            </TabItem>
+            <TabItem Header="{materialDesign:PackIcon ContentSaveOutline, Size=18}" Padding="4" 
+                     MinWidth="42" Height="42"
+                     ToolTip="保存" ToolTipService.Placement="Left">
+
+            </TabItem>
+        </TabControl>
+    </Grid>
+</ci:MyWindow>

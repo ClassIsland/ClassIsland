@@ -1474,4 +1474,11 @@ public partial class ProfileSettingsWindow : MyWindow
     {
         MainViewModel.Settings.ShowSellingAnnouncement = false;
     }
+
+    private void MenuItemExportExcel_OnClick(object sender, RoutedEventArgs e)
+    {
+        var win = IAppHost.GetService<ExcelExportWindow>();
+        win.Owner = this;
+        win.ShowDialog();
+    }
 }
