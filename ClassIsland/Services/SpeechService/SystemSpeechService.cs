@@ -20,7 +20,7 @@ public class SystemSpeechService : ISpeechService
         Logger.LogInformation("初始化了系统TTS服务。");
     }
 
-    public void EnqueueSpeechQueue(string text)
+    public void EnqueueSpeechQueue(string text, bool isTest = false)
     {
         Logger.LogInformation("朗读文本：{}", text);
         SpeechSynthesizer.Volume = (int)(SettingsService.Settings.SpeechVolume * 100);

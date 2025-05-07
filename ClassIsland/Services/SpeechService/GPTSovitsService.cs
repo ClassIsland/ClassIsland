@@ -57,7 +57,7 @@ public class GptSoVitsService : ISpeechService
         return path;
     }
 
-    public void EnqueueSpeechQueue(string text)
+    public void EnqueueSpeechQueue(string text,bool isTest = false)
     {
         Logger.LogInformation("以 {VoiceName} 朗读文本：{Text}", SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, text);
         if (string.IsNullOrWhiteSpace(text))
@@ -84,7 +84,7 @@ public class GptSoVitsService : ISpeechService
             return;
 
         PlayingQueue.Enqueue(new GptSoVitsPlayInfo(cache, new CancellationTokenSource(), task));
-        _ = ProcessPlayerList();
+        _ = ProcessPlayerList(isTest);
     }
 
     public void ClearSpeechQueue()
@@ -160,7 +160,7 @@ public class GptSoVitsService : ISpeechService
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
-                Logger.LogError("TTS 请求失败，状态码：{StatusCode}, 内容：{ErrorContent}", response.StatusCode, errorContent);
+                Logger.LogError("TTS 请求失败，状态码：{StatusCode}, 内容：{ErrorContent}，URL：{URL}", response.StatusCode, errorContent, requestUri);
                 return false;
             }
         }
@@ -171,7 +171,7 @@ public class GptSoVitsService : ISpeechService
         }
     }
 
-    private async Task ProcessPlayerList()
+    private async Task ProcessPlayerList(bool isTest)
     {
         if (IsPlaying)
             return;
@@ -195,7 +195,14 @@ public class GptSoVitsService : ISpeechService
 
             if (!File.Exists(playInfo.FilePath))
             {
-                Logger.LogError("语音文件不存在：{FilePath}", playInfo.FilePath);
+                if(isTest==false)
+                {
+                    Logger.LogError("语音文件不存在：{FilePath}", playInfo.FilePath);
+                }
+                else
+                {
+                    Logger.LogWarning("因启用测试模式，将要播放的语音文件已删除。");
+                }
                 continue;
             }
 
@@ -230,6 +237,19 @@ public class GptSoVitsService : ISpeechService
             catch (Exception ex)
             {
                 Logger.LogError(ex, "无法播放语音。");
+            }
+            if (isTest)
+            {
+                Logger.LogInformation("由于为测试模式，尝试删除缓存");
+                try
+                {
+                    Logger.LogTrace("删除缓存 {}", playInfo.FilePath);
+                    File.Delete(playInfo.FilePath);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex,"无法删除缓存，路径：{}", playInfo.FilePath);
+                }
             }
         }
 

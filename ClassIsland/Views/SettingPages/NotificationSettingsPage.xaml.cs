@@ -1,4 +1,4 @@
-using ClassIsland.Core.Abstractions.Controls;
+﻿using ClassIsland.Core.Abstractions.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -210,7 +210,7 @@ public partial class NotificationSettingsPage : SettingsPageBase
     private void ButtonTestSpeeching_OnClick(object sender, RoutedEventArgs e)
     {
         SpeechService.ClearSpeechQueue();
-        SpeechService.EnqueueSpeechQueue(ViewModel.TestSpeechText);
+        SpeechService.EnqueueSpeechQueue(ViewModel.TestSpeechText,true);
     }
 
     private void ButtonOpenSpeechSettings_OnClick(object sender, RoutedEventArgs e)
