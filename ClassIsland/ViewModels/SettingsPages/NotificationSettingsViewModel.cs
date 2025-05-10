@@ -64,6 +64,7 @@ public class NotificationSettingsViewModel : ObservableRecipient
     private GptSoVitsSpeechSettings? _selectedGptSoVitsSpeechPreset;
     private INotificationSenderRegisterInfo? _selectedRegisterInfo;
     private string? _notificationSettingsSelectedChannel;
+    private object? _speechProviderSettingsControl;
 
     public string TestSpeechText
     {
@@ -78,13 +79,13 @@ public class NotificationSettingsViewModel : ObservableRecipient
         }
     }
 
-    public GptSoVitsSpeechSettings? SelectedGptSoVitsSpeechPreset
+    public object? SpeechProviderSettingsControl
     {
-        get => _selectedGptSoVitsSpeechPreset;
+        get => _speechProviderSettingsControl;
         set
         {
-            if (Equals(value, _selectedGptSoVitsSpeechPreset)) return;
-            _selectedGptSoVitsSpeechPreset = value;
+            if (Equals(value, _speechProviderSettingsControl)) return;
+            _speechProviderSettingsControl = value;
             OnPropertyChanged();
         }
     }

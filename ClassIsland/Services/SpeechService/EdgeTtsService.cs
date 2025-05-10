@@ -6,7 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
 
 using Edge_tts_sharp;
@@ -19,6 +20,7 @@ using NAudio.Wave.SampleProviders;
 
 namespace ClassIsland.Services.SpeechService;
 
+[SpeechProviderInfo("classisland.speech.edgeTts", "EdgeTTS")]
 public class EdgeTtsService : ISpeechService
 {
     public static readonly string EdgeTtsCacheFolderPath = Path.Combine(App.AppCacheFolderPath, "EdgeTTS");

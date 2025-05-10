@@ -78,6 +78,8 @@ using Walterlv.Threading;
 using Walterlv.Windows;
 using ClassIsland.Controls.NotificationProviders;
 using System.Text;
+using ClassIsland.Controls.SpeechProviderSettingsControls;
+using ClassIsland.Core.Abstractions.Services.SpeechService;
 
 namespace ClassIsland;
 /// <summary>
@@ -496,6 +498,7 @@ public partial class App : AppBase, IAppHost
         PluginService.ProcessPluginsInstall();
         bool isSystemSpeechSystemExist = false;
         var spanHostBuilding = spanPreInit.StartChild("startup-host-building");
+
         IAppHost.Host = Microsoft.Extensions.Hosting.Host.
             CreateDefaultBuilder().
             UseContentRoot(AppContext.BaseDirectory).
@@ -530,34 +533,7 @@ public partial class App : AppBase, IAppHost
                 services.AddSingleton<IActionService, ActionService>();
                 services.AddSingleton<IWindowRuleService, WindowRuleService>();
                 services.AddSingleton<IAutomationService, AutomationService>();
-                try // 检测SystemSpeechService是否存在
-                {
-                    var s = new SpeechSynthesizer();
-                    s.SetOutputToDefaultAudioDevice();
-                    isSystemSpeechSystemExist = true;
-                }
-                catch(Exception e)
-                {
-                    // ignore
-                }
-                services.AddSingleton<ISpeechService>((provider =>
-                {
-                    var s = provider.GetService<SettingsService>();
-                    if (isSystemSpeechSystemExist)
-                    {
-                        return s?.Settings.SpeechSource switch
-                        {
-                            0 => new SystemSpeechService(),
-                            1 => new EdgeTtsService(),
-                            2 => new GptSoVitsService(),
-                            _ => new SystemSpeechService()
-                        };
-                    }
-                    else
-                    {
-                        return new EdgeTtsService();
-                    }
-                }));
+                services.AddSingleton<ISpeechService>(GetSpeechService);
                 services.AddSingleton<IExactTimeService, ExactTimeService>();
                 //services.AddSingleton(typeof(ApplicationCommand), ApplicationCommand);
                 services.AddSingleton<IProfileAnalyzeService, ProfileAnalyzeService>();
@@ -706,6 +682,10 @@ public partial class App : AppBase, IAppHost
                 services.AddHostedService<SleepActionHandler>();
                 // 认证提供方
                 services.AddAuthorizeProvider<PasswordAuthorizeProvider>();
+                // 语音提供方
+                services.AddSpeechProvider<SystemSpeechService>();
+                services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
+                services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
                 // Plugins
                 if (!ApplicationCommand.Safe)
                 {
@@ -896,6 +876,25 @@ public partial class App : AppBase, IAppHost
             GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
             GetService<ITaskBarIconService>().ShowNotification("更新完成。", $"应用已更新到版本{AppVersion}。点击此处以查看更新日志。", clickedCallback:() => uriNavigationService.NavigateWrapped(new Uri("classisland://app/settings/update")));
         }
+    }
+
+    private ISpeechService GetSpeechService(IServiceProvider provider)
+    {
+        try
+        {
+            var service = IAppHost.Host?.Services.GetRequiredKeyedService<ISpeechService>(Settings.SelectedSpeechProvider);
+            if (service == null)
+            {
+                throw new InvalidOperationException($"语音提供方 {Settings.SelectedSpeechProvider} 未注册");
+            }
+            return service;
+        }
+        catch (Exception e)
+        {
+            Logger?.LogError(e, "无法初始化语音提供方 {}", Settings.SelectedSpeechProvider);
+        }
+        return new BlankSpeechService();
+        
     }
 
     private TopmostEffectWindow BuildTopmostEffectWindow(IServiceProvider x)

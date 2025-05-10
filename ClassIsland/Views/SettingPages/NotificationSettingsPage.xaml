@@ -13,6 +13,7 @@
                            xmlns:converters="clr-namespace:ClassIsland.Converters"
                            xmlns:system="clr-namespace:System;assembly=System.Runtime"
                            xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                           xmlns:registry="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
                            mc:Ignorable="d"
                            d:DesignHeight="450" d:DesignWidth="800"
                            Title="提醒"
@@ -34,80 +35,6 @@
                               Filter="CollectionViewSourceNotificationProviders_OnFilter"/>
         <!-- 定义 BooleanToVisibilityConverter，如果尚未定义 -->
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <Grid Width="300" Margin="16" x:Key="SpeechPresets">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Margin="0 0 0 4">
-                <TextBlock Text="语音预设" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                           Margin="0 0 0 8" />
-                <TextBlock Text="管理 GPT-SoVITS 语音预设。" TextWrapping="Wrap"
-                           Margin="0 0 0 4" />
-                <WrapPanel>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            HorizontalAlignment="Left"
-                            Click="ButtonSaveGptSovitsPreset_OnClick">
-                        <controls2:IconText Kind="Floppy" Text="保存预设"/>
-                    </Button>
-                </WrapPanel>
-            </StackPanel>
-
-            <DataGrid Grid.Row="1"
-                      ItemsSource="{Binding GptSoVitsSpeechSettingsPresets}"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      BeginningEdit="DataGridPresets_OnBeginningEdit"
-                      CanUserDeleteRows="False"
-                      SelectedItem="{Binding ViewModel.SelectedGptSoVitsSpeechPreset}">
-                <DataGrid.Resources>
-                    <ci:BindingProxy x:Key="BindingProxy" Data="{Binding}"/>
-                </DataGrid.Resources>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Binding="{Binding PresetName}"
-                                        Header="名称"
-                                        Width="*"/>
-                    <DataGridTemplateColumn Header="操作"
-                                            Width="Auto">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" >
-                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Content="{materialDesign:PackIcon Download}"
-                                            Margin="0 -8"
-                                            ToolTip="加载"
-                                            Command="{Binding Data.LoadGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
-                                            CommandParameter="{Binding}"/>
-                                    
-                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Content="{materialDesign:PackIcon Upload}"
-                                            Margin="0 -8"
-                                            ToolTip="覆盖"
-                                            Visibility="{Binding IsInternal, Converter={StaticResource InverseBoolToVisConverter}}"
-                                            Command="{Binding Data.OverwriteGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
-                                            CommandParameter="{Binding}"/>
-                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Content="{materialDesign:PackIcon ContentCopy}"
-                                            Margin="0 -8"
-                                            ToolTip="创建副本"
-                                            Command="{Binding Data.DuplicateGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
-                                            CommandParameter="{Binding}"/>
-                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Content="{materialDesign:PackIcon Remove}"
-                                            Margin="0 -8"
-                                            ToolTip="移除"
-                                            Visibility="{Binding IsInternal, Converter={StaticResource InverseBoolToVisConverter}}"
-                                            Foreground="IndianRed"
-                                            Command="{Binding Data.RemoveGptSoVitsPresetCommand, Source={StaticResource BindingProxy}}"
-                                            CommandParameter="{Binding}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-
-        </Grid>
     </controls:SettingsPageBase.Resources>
 
     <controls1:ListDetailView Margin="12"
@@ -317,135 +244,21 @@
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center">
                                                 <ComboBox SelectedIndex="{Binding SettingsService.Settings.SpeechSource}"
-                                                         >
-                                                    <ComboBoxItem Content="系统TTS"
-                                                                  IsEnabled="{Binding SettingsService.Settings.IsSystemSpeechSystemExist}" />
-                                                    <ComboBoxItem Content="Edge TTS"
-                                                                  IsEnabled="{Binding SettingsService.Settings.IsNetworkConnect, Mode=TwoWay}" />
-                                                    <ComboBoxItem Content="GPT-SoVITS" />
-                                                </ComboBox>
-                                            </StackPanel>
-
-                                            <!-- Edge TTS 相关设置，仅在选择 Edge TTS 时显示 -->
-                                            <StackPanel Grid.Row="2" Grid.Column="0"
-                                                        Grid.ColumnSpan="2" Margin="0 6 0 6">
-                                                <StackPanel.Style>
-                                                    <Style TargetType="StackPanel">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                        <Style.Triggers>
-                                                            <!-- 假设 Edge TTS 在 ListBox 中的索引为 1 -->
-                                                            <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}" Value="1">
-                                                                <Setter Property="Visibility" Value="Visible" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </StackPanel.Style>
-                                                <TextBlock TextWrapping="Wrap" Text="注意：EdgeTTS需要联网工作，并且可能存在一定延迟。" />
-                                                <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                                          materialDesign:HintAssist.Hint="EdgeTTS说话人"
-                                                          SelectedValuePath="ShortName"
-                                                          SelectedValue="{Binding SettingsService.Settings.EdgeTtsVoiceName}"
-                                                          ItemsSource="{Binding ViewModel.EdgeVoices}">
+                                                          ItemsSource="{x:Static registry:SpeechProviderRegistryService.RegisteredProviders}"
+                                                          SelectedValuePath="Id"
+                                                          SelectedValue="{Binding SettingsService.Settings.SelectedSpeechProvider}">
                                                     <ComboBox.ItemTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock Text="{Binding FriendlyName}" />
+                                                            <TextBlock Text="{Binding Name}"/>
                                                         </DataTemplate>
                                                     </ComboBox.ItemTemplate>
                                                 </ComboBox>
                                             </StackPanel>
 
-                                            <!-- GPTSoVITS 相关设置，仅在选择 GPTSoVITS 时显示 -->
-                                            <StackPanel Grid.Row="2" Grid.Column="0"
-                                                        Grid.ColumnSpan="2" Margin="0 6 0 6">
-                                                <StackPanel.Style>
-                                                    <Style TargetType="StackPanel">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                        <Style.Triggers>
-                                                            <!-- 假设 GPTSoVITS 在 ListBox 中的索引为 2 -->
-                                                            <DataTrigger Binding="{Binding SettingsService.Settings.SpeechSource}" Value="2">
-                                                                <Setter Property="Visibility" Value="Visible" />
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </StackPanel.Style>
-
-                                                <WrapPanel>
-                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                            HorizontalAlignment="Left"
-                                                            Click="ButtonOpenGptSovitsPresetsDrawer_OnClick">
-                                                        <controls2:IconText Kind="ListBoxOutline" Text="语音预设…"/>
-                                                    </Button>
-                                                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                                                            HorizontalAlignment="Left"
-                                                            Click="ButtonSaveGptSovitsPreset2_OnClick">
-                                                        <controls2:IconText Kind="Floppy" Text="保存预设"/>
-                                                    </Button>
-                                                </WrapPanel>
-
-                                                <!-- 服务器 IP -->
-                                                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsServerIp, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Margin="0 4 0 0" 
-                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                         materialDesign:HintAssist.Hint="服务器 IP"/>
-
-                                                <!-- 服务器端口 -->
-                                                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Margin="0 4 0 0" 
-                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                         materialDesign:HintAssist.Hint="服务器端口"/>
-
-                                                <!-- 语音名称 -->
-                                                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Margin="0 4 0 0" 
-                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                         materialDesign:HintAssist.Hint="语音名称"/>
-
-                                                <!-- 文本语言 -->
-                                                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsTextLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Margin="0 4 0 0" 
-                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                         materialDesign:HintAssist.Hint="文本语言"/>
-
-                                                <!-- 参考音频路径 -->
-                                                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsRefAudioPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Margin="0 4 0 0" 
-                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                         materialDesign:HintAssist.Hint="参考音频路径"/>
-                                                    
-                                                <!-- 参考音频语言 -->
-                                                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPromptLang, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Margin="0 4 0 0" 
-                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                         materialDesign:HintAssist.Hint="参考音频语言"/>
-
-                                                <!-- 参考音频文本 -->
-                                                <TextBox Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsPromptText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                                         Margin="0 4 0 0" 
-                                                         TextWrapping="Wrap"
-                                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                         materialDesign:HintAssist.Hint="参考音频文本"/>
-
-                                                <Expander Background="{x:Null}"
-                                                          Margin="0 6 0 0"
-                                                          materialDesign:ExpanderAssist.VerticalHeaderPadding="2"
-                                                          materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
-                                                          Header="高级选项">
-                                                    <StackPanel>
-                                                        <!-- 文本分割方法 -->
-                                                        <TextBox
-                                                            Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsTextSplitMethod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                            Margin="0 4 0 0"
-                                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                            materialDesign:HintAssist.Hint="文本分割方法" />
-
-                                                        <!-- 并发数 -->
-                                                        <TextBox
-                                                            Text="{Binding SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsBatchSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                            Margin="0 4 0 0"
-                                                            Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                                            materialDesign:HintAssist.Hint="并发数" />
-                                                    </StackPanel></Expander>
-                                            </StackPanel>
+                                            <ContentPresenter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                                                              Margin="0 6 0 6"
+                                                              Content="{Binding ViewModel.SpeechProviderSettingsControl}"/>
+                                            
                                             <!-- 语音音量 -->
                                             <TextBlock Grid.Row="3" Grid.Column="0" Text="语音音量"
                                                        VerticalAlignment="Center"

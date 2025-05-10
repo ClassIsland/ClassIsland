@@ -19,6 +19,7 @@ using ClassIsland.Controls.NotificationEffects;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Notification;
 using ClassIsland.Models.EventArgs;

@@ -10,6 +10,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
+using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
 
 using Microsoft.Extensions.Logging;
@@ -20,6 +22,7 @@ using PgpCore;
 
 namespace ClassIsland.Services.SpeechService;
 
+[SpeechProviderInfo("classisland.speech.gpt-sovits", "GPT-SoVITS")]
 public class GptSoVitsService : ISpeechService
 {
     public static readonly string GPTSoVITSCacheFolderPath = Path.Combine(App.AppCacheFolderPath, "GPTSoVITS");

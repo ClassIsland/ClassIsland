@@ -25,10 +25,11 @@ using WindowsShortcutFactory;
 
 using File = System.IO.File;
 using ClassIsland.Core.Models;
+using ClassIsland.Core.Abstractions.Models.Speech;
 
 namespace ClassIsland.Models;
 
-public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings
+public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings, IGlobalSpeechSettings
 {
     private int _theme = 2;
     private bool _iscustomBackgroundColorEnabled = false;
@@ -1333,6 +1334,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public string SelectedSpeechProvider
+    {
+        get => _selectedSpeechProvider;
+        set
+        {
+            if (value == _selectedSpeechProvider) return;
+            _selectedSpeechProvider = value;
+            OnPropertyChanged();
+        }
+    }
+
     public string EdgeTtsVoiceName
     {
         get => _edgeTtsVoiceName;
@@ -1762,6 +1774,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _autoDisableCorruptPlugins = true;
     private bool _corruptPluginsDisabledLastSession = false;
     private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
+    private string _selectedSpeechProvider = "classisland.speech.edgeTts";
 
     public bool IsIgnoreWorkAreaEnabled
     {

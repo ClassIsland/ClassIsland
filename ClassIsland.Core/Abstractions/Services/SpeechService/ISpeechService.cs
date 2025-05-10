@@ -1,4 +1,7 @@
-﻿namespace ClassIsland.Shared.Abstraction.Services;
+﻿using System.Diagnostics.CodeAnalysis;
+using ClassIsland.Core.Abstractions.Models.Speech;
+
+namespace ClassIsland.Core.Abstractions.Services.SpeechService;
 
 /// <summary>
 /// TTS服务接口
@@ -15,4 +18,10 @@ public interface ISpeechService
     /// 清空TTS队列。
     /// </summary>
     public void ClearSpeechQueue();
+
+    /// <summary>
+    /// 语音全局设置
+    /// </summary>
+    [NotNull]
+    public static IGlobalSpeechSettings? GlobalSettings { get; internal set; }
 }
