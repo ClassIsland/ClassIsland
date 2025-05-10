@@ -1,9 +1,10 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
-
+using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Client;
@@ -11,7 +12,10 @@ using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Shared.Protobuf.Server;
 using ClassIsland.Shared.Protobuf.Service;
 using ClassIsland.Helpers;
-
+using ClassIsland.Services.Logging;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Protobuf.Command;
+using CsesSharp.Models;
 using Grpc.Core;
 using Grpc.Net.Client;
 
@@ -65,7 +69,40 @@ public class ManagementServerConnection : IManagementServerConnection
         if (lightConnect) 
             return;
         // 接受命令
+        CommandReceived += OnCommandReceived;
         Task.Run(ListenCommands);
+    }
+
+    private void OnCommandReceived(object? sender, ClientCommandEventArgs e)
+    {
+        if (e.Type != CommandTypes.GetClientConfig)
+        {
+            return;
+        }
+        var payload = GetClientConfig.Parser.ParseFrom(e.Payload);
+        if (payload == null)
+        {
+            return;
+        }
+        
+        Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
+        var uploadPayload = payload.ConfigType switch
+        {
+            ConfigTypes.AppSettings => JsonSerializer.Serialize(IAppHost.GetService<SettingsService>().Settings),
+            ConfigTypes.Profile => JsonSerializer.Serialize(IAppHost.GetService<IProfileService>().Profile),
+            ConfigTypes.CurrentComponent => JsonSerializer.Serialize(IAppHost.GetService<IComponentsService>()
+                .CurrentComponents),
+            ConfigTypes.CurrentAutomation => JsonSerializer.Serialize(IAppHost.GetService<IAutomationService>()
+                .Workflows),
+            ConfigTypes.Logs => JsonSerializer.Serialize(IAppHost.GetService<AppLogService>().Logs),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        var client = new ConfigUpload.ConfigUploadClient(Channel);
+        client.UploadConfig(new ConfigUploadScReq()
+        {
+            RequestGuidId = payload.RequestGuid,
+            Payload = uploadPayload
+        });
     }
 
 
