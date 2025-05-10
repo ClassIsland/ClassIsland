@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -76,26 +77,52 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         LoadConfig();
     }
 
+    public async Task LoadManagementConfig()
+    {
+        if (!ManagementService.IsManagementEnabled || ManagementService.Connection == null)
+        {
+            return;
+        }
+        
+        IsManagementMode = true;
+        try
+        {
+            if (!ManagementService.Manifest.ComponentsSource.IsNewerAndNotNull(ManagementService.Versions
+                    .ComponentsVersion))
+            {
+                return;
+            }
+            CurrentComponents = await ManagementService.Connection
+                .SaveJsonAsync<ComponentSettingsList>(ManagementService.Manifest.ComponentsSource.Value!,
+                    Management.ManagementService.ManagementComponentsPath);
+            ManagementService.Versions.ComponentsVersion = ManagementService.Manifest.ComponentsSource.Version;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "无法从集控拉取组件配置");
+            CurrentComponents =
+                ConfigureFileHelper.LoadConfig<ComponentSettingsList>(Management.ManagementService
+                    .ManagementComponentsPath);
+        }
+        LoadConfig();
+    
+    }
+
     private void LoadConfig()
     {
-        if (!File.Exists(SelectedConfigFullPath))
+        if (!IsManagementMode)
         {
-            CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponents);
-            SaveConfig();
-        }
-        else
-        {
-            CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
-        }
-
-        if (ManagementService.IsManagementEnabled && ManagementService.Connection != null)
-        {
-            IsManagementMode = true;
-            if (ManagementService.Manifest.CredentialSource.IsNewerAndNotNull(ManagementService.Versions.CredentialVersion))
+            if (!File.Exists(SelectedConfigFullPath))
             {
-                CurrentComponents = ManagementService.Connection.SaveJsonAsync<ComponentSettingsList>(ManagementService.Manifest.CredentialSource.Value!, Management.ManagementService.ManagementComponentsPath).Result;
+                CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponents);
+                SaveConfig();
+            }
+            else
+            {
+                CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
             }
         }
+        
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
         CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
 
