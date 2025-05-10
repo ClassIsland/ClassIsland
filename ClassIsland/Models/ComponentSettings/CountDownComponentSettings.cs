@@ -31,7 +31,6 @@ public class CountDownComponentSettings : ObservableRecipient
         get => _overTime;
         set
         {
-            if (value == null) return;
             if (value.Equals(_overTime)) return;
             _overTime = value;
             OnPropertyChanged();
@@ -54,7 +53,6 @@ public class CountDownComponentSettings : ObservableRecipient
         get => _fontColor;
         set
         {
-            if (value == null) return;
             if (value.Equals(_fontColor)) return;
             _fontColor = value;
             OnPropertyChanged();
@@ -66,7 +64,6 @@ public class CountDownComponentSettings : ObservableRecipient
         get => _fontSize;
         set
         {
-            if (value == null) return;
             if (value.Equals(_fontSize)) return;
             _fontSize = value;
             OnPropertyChanged();
