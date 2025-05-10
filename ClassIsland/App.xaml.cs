@@ -374,6 +374,7 @@ public partial class App : AppBase, IAppHost
         );
         SentrySdk.ConfigureScope(s => s.Transaction = transaction);
         var spanPreInit = transaction.StartChild("startup-init");
+        AppBase.CurrentLifetime = ApplicationLifetime.Initializing;
         MyWindow.ShowOssWatermark = ApplicationCommand.ShowOssWatermark;
         ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         //DependencyPropertyHelper.ForceOverwriteDependencyPropertyDefaultValue(FrameworkElement.FocusVisualStyleProperty,
@@ -703,11 +704,16 @@ public partial class App : AppBase, IAppHost
                     PluginService.InitializePlugins(context, services);
                 }
             }).Build();
+        AppBase.CurrentLifetime = ApplicationLifetime.Starting;
         Logger = GetService<ILogger<App>>();
         Logger.LogInformation("ClassIsland {}", AppVersionLong);
         var lifetime = IAppHost.GetService<IHostApplicationLifetime>();
         lifetime.ApplicationStarted.Register(() => Logger.LogInformation("App started."));
-        lifetime.ApplicationStopping.Register(() => Logger.LogInformation("App stopping."));
+        lifetime.ApplicationStopping.Register(() =>
+        {
+            Logger.LogInformation("App stopping.");
+            Stop();
+        });
         lifetime.ApplicationStopped.Register(() => Logger.LogInformation("App stopped."));
         lifetime.ApplicationStopping.Register(Stop);
         if (ApplicationCommand.Verbose)
@@ -858,6 +864,7 @@ public partial class App : AppBase, IAppHost
                 connection.LogAuditEvent(AuditEvents.AppStarted, new Empty());
             }
             _isStartedCompleted = true;
+            AppBase.CurrentLifetime = ApplicationLifetime.Running;
         };
 #if DEBUG
         MemoryProfiler.GetSnapshot("Pre MainWindow show");
@@ -1055,8 +1062,14 @@ public partial class App : AppBase, IAppHost
 
     public override void Stop()
     {
+        if (CurrentLifetime == ApplicationLifetime.Stopping)
+        {
+            return;
+        }
         Dispatcher.Invoke(async () =>
         {
+            CurrentLifetime = ApplicationLifetime.Stopping;
+            Logger?.LogInformation("正在停止应用");
             if (IAppHost.TryGetService<IManagementService>() is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
             {
                 connection.LogAuditEvent(AuditEvents.AppExited, new Empty());

@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Windows;
+using ClassIsland.Core.Enums;
 using ClassIsland.Shared;
 
 namespace ClassIsland.Core;
@@ -98,4 +99,9 @@ public abstract class AppBase : Application, IAppHost
     /// </summary>
     public static string AppVersionLong =>
         $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
+    
+    /// <summary>
+    /// 应用当前生命周期状态
+    /// </summary>
+    public static ApplicationLifetime CurrentLifetime { get; internal set; } = ApplicationLifetime.None;
 }

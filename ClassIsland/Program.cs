@@ -5,6 +5,8 @@ using System.CommandLine;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland;
+using ClassIsland.Core;
+using ClassIsland.Core.Enums;
 using ClassIsland.Services;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -15,6 +17,7 @@ Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
 Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
 
 AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
+AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
 
 var command = new RootCommand
 {
