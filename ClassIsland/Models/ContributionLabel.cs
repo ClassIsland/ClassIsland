@@ -36,4 +36,6 @@ public class ContributionLabel
         get;
         set;
     } = "";
+
+    public string LicenseUrl { get; set; } = "";
 }
