@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.Json;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
@@ -46,13 +47,15 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     private SettingsService SettingsService { get; }
     public ILogger<ComponentsService> Logger { get; }
+    public IManagementService ManagementService { get; }
 
     private string CurrentConfigName { get; set; } = "Default";
 
-    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger)
+    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger, IManagementService managementService)
     {
         SettingsService = settingsService;
         Logger = logger;
+        ManagementService = managementService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
 
         if (!Directory.Exists(ComponentSettingsPath))
@@ -83,6 +86,15 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         else
         {
             CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
+        }
+
+        if (ManagementService.IsManagementEnabled && ManagementService.Connection != null)
+        {
+            IsManagementMode = true;
+            if (ManagementService.Manifest.CredentialSource.IsNewerAndNotNull(ManagementService.Versions.CredentialVersion))
+            {
+                CurrentComponents = ManagementService.Connection.SaveJsonAsync<ComponentSettingsList>(ManagementService.Manifest.CredentialSource.Value!, Management.ManagementService.ManagementComponentsPath).Result;
+            }
         }
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
         CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
@@ -130,6 +142,8 @@ public class ComponentsService : ObservableRecipient, IComponentsService
     {
         ComponentConfigs = Directory.GetFiles(ComponentSettingsPath, "*.json").Select(Path.GetFileNameWithoutExtension).SkipWhile(x => x is null).ToList()!;
     }
+
+    public bool IsManagementMode { get; set; } = false;
 
 
     public ComponentSettingsList CurrentComponents

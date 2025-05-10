@@ -13,6 +13,7 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Helpers;
+using ClassIsland.Models.Authorize;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Client;
 using ClassIsland.Shared.Protobuf.Service;
@@ -52,6 +53,8 @@ public class ManagementService : IManagementService
     public static readonly string ManagementVersionsPath = Path.Combine(ManagementConfigureFolderPath, "Versions.json");
     public static readonly string ManagementSettingsPath = Path.Combine(ManagementConfigureFolderPath, "Settings.json");
     public static readonly string ManagementPolicyPath = Path.Combine(ManagementConfigureFolderPath, "Policy.json");
+    public static readonly string ManagementCredentialsPath = Path.Combine(ManagementConfigureFolderPath, "Credentials.json");
+    public static readonly string ManagementComponentsPath = Path.Combine(ManagementConfigureFolderPath, "Components.json");
 
     public static readonly string LocalManagementPolicyPath =
         Path.Combine(LocalManagementConfigureFolderPath, "Policy.json");
@@ -127,7 +130,7 @@ public class ManagementService : IManagementService
             }
             case CommandTypes.DataUpdated:
                 Logger.LogInformation("Received DataUpdated command.");
-                ReloadManagementAsync();
+                _ = ReloadManagementAsync();
             break;
         }
     }
@@ -165,12 +168,14 @@ public class ManagementService : IManagementService
         //Load old config
         ManagementManifest oldManifest = Manifest;
         ManagementPolicy oldPolicy = Policy;
+        ManagementCredentialConfig oldCredential = CredentialConfig;
         ManagementVersions oldVersions = Versions;
 
         try
         {
             Manifest = LoadConfig<ManagementManifest>(ManagementManifestPath);
             Policy = LoadConfig<ManagementPolicy>(ManagementPolicyPath);
+            CredentialConfig = LoadConfig<ManagementCredentialConfig>(ManagementCredentialsPath);
             Versions = LoadConfig<ManagementVersions>(ManagementVersionsPath);
             Manifest = await Connection.GetManifest();
             SaveConfig(ManagementManifestPath, Manifest);
@@ -179,11 +184,17 @@ public class ManagementService : IManagementService
             {
                 Policy = await Connection.SaveJsonAsync<ManagementPolicy>(Manifest.PolicySource.Value!, ManagementPolicyPath);
             }
+            // 拉取凭据
+            if (Manifest.CredentialSource.IsNewerAndNotNull(Versions.CredentialVersion))
+            {
+                CredentialConfig = await Connection.SaveJsonAsync<ManagementCredentialConfig>(Manifest.CredentialSource.Value!, ManagementCredentialsPath);
+            }
         }
         catch (Exception e)
         {
             Manifest = oldManifest;
             Policy = oldPolicy;
+            CredentialConfig = oldCredential;
             Versions = oldVersions;
             Logger.LogError(e, "拉取集控清单与策略失败");
             return;
@@ -228,7 +239,7 @@ public class ManagementService : IManagementService
         var w = CopyObject(settings);
         w.IsManagementEnabled = true;
         // 清空旧的配置
-        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, Path.Combine(App.AppRootFolderPath, "./Profiles/_management-profile.json")]).Where(File.Exists))
+        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, Path.Combine(App.AppRootFolderPath, "./Profiles/_management-profile.json"), ManagementCredentialsPath]).Where(File.Exists))
         {
             File.Delete(i);
             if (File.Exists(i + ".bak"))
