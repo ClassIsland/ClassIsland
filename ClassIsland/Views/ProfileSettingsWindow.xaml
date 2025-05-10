@@ -2217,7 +2217,8 @@
                                               Margin="4 0"
                                               ResizeBehavior="PreviousAndNext"/>
 
-                                <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl">
+                                <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl"
+                                            SelectionChanged="ScheduleAdjustmentTabControl_OnSelectionChanged">
                                     <TabItem Visibility="Collapsed">
                                         <Grid>
                                             <Grid.RowDefinitions>

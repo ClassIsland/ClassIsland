@@ -115,18 +115,25 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(ViewModel.SelectedTimePoint)) 
-            return;
-        if (ViewModel.PreviousTrackedTimeLayoutItem != null)
+        if (e.PropertyName == nameof(ViewModel.SelectedTimePoint))
         {
-            ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanged -= SelectedTimePointOnPropertyChanged;
-            ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanging -= SelectedTimePointOnPropertyChanging;
+            if (ViewModel.PreviousTrackedTimeLayoutItem != null)
+            {
+                ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanged -= SelectedTimePointOnPropertyChanged;
+                ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanging -= SelectedTimePointOnPropertyChanging;
+            }
+
+            if (ViewModel.SelectedTimePoint != null)
+            {
+                ViewModel.SelectedTimePoint.PropertyChanged += SelectedTimePointOnPropertyChanged;
+                ViewModel.SelectedTimePoint.PropertyChanging += SelectedTimePointOnPropertyChanging;
+                ViewModel.PreviousTrackedTimeLayoutItem = ViewModel.SelectedTimePoint;
+            }
         }
-        if (ViewModel.SelectedTimePoint != null)
+
+        if (e.PropertyName == nameof(ViewModel.ScheduleCalendarSelectedDate) && ScheduleAdjustmentTabControl.SelectedIndex == 0)
         {
-            ViewModel.SelectedTimePoint.PropertyChanged += SelectedTimePointOnPropertyChanged;
-            ViewModel.SelectedTimePoint.PropertyChanging += SelectedTimePointOnPropertyChanging;
-            ViewModel.PreviousTrackedTimeLayoutItem = ViewModel.SelectedTimePoint;
+            RefreshWeekScheduleRows();
         }
     }
 
@@ -1480,5 +1487,14 @@ public partial class ProfileSettingsWindow : MyWindow
         var win = IAppHost.GetService<ExcelExportWindow>();
         win.Owner = this;
         win.ShowDialog();
+    }
+
+    private void ScheduleAdjustmentTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ScheduleAdjustmentTabControl.SelectedIndex != 0)
+        {
+            return;
+        }
+        RefreshWeekScheduleRows();
     }
 }
