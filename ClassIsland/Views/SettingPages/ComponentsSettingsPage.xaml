@@ -29,7 +29,7 @@
       Unloaded="ComponentsSettingsPage_OnUnloaded">
 
     <controls:SettingsPageBase.Resources>
-        <ci:BindingProxy x:Key="DataProxy" Data="{Binding Mode=OneWay}"/>
+        <ci:BindingProxy x:Key="DataProxy"/>
         <CollectionViewSource x:Key="RegisteredComponentsSource" 
                               Source="{x:Static registry:ComponentRegistryService.Registered}"/>
         <CollectionViewSource x:Key="ContainerComponentsSource" 
@@ -99,7 +99,7 @@
                                         </MenuItem.ItemTemplate>
                                         <MenuItem.ItemContainerStyle>
                                             <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                                                <Setter Property="Command" Value="{Binding CreateContainerComponentCommand, RelativeSource={RelativeSource AncestorType=local:ComponentsSettingsPage}}"/>
+                                                <Setter Property="Command" Value="{Binding Data.CreateContainerComponentCommand, Source={StaticResource DataProxy}}"/>
                                                 <Setter Property="CommandParameter" Value="{Binding}"/>
                                             </Style>
                                         </MenuItem.ItemContainerStyle>

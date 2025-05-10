@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Services;
@@ -282,6 +283,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
     private void ComponentsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
+        if (FindResource("DataProxy") is BindingProxy proxy)
+        {
+            proxy.Data = this;
+        }
         SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
     }
 
@@ -303,8 +308,13 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
     [RelayCommand]
     private void OpenContextMenu(FrameworkElement element)
     {
-        if (element.ContextMenu != null) 
-            element.ContextMenu.IsOpen = true;
+        if (element.ContextMenu == null)
+        {
+            return;
+        }
+
+        //element.ContextMenu.DataContext = this;
+        element.ContextMenu.IsOpen = true;
     }
 
     [RelayCommand]
