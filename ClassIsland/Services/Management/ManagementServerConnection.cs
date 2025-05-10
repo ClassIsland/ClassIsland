@@ -1,10 +1,13 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Enums;
 using ClassIsland.Shared.Abstraction.Services;
 using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Client;
@@ -16,6 +19,7 @@ using ClassIsland.Services.Logging;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Protobuf.Command;
 using CsesSharp.Models;
+using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
 
@@ -39,7 +43,7 @@ public class ManagementServerConnection : IManagementServerConnection
     
     private string Host { get; }
     
-    private GrpcChannel Channel { get; }
+    internal GrpcChannel Channel { get; }
 
     private DispatcherTimer CommandConnectionAliveTimer { get; } = new()
     {
@@ -68,6 +72,7 @@ public class ManagementServerConnection : IManagementServerConnection
         Logger.LogInformation("初始化管理服务器连接。");
         if (lightConnect) 
             return;
+        AppBase.Current.AppStarted += (sender, args) => InstallAuditHooks();
         // 接受命令
         CommandReceived += OnCommandReceived;
         Task.Run(ListenCommands);
@@ -95,6 +100,10 @@ public class ManagementServerConnection : IManagementServerConnection
             ConfigTypes.CurrentAutomation => JsonSerializer.Serialize(IAppHost.GetService<IAutomationService>()
                 .Workflows),
             ConfigTypes.Logs => JsonSerializer.Serialize(IAppHost.GetService<AppLogService>().Logs),
+            ConfigTypes.PluginList => JsonSerializer.Serialize(IPluginService.LoadedPlugins
+                .Where(x => x.LoadStatus == PluginLoadStatus.Loaded)
+                .Select(x => x.Manifest.Id)
+                .ToList()),
             _ => throw new ArgumentOutOfRangeException()
         };
         var client = new ConfigUpload.ConfigUploadClient(Channel);
@@ -216,6 +225,21 @@ public class ManagementServerConnection : IManagementServerConnection
             timer.Elapsed += (sender, args) => Task.Run(ListenCommands);
             timer.Start();
         }
+    }
+
+    private void InstallAuditHooks()
+    {
+        
+    }
+
+    internal void LogAuditEvent(AuditEvents eventType, IBufferMessage payload)
+    {
+        _ = new Audit.AuditClient(Channel).LogEvent(new AuditScReq()
+        {
+            Event = eventType,
+            Payload = payload.ToByteString(),
+            TimestampUtc = (long)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds
+        });
     }
     
     public async Task<ManagementManifest> GetManifest()

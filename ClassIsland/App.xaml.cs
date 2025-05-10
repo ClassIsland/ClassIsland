@@ -80,6 +80,9 @@ using ClassIsland.Controls.NotificationProviders;
 using System.Text;
 using ClassIsland.Controls.SpeechProviderSettingsControls;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Shared.Protobuf.AuditEvent;
+using ClassIsland.Shared.Protobuf.Enum;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ClassIsland;
 /// <summary>
@@ -296,6 +299,14 @@ public partial class App : AppBase, IAppHost
 
         var plugins = DiagnosticService.GetPluginsByStacktrace(e);
         var disabled = DiagnosticService.DisableCorruptPlugins(plugins);
+        var managementService = IAppHost.TryGetService<IManagementService>();
+        if (managementService is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        {
+            connection.LogAuditEvent(AuditEvents.AppCrashed, new AppCrashed()
+            {
+                Stacktrace = e.ToString()
+            });
+        }
         if (!safe)
         {
             var traceId = SentrySdk.GetTraceHeader()?.TraceId;
@@ -841,6 +852,10 @@ public partial class App : AppBase, IAppHost
             {
                 App.GetService<ISplashService>().EndSplash();
             }
+            if (IAppHost.TryGetService<IManagementService>() is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+            {
+                connection.LogAuditEvent(AuditEvents.AppStarted, new Empty());
+            }
             _isStartedCompleted = true;
         };
 #if DEBUG
@@ -1041,6 +1056,10 @@ public partial class App : AppBase, IAppHost
     {
         Dispatcher.Invoke(async () =>
         {
+            if (IAppHost.TryGetService<IManagementService>() is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+            {
+                connection.LogAuditEvent(AuditEvents.AppExited, new Empty());
+            }
             AppStopping?.Invoke(this, EventArgs.Empty);
             IAppHost.Host?.Services.GetService<ILessonsService>()?.StopMainTimer();
             IAppHost.Host?.StopAsync(TimeSpan.FromSeconds(5));

@@ -5,12 +5,19 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Models.Plugins;
+using ClassIsland.Services.Management;
+using ClassIsland.Shared;
+using ClassIsland.Shared.Protobuf.AuditEvent;
+using ClassIsland.Shared.Protobuf.Enum;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using YamlDotNet.Serialization;
@@ -32,6 +39,10 @@ public class PluginService : IPluginService
     public static readonly string PluginConfigsFolderPath = Path.Combine(App.AppConfigPath, "Plugins");
 
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
+
+    internal static List<PluginManifest> InstalledPlugins { get; } = [];
+    
+    internal static List<PluginManifest> UninstalledPlugins { get; } = [];
 
     public static void ProcessPluginsInstall()
     {
@@ -66,6 +77,7 @@ public class PluginService : IPluginService
                 }
                 Directory.CreateDirectory(targetPath);
                 ZipFile.ExtractToDirectory(pkgPath, targetPath);
+                InstalledPlugins.Add(manifest);
             }
             catch (Exception e)
             {
@@ -116,6 +128,7 @@ public class PluginService : IPluginService
             if (info.IsUninstalling)
             {
                 Directory.Delete(pluginDir, true);
+                UninstalledPlugins.Add(manifest);
                 continue;
             }
             if (IPluginService.LoadedPluginsIds.Contains(manifest.Id))
@@ -172,6 +185,34 @@ public class PluginService : IPluginService
                 info.Exception = ex;
                 info.LoadStatus = PluginLoadStatus.Error;
             }
+        }
+        
+        AppBase.Current.AppStarted += CurrentOnAppStarted;
+    }
+
+    private static void CurrentOnAppStarted(object? sender, EventArgs e)
+    {
+        if (IAppHost.TryGetService<IManagementService>() is not
+            { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        {
+            return;
+        }
+
+        foreach (var i in InstalledPlugins)
+        {
+            connection.LogAuditEvent(AuditEvents.PluginInstalled, new PluginInstalled()
+            {
+                PluginId = i.Id,
+                Version = i.Version
+            });
+        }
+        foreach (var i in UninstalledPlugins)
+        {
+            connection.LogAuditEvent(AuditEvents.PluginUninstalled, new PluginUninstalled()
+            {
+                PluginId = i.Id,
+                Version = i.Version
+            });
         }
     }
 

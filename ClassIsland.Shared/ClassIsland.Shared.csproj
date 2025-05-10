@@ -41,6 +41,7 @@
     <Protobuf Include="Protobuf\Command\*.proto" />
     <Protobuf Include="Protobuf\Enum\*.proto" />
     <Protobuf Include="Protobuf\Management\*.proto" />
+    <Protobuf Include="Protobuf\AuditEvent\*.proto" />
   </ItemGroup>
 
   <Import Project="..\GeneratePackage.props" />

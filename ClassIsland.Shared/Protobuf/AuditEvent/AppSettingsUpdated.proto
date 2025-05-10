@@ -4,5 +4,4 @@ option csharp_namespace = "ClassIsland.Shared.Protobuf.AuditEvent";
 
 message AppSettingsUpdated {
   string PropertyName = 1;
-  string NewValue = 2;
 }

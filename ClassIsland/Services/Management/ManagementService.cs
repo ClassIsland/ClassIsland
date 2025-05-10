@@ -13,7 +13,9 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.Helpers;
-
+using ClassIsland.Shared.Protobuf.AuditEvent;
+using ClassIsland.Shared.Protobuf.Client;
+using ClassIsland.Shared.Protobuf.Service;
 using MaterialDesignThemes.Wpf;
 
 using Microsoft.Extensions.Logging;
@@ -281,13 +283,23 @@ public class ManagementService : IManagementService
         var fallbackCredential =
             new List<string>([CredentialConfig.AdminCredential, CredentialConfig.UserCredential]).First(x =>
                 !string.IsNullOrWhiteSpace(x));
-        return level switch
+        var result = level switch
         {
             AuthorizeLevel.None => true,
             AuthorizeLevel.User => await AuthorizeService.AuthenticateAsync(Fallback(CredentialConfig.UserCredential)),
             AuthorizeLevel.Admin => await AuthorizeService.AuthenticateAsync(Fallback(CredentialConfig.AdminCredential)),
             _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
         };
+
+        if (level != AuthorizeLevel.None && IsManagementEnabled && Connection is ManagementServerConnection connection)
+        {
+            connection.LogAuditEvent(result ? AuditEvents.AuthorizeSuccess : AuditEvents.AuthorizeFailed, new AuthorizeEvent()
+            {
+                Level = (int)level
+            });
+        }
+
+        return result;
 
         string Fallback(string c) => string.IsNullOrWhiteSpace(c) ? fallbackCredential : c;
     }

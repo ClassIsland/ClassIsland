@@ -9,4 +9,5 @@ message ClassChangeCompleted {
   string SourceClassSubjectId = 4;
   int32 TargetClassIndex = 5;
   string TargetClassSubjectId = 6;
+  bool WriteToSourceClassPlan = 7;
 }

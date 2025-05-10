@@ -6,7 +6,7 @@ enum AuditEvents {
   DefaultEvent = 0;
   AuthorizeSuccess = 1;
   AuthorizeFailed = 2;
-  AuthorizeCanceled = 3;
+//  AuthorizeCanceled = 3;
   AppSettingsUpdated = 4;
   ClassChangeCompleted = 5;
   ClassPlanUpdated = 6;

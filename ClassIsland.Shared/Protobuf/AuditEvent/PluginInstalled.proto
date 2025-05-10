@@ -5,5 +5,4 @@ option csharp_namespace = "ClassIsland.Shared.Protobuf.AuditEvent";
 message PluginInstalled {
   string PluginId = 1;
   string Version = 2;
-  string PluginPackageMd5 = 3;
 }

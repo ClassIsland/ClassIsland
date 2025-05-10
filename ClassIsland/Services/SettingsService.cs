@@ -17,6 +17,11 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Text.Json.Serialization;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Services.Management;
+using ClassIsland.Shared.Protobuf.AuditEvent;
+using ClassIsland.Shared.Protobuf.Enum;
+using Edge_tts_sharp.Model;
+using Octokit;
 
 namespace ClassIsland.Services;
 
@@ -293,6 +298,13 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
                             .GetCustomAttribute<JsonIgnoreAttribute>() != null)
             return;
         SaveSettings(propertyName);
+        if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        {
+            connection.LogAuditEvent(AuditEvents.AppSettingsUpdated, new AppSettingsUpdated()
+            {
+                PropertyName = propertyName
+            });
+        }
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
