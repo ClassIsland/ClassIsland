@@ -77,6 +77,7 @@ using Microsoft.Extensions.Logging.Console;
 using Walterlv.Threading;
 using Walterlv.Windows;
 using ClassIsland.Controls.NotificationProviders;
+using System.Text;
 
 namespace ClassIsland;
 /// <summary>
@@ -370,6 +371,7 @@ public partial class App : AppBase, IAppHost
         System.Windows.Forms.Application.EnableVisualStyles();
         DiagnosticService.BeginStartup();
         ConsoleService.InitializeConsole();
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         //if (IsAssetsTrimmed())
         //{
         //    Resources["HarmonyOsSans"] = FindResource("BackendFontFamily");

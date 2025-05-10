@@ -8,6 +8,8 @@
         xmlns:reoGrid="clr-namespace:unvell.ReoGrid;assembly=unvell.ReoGrid"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:converters="clr-namespace:ClassIsland.Converters"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
         mc:Ignorable="d"
         Title="导出到 Excel 表格" Height="700" Width="1400"
         WindowState="Maximized"
@@ -22,7 +24,9 @@
         Closed="ExcelExportWindow_OnClosed"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <ci:MyWindow.Resources>
+        <ci:BindingProxy x:Key="DataProxy" Data="{Binding}"/>
         <converters:ReoHorAlignmentToIntConverter x:Key="ReoHorAlignmentToIntConverter"/>
+        <converters:ReoGridVerAlignToIntConverter x:Key="ReoGridVerAlignToIntConverter" />
     </ci:MyWindow.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -74,10 +78,11 @@
         </reoGrid:ReoGridControl>
 
         <ToolBar Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
-                 ToolBarTray.IsLocked="True">
-            <Button Content="{materialDesign:PackIcon FolderFileOutline}" ToolTip="打开…"/>
-            <Button Content="{materialDesign:PackIcon ContentSaveOutline}" ToolTip="保存…"/>
-            <Button Content="{materialDesign:PackIcon MicrosoftExcel}" ToolTip="保存并在默认 Excel 文件编辑器中打开…"/>
+                 ToolBarTray.IsLocked="True"
+                 Visibility="{Binding ViewModel.IsSelectingMode, Converter={StaticResource InverseBoolToVisConverter}}">
+            <Button Content="{materialDesign:PackIcon ContentSaveOutline}" ToolTip="保存…" Click="ButtonSaveToFile_OnClick"/>
+            <Button Content="{materialDesign:PackIcon MicrosoftExcel}" ToolTip="保存并在默认 Excel 文件编辑器中打开…"
+                    Click="ButtonSaveAndOpenInExcel_OnClick"/>
             <Separator/>
             <Button Content="{materialDesign:PackIcon Undo}" ToolTip="撤销" Click="ButtonUndo_OnClick"
                     IsEnabled="{Binding ViewModel.CanUndo}"/>
@@ -117,11 +122,6 @@
                 <ListBoxItem Content="{materialDesign:PackIcon FormatUnderline}" ToolTip="下划线"
                              IsSelected="{Binding ViewModel.SelectedRange.Style.Underline}"/>
             </ListBox>
-            <Button ToolTip="字体颜色">
-                <Grid>
-                    <materialDesign:PackIcon Kind="FormatColourText"/>
-                </Grid>
-            </Button>
             <Separator/>
             <ListBox SelectionMode="Single" SelectedIndex="{Binding ViewModel.SelectedRange.Style.HorizontalAlign, Converter={StaticResource ReoHorAlignmentToIntConverter}}">
                 <ListBoxItem Content="{materialDesign:PackIcon Cancel}" ToolTip="无对齐" Visibility="Collapsed"/>
@@ -133,8 +133,23 @@
             <Separator/>
             <Button Content="{materialDesign:PackIcon TableMergeCells}" ToolTip="合并单元格" Click="ButtonMergeCells_OnClick"/>
             <Button Content="{materialDesign:PackIcon TableSplitCell}" ToolTip="取消单元格合并" Click="ButtonUnMergeCells_OnClick"/>
-            <Button Content="{materialDesign:PackIcon BorderAll}" ToolTip="设置边框"/>
 
+        </ToolBar>
+
+        <ToolBar Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1"
+                 ToolBarTray.IsLocked="True"
+                 Visibility="{Binding ViewModel.IsSelectingMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button Command="{Binding ExitSelectingModeCommand}">
+                <ci:IconText Kind="Check" Text="完成选择"/>
+            </Button>
+            <Separator/>
+            <TextBlock VerticalAlignment="Center" FontSize="14" FontWeight="Medium"
+                       Margin="16 0 0 0">
+                <Run Text="当前选区:"/>
+                <Run Text="{Binding ViewModel.SelectedRangePosition, Converter={StaticResource RangePositionToStringConverter}}"
+                     FontFamily="Consolas"
+                     FontSize="16"/>
+            </TextBlock>
         </ToolBar>
 
         <TabControl Grid.Column="2" Grid.Row="2" 
@@ -145,20 +160,142 @@
                 
             </TabControl.Resources>
             <TabItem Header="{materialDesign:PackIcon FileChartOutline, Size=18}" Padding="4" 
-                     MinWidth="42" Height="42"
-                     ToolTip="课表" ToolTipService.Placement="Left">
+                     MinWidth="42" Height="42">
                 
+                <Grid Margin="12" ToolTip="{x:Null}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="课表" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                        <controls:ExcelSelectionTextBox materialDesign:HintAssist.Hint="基准位置"
+                                                        IsSelecting="{Binding ViewModel.IsSelectingMode, Mode=TwoWay}"
+                                                        EnterSelectingModeCommand="{Binding EnterSelectingModeCommand}"
+                                                        SelectionPropertyName="ClassPlanStartPos"
+                                                        Value="{Binding ViewModel.ClassPlanStartPos, Mode=TwoWay}"/>
+                    </StackPanel>
+
+                    <ListBox Grid.Row="1" ItemsSource="{Binding ProfileService.Profile.ClassPlans}"
+                             SelectionMode="Multiple">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem"
+                                   BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                <Setter Property="materialDesign:BehaviorsAssist.Behaviors">
+                                    <Setter.Value>
+                                        <materialDesign:BehaviorCollection>
+                                            <behaviors:AllCollectionBehavior    
+                                                AllCollection="{Binding Data.ViewModel.SelectedClassPlanIds, Source={StaticResource DataProxy}}"
+                                                CurrentValue="{Binding Key}" />
+                                        </materialDesign:BehaviorCollection>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                          Content="{Binding Value.Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
             </TabItem>
             <TabItem Header="{materialDesign:PackIcon StyleOutline, Size=18}" Padding="4" 
-                     MinWidth="42" Height="42"
-                     ToolTip="样式" ToolTipService.Placement="Left">
+                     MinWidth="42" Height="42">
+                <ScrollViewer>
+                    <StackPanel Margin="12">
+                        <TextBlock Text="样式" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
 
+                        <CheckBox Content="包含教师名称" Margin="0 6 0 0"
+                                  IsChecked="{Binding ViewModel.IsTeacherNameEnabled}"/>
+                        <ComboBox Margin="0 6 0 0" materialDesign:HintAssist.Hint="水平对齐方式"
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                  SelectedIndex="{Binding ViewModel.HorAlign, Converter={StaticResource ReoHorAlignmentToIntConverter}}">
+                            <ComboBoxItem>无</ComboBoxItem>
+                            <ComboBoxItem>左对齐</ComboBoxItem>
+                            <ComboBoxItem>居中</ComboBoxItem>
+                            <ComboBoxItem>右对齐</ComboBoxItem>
+                            <ComboBoxItem>两端对齐</ComboBoxItem>
+                        </ComboBox>
+                        <ComboBox Margin="0 6 0 0" materialDesign:HintAssist.Hint="垂直对齐方式"
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                  SelectedIndex="{Binding ViewModel.VerAlign, Converter={StaticResource ReoGridVerAlignToIntConverter}}">
+                            <ComboBoxItem>默认</ComboBoxItem>
+                            <ComboBoxItem>顶部对齐</ComboBoxItem>
+                            <ComboBoxItem>居中</ComboBoxItem>
+                            <ComboBoxItem>低端对齐</ComboBoxItem>
+                        </ComboBox>
+
+                        <TextBlock Text="字体颜色" Margin="0 12 0 0"/>
+                        <ci:ColorPicker HorizontalAlignment="Left" Margin="0 4 0 0"
+                                        Color="{Binding ViewModel.ForegroundColor, Mode=TwoWay}"/>
+
+                        <TextBlock Text="背景颜色" Margin="0 12 0 0"
+                                  />
+                        <ci:ColorPicker HorizontalAlignment="Left" Margin="0 4 0 0"
+                                        Color="{Binding ViewModel.BackgroundColor, Mode=TwoWay}"/>
+
+                        <ComboBox Margin="0 6 0 0" materialDesign:HintAssist.Hint="单元格框线"
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                  SelectedIndex="{Binding ViewModel.BorderMode}">
+                            <ComboBoxItem>无</ComboBoxItem>
+                            <ComboBoxItem>全框线</ComboBoxItem>
+                            <ComboBoxItem>全粗框线</ComboBoxItem>
+                        </ComboBox>
+
+                        <Grid Margin="0 6 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" 
+                                     materialDesign:HintAssist.Hint="行高"
+                                     Text="{Binding ViewModel.RowHeight, Converter={StaticResource IntToStringConverter}}"
+                                     materialDesign:TextFieldAssist.SuffixText="px"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                            <TextBox Grid.Column="1" 
+                                     materialDesign:HintAssist.Hint="列宽"
+                                     Text="{Binding ViewModel.ColWidth, Converter={StaticResource IntToStringConverter}}"
+                                     materialDesign:TextFieldAssist.SuffixText="px"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
+                        </Grid>
+
+                        <Button Margin="0 12 0 0" HorizontalAlignment="Left"
+                                Click="ButtonRegenerate_OnClick">
+                            <ci:IconText Kind="Refresh" Text="刷新内容"/>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="{materialDesign:PackIcon ContentSaveOutline, Size=18}" Padding="4" 
-                     MinWidth="42" Height="42"
-                     ToolTip="保存" ToolTipService.Placement="Left">
+                     MinWidth="42" Height="42">
+                <ScrollViewer>
+                    <StackPanel Margin="12">
+                        <TextBlock Text="保存" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
 
+                        <Button Margin="0 12 0 0" HorizontalAlignment="Left"
+                                Click="ButtonSaveToFile_OnClick">
+                            <ci:IconText Kind="ContentSave" Text="保存到 Excel 表格"/>
+                        </Button>
+                        <TextBlock Text="保存到 Excel 表格，然后您可以在其它应用中查看导出后的课表，以及打印和分发课表。" Margin="0 4 0 0"
+                                   TextWrapping="Wrap"/>
+
+                        <Button Margin="0 12 0 0" HorizontalAlignment="Left"
+                                Style="{StaticResource MaterialDesignPaperButton}"
+                                Click="ButtonSaveAndOpenInExcel_OnClick">
+                            <ci:IconText Kind="MicrosoftExcel" Text="保存并在默认 Excel 文件编辑器中打开"/>
+                        </Button>
+                        <TextBlock Text="保存到 Excel 表格，并在默认的 Excel 文件编辑器中打开保存后的表格以继续编辑此文件。" Margin="0 4 0 0"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
+        <materialDesign:Snackbar Grid.Column="0" Grid.Row="0"
+                                 Grid.ColumnSpan="3" Grid.RowSpan="3"
+                                 MessageQueue="{Binding ViewModel.MessageQueue}"/>
     </Grid>
 </ci:MyWindow>
