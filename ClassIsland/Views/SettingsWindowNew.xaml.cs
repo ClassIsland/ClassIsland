@@ -326,11 +326,12 @@ public partial class SettingsWindowNew : MyWindow
             Logger.LogError(ex, "无法完成设置页面导航 {}", info.Id);
             spanLoadPhase1.Finish(ex, SpanStatus.InternalError);
             transaction.Finish(SpanStatus.InternalError);
-        }
-        finally
-        {
             ViewModel.IsNavigating = false;
         }
+        //finally
+        //{
+        //    ViewModel.IsNavigating = false;
+        //}
     }
 
     private SettingsPageBase? GetPage(string? id, out bool cached)
