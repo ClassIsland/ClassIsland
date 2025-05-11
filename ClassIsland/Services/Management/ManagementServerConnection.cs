@@ -234,11 +234,21 @@ public class ManagementServerConnection : IManagementServerConnection
 
     internal void LogAuditEvent(AuditEvents eventType, IBufferMessage payload)
     {
-        _ = new Audit.AuditClient(Channel).LogEvent(new AuditScReq()
+        _ = Task.Run(() =>
         {
-            Event = eventType,
-            Payload = payload.ToByteString(),
-            TimestampUtc = (long)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds
+            try
+            {
+                new Audit.AuditClient(Channel).LogEvent(new AuditScReq()
+                {
+                    Event = eventType,
+                    Payload = payload.ToByteString(),
+                    TimestampUtc = (long)(DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0)).TotalSeconds
+                });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "无法上传审计日志 {}", eventType);
+            }
         });
     }
     
