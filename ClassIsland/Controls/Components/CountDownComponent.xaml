@@ -27,7 +27,7 @@
                        FontSize="{Binding Settings.FontSize}"
                        VerticalAlignment="Center" Margin="0 0 2 0"
                        FontWeight="Medium"/>
-            <TextBlock Text="还有" 
+            <TextBlock Text="{Binding Settings.CountDownConnector}" 
                        VerticalAlignment="Center"
                        Visibility="{Binding Settings.IsCompactModeEnabled, Converter={StaticResource InverseBoolToVisConverter}}"/>
             <TextBlock Text="{Binding DaysLeft, Mode=OneWay}" 
