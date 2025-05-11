@@ -190,7 +190,7 @@ jobs:
           signing-policy-slug: release-signing
           github-artifact-id: '${{ steps.upload-sign-bundle.outputs.artifact-id }}'
           wait-for-completion: true
-          output-artifact-directory: '/out_signed'
+          output-artifact-directory: './out_signed'
           parameters: |
             version: ${{ toJSON(steps.commit.outputs.long) }}
 
