@@ -53,8 +53,20 @@
                 </controls1:SettingsCard>
                 
                 <controls1:SettingsCard IconGlyph="Ruler" Header="紧凑模式"
-                                        Description="启用后,将隐藏“距离”和“还有”二词。"
+                                        Description="启用后，将隐藏“距离”、“还有”和“仅剩”。"
                                         IsOn="{Binding Settings.IsCompactModeEnabled, Mode=TwoWay}"/>
+                
+                <controls1:SettingsCard IconGlyph="LinkVariant" Header="倒计时连接词"
+                                        Description="选择倒计时的连接词。">
+                    <controls1:SettingsCard.Switcher>
+                        <ComboBox Text="{Binding Settings.CountDownConnector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  Margin="10,8,0,0" MinWidth="120"
+                                  IsEditable="True">
+                            <ComboBoxItem Content="还有" />
+                            <ComboBoxItem Content="仅剩" />
+                        </ComboBox>
+                    </controls1:SettingsCard.Switcher>
+                </controls1:SettingsCard>
             </StackPanel>
         </Grid>
     </ScrollViewer>

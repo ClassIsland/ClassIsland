@@ -3,9 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using System.Windows;
 using ClassIsland.Core;
-using ClassIsland.Core.Abstractions.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -36,10 +34,10 @@ public class MemoryWatchDogService(ILogger<MemoryWatchDogService> logger) : Back
     {
         var size = Process.GetCurrentProcess().PrivateMemorySize64;
         //Console.WriteLine(size);
-        Logger.LogInformation("当前内存使用: {}", size);
+        Logger.LogInformation("当前内存使用: {}", Helpers.StorageSizeHelper.FormatSize(size)+$"({size} Bytes)");
         if (size < MemoryLimitBytes) 
             return;
-        Logger.LogCritical("达到内存使用上限！ {} / {}", size, MemoryLimitBytes);
+        Logger.LogCritical("达到内存使用上限！ {} / {}", Helpers.StorageSizeHelper.FormatSize(size)+$"({size} Bytes)", Helpers.StorageSizeHelper.FormatSize(MemoryLimitBytes)+$"({MemoryLimitBytes} Bytes)");
         //var startInfo = Process.GetCurrentProcess().StartInfo;
         var path = Environment.ProcessPath;
         if (path != null)

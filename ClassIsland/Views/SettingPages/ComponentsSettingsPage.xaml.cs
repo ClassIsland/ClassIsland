@@ -1,21 +1,13 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Models;
 using ClassIsland.Core.Abstractions.Services;
@@ -26,6 +18,7 @@ using ClassIsland.Core.Models.Components;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using ClassIsland.ViewModels.SettingsPages;
+using CommunityToolkit.Mvvm.Input;
 using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.Wpf;
 using Path = System.IO.Path;
@@ -70,7 +63,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
     private void CloseComponentChildrenView()
     {
         ViewModel.IsComponentChildrenViewOpen = false;
+        ViewModel.ChildrenComponentSettingsNavigationStack.Clear();
+        ViewModel.CanChildrenNavigateBack = false;
         ViewModel.SelectedComponentContainerChildren = [];
+        ViewModel.SelectedRootComponent = null;
     }
 
     private void ButtonRemoveSelectedComponent_OnClick(object sender, RoutedEventArgs e)
@@ -287,11 +283,115 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
     private void ComponentsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
+        if (FindResource("DataProxy") is BindingProxy proxy)
+        {
+            proxy.Data = this;
+        }
         SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
     }
 
     private void ComponentsSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
+    }
+
+    private void ContainerComponentsSource_OnFilter(object sender, FilterEventArgs e)
+    {
+        if (e.Item is not ComponentInfo info)
+        {
+            return;
+        }
+
+        e.Accepted = info.IsComponentContainer;
+    }
+
+    [RelayCommand]
+    private void OpenContextMenu(FrameworkElement element)
+    {
+        if (element.ContextMenu == null)
+        {
+            return;
+        }
+
+        //element.ContextMenu.DataContext = this;
+        element.ContextMenu.IsOpen = true;
+    }
+
+    [RelayCommand]
+    private void CreateContainerComponent(ComponentInfo container)
+    {
+        if (ViewModel.SelectedComponentSettings == null)
+        {
+            return;
+        }
+
+        var selected = ViewModel.SelectedComponentSettings;
+        var list = ComponentsService.CurrentComponents.Contains(selected)
+            ? ComponentsService.CurrentComponents
+            : ViewModel.SelectedComponentContainerChildren;
+        var index = list.IndexOf(ViewModel.SelectedComponentSettings);
+
+        if (index == -1)
+        {
+            return;
+        }
+
+        index = Math.Min(list.Count - 1, index);
+        var newComp = new ComponentSettings()
+        {
+            Id = container.Guid.ToString(),
+        };
+        if (container.ComponentType?.BaseType != null)
+        {
+            newComp.Settings =
+                Services.ComponentsService.LoadComponentSettings(newComp, container.ComponentType.BaseType);
+        }
+        list.Insert(index, newComp);
+        if (selected == ViewModel.SelectedComponentSettingsMain)
+        {
+            ViewModel.SelectedComponentSettingsMain = newComp;
+        }
+        else
+        {
+            ViewModel.SelectedComponentSettingsChild = newComp;
+        }
+        SetCurrentSelectedComponentContainer(newComp);
+        list.Remove(selected);
+        newComp.Children?.Add(selected);
+        ViewModel.SelectedComponentSettings = newComp;
+    }
+
+    [RelayCommand]
+    private void DuplicateComponent(ComponentSettings settings)
+    {
+        var list = ComponentsService.CurrentComponents.Contains(settings)
+            ? ComponentsService.CurrentComponents
+            : ViewModel.SelectedComponentContainerChildren;
+        var index = list.IndexOf(settings);
+        if (index == -1)
+        {
+            return;
+        }
+        index = Math.Min(list.Count - 1, index);
+
+        var newSettings = ConfigureFileHelper.CopyObject(settings);
+        list.Insert(index, newSettings);
+        if (settings == ViewModel.SelectedComponentSettingsMain)
+        {
+            ViewModel.SelectedComponentSettingsMain = newSettings;
+        }
+        else
+        {
+            ViewModel.SelectedComponentSettingsChild = newSettings;
+        }
+        ViewModel.SelectedComponentSettings = newSettings;
+    }
+
+    private void MenuItemDuplicateComponent_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (ViewModel.SelectedComponentSettings != null)
+        {
+            DuplicateComponent(ViewModel.SelectedComponentSettings);
+        }
     }
 }

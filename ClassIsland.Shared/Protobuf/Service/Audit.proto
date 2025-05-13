@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Service;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Service";
+
+import "Protobuf/Client/AuditScReq.proto";
+import "Protobuf/Server/AuditScRsp.proto";
+
+service Audit {
+  rpc LogEvent (Client.AuditScReq) returns (Server.AuditScRsp);
+}

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using ClassIsland.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
 using YamlDotNet.Serialization;
 
@@ -7,7 +8,7 @@ namespace ClassIsland.Core.Models.Plugin;
 /// <summary>
 /// 插件元数据
 /// </summary>
-public class PluginManifest : ObservableRecipient
+public class PluginManifest : ObservableRecipient, IMarketplaceItemManifest
 {
     /// <summary>
     /// 入口程序集。加载插件时，将在此入口程序集中搜索插件类。
@@ -59,4 +60,9 @@ public class PluginManifest : ObservableRecipient
     /// 插件作者
     /// </summary>
     public string Author { get; set; } = "";
+
+    /// <summary>
+    /// 插件需要的依赖
+    /// </summary>
+    public List<PluginDependency> Dependencies { get; set; } = [];
 }

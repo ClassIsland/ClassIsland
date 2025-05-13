@@ -5,18 +5,11 @@ using Microsoft.Extensions.Logging;
 using System.Windows.Threading;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Windows;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core;
 using ClassIsland.Models.Rules;
 using System.Windows.Forms;
-using System.Windows.Interop;
-using Windows.Win32.UI.Input;
-using ControlzEx.Standard;
-using Linearstar.Windows.RawInput;
-using System.Linq;
 
 namespace ClassIsland.Services;
 

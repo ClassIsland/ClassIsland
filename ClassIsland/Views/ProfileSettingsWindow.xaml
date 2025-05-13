@@ -43,6 +43,9 @@
                    Drop="ProfileSettingsWindow_OnDrop"
                    Button.Click="GlobalUpdated"
                    ListBox.SelectionChanged="GlobalUpdated">
+    <controls1:MyWindow.InputBindings>
+        <KeyBinding Key="S" Modifiers="Control" Command="{Binding SaveProfileCommand}"/>
+    </controls1:MyWindow.InputBindings>
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:ProfileSettingsWindow.OpenTimeLayoutItemEditorCommand}" Executed="ButtonEditTimePoint_OnClick"/>
         <CommandBinding Command="{x:Static local:ProfileSettingsWindow.RemoveSelectedTimeLayoutItemCommand}" Executed="ButtonRemoveTimePoint_OnClick"/>
@@ -567,7 +570,7 @@
                 <StackPanel Grid.Row="0">
                     <TextBlock Text="课表群" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
                     <TextBlock TextWrapping="Wrap" Margin="0 6 0 0">
-                        您可以通过课表群对课表进行分组，并灵活地启用一批课表。<ci:NavHyperlink CommandParameter="https://docs.classisland.tech/app/classplan#%E8%AF%BE%E8%A1%A8%E7%BE%A4">了解更多…</ci:NavHyperlink>
+                        您可以通过课表群对课表进行分组，并灵活地启用一批课表。<ci:NavHyperlink CommandParameter="https://docs.classisland.tech/app/profile/classplan#%E8%AF%BE%E8%A1%A8%E7%BE%A4">了解更多…</ci:NavHyperlink>
                     </TextBlock>
                     <StackPanel>
                         <StackPanel.Style>
@@ -1157,6 +1160,8 @@
                                                       SelectedIndex="{Binding ViewModel.SelectedClassIndex, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}, Mode=TwoWay}"
                                                       SelectedItem="{Binding ViewModel.SelectedClassInfo, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ProfileSettingsWindow}}">
                                                 <DataGrid.Columns>
+                                                    <DataGridCheckBoxColumn Header="启用"
+                                                                            Binding="{Binding IsEnabled}"/>
                                                     <DataGridTemplateColumn Header="时间" IsReadOnly="True">
                                                         <DataGridTemplateColumn.CellTemplate>
                                                             <DataTemplate>
@@ -2212,7 +2217,8 @@
                                               Margin="4 0"
                                               ResizeBehavior="PreviousAndNext"/>
 
-                                <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl">
+                                <TabControl Grid.Row="1" Grid.Column="2" x:Name="ScheduleAdjustmentTabControl"
+                                            SelectionChanged="ScheduleAdjustmentTabControl_OnSelectionChanged">
                                     <TabItem Visibility="Collapsed">
                                         <Grid>
                                             <Grid.RowDefinitions>
@@ -2737,6 +2743,9 @@
                                                 <MenuItem Header="导出到 CSES…"
                                                           Click="MenuItemExportCses_OnClick"
                                                           Icon="{materialDesign:PackIcon FileCodeOutline}" />
+                                                <MenuItem Header="导出到 Excel 表格…"
+                                                          Click="MenuItemExportExcel_OnClick"
+                                                          Icon="{materialDesign:PackIcon FileExcelOutline}" />
                                             </StackPanel>
                                         </materialDesign:Card>
                                     </materialDesign:PopupEx>

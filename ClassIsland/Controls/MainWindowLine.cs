@@ -6,15 +6,14 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Xml.Linq;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
-using ClassIsland.Models;
 using ClassIsland.Models.EventArgs;
 using ClassIsland.Services;
 using ClassIsland.Shared;
 using Linearstar.Windows.RawInput;
 using Microsoft.Extensions.Logging;
-using ILogger = Grpc.Core.Logging.ILogger;
 
 namespace ClassIsland.Controls;
 
@@ -33,6 +32,24 @@ public class MainWindowLine : Control
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindowLine), new PropertyMetadata(default(double)));
+
+    public static readonly DependencyProperty LastStoryboardNameProperty = DependencyProperty.Register(
+        nameof(LastStoryboardName), typeof(string), typeof(MainWindowLine), new PropertyMetadata(default(string)));
+
+    public string? LastStoryboardName
+    {
+        get { return (string)GetValue(LastStoryboardNameProperty); }
+        set { SetValue(LastStoryboardNameProperty, value); }
+    }
+
+    public static readonly DependencyProperty IsOverlayOpenProperty = DependencyProperty.Register(
+        nameof(IsOverlayOpen), typeof(bool), typeof(MainWindowLine), new PropertyMetadata(default(bool)));
+
+    public bool IsOverlayOpen
+    {
+        get { return (bool)GetValue(IsOverlayOpenProperty); }
+        set { SetValue(IsOverlayOpenProperty, value); }
+    }
 
     public double BackgroundWidth
     {
@@ -101,6 +118,8 @@ public class MainWindowLine : Control
         set { SetValue(IsLineFadedProperty, value); }
     }
 
+    private bool _isLoadCompleted = false;
+
     public MainWindow MainWindow { get; } = IAppHost.GetService<MainWindow>();
 
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
@@ -135,6 +154,14 @@ public class MainWindowLine : Control
         MainWindow.MainWindowAnimationEvent += MainWindowOnMainWindowAnimationEvent;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
         UpdateFadeStatus();
+
+        _isLoadCompleted = true;
+
+        Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
+        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
+        {
+            BeginStoryboard(LastStoryboardName);
+        }
     }
 
 
@@ -162,8 +189,12 @@ public class MainWindowLine : Control
             (IsMouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
     }
 
-    private Storyboard BeginStoryboard(string name)
+    private Storyboard? BeginStoryboard(string name)
     {
+        if (!_isLoadCompleted)
+        {
+            return null;
+        }
         var a = (Storyboard)FindResource(name);
         GridWrapper?.BeginStoryboard(a);
         return a;
@@ -235,11 +266,18 @@ public class MainWindowLine : Control
 
     public override void OnApplyTemplate()
     {
+        Logger.LogTrace("已应用控件模板");
         if (GetTemplateChild("PART_GridWrapper") is Grid wrapper)
         {
             GridWrapper = wrapper;
             wrapper.SizeChanged += WrapperOnSizeChanged;
-        } 
+        }
+
+        Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
+        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
+        {
+            BeginStoryboard(LastStoryboardName);
+        }
         base.OnApplyTemplate();
     }
 

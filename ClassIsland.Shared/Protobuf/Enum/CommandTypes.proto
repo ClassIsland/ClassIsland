@@ -13,4 +13,5 @@ enum CommandTypes {
   RestartApp=4;
   SendNotification=5;
   DataUpdated=6;
+  GetClientConfig=7;
 }

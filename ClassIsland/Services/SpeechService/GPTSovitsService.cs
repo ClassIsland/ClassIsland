@@ -10,7 +10,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core;
-using ClassIsland.Helpers;
+using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
 
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,7 @@ using PgpCore;
 
 namespace ClassIsland.Services.SpeechService;
 
+[SpeechProviderInfo("classisland.speech.gpt-sovits", "GPT-SoVITS")]
 public class GptSoVitsService : ISpeechService
 {
     public static readonly string GPTSoVITSCacheFolderPath = Path.Combine(App.AppCacheFolderPath, "GPTSoVITS");
@@ -91,9 +93,16 @@ public class GptSoVitsService : ISpeechService
     public void ClearSpeechQueue()
     {
         requestingCancellationTokenSource?.Cancel();
-        CurrentWavePlayer?.Stop();
-        CurrentWavePlayer?.Dispose();
-        CurrentWavePlayer = null;
+        try
+        {
+            CurrentWavePlayer?.Stop();
+            CurrentWavePlayer?.Dispose();
+            CurrentWavePlayer = null;
+        }
+        catch (Exception e)
+        {
+            // ignored
+        }
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();

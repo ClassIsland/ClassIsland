@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.AuditEvent;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.AuditEvent";
+
+import "Protobuf/Enum/ListItemUpdateOperations.proto";
+
+message ProfileItemUpdated {
+  string ItemId = 1;
+  Enum.ListItemUpdateOperations Operation = 2;
+}

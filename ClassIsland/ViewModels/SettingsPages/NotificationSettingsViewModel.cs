@@ -3,6 +3,7 @@ using Edge_tts_sharp.Model;
 using Edge_tts_sharp;
 using System.Collections.Generic;
 using ClassIsland.Models;
+using ClassIsland.Shared.Abstraction.Models.Notification;
 
 namespace ClassIsland.ViewModels.SettingsPages;
 
@@ -33,12 +34,37 @@ public class NotificationSettingsViewModel : ObservableRecipient
         }
     }
 
+    public string? NotificationSettingsSelectedChannel
+    {
+        get => _notificationSettingsSelectedChannel;
+        set
+        {
+            if (value == _notificationSettingsSelectedChannel) return;
+            _notificationSettingsSelectedChannel = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public INotificationSenderRegisterInfo? SelectedRegisterInfo
+    {
+        get => _selectedRegisterInfo;
+        set
+        {
+            if (Equals(value, _selectedRegisterInfo)) return;
+            _selectedRegisterInfo = value;
+            OnPropertyChanged();
+        }
+    }
+
     public List<eVoice> EdgeVoices { get; } =
         EdgeTts.GetVoice().FindAll(i => i.Locale.Contains("zh-CN"));
 
     // 现有的测试语音文本属性
     private string _testSpeechText = "风带来了故事的种子，时间使之发芽。";
     private GptSoVitsSpeechSettings? _selectedGptSoVitsSpeechPreset;
+    private INotificationSenderRegisterInfo? _selectedRegisterInfo;
+    private string? _notificationSettingsSelectedChannel;
+    private object? _speechProviderSettingsControl;
 
     public string TestSpeechText
     {
@@ -53,13 +79,13 @@ public class NotificationSettingsViewModel : ObservableRecipient
         }
     }
 
-    public GptSoVitsSpeechSettings? SelectedGptSoVitsSpeechPreset
+    public object? SpeechProviderSettingsControl
     {
-        get => _selectedGptSoVitsSpeechPreset;
+        get => _speechProviderSettingsControl;
         set
         {
-            if (Equals(value, _selectedGptSoVitsSpeechPreset)) return;
-            _selectedGptSoVitsSpeechPreset = value;
+            if (Equals(value, _speechProviderSettingsControl)) return;
+            _speechProviderSettingsControl = value;
             OnPropertyChanged();
         }
     }

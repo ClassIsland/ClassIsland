@@ -36,6 +36,10 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
 
     protected override void OnDetaching()
     {
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         AssociatedObject.Selected -= AssociatedObjectOnSelected;
         AssociatedObject.Unselected -= AssociatedObjectOnUnselected;
         base.OnDetaching();

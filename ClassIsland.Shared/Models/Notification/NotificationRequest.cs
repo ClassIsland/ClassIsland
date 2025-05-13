@@ -1,4 +1,6 @@
 ﻿#if !NETFRAMEWORK
+using System.ComponentModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Notification;
@@ -6,6 +8,8 @@ namespace ClassIsland.Shared.Models.Notification;
 /// <summary>
 /// 提醒请求。
 /// </summary>
+[Obsolete("此提醒请求已弃用，请使用 v2 提醒请求类型 ClassIsland.Core.Model.Notification.NotificationRequest。")]
+[EditorBrowsable(EditorBrowsableState.Never)]
 public class NotificationRequest : ObservableRecipient
 {
     private object? _overlayContent;

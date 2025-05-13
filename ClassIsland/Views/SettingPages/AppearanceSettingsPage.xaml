@@ -277,6 +277,11 @@
                 <controls1:SettingsCard IconGlyph="CogOutline" Header="启用兼容模式"
                                                                Description="若启用，将从注册表提取壁纸，而非桌面句柄。不兼容动态壁纸。可能会解决一些与壁纸提取相关的玄学问题。"
                                                                IsOn="{Binding SettingsService.Settings.IsFallbackModeEnabled, Mode=TwoWay}" />
+
+                <!-- 实验性取色算法 -->
+                <controls1:SettingsCard IconGlyph="FlaskOutline" Header="实验性取色算法"
+                                        Description="启用后将使用实验性的取色算法进行取色，取色性能更好。"
+                                        IsOn="{Binding SettingsService.Settings.UseExperimentColorPickingMethod, Mode=TwoWay}" />
                 <!-- 壁纸层窗口类名 -->
                 <controls1:SettingsCard IconGlyph="WindowMaximize" Header="壁纸层窗口类名"
                                                                Visibility="{Binding SettingsService.Settings.IsFallbackModeEnabled, Mode=OneWay, Converter={StaticResource InverseBoolToVisConverter}}"
@@ -295,7 +300,8 @@
                 </controls1:SettingsCard>
                 <!-- 取色亮度波峰 -->
                 <controls1:SettingsCard IconGlyph="ChartBellCurve" Header="取色亮度波峰"
-                                                               Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
+                                        Visibility="{Binding SettingsService.Settings.UseExperimentColorPickingMethod, Converter={StaticResource InverseBoolToVisConverter}}"
+                                        Description="取色时为亮度更接近此值的颜色赋予更高的权重，修改此值会影响到取色结果中整体颜色的亮度和准确性，请谨慎修改。（默认值：0.6）">
                     <controls1:SettingsCard.Switcher>
                         <Grid>
                             <controls1:NumbericTextBox MaxValue="1" MinValue="0" Width="150"

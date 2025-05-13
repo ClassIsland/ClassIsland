@@ -11,6 +11,7 @@
       xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
       xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:classIsland="clr-namespace:ClassIsland"
+      xmlns:validations="clr-namespace:ClassIsland.Validations"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="天气"
@@ -85,6 +86,7 @@
                            Margin="0 8 0 0" />
             </StackPanel>
         </Grid>
+        <converters:PreventNullConverter x:Key="PreventNullConverter" />
     </controls:SettingsPageBase.Resources>
     <ScrollViewer>
         <StackPanel Style="{StaticResource SettingsPageStackPanelStyle}" Tag="CanPolicyDisable">
@@ -134,20 +136,140 @@
 
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Kind="CogOutline" Text="设置" Margin="0 0 0 8" />
-            <!-- 城市选择 -->
-            <controls1:SettingsCard IconGlyph="MapOutline" Header="城市选择"
-                                    Description="选择当前所在的城市，以用于天气查询。">
-                <controls1:SettingsCard.Switcher>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding SettingsService.Settings.CityName}"
-                                   VerticalAlignment="Center" />
-                        <Button Content="{materialDesign:PackIcon EditOutline}" ToolTip="编辑"
-                                Margin="6 0 0 0"
-                                Style="{StaticResource MaterialDesignFlatButton}"
-                                Click="ButtonEditCurrentCity_OnClick" />
+            
+            <materialDesign:Card Margin="0 0 0 6">
+                <Expander Background="Transparent"
+                          IsExpanded="True"
+                          TextBlock.Foreground="{DynamicResource MaterialDesignBody}">
+                    <Expander.Header>
+                        <controls1:SettingsControl IconGlyph="Earth"
+                                                  Foreground="{DynamicResource MaterialDesignBody}"
+                                                  Header="天气位置"
+                                                  Description="设置 ClassIsland 用于查询天气的位置信息及获取这些位置信息的方式。"
+                                                  Margin="-12 0">
+                            <controls1:SettingsControl.Switcher>
+                                <Grid>
+                                    <ListBox
+                                        Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
+                                        SelectionMode="Single">
+                                        <ListBox.SelectedIndex>
+                                            <Binding Path="SettingsService.Settings.WeatherLocationSource"
+                                                     Converter="{StaticResource PreventNullConverter}">
+                                            </Binding>
+                                        </ListBox.SelectedIndex>
+                                        <ListBoxItem Content="选择城市" />
+                                        <ListBoxItem Content="坐标定位"/>
+                                    </ListBox>
+                                </Grid>
+                            </controls1:SettingsControl.Switcher>
+                        </controls1:SettingsControl>
+                    </Expander.Header>
+                    <StackPanel Margin="36 0 48 12">
+                        <!-- 城市选择 -->
+                        <controls1:SettingsControl IconGlyph="HomeCityOutline" Header="城市选择"
+                                                Description="选择当前所在的城市，以用于天气查询。"
+                                                Margin="0 0 0 6"
+                                                IsCompact="True">
+                            <controls1:SettingsControl.Switcher>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding SettingsService.Settings.CityName}"
+                                               VerticalAlignment="Center" />
+                                    <Button Content="{materialDesign:PackIcon EditOutline}" ToolTip="编辑"
+                                            Margin="6 0 0 0"
+                                            Click="ButtonEditCurrentCity_OnClick"
+                                            Foreground="{DynamicResource PrimaryHueMidBrush}">
+                                        <Button.Style>
+                                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignToolButton}">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SettingsService.Settings.WeatherLocationSource}"
+                                                                     Value="0">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </StackPanel>
+                            </controls1:SettingsControl.Switcher>
+                        </controls1:SettingsControl>
+                        <StackPanel>
+                            <!-- 位置坐标 -->
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.WeatherLocationSource}"
+                                                     Value="1">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </Style>
+                            </StackPanel.Style>
+                            <controls1:SettingsControl IconGlyph="MapOutline" Header="位置坐标"
+                                                       Description="输入用于获取天气信息的经纬坐标"
+                                                       Margin="0 0 0 6"
+                                                       IsCompact="True">
+                                <controls1:SettingsControl.Switcher>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Grid>
+                                            <StackPanel Orientation="Horizontal">
+
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ViewModel.HideLocationPos}" Value="True">
+                                                                <Setter Property="Effect">
+                                                                    <Setter.Value>
+                                                                        <BlurEffect Radius="16"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Setter Property="IsEnabled" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+                                                <TextBox
+                                                    Text="{Binding SettingsService.Settings.WeatherLongitude, Converter={StaticResource IntToStringConverter}}"
+                                                    VerticalAlignment="Center"
+                                                    MinWidth="75"
+                                                    materialDesign:TextFieldAssist.PrefixText="经度"
+                                                    materialDesign:TextFieldAssist.SuffixText="°"
+                                                    Margin="0 0 2 0" />
+                                                <TextBox
+                                                    Text="{Binding SettingsService.Settings.WeatherLatitude, Converter={StaticResource IntToStringConverter}}"
+                                                    VerticalAlignment="Center"
+                                                    MinWidth="75"
+                                                    Margin="0 0 6 0"
+                                                    materialDesign:TextFieldAssist.PrefixText="纬度"
+                                                    materialDesign:TextFieldAssist.SuffixText="°" />
+                                            </StackPanel>
+                                            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                    Click="ButtonShowPos_OnClick"
+                                                    Visibility="{Binding ViewModel.HideLocationPos, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <controls1:IconText Kind="ShowOutline" Text="显示坐标"/>
+                                            </Button>
+                                        </Grid>
+                                        <Button Style="{StaticResource MaterialDesignToolButton}"
+                                                Content="{materialDesign:PackIcon CrosshairsGps}"
+                                                ToolTip="定位"
+                                                Foreground="{DynamicResource PrimaryHueMidBrush}"
+                                                Click="ButtonGetCurrentPos_OnClick" />
+                                    </StackPanel>
+                                </controls1:SettingsControl.Switcher>
+                            </controls1:SettingsControl>
+                            <!-- 自动获取位置 -->
+                            <controls1:SettingsControl IconGlyph="AutoMode"
+                                                   Header="自动获取位置"
+                                                   IsCompact="True"
+                                                   Description="启用后，将在应用每次启动时自动更新位置信息。"
+                                                   IsOn="{Binding SettingsService.Settings.AutoRefreshWeatherLocation, Mode=TwoWay}"
+                                                   Margin="0 0 0 6" />
+                        </StackPanel>
                     </StackPanel>
-                </controls1:SettingsCard.Switcher>
-            </controls1:SettingsCard>
+                </Expander>
+            </materialDesign:Card>
             <!-- 排除预警 -->
             <materialDesign:Card Margin="0 0 0 8">
                 <Expander Background="Transparent"

@@ -46,6 +46,13 @@ public interface IPluginMarketService : INotifyPropertyChanged
     public void RequestDownloadPlugin(string id);
 
     /// <summary>
+    /// 解析商店插件信息
+    /// </summary>
+    /// <param name="id">插件 ID</param>
+    /// <returns>解析的插件信息，如果未找到对应 ID 的插件，将返回 null</returns>
+    public PluginIndexItem? ResolveMarketPlugin(string id);
+
+    /// <summary>
     /// 请求重启事件
     /// </summary>
     public event EventHandler? RestartRequested;
@@ -59,4 +66,10 @@ public interface IPluginMarketService : INotifyPropertyChanged
     /// 已加载的插件源
     /// </summary>
     public ObservableDictionary<string, PluginIndex> Indexes { get; }
+
+    /// <summary>
+    /// 获取索引信息
+    /// </summary>
+    /// <returns>获取到的索引信息</returns>
+    public IEnumerable<PluginIndexInfo> GetIndexInfos();
 }

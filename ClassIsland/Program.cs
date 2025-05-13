@@ -1,29 +1,23 @@
 ﻿using ClassIsland.Models;
 using System;
-using System.Collections;
 using System.CommandLine.NamingConventionBinder;
 using System.CommandLine;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Forms;
 using ClassIsland;
+using ClassIsland.Core;
+using ClassIsland.Core.Enums;
 using ClassIsland.Services;
 using ClassIsland.Shared.IPC;
 using ClassIsland.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
-using Microsoft.Win32;
 using Sentry;
-using NAudio;
-using Clipboard = System.Windows.Clipboard;
-using CommonDialog = System.Windows.Forms.CommonDialog;
-using MessageBox = System.Windows.MessageBox;
 
 Thread.CurrentThread.SetApartmentState(ApartmentState.Unknown);
 Thread.CurrentThread.SetApartmentState(ApartmentState.STA);
 
 AppDomain.CurrentDomain.UnhandledException += DiagnosticService.ProcessDomainUnhandledException;
+AppBase.CurrentLifetime = ApplicationLifetime.EarlyLoading;
 
 var command = new RootCommand
 {

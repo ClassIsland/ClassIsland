@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Management;
-using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Protobuf.Command;
 using ClassIsland.Shared.Protobuf.Enum;
-using ClassIsland.Services.Management;
 
 using MaterialDesignThemes.Wpf;
 
@@ -19,19 +20,9 @@ using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-public class ManagementNotificationProvider : INotificationProvider, IHostedService
+[NotificationProviderInfo("0117fb4f-5374-434a-97fb-4f5374634a07", "集控提醒", PackIconKind.Work, "来自集控服务器的提醒。")]
+public class ManagementNotificationProvider : NotificationProviderBase
 {
-    public string Name { get; set; } = "集控提醒";
-    public string Description { get; set; } = "来自集控服务器的提醒。";
-    public Guid ProviderGuid { get; set; } = new Guid("0117fb4f-5374-434a-97fb-4f5374634a07");
-    public object? SettingsElement { get; set; }
-    public object? IconElement { get; set; } = new PackIcon()
-    {
-        Kind = PackIconKind.Work,
-        Width = 24,
-        Height = 24
-    };
-    
     private INotificationHostService NotificationHostService { get; }
     
     private IManagementService ManagementService { get; }
@@ -40,7 +31,7 @@ public class ManagementNotificationProvider : INotificationProvider, IHostedServ
 
     public ManagementNotificationProvider(INotificationHostService notificationHostService, 
         IManagementService managementService,
-        ILogger<ManagementNotificationProvider> logger)
+        ILogger<ManagementNotificationProvider> logger) : base(false)
     {
         NotificationHostService = notificationHostService;
         ManagementService = managementService;
@@ -63,13 +54,10 @@ public class ManagementNotificationProvider : INotificationProvider, IHostedServ
         if (payload == null)
             return;
         Logger.LogInformation("接受集控消息：{} {}", payload.MessageMask, payload.MessageContent);
-        NotificationHostService.ShowNotification(new NotificationRequest()
+        ShowNotification(new NotificationRequest()
         {
-            MaskContent = new ManagementNotificationProviderControl(true, payload),
-            MaskSpeechContent = payload.MessageMask,
-            OverlayContent = new ManagementNotificationProviderControl(false, payload),
-            OverlayDuration = TimeSpan.FromSeconds(payload.DurationSeconds) * payload.RepeatCounts,
-            OverlaySpeechContent = payload.MessageContent,
+            MaskContent = NotificationContent.CreateTwoIconsMask(payload.MessageMask, rightIcon:PackIconKind.Announcement),
+            OverlayContent = NotificationContent.CreateRollingTextContent(payload.MessageContent, TimeSpan.FromSeconds(payload.DurationSeconds) * payload.RepeatCounts, payload.RepeatCounts),
             IsPriorityOverride = payload.IsEmergency,
             PriorityOverride = -1,
             RequestNotificationSettings =

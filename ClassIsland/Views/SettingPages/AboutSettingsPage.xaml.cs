@@ -1,20 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
@@ -24,7 +14,6 @@ using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Helpers;
 using ClassIsland.Models.AllContributors;
 using ClassIsland.Services;
-using ClassIsland.Services.Management;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
@@ -155,7 +144,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         {
             SettingsService.Settings.ContributorsCache =
                 await WebRequestHelper.GetJson<AllContributorsRc>(new Uri(
-                    "https://mirror.ghproxy.com/?q=https%3A%2F%2Fraw.githubusercontent.com%2FClassIsland%2FClassIsland%2Fmaster%2F.all-contributorsrc"));
+                    "https://github.moeyy.xyz/https://raw.githubusercontent.com/ClassIsland/ClassIsland/master/.all-contributorsrc"));
         }
         catch (Exception ex)
         {
@@ -211,5 +200,14 @@ public partial class AboutSettingsPage : SettingsPageBase
             ViewModel.SayingsCollection.RemoveAt(0);
         }
         SentrySdk.Metrics.Increment("views.settings.about.sayings.click");
+    }
+
+    private void UIElementAppInfo_OnMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        ViewModel.AppIconClickCount++;
+        if (ViewModel.AppIconClickCount >= 20 && !ManagementService.Policy.DisableEasterEggs)
+        {
+            Clipboard.SetDataObject("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC", false);
+        }
     }
 }

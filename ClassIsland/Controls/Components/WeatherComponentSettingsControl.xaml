@@ -35,6 +35,25 @@
                         </DockPanel>
                     </Grid>
                 </materialDesign:ColorZone>
+                <ci:SettingsCard IconGlyph="CardTextOutline"
+                                 Header="显示天气信息"
+                                 Description="显示当前天气信息摘要。"
+                                 Margin="0 0 0 6">
+                    <ci:SettingsCard.Switcher>
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox SelectedIndex="{Binding Settings.MainWeatherInfoKind}"
+                                      MinWidth="110">
+                                <ComboBoxItem>天气类型/气温</ComboBoxItem>
+                                <ComboBoxItem>湿度</ComboBoxItem>
+                                <ComboBoxItem>风力</ComboBoxItem>
+                                <ComboBoxItem>AQI</ComboBoxItem>
+                                <ComboBoxItem>气压</ComboBoxItem>
+                                <ComboBoxItem>体感温度</ComboBoxItem>
+                            </ComboBox>
+                            <ToggleButton Margin="4 0 0 0" IsChecked="{Binding Settings.ShowMainWeatherInfo}"/>
+                        </StackPanel>
+                    </ci:SettingsCard.Switcher>
+                </ci:SettingsCard>
                 <ci:SettingsCard IconGlyph="AlertCircleCheckOutline" Header="显示预警信号"
                                  Description="启用后，预警将以图标形式显示在天气组件上。"
                                  Margin="0 0 0 6"
@@ -47,7 +66,7 @@
                         <Grid>
                             <ComboBox SelectedIndex="{Binding Settings.AlertsTitleShowMode}">
                                 <ComboBoxItem>不显示</ComboBoxItem>
-                                <ComboBoxItem>当使用默认图标时</ComboBoxItem>
+                                <ComboBoxItem>仅当没有对应图标时</ComboBoxItem>
                                 <ComboBoxItem>总是显示</ComboBoxItem>
                             </ComboBox>
                         </Grid>

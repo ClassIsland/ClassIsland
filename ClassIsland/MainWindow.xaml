@@ -163,11 +163,6 @@
                       Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <MenuItem Header="SizeToContentTest" Click="ButtonResizeDebug_OnClick"/>
                 <Separator/>
-                <MenuItem Header="OverlayMaskIn" Click="MenuItemDebugOverlayMaskIn_OnClick"/>
-                <MenuItem Header="OverlayMaskOut" Click="MenuItemDebugOverlayMaskOut_OnClick"/>
-                <MenuItem Header="OverlayOut" Click="MenuItemDebugOverlayOut_OnClick"/>
-                <MenuItem Header="OverlayMaskOutDirect" Click="MenuItemDebugOverlayMaskOutDirect_OnClick"/>
-                <Separator/>
                 <MenuItem Header="WelcomeWindow" Click="MenuItemDebugWelcomeWindow_OnClick"/>
                 <MenuItem Header="WelcomeWindow (Full)" Click="MenuItemDebugWelcomeWindow2_OnClick"/>
                 <Separator/>
@@ -518,8 +513,10 @@
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="{x:Type GroupItem}">
                                                     <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                                             LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                              IsMainLine="{Binding Converter={StaticResource MainWindowIsMainLineConverter}, ConverterParameter={StaticResource ComponentsCollectionViewSource}}"
-                                                                             LineNumber="{Binding Name}">
+                                                                             LineNumber="{Binding Name}"
+                                                                             IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
                                                         <ItemsPresenter/>
                                                     </controls:MainWindowLine>
                                                 </ControlTemplate>

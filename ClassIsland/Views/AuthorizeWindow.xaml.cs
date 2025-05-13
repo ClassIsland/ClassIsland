@@ -1,26 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
-using ClassIsland.Core.Services.Registry;
-using ClassIsland.Models;
 using ClassIsland.Models.Authorize;
 using ClassIsland.Shared;
 using ClassIsland.ViewModels;
 using Microsoft.Extensions.Logging;
-using AuthorizeProviderDisplayingModel = ClassIsland.Models.Authorize.AuthorizeProviderDisplayingModel;
 
 namespace ClassIsland.Views;
 

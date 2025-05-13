@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -28,6 +29,7 @@ public class WeatherService : IHostedService, IWeatherService
 
     private ILogger<WeatherService> Logger { get; }
     public IRulesetService RulesetService { get; }
+    public ILocationService LocationService { get; }
 
     private DispatcherTimer UpdateTimer { get; } = new()
     {
@@ -36,10 +38,13 @@ public class WeatherService : IHostedService, IWeatherService
 
     public bool IsWeatherRefreshed { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService)
+    public bool IsPosUpdated { get; set; } = false;
+
+    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService, ILocationService locationService)
     {
         Logger = logger;
         RulesetService = rulesetService;
+        LocationService = locationService;
         SettingsService = settingsService;
         LoadData();
         RulesetService.RegisterRuleHandler("classisland.weather.currentWeather", CurrentWeatherRuleHandler);
@@ -100,6 +105,21 @@ public class WeatherService : IHostedService, IWeatherService
 
     public async Task QueryWeatherAsync()
     {
+        if (!IsPosUpdated && Settings.AutoRefreshWeatherLocation)
+        {
+            IsPosUpdated = true;
+            try
+            {
+                var pos = await LocationService.GetLocationAsync();
+                SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4);
+                SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError(exception, "无法获取当前位置");
+            }
+        }
+        
         var cityLatitude = string.Empty;
         var cityLongitude = string.Empty;
         
@@ -107,16 +127,28 @@ public class WeatherService : IHostedService, IWeatherService
         try
         {
             using var http = new HttpClient();
-            var uri =
-                $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn";
+            var uri = Settings.WeatherLocationSource switch
+            {
+                0 => $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn",
+                1 => $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/geo?longitude={Settings.WeatherLongitude}&latitude={Settings.WeatherLatitude}&locale=zh_cn",
+                _ => throw new ArgumentOutOfRangeException()
+            };
             Logger.LogInformation("获取城市信息： {}", uri);
             var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(new Uri(uri));
             // 取第一个城市信息
             var cityInfo = cityInfoList.FirstOrDefault();
-            if (cityInfo != null && cityInfo.LocationKey == Settings.CityId)
+            if (cityInfo != null && (Settings.WeatherLocationSource != 0 || cityInfo.LocationKey == Settings.CityId)
+                && !string.IsNullOrWhiteSpace(cityInfo.LocationKey))
             {
                 cityLatitude = cityInfo.Latitude;
-                cityLongitude = cityInfo.Longitude;       
+                cityLongitude = cityInfo.Longitude;
+                if (Settings.WeatherLocationSource == 1)
+                {
+                    cityLatitude = Settings.WeatherLatitude.ToString(CultureInfo.InvariantCulture);
+                    cityLongitude = Settings.WeatherLongitude.ToString(CultureInfo.InvariantCulture);
+                    Settings.CityId = cityInfo.LocationKey;
+                    Settings.CityName = $"{cityInfo.Name} ({cityInfo.Affiliation})";
+                }
             }
         }
         catch (Exception ex)

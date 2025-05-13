@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Services;
 
 namespace ClassIsland.Converters;
 

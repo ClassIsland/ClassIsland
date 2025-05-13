@@ -6,35 +6,27 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Attributes;
 using ClassIsland.Models.Actions;
 using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Core.Models.Notification;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-public class ActionNotificationProvider : INotificationProvider, IHostedService
+[NotificationProviderInfo("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6", "行动提醒", PackIconKind.Airplane, "显示由行动发出的提醒。")]
+public class ActionNotificationProvider : NotificationProviderBase
 {
     public INotificationHostService NotificationHostService { get; }
     public IActionService ActionService { get; }
-    public string Name { get; set; } = "行动提醒";
-    public string Description { get; set; } = "显示由行动发出的提醒。";
-    public Guid ProviderGuid { get; set; } = new Guid("4B12F124-8585-43C7-AFC5-7BBB7CBE60D6");
-    public object? SettingsElement { get; set; }
-    public object? IconElement { get; set; } = new PackIcon()
-    {
-        Kind = PackIconKind.Airplane,
-        Width = 24,
-        Height = 24
-    };
 
     public ActionNotificationProvider(INotificationHostService notificationHostService, IActionService actionService)
     {
         NotificationHostService = notificationHostService;
         ActionService = actionService;
 
-        NotificationHostService.RegisterNotificationProvider(this);
         ActionService.RegisterActionHandler("classisland.showNotification", (o, s) => AppBase.Current.Dispatcher.Invoke(() => ActionHandler(o, s)));
     }
 
@@ -44,25 +36,18 @@ public class ActionNotificationProvider : INotificationProvider, IHostedService
         {
             return;
         }
-        NotificationHostService.ShowNotification(new NotificationRequest()
+        ShowNotification(new NotificationRequest()
         {
-            MaskContent = new StackPanel()
+            MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask, hasRightIcon:false, factory: x =>
             {
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Orientation = Orientation.Horizontal,
-                Children =
-                {
-                    new PackIcon(){ Kind = PackIconKind.InfoCircleOutline, Width = 22, Height = 22, VerticalAlignment = VerticalAlignment.Center},
-                    new TextBlock(new Run(settings.Mask)){FontSize = (double)Application.Current.Resources["MainWindowEmphasizedFontSize"], VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(4, 0, 0, 0), FontWeight = FontWeights.Bold}
-                }
-            },
-            OverlayContent = string.IsNullOrWhiteSpace(settings.Content) || settings.ContentDurationSeconds <= 0 ? null : new TextBlock(new Run(settings.Content)) { FontSize = 18, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center},
-            IsSpeechEnabled = settings.IsContentSpeechEnabled || settings.IsMaskSpeechEnabled,
-            MaskSpeechContent = settings.IsMaskSpeechEnabled ? settings.Mask : "",
-            OverlaySpeechContent = settings.IsContentSpeechEnabled ? settings.Content : "",
-            MaskDuration = TimeSpan.FromSeconds(settings.MaskDurationSeconds),
-            OverlayDuration = TimeSpan.FromSeconds(settings.ContentDurationSeconds),
+                x.Duration = TimeSpan.FromSeconds(settings.MaskDurationSeconds);
+                x.IsSpeechEnabled = settings.IsMaskSpeechEnabled;
+            }),
+            OverlayContent = string.IsNullOrWhiteSpace(settings.Content) || settings.ContentDurationSeconds <= 0 ? null : NotificationContent.CreateSimpleTextContent(settings.Content, factory: x =>
+            {
+                x.IsSpeechEnabled = settings.IsContentSpeechEnabled;
+                x.Duration = TimeSpan.FromSeconds(settings.ContentDurationSeconds);
+            }),
             RequestNotificationSettings =
             {
                 IsSettingsEnabled = settings.IsAdvancedSettingsEnabled,

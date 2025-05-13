@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Models;
 using ClassIsland.Models.ComponentSettings;
 using MaterialDesignThemes.Wpf;
 

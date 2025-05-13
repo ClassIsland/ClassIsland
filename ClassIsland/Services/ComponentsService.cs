@@ -4,17 +4,18 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.Json;
-using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Models.Components;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
+using Sentry;
 
 namespace ClassIsland.Services;
 
@@ -47,13 +48,15 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     private SettingsService SettingsService { get; }
     public ILogger<ComponentsService> Logger { get; }
+    public IManagementService ManagementService { get; }
 
     private string CurrentConfigName { get; set; } = "Default";
 
-    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger)
+    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger, IManagementService managementService)
     {
         SettingsService = settingsService;
         Logger = logger;
+        ManagementService = managementService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
 
         if (!Directory.Exists(ComponentSettingsPath))
@@ -74,17 +77,52 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         LoadConfig();
     }
 
+    public async Task LoadManagementConfig()
+    {
+        if (!ManagementService.IsManagementEnabled || ManagementService.Connection == null)
+        {
+            return;
+        }
+        
+        IsManagementMode = true;
+        try
+        {
+            if (!ManagementService.Manifest.ComponentsSource.IsNewerAndNotNull(ManagementService.Versions
+                    .ComponentsVersion))
+            {
+                return;
+            }
+            CurrentComponents = await ManagementService.Connection
+                .SaveJsonAsync<ComponentSettingsList>(ManagementService.Manifest.ComponentsSource.Value!,
+                    Management.ManagementService.ManagementComponentsPath);
+            ManagementService.Versions.ComponentsVersion = ManagementService.Manifest.ComponentsSource.Version;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "无法从集控拉取组件配置");
+            CurrentComponents =
+                ConfigureFileHelper.LoadConfig<ComponentSettingsList>(Management.ManagementService
+                    .ManagementComponentsPath);
+        }
+        LoadConfig();
+    
+    }
+
     private void LoadConfig()
     {
-        if (!File.Exists(SelectedConfigFullPath))
+        if (!IsManagementMode)
         {
-            CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponents);
-            SaveConfig();
+            if (!File.Exists(SelectedConfigFullPath))
+            {
+                CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponents);
+                SaveConfig();
+            }
+            else
+            {
+                CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
+            }
         }
-        else
-        {
-            CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
-        }
+        
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
         CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
 
@@ -132,6 +170,8 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         ComponentConfigs = Directory.GetFiles(ComponentSettingsPath, "*.json").Select(Path.GetFileNameWithoutExtension).SkipWhile(x => x is null).ToList()!;
     }
 
+    public bool IsManagementMode { get; set; } = false;
+
 
     public ComponentSettingsList CurrentComponents
     {
@@ -146,39 +186,54 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     public ComponentBase? GetComponent(ComponentSettings settings, bool isSettings)
     {
-        var type = isSettings ? settings.AssociatedComponentInfo.SettingsType : settings.AssociatedComponentInfo.ComponentType;
-        if (type == null)
+        var transaction = SentrySdk.StartTransaction("Get Component Instance", "component.getInstance");
+        transaction.SetTag("component", settings.AssociatedComponentInfo.Name);
+        transaction.SetTag("component.isSettings", isSettings.ToString());
+        transaction.SetTag("component.Id", settings.AssociatedComponentInfo.Guid.ToString());
+        try
         {
-            return null;
-        }
-
-        var c = IAppHost.Host?.Services.GetService(type);
-        if (c is not ComponentBase component)
-        {
-            return null;
-        }
-
-
-        var baseType = type.BaseType;
-        var migrated = settings.IsMigrated && !isSettings;
-        if (migrated)
-        {
-            if (baseType?.GetGenericArguments().Length > 0)
+            var type = isSettings ? settings.AssociatedComponentInfo.SettingsType : settings.AssociatedComponentInfo.ComponentType;
+            if (type == null)
             {
-                var settingsType = baseType.GetGenericArguments().First();
-                var componentSettings = Activator.CreateInstance(settingsType);
-                settings.Settings = componentSettings;
+                transaction.Finish(SpanStatus.NotFound);
+                return null;
+            }
+
+            var c = IAppHost.Host?.Services.GetService(type);
+            if (c is not ComponentBase component)
+            {
+                transaction.Finish(SpanStatus.NotFound);
+                return null;
+            }
+
+
+            var baseType = type.BaseType;
+            var migrated = settings.IsMigrated && !isSettings;
+            if (migrated)
+            {
+                if (baseType?.GetGenericArguments().Length > 0)
+                {
+                    var settingsType = baseType.GetGenericArguments().First();
+                    var componentSettings = Activator.CreateInstance(settingsType);
+                    settings.Settings = componentSettings;
+                    component.SettingsInternal = componentSettings;
+                }
+                component.OnMigrated(settings.MigrationSource, settings.Settings);
+            } 
+            if (baseType?.GetGenericArguments().Length > 0 && !migrated)
+            {
+                var componentSettings = LoadComponentSettings(settings, baseType);
+
                 component.SettingsInternal = componentSettings;
             }
-            component.OnMigrated(settings.MigrationSource, settings.Settings);
-        } 
-        if (baseType?.GetGenericArguments().Length > 0 && !migrated)
-        {
-            var componentSettings = LoadComponentSettings(settings, baseType);
-
-            component.SettingsInternal = componentSettings;
+            transaction.Finish(SpanStatus.Ok);
+            return component;
         }
-        return component;
+        catch (Exception ex)
+        {
+            transaction.Finish(ex, SpanStatus.InternalError);
+            throw;
+        }
     }
 
     internal static object? LoadComponentSettings(ComponentSettings settings, Type baseType)

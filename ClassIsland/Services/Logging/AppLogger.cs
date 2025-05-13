@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Logging;
+using ClassIsland.Models.Logging;
 using Microsoft.Extensions.Logging;
+using Pastel;
 
 namespace ClassIsland.Services.Logging;
 
@@ -9,13 +15,21 @@ public class AppLogger(AppLogService appLogService, string categoryName) : ILogg
     private AppLogService AppLogService { get; } = appLogService;
 
     private string CategoryName { get; } = categoryName;
-    
+
+    private static readonly AsyncLocal<Stack<object>> ScopeStack = new AsyncLocal<Stack<object>>();
+
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
+        List<string> scopes = [];
+        if (ScopeStack.Value != null)
+        {
+            scopes.AddRange(ScopeStack.Value.Select(scope => (scope.ToString() ?? "") + " => "));
+        }
+        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
         AppLogService.AddLog(new LogEntry()
         {
             LogLevel = logLevel,
-            Message = formatter(state, exception) + (exception != null ? "\n" + exception : ""),
+            Message = LogMaskingHelper.MaskLog(message),
             CategoryName = CategoryName,
             Exception = exception
         });
@@ -28,6 +42,9 @@ public class AppLogger(AppLogService appLogService, string categoryName) : ILogg
 
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
     {
-        return null;
+        ScopeStack.Value ??= new Stack<object>();
+        ScopeStack.Value.Push(state);
+
+        return new LoggingScope(() => ScopeStack.Value.Pop());
     }
 }

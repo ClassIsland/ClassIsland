@@ -29,9 +29,12 @@
       Unloaded="ComponentsSettingsPage_OnUnloaded">
 
     <controls:SettingsPageBase.Resources>
-        <ci:BindingProxy x:Key="DataProxy" Data="{Binding Mode=OneWay}"/>
+        <ci:BindingProxy x:Key="DataProxy"/>
         <CollectionViewSource x:Key="RegisteredComponentsSource" 
                               Source="{x:Static registry:ComponentRegistryService.Registered}"/>
+        <CollectionViewSource x:Key="ContainerComponentsSource" 
+                              Source="{x:Static registry:ComponentRegistryService.Registered}"
+                              Filter="ContainerComponentsSource_OnFilter"/>
 
         <StackPanel x:Key="CreateProfileDialog" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
             <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="新建档案"/>
@@ -81,6 +84,35 @@
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                        <Setter Property="ContextMenu">
+                            <Setter.Value>
+                                <ContextMenu FontFamily="{StaticResource HarmonyOsSans}">
+                                    <MenuItem Icon="{materialDesign:PackIcon Group}"  Header="包裹到容器"
+                                              ItemsSource="{Binding Source={StaticResource ContainerComponentsSource}}">
+                                        <MenuItem.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </MenuItem.ItemTemplate>
+                                        <MenuItem.ItemContainerStyle>
+                                            <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                                <Setter Property="Command" Value="{Binding Data.CreateContainerComponentCommand, Source={StaticResource DataProxy}}"/>
+                                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                                            </Style>
+                                        </MenuItem.ItemContainerStyle>
+                                    </MenuItem>
+                                    <MenuItem Icon="{materialDesign:PackIcon ContentDuplicate}"  Header="创建副本"
+                                              Command="{Binding Data.DuplicateComponentCommand, Source={StaticResource DataProxy}}"
+                                              CommandParameter="{Binding}"/>
+                                </ContextMenu>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate DataType="{x:Type components:ComponentSettings}">
@@ -90,8 +122,16 @@
                                                      />
                             <TextBlock Text="{Binding AssociatedComponentInfo.Name}"
                                        VerticalAlignment="Center"/>
+                            <Button Content="{materialDesign:PackIcon MoreHoriz}"
+                                    Margin="4 -16 0 -16"
+                                    VerticalAlignment="Center"
+                                    ToolTip="更多选项…"
+                                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}}"
+                                    Command="{Binding OpenContextMenuCommand, RelativeSource={RelativeSource AncestorType=local:ComponentsSettingsPage}}"
+                                    Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                    Style="{StaticResource MaterialDesignToolForegroundButton}"/>
                             <Button Content="{materialDesign:PackIcon OpenInBrowser}"
-                                    Margin="4 -16 -4 -16"
+                                    Margin="0 -16 0 -16"
                                     VerticalAlignment="Center"
                                     ToolTip="查看子组件"
                                     Click="ButtonShowChildrenComponents_OnClick"
@@ -105,7 +145,7 @@
                             </Button>
                             <Button Content="{materialDesign:PackIcon Remove}"
                                     Foreground="IndianRed"
-                                    Margin="4 -16 -4 -16"
+                                    Margin="0 -16 -4 -16"
                                     VerticalAlignment="Center"
                                     ToolTip="删除"
                                     Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -128,16 +168,20 @@
         <converters:HorizontalAlignmentToIntConverter x:Key="HorizontalAlignmentToIntConverter" />
 
     </controls:SettingsPageBase.Resources>
-    <Grid Margin="8 0">
+    <Grid Margin="8 0" IsEnabled="{Binding ComponentsService.IsManagementMode, Converter={StaticResource InvertBooleanConverter}}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <!-- ROW 0 组件方案管理 -->
-        <Grid Grid.Row="0" MaxWidth="750">
+        <!-- ROW 0 集控提示 -->
+        <TextBlock Text="部分设置由您的组织管理，您只能查看这些设置。" MaxWidth="750" TextWrapping="Wrap"
+                   Grid.Row="0" Visibility="{Binding ComponentsService.IsManagementMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        <!-- ROW 1 组件方案管理 -->
+        <Grid Grid.Row="1" MaxWidth="750">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
@@ -175,26 +219,26 @@
                         Style="{StaticResource MaterialDesignToolForegroundButton}"/>
             </StackPanel>
         </Grid>
-        <!-- ROW 1 列表编辑区域 -->
-        <Border Grid.Row="1"
+        <!-- ROW 2 列表编辑区域 -->
+        <Border Grid.Row="2"
                 Background="{DynamicResource MaterialDesignToolBarBackground}"
                 Margin="-8 8"/>
-        <ListBox Grid.Row="1"
+        <ListBox Grid.Row="2"
                  Margin="-8 8"
                  ItemsSource="{Binding ComponentsService.CurrentComponents}"
                  SelectedItem="{Binding ViewModel.SelectedComponentSettingsMain}"
                  SelectionChanged="SelectorComponents_OnSelectionChanged"
                  Style="{StaticResource ComponentListBoxStyle}">
         </ListBox>
-        <!-- ROW 2 选中组件信息 -->
-        <StackPanel Grid.Row="2" MaxWidth="750">
+        <!-- ROW 3 选中组件信息 -->
+        <StackPanel Grid.Row="3" MaxWidth="750">
             <StackPanel Orientation="Horizontal">
                 
             </StackPanel>
         </StackPanel>
 
-        <!-- ROW 3 容器组件 -->
-        <GroupBox Grid.Row="3" Visibility="{Binding ViewModel.IsComponentChildrenViewOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <!-- ROW 4 容器组件 -->
+        <GroupBox Grid.Row="4" Visibility="{Binding ViewModel.IsComponentChildrenViewOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
             <GroupBox.HeaderTemplate>
                 <DataTemplate>
                     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ComponentsSettingsPage}}">
@@ -240,8 +284,8 @@
             </StackPanel>
         </GroupBox>
 
-        <!-- ROW 4 组件设置 -->
-        <Grid Grid.Row="4" HorizontalAlignment="Stretch">
+        <!-- ROW 5 组件设置 -->
+        <Grid Grid.Row="5" HorizontalAlignment="Stretch">
 
             <TabControl HorizontalContentAlignment="Left" 
                         MaxWidth="750"
@@ -269,12 +313,12 @@
                         </dd:DragDrop.EffectCopyAdornerTemplate>
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                                <Setter Property="Width" Value="180"></Setter>
+                                
                             </Style>
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
+                                <Grid HorizontalAlignment="Stretch" Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ContentPresenter}}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition/>
@@ -300,13 +344,21 @@
                                                FontSize="12"
                                                FontWeight="Regular"
                                                TextWrapping="Wrap"
-                                               TextTrimming="CharacterEllipsis"/>
+                                               HorizontalAlignment="Stretch"
+                                               TextAlignment="Left"
+                                               TextTrimming="CharacterEllipsis"
+                                               />
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <controls1:VirtualizingWrapPanel IsItemsHost="True"/>
+                                <controls1:VirtualizingWrapPanel IsItemsHost="True"
+                                                                 StretchItems="True">
+                                    <controls1:VirtualizingWrapPanel.ItemSize>
+                                        <Size Width="170" Height="67"/>
+                                    </controls1:VirtualizingWrapPanel.ItemSize>
+                                </controls1:VirtualizingWrapPanel>
                             </ItemsPanelTemplate>
                         </ListBox.ItemsPanel>
                     </ListBox>

@@ -3,14 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
-using Windows.Win32;
-using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Core.Models.Ruleset;
 using ClassIsland.Core.Models.Weather;
@@ -20,8 +15,6 @@ using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AllContributors;
-using ClassIsland.Services;
-using ClassIsland.Services.AppUpdating;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using Microsoft.Extensions.Logging;
@@ -31,12 +24,12 @@ using Octokit;
 using WindowsShortcutFactory;
 
 using File = System.IO.File;
-using System.Runtime.InteropServices;
 using ClassIsland.Core.Models;
+using ClassIsland.Core.Abstractions.Models.Speech;
 
 namespace ClassIsland.Models;
 
-public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings
+public class Settings : ObservableRecipient, ILessonControlSettings, INotificationSettings, IGlobalSpeechSettings
 {
     private int _theme = 2;
     private bool _iscustomBackgroundColorEnabled = false;
@@ -271,6 +264,50 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _settingsOverlay) return;
             _settingsOverlay = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double WeatherLongitude
+    {
+        get => _weatherLongitude;
+        set
+        {
+            if (value.Equals(_weatherLongitude)) return;
+            _weatherLongitude = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public double WeatherLatitude
+    {
+        get => _weatherLatitude;
+        set
+        {
+            if (value.Equals(_weatherLatitude)) return;
+            _weatherLatitude = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public int WeatherLocationSource
+    {
+        get => _weatherLocationSource;
+        set
+        {
+            if (value == _weatherLocationSource) return;
+            _weatherLocationSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool AutoRefreshWeatherLocation
+    {
+        get => _autoRefreshWeatherLocation;
+        set
+        {
+            if (value == _autoRefreshWeatherLocation) return;
+            _autoRefreshWeatherLocation = value;
             OnPropertyChanged();
         }
     }
@@ -811,6 +848,28 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public bool AutoDisableCorruptPlugins
+    {
+        get => _autoDisableCorruptPlugins;
+        set
+        {
+            if (value == _autoDisableCorruptPlugins) return;
+            _autoDisableCorruptPlugins = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool CorruptPluginsDisabledLastSession
+    {
+        get => _corruptPluginsDisabledLastSession;
+        set
+        {
+            if (value == _corruptPluginsDisabledLastSession) return;
+            _corruptPluginsDisabledLastSession = value;
+            OnPropertyChanged();
+        }
+    }
+
     #endregion
 
     #region Appearence
@@ -926,6 +985,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isFallbackModeEnabled) return;
             _isFallbackModeEnabled = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool UseExperimentColorPickingMethod
+    {
+        get => _useExperimentColorPickingMethod;
+        set
+        {
+            if (value == _useExperimentColorPickingMethod) return;
+            _useExperimentColorPickingMethod = value;
             OnPropertyChanged();
         }
     }
@@ -1180,6 +1250,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
+    public ObservableDictionary<string, NotificationSettings> NotificationChannelsNotifySettings
+    {
+        get => _notificationChannelsNotifySettings;
+        set
+        {
+            if (Equals(value, _notificationChannelsNotifySettings)) return;
+            _notificationChannelsNotifySettings = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsSystemSpeechSystemExist
     {
         get => _isSystemSpeechSystemExist;
@@ -1249,6 +1330,17 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
                 return;
             }
             _speechSource = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string SelectedSpeechProvider
+    {
+        get => _selectedSpeechProvider;
+        set
+        {
+            if (value == _selectedSpeechProvider) return;
+            _selectedSpeechProvider = value;
             OnPropertyChanged();
         }
     }
@@ -1674,6 +1766,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     bool _isIgnoreWorkAreaEnabled;
     private int _criticalSafeModeMethod = 0;
     private bool _notificationUseStandaloneEffectUiThread = true;
+    private double _weatherLongitude = 0.0;
+    private double _weatherLatitude = 0.0;
+    private int _weatherLocationSource = 0;
+    private bool _autoRefreshWeatherLocation = false;
+    private bool _useExperimentColorPickingMethod = false;
+    private bool _autoDisableCorruptPlugins = true;
+    private bool _corruptPluginsDisabledLastSession = false;
+    private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
+    private string _selectedSpeechProvider = "classisland.speech.edgeTts";
 
     public bool IsIgnoreWorkAreaEnabled
     {

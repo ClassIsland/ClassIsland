@@ -24,6 +24,77 @@ public class ClassPlan : AttachableSettingsObject
     private int _lastTimeLayoutCount = -1;
     private string _associatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
 
+    private bool _isValidTimeLayoutItemsDirty = true;
+    private ObservableCollection<TimeLayoutItem> _validTimeLayoutItems = [];
+
+    /// <summary>
+    /// 有效的时间点列表
+    /// </summary>
+    [JsonIgnore]
+    public ObservableCollection<TimeLayoutItem> ValidTimeLayoutItems
+    {
+        get
+        {
+            if (!_isValidTimeLayoutItemsDirty) 
+                return _validTimeLayoutItems;
+            _validTimeLayoutItems = GetValidTimeLayoutItems();
+            _isValidTimeLayoutItemsDirty = false;
+            return _validTimeLayoutItems;
+        }
+    }
+
+    private void MakeValidTimeLayoutItemsDirty()
+    {
+        _isValidTimeLayoutItemsDirty = true;
+        OnPropertyChanged(nameof(ValidTimeLayoutItems));
+    }
+
+    private ObservableCollection<TimeLayoutItem> GetValidTimeLayoutItems()
+    {
+        if (TimeLayout == null)
+            return [];
+        var timeLayoutMap = Classes.ToDictionary(x => x.CurrentTimeLayoutItem, x => x);
+        var displayTimePoints = TimeLayout.Layouts
+            .Where(x => x.TimeType is 0 or 1 or 2)
+            .ToList();
+        ObservableCollection<TimeLayoutItem> items = [.. displayTimePoints.Select(x => x)];
+        List<TimeLayoutItem> remove = [];
+        // 正向搜索
+        var isPrevEnabled = true;
+        for (var i = 0; i < displayTimePoints.Count; i++)
+        {
+            if (timeLayoutMap.TryGetValue(items[i], out var info))
+            {
+                isPrevEnabled = info.IsEnabled;
+            }
+
+            if (!isPrevEnabled)
+            {
+                remove.Add(displayTimePoints[i]);
+            }
+        }
+        // 反向搜索
+        isPrevEnabled = true;
+        for (var i = displayTimePoints.Count - 1; i >= 0; i--)
+        {
+            if (timeLayoutMap.TryGetValue(items[i], out var info))
+            {
+                isPrevEnabled = info.IsEnabled;
+            }
+
+            if (!isPrevEnabled)
+            {
+                remove.Add(displayTimePoints[i]);
+            }
+        }
+
+        foreach (var i in remove)
+        {
+            items.Remove(i);
+        }
+        return items;
+    }
+
     /// <summary>
     /// 当课程表更新时触发
     /// </summary>
@@ -60,6 +131,7 @@ public class ClassPlan : AttachableSettingsObject
             TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
         }
         Classes.CollectionChanged += ClassesOnCollectionChanged;
+        ClassesChanged += (sender, args) => MakeValidTimeLayoutItemsDirty();
     }
 
     private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -114,6 +186,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
         RefreshClassesList(true);
+        NotifyClassesChanged();
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -131,6 +204,7 @@ public class ClassPlan : AttachableSettingsObject
                     TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
                 }
 
+                NotifyClassesChanged();
                 break;
             }
             case nameof(Classes):

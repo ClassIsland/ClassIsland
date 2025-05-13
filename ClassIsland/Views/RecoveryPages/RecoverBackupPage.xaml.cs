@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Services;
@@ -40,11 +32,12 @@ public partial class RecoverBackupPage : Page
         {
             ViewModel.Backups =
                 new ObservableCollection<string>(
-                    Directory.GetDirectories(Path.Combine(App.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName)!);
+                    Directory.GetFiles(Path.Combine(App.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName).Concat(
+                        Directory.GetDirectories(Path.Combine(App.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName)!)); 
         }
     }
 
-    private async Task RecoverBackupAsync(string backupRoot)
+    private async Task RecoverBackupAsync(string backupPath)
     {
         if (ViewModel.RecoverMode == 1)
         {
@@ -68,7 +61,12 @@ public partial class RecoverBackupPage : Page
 
         await Task.Run(() =>
         {
-            FileFolderService.CopyFolder(backupRoot, App.AppRootFolderPath, true);
+            if(Path.GetExtension(backupPath)==".zip"){
+                ZipFile.ExtractToDirectory(backupPath, App.AppRootFolderPath, true);
+            }
+            if(Directory.Exists(backupPath)){
+                FileFolderService.CopyFolder(backupPath, App.AppRootFolderPath, true);
+            }
         });
     }
 
@@ -91,12 +89,12 @@ public partial class RecoverBackupPage : Page
             return;
         }
 
-        var backupRoot = Path.Combine(App.AppRootFolderPath, "Backups", ViewModel.SelectedBackupName);
+        var backupPath = Path.Combine(App.AppRootFolderPath, "Backups", ViewModel.SelectedBackupName);
 
         try
         {
             ViewModel.IsWorking = true;
-            await RecoverBackupAsync(backupRoot);
+            await RecoverBackupAsync(backupPath);
             ViewModel.IsWorking = false;
             CommonDialog.ShowInfo($"操作成功完成。");
         }

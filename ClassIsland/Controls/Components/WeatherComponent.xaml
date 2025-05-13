@@ -10,19 +10,115 @@
                         xmlns:controls1="clr-namespace:ClassIsland.Controls"
                         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                         xmlns:ci="http://classisland.tech/schemas/xaml/core"
+                        xmlns:converters="clr-namespace:ClassIsland.Converters"
                         mc:Ignorable="d"
                         d:DesignHeight="450" d:DesignWidth="800">
     <controls:ComponentBase.Resources>
         <ci:SizeDoubleToCornerRadiusConverter x:Key="SizeDoubleToCornerRadiusConverter" />
+        <converters:StringToDoubleConverter x:Key="StringToDoubleConverter" />
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <controls1:WeatherPackIconControl Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
-                                             Height="22" Width="22" VerticalAlignment="Center"/>
-            <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
-                </Run><Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}"/>
-            </TextBlock>
+            <TabControl Visibility="{Binding Settings.ShowMainWeatherInfo, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        SelectedIndex="{Binding Settings.MainWeatherInfoKind}">
+                <TabItem Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <controls1:WeatherPackIconControl
+                            Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
+                            Height="22" Width="22" VerticalAlignment="Center" />
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Height="22" Width="22"
+                                                 Kind="WaterPercent"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Height="22" Width="22"
+                                                 Kind="Windsock"/>
+                        <materialDesign:PackIcon Height="22" Width="22"
+                                                 Margin="6 0 0 0"
+                                                 Kind="Navigation">
+                            <materialDesign:PackIcon.RenderTransform>
+                                <RotateTransform Angle="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Direction.Value, Converter={StaticResource StringToDoubleConverter}}" CenterX="11" CenterY="11"/>
+                            </materialDesign:PackIcon.RenderTransform>
+                        </materialDesign:PackIcon>
+                        <TextBlock VerticalAlignment="Center" Margin="0 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Leaf" Width="22" Height="22">
+                            <materialDesign:PackIcon.Style>
+                                <Style TargetType="materialDesign:PackIcon">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="1">
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel1Brush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="2">
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel2Brush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="3">
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel3Brush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="4">
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel4Brush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="5">
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel5Brush}"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="6">
+                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel6Brush}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </materialDesign:PackIcon.Style>
+                        </materialDesign:PackIcon>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}">
+                            </Run>
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Height="22" Width="22"
+                                                 Kind="Gauge"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+                <TabItem Visibility="Collapsed">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Height="22" Width="22"
+                                                 Kind="HomeThermometerOutline"/>
+                        <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Value}">
+                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Unit}" />
+                        </TextBlock>
+                    </StackPanel>
+                </TabItem>
+            </TabControl>
             <!-- 预警信号 -->
             <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
                           Visibility="{Binding Settings.ShowAlerts, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -114,7 +210,7 @@
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                    VerticalAlignment="Center" FontWeight="Regular">
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}">
-                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="m"/>
+                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="min"/>
                         </TextBlock>
                     </StackPanel>
                 </Border>

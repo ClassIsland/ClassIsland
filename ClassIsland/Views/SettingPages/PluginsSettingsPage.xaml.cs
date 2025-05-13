@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,13 +13,11 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Core.Controls;
+using ClassIsland.Core.Enums;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.Plugin;
@@ -29,12 +25,10 @@ using ClassIsland.Services;
 using ClassIsland.ViewModels.SettingsPages;
 using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
+using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-using Sentry;
-using WebSocketSharp;
 using YamlDotNet.Serialization.NamingConventions;
 using YamlDotNet.Serialization;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 using Path = System.IO.Path;
 using SaveFileDialog = System.Windows.Forms.SaveFileDialog;
@@ -53,17 +47,19 @@ public partial class PluginsSettingsPage : SettingsPageBase
     public IPluginService PluginService { get; }
     public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
+    public ILogger<PluginsSettingsPage> Logger { get; }
 
     private CancellationTokenSource DocumentLoadingCancellationTokenSource { get; set; } = new();
 
-    public PluginsSettingsPage(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService)
+    public PluginsSettingsPage(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
     {
         InitializeComponent();
         DataContext = this;
         PluginService = pluginService;
         PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
-        
+        Logger = logger;
+
         if (DateTime.Now - SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
         {
             _ = PluginMarketService.RefreshPluginSourceAsync();
@@ -250,7 +246,57 @@ public partial class PluginsSettingsPage : SettingsPageBase
     [RelayCommand]
     private void InstallPlugin(string id)
     {
-        PluginMarketService.RequestDownloadPlugin(id);
+        List<PluginInfo> resolvedPlugins = [];
+        List<string> missingPlugins = [];
+        var plugin = PluginMarketService.ResolveMarketPlugin(id);
+        if (plugin == null)
+        {
+            Logger.LogWarning("未找到插件：{}", id);
+            return;
+        }
+
+        resolvedPlugins.Add(plugin);
+        ResolveDependencies(plugin, resolvedPlugins, missingPlugins);
+        if (missingPlugins.Count > 0)
+        {
+            var result = new CommonDialogBuilder()
+                .SetIconKind(CommonDialogIconKind.Hint)
+                .SetContent("此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？\n\n" +
+                            "未找到的必选依赖项：\n" + string.Join('\n', missingPlugins))
+                .AddCancelAction()
+                .AddAction("继续", PackIconKind.ArrowRight)
+                .ShowDialog();
+            if (result != 1)
+            {
+                return;
+            }
+        }
+        foreach (var i in resolvedPlugins)
+        {
+            PluginMarketService.RequestDownloadPlugin(i.Manifest.Id);
+        }
+    }
+
+    private void ResolveDependencies(PluginInfo plugin, List<PluginInfo> resolvedPlugins, List<string> missingPlugins)
+    {
+        if (IPluginService.LoadedPluginsIds.Contains(plugin.Manifest.Id) || resolvedPlugins.Contains(plugin))
+        {
+            return;
+        }
+        resolvedPlugins.Add(plugin);
+        foreach (var i in plugin.Manifest.Dependencies)
+        {
+            var dep = PluginMarketService.ResolveMarketPlugin(i.Id);
+            if (dep == null)
+            {
+                if (i.IsRequired && !IPluginService.LoadedPluginsIds.Contains(i.Id))
+                {
+                    missingPlugins.Add(i.Id);
+                }
+                continue;
+            }
+            ResolveDependencies(dep, resolvedPlugins, missingPlugins);
+        }
     }
 
     private void MenuItemReloadFromCache_OnClick(object sender, RoutedEventArgs e)
@@ -418,6 +464,10 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private void OnPluginMarketServiceOnRestartRequested(object? sender, EventArgs args)
     {
+        if (PluginMarketService.MergedPlugins.Any(x => x.Value.DownloadProgress?.IsDownloading == true))
+        {
+            return;
+        }
         RequestRestart();
     }
 
@@ -425,5 +475,10 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
         PluginMarketService.RestartRequested -= OnPluginMarketServiceOnRestartRequested;
+    }
+
+    private void ButtonOpenMarket_OnClick(object sender, RoutedEventArgs e)
+    {
+        ViewModel.PluginCategoryIndex = 0;
     }
 }

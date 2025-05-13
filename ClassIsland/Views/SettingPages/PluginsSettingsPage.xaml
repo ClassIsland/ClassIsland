@@ -14,6 +14,7 @@
       xmlns:views="clr-namespace:ClassIsland.Views"
       xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
       xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      xmlns:converters="clr-namespace:ClassIsland.Converters"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="插件"
@@ -283,6 +284,22 @@
                                                  TextAlignment="Left" TextWrapping="Wrap"
                                                  Text="{Binding Exception, Mode=OneWay}"/>
                     </TabItem>
+                    <TabItem Header="依赖项">
+                        <DataGrid ItemsSource="{Binding Manifest.Dependencies, Mode=OneWay}"
+                                  IsReadOnly="True"
+                                  CanUserReorderColumns="False"
+                                  AutoGenerateColumns="False">
+
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Width="*"
+                                                    Binding="{Binding Id}"
+                                                    Header="插件 ID"/>
+                                <DataGridCheckBoxColumn Width="75"
+                                                    Binding="{Binding IsRequired}"
+                                                    Header="必选？"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
                 </TabControl>
             </Grid>
         </DataTemplate>
@@ -359,6 +376,56 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
+        <converters:LargeNumberToFriendlyNumberConverter x:Key="LargeNumberToFriendlyNumberConverter" />
+
+        <ControlTemplate x:Key="BlankListBoxTemplate">
+            <Grid>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ci:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_不可以看.png"
+                                       Height="72" Width="72"
+                                       StickerToolTip="光辉矢愿_不可以看"
+                                       FallbackPackIconKind="ToyBrickSearch"
+                                       Margin="0 0 0 8" />
+                    <TextBlock Margin="0 0 0 6">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ViewModel.PluginCategoryIndex}" Value="1" />
+                                            <Condition
+                                                Binding="{Binding Count, Source={x:Static services:IPluginService.LoadedPlugins}}"
+                                                Value="0" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Text" Value="还没有安装任何插件，不妨去插件市场看看吧" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Text" Value="找不到符合条件的插件，请调整筛选条件后重试" />
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Button HorizontalAlignment="Center" Click="ButtonOpenMarket_OnClick">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ViewModel.PluginCategoryIndex}" Value="1" />
+                                            <Condition
+                                                Binding="{Binding Count, Source={x:Static services:IPluginService.LoadedPlugins}}"
+                                                Value="0" />
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Style>
+                        </Button.Style>
+                        <ci:IconText Kind="MarketplaceOutline" Text="前往插件市场" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </ControlTemplate>
     </ci:SettingsPageBase.Resources>
     <Grid AllowDrop="True" Drop="Grid_Drop" DragEnter="Grid_DragEnter" DragLeave="Grid_DragLeave">
         <controls1:ListDetailView IsEnabled="{Binding SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
@@ -493,6 +560,17 @@
                              SelectedValuePath="Value"
                              SelectionChanged="Selector_OnSelectionChanged"
                              HorizontalContentAlignment="Stretch">
+                        <ListBox.Style>
+                            <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignListBox}">
+                                <Style.Triggers>
+                                    <Trigger Property="HasItems" Value="False">
+                                        <Setter Property="Template" Value="{StaticResource BlankListBoxTemplate}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+                                <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+                            </Style>
+                        </ListBox.Style>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid Background="Transparent">
@@ -547,13 +625,25 @@
                                                Grid.RowSpan="2" 
                                                Orientation="Horizontal"
                                                VerticalAlignment="Top" HorizontalAlignment="Right">
+                                        <StackPanel Orientation="Horizontal" ToolTip="下载量" Margin="2 0 0 0">
+                                            <materialDesign:PackIcon Width="16" Height="16"
+                                                                     Kind="Download" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Value.DownloadCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
+                                                       FontSize="12" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" ToolTip="Stars" Margin="4 0 0 0">
+                                            <materialDesign:PackIcon Width="16" Height="16"
+                                                                     Kind="Star" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Value.StarsCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
+                                                       FontSize="12" VerticalAlignment="Center"/>
+                                        </StackPanel>
                                         <materialDesign:PackIcon ToolTip="此插件将在重启后被卸载。"
                                                                  Foreground="Orange"
-                                                                         Width="16" Height="16"
-                                                                         VerticalAlignment="Center"
-                                                                         Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                                         Margin="2 0 0 0"
-                                                                         Kind="Delete"/>
+                                                                 Width="16" Height="16"
+                                                                 VerticalAlignment="Center"
+                                                                 Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                                 Margin="4 0 0 0"
+                                                                 Kind="Delete"/>
                                         <materialDesign:PackIcon ToolTip="插件需要重启以应用更改。"
                                                                  Foreground="Orange"
                                                                  Width="16" Height="16"
@@ -653,6 +743,8 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+
+                    
                 </Grid>
             </controls1:ListDetailView.LeftContent>
             <controls1:ListDetailView.RightContent>

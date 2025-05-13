@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
-using ClassIsland.Core;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Shared.Interfaces.Controls;
 using ClassIsland.Services;

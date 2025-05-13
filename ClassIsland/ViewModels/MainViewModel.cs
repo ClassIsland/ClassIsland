@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Shared.Enums;
-using ClassIsland.Shared.Models.Notification;
+using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
@@ -15,8 +14,6 @@ public class MainViewModel : ObservableRecipient
 {
     private Profile _profile = new();
     private Settings _settings = new();
-    private object? _currentMaskElement;
-    private object? _currentOverlayElement;
     private bool _isOverlayOpened = false;
     private bool _isMouseIn = false;
     private bool _isMainWindowFaded = false;
@@ -34,6 +31,9 @@ public class MainViewModel : ObservableRecipient
     private DateTime _debugCurrentTime = DateTime.Now;
     private bool _isNotificationWindowExplicitShowed = false;
     private bool _isHideRuleSatisfied = false;
+    private string? _lastStoryboardName;
+    private NotificationContent? _currentMaskContent;
+    private NotificationContent? _currentOverlayContent;
 
     public Profile Profile
     {
@@ -57,25 +57,31 @@ public class MainViewModel : ObservableRecipient
         }
     }
 
-    public object? CurrentMaskElement
+    public object? CurrentMaskElement => CurrentMaskContent?.Content;
+
+    public object? CurrentOverlayElement => CurrentOverlayContent?.Content;
+
+    public NotificationContent? CurrentMaskContent
     {
-        get => _currentMaskElement;
+        get => _currentMaskContent;
         set
         {
-            if (Equals(value, _currentMaskElement)) return;
-            _currentMaskElement = value;
+            if (Equals(value, _currentMaskContent)) return;
+            _currentMaskContent = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentMaskElement));
         }
     }
 
-    public object? CurrentOverlayElement
+    public NotificationContent? CurrentOverlayContent
     {
-        get => _currentOverlayElement;
+        get => _currentOverlayContent;
         set
         {
-            if (Equals(value, _currentOverlayElement)) return;
-            _currentOverlayElement = value;
+            if (Equals(value, _currentOverlayContent)) return;
+            _currentOverlayContent = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentOverlayElement));
         }
     }
 
@@ -257,6 +263,17 @@ public class MainViewModel : ObservableRecipient
         {
             if (value == _isNotificationWindowExplicitShowed) return;
             _isNotificationWindowExplicitShowed = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string? LastStoryboardName
+    {
+        get => _lastStoryboardName;
+        set
+        {
+            if (value == _lastStoryboardName) return;
+            _lastStoryboardName = value;
             OnPropertyChanged();
         }
     }

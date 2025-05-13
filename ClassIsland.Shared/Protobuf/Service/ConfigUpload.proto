@@ -1,0 +1,10 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.Service;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.Service";
+
+import "Protobuf/Server/ConfigUploadScRsp.proto";
+import "Protobuf/Client/ConfigUploadScReq.proto";
+
+service ConfigUpload {
+  rpc UploadConfig (Client.ConfigUploadScReq) returns (Server.ConfigUploadScRsp);
+}

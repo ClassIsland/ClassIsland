@@ -16,6 +16,12 @@ using ClassIsland.Models.ComponentSettings;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Text.Json.Serialization;
+using ClassIsland.Core.Abstractions.Services.SpeechService;
+using ClassIsland.Services.Management;
+using ClassIsland.Shared.Protobuf.AuditEvent;
+using ClassIsland.Shared.Protobuf.Enum;
+using Edge_tts_sharp.Model;
+using Octokit;
 
 namespace ClassIsland.Services;
 
@@ -75,6 +81,8 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             {
                 await LoadManagementSettingsAsync();
             }
+
+            ISpeechService.GlobalSettings = Settings;
         }
         catch (Exception ex)
         {
@@ -83,7 +91,7 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             // ignored
         }
 
-        if (!Settings.IsSystemSpeechSystemExist)
+        if (Settings is { IsSystemSpeechSystemExist: false, SpeechSource: 0 })
         {
             Settings.SpeechSource = 1;
         }
@@ -214,6 +222,17 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             WillMigrateProfileTrustedState = true;
             Logger.LogInformation("成功迁移了 1.5.4.0 以前的设置。");
         }
+        if (Settings.LastAppVersion < Version.Parse("1.6.3.0"))
+        {
+            Settings.SelectedSpeechProvider = Settings.SpeechSource switch
+            {
+                0 => "classisland.speech.system",
+                1 => "classisland.speech.edgeTts",
+                2 => "classisland.speech.gpt-sovits",
+                _ => Settings.SelectedSpeechProvider
+            };
+            Logger.LogInformation("成功迁移了 1.6.3.0 以前的设置。");
+        }
     }
 #pragma warning restore CS0612 // 类型或成员已过时
 
@@ -279,6 +298,13 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
                             .GetCustomAttribute<JsonIgnoreAttribute>() != null)
             return;
         SaveSettings(propertyName);
+        if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        {
+            connection.LogAuditEvent(AuditEvents.AppSettingsUpdated, new AppSettingsUpdated()
+            {
+                PropertyName = propertyName
+            });
+        }
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

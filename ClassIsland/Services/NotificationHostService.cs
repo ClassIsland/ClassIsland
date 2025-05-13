@@ -9,14 +9,16 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Services.NotificationProviders;
+using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
-
+using ClassIsland.Shared.Models.Notification;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Services;
 
@@ -51,62 +53,6 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     public void OnCurrentStateChanged(object sender, EventArgs args) => CurrentStateChanged?.Invoke(sender, args);
 
     #endregion
-    private TimeSpan _onClassDeltaTime = TimeSpan.Zero;
-    private TimeSpan _onBreakingTimeDeltaTime = TimeSpan.Zero;
-    private Subject _nextClassSubject = new Subject();
-    private TimeLayoutItem _nextClassTimeLayoutItem = new();
-    private TimeLayoutItem _nextBreakingTimeLayoutItem = new();
-    private bool _isClassPlanLoaded = false;
-    private bool _isClassConfirmed = false;
-    private TimeState _currentState = TimeState.None;
-
-    public TimeSpan OnClassDeltaTime
-    {
-        get => _onClassDeltaTime;
-        set => SetField(ref _onClassDeltaTime, value);
-    }
-
-    public TimeSpan OnBreakingTimeDeltaTime
-    {
-        get => _onBreakingTimeDeltaTime;
-        set => SetField(ref _onBreakingTimeDeltaTime, value);
-    }
-
-    public Subject NextClassSubject
-    {
-        get => _nextClassSubject;
-        set => SetField(ref _nextClassSubject, value);
-    }
-
-    public TimeLayoutItem NextClassTimeLayoutItem
-    {
-        get => _nextClassTimeLayoutItem;
-        set => SetField(ref _nextClassTimeLayoutItem, value);
-    }
-
-    public TimeLayoutItem NextBreakingTimeLayoutItem
-    {
-        get => _nextBreakingTimeLayoutItem;
-        set => SetField(ref _nextBreakingTimeLayoutItem, value);
-    }
-
-    public bool IsClassPlanLoaded
-    {
-        get => _isClassPlanLoaded;
-        set => SetField(ref _isClassPlanLoaded, value);
-    }
-
-    public bool IsClassConfirmed
-    {
-        get => _isClassConfirmed;
-        set => SetField(ref _isClassConfirmed, value);
-    }
-
-    public TimeState CurrentState
-    {
-        get => _currentState;
-        set => SetField(ref _currentState, value);
-    }
 
     public NotificationRequest? CurrentRequest { get; set; }
 
@@ -149,9 +95,21 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             ProviderSettings = Settings.NotificationProvidersNotifySettings[provider.ProviderGuid.ToString()]
         });
+
+        if (provider is not NotificationProviderBase providerBase)
+        {
+            return;
+        }
+
+        var providerInfo = NotificationProviderRegistryService.RegisteredProviders.First(x => x.Guid == provider.ProviderGuid);
+        foreach (var channelInfo in providerInfo.RegisteredChannels)
+        {
+            providerBase.Channels[channelInfo.Guid] = new NotificationChannel(providerBase, providerInfo, channelInfo);
+        }
     }
 
-    public void ShowNotification(NotificationRequest request)
+    [Obsolete]
+    public void ShowNotification(Shared.Models.Notification.NotificationRequest request)
     {
         var trace = new StackTrace();
         Logger.LogDebug("准备显示提醒\n{}", trace);
@@ -164,14 +122,16 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             if (provider == null)
                 continue;
             Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
-            ShowNotification(request, provider.ProviderGuid);
+            var newRequest = NotificationRequest.ConvertFromOldNotificationRequest(request);
+            Logger.LogWarning("提醒提供方 {} 当前调用的提醒 API 已弃用，请使用 v2 提醒 API", provider.ProviderGuid);
+            ShowNotification(newRequest, provider.ProviderGuid, Guid.Empty);
             return;
         }
 
         throw new ArgumentException("此方法只能由 INotificationProvider 调用。");
     }
 
-    private void ShowNotification(NotificationRequest request, Guid providerGuid)
+    public void ShowNotification(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
         request.NotificationSourceGuid = providerGuid;
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
@@ -181,15 +141,85 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         {
             _queueIndex = 0;
         }
+
+        if (channelGuid != Guid.Empty && request.ChannelId == Guid.Empty)
+        {
+            request.ChannelId = channelGuid;
+        }
+
+        var channel =
+            request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
+        request.ChannelSettings = channel?.ProviderSettings;
         RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
     }
 
-    public async Task ShowNotificationAsync(NotificationRequest request)
+    [Obsolete]
+    public async Task ShowNotificationAsync(Shared.Models.Notification.NotificationRequest request)
     {
         ShowNotification(request);
         await Task.Run(() =>
         {
             request.CompletedTokenSource.Token.WaitHandle.WaitOne();
+        });
+    }
+
+    public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid)
+    {
+        ShowNotification(request, providerGuid, channelGuid);
+        await Task.Run(() =>
+        {
+            request.CompletedTokenSource.Token.WaitHandle.WaitOne();
+        });
+    }
+
+    public void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid)
+    {
+        if (requests.Length <= 0)
+        {
+            return;
+        }
+
+        var rootCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(requests.Select(x => x.CancellationTokenSource.Token).ToArray());
+        var rootCompletedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(requests.Select(x => x.CompletedTokenSource.Token).ToArray());
+        rootCancellationTokenSource.Token.Register(() =>
+        {
+            foreach (var request in requests.Where(x => !x.CancellationToken.IsCancellationRequested))
+            {
+                request.CancellationTokenSource.Cancel();
+            }
+        });
+        foreach (var request in requests)
+        {
+            request.RootCancellationTokenSource = rootCancellationTokenSource;
+            request.RootCompletedTokenSource = rootCompletedTokenSource;
+            
+            ShowNotification(request, providerGuid, channelGuid);
+        }
+    }
+
+    public async Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid)
+    {
+        if (requests.Length <= 0)
+        {
+            return;
+        }
+        ShowChainedNotifications(requests, providerGuid, channelGuid);
+        await Task.Run(() =>
+        {
+            requests.Last().CompletedTokenSource.Token.WaitHandle.WaitOne();
+        });
+    }
+
+    public void RegisterNotificationChannel(NotificationChannel channel)
+    {
+        Logger.LogInformation("注册提醒渠道：{}（{}）", channel.ChannelInfo.Guid, channel.ChannelInfo.Name);
+        if (!Settings.NotificationChannelsNotifySettings.ContainsKey(channel.ChannelInfo.Guid.ToString()))
+        {
+            Settings.NotificationChannelsNotifySettings.Add(channel.ChannelInfo.Guid.ToString(), new());
+        }
+        NotificationProviders.FirstOrDefault(x => x.ProviderGuid == channel.ChannelInfo.AssociatedProviderGuid)?.NotificationChannels.Add(new NotificationChannelRegisterInfo(channel)
+        {
+            ProviderSettings = Settings.NotificationChannelsNotifySettings[channel.ChannelInfo.Guid.ToString()]
         });
     }
 

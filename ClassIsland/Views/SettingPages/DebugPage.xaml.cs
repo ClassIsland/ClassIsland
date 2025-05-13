@@ -1,39 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Controls;
-using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
-using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Services;
 using ClassIsland.Shared;
-using ClassIsland.Shared.Interfaces;
 using ClassIsland.ViewModels.SettingsPages;
 using MaterialDesignThemes.Wpf;
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
-using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views.SettingPages;
@@ -53,12 +35,13 @@ public partial class DebugPage : SettingsPageBase
     private ILessonsService LessonsService { get; }
 
     public IProfileAnalyzeService ProfileAnalyzeService { get; }
+    public ILocationService LocationService { get; }
 
     private IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
 
     public DebugPageViewModel ViewModel { get; } = new();
 
-    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService)
+    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService, ILocationService locationService)
     {
         InitializeComponent();
         DataContext = this;
@@ -67,6 +50,7 @@ public partial class DebugPage : SettingsPageBase
         ConsoleService = consoleService;
         LessonsService = lessonsService;
         ProfileAnalyzeService = profileAnalyzeService;
+        LocationService = locationService;
     }
 
     private void ButtonCloseDebug_OnClick(object sender, RoutedEventArgs e)
@@ -261,5 +245,11 @@ public partial class DebugPage : SettingsPageBase
     private void MenuItemShowTestNotification_OnClick(object sender, RoutedEventArgs e)
     {
         IAppHost.GetService<ITaskBarIconService>().ShowNotification("Title", "Content", clickedCallback:() => CommonDialog.ShowInfo("Clicked!"));
+    }
+
+    private async void MenuItemTryGetLocation_OnClick(object sender, RoutedEventArgs e)
+    {
+        var location = await LocationService.GetLocationAsync();
+        CommonDialog.ShowInfo(location.ToString());
     }
 }

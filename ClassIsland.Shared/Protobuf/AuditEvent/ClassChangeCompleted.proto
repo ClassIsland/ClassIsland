@@ -1,0 +1,13 @@
+syntax = "proto3";
+package ClassIsland.Shared.Protobuf.AuditEvent;
+option csharp_namespace = "ClassIsland.Shared.Protobuf.AuditEvent";
+
+message ClassChangeCompleted {
+  string ClassPlanId = 1;
+  int32 ChangeMode = 2;
+  int32 SourceClassIndex = 3;
+  string SourceClassSubjectId = 4;
+  int32 TargetClassIndex = 5;
+  string TargetClassSubjectId = 6;
+  bool WriteToSourceClassPlan = 7;
+}

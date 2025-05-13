@@ -5,27 +5,22 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Attributes;
-using ClassIsland.Core.Controls.CommonDialog;
 using ClassIsland.Core.Enums.SettingsWindow;
 using ClassIsland.Core.Services.Registry;
 using ClassIsland.Shared;
@@ -39,13 +34,12 @@ using Sentry;
 using System.IO;
 using ClassIsland.Controls;
 using Path = System.IO.Path;
-using System.Collections.ObjectModel;
 using System.Web;
 using ClassIsland.Core.Enums;
 using ClassIsland.Core.Models.SettingsWindow;
 using Application = System.Windows.Application;
-using YamlDotNet.Core.Tokens;
 using ClassIsland.Helpers;
+using System.Transactions;
 
 namespace ClassIsland.Views;
 
@@ -210,23 +204,38 @@ public partial class SettingsWindowNew : MyWindow
 
     private async void NavigationServiceOnLoadCompleted(object sender, NavigationEventArgs e)
     {
-        if (e.ExtraData is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)  
+        if (e.ExtraData is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)
         {
-            // 如果是从设置导航栏导航的，并且没有要求保留历史记录，那么就要清除掉返回项目
-            if (!data.KeepHistory)
+            var transaction = data.Transaction as ITransactionTracer;
+            var span = data.Span as ISpan;
+            try
             {
-                NavigationService.RemoveBackEntry();
+                // 如果是从设置导航栏导航的，并且没有要求保留历史记录，那么就要清除掉返回项目
+                if (!data.KeepHistory)
+                {
+                    NavigationService.RemoveBackEntry();
+                }
+
+                if (!IThemeService.IsWaitForTransientDisabled)
+                {
+                    await Dispatcher.Yield();
+                }
+
+                ViewModel.IsNavigating = false;
+                var child = LoadingAsyncBox.LoadingView as LoadingMask;
+                child?.FinishFakeLoading();
+                if (!IThemeService.IsTransientDisabled)
+                {
+                    await BeginStoryboardAsync("NavigationEntering");
+                }
+                span?.Finish(SpanStatus.Ok);
+                transaction?.Finish(SpanStatus.Ok);
             }
-            if (!IThemeService.IsWaitForTransientDisabled)
+            catch (Exception ex)
             {
-                await Dispatcher.Yield();
-            }
-            ViewModel.IsNavigating = false;
-            var child = LoadingAsyncBox.LoadingView as LoadingMask;
-            child?.FinishFakeLoading();
-            if (!IThemeService.IsTransientDisabled)
-            {
-                await BeginStoryboardAsync("NavigationEntering");
+                Logger.LogError(ex, "无法完成设置页面导航 {}", ViewModel.SelectedPageInfo?.Id);
+                span?.Finish(ex, SpanStatus.InternalError);
+                transaction?.Finish(SpanStatus.InternalError);
             }
         }
         ViewModel.IsNavigating = false;
@@ -245,6 +254,11 @@ public partial class SettingsWindowNew : MyWindow
         {
             return;
         }
+
+        var transaction = SentrySdk.StartTransaction("Navigate SettingsPage", "settings.navigate");
+        transaction.SetTag("navigationPage", info.Name);
+        transaction.SetTag("navigationPage.id", info.Id);
+        var spanLoadPhase1 = transaction.StartChild("setupPage");
         switch (info.Category)
         {
             // 判断是否可以导航
@@ -262,47 +276,70 @@ public partial class SettingsWindowNew : MyWindow
         Logger.LogTrace("开始导航");
         ViewModel.IsPopupOpen = false;
         ViewModel.IsNavigating = true;
-        if (ViewModel.IsViewCompressed)
+        try
         {
-            ViewModel.IsNavigationDrawerOpened = false;
-        }
-        ViewModel.SelectedPageInfo = info;
+            if (ViewModel.IsViewCompressed)
+            {
+                ViewModel.IsNavigationDrawerOpened = false;
+            }
 
-        var uriQuery = HttpUtility.ParseQueryString(uri?.Query ?? "");
-        var keepHistory = uriQuery[KeepHistoryParameterName] == "true";
-        var child = LoadingAsyncBox.LoadingView as LoadingMask;
-        child?.StartFakeLoading();
-        if (SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading)
-        {
-            await UpdateEchoCaveAsync();
+            ViewModel.SelectedPageInfo = info;
+
+            var uriQuery = HttpUtility.ParseQueryString(uri?.Query ?? "");
+            var keepHistory = uriQuery[KeepHistoryParameterName] == "true";
+            var child = LoadingAsyncBox.LoadingView as LoadingMask;
+            child?.StartFakeLoading();
+            if (SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading)
+            {
+                await UpdateEchoCaveAsync();
+            }
+
+            if (!IThemeService.IsTransientDisabled)
+            {
+                await BeginStoryboardAsync("NavigationLeaving");
+            }
+
+            HangService.AssumeHang();
+            // 从ioc容器获取页面
+            var page = GetPage(info.Id, out var cached);
+            transaction.SetTag("cache.hit", cached.ToString());
+            transaction.SetTag("cache.policy", SettingsService.Settings.SettingsPagesCachePolicy.ToString());
+            // 清空抽屉
+            ViewModel.IsDrawerOpen = false;
+            ViewModel.DrawerContent = null;
+            // 进行导航
+            if (!keepHistory)
+            {
+                NavigationService.RemoveBackEntry();
+            }
+            var spanLoadPhase2 = transaction.StartChild("frameNavigate");
+            NavigationService.Navigate(page, new SettingsWindowNavigationData(true, uri != null, uri, keepHistory, transaction, spanLoadPhase2));
+            //ViewModel.FrameContent;
+            if (!keepHistory)
+            {
+                NavigationService.RemoveBackEntry();
+            }
+            spanLoadPhase1.Finish(SpanStatus.Ok);
         }
-        if (!IThemeService.IsTransientDisabled)
+        catch (Exception ex)
         {
-            await BeginStoryboardAsync("NavigationLeaving");
+            Logger.LogError(ex, "无法完成设置页面导航 {}", info.Id);
+            spanLoadPhase1.Finish(ex, SpanStatus.InternalError);
+            transaction.Finish(SpanStatus.InternalError);
+            ViewModel.IsNavigating = false;
         }
-        HangService.AssumeHang();
-        // 从ioc容器获取页面
-        var page = GetPage(info.Id);
-        // 清空抽屉
-        ViewModel.IsDrawerOpen = false;
-        ViewModel.DrawerContent = null;
-        // 进行导航
-        if (!keepHistory)
-        {
-            NavigationService.RemoveBackEntry();
-        }
-        NavigationService.Navigate(page, new SettingsWindowNavigationData(true, uri != null, uri, keepHistory));
-        //ViewModel.FrameContent;
-        if (!keepHistory)
-        {
-            NavigationService.RemoveBackEntry();
-        }
+        //finally
+        //{
+        //    ViewModel.IsNavigating = false;
+        //}
     }
 
-    private SettingsPageBase? GetPage(string? id)
+    private SettingsPageBase? GetPage(string? id, out bool cached)
     {
+        cached = false;
         if (_cachedPages.TryGetValue(id ?? "", out var page))
         {
+            cached = true;
             return page;
         }
         var pageNew = IAppHost.Host?.Services.GetKeyedService<SettingsPageBase>(id);

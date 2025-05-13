@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -7,21 +8,20 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Animation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
-using ClassIsland.Shared.Helpers;
-using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services.Management;
+using ClassIsland.Shared.Models.Profile;
 
 using Microsoft.Extensions.Logging;
 
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
 
 using Path = System.IO.Path;
-using System.Windows.Input;
 using ClassIsland.Shared;
 using ClassIsland.Shared.IPC.Abstractions.Services;
+using ClassIsland.Shared.Protobuf.AuditEvent;
+using ClassIsland.Shared.Protobuf.Enum;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using Sentry;
 
@@ -178,7 +178,37 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         Logger.LogTrace("成功加载档案！信任：{}", IsCurrentProfileTrusted);
         CleanExpiredTempClassPlan();
         _isProfileLoaded = true;
+
+        Profile.ClassPlans.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.ClassPlanUpdated, args);
+        Profile.TimeLayouts.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.TimeLayoutUpdated, args);
+        Profile.Subjects.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
         spanLoadingProfile?.Finish();
+    }
+
+    public void AuditProfileChangeEvent(AuditEvents eventType, NotifyCollectionChangedEventArgs args)
+    {
+        if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        {
+            connection.LogAuditEvent(eventType, new ProfileItemUpdated()
+            {
+                Operation = args.Action switch
+                {
+                    NotifyCollectionChangedAction.Add => ListItemUpdateOperations.Add,
+                    NotifyCollectionChangedAction.Remove => ListItemUpdateOperations.Remove,
+                    NotifyCollectionChangedAction.Replace => ListItemUpdateOperations.Update,
+                    NotifyCollectionChangedAction.Move => ListItemUpdateOperations.Update,
+                    NotifyCollectionChangedAction.Reset => ListItemUpdateOperations.Update,
+                    _ => throw new ArgumentOutOfRangeException()
+                },
+                ItemId = args.NewItems?[0] switch
+                {
+                    KeyValuePair<string, ClassPlan> cp => cp.Key,
+                    KeyValuePair<string, TimeLayout> tl => tl.Key,
+                    KeyValuePair<string, Subject> s => s.Key,
+                    _ => throw new ArgumentOutOfRangeException()
+                },
+            });
+        }
     }
 
     public void SaveProfile()

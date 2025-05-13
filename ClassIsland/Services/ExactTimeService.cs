@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
-using ClassIsland.Shared.Abstraction.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using GuerrillaNtp;

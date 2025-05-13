@@ -130,71 +130,120 @@
                                                        ToolTip="{Binding Website}">
                                     网站…
                                 </commands:NavHyperlink>
+                                <commands:NavHyperlink CommandParameter="{Binding LicenseUrl}"
+                                                       ToolTip="{Binding LicenseUrl}">
+                                    查看许可证…
+                                </commands:NavHyperlink>
                             </TextBlock>
                             <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
                 <models:ContributionLabel Title=".NET"
-                                          Website="https://github.com/microsoft/dotnet" />
+                                          Website="https://github.com/microsoft/dotnet" 
+                                          LicenseUrl="https://github.com/microsoft/dotnet/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="BouncyCastle"
+                                          Website="https://www.bouncycastle.org/download/bouncy-castle-c/"
+                                          LicenseUrl="https://github.com/bcgit/bc-csharp/blob/master/LICENSE.md"/>
+                <models:ContributionLabel Title="ColorHelper"
+                                          Website="https://github.com/iamartyom/ColorHelper"
+                                          LicenseUrl="https://github.com/iamartyom/ColorHelper/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="CommunityToolkit.Mvvm"
-                                          Website="https://github.com/CommunityToolkit/dotnet" />
+                                          Website="https://github.com/CommunityToolkit/dotnet" 
+                                          LicenseUrl="https://github.com/CommunityToolkit/dotnet/blob/main/LICENSE"/>
                 <models:ContributionLabel Title="dotnetCampus.Ipc"
-                                          Website="https://github.com/dotnet-campus/dotnetCampus.Ipc" />
+                                          Website="https://github.com/dotnet-campus/dotnetCampus.Ipc" 
+                                          LicenseUrl="https://github.com/dotnet-campus/dotnetCampus.Ipc/blob/main/LICENSE"/>
                 <models:ContributionLabel Title="Downloader"
-                                          Website="https://github.com/bezzad/Downloader" />
+                                          Website="https://github.com/bezzad/Downloader" 
+                                          LicenseUrl="https://github.com/bezzad/Downloader/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="EPPlus"
-                                          Website="https://github.com/EPPlusSoftware/EPPlus" />
+                                          Website="https://github.com/EPPlusSoftware/EPPlus" 
+                                          LicenseUrl="https://github.com/EPPlusSoftware/EPPlus/blob/develop8/license.md"/>
                 <models:ContributionLabel Title="Edge_tts_sharp"
-                                          Website="https://github.com/Entity-Now/Edge_tts_sharp" />
+                                          Website="https://github.com/Entity-Now/Edge_tts_sharp" 
+                                          LicenseUrl=""/>
                 <models:ContributionLabel Title="gong-wpf-dragdrop"
-                                          Website="https://github.com/punker76/gong-wpf-dragdrop" />
+                                          Website="https://github.com/punker76/gong-wpf-dragdrop" 
+                                          LicenseUrl="https://github.com/punker76/gong-wpf-dragdrop/blob/develop/LICENSE"/>
                 <models:ContributionLabel Title="Google.Protobuf"
-                                          Website="https://github.com/protocolbuffers/protobuf" />
+                                          Website="https://github.com/protocolbuffers/protobuf" 
+                                          LicenseUrl="https://github.com/protocolbuffers/protobuf/blob/main/LICENSE"/>
                 <models:ContributionLabel Title="Grpc"
-                                          Website="https://github.com/grpc/grpc-dotnet" />
-                <models:ContributionLabel Title="Grpc.Net.Client"
-                                          Website="https://github.com/grpc/grpc-dotnet" />
+                                          Website="https://github.com/grpc/grpc-dotnet"
+                                          LicenseUrl="https://github.com/grpc/grpc-dotnet/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="Grpc.Tools"
-                                          Website="https://github.com/grpc/grpc" />
+                                          Website="https://github.com/grpc/grpc"
+                                          LicenseUrl="https://github.com/grpc/grpc/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="GuerrillaNtp"
-                                          Website="https://github.com/robertvazan/guerrillantp" />
+                                          Website="https://github.com/robertvazan/guerrillantp" 
+                                          LicenseUrl="https://github.com/robertvazan/guerrillantp/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="H.NotifyIcon"
-                                          Website="https://github.com/HavenDV/H.NotifyIcon" />
+                                          Website="https://github.com/HavenDV/H.NotifyIcon" 
+                                          LicenseUrl="https://github.com/HavenDV/H.NotifyIcon/blob/master/LICENSE.md"/>
                 <models:ContributionLabel Title="HarmonyOS Sans"
-                                          Website="https://developer.harmonyos.com/cn/design/resource" />
+                                          Website="https://developer.harmonyos.com/cn/design/resource" 
+                                          LicenseUrl="https://github.com/ClassIsland/ClassIsland/blob/dev/ClassIsland/Assets/Fonts/LICENSE.txt"/>
                 <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
-                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit" />
+                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit"
+                                          LicenseUrl="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="MdXaml"
-                                          Website="https://github.com/whistyun/MdXaml" />
+                                          Website="https://github.com/whistyun/MdXaml" 
+                                          LicenseUrl="https://github.com/whistyun/MdXaml/blob/master/LICENSE.txt"/>
                 <models:ContributionLabel Title="Microsoft.Data.Sqlite"
-                                          Website="https://github.com/dotnet/efcore" />
+                                          Website="https://github.com/dotnet/efcore" 
+                                          LicenseUrl="https://github.com/dotnet/efcore/blob/main/LICENSE.txt"/>
                 <models:ContributionLabel Title="Microsoft.Extensions.Hosting"
-                                          Website="https://github.com/dotnet/runtime" />
+                                          Website="https://github.com/dotnet/runtime"
+                                          LicenseUrl="https://github.com/dotnet/runtime/blob/main/LICENSE.TXT"/>
                 <models:ContributionLabel Title="Microsoft.Windows.CsWin32"
-                                          Website="https://github.com/microsoft/CsWin32" />
+                                          Website="https://github.com/microsoft/CsWin32"
+                                          LicenseUrl="https://github.com/microsoft/CsWin32/blob/main/LICENSE"/>
                 <models:ContributionLabel Title="NAudio"
-                                          Website="https://github.com/naudio/NAudio" />
+                                          Website="https://github.com/naudio/NAudio" 
+                                          LicenseUrl="https://github.com/naudio/NAudio/blob/master/license.txt"/>
+                <models:ContributionLabel Title="Net.Codecrete.QrCodeGenerator"
+                                          Website="https://github.com/manuelbl/QrCodeGenerator"
+                                          LicenseUrl="https://github.com/manuelbl/QrCodeGenerator/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="Octokit"
-                                          Website="https://github.com/octokit/octokit.net" />
+                                          Website="https://github.com/octokit/octokit.net"
+                                          LicenseUrl="https://github.com/octokit/octokit.net/blob/main/LICENSE.txt"/>
                 <models:ContributionLabel Title="Pastel"
-                                          Website="https://github.com/silkfire/Pastel" />
+                                          Website="https://github.com/silkfire/Pastel" 
+                                          LicenseUrl="https://github.com/silkfire/Pastel/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="PgpCore"
+                                          Website="https://github.com/mattosaurus/PgpCore"
+                                          LicenseUrl="https://github.com/mattosaurus/PgpCore/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="RawInput.Sharp"
-                                          Website="https://github.com/mfakane/rawinput-sharp" />
+                                          Website="https://github.com/mfakane/rawinput-sharp"
+                                          LicenseUrl="https://github.com/mfakane/rawinput-sharp/blob/master/LICENSE.txt"/>
                 <models:ContributionLabel Title="Sentry"
-                                          Website="https://github.com/getsentry/sentry-dotnet" />
+                                          Website="https://github.com/getsentry/sentry-dotnet" 
+                                          LicenseUrl="https://github.com/getsentry/sentry-dotnet/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="Starward"
+                                          Website="https://github.com/Scighost/Starward" 
+                                          LicenseUrl="https://github.com/Scighost/Starward/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="TimeCrontab"
+                                          Website="https://github.com/MonkSoul/TimeCrontab" 
+                                          LicenseUrl="https://github.com/monksoul/TimeCrontab/blob/net6/LICENSE"/>
                 <models:ContributionLabel Title="unvell.ReoGridWPF"
-                                          Website="https://github.com/unvell/ReoGrid" />
+                                          Website="https://github.com/unvell/ReoGrid"
+                                          LicenseUrl="https://github.com/unvell/ReoGrid/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="VirtualizingWrapPanel"
-                                          Website="https://github.com/sbaeumlisberger/VirtualizingWrapPanel" />
+                                          Website="https://github.com/sbaeumlisberger/VirtualizingWrapPanel" 
+                                          LicenseUrl="https://github.com/sbaeumlisberger/VirtualizingWrapPanel/blob/master/LICENSE"/>
                 <models:ContributionLabel Title="WPF"
-                                          Website="https://github.com/dotnet/Wpf" />
+                                          Website="https://github.com/dotnet/Wpf" 
+                                          LicenseUrl="https://github.com/dotnet/wpf/blob/main/LICENSE.TXT"/>
                 <models:ContributionLabel Title="WindowsShortcutFactory"
-                                          Website="https://github.com/gdivis/WindowsShortcutFactory" />
+                                          Website="https://github.com/gdivis/WindowsShortcutFactory"
+                                          LicenseUrl="https://licenses.nuget.org/MIT"/>
                 <models:ContributionLabel Title="WinowsCommunityToolkit"
-                                          Website="https://github.com/CommunityToolkit/WindowsCommunityToolkit" />
+                                          Website="https://github.com/CommunityToolkit/WindowsCommunityToolkit"
+                                          LicenseUrl="https://github.com/CommunityToolkit/WindowsCommunityToolkit/blob/main/License.md"/>
                 <models:ContributionLabel Title="YamlDotNet"
-                                          Website="https://github.com/aaubry/YamlDotNet" />
+                                          Website="https://github.com/aaubry/YamlDotNet"
+                                          LicenseUrl="https://github.com/aaubry/YamlDotNet/blob/master/LICENSE.txt"/>
             </ListView>
         </Grid>
 
@@ -251,7 +300,7 @@
                         <Grid HorizontalAlignment="Stretch" Margin="12">
                             <!-- about -->
                             <StackPanel Margin="12 0 0 0">
-                                <TextBlock>
+                                <TextBlock Background="Transparent" MouseDown="UIElementAppInfo_OnMouseDown">
                                     <Run Text="ClassIsland" FontSize="24" />
                                     <Run Text="{x:Static ci:App.AppVersion}" />
                                     <Run Text="(Codename" />
@@ -355,7 +404,7 @@
                         界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。<LineBreak/>
                         应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak/>
                         感谢协助本应用测试的同学。<LineBreak/>
-                        感谢<commands:NavHyperlink CommandParameter="https://www.jiangyin14.top/">姜胤</commands:NavHyperlink>和<commands:NavHyperlink CommandParameter="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>为本项目提供的服务器资源。<LineBreak/>
+                        感谢<commands:NavHyperlink CommandParameter="https://forum.smart-teach.cn/">智教联盟</commands:NavHyperlink>提供服务器资源，<commands:NavHyperlink CommandParameter="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>提供 TTS、遥测等服务资源。<LineBreak/>
                         天气数据来源于小米天气。<LineBreak/>
                         部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak/>
                         感谢其他使用的第三方库和贡献成员，详见贡献名单和第三方库。

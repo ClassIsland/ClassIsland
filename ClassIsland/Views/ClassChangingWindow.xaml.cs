@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-
-using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Core.Controls;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
 using ClassIsland.Services.Management;
+using ClassIsland.Shared.Protobuf.AuditEvent;
+using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
 
 using MaterialDesignThemes.Wpf;
@@ -98,12 +98,15 @@ public partial class ClassChangingWindow : MyWindow
         }
         var cp = ProfileService.Profile.ClassPlans[key];
         var aI = GetSubjectIndex(ViewModel.SourceIndex);
+        var bI = 0;
+        var a = "";
+        var b = "";
 
         if (SettingsService.Settings.IsSwapMode)
         {
-            var bI = GetSubjectIndex(ViewModel.SwapModeTargetIndex);
-            var a = cp.Classes[aI].SubjectId;
-            var b = cp.Classes[bI].SubjectId;
+            bI = GetSubjectIndex(ViewModel.SwapModeTargetIndex);
+            a = cp.Classes[aI].SubjectId;
+            b = cp.Classes[bI].SubjectId;
             cp.Classes[aI].SubjectId = b;
             cp.Classes[bI].SubjectId = a;
         }
@@ -118,6 +121,19 @@ public partial class ClassChangingWindow : MyWindow
         }
 
         ProfileService.SaveProfile();
+        if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
+        {
+            connection.LogAuditEvent(AuditEvents.ClassChangeCompleted, new ClassChangeCompleted()
+            {
+                ChangeMode = SettingsService.Settings.IsSwapMode ? 0 : 1,
+                ClassPlanId = key,
+                SourceClassIndex = aI,
+                SourceClassSubjectId = a,
+                TargetClassIndex = bI,
+                TargetClassSubjectId = b,
+                WriteToSourceClassPlan = ViewModel.WriteToSourceClassPlan
+            });
+        }
         Close();
     }
 

@@ -358,6 +358,13 @@
                                 </DockPanel>
                             </controls1:SettingsControl.Switcher>
                         </controls1:SettingsControl>
+
+                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                HorizontalAlignment="Left"
+                                Margin="0 6 0 0"
+                                Click="ButtonAdjustTime_OnClick">
+                            <ci:IconText Kind="ClockCheckOutline" Text="对齐铃声…"/>
+                        </Button>
                     </StackPanel>
                 </Expander>
             </materialDesign:Card>
@@ -400,6 +407,12 @@
             </Border>
             <Separator Margin="0 16 0 8" />
             <controls1:IconText Kind="CogOutline" Text="高级" Margin="0 0 0 8" />
+            <!-- 自动禁用异常插件 -->
+            <controls1:SettingsCard IconGlyph="PuzzleRemoveOutline"
+                                    Header="自动禁用异常插件"
+                                    Description="启用后，ClassIsland 将自动禁用导致应用崩溃的插件，以避免异常插件进一步影响后续使用。"
+                                    IsOn="{Binding SettingsService.Settings.AutoDisableCorruptPlugins, Mode=TwoWay}"
+                                    Margin="0 0 0 6" />
             <!-- 禁用过渡动画 -->
             <controls1:SettingsCard IconGlyph="AnimationPlayOutline"
                                    Header="禁用过渡动画"

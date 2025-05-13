@@ -54,4 +54,16 @@ public class BitmapConveters
             return result;
         }
     }
+
+    public static byte[] BitmapToByteArray(Bitmap bitmap)
+    {
+        var pixelFormat2 = System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+        var bitmapdata = bitmap.LockBits(rect, ImageLockMode.ReadOnly, pixelFormat2);
+        var length = Math.Abs(bitmapdata.Stride) * bitmap.Height;
+        var destination = new byte[length];
+        Marshal.Copy(bitmapdata.Scan0, destination, 0, length);
+        bitmap.UnlockBits(bitmapdata);
+        return destination;
+    }
 }

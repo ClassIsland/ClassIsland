@@ -121,10 +121,14 @@
                                 <DataTemplate>
                                     <CheckBox
                                         IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}, Mode=OneWay}"
-                                        Content="{Binding Value.Name}"
                                         IsHitTestVisible="False"
                                         Focusable="False"
-                                        HorizontalAlignment="Stretch" />
+                                        HorizontalAlignment="Stretch">
+                                        <CheckBox.Content>
+                                            <TextBlock Text="{Binding Value.Name}"
+                                                       VerticalAlignment="Center"/>
+                                        </CheckBox.Content>
+                                    </CheckBox>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>

@@ -1,0 +1,25 @@
+﻿<ci:SpeechProviderControlBase x:Class="ClassIsland.Controls.SpeechProviderSettingsControls.EdgeTtsSpeechServiceSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.SpeechProviderSettingsControls"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:EdgeTtsSpeechServiceSettingsControl}}">
+        <TextBlock TextWrapping="Wrap" Text="注意：EdgeTTS需要联网工作，并且可能存在一定延迟。" />
+        <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                  materialDesign:HintAssist.Hint="EdgeTTS说话人"
+                  SelectedValuePath="ShortName"
+                  SelectedValue="{Binding SettingsService.Settings.EdgeTtsVoiceName}"
+                  ItemsSource="{Binding EdgeVoices}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding FriendlyName}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </StackPanel>
+</ci:SpeechProviderControlBase>

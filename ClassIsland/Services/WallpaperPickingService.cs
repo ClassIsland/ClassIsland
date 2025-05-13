@@ -14,10 +14,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Helpers.Native;
+using ClassIsland.Helpers;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
-
+using Sentry;
 using Application = System.Windows.Application;
 using Color = System.Windows.Media.Color;
 using ColorConverter = System.Windows.Media.ColorConverter;
@@ -237,12 +238,16 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
         IsWorking = true;
         Logger.LogInformation("正在提取壁纸主题色。");
-
+        var transaction = SentrySdk.StartTransaction("Get Wallpaper Accent Color", "wallpaperAccentColor.get");
+        transaction.SetTag("colorPicking.colorSource", SettingsService.Settings.ColorSource.ToString());
+        transaction.SetTag("wallpaper.isFallbackModeEnabled", SettingsService.Settings.IsFallbackModeEnabled.ToString());
+        transaction.SetTag("colorPicking.useExpImpl", SettingsService.Settings.UseExperimentColorPickingMethod.ToString());
         try
         {
             await Task.Run(() =>
             {
-                var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
+                var spanGetImage = transaction.StartChild("getImage");
+                using var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
                     : SettingsService.Settings.IsFallbackModeEnabled ?
                         (GetFallbackWallpaper())
                         :
@@ -254,9 +259,13 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                 if (bitmap is null)
                 {
                     Logger.LogError("获取壁纸失败。");
+                    spanGetImage.Finish(SpanStatus.NotFound);
+                    transaction.Finish(SpanStatus.InternalError);
                     return;
                 }
+                spanGetImage.Finish(SpanStatus.Ok);
 
+                var spanConvertImage = transaction.StartChild("convertImage");
                 double dpiX = 1, dpiY = 1;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -264,26 +273,21 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                     mw.GetCurrentDpi(out dpiX, out dpiY);
                 });
                 WallpaperImage = BitmapConveters.ConvertToBitmapImage(bitmap, bitmap.Width);
-                var w = new Stopwatch();
-                w.Start();
-                var right = SettingsService.Settings.TargetLightValue - 0.5;
-                var left = SettingsService.Settings.TargetLightValue + 0.5;
-                var r = ColorOctTreeNode.ProcessImage(bitmap)
-                    .OrderByDescending(i =>
-                    {
-                        var c = (Color)ColorConverter.ConvertFromString(i.Key);
-                        ColorToHsv(c, out var h, out var s, out var v);
-                        return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
-                    })
-                    .ThenByDescending(i => i.Value)
-                    .ToList();
-                WallpaperColorPlatte.Clear();
-                for (var i = 0; i < Math.Min(r.Count, 5); i++)
+                spanConvertImage.Finish(SpanStatus.Ok);
+
+                var spanGetAccent = transaction.StartChild("getAccent");
+                if (SettingsService.Settings.UseExperimentColorPickingMethod)
                 {
-                    WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
+                    NewColorPickingImpl(bitmap);
                 }
+                else
+                {
+                    OldColorPickingImpl(bitmap);
+                }
+                spanGetAccent.Finish(SpanStatus.Ok);
             });
 
+            var spanFinalize = transaction.StartChild("finalize");
             // Update cached platte
             if (SettingsService.Settings.WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
                 WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
@@ -301,11 +305,47 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         
             IsWorking = false;
             GC.Collect();
+            spanFinalize.Finish(SpanStatus.Ok);
+            transaction.Finish(SpanStatus.Ok);
         }
         catch (Exception e)
         {
+            transaction.GetLastActiveSpan()?.Finish(e, SpanStatus.InternalError);
+            transaction.Finish(e, SpanStatus.InternalError);
             Logger.LogError(e, "无法提取壁纸主题色");
         }
+    }
+
+    private void OldColorPickingImpl(Bitmap bitmap)
+    {
+        var w = new Stopwatch();
+        w.Start();
+        var right = SettingsService.Settings.TargetLightValue - 0.5;
+        var left = SettingsService.Settings.TargetLightValue + 0.5;
+        var r = ColorOctTreeNode.ProcessImage(bitmap)
+            .OrderByDescending(i =>
+            {
+                var c = (Color)ColorConverter.ConvertFromString(i.Key);
+                ColorToHsv(c, out var h, out var s, out var v);
+                return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
+            })
+            .ThenByDescending(i => i.Value)
+            .ToList();
+        WallpaperColorPlatte.Clear();
+        for (var i = 0; i < Math.Min(r.Count, 5); i++)
+        {
+            WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
+        }
+        Logger.LogInformation("提取到的主题色:{Color}", string.Join(",", WallpaperColorPlatte));
+    }
+
+    private void NewColorPickingImpl(Bitmap bitmap)
+    {
+        var bytes = BitmapConveters.BitmapToByteArray(bitmap);
+        var back = AccentColorHelper.GetAccentColor(bytes, bitmap.Width, bitmap.Height);
+        WallpaperColorPlatte.Clear();
+        WallpaperColorPlatte.Add(back ?? new Color());
+        Logger.LogInformation("实验性取色算法:提取到的主题色:{Color}", back?.ToString());
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

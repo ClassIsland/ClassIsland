@@ -1,6 +1,5 @@
 ﻿using System.Windows.Documents;
 using ClassIsland.Core.Models.Updating;
-using ClassIsland.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels.SettingsPages;

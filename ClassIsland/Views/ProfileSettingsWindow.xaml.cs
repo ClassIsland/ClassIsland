@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 
 using ClassIsland.Controls;
-using ClassIsland.Converters;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -24,11 +23,11 @@ using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Models;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Services;
-using ClassIsland.Services.Management;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Extensions;
 using ClassIsland.Shared.Models.Action;
 using ClassIsland.ViewModels;
+using CommunityToolkit.Mvvm.Input;
 using CsesSharp;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
@@ -42,7 +41,6 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
 using Path = System.IO.Path;
 using TabControl = System.Windows.Controls.TabControl;
-using unvell.ReoGrid.IO.OpenXML.Schema;
 
 namespace ClassIsland.Views;
 /// <summary>
@@ -117,18 +115,25 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName != nameof(ViewModel.SelectedTimePoint)) 
-            return;
-        if (ViewModel.PreviousTrackedTimeLayoutItem != null)
+        if (e.PropertyName == nameof(ViewModel.SelectedTimePoint))
         {
-            ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanged -= SelectedTimePointOnPropertyChanged;
-            ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanging -= SelectedTimePointOnPropertyChanging;
+            if (ViewModel.PreviousTrackedTimeLayoutItem != null)
+            {
+                ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanged -= SelectedTimePointOnPropertyChanged;
+                ViewModel.PreviousTrackedTimeLayoutItem.PropertyChanging -= SelectedTimePointOnPropertyChanging;
+            }
+
+            if (ViewModel.SelectedTimePoint != null)
+            {
+                ViewModel.SelectedTimePoint.PropertyChanged += SelectedTimePointOnPropertyChanged;
+                ViewModel.SelectedTimePoint.PropertyChanging += SelectedTimePointOnPropertyChanging;
+                ViewModel.PreviousTrackedTimeLayoutItem = ViewModel.SelectedTimePoint;
+            }
         }
-        if (ViewModel.SelectedTimePoint != null)
+
+        if (e.PropertyName == nameof(ViewModel.ScheduleCalendarSelectedDate) && ScheduleAdjustmentTabControl.SelectedIndex == 0)
         {
-            ViewModel.SelectedTimePoint.PropertyChanged += SelectedTimePointOnPropertyChanged;
-            ViewModel.SelectedTimePoint.PropertyChanging += SelectedTimePointOnPropertyChanging;
-            ViewModel.PreviousTrackedTimeLayoutItem = ViewModel.SelectedTimePoint;
+            RefreshWeekScheduleRows();
         }
     }
 
@@ -994,6 +999,12 @@ public partial class ProfileSettingsWindow : MyWindow
 
     private void ButtonSave_OnClick(object sender, RoutedEventArgs e)
     {
+        SaveProfile();
+    }
+
+    [RelayCommand]
+    private void SaveProfile()
+    {
         ProfileService.SaveProfile();
         ViewModel.MessageQueue.Enqueue($"已保存到{ProfileService.CurrentProfilePath}。");
     }
@@ -1469,5 +1480,21 @@ public partial class ProfileSettingsWindow : MyWindow
     private void ButtonHideSellingAnnouncementBanner_OnClick(object sender, RoutedEventArgs e)
     {
         MainViewModel.Settings.ShowSellingAnnouncement = false;
+    }
+
+    private void MenuItemExportExcel_OnClick(object sender, RoutedEventArgs e)
+    {
+        var win = IAppHost.GetService<ExcelExportWindow>();
+        win.Owner = this;
+        win.ShowDialog();
+    }
+
+    private void ScheduleAdjustmentTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (ScheduleAdjustmentTabControl.SelectedIndex != 0)
+        {
+            return;
+        }
+        RefreshWeekScheduleRows();
     }
 }

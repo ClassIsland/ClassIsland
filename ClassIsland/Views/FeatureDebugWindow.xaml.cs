@@ -8,7 +8,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers;
 using ClassIsland.Core.Controls.CommonDialog;
-using ClassIsland.Helpers;
 using ClassIsland.Models.Authorize;
 
 namespace ClassIsland.Views;
@@ -22,13 +21,15 @@ public partial class FeatureDebugWindow : MyWindow
 
     public IProfileService ProfileService { get; }
     public IAuthorizeService AuthorizeService { get; }
+    public IWeatherService WeatherService { get; }
 
-    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService, IAuthorizeService authorizeService)
+    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService, IAuthorizeService authorizeService, IWeatherService weatherService)
     {
         DataContext = this;
         LessonsService = lessonsService;
         ProfileService = profileService;
         AuthorizeService = authorizeService;
+        WeatherService = weatherService;
         InitializeComponent();
     }
 

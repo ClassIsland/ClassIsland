@@ -7,32 +7,219 @@
              xmlns:local="clr-namespace:ClassIsland.Controls.Components"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
              xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
-                  Loaded="SlideComponent_OnLoaded"
+             Loaded="SlideComponent_OnLoaded"
+                  Unloaded="SlideComponent_OnUnloaded"
              d:DesignHeight="450" d:DesignWidth="800">
+    <ci:ComponentBase.Resources>
+        <Storyboard x:Key="SlideInAnimation">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.0" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.25" Value="1">
+                    <!--<EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>-->
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-40">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.25" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="SlideOutAnimation">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.25" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.25" Value="0">
+                    <!--<EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>-->
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.25" Value="40">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <ExponentialEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <DataTemplate x:Key="NewSlidePresenter">
+            <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}">
+                <ListBox Grid.Column="0"
+                         Margin="-6 0"
+                         SelectedIndex="{Binding SelectedIndex}"
+                         ItemsSource="{Binding Settings.Children}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.CanContentScroll="True"
+                         VirtualizingPanel.IsVirtualizing="False"
+                         materialDesign:ListBoxItemAssist.ShowSelection="False"
+                         VerticalContentAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Stretch">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Grid IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.Resources>
+                        <Style TargetType="ScrollViewer" BasedOn="{StaticResource MaterialDesignScrollViewer}">
+                            <Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
+                        </Style>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                            <Style.Triggers>
+                                <!-- 无动画隐藏状态 -->
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="False"/>
+                                        <Condition Binding="{Binding Settings.IsAnimationEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}" Value="False"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </MultiDataTrigger>
+                                <!-- 有动画隐藏状态 -->
+                                <DataTrigger Binding="{Binding Settings.IsAnimationEnabled, RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}"
+                                             Value="True">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <ContentPresenter HorizontalAlignment="{Binding Settings.HorizontalAlignment, RelativeSource={RelativeSource AncestorType=ci:ComponentPresenter}}">
+                                                    <ContentPresenter.RenderTransform>
+                                                        <TransformGroup>
+                                                            <ScaleTransform/>
+                                                            <SkewTransform/>
+                                                            <RotateTransform/>
+                                                            <TranslateTransform Y="0"/>
+                                                        </TransformGroup>
+                                                    </ContentPresenter.RenderTransform>
+                                                    <ContentPresenter.Style>
+                                                        <Style TargetType="ContentPresenter">
+                                                            <Style.Triggers>
+                                                                <MultiDataTrigger>
+                                                                    <MultiDataTrigger.Conditions>
+                                                                        <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}" Value="True"/>
+                                                                    </MultiDataTrigger.Conditions>
+                                                                    <MultiDataTrigger.EnterActions>
+                                                                        <BeginStoryboard Storyboard="{StaticResource SlideInAnimation}"
+                                                                            Name="SlideInAnimation"
+                                                                            HandoffBehavior="SnapshotAndReplace"/>
+                                                                    </MultiDataTrigger.EnterActions>
+                                                                    <MultiDataTrigger.ExitActions>
+                                                                        <BeginStoryboard Storyboard="{StaticResource SlideOutAnimation}"
+                                                                            Name="SlideOutAnimation"
+                                                                            HandoffBehavior="SnapshotAndReplace"/>
+                                                                    </MultiDataTrigger.ExitActions>
+                                                                </MultiDataTrigger> 
+                                                            </Style.Triggers>
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </Style>
+                                                    </ContentPresenter.Style>
+                                                </ContentPresenter>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                
+                            </Style.Triggers>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter HorizontalAlignment="{Binding Settings.HorizontalAlignment, RelativeSource={RelativeSource AncestorType=ci:ComponentPresenter}}"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <ci:ComponentPresenter IsOnMainWindow="True" 
+                                                   Settings="{Binding}"
+                                                   HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                   HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                   Margin="6 0" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="OldSlidePresenter">
+            <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}">
+                <TabControl Grid.Column="0"
+                            Margin="-6 0"
+                            TabStripPlacement="Left"
+                            SelectedIndex="{Binding SelectedIndex}"
+                            ItemsSource="{Binding Settings.Children}"
+                            VerticalContentAlignment="Stretch">
+                    <TabControl.ItemContainerStyle>
+                        <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </Style>
+                    </TabControl.ItemContainerStyle>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <ci:ComponentPresenter IsOnMainWindow="True" 
+
+                                                       Settings="{Binding}"
+                                                       HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                       HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                       Margin="6 0" />
+                            </Grid>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
+                <!--<TextBlock Text="{Binding SelectedIndex}" Foreground="Red"/>-->
+            </Grid>
+        </DataTemplate>
+        
+    </ci:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}">
-        <TabControl Grid.Column="0"
-                      Margin="-6 0"
-                      SelectedIndex="{Binding SelectedIndex}"
-                      ItemsSource="{Binding Settings.Children}"
-                      VerticalContentAlignment="Stretch">
-            <TabControl.ItemContainerStyle>
-                <Style TargetType="TabItem" BasedOn="{StaticResource MaterialDesignTabItem}">
-                    <Setter Property="Visibility" Value="Collapsed"/>
+        <ContentPresenter HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch" RenderTransformOrigin="0.5,0.5">
+            <ContentPresenter.Style>
+                <Style TargetType="ContentPresenter">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Settings.UseOldPresentingBehavior, RelativeSource={RelativeSource FindAncestor, AncestorType=local:SlideComponent}}"
+                                     Value="True">
+                            <Setter Property="ContentTemplate" Value="{StaticResource OldSlidePresenter}"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                    <Setter Property="ContentTemplate" Value="{StaticResource NewSlidePresenter}"/>
                 </Style>
-            </TabControl.ItemContainerStyle>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <ci:ComponentPresenter IsOnMainWindow="True" 
-                                               Settings="{Binding}"
-                                               HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                               HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                               Margin="6 0" />
-                    </Grid>
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
+            </ContentPresenter.Style>
+        </ContentPresenter>
         <!--<TextBlock Text="{Binding SelectedIndex}" Foreground="Red"/>-->
     </Grid>
 </ci:ComponentBase>

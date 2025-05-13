@@ -31,6 +31,16 @@ public class ManagementManifest
     /// 策略源
     /// </summary>
     public ReVersionString PolicySource { get; set; } = new();
+    
+    /// <summary>
+    /// 组件设置源
+    /// </summary>
+    public ReVersionString ComponentsSource { get; set; } = new();
+    
+    /// <summary>
+    /// 凭据设置源
+    /// </summary>
+    public ReVersionString CredentialSource { get; set; } = new();
 
     /// <summary>
     /// 集控服务器类型

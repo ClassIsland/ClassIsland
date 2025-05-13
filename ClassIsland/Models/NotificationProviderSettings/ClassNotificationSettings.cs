@@ -10,11 +10,13 @@ public class ClassNotificationSettings : ObservableRecipient, IClassNotification
     private int _inDoorClassPreparingDeltaTime = 60;
     private int _outDoorClassPreparingDeltaTime = 600;
     private string _classOnPreparingText = "准备上课，请回到座位并保持安静，做好上课准备。";
+    private string _outdoorClassOnPreparingText = "下节课程为户外课程，请合理规划时间，做好上课准备。";
     private bool _isSpeechEnabledOnClassPreparing = true;
     private bool _isSpeechEnabledOnClassOn = true;
     private bool _isSpeechEnabledOnClassOff = true;
     private bool _showTeacherName = false;
     private string _classOnPreparingMaskText = "即将上课";
+    private string _outdoorClassOnPreparingMaskText = "即将上课";
     private string _classOnMaskText = "上课";
     private string _classOffMaskText = "课间休息";
     private string _classOffOverlayText = "";
@@ -92,6 +94,28 @@ public class ClassNotificationSettings : ObservableRecipient, IClassNotification
         {
             if (value == _classOnPreparingMaskText) return;
             _classOnPreparingMaskText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OutdoorClassOnPreparingMaskText
+    {
+        get => _outdoorClassOnPreparingMaskText;
+        set
+        {
+            if (value == _outdoorClassOnPreparingMaskText) return;
+            _outdoorClassOnPreparingMaskText = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string OutdoorClassOnPreparingText
+    {
+        get => _outdoorClassOnPreparingText;
+        set
+        {
+            if (value == _outdoorClassOnPreparingText) return;
+            _outdoorClassOnPreparingText = value;
             OnPropertyChanged();
         }
     }

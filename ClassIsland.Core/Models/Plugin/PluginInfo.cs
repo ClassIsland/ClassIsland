@@ -1,7 +1,6 @@
 using System.IO;
 using System.Text.Json.Serialization;
-using System.Windows.Documents;
-using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Core.Abstractions.Models.Marketplace;
 using ClassIsland.Core.Enums;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -10,13 +9,15 @@ namespace ClassIsland.Core.Models.Plugin;
 /// <summary>
 /// 插件信息
 /// </summary>
-public class PluginInfo() : ObservableRecipient
+public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
 {
     private DownloadProgress? _downloadProgress;
     private bool _isAvailableOnMarket = false;
     private PluginManifest _manifest = new();
     private bool _restartRequired = false;
     private bool _isUpdateAvailable = false;
+    private long _downloadCount = 0;
+    private long _starsCount = 0;
 
     /// <summary>
     /// 插件元数据
@@ -121,6 +122,9 @@ public class PluginInfo() : ObservableRecipient
     [JsonIgnore]
     public PluginLoadStatus LoadStatus { get; internal set; } = PluginLoadStatus.NotLoaded;
 
+    /// <inheritdoc />
+    [JsonIgnore]
+    public IMarketplaceItemManifest ManifestReadonly => Manifest;
 
     /// <summary>
     /// 是否在插件市场上可用
@@ -178,6 +182,34 @@ public class PluginInfo() : ObservableRecipient
         {
             if (value == _isUpdateAvailable) return;
             _isUpdateAvailable = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件下载量
+    /// </summary>
+    public long DownloadCount
+    {
+        get => _downloadCount;
+        set
+        {
+            if (value == _downloadCount) return;
+            _downloadCount = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// 插件 Stars 数量
+    /// </summary>
+    public long StarsCount
+    {
+        get => _starsCount;
+        set
+        {
+            if (value == _starsCount) return;
+            _starsCount = value;
             OnPropertyChanged();
         }
     }

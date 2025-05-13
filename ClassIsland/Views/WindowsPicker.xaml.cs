@@ -4,15 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-
-using ClassIsland.Controls;
-using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models;
-using ClassIsland.Models;
-using ClassIsland.Services;
 using ClassIsland.ViewModels;
 
 using Microsoft.Extensions.Logging;
