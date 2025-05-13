@@ -43,20 +43,21 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 - [x] 简洁直观的 [课表编辑工具](https://docs.classisland.tech/app/classplan)
 - [x] 从 Excel 表格、[CSES](https://github.com/cses-org/cses) 或其他软件 [导入课表](https://docs.classisland.tech/app/profile/#%E4%BB%8E%E8%A1%A8%E6%A0%BC%E5%AF%BC%E5%85%A5)
+- [x] 将课表信息导出到 Excel 表格
 - [x] 多周轮换、快速录入时间表、自定义设置
 - [x] 单日/跨天临时换课
 - [x] 提前预定要临时启用的课表
 
 ### 自定义
 
-- [x] 通过 [组件](https://docs.classisland.tech/app/basic#组件)（日期、时间、天气简报、倒计日等）自定义显示的内容。支持多行显示组件和组件轮播
+- [x] 通过 [组件](https://docs.classisland.tech/app/basic#组件)（日期、时间、天气简报、倒计日等）自定义显示的内容。支持多行显示组件、组件轮播和组件滚动
 - [x] 通过 [插件](https://docs.classisland.tech/app/basic#组件) 扩展应用功能，高度自定义你的 ClassIsland
-- [x] 通过主题系统高度定制应用主界面外观 [^1]
+- [x] 通过主题系统高度定制应用主界面外观
 
 ### 其它功能
 
 - [x] 通过[自动化](https://docs.classisland.tech/app/automation.html)在特定事件发生时/特定时间自动执行某些操作（如显示提醒、打开应用/文件/网页等），提高教学效率
-- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced#天气)信息、降水提示、6 小时/3 天天气预报和极端天气预警
+- [x] 显示当前的[天气](https://docs.classisland.tech/app/advanced#天气)信息、降水提示、6 小时/3 天天气预报和极端天气预警等信息，支持根据定位获取天气信息
 - [x] 自动同步软件时间、手动对齐铃声
 - [x] 使用密码等认证方式保护应用设置和课表配置
 - [x] 丝滑、流畅的过渡动画
@@ -64,8 +65,6 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 - [x] 自动软件更新
 - [ ] [集控管理](https://docs.classisland.tech/management)_（即将发布）_
 - [ ] ……
-
-[^1]: 需要更新到 1.5.3.1 或以上版本的 ClassIsland，并安装 [ClassIsland 主题加载器](https://github.com/ClassIsland/ClassIsland.ThemeLoader) 插件。
 
 ## 软件截图
 
@@ -75,11 +74,11 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ##### 1. 软件效果
 
-![软件截图 - 整体效果](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-28_11-47-04.png)
+![软件截图 - 整体效果](https://res.classisland.tech/screenshots/ClassIsland/Snipaste_2025-03-28_11-47-04.png)
 
 ##### 2. 演示上课提醒视频
 
-<video src="https://github.com/ClassIsland/ClassIsland/assets/55006226/b797138a-84ef-4296-b69b-3989f331f289" loop label="软件截图 - 上课提醒" autoplay muted></video>
+<video src="https://res.classisland.tech/screenshots/ClassIsland/notifications.mp4" loop label="软件截图 - 上课提醒" autoplay muted></video>
 
 <details>
 <summary>查看更多软件截图……</summary>
@@ -88,31 +87,31 @@ ClassIsland 是一款适用于班级多媒体屏幕的课表信息显示工具�
 
 ##### 1. 课表编辑
 
-![软件截图 - 课表编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/1.png)
+![软件截图 - 课表编辑](https://res.classisland.tech/screenshots/ClassIsland/1.png)
 
 ##### 2. 时间表编辑
 
-![软件截图 - 时间表编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/3.png)
+![软件截图 - 时间表编辑](https://res.classisland.tech/screenshots/ClassIsland/3.png)
 
 ##### 3. 科目编辑
 
-![软件截图 - 科目编辑](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/4.png)
+![软件截图 - 科目编辑](https://res.classisland.tech/screenshots/ClassIsland/4.png)
 
 ##### 4. 预定调课
 
-![软件截图 - 跨天换课](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/5.png)
+![软件截图 - 跨天换课](https://res.classisland.tech/screenshots/ClassIsland/5.png)
 
-![软件截图 - 预定课表](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/6.png)
+![软件截图 - 预定课表](https://res.classisland.tech/screenshots/ClassIsland/6.png)
 
 ### 设置界面
 
 ##### 1. 基本设置
 
-![软件截图 - 应用设置](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-29_09-33-56.png)
+![软件截图 - 应用设置](https://res.classisland.tech/screenshots/ClassIsland/Snipaste_2025-03-29_09-33-56.png)
 
 ##### 2. 组件设置
 
-![软件截图 - 组件设置](https://github.com/ClassIsland/images/raw/main/images/ClassIsland/Snipaste_2025-03-28_11-47-25.png)
+![软件截图 - 组件设置](https://res.classisland.tech/screenshots/ClassIsland/Snipaste_2025-03-28_11-47-25.png)
 
 </details>
 
@@ -154,14 +153,13 @@ ClassIsland 与部分窗口美化工具（特别是如 Mica For Everyone 这类�
 
 ## 开发
 
-![Repobeat dev](https://repobeats.axiom.co/api/embed/ace0a0609166a47b16a58bb7d2d0d5e20968d4d1.svg "Repobeats analytics image")
+![Alt](https://repobeats.axiom.co/api/embed/ca0697cbbfea1d5ab5350fb86d7056e803552b2a.svg "Repobeats analytics image")
 
 本项目目前开发状态：
 
 | 分支 | 开发状态 | 信息 |
 | --- | --- | --- |
-| [`dev`](https://github.com/ClassIsland/ClassIsland/tree/dev) | 正在此分支上开发版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=dev&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/dev)](https://www.codefactor.io/repository/github/classisland/classisland/overview/dev) |
-| [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上维护版本 [1.6 - Himeko](https://github.com/ClassIsland/ClassIsland/milestone/7)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master) |
+| [`master`](https://github.com/ClassIsland/ClassIsland/tree/master) | 正在此分支上维护版本 [1.7 - RyouYamada](https://github.com/ClassIsland/ClassIsland/milestone/8)。| [![Build](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml/badge.svg?branch=master&style=flat_square)](https://github.com/ClassIsland/ClassIsland/actions/workflows/build_release.yml) [![CodeFactor](https://www.codefactor.io/repository/github/classisland/classisland/badge/master)](https://www.codefactor.io/repository/github/classisland/classisland/overview/master) |
 
 要在本地编译应用，请参考文档[配置 ClassIsland 本体开发环境](https://docs.classisland.tech/dev/get-started/devlopment.html)。
 
