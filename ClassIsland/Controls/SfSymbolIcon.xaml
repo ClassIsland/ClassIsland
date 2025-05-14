@@ -8,6 +8,9 @@
                     <DrawingImage.Drawing>
                         <DrawingGroup ClipGeometry="{Binding DrawingClipGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}">
                             <GeometryDrawing 
+                                Brush="Transparent"
+                                Geometry="{Binding DrawingClipGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}"/>
+                            <GeometryDrawing 
                                 Brush="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}"
                                 Geometry="{Binding DrawingGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}"/>
                         </DrawingGroup>

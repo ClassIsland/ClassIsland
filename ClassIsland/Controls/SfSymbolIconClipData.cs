@@ -6,194 +6,194 @@ namespace ClassIsland.Controls;
 
 public static class SfSymbolIconClipData
 {
-    public static FrozenDictionary<SfSymbolIconKind, string> PathData = new Dictionary<SfSymbolIconKind, string>()
+    public static readonly FrozenDictionary<SfSymbolIconKind, string> PathData = new Dictionary<SfSymbolIconKind, string>()
     {
 
-        { SfSymbolIconKind.SunMin, "M0,0 V28.62890625 H28.62890625 V0 H0 Z" },
+        { SfSymbolIconKind.SunMin, "M-6.412109,-6.412109 V35.041016 H35.041016 V-6.412109 H-6.412109 Z"  },
 
-        { SfSymbolIconKind.SunMinFill, "M0,0 V28.62890625 H28.62890625 V0 H0 Z" },
+        { SfSymbolIconKind.SunMinFill, "M-6.412109,-6.412109 V35.041016 H35.041016 V-6.412109 H-6.412109 Z"  },
 
-        { SfSymbolIconKind.SunMax, "M0,0 V31.8828125 H31.8828125 V0 H0 Z" },
+        { SfSymbolIconKind.SunMax, "M-4.785156,-4.785156 V36.667969 H36.667969 V-4.785156 H-4.785156 Z"  },
 
-        { SfSymbolIconKind.SunMaxFill, "M0,0 V31.8828125 H31.8828125 V0 H0 Z" },
+        { SfSymbolIconKind.SunMaxFill, "M-4.785156,-4.785156 V36.667969 H36.667969 V-4.785156 H-4.785156 Z"  },
 
-        { SfSymbolIconKind.SunMaxTrianglebadgeExclamationmark, "M0,0 V29.83203125 H31.8828125 V0 H0 Z" },
+        { SfSymbolIconKind.SunMaxTrianglebadgeExclamationmark, "M-4.785156,-5.810547 V35.642578 H36.667969 V-5.810547 H-4.785156 Z"  },
 
-        { SfSymbolIconKind.SunMaxTrianglebadgeExclamationmarkFill, "M0,0 V29.708984375 H31.8828125 V0 H0 Z" },
+        { SfSymbolIconKind.SunMaxTrianglebadgeExclamationmarkFill, "M-4.785156,-5.87207 V35.581055 H36.667969 V-5.87207 H-4.785156 Z"  },
 
-        { SfSymbolIconKind.Sunrise, "M0,0 V29.3125 H35.041015625 V0 H0 Z" },
+        { SfSymbolIconKind.Sunrise, "M-3.206055,-6.070312 V35.382813 H38.24707 V-6.070312 H-3.206055 Z"  },
 
-        { SfSymbolIconKind.SunriseFill, "M0,0 V29.3125 H35.041015625 V0 H0 Z" },
+        { SfSymbolIconKind.SunriseFill, "M-3.206055,-6.070312 V35.382813 H38.24707 V-6.070312 H-3.206055 Z"  },
 
-        { SfSymbolIconKind.Sunset, "M0,0 V29.3125 H35.041015625 V0 H0 Z" },
+        { SfSymbolIconKind.Sunset, "M-3.206055,-6.070312 V35.382813 H38.24707 V-6.070312 H-3.206055 Z"  },
 
-        { SfSymbolIconKind.SunsetFill, "M0,0 V29.3125 H35.041015625 V0 H0 Z" },
+        { SfSymbolIconKind.SunsetFill, "M-3.206055,-6.070312 V35.382813 H38.24707 V-6.070312 H-3.206055 Z"  },
 
-        { SfSymbolIconKind.SunHorizon, "M0,0 V22.94140625 H35.041015625 V0 H0 Z" },
+        { SfSymbolIconKind.SunHorizon, "M-3.206055,-9.255859 V32.197266 H38.24707 V-9.255859 H-3.206055 Z"  },
 
-        { SfSymbolIconKind.SunHorizonFill, "M0,0 V22.99609375 H35.041015625 V0 H0 Z" },
+        { SfSymbolIconKind.SunHorizonFill, "M-3.206055,-9.228516 V32.224609 H38.24707 V-9.228516 H-3.206055 Z"  },
 
-        { SfSymbolIconKind.SunDust, "M0,0 V32.9765625 H31.5546875 V0 H0 Z" },
+        { SfSymbolIconKind.SunDust, "M-4.949219,-4.238281 V37.214844 H36.503906 V-4.238281 H-4.949219 Z"  },
 
-        { SfSymbolIconKind.SunDustFill, "M0,0 V32.9765625 H31.5546875 V0 H0 Z" },
+        { SfSymbolIconKind.SunDustFill, "M-4.949219,-4.238281 V37.214844 H36.503906 V-4.238281 H-4.949219 Z"  },
 
-        { SfSymbolIconKind.SunHaze, "M0,0 V32.416015625 H31.5546875 V0 H0 Z" },
+        { SfSymbolIconKind.SunHaze, "M-4.949219,-4.518555 V36.93457 H36.503906 V-4.518555 H-4.949219 Z" },
 
-        { SfSymbolIconKind.SunHazeFill, "M0,0 V32.416015625 H31.5546875 V0 H0 Z" },
+        { SfSymbolIconKind.SunHazeFill, "M-4.949219,-4.518555 V36.93457 H36.503906 V-4.518555 H-4.949219 Z" },
 
-        { SfSymbolIconKind.SunRain, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.SunRain, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.SunRainFill, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.SunRainFill, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.SunSnow, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.SunSnow, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.SunSnowFill, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.SunSnowFill, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.Moon, "M0,0 V28.08203125 H27.958984375 V0 H0 Z" },
+        { SfSymbolIconKind.Moon, "M-6.74707,-6.685547 V34.767578 H34.706055 V-6.685547 H-6.74707 Z" },
 
-        { SfSymbolIconKind.MoonFill, "M0,0 V27.001953125 H26.87890625 V0 H0 Z" },
+        { SfSymbolIconKind.MoonFill, "M-7.287109,-7.225586 V34.227539 H34.166016 V-7.225586 H-7.287109 Z" },
 
-        { SfSymbolIconKind.MoonDust, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.MoonDust, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.MoonDustFill, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.MoonDustFill, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.MoonHaze, "M0,0 V30.355453757111 H31.5546875 V0 H0 Z" },
+        { SfSymbolIconKind.MoonHaze, "M-4.949219,-5.548836 V35.904289 H36.503906 V-5.548836 H-4.949219 Z" },
 
-        { SfSymbolIconKind.MoonHazeFill, "M0,0 V30.355453757111 H31.5546875 V0 H0 Z" },
+        { SfSymbolIconKind.MoonHazeFill, "M-4.949219,-5.548836 V35.904289 H36.503906 V-5.548836 H-4.949219 Z" },
 
-        { SfSymbolIconKind.Sparkles, "M0,0 V31.869140625 H26.38671875 V0 H0 Z" },
+        { SfSymbolIconKind.Sparkles, "M-7.533203,-4.791992 V36.661133 H33.919922 V-4.791992 H-7.533203 Z" },
 
-        { SfSymbolIconKind.MoonStars, "M0,0 V31.0078125 H29.298828125 V0 H0 Z" },
+        { SfSymbolIconKind.MoonStars, "M-6.077148,-5.222656 V36.230469 H35.375977 V-5.222656 H-6.077148 Z" },
 
-        { SfSymbolIconKind.MoonStarsFill, "M0,0 V31.0078125 H29.298828125 V0 H0 Z" },
+        { SfSymbolIconKind.MoonStarsFill, "M-6.077148,-5.222656 V36.230469 H35.375977 V-5.222656 H-6.077148 Z" },
 
-        { SfSymbolIconKind.Cloud, "M0,0 V22.88671875 H34.1796875 V0 H0 Z" },
+        { SfSymbolIconKind.Cloud, "M-3.636719,-9.283203 V32.169922 H37.816406 V-9.283203 H-3.636719 Z" },
 
-        { SfSymbolIconKind.CloudFill, "M0,0 V22.88671875 H34.1796875 V0 H0 Z" },
+        { SfSymbolIconKind.CloudFill, "M-3.636719,-9.283203 V32.169922 H37.816406 V-9.283203 H-3.636719 Z" },
 
-        { SfSymbolIconKind.CloudDrizzle, "M0,0 V33.0973411985618 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudDrizzle, "M-4.504883,-4.177892 V37.275233 H36.948242 V-4.177892 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudDrizzleFill, "M0,0 V33.0973411985618 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudDrizzleFill, "M-4.504883,-4.177892 V37.275233 H36.948242 V-4.177892 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudRain, "M0,0 V33.1388036293324 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudRain, "M-4.504883,-4.157161 V37.295964 H36.948242 V-4.157161 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudRainFill, "M0,0 V33.1388036293324 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudRainFill, "M-4.504883,-4.157161 V37.295964 H36.948242 V-4.157161 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudHeavyrain, "M0,0 V33.1431652422053 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudHeavyrain, "M-4.504883,-4.15498 V37.298145 H36.948242 V-4.15498 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudHeavyrainFill, "M0,0 V33.1431652422053 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudHeavyrainFill, "M-4.504883,-4.15498 V37.298145 H36.948242 V-4.15498 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudFog, "M0,0 V31.705078125 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudFog, "M-4.504883,-4.874023 V36.579102 H36.948242 V-4.874023 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudFogFill, "M0,0 V31.705078125 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudFogFill, "M-4.504883,-4.874023 V36.579102 H36.948242 V-4.874023 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudHail, "M0,0 V33.318359375 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudHail, "M-4.504883,-4.067383 V37.385742 H36.948242 V-4.067383 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudHailFill, "M0,0 V33.318359375 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudHailFill, "M-4.504883,-4.067383 V37.385742 H36.948242 V-4.067383 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudSnow, "M0,0 V34.248046875 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSnow, "M-4.504883,-3.602539 V37.850586 H36.948242 V-3.602539 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudSnowFill, "M0,0 V34.248046875 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSnowFill, "M-4.504883,-3.602539 V37.850586 H36.948242 V-3.602539 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudSleet, "M0,0 V34.91796875 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSleet, "M-4.504883,-3.267578 V38.185547 H36.948242 V-3.267578 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudSleetFill, "M0,0 V34.91796875 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSleetFill, "M-4.504883,-3.267578 V38.185547 H36.948242 V-3.267578 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudBolt, "M0,0 V34.2242274158563 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudBolt, "M-4.504883,-3.614449 V37.838676 H36.948242 V-3.614449 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudBoltFill, "M0,0 V34.2242274158563 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudBoltFill, "M-4.504883,-3.614449 V37.838676 H36.948242 V-3.614449 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudBoltRain, "M0,0 V34.2242274158563 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudBoltRain, "M-4.504883,-3.614449 V37.838676 H36.948242 V-3.614449 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudBoltRainFill, "M0,0 V34.2242274158563 H32.443359375 V0 H0 Z" },
+        { SfSymbolIconKind.CloudBoltRainFill, "M-4.504883,-3.614449 V37.838676 H36.948242 V-3.614449 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudSun, "M0,0 V29.271484375 H41.453125 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSun, "M-0.0,-6.09082 V35.362305 H41.453125 V-6.09082 H-0.0 Z" },
 
-        { SfSymbolIconKind.CloudSunFill, "M0,0 V29.0390625 H41.384765625 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSunFill, "M-0.03418,-6.207031 V35.246094 H41.418945 V-6.207031 H-0.03418 Z" },
 
-        { SfSymbolIconKind.CloudSunRain, "M0,0 V40.1902402449358 H41.453125 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSunRain, "M-0.0,-0.631442 V40.821683 H41.453125 V-0.631442 H-0.0 Z" },
 
-        { SfSymbolIconKind.CloudSunRainFill, "M0,0 V40.1902402449358 H41.357421875 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSunRainFill, "M-0.047852,-0.631442 V40.821683 H41.405273 V-0.631442 H-0.047852 Z" },
 
-        { SfSymbolIconKind.CloudSunBolt, "M0,0 V41.1832117908563 H41.453125 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSunBolt, "M-0.0,-0.134957 V41.318168 H41.453125 V-0.134957 H-0.0 Z" },
 
-        { SfSymbolIconKind.CloudSunBoltFill, "M0,0 V41.1891436286057 H41.357421875 V0 H0 Z" },
+        { SfSymbolIconKind.CloudSunBoltFill, "M-0.047852,-0.131991 V41.321134 H41.405273 V-0.131991 H-0.047852 Z" },
 
-        { SfSymbolIconKind.CloudMoon, "M0,0 V25.4828344798734 H37.7974450776796 V0 H0 Z" },
+        { SfSymbolIconKind.CloudMoon, "M-1.82784,-7.985145 V33.46798 H39.625285 V-7.985145 H-1.82784 Z" },
 
-        { SfSymbolIconKind.CloudMoonFill, "M0,0 V24.6781633678055 H37.48828125 V0 H0 Z" },
+        { SfSymbolIconKind.CloudMoonFill, "M-1.982422,-8.387481 V33.065644 H39.470703 V-8.387481 H-1.982422 Z" },
 
-        { SfSymbolIconKind.CloudMoonRain, "M0,0 V36.3851434287699 H37.7974450776796 V0 H0 Z" },
+        { SfSymbolIconKind.CloudMoonRain, "M-1.82784,-2.533991 V38.919134 H39.625285 V-2.533991 H-1.82784 Z" },
 
-        { SfSymbolIconKind.CloudMoonRainFill, "M0,0 V35.777476220603 H37.556640625 V0 H0 Z" },
+        { SfSymbolIconKind.CloudMoonRainFill, "M-1.948242,-2.837824 V38.615301 H39.504883 V-2.837824 H-1.948242 Z" },
 
-        { SfSymbolIconKind.CloudMoonBolt, "M0,0 V37.3815522302081 H37.7974450776796 V0 H0 Z" },
+        { SfSymbolIconKind.CloudMoonBolt, "M-1.82784,-2.035786 V39.417339 H39.625285 V-2.035786 H-1.82784 Z" },
 
-        { SfSymbolIconKind.CloudMoonBoltFill, "M0,0 V36.7887633670838 H37.556640625 V0 H0 Z" },
+        { SfSymbolIconKind.CloudMoonBoltFill, "M-1.948242,-2.332181 V39.120944 H39.504883 V-2.332181 H-1.948242 Z" },
 
-        { SfSymbolIconKind.Smoke, "M0,0 V25.45703125 H34.09765625 V0 H0 Z" },
+        { SfSymbolIconKind.Smoke, "M-3.677734,-7.998047 V33.455078 H37.775391 V-7.998047 H-3.677734 Z" },
 
-        { SfSymbolIconKind.SmokeFill, "M0,0 V25.375 H34.193359375 V0 H0 Z" },
+        { SfSymbolIconKind.SmokeFill, "M-3.629883,-8.039062 V33.414063 H37.823242 V-8.039062 H-3.629883 Z" },
 
-        { SfSymbolIconKind.Wind, "M0,0 V25.62109375 H28.9274368495906 V0 H0 Z" },
+        { SfSymbolIconKind.Wind, "M-6.262844,-7.916016 V33.537109 H35.190281 V-7.916016 H-6.262844 Z" },
 
-        { SfSymbolIconKind.WindSnow, "M0,0 V28.041015625 H28.9274368495906 V0 H0 Z" },
+        { SfSymbolIconKind.WindSnow, "M-6.262844,-6.706055 V34.74707 H35.190281 V-6.706055 H-6.262844 Z" },
 
-        { SfSymbolIconKind.Snowflake, "M0,0 V28.7109375 H25.242865673531 V0 H0 Z" },
+        { SfSymbolIconKind.Snowflake, "M-8.10513,-6.371094 V35.082031 H33.347995 V-6.371094 H-8.10513 Z" },
 
-        { SfSymbolIconKind.SnowflakeSlash, "M0,0 V28.7109375 H28.1281935448425 V0 H0 Z" },
+        { SfSymbolIconKind.SnowflakeSlash, "M-6.662466,-6.371094 V35.082031 H34.790659 V-6.371094 H-6.662466 Z" },
 
-        { SfSymbolIconKind.Tornado, "M0,0 V32.5011926471653 H27.671875 V0 H0 Z" },
+        { SfSymbolIconKind.Tornado, "M-6.890625,-4.475966 V36.977159 H34.5625 V-4.475966 H-6.890625 Z" },
 
-        { SfSymbolIconKind.Tropicalstorm, "M0,0 V30.59765625 H18.607421875 V0 H0 Z" },
+        { SfSymbolIconKind.Tropicalstorm, "M-11.422852,-5.427734 V36.025391 H30.030273 V-5.427734 H-11.422852 Z" },
 
-        { SfSymbolIconKind.Hurricane, "M0,0 V30.59765625 H18.607421875 V0 H0 Z" },
+        { SfSymbolIconKind.Hurricane, "M-11.422852,-5.427734 V36.025391 H30.030273 V-5.427734 H-11.422852 Z" },
 
-        { SfSymbolIconKind.ThermometerSun, "M0,0 V36.72265625 H29.818359375 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerSun, "M-5.817383,-2.365234 V39.087891 H35.635742 V-2.365234 H-5.817383 Z" },
 
-        { SfSymbolIconKind.ThermometerSunFill, "M0,0 V36.72265625 H29.818359375 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerSunFill, "M-5.817383,-2.365234 V39.087891 H35.635742 V-2.365234 H-5.817383 Z" },
 
-        { SfSymbolIconKind.ThermometerSnowflake, "M0,0 V31.869140625 H26.9554740765955 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerSnowflake, "M-7.248825,-4.791992 V36.661133 H34.2043 V-4.791992 H-7.248825 Z" },
 
-        { SfSymbolIconKind.ThermometerVariable, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerVariable, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.ThermometerVariableAndFigure, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerVariableAndFigure, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.ThermometerLow, "M0,0 V31.5546875 H19.90625 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerLow, "M-10.773438,-4.949219 V36.503906 H30.679687 V-4.949219 H-10.773438 Z" },
 
-        { SfSymbolIconKind.ThermometerMedium, "M0,0 V31.5546875 H19.90625 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerMedium, "M-10.773438,-4.949219 V36.503906 H30.679687 V-4.949219 H-10.773438 Z" },
 
-        { SfSymbolIconKind.ThermometerHigh, "M0,0 V31.5546875 H19.90625 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerHigh, "M-10.773438,-4.949219 V36.503906 H30.679687 V-4.949219 H-10.773438 Z" },
 
-        { SfSymbolIconKind.ThermometerMediumSlash, "M0,0 V31.5546875 H24.920449589685 V0 H0 Z" },
+        { SfSymbolIconKind.ThermometerMediumSlash, "M-8.266338,-4.949219 V36.503906 H33.186787 V-4.949219 H-8.266338 Z" },
 
-        { SfSymbolIconKind.DegreesignFahrenheit, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.DegreesignFahrenheit, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.DegreesignCelsius, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.DegreesignCelsius, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.AqiLow, "M0,0 V33.974609375 H29.572265625 V0 H0 Z" },
+        { SfSymbolIconKind.AqiLow, "M-5.94043,-3.739258 V37.713867 H35.512695 V-3.739258 H-5.94043 Z" },
 
-        { SfSymbolIconKind.AqiMedium, "M0,0 V34.7265625 H30.32421875 V0 H0 Z" },
+        { SfSymbolIconKind.AqiMedium, "M-5.564453,-3.363281 V38.089844 H35.888672 V-3.363281 H-5.564453 Z" },
 
-        { SfSymbolIconKind.AqiHigh, "M0,0 V35.4375 H36.873046875 V0 H0 Z" },
+        { SfSymbolIconKind.AqiHigh, "M-2.290039,-3.007812 V38.445313 H39.163086 V-3.007812 H-2.290039 Z" },
 
-        { SfSymbolIconKind.Humidity, "M0,0 V24.650390625 H30.1813327899873 V0 H0 Z" },
+        { SfSymbolIconKind.Humidity, "M-5.635896,-8.401367 V33.051758 H35.817229 V-8.401367 H-5.635896 Z" },
 
-        { SfSymbolIconKind.HumidityFill, "M0,0 V24.63671875 H30.1676609149873 V0 H0 Z" },
+        { SfSymbolIconKind.HumidityFill, "M-5.642732,-8.408203 V33.044922 H35.810393 V-8.408203 H-5.642732 Z" },
 
-        { SfSymbolIconKind.Rainbow, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.Rainbow, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.CloudRainbowCrop, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.CloudRainbowCrop, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.CloudRainbowCropFill, "M0,0 V33.4140625 H25.265625 V0 H0 Z" },
+        { SfSymbolIconKind.CloudRainbowCropFill, "M-8.09375,-4.019531 V37.433594 H33.359375 V-4.019531 H-8.09375 Z" },
 
-        { SfSymbolIconKind.CarbonMonoxideCloud, "M0,0 V27.53515625 H34.521484375 V0 H0 Z" },
+        { SfSymbolIconKind.CarbonMonoxideCloud, "M-3.46582,-6.958984 V34.494141 H37.987305 V-6.958984 H-3.46582 Z" },
 
-        { SfSymbolIconKind.CarbonMonoxideCloudFill, "M0,0 V27.53515625 H34.521484375 V0 H0 Z" },
+        { SfSymbolIconKind.CarbonMonoxideCloudFill, "M-3.46582,-6.958984 V34.494141 H37.987305 V-6.958984 H-3.46582 Z" },
 
-        { SfSymbolIconKind.CarbonDioxideCloud, "M0,0 V27.53515625 H34.521484375 V0 H0 Z" },
+        { SfSymbolIconKind.CarbonDioxideCloud, "M-3.46582,-6.958984 V34.494141 H37.987305 V-6.958984 H-3.46582 Z" },
 
-        { SfSymbolIconKind.CarbonDioxideCloudFill, "M0,0 V27.53515625 H34.521484375 V0 H0 Z" },
+        { SfSymbolIconKind.CarbonDioxideCloudFill, "M-3.46582,-6.958984 V34.494141 H37.987305 V-6.958984 H-3.46582 Z" },
 
     }.ToFrozenDictionary();
 }

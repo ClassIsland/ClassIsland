@@ -15,6 +15,7 @@
         xmlns:settingPages="clr-namespace:ClassIsland.Views.SettingPages"
         xmlns:action1="clr-namespace:ClassIsland.Shared.Models.Action;assembly=ClassIsland.Shared"
         xmlns:services="clr-namespace:ClassIsland.Services"
+        xmlns:weather="clr-namespace:ClassIsland.Core.Models.Weather;assembly=ClassIsland.Core"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance local:FeatureDebugWindow}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
@@ -172,16 +173,11 @@
                                     Width="64" Height="64"
                                     StickerToolTip="帕姆_点赞"
                                     ImageSource="/Assets/HoYoStickers/帕姆_点赞.png"/>
-                    <Image>
-                        <Image.Source>
-                            <DrawingImage>
-                                <DrawingImage.Drawing>
-                                    <GeometryDrawing Geometry="">
-                                    </GeometryDrawing>
-                                </DrawingImage.Drawing>
-                            </DrawingImage>
-                        </Image.Source>
-                    </Image>
+                    <controls:WeatherRangePackIconControl>
+                        <controls:WeatherRangePackIconControl.Value>
+                            <weather:RangedValue From="2" To="4"/>
+                        </controls:WeatherRangePackIconControl.Value>
+                    </controls:WeatherRangePackIconControl>
                 </StackPanel>
             </TabItem>
             <TabItem Header="LessonsListBox">
