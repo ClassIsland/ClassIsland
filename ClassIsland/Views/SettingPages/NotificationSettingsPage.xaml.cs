@@ -177,6 +177,6 @@ public partial class NotificationSettingsPage : SettingsPageBase
 
     private void ButtonOpenAdvancedProviderSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenDrawer("NotificationSettingsDrawer", dataContext: ViewModel.SelectedRegisterInfo?.ProviderSettings);
+        OpenDrawer("NotificationSettingsDrawer", dataContext: ViewModel.SelectedRegisterInfo);
     }
 }
