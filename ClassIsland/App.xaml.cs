@@ -288,7 +288,7 @@ public partial class App : AppBase, IAppHost
 
         //Settings.DiagnosticCrashCount++;
         //Settings.DiagnosticLastCrashTime = DateTime.Now;
-        
+
         if (!critical)  // 全局未捕获的异常应该由 SentrySdk 自行捕获。
         {
             SentrySdk.CaptureException(e, scope =>
