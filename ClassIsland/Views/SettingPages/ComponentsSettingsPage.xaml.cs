@@ -50,6 +50,14 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         {
             mainHandler.Components = ComponentsService.CurrentComponents;
         }
+        if (FindResource("DataProxy") is BindingProxy proxy)
+        {
+            proxy.Data = this;
+        }
+        if (FindResource("DataProxyDuplicate") is BindingProxy proxyDuplicate)
+        {
+            proxyDuplicate.Data = DuplicateComponentCommand;
+        }
     }
 
     private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
@@ -283,10 +291,6 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
     private void ComponentsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (FindResource("DataProxy") is BindingProxy proxy)
-        {
-            proxy.Data = this;
-        }
         SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
     }
 
