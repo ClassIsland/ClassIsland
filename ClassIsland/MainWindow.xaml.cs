@@ -244,8 +244,8 @@ public partial class MainWindow : Window
 
     private void LessonsServiceOnPreMainTimerTicked(object? sender, EventArgs e)
     {
-        SettingsService.Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
-        SettingsService.Settings.IsNotificationSpeechEnabled = SettingsService.Settings.IsNetworkConnect || SettingsService.Settings.IsSystemSpeechSystemExist;
+        //SettingsService.Settings.IsNetworkConnect = InternetGetConnectedState(out var _);
+        //SettingsService.Settings.IsNotificationSpeechEnabled = SettingsService.Settings.IsNetworkConnect || SettingsService.Settings.IsSystemSpeechSystemExist;
         if (SettingsService.Settings.IsMainWindowDebugEnabled)
             ViewModel.DebugCurrentTime = ExactTimeService.GetCurrentLocalDateTime();
 

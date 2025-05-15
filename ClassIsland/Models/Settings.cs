@@ -1278,11 +1278,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value == _isNetworkConnect) return;
-            if (value == false && !IsSystemSpeechSystemExist)
-            {
-                IsNotificationSpeechEnabled = false;
-                AllowNotificationSpeech = false;
-            }
             _isNetworkConnect = value;
             OnPropertyChanged();
         }
