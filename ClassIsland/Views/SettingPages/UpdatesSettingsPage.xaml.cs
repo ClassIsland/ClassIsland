@@ -65,9 +65,6 @@ public partial class UpdatesSettingsPage : SettingsPageBase
             case nameof(SettingsService.Settings.UpdateReleaseInfo):
                 UpdateCache();
                 break;
-            case nameof(SettingsService.Settings.SpeechSource):
-                RequestRestart();
-                break;
         }
 
         RefreshDescription();

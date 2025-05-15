@@ -319,8 +319,7 @@
                                                         Orientation="Horizontal"
                                                         HorizontalAlignment="Right"
                                                         VerticalAlignment="Center">
-                                                <ComboBox SelectedIndex="{Binding SettingsService.Settings.SpeechSource}"
-                                                          ItemsSource="{x:Static registry:SpeechProviderRegistryService.RegisteredProviders}"
+                                                <ComboBox ItemsSource="{x:Static registry:SpeechProviderRegistryService.RegisteredProviders}"
                                                           SelectedValuePath="Id"
                                                           SelectedValue="{Binding SettingsService.Settings.SelectedSpeechProvider}">
                                                     <ComboBox.ItemTemplate>
