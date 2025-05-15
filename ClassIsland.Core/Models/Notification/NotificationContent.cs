@@ -36,22 +36,10 @@ public class NotificationContent : ObservableRecipient
     /// <remarks>
     /// 即使不设置此属性，ContentPresenter 也会根据设置的数据类型选择资源中对应的数据模板进行呈现。
     /// </remarks>
-   public DataTemplate? ContentTemplate
+    public DataTemplate? ContentTemplate
     {
         get => _contentTemplate;
         set => SetProperty(ref _contentTemplate, value);
-    }
-
-    /// <summary>
-    /// 提醒内容模板资源键，可选。如果此值不为 null，将使用此值来查找并覆盖 <see cref="ContentTemplate"/>。
-    /// </summary>
-    /// <remarks>
-    /// 即使不设置此属性，ContentPresenter 也会根据设置的数据类型选择资源中对应的数据模板进行呈现。
-    /// </remarks>
-    public object? ContentTemplateResourceKey
-    {
-        get => _contentTemplateResourceKey;
-        set => SetProperty(ref _contentTemplateResourceKey, value);
     }
 
     /// <summary>
@@ -136,7 +124,6 @@ public class NotificationContent : ObservableRecipient
                 HasRightIcon = hasRightIcon,
                 Text = text
             },
-            ContentTemplateResourceKey = TwoIconsMaskTemplateData.TemplateResourceKey,
             SpeechContent = text,
         };
         factory?.Invoke(content);
@@ -158,7 +145,6 @@ public class NotificationContent : ObservableRecipient
             {
                 Text = text
             },
-            ContentTemplateResourceKey = SimpleTextTemplateData.TemplateResourceKey,
             SpeechContent = text,
         };
         factory?.Invoke(content);

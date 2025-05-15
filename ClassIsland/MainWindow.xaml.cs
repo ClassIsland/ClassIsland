@@ -317,30 +317,6 @@ public partial class MainWindow : Window
             var rawTime = content.EndTime.Value - ExactTimeService.GetCurrentLocalDateTime();
             content.Duration = rawTime > TimeSpan.Zero ? rawTime : TimeSpan.Zero;
         }
-
-        if (content.ContentTemplateResourceKey != null)
-        {
-            LoadNotificationContentTemplate(content);
-        }
-    }
-
-    private void LoadNotificationContentTemplate(NotificationContent content)
-    {
-        if (content.ContentTemplateResourceKey == null)
-        {
-            return;
-        }
-        content.ContentTemplate = ResourceLoaderBorder.TryFindResource(content.ContentTemplateResourceKey) as DataTemplate;
-        if (content.ContentTemplate != null)
-        {
-            return;
-        }
-        content.ContentTemplate = AppBase.Current.TryFindResource(content.ContentTemplateResourceKey) as DataTemplate;
-        if (content.ContentTemplate != null)
-        {
-            return;
-        }
-        Logger.LogWarning("无法加载提醒内容模板 {}", content.ContentTemplateResourceKey);
     }
 
     private async Task ProcessNotification()
