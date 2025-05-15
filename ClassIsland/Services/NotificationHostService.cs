@@ -147,6 +147,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             request.ChannelId = channelGuid;
         }
 
+        channelGuid = request.ChannelId;
+
         var channel =
             request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
         request.ChannelSettings = channel?.ProviderSettings;
