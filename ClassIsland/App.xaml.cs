@@ -905,7 +905,7 @@ public partial class App : AppBase, IAppHost
     {
         try
         {
-            var service = IAppHost.Host?.Services.GetRequiredKeyedService<ISpeechService>(Settings.SelectedSpeechProvider);
+            var service = IAppHost.Host?.Services.GetKeyedService<ISpeechService>(Settings.SelectedSpeechProvider);
             if (service == null)
             {
                 throw new InvalidOperationException($"语音提供方 {Settings.SelectedSpeechProvider} 未注册");
