@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -187,6 +188,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
     public ComponentBase? GetComponent(ComponentSettings settings, bool isSettings)
     {
         var transaction = SentrySdk.StartTransaction("Get Component Instance", "component.getInstance");
+        var sb = Stopwatch.StartNew();
         transaction.SetTag("component", settings.AssociatedComponentInfo.Name);
         transaction.SetTag("component.isSettings", isSettings.ToString());
         transaction.SetTag("component.Id", settings.AssociatedComponentInfo.Guid.ToString());
@@ -227,6 +229,11 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                 component.SettingsInternal = componentSettings;
             }
             transaction.Finish(SpanStatus.Ok);
+            sb.Stop();
+            if (sb.Elapsed >= TimeSpan.FromMilliseconds(500))
+            {
+                Logger.LogWarning("组件 {}/{} ({}) 初始化消耗了太长时间，耗时为 {}ms", settings.Id, isSettings ? "settings" : "component", settings.AssociatedComponentInfo.Name, sb.ElapsedMilliseconds);
+            }
             return component;
         }
         catch (Exception ex)
