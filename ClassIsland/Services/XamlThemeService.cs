@@ -58,6 +58,10 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
         Logger = logger;
         PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
+        if (App.ApplicationCommand.Safe)
+        {
+            return;
+        }
         var resourceBoarder = VisualTreeUtils.FindChildVisualByName<Border>(MainWindow, "ResourceLoaderBorder");
         resourceBoarder?.Resources.MergedDictionaries.Add(RootResourceDictionary);
 
@@ -69,6 +73,11 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
     public void LoadAllThemes()
     {
         LoadThemeSource();
+
+        if (App.ApplicationCommand.Safe)
+        {
+            return;
+        }
         RootResourceDictionary.MergedDictionaries.Clear();
         foreach (var themeInfo in Themes)
         {
