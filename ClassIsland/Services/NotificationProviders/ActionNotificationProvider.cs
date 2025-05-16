@@ -13,6 +13,7 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Core.Models.Notification;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Hosting;
+using ClassIsland.Helpers;
 
 namespace ClassIsland.Services.NotificationProviders;
 
@@ -40,13 +41,13 @@ public class ActionNotificationProvider : NotificationProviderBase
         {
             MaskContent = NotificationContent.CreateTwoIconsMask(settings.Mask, hasRightIcon:false, factory: x =>
             {
-                x.Duration = TimeSpan.FromSeconds(settings.MaskDurationSeconds);
+                x.Duration = TimeSpanHelper.FromSecondsSafe(settings.MaskDurationSeconds);
                 x.IsSpeechEnabled = settings.IsMaskSpeechEnabled;
             }),
             OverlayContent = string.IsNullOrWhiteSpace(settings.Content) || settings.ContentDurationSeconds <= 0 ? null : NotificationContent.CreateSimpleTextContent(settings.Content, factory: x =>
             {
                 x.IsSpeechEnabled = settings.IsContentSpeechEnabled;
-                x.Duration = TimeSpan.FromSeconds(settings.ContentDurationSeconds);
+                x.Duration = TimeSpanHelper.FromSecondsSafe(settings.ContentDurationSeconds);
             }),
             RequestNotificationSettings =
             {

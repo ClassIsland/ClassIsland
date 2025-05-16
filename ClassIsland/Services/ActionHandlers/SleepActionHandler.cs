@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
+using ClassIsland.Helpers;
 namespace ClassIsland.Services.ActionHandlers;
 
 public class SleepActionHandler : IHostedService
@@ -12,7 +13,7 @@ public class SleepActionHandler : IHostedService
     {
         ActionService.RegisterActionHandler("classisland.action.sleep",
             (s, g) => {
-                Task.Delay(TimeSpan.FromSeconds(((SleepActionSettings)s!).Value))
+                Task.Delay(TimeSpanHelper.FromSecondsSafe(((SleepActionSettings)s!).Value))
                     .Wait();
             });
     }

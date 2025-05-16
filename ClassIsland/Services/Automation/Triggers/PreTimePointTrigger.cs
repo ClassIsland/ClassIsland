@@ -2,6 +2,7 @@
 using ClassIsland.Core.Abstractions.Automation;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Helpers;
 using ClassIsland.Models.Automation.Triggers;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Profile;
@@ -52,7 +53,7 @@ public class PreTimePointTrigger(ILessonsService lessonsService, IExactTimeServi
                 return;
             }
 
-            var targetTime = targetTimePoint.StartSecond - TimeSpan.FromSeconds(Settings.TimeSeconds);
+            var targetTime = targetTimePoint.StartSecond - TimeSpanHelper.FromSecondsSafe(Settings.TimeSeconds);
             var targetTime2 = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(targetTime.TimeOfDay));
             //Console.WriteLine($"{LastCheckTime} {targetTime} {targetTimePoint.StartSecond} {now}");
             if (LastCheckTime < targetTime2 && targetTime2 <= now)

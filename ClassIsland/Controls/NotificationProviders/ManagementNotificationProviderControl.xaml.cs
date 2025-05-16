@@ -2,7 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-
+using ClassIsland.Helpers;
 using ClassIsland.Shared.Protobuf.Command;
 
 namespace ClassIsland.Controls.NotificationProviders;
@@ -27,7 +27,7 @@ public partial class ManagementNotificationProviderControl : UserControl
         {
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
-            Duration = new Duration(TimeSpan.FromSeconds(Payload.DurationSeconds)),
+            Duration = new Duration(TimeSpanHelper.FromSecondsSafe(Payload.DurationSeconds)),
         };
         var storyboard = new Storyboard()
         {

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Helpers;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
@@ -47,7 +48,7 @@ public partial class SlideComponent
     private void LoadSettings()
     {
         //Timer.Stop();
-        Timer.Interval = TimeSpan.FromSeconds(Settings.SlideSeconds);
+        Timer.Interval = TimeSpanHelper.FromSecondsSafe(Settings.SlideSeconds);
         RefreshRules();
         //Timer.Start();
     }

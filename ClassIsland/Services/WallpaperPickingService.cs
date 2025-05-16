@@ -92,7 +92,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         AppBase.Current.AppStopping += (sender, args) => RegistryNotifier.Stop();
         AppBase.Current.AppStopping += (sender, args) => SystemEvents.UserPreferenceChanged -= SystemEventsOnUserPreferenceChanged;
         UpdateTimer.Tick += UpdateTimerOnTick;
-        UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+        UpdateTimer.Interval = TimeSpanHelper.FromSecondsSafe(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
         SettingsService.Settings.PropertyChanged += SettingsServiceOnPropertyChanged;
         UpdateUpdateTimerEnableState();
     }
@@ -102,7 +102,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         switch (e.PropertyName)
         {
             case nameof(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds):
-                UpdateTimer.Interval = TimeSpan.FromSeconds(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+                UpdateTimer.Interval = TimeSpanHelper.FromSecondsSafe(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
                 break;
             case nameof(SettingsService.Settings.IsWallpaperAutoUpdateEnabled):
             case nameof(SettingsService.Settings.ColorSource):

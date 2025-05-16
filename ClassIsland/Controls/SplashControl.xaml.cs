@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Helpers;
 using ClassIsland.Services;
 
 namespace ClassIsland.Controls;
@@ -62,7 +63,7 @@ public partial class SplashControl : UserControl
         {
             From = CurrentProgress,
             To = e,
-            Duration = new Duration(TimeSpan.FromSeconds(seconds)),
+            Duration = new Duration(TimeSpanHelper.FromSecondsSafe(seconds)),
             EasingFunction = new ExponentialEase()
         };
         var storyboard = new Storyboard()

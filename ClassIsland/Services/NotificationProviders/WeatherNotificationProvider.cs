@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Notification;
+using ClassIsland.Helpers;
 
 namespace ClassIsland.Services.NotificationProviders;
 
@@ -167,7 +168,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
             var t = i.Detail.Length / Settings.WeatherAlertSpeed;
             if (t <= 10) t = 10.0;
             if (t >= 90) t = 90.0;
-            var ts = TimeSpan.FromSeconds(t);
+            var ts = TimeSpanHelper.FromSecondsSafe(t);
             IAppHost.GetService<ILogger<WeatherNotificationProvider>>().LogTrace("单次预警显示时长：{}", ts);
             ShowNotification(new Core.Models.Notification.NotificationRequest()
             {

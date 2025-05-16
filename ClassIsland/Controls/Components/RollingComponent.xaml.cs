@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
+using ClassIsland.Helpers;
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
@@ -100,8 +101,8 @@ public partial class RollingComponent
             KeyFrames = [
                 //new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpan.FromSeconds(Settings.PauseSeconds + durationSeconds))),
                 new LinearDoubleKeyFrame(-pausePos),
-                new LinearDoubleKeyFrame(-pausePos, KeyTime.FromTimeSpan(TimeSpan.FromSeconds(pauseSeconds))),
-                new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpan.FromSeconds(pauseSeconds + durationSeconds))),
+                new LinearDoubleKeyFrame(-pausePos, KeyTime.FromTimeSpan(TimeSpanHelper.FromSecondsSafe(pauseSeconds))),
+                new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpanHelper.FromSecondsSafe(pauseSeconds + durationSeconds))),
 
             ]
         };

@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Helpers;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Services;
 using ClassIsland.Services.NotificationProviders;
@@ -102,7 +103,7 @@ public partial class TimeAdjustmentWindow
                 var nextPrepOnClassDeltaSeconds = classNotificationProvider.GetSettingsDeltaTime();
                 var onClassTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
                     LessonsService.NextClassTimeLayoutItem.StartSecond.TimeOfDay));
-                var prepOnClassTime = onClassTime - TimeSpan.FromSeconds(nextPrepOnClassDeltaSeconds);
+                var prepOnClassTime = onClassTime - TimeSpanHelper.FromSecondsSafe(nextPrepOnClassDeltaSeconds);
                 if (now <= prepOnClassTime)
                 {
                     ViewModel.TargetTime = prepOnClassTime;

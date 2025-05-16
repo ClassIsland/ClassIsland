@@ -451,7 +451,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         DownloadedSize = e.ReceivedBytesSize;
         DownloadSpeed = e.BytesPerSecondSpeed;
         
-        DownloadEtcSeconds = TimeSpan.FromSeconds(DownloadSpeed == 0 ? 0 : (long)((TotalSize - DownloadedSize) / DownloadSpeed));
+        DownloadEtcSeconds = TimeSpanHelper.FromSecondsSafe(DownloadSpeed == 0 ? 0 : (long)((TotalSize - DownloadedSize) / DownloadSpeed));
         Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
     }
 

@@ -75,7 +75,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
         }
 
         var settingsDeltaTime = GetSettingsDeltaTime();
-        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpan.FromSeconds(settingsDeltaTime) && settingsSource.IsClassOnPreparingNotificationEnabled)
+        if (tClassDelta > TimeSpan.Zero && tClassDelta <= TimeSpanHelper.FromSecondsSafe(settingsDeltaTime) && settingsSource.IsClassOnPreparingNotificationEnabled)
         {
             if (IsClassPreparingNotified)
                 return;
@@ -128,8 +128,8 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
 
     private TimeSpan CalculateDeltaTime(int settingsDeltaTime, TimeSpan tClassDelta)
     {
-        var deltaTime = TimeSpan.FromSeconds(settingsDeltaTime) - tClassDelta;
-        return deltaTime > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpan.FromSeconds(settingsDeltaTime);
+        var deltaTime = TimeSpanHelper.FromSecondsSafe(settingsDeltaTime) - tClassDelta;
+        return deltaTime > TimeSpan.FromSeconds(10) ? tClassDelta : TimeSpanHelper.FromSecondsSafe(settingsDeltaTime);
     }
 
     private NotificationRequest BuildNotificationRequest(IClassNotificationSettings settingsSource, TimeSpan deltaTime)
