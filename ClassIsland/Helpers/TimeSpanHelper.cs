@@ -4,7 +4,7 @@ namespace ClassIsland.Helpers;
 
 public static class TimeSpanHelper
 {
-    public const double MaxTimeSpanSeconds = 922337203685.0;
+    public const double MaxTimeSpanSeconds = 2147483.0;
 
     public static TimeSpan FromSecondsSafe(double seconds)
     {
