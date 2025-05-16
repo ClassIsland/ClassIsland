@@ -342,7 +342,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             return false;
         }
         var i0 = GetClassIndex(layout.Layouts.IndexOf(prevClassTimeItem));
-        if (CurrentClassPlan?.Classes.Count > i0 &&
+        if (i0 >= 0 && CurrentClassPlan?.Classes.Count > i0 &&
             Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var prevSubject))
         {
             return prevSubject == subject;
@@ -446,7 +446,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             if (currentTimeLayoutItem.TimeType == 0)
             {
                 var i0 = GetClassIndex((int)currentSelectedIndex);
-                if (CurrentClassPlan.Classes.Count > i0 &&
+                if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
                     Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
                 {
                     currentSubject = subject;
@@ -469,7 +469,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
         if (nextClassTimeLayoutItem != null)
         {
             var i0 = GetClassIndex(layout.IndexOf(nextClassTimeLayoutItem));
-            if (CurrentClassPlan.Classes.Count > i0 &&
+            if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
                 Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
                 nextClassSubject = subject;
         }
@@ -533,6 +533,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private int GetClassIndex(int index)
     {
+        if (index < 0 || index >= CurrentClassPlan?.TimeLayout.Layouts.Count )
+        {
+            return -1;
+        }
         var k = CurrentClassPlan?.TimeLayout.Layouts[index];
         var l = (from t in CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
         var i = l.IndexOf(k);
