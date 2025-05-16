@@ -50,4 +50,12 @@ public interface IXamlThemeService
     /// 重载本地主题源
     /// </summary>
     public void LoadThemeSource();
+
+    /// <summary>
+    /// 打包主题
+    /// </summary>
+    /// <param name="id">主题 ID</param>
+    /// <param name="outputPath">输出路径</param>
+    /// <returns></returns>
+    Task PackageThemeAsync(string id, string outputPath);
 }

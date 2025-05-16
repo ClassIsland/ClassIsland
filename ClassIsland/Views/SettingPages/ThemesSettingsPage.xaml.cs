@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
+using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models.Plugin;
@@ -14,6 +17,7 @@ using CommunityToolkit.Mvvm.Input;
 using MaterialDesignThemes.Wpf;
 using ClassIsland.Core.Controls;
 using ClassIsland.Core.Enums;
+using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 
 namespace ClassIsland.Views.SettingPages;
 
@@ -34,6 +38,11 @@ public partial class ThemesSettingsPage
         PluginMarketService = pluginMarketService;
         InitializeComponent();
         DataContext = this;
+
+        if (FindResource("DataProxy") is BindingProxy proxy)
+        {
+            proxy.Data = this;
+        }
     }
 
     private void ButtonLoadThemes_OnClick(object sender, RoutedEventArgs e)
@@ -113,5 +122,55 @@ public partial class ThemesSettingsPage
     private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
     {
         await PluginMarketService.RefreshPluginSourceAsync();
+    }
+
+    [RelayCommand]
+    private void OpenContextMenu(ContextMenu? menu)
+    {
+        if (menu != null)
+        {
+            menu.IsOpen = true;
+        }
+    }
+
+    [RelayCommand]
+    private void UninstallTheme(ThemeInfo info)
+    {
+        info.IsUninstalling = true;
+        RequestRestart();
+    }
+
+    [RelayCommand]
+    private void UndoUninstallTheme(ThemeInfo info)
+    {
+        info.IsUninstalling = false;
+    }
+
+    [RelayCommand]
+    private async void PackageThemeCommand(ThemeInfo? info)
+    {
+        if (info == null)
+            return;
+        var dialog = new SaveFileDialog()
+        {
+            Title = "打包主题",
+            FileName = info.Manifest.Id + ".zip",
+            Filter = $"ClassIsland 主题包(*.zip)|*.zip"
+        };
+        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            return;
+        try
+        {
+            await XamlThemeService.PackageThemeAsync(info.Manifest.Id, dialog.FileName);
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = Path.GetDirectoryName(dialog.FileName) ?? "",
+                UseShellExecute = true
+            });
+        }
+        catch (Exception ex)
+        {
+            CommonDialog.ShowError($"无法打包主题 {info.Manifest.Id}：{ex.Message}");
+        }
     }
 }

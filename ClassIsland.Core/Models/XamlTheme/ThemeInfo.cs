@@ -245,4 +245,33 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
             OnPropertyChanged();
         }
     }
+
+    /// <summary>
+    /// 主题是否将要卸载
+    /// </summary>
+    [JsonIgnore]
+    public bool IsUninstalling
+    {
+        get
+        {
+            if (!IsLocal)
+                return false;
+            return File.Exists(System.IO.Path.Combine(Path, ".uninstall"));
+        }
+        set
+        {
+            if (!IsLocal)
+                throw new InvalidOperationException("无法为不存在本地的插件设置将要卸载状态。");
+            var path = System.IO.Path.Combine(Path, ".uninstall");
+            if (value)
+            {
+                File.WriteAllText(path, "");
+            }
+            else
+            {
+                File.Delete(path);
+            }
+            OnPropertyChanged();
+        }
+    }
 }

@@ -42,8 +42,8 @@
 
         <CollectionViewSource x:Key="ThemeSource" 
                               Source="{Binding XamlThemeService.MergedThemes}"
-                              Filter="ThemeSource_OnFilter">
-        </CollectionViewSource>
+                              Filter="ThemeSource_OnFilter"/>
+        <ci:BindingProxy x:Key="DataProxy"/>
     </ci:SettingsPageBase.Resources>
     <Grid >
         <Grid.RowDefinitions>
@@ -151,6 +151,14 @@
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
                     <Setter Property="Padding" Value="0"/>
                     <Setter Property="Margin" Value="2"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <ContentPresenter Content="{Binding}"
+                                                  ContentTemplate="{Binding ItemTemplate, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
@@ -167,7 +175,9 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <materialDesign:Card Background="{DynamicResource MaterialDesignBackground}">
-                        <Grid >
+                        <materialDesign:Card.Resources>
+                        </materialDesign:Card.Resources>
+                        <Grid Background="Transparent">
                             <Border>
                                 <Border.OpacityMask>
                                     <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
@@ -250,13 +260,28 @@
                                                 ToolTip="加载此主题时发生错误"
                                                 CommandParameter="{Binding Value}"
                                                 Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
-                                    <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                                Content="{materialDesign:PackIcon FolderOutline}"
-                                                Margin="2 0"
-                                                ToolTip="打开主题文件夹…"
-                                                Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                                CommandParameter="{Binding Value}"
-                                                Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                    <materialDesign:PopupBox Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                             Content="{materialDesign:PackIcon MoreHoriz}"
+                                                             Margin="2 0"
+                                                             ToolTip="更多选项…">
+                                        <StackPanel>
+                                            <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开主题文件夹…"
+                                                      CommandParameter="{Binding Value}"
+                                                      Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon PackageOutline}" Header="打包主题…"
+                                                      CommandParameter="{Binding Value}"
+                                                      Command="{Binding PackageThemeCommandCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
+                                            <Separator/>
+                                            <MenuItem Icon="{materialDesign:PackIcon Remove}" Header="卸载主题"
+                                                      Visibility="{Binding Value.IsUninstalling, Converter={StaticResource InverseBoolToVisConverter}}"
+                                                      CommandParameter="{Binding Value}"
+                                                      Command="{Binding UninstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
+                                            <MenuItem Icon="{materialDesign:PackIcon Undo}" Header="撤销卸载"
+                                                      Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                      CommandParameter="{Binding Value}"
+                                                      Command="{Binding UndoUninstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
+                                        </StackPanel>
+                                    </materialDesign:PopupBox>
                                     <Button
                                             ToolTip="安装"
                                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
@@ -312,7 +337,5 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-
-        <TextBlock Grid.Row="3" Text="⚠ Under Construction" HorizontalAlignment="Right"/>
     </Grid>
 </ci:SettingsPageBase>

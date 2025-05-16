@@ -338,6 +338,18 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
                 Logger.LogError(e, "无法安装主题 {}", pkgPath);
             }
         }
+
+        foreach (var pkg in Directory.EnumerateDirectories(ThemesPath).Where(x => Path.Exists(Path.Combine(x, ".uninstall"))))
+        {
+            try
+            {
+                Directory.Delete(pkg, true);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e, "无法卸载主题 {}", pkg);
+            }
+        }
     }
 
     private static void InstallTheme(string pkgPath)
@@ -364,5 +376,21 @@ public class XamlThemeService : ObservableRecipient, IXamlThemeService
             ZipFile.ExtractToDirectory(pkgPath, targetPath);
         }
         File.Delete(pkgPath);
+    }
+
+    public async Task PackageThemeAsync(string id, string outputPath)
+    {
+        var plugin = Themes.FirstOrDefault(x => x.Manifest.Id == id);
+        if (plugin == null)
+        {
+            throw new ArgumentException($"找不到主题 {id}。", nameof(id));
+        }
+
+        await Task.Run(() =>
+        {
+            if (File.Exists(outputPath))
+                File.Delete(outputPath);
+            ZipFile.CreateFromDirectory(plugin.Path, outputPath);
+        });
     }
 }
