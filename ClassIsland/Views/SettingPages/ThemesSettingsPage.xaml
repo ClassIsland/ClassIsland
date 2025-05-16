@@ -337,5 +337,66 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+
+        <Border Grid.Row="0" Grid.RowSpan="3" 
+                Background="{DynamicResource MaterialDesignPaper}"
+                Visibility="{Binding SettingsService.Settings.IsThemeWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <ScrollViewer>
+                <StackPanel VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="75" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="75" />
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="0" Source="/Assets/AppLogo.png" />
+                        <materialDesign:PackIcon Grid.Column="1"
+                                                 VerticalAlignment="Center"
+                                                 Width="25" Height="25"
+                                                 Margin="16 0"
+                                                 Kind="Plus" />
+                        <materialDesign:PackIcon Grid.Column="2" Kind="FileCode"
+                                                 VerticalAlignment="Stretch"
+                                                 HorizontalAlignment="Stretch"
+                                                 Height="75"
+                                                 Width="75" />
+                    </Grid>
+                    <TextBlock Text="主题"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="0 8 0 0"
+                               Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+                    <TextBlock Margin="0 6 0 0"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Width="320">
+                        <Run Text="欢迎使用主题！主题可以修改甚至完全重塑 ClassIsland 主界面的外观。您可以使用主题功能打造出独一无二的 ClassIsland 界面。" />
+
+                    </TextBlock>
+                    <Border Width="320"
+                            Background="#22FF8800"
+                            Margin="0 8 0 0"
+                            Padding="8">
+                        <StackPanel>
+                            <materialDesign:PackIcon Kind="Warning"
+                                                     Margin="0 0 0 4"
+                                                     HorizontalAlignment="Center"/>
+                            <TextBlock TextAlignment="Center"
+                                       HorizontalAlignment="Center"
+                                       TextWrapping="Wrap"
+                                       Text="需要注意，主题以 XAML 资源的形式加载，可能存在与部分 ClassIsland 版本不兼容，甚至使应用完全无法使用的情况。并且主题也可以以 ClassIsland 的身份和权限执行任意代码。请不要安装来路不明的主题，开发者也无法保证市场所提供的主题都是绝对安全的。ClassIsland 开发团队对使用主题造成的一切后果概不负责。" />
+                        </StackPanel>
+                    </Border>
+
+                    <Button HorizontalAlignment="Center"
+                            Margin="0 16 0 0"
+                            Click="ButtonAgreeAgreement_OnClick">
+                        <ci:IconText Kind="Check" Text="同意并开始使用主题"></ci:IconText>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
     </Grid>
 </ci:SettingsPageBase>

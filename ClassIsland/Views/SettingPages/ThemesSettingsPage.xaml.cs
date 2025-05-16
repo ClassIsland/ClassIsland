@@ -29,13 +29,15 @@ public partial class ThemesSettingsPage
 {
     public IXamlThemeService XamlThemeService { get; }
     public IPluginMarketService PluginMarketService { get; }
+    public SettingsService SettingsService { get; }
 
     public ThemesSettingsViewModel ViewModel { get; } = new();
 
-    public ThemesSettingsPage(IXamlThemeService xamlThemeService, IPluginMarketService pluginMarketService)
+    public ThemesSettingsPage(IXamlThemeService xamlThemeService, IPluginMarketService pluginMarketService, SettingsService settingsService)
     {
         XamlThemeService = xamlThemeService;
         PluginMarketService = pluginMarketService;
+        SettingsService = settingsService;
         InitializeComponent();
         DataContext = this;
 
@@ -172,5 +174,10 @@ public partial class ThemesSettingsPage
         {
             CommonDialog.ShowError($"无法打包主题 {info.Manifest.Id}：{ex.Message}");
         }
+    }
+
+    private void ButtonAgreeAgreement_OnClick(object sender, RoutedEventArgs e)
+    {
+        SettingsService.Settings.IsThemeWarningVisible = false;
     }
 }

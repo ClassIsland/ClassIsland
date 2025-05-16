@@ -1770,6 +1770,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _corruptPluginsDisabledLastSession = false;
     private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
     private string _selectedSpeechProvider = "classisland.speech.edgeTts";
+    private bool _isThemeWarningVisible = true;
 
     public bool IsIgnoreWorkAreaEnabled
     {
@@ -2178,6 +2179,18 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     }
 
     #endregion
+
+    public bool IsThemeWarningVisible
+    {
+        get => _isThemeWarningVisible;
+        set
+        {
+            if (value == _isThemeWarningVisible) return;
+            _isThemeWarningVisible = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsDebugEnabled
     {
         get => _isDebugEnabled;
