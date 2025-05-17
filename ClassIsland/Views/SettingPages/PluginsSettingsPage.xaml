@@ -748,18 +748,20 @@
                 </Grid>
             </controls1:ListDetailView.LeftContent>
             <controls1:ListDetailView.RightContent>
-                <ContentPresenter Content="{Binding ViewModel.SelectedPluginInfo}">
-                    <ContentPresenter.Style>
-                        <Style TargetType="ContentPresenter">
-                            <Style.Triggers>
-                                <Trigger Property="Content" Value="{x:Null}">
-                                    <Setter Property="ContentTemplate" Value="{StaticResource BlankPluginDetailDataTemplate}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                            <Setter Property="ContentTemplate" Value="{StaticResource PluginDetailDataTemplate}"/>
-                        </Style>
-                    </ContentPresenter.Style>
-                </ContentPresenter>
+                <Grid>
+                    <ContentPresenter Content="{Binding ViewModel.SelectedPluginInfo}">
+                        <ContentPresenter.Style>
+                            <Style TargetType="ContentPresenter">
+                                <Style.Triggers>
+                                    <Trigger Property="Content" Value="{x:Null}">
+                                        <Setter Property="ContentTemplate" Value="{StaticResource BlankPluginDetailDataTemplate}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                                <Setter Property="ContentTemplate" Value="{StaticResource PluginDetailDataTemplate}"/>
+                            </Style>
+                        </ContentPresenter.Style>
+                    </ContentPresenter>
+                </Grid>
             </controls1:ListDetailView.RightContent>
         </controls1:ListDetailView>
         <Border Background="{DynamicResource MaterialDesignPaper}"
