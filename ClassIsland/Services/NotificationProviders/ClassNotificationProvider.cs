@@ -157,8 +157,9 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             },
             ChannelId = Guid.Parse(PrepareOnClassChannelId)
         };
+        
         //prepareOnClassNotificationRequest.CancellationToken.Register(prepareClassOnEndCallback);
-        prepareOnClassNotificationRequest.CompletedToken.Register(PrepareClassOnEndCallback);
+        //prepareOnClassNotificationRequest.CompletedToken.Register(PrepareClassOnEndCallback);
         return prepareOnClassNotificationRequest;
 
         void PrepareClassOnEndCallback()
@@ -229,6 +230,11 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
     private void OnClass(object? sender, EventArgs e)
     {
         ShowOnClassNotificationCore();
+
+        // 考虑到可能出现提醒过程中时间提前，导致提醒播放结束时还没上课导致重复提醒的情况，
+        // 这里改为在上课时才取消准备上课提醒的标志。
+        IsClassPreparingNotified = false;
+        IsClassOnNotified = false;
     }
 
     private void ShowOnClassNotificationCore()
@@ -265,7 +271,7 @@ public class ClassNotificationProvider : NotificationProviderBase<ClassNotificat
             ChannelId = Guid.Parse(OnClassChannelId)
         };
         onClassNotificationRequest.CancellationToken.Register(classOnEndCallback);
-        onClassNotificationRequest.CompletedToken.Register(classOnEndCallback);
+        //onClassNotificationRequest.CompletedToken.Register(classOnEndCallback);
         return onClassNotificationRequest;
     }
 
