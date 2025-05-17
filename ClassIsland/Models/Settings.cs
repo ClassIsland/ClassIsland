@@ -148,7 +148,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private double _notificationEffectRenderingScale = 1.0;
     private bool _isNotificationEffectRenderingScaleAutoSet = false;
     private AllContributorsRc _contributorsCache = new();
-    private bool _isNotificationSpeechEnabled = false;
     private bool _allowNotificationSpeech = false;
     private bool _allowNotificationEffect = true;
     private bool _allowNotificationSound = false;
@@ -1413,17 +1412,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _isNotificationEffectRenderingScaleAutoSet) return;
             _isNotificationEffectRenderingScaleAutoSet = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsNotificationSpeechEnabled
-    {
-        get => _isNotificationSpeechEnabled;
-        set
-        {
-            if (value == _isNotificationSpeechEnabled) return;
-            _isNotificationSpeechEnabled = value;
             OnPropertyChanged();
         }
     }

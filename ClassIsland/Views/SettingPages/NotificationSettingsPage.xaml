@@ -290,7 +290,6 @@
                                                                        Header="允许启用提醒语音"
                                                                        Description="在发出提醒时用语音播报提醒内容。"
                                                                        IsOn="{Binding SettingsService.Settings.AllowNotificationSpeech, Mode=TwoWay}"
-                                                                       IsEnabled="{Binding SettingsService.Settings.IsNotificationSpeechEnabled, Mode=TwoWay}"
                                                                        Margin="-12 0" />
                                         </Expander.Header>
                                         <Grid Margin="36 0 48 12"
