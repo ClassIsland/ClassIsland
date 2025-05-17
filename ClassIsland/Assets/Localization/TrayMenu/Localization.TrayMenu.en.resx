@@ -117,61 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="General_string" xml:space="preserve">
-    <value>General</value>
+  <data name="Settings_string" xml:space="preserve">
+    <value>Settings...</value>
   </data>
-  <data name="Components_string" xml:space="preserve">
-    <value>Components</value>
+  <data name="Restart_string" xml:space="preserve">
+    <value>Restart</value>
   </data>
-  <data name="Appearance_string" xml:space="preserve">
-    <value>Appearance</value>
+  <data name="Quit_string" xml:space="preserve">
+    <value>Quit</value>
   </data>
-  <data name="Notification_string" xml:space="preserve">
-    <value>Notification</value>
+  <data name="Help_string" xml:space="preserve">
+    <value>Help...</value>
   </data>
-  <data name="Window_string" xml:space="preserve">
-    <value>Window</value>
+  <data name="LoadTempSchedule_string" xml:space="preserve">
+    <value>Load temporary schedule...</value>
   </data>
-  <data name="Weather_string" xml:space="preserve">
-    <value>Weather</value>
+  <data name="EditProfile_string" xml:space="preserve">
+    <value>Edit profile...</value>
   </data>
-  <data name="Update_string" xml:space="preserve">
-    <value>Update</value>
+  <data name="HideInterface_string" xml:space="preserve">
+    <value>Hide interface</value>
   </data>
-  <data name="Automation_string" xml:space="preserve">
-    <value>Automation</value>
-  </data>
-  <data name="Storage_string" xml:space="preserve">
-    <value>Storage</value>
-  </data>
-  <data name="Privacy_string" xml:space="preserve">
-    <value>Privacy</value>
-  </data>
-  <data name="Plugins_string" xml:space="preserve">
-    <value>Plugins</value>
-  </data>
-  <data name="About_string" xml:space="preserve">
-    <value>About ClassIsland</value>
-  </data>
-  <data name="Theme_string" xml:space="preserve">
-    <value>Theme</value>
-  </data>
-  <data name="Behavior_string" xml:space="preserve">
-    <value>Behavior</value>
-  </data>
-  <data name="OpenSourceStatement" xml:space="preserve">
-    <value>ClassIsland is an open source and free software, and the official does not provide any form of paid support services. The source code is hosted at {sourcecodeurl}.If you obtain this application through paid assistance or other payment methods, please prioritize seeking help from the seller within the service framework agreed upon with them when encountering problems. If the seller does not provide the service you expected, please refund or actively protect your legitimate rights and interests through other ways.</value>
-  </data>
-  <data name="ExperimentalFeature_string" xml:space="preserve">
-    <value>Experimental feature</value>
-  </data>
-  <data name="DebuggingWindowRules_string" xml:space="preserve">
-    <value>Debugging window rules</value>
-  </data>
-  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
-    <value>Create a quick adjust course shortcut</value>
-  </data>
-  <data name="ManagementOptions_string" xml:space="preserve">
-    <value>Management options</value>
+  <data name="AdjustCourses_string" xml:space="preserve">
+    <value>Adjust course...</value>
   </data>
 </root>

@@ -117,61 +117,44 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="General_string" xml:space="preserve">
-    <value>General</value>
+  <data name="LangName_string" xml:space="preserve">
+    <value>English</value>
+    <comment>设置中显示的语言名称</comment>
   </data>
-  <data name="Components_string" xml:space="preserve">
-    <value>Components</value>
+  <data name="LoadOnBoot_string" xml:space="preserve">
+    <value>Start on Boot</value>
+    <comment>设置-基本-行为-"开机自启"</comment>
   </data>
-  <data name="Appearance_string" xml:space="preserve">
-    <value>Appearance</value>
+  <data name="RegURLProto_string" xml:space="preserve">
+    <value>Register URL Protocol</value>
+    <comment>设置-基本-行为-"注册URL协议"</comment>
   </data>
-  <data name="Notification_string" xml:space="preserve">
-    <value>Notification</value>
+  <data name="LoadOnBoot_Description" xml:space="preserve">
+    <value>Automatically run this application when your system starts.</value>
+    <comment>设置-基本-行为-开机自启-注释</comment>
   </data>
-  <data name="Window_string" xml:space="preserve">
-    <value>Window</value>
-  </data>
-  <data name="Weather_string" xml:space="preserve">
-    <value>Weather</value>
-  </data>
-  <data name="Update_string" xml:space="preserve">
-    <value>Update</value>
-  </data>
-  <data name="Automation_string" xml:space="preserve">
-    <value>Automation</value>
-  </data>
-  <data name="Storage_string" xml:space="preserve">
-    <value>Storage</value>
-  </data>
-  <data name="Privacy_string" xml:space="preserve">
-    <value>Privacy</value>
-  </data>
-  <data name="Plugins_string" xml:space="preserve">
-    <value>Plugins</value>
-  </data>
-  <data name="About_string" xml:space="preserve">
-    <value>About ClassIsland</value>
-  </data>
-  <data name="Theme_string" xml:space="preserve">
-    <value>Theme</value>
+  <data name="RegURLProto_Description" xml:space="preserve">
+    <value>Allows third-party applications or web pages to call some functions of this application through the URL protocol classisland://. See the help documentation for details.</value>
+    <comment>设置-基本-行为-注册URL协议-注释</comment>
   </data>
   <data name="Behavior_string" xml:space="preserve">
     <value>Behavior</value>
+    <comment>设置-基本-"行为"</comment>
   </data>
-  <data name="OpenSourceStatement" xml:space="preserve">
-    <value>ClassIsland is an open source and free software, and the official does not provide any form of paid support services. The source code is hosted at {sourcecodeurl}.If you obtain this application through paid assistance or other payment methods, please prioritize seeking help from the seller within the service framework agreed upon with them when encountering problems. If the seller does not provide the service you expected, please refund or actively protect your legitimate rights and interests through other ways.</value>
+  <data name="SemesterStartDate_string" xml:space="preserve">
+    <value>Semester Start Date</value>
+    <comment>设置-基本-行为-"学期开始时间"</comment>
   </data>
-  <data name="ExperimentalFeature_string" xml:space="preserve">
-    <value>Experimental feature</value>
+  <data name="SemesterStartDate_Description" xml:space="preserve">
+    <value>This date will be considered the first day of the semester, used for calculating multiple-week rotating schedules. It should be set as the first day of the week.</value>
+    <comment>设置-基本-行为-学期开始时间-注释</comment>
   </data>
-  <data name="DebuggingWindowRules_string" xml:space="preserve">
-    <value>Debugging window rules</value>
+  <data name="HideWindow_string" xml:space="preserve">
+    <value>Hide window</value>
+    <comment>设置-基本-行为-"隐藏窗口"</comment>
   </data>
-  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
-    <value>Create a quick adjust course shortcut</value>
-  </data>
-  <data name="ManagementOptions_string" xml:space="preserve">
-    <value>Management options</value>
+  <data name="HideWindow_Description" xml:space="preserve">
+    <value>Hide the main interface in the selected situations to prevent it from obstructing the screen and affecting teaching.</value>
+    <comment>设置-基本-行为-隐藏窗口-"高级模式"</comment>
   </data>
 </root>

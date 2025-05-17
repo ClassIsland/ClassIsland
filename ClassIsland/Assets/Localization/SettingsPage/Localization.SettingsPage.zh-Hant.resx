@@ -117,21 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LangName_string" xml:space="preserve">
-    <value>中文(繁體)</value>
-  </data>
-  <data name="Startup_string" xml:space="preserve">
-    <value>正在啓動</value>
-  </data>
-  <data name="Settings_string" xml:space="preserve">
-    <value>應用設置</value>
-  </data>
-  <data name="Restart_string" xml:space="preserve">
-    <value>重啓</value>
-  </data>
-  <data name="Quit_string" xml:space="preserve">
-    <value>退出</value>
-  </data>
   <data name="General_string" xml:space="preserve">
     <value>基本</value>
   </data>
@@ -171,31 +156,22 @@
   <data name="Theme_string" xml:space="preserve">
     <value>主題</value>
   </data>
-  <data name="LoadOnBoot_string" xml:space="preserve">
-    <value>開機自啓</value>
-  </data>
-  <data name="RegURLProto_string" xml:space="preserve">
-    <value>註冊URL協議</value>
-  </data>
   <data name="Behavior_string" xml:space="preserve">
     <value>行为</value>
   </data>
-  <data name="RegURLProto_Description" xml:space="preserve">
-    <value>允許第三方應用或網頁通過URL協議(classisland://)調用本應用的部分功能，詳見幫助文檔</value>
+  <data name="OpenSourceStatement" xml:space="preserve">
+    <value>ClassIsland 是開源免費的軟件，官方沒有提供任何形式的付費支持服務，源代碼倉庫地址在{sourcecodeurl}。如果您通過有償協助等付費方式取得本應用，在遇到問題時請在與賣家約定的服務框架下，優先向賣家求助。如果賣家沒有提供您預期的服務，請退款或通過其它形式積極維護您的合法權益。</value>
   </data>
-  <data name="LoadOnBoot_Description" xml:space="preserve">
-    <value>在您的系統啓動時自動運行本應用</value>
+  <data name="ExperimentalFeature_string" xml:space="preserve">
+    <value>實驗性功能</value>
   </data>
-  <data name="SemesterStartDate_string" xml:space="preserve">
-    <value>学期开始时间</value>
+  <data name="DebuggingWindowRules_string" xml:space="preserve">
+    <value>調試窗口規則</value>
   </data>
-  <data name="SemesterStartDate_Description" xml:space="preserve">
-    <value>此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。</value>
+  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
+    <value>創建快捷換課圖標</value>
   </data>
-  <data name="HideWindow_string" xml:space="preserve">
-    <value>隱藏窗口</value>
-  </data>
-  <data name="HideWindow_Description" xml:space="preserve">
-    <value>將在以下選定的情況隱藏主界面，以防止遮擋屏幕影響授課。</value>
+  <data name="ManagementOptions_string" xml:space="preserve">
+    <value>集控選項</value>
   </data>
 </root>

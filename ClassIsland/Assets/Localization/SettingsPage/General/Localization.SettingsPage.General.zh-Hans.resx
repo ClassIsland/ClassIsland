@@ -117,61 +117,34 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="General_string" xml:space="preserve">
-    <value>General</value>
+  <data name="LangName_string" xml:space="preserve">
+    <value>中文(简体)</value>
   </data>
-  <data name="Components_string" xml:space="preserve">
-    <value>Components</value>
+  <data name="LoadOnBoot_string" xml:space="preserve">
+    <value>开机自启</value>
   </data>
-  <data name="Appearance_string" xml:space="preserve">
-    <value>Appearance</value>
+  <data name="RegURLProto_string" xml:space="preserve">
+    <value>注册URL协议</value>
   </data>
-  <data name="Notification_string" xml:space="preserve">
-    <value>Notification</value>
+  <data name="LoadOnBoot_Description" xml:space="preserve">
+    <value>在您的系统启动时自动运行本应用</value>
   </data>
-  <data name="Window_string" xml:space="preserve">
-    <value>Window</value>
-  </data>
-  <data name="Weather_string" xml:space="preserve">
-    <value>Weather</value>
-  </data>
-  <data name="Update_string" xml:space="preserve">
-    <value>Update</value>
-  </data>
-  <data name="Automation_string" xml:space="preserve">
-    <value>Automation</value>
-  </data>
-  <data name="Storage_string" xml:space="preserve">
-    <value>Storage</value>
-  </data>
-  <data name="Privacy_string" xml:space="preserve">
-    <value>Privacy</value>
-  </data>
-  <data name="Plugins_string" xml:space="preserve">
-    <value>Plugins</value>
-  </data>
-  <data name="About_string" xml:space="preserve">
-    <value>About ClassIsland</value>
-  </data>
-  <data name="Theme_string" xml:space="preserve">
-    <value>Theme</value>
+  <data name="RegURLProto_Description" xml:space="preserve">
+    <value>允许第三方应用或网页通过URL协议(classisland://)调用本应用的部分功能，详见帮助文档</value>
   </data>
   <data name="Behavior_string" xml:space="preserve">
-    <value>Behavior</value>
+    <value>行为</value>
   </data>
-  <data name="OpenSourceStatement" xml:space="preserve">
-    <value>ClassIsland is an open source and free software, and the official does not provide any form of paid support services. The source code is hosted at {sourcecodeurl}.If you obtain this application through paid assistance or other payment methods, please prioritize seeking help from the seller within the service framework agreed upon with them when encountering problems. If the seller does not provide the service you expected, please refund or actively protect your legitimate rights and interests through other ways.</value>
+  <data name="SemesterStartDate_string" xml:space="preserve">
+    <value>学期开始时间</value>
   </data>
-  <data name="ExperimentalFeature_string" xml:space="preserve">
-    <value>Experimental feature</value>
+  <data name="SemesterStartDate_Description" xml:space="preserve">
+    <value>此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。</value>
   </data>
-  <data name="DebuggingWindowRules_string" xml:space="preserve">
-    <value>Debugging window rules</value>
+  <data name="HideWindow_string" xml:space="preserve">
+    <value>隐藏窗口</value>
   </data>
-  <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
-    <value>Create a quick adjust course shortcut</value>
-  </data>
-  <data name="ManagementOptions_string" xml:space="preserve">
-    <value>Management options</value>
+  <data name="HideWindow_Description" xml:space="preserve">
+    <value>将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。</value>
   </data>
 </root>
