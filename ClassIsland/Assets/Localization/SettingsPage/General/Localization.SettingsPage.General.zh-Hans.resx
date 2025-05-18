@@ -147,4 +147,7 @@
   <data name="HideWindow_Description" xml:space="preserve">
     <value>将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。</value>
   </data>
+  <data name="AdjustOffset_string" xml:space="preserve">
+    <value />
+  </data>
 </root>

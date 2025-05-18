@@ -118,79 +118,111 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="General_string" xml:space="preserve">
-    <value>General</value>
+    <value>基本</value>
     <comment>设置"基本"</comment>
   </data>
   <data name="Components_string" xml:space="preserve">
-    <value>Components</value>
+    <value>组件</value>
     <comment>设置"组件"</comment>
   </data>
   <data name="Appearance_string" xml:space="preserve">
-    <value>Appearance</value>
+    <value>外观</value>
     <comment>设置“外观”</comment>
   </data>
   <data name="Notification_string" xml:space="preserve">
-    <value>Notification</value>
+    <value>通知</value>
     <comment>设置“通知”</comment>
   </data>
   <data name="Window_string" xml:space="preserve">
-    <value>Window</value>
+    <value>窗口</value>
     <comment>设置“窗口”</comment>
   </data>
   <data name="Weather_string" xml:space="preserve">
-    <value>Weather</value>
+    <value>天气</value>
     <comment>设置“天气”</comment>
   </data>
   <data name="Update_string" xml:space="preserve">
-    <value>Update</value>
+    <value>更新</value>
     <comment>设置“更新”</comment>
   </data>
   <data name="Automation_string" xml:space="preserve">
-    <value>Automation</value>
+    <value>自动化</value>
     <comment>设置“自动化”</comment>
   </data>
   <data name="Storage_string" xml:space="preserve">
-    <value>Storage</value>
+    <value>存储</value>
     <comment>设置“存储”</comment>
   </data>
   <data name="Privacy_string" xml:space="preserve">
-    <value>Privacy</value>
+    <value>隐私</value>
     <comment>设置“隐私”</comment>
   </data>
   <data name="Plugins_string" xml:space="preserve">
-    <value>Plugins</value>
+    <value>插件</value>
     <comment>设置“插件”</comment>
   </data>
   <data name="About_string" xml:space="preserve">
-    <value>About ClassIsland</value>
+    <value>关于 ClassIsland</value>
     <comment>设置“关于ClassIsland”</comment>
   </data>
   <data name="Theme_string" xml:space="preserve">
-    <value>Theme</value>
+    <value>主题</value>
     <comment>设置"主题"</comment>
   </data>
   <data name="Behavior_string" xml:space="preserve">
-    <value>Behavior</value>
+    <value>行为</value>
     <comment>设置-基本-"行为"</comment>
   </data>
   <data name="OpenSourceStatement" xml:space="preserve">
-    <value>ClassIsland is an open source and free software, and the official does not provide any form of paid support services. The source code is hosted at {sourcecodeurl}.If you obtain this application through paid assistance or other payment methods, please prioritize seeking help from the seller within the service framework agreed upon with them when encountering problems. If the seller does not provide the service you expected, please refund or actively protect your legitimate rights and interests through other ways.</value>
+    <value>ClassIsland 是开源免费的软件，官方没有提供任何形式的付费支持服务，源代码仓库地址在{sourcecodeurl}。如果您通过有偿协助等付费方式取得本应用，在遇到问题时请在与卖家约定的服务框架下，优先向卖家求助。如果卖家没有提供您预期的服务，请退款或通过其它形式积极维护您的合法权益。</value>
     <comment>开源反诈声明</comment>
   </data>
   <data name="ExperimentalFeature_string" xml:space="preserve">
-    <value>Experimental feature</value>
+    <value>实验性功能</value>
     <comment>设置-菜单-"实验性功能"</comment>
   </data>
   <data name="DebuggingWindowRules_string" xml:space="preserve">
-    <value>Debugging window rules</value>
+    <value>调试窗口规则</value>
     <comment>设置-菜单-"调试窗口规则"</comment>
   </data>
   <data name="CreateQuickAdjustCourseShortcut_string" xml:space="preserve">
-    <value>Create a quick adjust course shortcut</value>
+    <value>创建快捷换课图标</value>
     <comment>设置-菜单-”创建快捷换课图标“</comment>
   </data>
   <data name="ManagementOptions_string" xml:space="preserve">
-    <value>Management options</value>
+    <value>集控选项</value>
     <comment>设置-菜单-"集控选项"</comment>
+  </data>
+  <data name="JoinManagement_string" xml:space="preserve">
+    <value>加入管理...</value>
+    <comment>设置-菜单-"加入管理"</comment>
+  </data>
+  <data name="ViewAppLog_string" xml:space="preserve">
+    <value>日志...</value>
+    <comment>设置-菜单-"日志..."</comment>
+  </data>
+  <data name="ExportDiagData_string" xml:space="preserve">
+    <value>导出诊断数据</value>
+    <comment>设置-菜单-"导出诊断数据"</comment>
+  </data>
+  <data name="RestartToRecoveryMode_string" xml:space="preserve">
+    <value>重启至恢复模式</value>
+    <comment>设置-菜单-"重启到恢复模式"</comment>
+  </data>
+  <data name="OpenLogDir_string" xml:space="preserve">
+    <value>打开日志目录...</value>
+    <comment>设置-菜单-“打开日志目录...”</comment>
+  </data>
+  <data name="OpenDataDir_string" xml:space="preserve">
+    <value>打开数据目录...</value>
+    <comment>设置-菜单-“打开数据目录...”</comment>
+  </data>
+  <data name="OpenAppDir_string" xml:space="preserve">
+    <value>打开应用目录...</value>
+    <comment>设置-菜单-"打开应用目录"</comment>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>应用设置</value>
+    <comment>设置-“应用设置”</comment>
   </data>
 </root>

@@ -118,35 +118,35 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Settings_string" xml:space="preserve">
-    <value>Settings...</value>
+    <value>应用设置...</value>
     <comment>右键托盘菜单“应用设置”</comment>
   </data>
   <data name="Restart_string" xml:space="preserve">
-    <value>Restart</value>
+    <value>重启</value>
     <comment>右键托盘菜单"重启"</comment>
   </data>
   <data name="Quit_string" xml:space="preserve">
-    <value>Quit</value>
+    <value>退出</value>
     <comment>右键托盘菜单"退出"</comment>
   </data>
   <data name="Help_string" xml:space="preserve">
-    <value>Help...</value>
+    <value>应用设置...</value>
     <comment>右键托盘菜单"帮助..."</comment>
   </data>
   <data name="LoadTempSchedule_string" xml:space="preserve">
-    <value>Load temporary schedule...</value>
+    <value>加载临时课表...</value>
     <comment>右键托盘菜单"加载临时课表..."</comment>
   </data>
   <data name="EditProfile_string" xml:space="preserve">
-    <value>Edit profile...</value>
+    <value>编辑档案...</value>
     <comment>右键托盘菜单"编辑档案...“</comment>
   </data>
   <data name="HideInterface_string" xml:space="preserve">
-    <value>Hide interface</value>
+    <value>隐藏主界面</value>
     <comment>右键托盘菜单"隐藏主界面..."</comment>
   </data>
   <data name="AdjustCourses_string" xml:space="preserve">
-    <value>Adjust course...</value>
+    <value>换课...</value>
     <comment>右键托盘菜单"换课..."</comment>
   </data>
 </root>

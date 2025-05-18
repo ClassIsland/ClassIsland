@@ -118,43 +118,47 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="LangName_string" xml:space="preserve">
-    <value>English</value>
+    <value>中文(简体)</value>
     <comment>设置中显示的语言名称</comment>
   </data>
   <data name="LoadOnBoot_string" xml:space="preserve">
-    <value>Start on Boot</value>
+    <value>开机自启</value>
     <comment>设置-基本-行为-"开机自启"</comment>
   </data>
   <data name="RegURLProto_string" xml:space="preserve">
-    <value>Register URL Protocol</value>
+    <value>注册URL协议</value>
     <comment>设置-基本-行为-"注册URL协议"</comment>
   </data>
   <data name="LoadOnBoot_Description" xml:space="preserve">
-    <value>Automatically run this application when your system starts.</value>
+    <value>在您的系统启动时自动运行本应用</value>
     <comment>设置-基本-行为-开机自启-注释</comment>
   </data>
   <data name="RegURLProto_Description" xml:space="preserve">
-    <value>Allows third-party applications or web pages to call some functions of this application through the URL protocol classisland://. See the help documentation for details.</value>
+    <value>允许第三方应用或网页通过URL协议(classisland://)调用本应用的部分功能，详见帮助文档</value>
     <comment>设置-基本-行为-注册URL协议-注释</comment>
   </data>
   <data name="Behavior_string" xml:space="preserve">
-    <value>Behavior</value>
+    <value>行为</value>
     <comment>设置-基本-"行为"</comment>
   </data>
   <data name="SemesterStartDate_string" xml:space="preserve">
-    <value>Semester Start Date</value>
+    <value>学期开始时间</value>
     <comment>设置-基本-行为-"学期开始时间"</comment>
   </data>
   <data name="SemesterStartDate_Description" xml:space="preserve">
-    <value>This date will be considered the first day of the semester, used for calculating multiple-week rotating schedules. It should be set as the first day of the week.</value>
+    <value>此时间将作为学期的第一天，用于多周轮换课表的计算。应设为一周的第一天。</value>
     <comment>设置-基本-行为-学期开始时间-注释</comment>
   </data>
   <data name="HideWindow_string" xml:space="preserve">
-    <value>Hide window</value>
+    <value>隐藏窗口</value>
     <comment>设置-基本-行为-"隐藏窗口"</comment>
   </data>
   <data name="HideWindow_Description" xml:space="preserve">
-    <value>Hide the main interface in the selected situations to prevent it from obstructing the screen and affecting teaching.</value>
+    <value>将在以下选定的情况隐藏主界面，以防止遮挡屏幕影响授课。</value>
     <comment>设置-基本-行为-隐藏窗口-"高级模式"</comment>
+  </data>
+  <data name="AdjustOffset_string" xml:space="preserve">
+    <value>调整偏移...</value>
+    <comment>设置-基本-行为-学期开始时间-"调整偏移"</comment>
   </data>
 </root>
