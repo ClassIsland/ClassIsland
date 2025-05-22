@@ -120,6 +120,8 @@ public class MainWindowLine : Control
 
     private bool _isLoadCompleted = false;
 
+    private bool _isTemplateApplied = false;
+
     public MainWindow MainWindow { get; } = IAppHost.GetService<MainWindow>();
 
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
@@ -156,12 +158,6 @@ public class MainWindowLine : Control
         UpdateFadeStatus();
 
         _isLoadCompleted = true;
-
-        Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
-        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
-        {
-            BeginStoryboard(LastStoryboardName);
-        }
     }
 
 
@@ -191,7 +187,7 @@ public class MainWindowLine : Control
 
     private Storyboard? BeginStoryboard(string name)
     {
-        if (!_isLoadCompleted)
+        if (!_isLoadCompleted || !_isTemplateApplied)
         {
             return null;
         }
@@ -269,8 +265,13 @@ public class MainWindowLine : Control
         Logger.LogTrace("已应用控件模板");
         if (GetTemplateChild("PART_GridWrapper") is Grid wrapper)
         {
+            if (GridWrapper is not null)
+            {
+                GridWrapper.SizeChanged -= WrapperOnSizeChanged;
+            }
             GridWrapper = wrapper;
             wrapper.SizeChanged += WrapperOnSizeChanged;
+            wrapper.Loaded += GridWrapperOnLoaded;
         }
 
         Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
@@ -279,6 +280,22 @@ public class MainWindowLine : Control
             BeginStoryboard(LastStoryboardName);
         }
         base.OnApplyTemplate();
+    }
+
+    private void GridWrapperOnLoaded(object sender, RoutedEventArgs e)
+    {
+        if (GridWrapper != null)
+        {
+            GridWrapper.Loaded -= GridWrapperOnLoaded;
+        }
+
+        _isTemplateApplied = true;
+
+        Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
+        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
+        {
+            BeginStoryboard(LastStoryboardName);
+        }
     }
 
     private void WrapperOnSizeChanged(object sender, SizeChangedEventArgs e)
