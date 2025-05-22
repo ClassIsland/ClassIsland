@@ -133,6 +133,8 @@ public partial class MainWindow : Window
 
     public event EventHandler<MainWindowAnimationEventArgs>? MainWindowAnimationEvent;
 
+    private Point _centerPointCache = new Point(0, 0);
+
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
         nameof(BackgroundWidth), typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
@@ -304,10 +306,10 @@ public partial class MainWindow : Window
         GetCurrentDpi(out var dpi, out _);
         
         if (VisualTreeUtils.FindChildVisualByName<Grid>(this, "PART_GridWrapper") is not { } gridWrapper) 
-            return new Point(0, 0);
+            return _centerPointCache;  // 在切换组件配置时可能出现找不到 GridWrapper 的情况，此时要使用上一次的数值
         var p = gridWrapper.TranslatePoint(new Point(gridWrapper.ActualWidth / 2, gridWrapper.ActualHeight / 2), this);
         p.Y = Top + (ActualHeight / 2);
-        return p;
+        return _centerPointCache = p;
     }
 
     private void PreProcessNotificationContent(NotificationContent content)
