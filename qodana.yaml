@@ -11,5 +11,6 @@ exclude:
     paths:
       - vendors
       - ClassIsland.Core/Walterlv
+      - .github
   - name: XmlHighlighting
 fixesStrategy: cleanup
