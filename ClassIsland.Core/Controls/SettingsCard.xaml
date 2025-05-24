@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters"
              xmlns:controls1="clr-namespace:ClassIsland.Core.Controls"
              mc:Ignorable="d"
              Foreground="{DynamicResource MaterialDesignBody}"

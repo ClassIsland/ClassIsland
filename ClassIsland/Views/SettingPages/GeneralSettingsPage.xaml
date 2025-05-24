@@ -8,7 +8,6 @@
                            xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                            xmlns:controls2="clr-namespace:ClassIsland.Controls"
-                           xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                            xmlns:commands="clr-namespace:ClassIsland.Core.Commands;assembly=ClassIsland.Core"
                            xmlns:ci="http://classisland.tech/schemas/xaml/core"
                            mc:Ignorable="d"

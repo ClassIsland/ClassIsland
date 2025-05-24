@@ -136,7 +136,7 @@ public partial class TimeLineListItemExpandingAdornerControl
 
     private static TimeSpan RoundTime(TimeSpan time)
     {
-        return TimeSpan.FromMinutes(time.TotalMinutes - (time.TotalMinutes % 5));
+        return TimeSpan.FromMinutes(time.TotalMinutes - time.TotalMinutes % 5);
     }
 
     private TimeSpan GetDelta(TimeSpan raw, double v)

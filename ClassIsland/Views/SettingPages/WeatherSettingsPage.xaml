@@ -9,8 +9,6 @@
                            xmlns:controls2="clr-namespace:ClassIsland.Controls"
                            xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                            xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
-                           xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-                           xmlns:classIsland="clr-namespace:ClassIsland"
                            mc:Ignorable="d"
                            d:DesignHeight="450" d:DesignWidth="800"
                            Title="天气"

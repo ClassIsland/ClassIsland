@@ -201,8 +201,7 @@
                                                 <Setter Property="Opacity" Value="0.8" />
                                             </MultiDataTrigger>
 
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True" />
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>

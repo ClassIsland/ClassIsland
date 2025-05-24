@@ -32,8 +32,6 @@
         <CollectionViewSource Source="{Binding SettingsService.Settings.NotificationProvidersPriority}"
                               x:Key="CollectionViewSourceNotificationProviders"
                               Filter="CollectionViewSourceNotificationProviders_OnFilter" />
-        <ci:BindingProxy x:Key="DataProxy"
-                         Data="{Binding}" />
 
     </controls:SettingsPageBase.Resources>
 

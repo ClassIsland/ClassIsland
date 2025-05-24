@@ -88,7 +88,9 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 【提醒】优化户外课程默认提示语文本表述 ([#933](https://github.com/ClassIsland/ClassIsland/issues/933))
 - 【提醒】户外课程支持自定义提醒文本
 -
+
 【提醒/上课提醒】提醒渠道支持，将上下课提醒拆分到多个提醒渠道中 ([#517](https://github.com/ClassIsland/ClassIsland/issues/517))
+
 - 【提醒/上课提醒】优化即将上课提醒发布逻辑
 - 【档案】直接隐藏一定时间的课程 ([#182](https://github.com/ClassIsland/ClassIsland/issues/182))
 - 【档案】添加复姓处理逻辑到 Subject 类
@@ -97,10 +99,14 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 【天气】将天气图标修改为 Sf Symbol Icon
 - 【应用】崩溃时自动禁用导致崩溃的异常插件
 -
+
 【应用】优化日志中内存使用量的显示、添加初步本地化语言文本 ([#956](https://github.com/ClassIsland/ClassIsland/issues/956))
+
 - 【自动化】在特定时间点前指定时间触发自动化 ([#458](https://github.com/ClassIsland/ClassIsland/issues/458))
 -
+
 【行动】加入重启应用、设置主界面偏移和设置主界面置顶状态的行动 ([#981](https://github.com/ClassIsland/ClassIsland/issues/981)) ([#833](https://github.com/ClassIsland/ClassIsland/issues/833)) ([#773](https://github.com/ClassIsland/ClassIsland/issues/773))
+
 - 【主题色提取】引入实验性取色算法
 - 【应用】将未捕获的异常 UCEERR_RENDERTHREADFAILURE (0x88980406) 视为关键异常
 - 【诊断】崩溃来源插件分析
@@ -128,7 +134,9 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 【主界面】修复提醒时切换多行组件配置方案或重载主题出现 Bug
   的问题 ([#628](https://github.com/ClassIsland/ClassIsland/issues/628))
 -
+
 【主界面】修复在主界面行控件未完全初始化时发出提醒报错的问题 ([#737](https://github.com/ClassIsland/ClassIsland/issues/737))
+
 - 【主界面】修复禁用鼠标穿透后无法点击主界面元素的问题
 - 【应用设置】修复在系统 TTS 不可用时选择其它 TTS 提供方时设置被覆盖的问题
 - 【应用设置/插件】修复无法正常更新插件的问题 ([#924](https://github.com/ClassIsland/ClassIsland/issues/924))
@@ -140,23 +148,29 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 【提醒】修复缺少标点符号导致播报任教老师时可能出现断句问题
 - 【提醒】修复提醒渠道设置不能保存的问题 ([#987](https://github.com/ClassIsland/ClassIsland/issues/987))
 -
+
 【提醒】修复滚动文字提醒（天气预警、滚动文字提醒模板）在部分主题下高度错位的问题  ([#943](https://github.com/ClassIsland/ClassIsland/issues/943))
+
 - 【提醒】修复准备上课时覆盖的附加设置不生效的问题 ([#935](https://github.com/ClassIsland/ClassIsland/issues/935))
 - 【提醒】修复发出准备上课提醒时报错的问题 ([#905](https://github.com/ClassIsland/ClassIsland/issues/905))
 - 【提醒/行动】行动提醒遮罩字体大小使用强调字体大小
 -
+
 【提醒/行动】修复在行动提醒中启用高级设置时，无法使用语音的问题 ([#913](https://github.com/ClassIsland/ClassIsland/issues/913))
+
 - 【UI】修正过时的文档链接
 - 【UI】缓解在部分界面 UI 停止渲染的问题
 - 【应用】修复重复触发应用停止事件的问题 ([#1014](https://github.com/ClassIsland/ClassIsland/issues/1014))
 - 【课程服务】修复编辑当前加载的时间表时课程服务索引溢出的问题
 - 【档案】修复 ClassInfo 获取课程对应时间点超出索引的问题
 -
+
 【档案编辑】修复调课日历中课表选择界面不显示课表的第一个下划线的问题 ([#921](https://github.com/ClassIsland/ClassIsland/issues/921))
 -
 【档案编辑】修复选择临时课表时，课表名中的第一个下划线不显示的问题 ([#885](https://github.com/ClassIsland/ClassIsland/issues/885))
 -
 【档案编辑】修复调课页面在更新选择日期后没有及时更新表格内容的问题 ([#1017](https://github.com/ClassIsland/ClassIsland/issues/1017))
+
 - 【集控】正常执行集控服务器的 DataUpdated 指令
 
 ## 🐛 Bug 修复（1.6.3.0 - 1.7.0.0）
