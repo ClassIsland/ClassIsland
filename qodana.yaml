@@ -4,3 +4,4 @@ profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
+ide: QDNET
