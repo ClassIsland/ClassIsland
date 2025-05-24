@@ -20,6 +20,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
           submodules: recursive
+          token: ${{ secrets.CLASSISLAND_BOT_PAT }}
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
