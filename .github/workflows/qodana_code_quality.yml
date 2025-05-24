@@ -20,7 +20,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
           submodules: recursive
-          token: ${{ secrets.CLASSISLAND_BOT_PAT }}
       - name: Install .NET Core
         uses: actions/setup-dotnet@v3
         with:
@@ -30,7 +29,6 @@ jobs:
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.1
         with:
-          push-fixes: branch
           pr-mode: ${{ github.event_name == 'pull_request' }} 
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1826663083 }}
