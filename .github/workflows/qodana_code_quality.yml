@@ -4,8 +4,8 @@ on:
   pull_request:
   push:
     branches: # Specify your branches here
-      - main # The 'main' branch
-      - 'releases/*' # The release branches
+      - master
+      - dev
 
 jobs:
   qodana:
@@ -19,6 +19,12 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}  # to check out the actual pull request commit, not the merge commit
           fetch-depth: 0  # a full history is required for pull request analysis
+      - name: Install .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Build Project
+        run: dotnet build
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.1
         with:
