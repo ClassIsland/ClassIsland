@@ -11,6 +11,7 @@
         SnapsToDevicePixels="True"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
