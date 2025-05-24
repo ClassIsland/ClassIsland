@@ -52,6 +52,11 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         Logger.LogInformation("拉取集控默认设置");
         var url = ManagementService.Manifest.DefaultSettingsSource.Value!;
         var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
+        if (settings == null)
+        {
+            Logger.LogError("Failed to load management settings, received null. Keeping existing settings.");
+            return;
+        }
         Settings = settings;
         Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName!);
         Logger.LogTrace("拉取集控默认设置成功！");
@@ -70,7 +75,15 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             {
                 Logger.LogInformation("加载配置文件。");
                 var r = ConfigureFileHelper.LoadConfig<Settings>(Path.Combine(App.AppRootFolderPath, "Settings.json"));
-                Settings = r;
+                if (r == null)
+                {
+                    Logger.LogError("Failed to load settings from Settings.json, file might be corrupted or invalid. Using default settings.");
+                    Settings = new Settings();
+                }
+                else
+                {
+                    Settings = r;
+                }
                 Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName!);
             }
 
@@ -97,20 +110,31 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         if (requiresRestarting) AppBase.Current.Restart();
     }
 
-    private T TryGetDictionaryValue<T>(IDictionary<string, object?> dictionary, string key, T? fallbackValue = null)
+    private T? TryGetDictionaryValue<T>(IDictionary<string, object?> dictionary, string key, T? fallbackValue = null)
         where T : class
     {
         var fallback = fallbackValue ?? Activator.CreateInstance<T>();
-        var r = Settings.MiniInfoProviderSettings.TryGetValue(key.ToLower(), out var o);
-        if (o is JsonElement o1) return o1.Deserialize<T>() ?? fallback;
-
-        return (T?)Settings.MiniInfoProviderSettings[key.ToLower()] ?? fallback;
+        if (Settings.MiniInfoProviderSettings.TryGetValue(key.ToLower(), out var o))
+        {
+            if (o is JsonElement o1)
+            {
+                return o1.Deserialize<T>() ?? fallback;
+            }
+            return (T?)o ?? fallback;
+        }
+        return fallback;
     }
 
 #pragma warning disable CS0612 // 类型或成员已过时
     private void MigrateSettings(out bool requiresRestarting)
     {
         requiresRestarting = false;
+        if (Settings == null)
+        {
+            Logger.LogError("Settings object is null, cannot perform migration.");
+            requiresRestarting = false;
+            return;
+        }
         if (Assembly.GetExecutingAssembly().GetName().Version < Version.Parse("1.4.1.0")) return;
         if (Settings.LastAppVersion < Version.Parse("1.4.1.0")) // 从 1.4.1.0 以前的版本升级
         {
@@ -231,13 +255,14 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     public void AddSettingsOverlay(string guid, string binding, dynamic? value)
     {
         var property = typeof(Settings).GetProperty(binding);
-        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量 {binding}");
 
         if (!Settings.SettingsOverlay.TryGetValue(binding, out var overlay))
         {
             overlay = [];
             var original = property.GetValue(Settings);
-            if (value.ToString() == original.ToString()) return;
+            // Ensure original and value are not null before calling ToString()
+            if (value?.ToString() == original?.ToString()) return; 
             overlay["@"] = original;
         }
 
@@ -254,17 +279,39 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     public void RemoveSettingsOverlay(string guid, string binding)
     {
         var property = typeof(Settings).GetProperty(binding);
-        if (property == null) throw new KeyNotFoundException($"找不到设置变量{property}");
+        if (property == null) throw new KeyNotFoundException($"找不到设置变量 {binding}");
         if (!Settings.SettingsOverlay.TryGetValue(binding, out var overlay)) return;
 
         overlay.Remove(guid);
+        if (!overlay.Any()) // If overlay becomes empty after removal
+        {
+            Settings.SettingsOverlay.Remove(binding);
+            // Potentially reset to a default or base value if necessary, or handle as per application logic
+            // For now, just removing the overlay key. If a value reset is needed, it's more complex.
+            // One option: property.SetValue(Settings, property.PropertyType.IsValueType ? Activator.CreateInstance(property.PropertyType) : null);
+            return; 
+        }
+
         var last = overlay.Last().Value;
         if (last is JsonElement json)
-            last = json.Deserialize(property.GetValue(Settings).GetType());
-
+        {
+            var targetType = property.GetValue(Settings)?.GetType() ?? property.PropertyType;
+            try
+            {
+                last = json.Deserialize(targetType);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error deserializing settings overlay value for property {Binding} from JsonElement.", binding);
+                // Decide how to handle error: keep json, set to null, or use a default.
+                // For now, let's attempt to set to default for the type if deserialization fails.
+                last = targetType.IsValueType ? Activator.CreateInstance(targetType) : null;
+            }
+        }
+        
         property.SetValue(Settings, last);
 
-        if (overlay.Count > 1)
+        if (overlay.Count > 1) // This check might be redundant if we handle empty overlay above, but keep for safety.
             Settings.SettingsOverlay[binding] = overlay;
         else
             Settings.SettingsOverlay.Remove(binding);
@@ -273,10 +320,16 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     private void SettingsChanged(string propertyName)
     {
         if (propertyName != nameof(Settings.SettingsOverlay))
-            Settings.SettingsOverlay.Remove(propertyName);
+            Settings.SettingsOverlay.Remove(propertyName); // This might throw if propertyName is not in overlay. Consider TryRemove.
 
-        if (typeof(Settings).GetProperty(propertyName)
-                .GetCustomAttribute<JsonIgnoreAttribute>() != null)
+        var propertyInfo = typeof(Settings).GetProperty(propertyName);
+        if (propertyInfo == null)
+        {
+            Logger.LogWarning("SettingsChanged: Property {PropertyName} not found on Settings type.", propertyName);
+            return;
+        }
+
+        if (propertyInfo.GetCustomAttribute<JsonIgnoreAttribute>() != null)
             return;
         SaveSettings(propertyName);
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })

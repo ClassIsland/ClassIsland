@@ -80,11 +80,16 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-classPlan");
                 var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
-                var cpNew = classPlan =
-                    await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource
-                        .Value!);
-                MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
-                MergeDictionary(Profile.ClassPlanGroups, cpOld.ClassPlanGroups, cpNew.ClassPlanGroups);
+                classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
+                if (classPlan == null)
+                {
+                    Logger.LogError("Failed to download class plan from management source, the result was null.");
+                }
+                else
+                {
+                    MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, classPlan.ClassPlans);
+                    MergeDictionary(Profile.ClassPlanGroups, cpOld.ClassPlanGroups, classPlan.ClassPlanGroups);
+                }
                 spanDownload?.Finish();
             }
 
@@ -93,10 +98,15 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-timeLayout");
                 var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
-                var tlNew = timeLayouts =
-                    await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource
-                        .Value!);
-                MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
+                timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
+                if (timeLayouts == null)
+                {
+                    Logger.LogError("Failed to download time layouts from management source, the result was null.");
+                }
+                else
+                {
+                    MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, timeLayouts.TimeLayouts);
+                }
                 spanDownload?.Finish();
             }
 
@@ -104,10 +114,15 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-subjects");
                 var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
-                var subjectNew = subjects =
-                    await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource
-                        .Value!);
-                MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
+                subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
+                if (subjects == null)
+                {
+                    Logger.LogError("Failed to download subjects from management source, the result was null.");
+                }
+                else
+                {
+                    MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjects.Subjects);
+                }
                 spanDownload?.Finish();
             }
 
@@ -149,11 +164,26 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogInformation("档案不存在：{}", path);
             if (!ManagementService.IsManagementEnabled) // 在集控模式下不需要默认科目
             {
-                var subject =
-                    new StreamReader(
-                        Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!
-                            .Stream).ReadToEnd();
-                Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
+                var resourceStreamInfo = Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative));
+                if (resourceStreamInfo == null)
+                {
+                    Logger.LogError("Failed to load default subjects: resource stream was null. Initializing with empty subjects list.");
+                    Profile.Subjects = new();
+                }
+                else
+                {
+                    var subjectJson = new StreamReader(resourceStreamInfo.Stream).ReadToEnd();
+                    var deserializedProfile = JsonSerializer.Deserialize<Profile>(subjectJson);
+                    if (deserializedProfile == null)
+                    {
+                        Logger.LogError("Failed to deserialize default subjects. Initializing with empty subjects list.");
+                        Profile.Subjects = new();
+                    }
+                    else
+                    {
+                        Profile.Subjects = deserializedProfile.Subjects;
+                    }
+                }
             }
 
             SaveProfile(filename);
@@ -190,6 +220,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public void AuditProfileChangeEvent(AuditEvents eventType, NotifyCollectionChangedEventArgs args)
     {
+        if (args.NewItems == null || args.NewItems.Count == 0) return;
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
             connection.LogAuditEvent(eventType, new ProfileItemUpdated
             {
@@ -235,7 +266,18 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     private static T DuplicateJson<T>(T o)
     {
         var json = JsonSerializer.Serialize(o);
-        return JsonSerializer.Deserialize<T>(json)!;
+        // If o is null, JsonSerializer.Serialize(o) will produce "null". 
+        // Deserialize<T>("null") can return null for reference types.
+        // If T is a non-nullable reference type, this could be an issue.
+        // However, if 'o' is not supposed to be null, then 'json' won't be "null".
+        // And if T is a reference type, Deserialize can return null.
+        // Adding a check here for critical paths or ensuring 'o' is never null.
+        var deserializedObject = JsonSerializer.Deserialize<T>(json);
+        if (deserializedObject == null && o != null) // o != null check means we didn't *intend* to get null
+        {
+            throw new InvalidOperationException($"Deserialization of a non-null object of type {typeof(T).FullName} resulted in a null object. JSON: {json}");
+        }
+        return deserializedObject;
     }
 
     public string? CreateTempClassPlan(string id, string? timeLayoutId = null, DateTime? enableDateTime = null)
@@ -246,7 +288,11 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             && Profile.ClassPlans.TryGetValue(orderedSchedule.ClassPlanId, out var cp1)
             && cp1.IsOverlay)
             return null;
-        var cp = Profile.ClassPlans[id];
+        if (!Profile.ClassPlans.TryGetValue(id, out var cp))
+        {
+            Logger.LogWarning("CreateTempClassPlan: Class plan with id {} not found.", id);
+            return null;
+        }
         timeLayoutId ??= cp.TimeLayoutId;
         var newCp = DuplicateJson(cp);
 
@@ -313,7 +359,11 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     {
         Logger.LogInformation("将临时层课表转换为普通课表：{}", id);
         var today = IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
-        if (!Profile.ClassPlans.TryGetValue(id, out var classPlan)) return;
+        if (!Profile.ClassPlans.TryGetValue(id, out var classPlan))
+        {
+            Logger.LogWarning("ConvertToStdClassPlan: Class plan with id {} not found.", id);
+            return;
+        }
         classPlan.IsOverlay = false;
     }
 

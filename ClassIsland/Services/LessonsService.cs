@@ -408,8 +408,20 @@ public class LessonsService : ObservableRecipient, ILessonsService
         // 开始获取信息
         isClassPlanLoaded = true;
         // Activate selected item
-        CurrentClassPlan!.IsActivated = true;
-        CurrentClassPlan.TimeLayout.IsActivated = true;
+        if (CurrentClassPlan == null)
+        {
+            Logger.LogWarning("ProcessLessons: CurrentClassPlan is null. Skipping activation and further processing.");
+            goto final;
+        }
+        CurrentClassPlan.IsActivated = true;
+        if (CurrentClassPlan.TimeLayout == null)
+        {
+            Logger.LogWarning("ProcessLessons: CurrentClassPlan.TimeLayout is null. Skipping TimeLayout activation.");
+        }
+        else
+        {
+            CurrentClassPlan.TimeLayout.IsActivated = true;
+        }
 
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         var validTimeLayoutItems = CurrentClassPlan.ValidTimeLayoutItems;
@@ -518,9 +530,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private int GetClassIndex(int index)
     {
-        if (index < 0 || index >= CurrentClassPlan?.TimeLayout.Layouts.Count) return -1;
-        var k = CurrentClassPlan?.TimeLayout.Layouts[index];
-        var l = (from t in CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
+        if (index < 0 || CurrentClassPlan?.TimeLayout?.Layouts == null || index >= CurrentClassPlan.TimeLayout.Layouts.Count) return -1;
+        var k = CurrentClassPlan?.TimeLayout?.Layouts[index];
+        var l = (from t in CurrentClassPlan?.TimeLayout?.Layouts where t.TimeType == 0 select t).ToList();
         var i = l.IndexOf(k);
         return i;
     }
@@ -551,10 +563,22 @@ public class LessonsService : ObservableRecipient, ILessonsService
         }
 
         CurrentClassPlan = GetClassPlanByDate(currentTime);
-        var orderedClassPlanId = Profile.OrderedSchedules[currentTime.Date]?.ClassPlanId;
-        if (orderedClassPlanId != null
-            && Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
-            && classPlan.IsOverlay)
+        if (Profile.OrderedSchedules.TryGetValue(currentTime.Date, out var orderedSchedule) && orderedSchedule?.ClassPlanId != null)
+        {
+            var orderedClassPlanId = orderedSchedule.ClassPlanId;
+            if (Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan) && classPlan.IsOverlay)
+            {
+                Profile.OverlayClassPlanId = orderedClassPlanId;
+            }
+            else
+            {
+                Profile.OverlayClassPlanId = null;
+            }
+        }
+        else
+        {
+            Profile.OverlayClassPlanId = null;
+        }
             Profile.OverlayClassPlanId = orderedClassPlanId;
         else
             Profile.OverlayClassPlanId = null;
@@ -564,6 +588,12 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         if (plan.IsOverlay || !plan.IsEnabled)
             return false;
+
+        if (plan.TimeRule == null)
+        {
+            Logger.LogWarning("CheckClassPlan: plan.TimeRule is null for plan {PlanName} ({PlanId}). Skipping check.", plan.Name, plan.Id);
+            return false;
+        }
 
         if (plan.TimeRule.WeekDay != (int)time.DayOfWeek) return false;
 
@@ -577,6 +607,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
         // RefreshMultiWeekRotation();
         var rotation = GetMultiWeekRotationByTime(time);
+        // Ensure WeekCountDivTotal is a valid index for rotation list
+        if (plan.TimeRule.WeekCountDivTotal < 0 || plan.TimeRule.WeekCountDivTotal >= rotation.Count)
+        {
+            Logger.LogWarning("CheckClassPlan: plan.TimeRule.WeekCountDivTotal ({}) is out of bounds for rotation list for plan {PlanName} ({PlanId}).", 
+                plan.TimeRule.WeekCountDivTotal, plan.Name, plan.Id);
+            return false;
+        }
         return plan.TimeRule.WeekCountDiv == rotation[plan.TimeRule.WeekCountDivTotal];
     }
 
