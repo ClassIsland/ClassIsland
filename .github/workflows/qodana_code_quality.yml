@@ -24,12 +24,12 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      - name: Build Project
-        run: dotnet build
+      - name: Restore Project
+        run: dotnet restore
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.1
         with:
-          pr-mode: false
+          pr-mode: ${{ github.event_name == 'pull_request' }} 
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1826663083 }}
           QODANA_ENDPOINT: 'https://qodana.cloud'

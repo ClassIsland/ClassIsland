@@ -1,4 +1,4 @@
-version: "1.0"
+version: '1.0'
 profile:
   name: qodana.recommended
 include:
@@ -6,3 +6,11 @@ include:
 ide: QDNET
 dotnet:
   solution: ClassIsland.sln
+exclude:
+  - name: All
+    paths:
+      - vendors
+      - ClassIsland.Core/Walterlv
+      - "**/*.manifest"
+      - "**/*.appxmaniefst"
+fixesStrategy: cleanup
