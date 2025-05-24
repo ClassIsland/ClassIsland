@@ -71,17 +71,29 @@ public static class SfSymbolIconClipData
 
         { SfSymbolIconKind.CloudFill, "M-3.636719,-9.283203 V32.169922 H37.816406 V-9.283203 H-3.636719 Z" },
 
-        { SfSymbolIconKind.CloudDrizzle, "M-4.504883,-4.177892 V37.275233 H36.948242 V-4.177892 H-4.504883 Z" },
+        { SfSymbolIconKind.CloudDrizzle, "M0 0V15H15V0H0Z" },
 
         { SfSymbolIconKind.CloudDrizzleFill, "M-4.504883,-4.177892 V37.275233 H36.948242 V-4.177892 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudRain, "M-4.504883,-4.157161 V37.295964 H36.948242 V-4.157161 H-4.504883 Z" },
+        { SfSymbolIconKind.CloudRain, "M0 0V15H15V0H0Z" },
 
         { SfSymbolIconKind.CloudRainFill, "M-4.504883,-4.157161 V37.295964 H36.948242 V-4.157161 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudHeavyrain, "M-4.504883,-4.15498 V37.298145 H36.948242 V-4.15498 H-4.504883 Z" },
+        { SfSymbolIconKind.CloudHeavyrain, "M0 0V23H23V0H0Z" },
 
         { SfSymbolIconKind.CloudHeavyrainFill, "M-4.504883,-4.15498 V37.298145 H36.948242 V-4.15498 H-4.504883 Z" },
+
+        { SfSymbolIconKind.CloudRainstorm, "M0 0V23H23V0H0Z"},
+        
+        { SfSymbolIconKind.CloudRainstormFill, "M0 0V23H23V0H0Z"},
+
+        { SfSymbolIconKind.CloudHeavyStorm, "M0 0V23H23V0H0Z"},
+
+        { SfSymbolIconKind.CloudHeavyStormFill, "M0 0V23H23V0H0Z"},
+
+        { SfSymbolIconKind.CloudSereveStorm, "M0 0V23H23V0H0Z"},
+
+        { SfSymbolIconKind.CloudSereveStormFill, "M0 0V23H23V0H0Z"},
 
         { SfSymbolIconKind.CloudFog, "M-4.504883,-4.874023 V36.579102 H36.948242 V-4.874023 H-4.504883 Z" },
 
