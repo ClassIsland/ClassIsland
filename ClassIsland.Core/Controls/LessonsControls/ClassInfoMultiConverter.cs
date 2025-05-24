@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Windows.Data;
+
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Models.Profile;
@@ -16,16 +17,24 @@ public class ClassInfoMultiConverter : IMultiValueConverter
         // [1]: int                       SelectedIndex
         // [2]: ObservableDictionary<...> Subjects
         // [3]: ClassPlan                 ClassPlan
-        if (values.Length < 4) return null;
+        if (values.Length < 4)
+        {
+            return null;
+        }
 
         if (values[0] is not TimeLayoutItem selectedItem ||
             values[1] is not int selectedIndex ||
             values[2] is not ObservableDictionary<string, Subject> subjects ||
             values[3] is not ClassPlan classPlan)
+        {
             return null;
+        }
 
         var subjectIndex = GetSubjectIndex(classPlan.TimeLayout.Layouts.IndexOf(selectedItem));
-        if (subjectIndex >= classPlan.Classes.Count || subjectIndex < 0) return null;
+        if (subjectIndex >= classPlan.Classes.Count || subjectIndex < 0)
+        {
+            return null;
+        }
 
         return classPlan.Classes[subjectIndex];
 

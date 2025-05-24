@@ -15,10 +15,9 @@ public class ActionService : IActionService
 {
     private ILogger<ActionService> Logger { get; }
 
-    private DateTime LastActionRunTime { get; set; }
+    private DateTime LastActionRunTime { get; set; } 
 
-    public ActionService(ILogger<ActionService> logger, ILessonsService lessonsService,
-        IExactTimeService exactTimeService, IProfileService profileService)
+    public ActionService(ILogger<ActionService> logger, ILessonsService lessonsService, IExactTimeService exactTimeService, IProfileService profileService)
     {
         Logger = logger;
         LessonsService = lessonsService;
@@ -31,7 +30,10 @@ public class ActionService : IActionService
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
-        if (!ProfileService.IsCurrentProfileTrusted) return;
+        if (!ProfileService.IsCurrentProfileTrusted)
+        {
+            return;
+        }
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
         var triggeredActions = LessonsService.CurrentClassPlan?.TimeLayout?.Layouts
             .Where(x => x.TimeType == 3 && x.StartSecond.TimeOfDay > LastActionRunTime.TimeOfDay &&
@@ -39,11 +41,17 @@ public class ActionService : IActionService
             .Select(x => x)
             .ToList();
         LastActionRunTime = currentTime;
-        if (triggeredActions == null) return;
+        if (triggeredActions == null)
+        {
+            return;
+        }
 
         foreach (var i in triggeredActions)
         {
-            if (i.ActionSet == null) continue;
+            if (i.ActionSet == null)
+            {
+                continue;
+            }
             Logger.LogInformation("触发时间点行动：{}/[{}]", LessonsService.CurrentClassPlan?.TimeLayout?.Name, i.StartSecond);
             Invoke(i.ActionSet);
         }
@@ -73,29 +81,44 @@ public class ActionService : IActionService
 
     public void Invoke(ActionSet actionSet)
     {
-        if (App.ApplicationCommand.Safe) return;
+        if (App.ApplicationCommand.Safe)
+        {
+            return;
+        }
         foreach (var action in actionSet.Actions)
             action.Exception = null;
-        if (actionSet.IsRevertEnabled) actionSet.IsOn = true;
+        if (actionSet.IsRevertEnabled)
+        {
+            actionSet.IsOn = true;
+        }
         Task.Run(() =>
         {
-            foreach (var action in actionSet.Actions) InvokeAction(action, actionSet.Guid);
+            foreach (var action in actionSet.Actions)
+            {
+                InvokeAction(action, actionSet.Guid);
+            }
         });
     }
 
     public void Revert(ActionSet actionSet)
     {
-        if (App.ApplicationCommand.Safe) return;
+        if (App.ApplicationCommand.Safe)
+        {
+            return;
+        }
         foreach (var action in actionSet.Actions)
             action.Exception = null;
         actionSet.IsOn = false;
         Task.Run(() =>
         {
-            foreach (var action in actionSet.Actions) InvokeAction(action, actionSet.Guid, true);
+            foreach (var action in actionSet.Actions)
+            {
+                InvokeAction(action, actionSet.Guid, isBack: true);
+            }
         });
     }
 
-    private void InvokeAction(Action action, string guid, bool isBack = false)
+    void InvokeAction(Action action, string guid, bool isBack = false)
     {
         if (action.Id == string.Empty) return;
         if (!IActionService.Actions.TryGetValue(action.Id, out var actionRegistryInfo))
@@ -109,9 +132,11 @@ public class ActionService : IActionService
         if (settingsType != null)
         {
             settings = action.Settings ?? Activator.CreateInstance(settingsType);
-            if (settings is JsonElement json) settings = json.Deserialize(settingsType);
+            if (settings is JsonElement json)
+            {
+                settings = json.Deserialize(settingsType);
+            }
         }
-
         if (isBack)
         {
             if (actionRegistryInfo.RevertHandle != null)
@@ -147,11 +172,18 @@ public class ActionService : IActionService
     }
 
 
+
     public bool ExistRevertHandler(Action action)
     {
         if (action.Id == string.Empty) return false;
-        if (!IActionService.Actions.TryGetValue(action.Id, out var actionRegistryInfo)) return false;
-        if (actionRegistryInfo.RevertHandle != null) return true;
+        if (!IActionService.Actions.TryGetValue(action.Id, out var actionRegistryInfo))
+        {
+            return false;
+        }
+        if (actionRegistryInfo.RevertHandle != null)
+        {
+            return true;
+        }
         return false;
     }
 }

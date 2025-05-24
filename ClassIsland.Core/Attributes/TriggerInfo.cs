@@ -10,7 +10,7 @@ namespace ClassIsland.Core.Attributes;
 /// <param name="name">触发器名称</param>
 /// <param name="iconKind">触发器图表类型</param>
 [AttributeUsage(AttributeTargets.Class)]
-public class TriggerInfo(string id, string name, PackIconKind iconKind = PackIconKind.ClockOutline) : Attribute
+public class TriggerInfo(string id, string name, PackIconKind iconKind=PackIconKind.ClockOutline) : Attribute
 {
     /// <summary>
     /// 触发器 ID

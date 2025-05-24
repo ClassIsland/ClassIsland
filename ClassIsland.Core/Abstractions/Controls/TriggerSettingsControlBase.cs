@@ -26,21 +26,29 @@ public abstract class TriggerSettingsControlBase : UserControl, INotifyPropertyC
     public static TriggerSettingsControlBase? GetInstance(TriggerInfo info, ref object? settings)
     {
         var control = IAppHost.Host?.Services.GetKeyedService<TriggerSettingsControlBase>(info.Id);
-        if (control == null || info.SettingsControlType == null) return null;
+        if (control == null || info.SettingsControlType == null)
+        {
+            return null;
+        }
 
         var baseType = info.SettingsControlType.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json) settingsReal = json.Deserialize(settingsType);
+            if (settingsReal is JsonElement json)
+            {
+                settingsReal = json.Deserialize(settingsType);
+            }
 
-            if (settingsReal?.GetType() != settingsType) settingsReal = Activator.CreateInstance(settingsType);
+            if (settingsReal?.GetType() != settingsType)
+            {
+                settingsReal = Activator.CreateInstance(settingsType);
+            }
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;
         }
-
         return control;
     }
 

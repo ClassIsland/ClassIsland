@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using A = ClassIsland.Core.Models.Action;
-
 namespace ClassIsland.Core.Controls.Action;
 
 /// <summary>
@@ -12,11 +11,13 @@ namespace ClassIsland.Core.Controls.Action;
 public partial class ActionSettingsControlPresenter : UserControl
 {
     public static readonly DependencyProperty ActionIdProperty = DependencyProperty.Register(
-        nameof(ActionId), typeof(string), typeof(ActionSettingsControlPresenter), new PropertyMetadata(default(string),
-            (o, _) =>
+        nameof(ActionId), typeof(string), typeof(ActionSettingsControlPresenter), new PropertyMetadata(default(string), (o, _) =>
+        {
+            if (o is ActionSettingsControlPresenter control)
             {
-                if (o is ActionSettingsControlPresenter control) control.UpdateContent();
-            }));
+                control.UpdateContent();
+            }
+        }));
 
     public string ActionId
     {
@@ -25,10 +26,12 @@ public partial class ActionSettingsControlPresenter : UserControl
     }
 
     public static readonly DependencyProperty ActionProperty = DependencyProperty.Register(
-        nameof(Action), typeof(Shared.Models.Action.Action), typeof(ActionSettingsControlPresenter),
-        new PropertyMetadata(default(Shared.Models.Action.Action), (o, _) =>
+        nameof(Action), typeof(Shared.Models.Action.Action), typeof(ActionSettingsControlPresenter), new PropertyMetadata(default(Shared.Models.Action.Action), (o, _) =>
         {
-            if (o is ActionSettingsControlPresenter control) control.UpdateContent();
+            if (o is ActionSettingsControlPresenter control)
+            {
+                control.UpdateContent();
+            }
         }));
 
     public Shared.Models.Action.Action? Action
@@ -44,8 +47,14 @@ public partial class ActionSettingsControlPresenter : UserControl
 
     private void UpdateContent()
     {
-        if (Action == null || ActionId == null) return;
-        if (!IActionService.Actions.TryGetValue(ActionId, out var info)) return;
+        if (Action == null || ActionId == null)
+        {
+            return;
+        }
+        if (!IActionService.Actions.TryGetValue(ActionId, out var info))
+        {
+            return;
+        }
 
         var actionSettings = Action.Settings;
         RootContentPresenter.Content = ActionSettingsControlBase.GetInstance(info, ref actionSettings);

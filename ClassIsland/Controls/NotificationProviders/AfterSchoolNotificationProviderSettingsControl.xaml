@@ -1,18 +1,17 @@
 ﻿<ci:NotificationProviderControlBase
     x:TypeArguments="notificationProviderSettings:AfterSchoolNotificationProviderSettings"
-    x:Class="ClassIsland.Controls.NotificationProviders.AfterSchoolNotificationProviderSettingsControl"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:ci="http://classisland.tech/schemas/xaml/core"
-    xmlns:notificationProviderSettings="clr-namespace:ClassIsland.Models.NotificationProviderSettings"
-    mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="800">
-    <ScrollViewer
-        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AfterSchoolNotificationProviderSettingsControl}}">
+            x:Class="ClassIsland.Controls.NotificationProviders.AfterSchoolNotificationProviderSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:notificationProviderSettings="clr-namespace:ClassIsland.Models.NotificationProviderSettings"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <ScrollViewer DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AfterSchoolNotificationProviderSettingsControl}}">
         <StackPanel Margin="4">
             <!-- 附加设置覆盖提示 -->
             <materialDesign:ColorZone Background="{DynamicResource MaterialDesignToolBarBackground}"
@@ -24,23 +23,23 @@
                                 materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
                                 Foreground="{DynamicResource MaterialDesignBody}"
                                 Click="ButtonShowAttachedSettingsInfo_OnClick">
-                            <ci:IconText Kind="MoreCircleOutline" Text="查看…" />
+                            <ci:IconText Kind="MoreCircleOutline" Text="查看…"/>
                         </Button>
                         <materialDesign:PackIcon Kind="LayersOutline"
                                                  Margin="0 0 4 0"
-                                                 VerticalAlignment="Center" />
+                                                 VerticalAlignment="Center"/>
                         <TextBlock Text="此处的设置可以在档案设置中被附加设置覆盖。"
                                    TextWrapping="Wrap"
-                                   VerticalAlignment="Center" />
+                                   VerticalAlignment="Center"/>
                     </DockPanel>
                 </Grid>
             </materialDesign:ColorZone>
-            <CheckBox Content="已启用" IsChecked="{Binding Settings.IsEnabled}"
-                      Margin="0 0 0 8" />
+            <CheckBox Content="已启用" IsChecked="{Binding Settings.IsEnabled}" 
+                      Margin="0 0 0 8"/>
             <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      materialDesign:HintAssist.Hint="提醒显示内容"
                      Padding="8"
-                     Text="{Binding Settings.NotificationMsg}" />
+                     Text="{Binding Settings.NotificationMsg}"/>
         </StackPanel>
     </ScrollViewer>
 </ci:NotificationProviderControlBase>

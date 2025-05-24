@@ -29,54 +29,57 @@ public class IconControl : Control
 
     public PackIconKind PackIconKind
     {
-        get => (PackIconKind)GetValue(PackIconKindProperty);
-        set => SetValue(PackIconKindProperty, value);
+        get { return (PackIconKind)GetValue(PackIconKindProperty); }
+        set { SetValue(PackIconKindProperty, value); }
     }
 
     public static readonly DependencyProperty ImageSourceProperty = DependencyProperty.Register(
         nameof(ImageSource), typeof(ImageSource), typeof(IconControl), new PropertyMetadata(default(ImageSource),
             (o, args) =>
             {
-                if (o is IconControl control) control.OnImageSourceChanged(o, args);
+                if (o is IconControl control)
+                {
+                    control.OnImageSourceChanged(o, args);
+                }
             }));
 
     public ImageSource ImageSource
     {
-        get => (ImageSource)GetValue(ImageSourceProperty);
-        set => SetValue(ImageSourceProperty, value);
+        get { return (ImageSource)GetValue(ImageSourceProperty); }
+        set { SetValue(ImageSourceProperty, value); }
     }
 
     public static readonly DependencyProperty IconKindProperty = DependencyProperty.Register(
-        nameof(IconKind), typeof(IconControlIconKind), typeof(IconControl), new PropertyMetadata(
-            default(IconControlIconKind), (o, args) =>
+        nameof(IconKind), typeof(IconControlIconKind), typeof(IconControl), new PropertyMetadata(default(IconControlIconKind), (o, args) =>
+        {
+            if (o is IconControl control)
             {
-                if (o is IconControl control) control.OnIconKindChanged(o, args);
-            }));
+                control.OnIconKindChanged(o, args);
+            }
+        }));
 
     public IconControlIconKind IconKind
     {
-        get => (IconControlIconKind)GetValue(IconKindProperty);
-        set => SetValue(IconKindProperty, value);
+        get { return (IconControlIconKind)GetValue(IconKindProperty); }
+        set { SetValue(IconKindProperty, value); }
     }
 
     public static readonly DependencyProperty FallbackPackIconKindProperty = DependencyProperty.Register(
-        nameof(FallbackPackIconKind), typeof(PackIconKind), typeof(IconControl),
-        new PropertyMetadata(default(PackIconKind)));
+        nameof(FallbackPackIconKind), typeof(PackIconKind), typeof(IconControl), new PropertyMetadata(default(PackIconKind)));
 
     public PackIconKind FallbackPackIconKind
     {
-        get => (PackIconKind)GetValue(FallbackPackIconKindProperty);
-        set => SetValue(FallbackPackIconKindProperty, value);
+        get { return (PackIconKind)GetValue(FallbackPackIconKindProperty); }
+        set { SetValue(FallbackPackIconKindProperty, value); }
     }
 
     public static readonly DependencyProperty RealIconKindProperty = DependencyProperty.Register(
-        nameof(RealIconKind), typeof(IconControlIconKind), typeof(IconControl),
-        new PropertyMetadata(IconControlIconKind.PackIcon));
+        nameof(RealIconKind), typeof(IconControlIconKind), typeof(IconControl), new PropertyMetadata(IconControlIconKind.PackIcon));
 
     public IconControlIconKind RealIconKind
     {
-        get => (IconControlIconKind)GetValue(RealIconKindProperty);
-        set => SetValue(RealIconKindProperty, value);
+        get { return (IconControlIconKind)GetValue(RealIconKindProperty); }
+        set { SetValue(RealIconKindProperty, value); }
     }
 
     public static readonly DependencyProperty IsFallbackModeProperty = DependencyProperty.Register(
@@ -84,8 +87,8 @@ public class IconControl : Control
 
     public bool IsFallbackMode
     {
-        get => (bool)GetValue(IsFallbackModeProperty);
-        set => SetValue(IsFallbackModeProperty, value);
+        get { return (bool)GetValue(IsFallbackModeProperty); }
+        set { SetValue(IsFallbackModeProperty, value); }
     }
 
     #endregion
@@ -93,7 +96,10 @@ public class IconControl : Control
     /// <inheritdoc />
     public override void OnApplyTemplate()
     {
-        if (GetTemplateChild("PART_ImageIcon") is Image image) image.ImageFailed += ImageOnImageFailed;
+        if (GetTemplateChild("PART_ImageIcon") is Image image)
+        {
+            image.ImageFailed += ImageOnImageFailed;
+        }
         base.OnApplyTemplate();
     }
 
@@ -117,7 +123,6 @@ public class IconControl : Control
             IsFallbackMode = true;
             return;
         }
-
         RealIconKind = IconKind;
         IsFallbackMode = false;
     }
@@ -129,7 +134,6 @@ public class IconControl : Control
 
     static IconControl()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(IconControl),
-            new FrameworkPropertyMetadata(typeof(IconControl)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(IconControl), new FrameworkPropertyMetadata(typeof(IconControl)));
     }
 }

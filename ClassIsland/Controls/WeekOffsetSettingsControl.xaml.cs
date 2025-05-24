@@ -72,10 +72,10 @@ public partial class WeekOffsetSettingsControl : UserControl, INotifyPropertyCha
         var settings = SettingsService.Settings;
 
         var dd = (ExactTimeService.GetCurrentLocalDateTime().Date - settings.SingleWeekStartTime).TotalDays;
-        for (var i = 2; i < 5; i++)
+        for (int i = 2; i < 5; i++)
         {
-            var dw = (int)Math.Floor(dd / 7);
-            var w = (dw - (CurrentWeeks[i] - 1) + i) % i;
+            int dw = (int)Math.Floor(dd / 7);
+            int w = (dw - (CurrentWeeks[i] - 1) + i) % i;
             settings.MultiWeekRotationOffset[i] = w;
         }
     }

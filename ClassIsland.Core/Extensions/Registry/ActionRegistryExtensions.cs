@@ -3,7 +3,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Action;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.DependencyInjection;
-
 namespace ClassIsland.Core.Extensions.Registry;
 
 /// <summary>
@@ -21,11 +20,11 @@ public static class ActionRegistryExtensions
     /// <param name="onHandle">行动处理程序。</param>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddAction
-    (this IServiceCollection services,
-        string id,
-        string name = "",
-        PackIconKind iconKind = PackIconKind.BacteriaOutline,
-        ActionRegistryInfo.HandleDelegate? onHandle = null)
+        (this IServiceCollection services,
+         string id,
+         string name = "",
+         PackIconKind iconKind = PackIconKind.BacteriaOutline,
+         ActionRegistryInfo.HandleDelegate? onHandle = null)
     {
         Register(id, name, iconKind, onHandle);
         return services;
@@ -43,12 +42,12 @@ public static class ActionRegistryExtensions
     /// <typeparam name="TSettingsControl">行动设置控件类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddAction<TSettings, TSettingsControl>
-    (this IServiceCollection services,
-        string id,
-        string name = "",
-        PackIconKind iconKind = PackIconKind.BacteriaOutline,
-        ActionRegistryInfo.HandleDelegate? onHandle = null)
-        where TSettingsControl : ActionSettingsControlBase
+        (this IServiceCollection services,
+         string id,
+         string name = "",
+         PackIconKind iconKind = PackIconKind.BacteriaOutline,
+         ActionRegistryInfo.HandleDelegate? onHandle = null)
+         where TSettingsControl : ActionSettingsControlBase
     {
         var info = Register(id, name, iconKind, onHandle);
         services.AddKeyedTransient<ActionSettingsControlBase, TSettingsControl>(id);
@@ -59,12 +58,15 @@ public static class ActionRegistryExtensions
 
 
     private static ActionRegistryInfo Register
-    (string id,
-        string name = "",
-        PackIconKind iconKind = PackIconKind.BacteriaOutline,
-        ActionRegistryInfo.HandleDelegate? onHandle = null)
+        (string id,
+         string name = "",
+         PackIconKind iconKind = PackIconKind.BacteriaOutline,
+         ActionRegistryInfo.HandleDelegate? onHandle = null)
     {
-        if (IActionService.Actions.ContainsKey(id)) throw new InvalidOperationException($"已注册ID为 {id} 的行动。");
+        if (IActionService.Actions.ContainsKey(id))
+        {
+            throw new InvalidOperationException($"已注册ID为 {id} 的行动。");
+        }
 
         var info = new ActionRegistryInfo(id, name, iconKind);
         info.Handle += onHandle;

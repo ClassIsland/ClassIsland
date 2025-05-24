@@ -8,7 +8,6 @@ using ClassIsland.Core.Models.ProfileAnalyzing;
 using ClassIsland.Models;
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
-using ClassIsland.Shared.Models.Profile;
 using ClassIsland.ViewModels;
 
 namespace ClassIsland.Views;
@@ -31,10 +30,15 @@ public partial class ClassPlanDetailsWindow
         DataContext = this;
         ViewModel.PropertyChanged += (sender, args) =>
         {
-            if (args.PropertyName == nameof(ViewModel.ClassPlan)) RefreshClasses();
+            if (args.PropertyName == nameof(ViewModel.ClassPlan))
+            {
+                RefreshClasses();
+            }
 
             if (args.PropertyName is nameof(ViewModel.SelectedControlInfo) or nameof(ViewModel.SelectedLesson))
+            {
                 Analyze();
+            }
         };
     }
 
@@ -44,10 +48,13 @@ public partial class ClassPlanDetailsWindow
         ViewModel.Classes.Clear();
         ViewModel.ClassPlan.RefreshClassesList();
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (ViewModel.ClassPlan.TimeLayout == null) return;
+        if (ViewModel.ClassPlan.TimeLayout == null)
+        {
+            return;
+        }
         foreach (var i in ViewModel.ClassPlan.TimeLayout.Layouts)
         {
-            var info = new LessonDetails
+            var info = new LessonDetails()
             {
                 TimeLayoutItem = i
             };
@@ -62,12 +69,11 @@ public partial class ClassPlanDetailsWindow
                         info.Subject = subject;
                         info.SubjectId = classInfo.SubjectId;
                     }
-
                     ViewModel.Classes.Add(info);
                     break;
                 }
                 case 1:
-                    info.Subject = new Subject
+                    info.Subject = new()
                     {
                         Initial = "休",
                         Name = info.TimeLayoutItem.BreakNameText
@@ -85,7 +91,10 @@ public partial class ClassPlanDetailsWindow
 
     private void Analyze()
     {
-        if (ViewModel.SelectedControlInfo == null || ViewModel.SelectedLesson == null) return;
+        if (ViewModel.SelectedControlInfo == null || ViewModel.SelectedLesson == null)
+        {
+            return;
+        }
 
         ViewModel.Nodes.Clear();
         ViewModel.DisplayControlInfo = ViewModel.SelectedControlInfo;
@@ -93,7 +102,7 @@ public partial class ClassPlanDetailsWindow
         var id = ViewModel.SelectedControlInfo.Guid;
 
         var state = AttachedSettingsControlState.Disabled;
-        var nodes = new Dictionary<AttachableObjectAddress, AttachableSettingsObject>
+        var nodes = new Dictionary<AttachableObjectAddress, AttachableSettingsObject>()
         {
             {
                 new AttachableObjectAddress(ViewModel.ClassPlan.TimeLayoutId,
@@ -107,24 +116,32 @@ public partial class ClassPlanDetailsWindow
             },
             {
                 new AttachableObjectAddress(ViewModel.ClassPlan.TimeLayoutId), ViewModel.ClassPlan.TimeLayout
-            }
+            },
         };
         if (ViewModel.SelectedLesson.TimeLayoutItem.TimeType != 1)
+        {
             nodes.Add(
                 new AttachableObjectAddress(ViewModel.SelectedLesson.SubjectId), ViewModel.SelectedLesson.Subject
             );
+        }
 
         ViewModel.Summary = "小结：将使用在【应用设置】中的设置或默认设置。";
         foreach (var i in nodes)
         {
-            if (!ProfileAnalyzeService.Nodes.TryGetValue(i.Key, out var node)) continue;
-            if (!ViewModel.SelectedControlInfo.Targets.HasFlag(node.Target)) continue;
-            var item = new AttachedSettingsNodeWithState
+            if (!ProfileAnalyzeService.Nodes.TryGetValue(i.Key, out var node))
+            {
+                continue;
+            }
+            if (!ViewModel.SelectedControlInfo.Targets.HasFlag(node.Target))
+            {
+                continue;
+            }
+            var item = new AttachedSettingsNodeWithState()
             {
                 Address = i.Key,
                 Node = node
             };
-
+            
             if (!i.Value.AttachedObjects.TryGetValue(id.ToString(), out var settings))
             {
                 item.State = AttachedSettingsControlState.Disabled;
@@ -140,9 +157,7 @@ public partial class ClassPlanDetailsWindow
                 }的设置。";
             }
             else
-            {
                 item.State = AttachedSettingsControlState.Disabled;
-            }
 
             finish:
             ViewModel.Nodes.Add(item);
@@ -153,9 +168,14 @@ public partial class ClassPlanDetailsWindow
         foreach (var i in ViewModel.Nodes)
         {
             if (i.State == AttachedSettingsControlState.Enabled && state == AttachedSettingsControlState.Override)
+            {
                 i.State = AttachedSettingsControlState.Override;
+            }
 
-            if (i.State == AttachedSettingsControlState.Enabled) state = AttachedSettingsControlState.Override;
+            if (i.State == AttachedSettingsControlState.Enabled)
+            {
+                state = AttachedSettingsControlState.Override;
+            }
         }
     }
 

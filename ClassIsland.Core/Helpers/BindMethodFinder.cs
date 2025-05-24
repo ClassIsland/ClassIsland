@@ -14,15 +14,17 @@ internal static class BindMethodFinder
         var bindMethodInfo = GetBindMethodUsingAttribute(serviceType);
 
         if (bindMethodInfo == null)
+        {
             // Fallback to searching for bind method using known type hierarchy that Grpc.Tools generates
             bindMethodInfo = GetBindMethodFallback(serviceType);
+        }
 
         return bindMethodInfo;
     }
 
     internal static MethodInfo? GetBindMethodUsingAttribute(Type serviceType)
     {
-        var currentServiceType = serviceType;
+        Type? currentServiceType = serviceType;
         BindServiceMethodAttribute? bindServiceMethod;
         do
         {
@@ -30,14 +32,16 @@ internal static class BindMethodFinder
             // We need to know the base service type because it is used with GetMethod below
             bindServiceMethod = currentServiceType.GetCustomAttribute<BindServiceMethodAttribute>();
             if (bindServiceMethod != null)
+            {
                 // Bind method will be public and static
                 // Two parameters: ServiceBinderBase and the service type
                 return bindServiceMethod.BindType.GetMethod(
                     bindServiceMethod.BindMethodName,
                     BindMethodBindingFlags,
-                    null,
+                    binder: null,
                     new[] { typeof(ServiceBinderBase), currentServiceType },
                     Array.Empty<ParameterModifier>());
+            }
         } while ((currentServiceType = currentServiceType.BaseType) != null);
 
         return null;
@@ -51,7 +55,10 @@ internal static class BindMethodFinder
     {
         // Search for the generated service base class
         var baseType = GetServiceBaseType(serviceType);
-        if (baseType == null) return null;
+        if (baseType == null)
+        {
+            return null;
+        }
 
         // We need to call Foo.BindService from the declaring type.
         var declaringType = baseType.DeclaringType;
@@ -60,7 +67,7 @@ internal static class BindMethodFinder
         return declaringType?.GetMethod(
             "BindService",
             BindMethodBindingFlags,
-            null,
+            binder: null,
             new[] { typeof(ServiceBinderBase), baseType },
             Array.Empty<ParameterModifier>());
     }
@@ -72,7 +79,10 @@ internal static class BindMethodFinder
         var baseType = serviceImplementation.BaseType;
 
         // Handle services that have multiple levels of inheritence
-        while (baseType?.BaseType?.BaseType != null) baseType = baseType.BaseType;
+        while (baseType?.BaseType?.BaseType != null)
+        {
+            baseType = baseType.BaseType;
+        }
 
         return baseType;
     }

@@ -1,61 +1,62 @@
 ﻿<UserControl x:Class="ClassIsland.Controls.JoinManagementDialog"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             mc:Ignorable="d"
+             mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:JoinManagementDialog}}">
-        <StackPanel Margin="16" MaxWidth="400"
-                    IsEnabled="{Binding ViewModel.IsWorking, Converter={StaticResource InvertBooleanConverter}}">
+        <StackPanel Margin="16" MaxWidth="400" IsEnabled="{Binding ViewModel.IsWorking, Converter={StaticResource InvertBooleanConverter}}">
             <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-                <Run Text="加入管理" />
+                <Run Text="加入管理"/>
             </TextBlock>
             <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
-                <Run Text="将当前ClassIsland实例连接到管理组织。" />
+                <Run Text="将当前ClassIsland实例连接到管理组织。"></Run>
             </TextBlock>
             <Grid Margin="0 6 0 0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
-                    <Run Text="配置文件：" />
-                    <Run Text="{Binding ViewModel.ConfigFilePath, Mode=OneWay}" />
+                    <Run Text="配置文件："/>
+                    <Run Text="{Binding ViewModel.ConfigFilePath, Mode=OneWay}"/>
                 </TextBlock>
                 <local:FileBrowserButton Grid.Column="1" Filter="配置文件(*.json)|*.json"
                                          FileSelected="FileBrowserButton_OnFileSelected"
-                                         CurrentPath="{Binding ViewModel.ConfigFilePath, Mode=TwoWay}" />
+                                         CurrentPath="{Binding ViewModel.ConfigFilePath, Mode=TwoWay}"/>
             </Grid>
             <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                      materialDesign:HintAssist.Hint="ID（可选）"
-                     Text="{Binding ViewModel.ManagementSettings.ClassIdentity}" />
+                     Text="{Binding ViewModel.ManagementSettings.ClassIdentity}"/>
             <TextBlock Margin="0 6 0 0" Text="{Binding ViewModel.ErrorMessage}"
                        Visibility="{Binding ViewModel.IsErrorMessageOpen, Converter={StaticResource BooleanToVisibilityConverter}}"
                        Foreground="IndianRed"
-                       TextWrapping="Wrap" />
+                       TextWrapping="Wrap"/>
             <Grid Margin="0 8 0 0" HorizontalAlignment="Stretch">
                 <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                              HorizontalAlignment="Left" VerticalAlignment="Center"
                              IsIndeterminate="True"
-                             Visibility="{Binding ViewModel.IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}"
-                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                             Visibility="{Binding ViewModel.IsWorking, Converter={StaticResource BooleanToVisibilityConverter}}"
+                             />
+                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right">
+                    <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
                         <Button.CommandParameter>
                             <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                                 False
                             </system:Boolean>
                         </Button.CommandParameter>
                     </Button>
-                    <Button Content="连接" IsDefault="True"
+                    <Button Content="连接" IsDefault="True" 
                             IsEnabled="{Binding ViewModel.IsConfigLoaded}"
                             HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}"
-                            Click="ButtonOk_OnClick" />
+                            Click="ButtonOk_OnClick">
+                       
+                    </Button>
                 </StackPanel>
             </Grid>
-        </StackPanel>
+        </StackPanel>   
     </Grid>
 </UserControl>

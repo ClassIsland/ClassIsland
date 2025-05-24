@@ -21,8 +21,8 @@ public class SecondsToFormatTimeConverter : DependencyObject, IValueConverter
 
     public bool Ceiling
     {
-        get => (bool)GetValue(CeilingProperty);
-        set => SetValue(CeilingProperty, value);
+        get { return (bool)GetValue(CeilingProperty); }
+        set { SetValue(CeilingProperty, value); }
     }
 
     /// <inheritdoc />
@@ -30,8 +30,7 @@ public class SecondsToFormatTimeConverter : DependencyObject, IValueConverter
     {
         var withSeconds = parameter as bool? ?? false;
 
-        if (withSeconds)
-        {
+        if (withSeconds) {
             var v = TimeSpan.FromSeconds(value as long? ?? value as int? ?? 0);
             return v.TotalSeconds switch // 显示秒数
             {
@@ -42,8 +41,7 @@ public class SecondsToFormatTimeConverter : DependencyObject, IValueConverter
             };
         }
 
-        var rounded =
-            TimeSpan.FromMinutes(Round(TimeSpan.FromSeconds(value as long? ?? value as int? ?? 0).TotalMinutes));
+        var rounded = TimeSpan.FromMinutes(Round(TimeSpan.FromSeconds(value as long? ?? value as int? ?? 0).TotalMinutes));
         return rounded.TotalSeconds switch // 不显示秒数
         {
             >= 3600 => $"{Math.Floor(rounded.TotalHours)}h{rounded.Minutes:00}m",
@@ -52,15 +50,9 @@ public class SecondsToFormatTimeConverter : DependencyObject, IValueConverter
             _ => ""
         };
 
-        double Round(double x)
-        {
-            return Ceiling ? Math.Ceiling(x) : Math.Floor(x);
-        }
+        double Round(double x) => Ceiling ? Math.Ceiling(x) : Math.Floor(x);
     }
 
     /// <inheritdoc />
-    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
-        return null;
-    }
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) => null;
 }

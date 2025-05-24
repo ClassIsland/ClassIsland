@@ -24,8 +24,5 @@ public struct ReVersionString
     /// </summary>
     /// <param name="version">输入版本</param>
     /// <returns>检测结果。如果当前字符串有值，且版本大于输入版本，则返回true</returns>
-    public bool IsNewerAndNotNull(int version)
-    {
-        return !string.IsNullOrWhiteSpace(Value) && Version > version;
-    }
+    public bool IsNewerAndNotNull(int version) => !(string.IsNullOrWhiteSpace(Value)) && Version > version;
 }

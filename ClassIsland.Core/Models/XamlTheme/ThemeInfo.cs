@@ -113,9 +113,13 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
             try
             {
                 if (value)
+                {
                     File.WriteAllText(System.IO.Path.Combine(Path, ".enabled"), "");
+                }
                 else
+                {
                     File.Delete(System.IO.Path.Combine(Path, ".enabled"));
+                }
             }
             catch (Exception e)
             {
@@ -125,8 +129,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
     }
 
     /// <inheritdoc />
-    [JsonIgnore]
-    public IMarketplaceItemManifest ManifestReadonly => Manifest;
+    [JsonIgnore] public IMarketplaceItemManifest ManifestReadonly => Manifest;
 
     /// <summary>
     /// 主题是否在市场上可用
@@ -186,7 +189,7 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
             OnPropertyChanged();
         }
     }
-
+    
     /// <summary>
     /// 主题下载量
     /// </summary>
@@ -261,9 +264,13 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
                 throw new InvalidOperationException("无法为不存在本地的插件设置将要卸载状态。");
             var path = System.IO.Path.Combine(Path, ".uninstall");
             if (value)
+            {
                 File.WriteAllText(path, "");
+            }
             else
+            {
                 File.Delete(path);
+            }
             OnPropertyChanged();
         }
     }

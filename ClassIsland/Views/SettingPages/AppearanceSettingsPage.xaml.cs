@@ -47,11 +47,14 @@ public partial class AppearanceSettingsPage : SettingsPageBase
     {
         var w = new WindowsPicker(SettingsService.Settings.WallpaperClassName)
         {
-            Owner = Window.GetWindow(this)
+            Owner = Window.GetWindow(this),
         };
         var r = w.ShowDialog();
         SettingsService.Settings.WallpaperClassName = w.SelectedResult ?? "";
-        if (r == true) await WallpaperPickingService.GetWallpaperAsync();
+        if (r == true)
+        {
+            await WallpaperPickingService.GetWallpaperAsync();
+        }
         GC.Collect();
     }
 
@@ -64,10 +67,13 @@ public partial class AppearanceSettingsPage : SettingsPageBase
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = MouseWheelEvent;
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
             eventArg.Source = sender;
             var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null) parent.RaiseEvent(eventArg);
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
         }
     }
 }

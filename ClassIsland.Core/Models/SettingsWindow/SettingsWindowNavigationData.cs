@@ -7,8 +7,7 @@ namespace ClassIsland.Core.Models.SettingsWindow;
 /// </summary>
 public class SettingsWindowNavigationData
 {
-    internal SettingsWindowNavigationData(bool isNavigateFromSettingsWindow, bool isNavigateFromUri, Uri? navigateUri,
-        bool keepHistory, object? transaction, object? span)
+    internal SettingsWindowNavigationData(bool isNavigateFromSettingsWindow, bool isNavigateFromUri, Uri? navigateUri, bool keepHistory, object? transaction, object? span)
     {
         IsNavigateFromSettingsWindow = isNavigateFromSettingsWindow;
         IsNavigateFromUri = isNavigateFromUri;

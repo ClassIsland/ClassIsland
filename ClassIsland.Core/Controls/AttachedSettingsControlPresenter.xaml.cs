@@ -27,8 +27,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     public IManagementService ManagementService { get; }
 
     public static readonly DependencyProperty ControlInfoProperty = DependencyProperty.Register(
-        nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(default(AttachedSettingsControlInfo)));
+        nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(AttachedSettingsControlInfo)));
 
     public AttachedSettingsControlInfo? ControlInfo
     {
@@ -37,8 +36,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     }
 
     public static readonly DependencyProperty TargetObjectProperty = DependencyProperty.Register(
-        nameof(TargetObject), typeof(AttachableSettingsObject), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(default(AttachableSettingsObject)));
+        nameof(TargetObject), typeof(AttachableSettingsObject), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(AttachableSettingsObject)));
 
     public AttachableSettingsObject? TargetObject
     {
@@ -47,8 +45,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     }
 
     public static readonly DependencyProperty ContentObjectProperty = DependencyProperty.Register(
-        nameof(ContentObject), typeof(object), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(default(object)));
+        nameof(ContentObject), typeof(object), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(object)));
 
     public object? ContentObject
     {
@@ -57,23 +54,21 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     }
 
     public static readonly DependencyProperty AssociatedAttachedSettingsProperty = DependencyProperty.Register(
-        nameof(AssociatedAttachedSettings), typeof(IAttachedSettings), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(default(IAttachedSettings?)));
+        nameof(AssociatedAttachedSettings), typeof(IAttachedSettings), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(IAttachedSettings?)));
 
     public IAttachedSettings? AssociatedAttachedSettings
     {
-        get => (IAttachedSettings?)GetValue(AssociatedAttachedSettingsProperty);
-        set => SetValue(AssociatedAttachedSettingsProperty, value);
+        get { return (IAttachedSettings?)GetValue(AssociatedAttachedSettingsProperty); }
+        set { SetValue(AssociatedAttachedSettingsProperty, value); }
     }
 
     public static readonly DependencyProperty ContentIdProperty = DependencyProperty.Register(
-        nameof(ContentId), typeof(string), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(default(string)));
+        nameof(ContentId), typeof(string), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(string)));
 
     public string ContentId
     {
-        get => (string)GetValue(ContentIdProperty);
-        set => SetValue(ContentIdProperty, value);
+        get { return (string)GetValue(ContentIdProperty); }
+        set { SetValue(ContentIdProperty, value); }
     }
 
     public static readonly DependencyProperty ContentIndexProperty = DependencyProperty.Register(
@@ -81,13 +76,12 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     public int ContentIndex
     {
-        get => (int)GetValue(ContentIndexProperty);
-        set => SetValue(ContentIndexProperty, value);
+        get { return (int)GetValue(ContentIndexProperty); }
+        set { SetValue(ContentIndexProperty, value); }
     }
 
     public static readonly DependencyProperty IsPopupOpenedProperty = DependencyProperty.Register(
-        nameof(IsPopupOpened), typeof(bool), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(default(bool)));
+        nameof(IsPopupOpened), typeof(bool), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(bool)));
 
     private ObservableCollection<AttachableObjectNode> _nextItems = new();
     private ObservableCollection<AttachableObjectNode> _previousItems = new();
@@ -97,18 +91,17 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     public bool IsPopupOpened
     {
-        get => (bool)GetValue(IsPopupOpenedProperty);
-        set => SetValue(IsPopupOpenedProperty, value);
+        get { return (bool)GetValue(IsPopupOpenedProperty); }
+        set { SetValue(IsPopupOpenedProperty, value); }
     }
 
     public static readonly DependencyProperty IsDependencyModeProperty = DependencyProperty.Register(
-        nameof(IsDependencyMode), typeof(bool), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(default(bool)));
+        nameof(IsDependencyMode), typeof(bool), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(default(bool)));
 
     public bool IsDependencyMode
     {
-        get => (bool)GetValue(IsDependencyModeProperty);
-        set => SetValue(IsDependencyModeProperty, value);
+        get { return (bool)GetValue(IsDependencyModeProperty); }
+        set { SetValue(IsDependencyModeProperty, value); }
     }
 
     public ObservableCollection<AttachableObjectNode> NextItems
@@ -167,25 +160,22 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     }
 
     public static readonly DependencyProperty StateProperty = DependencyProperty.Register(
-        nameof(State), typeof(AttachedSettingsControlState), typeof(AttachedSettingsControlPresenter),
-        new PropertyMetadata(AttachedSettingsControlState.Enabled));
+        nameof(State), typeof(AttachedSettingsControlState), typeof(AttachedSettingsControlPresenter), new PropertyMetadata(AttachedSettingsControlState.Enabled));
 
     public AttachedSettingsControlState State
     {
-        get => (AttachedSettingsControlState)GetValue(StateProperty);
-        set => SetValue(StateProperty, value);
+        get { return (AttachedSettingsControlState)GetValue(StateProperty); }
+        set { SetValue(StateProperty, value); }
     }
 
-    public AttachedSettingsControlPresenter(IProfileAnalyzeService profileAnalyzeService,
-        IProfileService profileService, IManagementService managementService)
+    public AttachedSettingsControlPresenter(IProfileAnalyzeService profileAnalyzeService, IProfileService profileService, IManagementService managementService)
     {
         ProfileAnalyzeService = profileAnalyzeService;
         ProfileService = profileService;
         ManagementService = managementService;
     }
 
-    public AttachedSettingsControlPresenter() : this(IAppHost.GetService<IProfileAnalyzeService>(),
-        IAppHost.GetService<IProfileService>(), IAppHost.GetService<IManagementService>())
+    public AttachedSettingsControlPresenter() : this(IAppHost.GetService<IProfileAnalyzeService>(), IAppHost.GetService<IProfileService>(), IAppHost.GetService<IManagementService>())
     {
         InitializeComponent();
         UpdateContent();
@@ -208,7 +198,10 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     private async Task AnalyzeAsync()
     {
-        if (ControlInfo == null || ProfileAnalyzeService == null || IsLoading) return;
+        if (ControlInfo == null || ProfileAnalyzeService == null || IsLoading)
+        {
+            return;
+        }
         IsLoading = true;
         var contentId = ContentId;
         var contentIndex = ContentIndex;
@@ -216,8 +209,7 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         await Task.Run(() =>
         {
             ProfileAnalyzeService.Analyze();
-            NextItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindNextObjects(
-                new AttachableObjectAddress(contentId, contentIndex),
+            NextItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindNextObjects(new AttachableObjectAddress(contentId, contentIndex),
                 guid.ToString())!);
             PreviousItems = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.FindPreviousObjects(
                 new AttachableObjectAddress(contentId, contentIndex),
@@ -228,14 +220,19 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
     {
-        if (e.Property == TargetObjectProperty || e.Property == ControlInfoProperty ||
-            e.Property == ContentIdProperty) UpdateContent();
+        if (e.Property == TargetObjectProperty || e.Property == ControlInfoProperty || e.Property == ContentIdProperty)
+        {
+            UpdateContent();
+        }
         base.OnPropertyChanged(e);
     }
 
     private void UpdateContent()
     {
-        if (TargetObject == null || ControlInfo == null) return;
+        if (TargetObject == null || ControlInfo == null)
+        {
+            return;
+        }
 
         TargetObject.AttachedObjects.TryGetValue(ControlInfo.Guid.ToString(), out var settings);
         ContentObject = AttachedSettingsControlBase.GetInstance(ControlInfo, ref settings);
@@ -247,9 +244,10 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         TargetObject.AttachedObjects[ControlInfo.Guid.ToString()] = settings;
         AssociatedAttachedSettings = settings as IAttachedSettings;
 
-        if (!IsDependencyMode || ProfileAnalyzeService == null ||
-            !ProfileAnalyzeService.Nodes.TryGetValue(new AttachableObjectAddress(ContentId, ContentIndex),
-                out var node)) return;
+        if (!IsDependencyMode || ProfileAnalyzeService == null || !ProfileAnalyzeService.Nodes.TryGetValue(new AttachableObjectAddress(ContentId, ContentIndex), out var node))
+        {
+            return;
+        }
 
         DependencyItemPackIconKind = node.Target switch
         {
@@ -266,29 +264,55 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
         {
             case AttachedSettingsTargets.Lesson:
                 if (ProfileService.Profile.ClassPlans.TryGetValue(ContentId, out var classPlan))
+                {
                     DependencyItemTitle = $"课表 {classPlan.Name}，第{ContentIndex}节";
+                }
 
-                if (policy.DisableProfileClassPlanEditing) IsEnabled = false;
+                if (policy.DisableProfileClassPlanEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
             case AttachedSettingsTargets.ClassPlan:
                 if (ProfileService.Profile.ClassPlans.TryGetValue(ContentId, out var classPlan2))
+                {
                     DependencyItemTitle = $"课表 {classPlan2.Name}";
-                if (policy.DisableProfileClassPlanEditing) IsEnabled = false;
+                }
+                if (policy.DisableProfileClassPlanEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
             case AttachedSettingsTargets.TimePoint:
-                if (ProfileService.Profile.TimeLayouts.TryGetValue(ContentId, out var timeLayout) &&
-                    node.Object is TimeLayoutItem item)
+                if (ProfileService.Profile.TimeLayouts.TryGetValue(ContentId, out var timeLayout) && node.Object is TimeLayoutItem item)
+                {
                     DependencyItemTitle = $"时间表 {timeLayout.Name}，{item.StartSecond:t}-{item.EndSecond:t}";
-                if (policy.DisableProfileTimeLayoutEditing) IsEnabled = false;
+                }
+                if (policy.DisableProfileTimeLayoutEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
 
             case AttachedSettingsTargets.Subject:
-                if (node.Object is Subject subject) DependencyItemTitle = $"科目 {subject.Name}";
-                if (policy.DisableProfileSubjectsEditing) IsEnabled = false;
+                if (node.Object is Subject subject)
+                {
+                    DependencyItemTitle = $"科目 {subject.Name}";
+                }
+                if (policy.DisableProfileSubjectsEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
             case AttachedSettingsTargets.TimeLayout:
-                if (node.Object is TimeLayout item2) DependencyItemTitle = $"时间表 {item2.Name}";
-                if (policy.DisableProfileTimeLayoutEditing) IsEnabled = false;
+                if (node.Object is TimeLayout item2)
+                {
+                    DependencyItemTitle = $"时间表 {item2.Name}";
+                }
+                if (policy.DisableProfileTimeLayoutEditing)
+                {
+                    IsEnabled = false;
+                }
                 break;
             case AttachedSettingsTargets.None:
                 DependencyItemTitle = "???";
@@ -302,7 +326,6 @@ public partial class AttachedSettingsControlPresenter : UserControl, INotifyProp
     public event PropertyChangedEventHandler? PropertyChanged;
 
     #region PropertyChanged
-
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

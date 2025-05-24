@@ -10,24 +10,24 @@
     <TabControl>
         <TabItem Header="Uri 导航">
             <StackPanel Margin="8">
-                <Label Content="Uri" />
-                <TextBox Text="{Binding ViewModel.Uri}" />
+                <Label Content="Uri"/>
+                <TextBox Text="{Binding ViewModel.Uri}"/>
                 <Button HorizontalAlignment="Left"
                         Content="导航"
-                        Click="ButtonNavigate_OnClick" />
+                        Click="ButtonNavigate_OnClick"/>
             </StackPanel>
         </TabItem>
         <TabItem Header="课程服务">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Button Grid.Row="0" HorizontalAlignment="Right"
                         Content="刷新"
-                        Click="ButtonRefreshLessonInfos_OnClick" />
-                <TextBox Grid.Row="1" Text="{Binding ViewModel.LessonInfos}"
-                         IsReadOnly="True" />
+                        Click="ButtonRefreshLessonInfos_OnClick"/>
+                <TextBox  Grid.Row="1" Text="{Binding ViewModel.LessonInfos}"
+                          IsReadOnly="True"/>
             </Grid>
         </TabItem>
     </TabControl>

@@ -24,7 +24,7 @@
                  VerticalAlignment="Center"
                  HorizontalAlignment="Left"
                  materialDesign:HintAssist.Hint="应用程序、网址 或 cmd 命令"
-                 MaxWidth="250" />
+                 MaxWidth="250"/>
         <controls:FileBrowserButton CurrentPath="{Binding Settings.Value, Mode=TwoWay}"
                                     Grid.Column="1" />
         <materialDesign:PopupBox Grid.Column="3"
@@ -35,7 +35,7 @@
                          materialDesign:HintAssist.IsFloating="True"
                          materialDesign:HintAssist.Hint="（可选）应用程序启动参数"
                          VerticalAlignment="Center"
-                         MinWidth="250" />
+                         MinWidth="250"/>
             </StackPanel>
         </materialDesign:PopupBox>
     </Grid>

@@ -9,12 +9,10 @@ public enum AuthorizeLevel
     /// 无
     /// </summary>
     None,
-
     /// <summary>
     /// 用户认证
     /// </summary>
     User,
-
     /// <summary>
     /// 管理员认证
     /// </summary>

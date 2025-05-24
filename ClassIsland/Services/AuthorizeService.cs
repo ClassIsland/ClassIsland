@@ -28,9 +28,7 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
     {
         try
         {
-            var credential = credentialString != null
-                ? ConvertCredentialStringToModel(credentialString)
-                : new Credential();
+            var credential = credentialString != null ? ConvertCredentialStringToModel(credentialString) : new Credential();
             var window = new AuthorizeWindow(credential, true);
             var result = window.ShowDialog();
             return result != true ? credentialString : ConvertCredentialModelToString(credential);
@@ -50,7 +48,6 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
             logger.LogWarning("传入了空的认证字符串，默认为认证通过。");
             return true;
         }
-
         try
         {
             var credential = ConvertCredentialStringToModel(credentialString);
@@ -64,7 +61,6 @@ public class AuthorizeService(ILogger<AuthorizeService> logger) : IAuthorizeServ
             CommonDialog.ShowError($"认证时发生异常：{e.Message}");
             return false;
         }
-
         return false;
     }
 }

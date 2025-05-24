@@ -7,6 +7,8 @@
                      xmlns:ci="http://classisland.tech/schemas/xaml/core"
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                      xmlns:controls="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+                     xmlns:controls1="clr-namespace:ClassIsland.Controls"
+                     xmlns:classIsland="clr-namespace:ClassIsland"
                      xmlns:system="clr-namespace:System;assembly=System.Runtime"
                      mc:Ignorable="d"
                      d:DesignHeight="450" d:DesignWidth="800"
@@ -21,15 +23,29 @@
                      d:DataContext="{d:DesignInstance local:ThemesSettingsPage}">
 
     <ci:SettingsPageBase.Resources>
+        <Grid x:Key="ErrorInfoDrawer" Margin="16" Width="450">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Text="错误信息" Grid.Row="0"
+                       Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <TextBox Grid.Row="1"
+                     VerticalContentAlignment="Top"
+                     materialDesign:TextFieldAssist.UnderlineBrush="{x:Null}"
+                     BorderThickness="0"
+                     Text="{Binding Mode=OneTime}" />
+        </Grid>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <system:Int32 x:Key="ClipMode">0</system:Int32>
         <system:Double x:Key="ClipRadius">4</system:Double>
 
-        <CollectionViewSource x:Key="ThemeSource"
+        <CollectionViewSource x:Key="ThemeSource" 
                               Source="{Binding XamlThemeService.MergedThemes}"
-                              Filter="ThemeSource_OnFilter" />
+                              Filter="ThemeSource_OnFilter"/>
+        <ci:BindingProxy x:Key="DataProxy"/>
     </ci:SettingsPageBase.Resources>
-    <Grid>
+    <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -43,16 +59,16 @@
             </Grid.ColumnDefinitions>
 
             <ListBox
-                DockPanel.Dock="Left"
-                Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                HorizontalAlignment="Left"
-                materialDesign:ListBoxItemAssist.ShowSelection="False"
-                ScrollViewer.CanContentScroll="True"
-                HorizontalContentAlignment="Center"
-                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
-                ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                SelectedIndex="{Binding ViewModel.ThemeCategoryIndex}"
-                SelectionChanged="ListBoxCategory_OnSelectionChanged">
+                                DockPanel.Dock="Left"
+                                Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                HorizontalAlignment="Left"
+                                materialDesign:ListBoxItemAssist.ShowSelection="False"
+                                ScrollViewer.CanContentScroll="True"
+                                HorizontalContentAlignment="Center"
+                                ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                SelectedIndex="{Binding ViewModel.ThemeCategoryIndex}"
+                                SelectionChanged="ListBoxCategory_OnSelectionChanged">
                 <ListBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Horizontal" IsItemsHost="True" />
@@ -66,9 +82,10 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <RadioButton Content="{Binding}"
-                                     Style="{StaticResource MaterialDesignTabRadioButton}"
-                                     Height="36"
-                                     IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}" />
+                                                     Style="{StaticResource MaterialDesignTabRadioButton}"
+                                                     Height="36"
+                                                     IsChecked="{Binding IsSelected, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListBoxItem}}">
+                        </RadioButton>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
                 <system:String>市场</system:String>
@@ -95,16 +112,16 @@
             </materialDesign:ColorZone>
         </Grid>
 
-        <StackPanel Grid.Row="1" Grid.Column="0">
+        <StackPanel Grid.Row="1" Grid.Column="0" >
             <ProgressBar IsIndeterminate="True" Height="5"
-                         Visibility="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                         Visibility="{Binding PluginMarketService.IsLoadingPluginSource, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <materialDesign:ColorZone Background="#10FF0000">
                 <materialDesign:ColorZone.Style>
                     <Style TargetType="materialDesign:ColorZone">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding PluginMarketService.Exception, Mode=OneWay}"
                                          Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -112,33 +129,33 @@
                 <Grid>
                     <DockPanel Margin="8 4">
                         <materialDesign:PackIcon Kind="ErrorOutline"
-                                                 Height="20" Width="20" />
+                                                 Height="20" Width="20"/>
                         <TextBlock TextWrapping="Wrap"
                                    VerticalAlignment="Center"
-                                   Margin="4 0 0 0">
-                            <Run Text="刷新市场失败：" />
-                            <Run Text="{Binding PluginMarketService.Exception.Message, Mode=OneWay}" />
+                                   Margin="4 0 0 0" >
+                            <Run Text="刷新市场失败："/>
+                            <Run Text="{Binding PluginMarketService.Exception.Message, Mode=OneWay}"/>
                         </TextBlock>
                     </DockPanel>
                 </Grid>
             </materialDesign:ColorZone>
         </StackPanel>
-
+        
 
         <ListBox Grid.Row="2" HorizontalContentAlignment="Stretch"
-                 Background="{DynamicResource MaterialDesignPaper}"
-                 ItemsSource="{Binding Source={StaticResource ThemeSource}}"
-                 materialDesign:ListBoxItemAssist.ShowSelection="False"
-                 VerticalContentAlignment="Stretch">
+                     Background="{DynamicResource MaterialDesignPaper}"
+                     ItemsSource="{Binding Source={StaticResource ThemeSource}}"
+                     materialDesign:ListBoxItemAssist.ShowSelection="False"
+                     VerticalContentAlignment="Stretch">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="Margin" Value="2" />
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="2"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate>
                                 <ContentPresenter Content="{Binding}"
-                                                  ContentTemplate="{Binding ItemTemplate, RelativeSource={RelativeSource AncestorType=ListBox}}" />
+                                                  ContentTemplate="{Binding ItemTemplate, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -146,11 +163,11 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <controls:VirtualizingWrapPanel IsItemsHost="True"
+                    <controls:VirtualizingWrapPanel IsItemsHost="True" 
                                                     Orientation="Horizontal"
                                                     StretchItems="True">
                         <controls:VirtualizingWrapPanel.ItemSize>
-                            <Size Width="264" Height="150" />
+                            <Size Width="264" Height="150"/>
                         </controls:VirtualizingWrapPanel.ItemSize>
                     </controls:VirtualizingWrapPanel>
                 </ItemsPanelTemplate>
@@ -165,27 +182,24 @@
                                 <Border.OpacityMask>
                                     <LinearGradientBrush StartPoint="0, 0" EndPoint="0, 1">
                                         <LinearGradientBrush.GradientStops>
-                                            <GradientStop Color="#ffffffff" Offset="0" />
-                                            <GradientStop Color="#ffffffff" Offset="0.65" />
-                                            <GradientStop Color="#00ffffff" Offset="1.0" />
+                                            <GradientStop Color="#ffffffff" Offset="0"/>
+                                            <GradientStop Color="#ffffffff" Offset="0.65"/>
+                                            <GradientStop Color="#00ffffff" Offset="1.0"/>
                                         </LinearGradientBrush.GradientStops>
                                     </LinearGradientBrush>
                                 </Border.OpacityMask>
                                 <Border.Clip>
                                     <MultiBinding Converter="{StaticResource WidthDoubleToRectConverter}">
-                                        <Binding Path="ActualWidth" Mode="OneWay"
-                                                 RelativeSource="{RelativeSource Self}" />
-                                        <Binding Path="ActualWidth" Mode="OneWay"
-                                                 RelativeSource="{RelativeSource Self}" />
-                                        <Binding Path="ActualHeight" Mode="OneWay"
-                                                 RelativeSource="{RelativeSource Self}" />
-                                        <Binding Source="{StaticResource ClipMode}" />
-                                        <Binding Source="{StaticResource ClipRadius}" />
-                                        <Binding Source="{StaticResource ClipRadius}" />
+                                        <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                        <Binding Path="ActualWidth" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                        <Binding Path="ActualHeight" Mode="OneWay" RelativeSource="{RelativeSource Self}" />
+                                        <Binding Source="{StaticResource ClipMode}"/>
+                                        <Binding Source="{StaticResource ClipRadius}"/>
+                                        <Binding Source="{StaticResource ClipRadius}"/>
                                     </MultiBinding>
                                 </Border.Clip>
                                 <Image Source="{Binding Value.RealBannerPath, Mode=OneWay}" Stretch="UniformToFill"
-                                       StretchDirection="Both" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                       StretchDirection="Both" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Border>
                             <Grid VerticalAlignment="Bottom" Margin="8">
                                 <Grid.Style>
@@ -194,21 +208,24 @@
                                             <MultiDataTrigger>
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding Value.IsLoaded}"
-                                                               Value="False" />
+                                                               Value="False"/>
                                                     <Condition Binding="{Binding Value.IsLocal}"
-                                                               Value="True" />
+                                                               Value="True"/>
                                                 </MultiDataTrigger.Conditions>
-                                                <Setter Property="Opacity" Value="0.8" />
+                                                <Setter Property="Opacity" Value="0.8"/>
                                             </MultiDataTrigger>
 
                                             <Trigger Property="IsMouseOver" Value="True">
+                                                <Trigger.EnterActions>
+                                                    
+                                                </Trigger.EnterActions>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -217,8 +234,8 @@
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Value.Manifest.Name}"
-                                           VerticalAlignment="Center" FontWeight="Medium" FontSize="16" />
-                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
+                                           VerticalAlignment="Center" FontWeight="Medium" FontSize="16"/>
+                                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" >
                                     <TextBlock Text="{Binding Value.Manifest.Author}"
                                                VerticalAlignment="Center" FontSize="12"
                                                HorizontalAlignment="Left" />
@@ -236,88 +253,83 @@
                                             Margin="0 -8"
                                             IsEnabled="{Binding Value.DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}">
                                     <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
-                                            Content="{materialDesign:PackIcon Error}"
-                                            Visibility="{Binding Value.IsError, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                            Margin="2 0"
-                                            Foreground="Red"
-                                            ToolTip="加载此主题时发生错误"
-                                            CommandParameter="{Binding Value}"
-                                            Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
-                                    <materialDesign:PopupBox
-                                        Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Content="{materialDesign:PackIcon MoreHoriz}"
-                                        Margin="2 0"
-                                        ToolTip="更多选项…">
+                                                Content="{materialDesign:PackIcon Error}"
+                                                Visibility="{Binding Value.IsError, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                Margin="2 0"
+                                                Foreground="Red"
+                                                ToolTip="加载此主题时发生错误"
+                                                CommandParameter="{Binding Value}"
+                                                Command="{Binding ShowErrorsCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                    <materialDesign:PopupBox Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                                             Content="{materialDesign:PackIcon MoreHoriz}"
+                                                             Margin="2 0"
+                                                             ToolTip="更多选项…">
                                         <StackPanel>
                                             <MenuItem Icon="{materialDesign:PackIcon FolderOutline}" Header="打开主题文件夹…"
                                                       CommandParameter="{Binding Value}"
-                                                      Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                                      Command="{Binding OpenFolderCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
                                             <MenuItem Icon="{materialDesign:PackIcon PackageOutline}" Header="打包主题…"
                                                       CommandParameter="{Binding Value}"
-                                                      Command="{Binding PackageThemeCommandCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
-                                            <Separator />
+                                                      Command="{Binding PackageThemeCommandCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
+                                            <Separator/>
                                             <MenuItem Icon="{materialDesign:PackIcon Remove}" Header="卸载主题"
                                                       Visibility="{Binding Value.IsUninstalling, Converter={StaticResource InverseBoolToVisConverter}}"
                                                       CommandParameter="{Binding Value}"
-                                                      Command="{Binding UninstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                                      Command="{Binding UninstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
                                             <MenuItem Icon="{materialDesign:PackIcon Undo}" Header="撤销卸载"
                                                       Visibility="{Binding Value.IsUninstalling, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                       CommandParameter="{Binding Value}"
-                                                      Command="{Binding UndoUninstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}" />
+                                                      Command="{Binding UndoUninstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"/>
                                         </StackPanel>
                                     </materialDesign:PopupBox>
                                     <Button
-                                        ToolTip="安装"
-                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                                        Width="28" Height="28"
-                                        CommandParameter="{Binding Value.Manifest.Id}"
-                                        Command="{Binding InstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"
-                                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding Value.DownloadProgress.IsDownloading}"
-                                        materialDesign:ButtonProgressAssist.Value="{Binding Value.DownloadProgress.Progress}"
-                                        Content="{materialDesign:PackIcon MonitorDownload}">
+                                            ToolTip="安装"
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                            Width="28" Height="28"
+                                            CommandParameter="{Binding Value.Manifest.Id}"
+                                            Command="{Binding InstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"
+                                            materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding Value.DownloadProgress.IsDownloading}"
+                                            materialDesign:ButtonProgressAssist.Value="{Binding Value.DownloadProgress.Progress}"
+                                            Content="{materialDesign:PackIcon MonitorDownload}">
                                         <Button.Visibility>
-                                            <MultiBinding
-                                                Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
-                                                <Binding Path="Value.IsLocal"
-                                                         Converter="{StaticResource InvertBooleanConverter}" />
-                                                <Binding Path="Value.IsAvailableOnMarket" />
-                                                <Binding Path="Value.RestartRequired"
-                                                         Converter="{StaticResource InvertBooleanConverter}" />
+                                            <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                                <Binding Path="Value.IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
+                                                <Binding Path="Value.IsAvailableOnMarket"/>
+                                                <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
                                             </MultiBinding>
                                         </Button.Visibility>
                                     </Button>
                                     <Button
-                                        ToolTip="更新"
-                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                                        Width="28" Height="28"
-                                        CommandParameter="{Binding Value.Manifest.Id}"
-                                        Command="{Binding InstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"
-                                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding Value.DownloadProgress.IsDownloading}"
-                                        materialDesign:ButtonProgressAssist.Value="{Binding Value.DownloadProgress.Progress}"
-                                        Content="{materialDesign:PackIcon Upload}">
+                                            ToolTip="更新"
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                            Width="28" Height="28"
+                                            CommandParameter="{Binding Value.Manifest.Id}"
+                                            Command="{Binding InstallThemeCommand, RelativeSource={RelativeSource AncestorType=local:ThemesSettingsPage}}"
+                                            materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding Value.DownloadProgress.IsDownloading}"
+                                            materialDesign:ButtonProgressAssist.Value="{Binding Value.DownloadProgress.Progress}"
+                                            Content="{materialDesign:PackIcon Upload}">
                                         <Button.Visibility>
-                                            <MultiBinding
-                                                Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
-                                                <Binding Path="Value.IsLocal" />
-                                                <Binding Path="Value.IsAvailableOnMarket" />
-                                                <Binding Path="Value.IsUpdateAvailable" />
-                                                <Binding Path="Value.RestartRequired"
-                                                         Converter="{StaticResource InvertBooleanConverter}" />
+                                            <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
+                                                <Binding Path="Value.IsLocal"/>
+                                                <Binding Path="Value.IsAvailableOnMarket"/>
+                                                <Binding Path="Value.IsUpdateAvailable"/>
+                                                <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
                                             </MultiBinding>
                                         </Button.Visibility>
                                     </Button>
                                     <Button
-                                        ToolTip="重启以应用更改"
-                                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                                        Width="28" Height="28"
-                                        Click="ButtonRestart_OnClick"
-                                        Content="{materialDesign:PackIcon Restart}"
-                                        Visibility="{Binding Value.RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            ToolTip="重启以应用更改"
+                                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                            Width="28" Height="28"
+                                            Click="ButtonRestart_OnClick"
+                                            Content="{materialDesign:PackIcon Restart}"
+                                            Visibility="{Binding Value.RestartRequired, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    </Button>
                                     <ToggleButton IsChecked="{Binding Value.IsEnabled}"
                                                   VerticalAlignment="Center"
                                                   Visibility="{Binding Value.IsLocal, Converter={StaticResource BooleanToVisibilityConverter}}"
                                                   Margin="4 0 0 0" />
-
+                                    
                                 </StackPanel>
                             </Grid>
                         </Grid>
@@ -326,7 +338,7 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <Border Grid.Row="0" Grid.RowSpan="3"
+        <Border Grid.Row="0" Grid.RowSpan="3" 
                 Background="{DynamicResource MaterialDesignPaper}"
                 Visibility="{Binding SettingsService.Settings.IsThemeWarningVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <ScrollViewer>
@@ -370,7 +382,7 @@
                         <StackPanel>
                             <materialDesign:PackIcon Kind="Warning"
                                                      Margin="0 0 0 4"
-                                                     HorizontalAlignment="Center" />
+                                                     HorizontalAlignment="Center"/>
                             <TextBlock TextAlignment="Center"
                                        HorizontalAlignment="Center"
                                        TextWrapping="Wrap"
@@ -381,7 +393,7 @@
                     <Button HorizontalAlignment="Center"
                             Margin="0 16 0 0"
                             Click="ButtonAgreeAgreement_OnClick">
-                        <ci:IconText Kind="Check" Text="同意并开始使用主题" />
+                        <ci:IconText Kind="Check" Text="同意并开始使用主题"></ci:IconText>
                     </Button>
                 </StackPanel>
             </ScrollViewer>

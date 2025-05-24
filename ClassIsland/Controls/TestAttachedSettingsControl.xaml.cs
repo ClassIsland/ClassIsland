@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Controls;
+
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models.AttachedSettings;

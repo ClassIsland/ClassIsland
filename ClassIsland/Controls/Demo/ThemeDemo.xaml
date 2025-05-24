@@ -12,15 +12,13 @@
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Style.Triggers>
-                        <DataTrigger
-                            Binding="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
-                            Value="Light">
-                            <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}" />
+                        <DataTrigger Binding="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
+                                     Value="Light">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryHueLightBrush}"/>
                         </DataTrigger>
-                        <DataTrigger
-                            Binding="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
-                            Value="Dark">
-                            <Setter Property="Background" Value="{DynamicResource PrimaryHueDarkBrush}" />
+                        <DataTrigger Binding="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
+                                     Value="Dark">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryHueDarkBrush}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
@@ -34,9 +32,7 @@
                     <Setter Property="Opacity" Value="0.8" />
                 </Style>
             </Grid.Resources>
-            <materialDesign:ColorZone
-                Mode="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
-                HorizontalAlignment="Center">
+            <materialDesign:ColorZone Mode="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}" HorizontalAlignment="Center">
                 <StackPanel Orientation="Horizontal"
                             Margin="2">
 
@@ -50,12 +46,11 @@
                     <Rectangle Width="4" />
                 </StackPanel>
             </materialDesign:ColorZone>
-            <materialDesign:ColorZone
-                Mode="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Width="100"
-                Height="50">
+            <materialDesign:ColorZone Mode="{Binding ThemeMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:ThemeDemo}}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Bottom"
+                                      Width="100"
+                                      Height="50">
                 <StackPanel>
                     <StackPanel Height="6" HorizontalAlignment="Right" Orientation="Horizontal">
                         <Rectangle Width="4" Opacity="0.5" />

@@ -35,13 +35,13 @@ public partial class RollingTextTemplate : UserControl
 
     private void RollingTextTemplate_OnLoaded(object sender, RoutedEventArgs e)
     {
-        var da = new DoubleAnimation
+        var da = new DoubleAnimation()
         {
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
-            Duration = Data.Duration / Math.Min(Data.RepeatCount, 1)
+            Duration = Data.Duration / Math.Min(Data.RepeatCount, 1),
         };
-        var storyboard = new Storyboard
+        var storyboard = new Storyboard()
         {
         };
         Storyboard.SetTarget(da, Description);

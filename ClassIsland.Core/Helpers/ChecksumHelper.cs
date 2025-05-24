@@ -25,7 +25,10 @@ public static class ChecksumHelper
     {
         var regex = new Regex(@"<!-- CLASSISLAND_PKG_MD5 (.+?) -->");
         var match = regex.Match(releaseNote);
-        if (!match.Success) return "";
+        if (!match.Success)
+        {
+            return "";
+        }
 
         var json = match.Groups[1].Value;
         try
@@ -62,6 +65,9 @@ public static class ChecksumHelper
     /// <exception cref="ChecksumUnMatchException">校验和校验不通过时抛出此异常。</exception>
     public static void VerifyChecksum(string filePath, string checksum)
     {
-        if (!CheckChecksum(filePath, checksum)) throw new ChecksumUnMatchException($"文件 {filePath} 校验和不匹配。");
+        if (!CheckChecksum(filePath, checksum))
+        {
+            throw new ChecksumUnMatchException($"文件 {filePath} 校验和不匹配。");
+        }
     }
 }

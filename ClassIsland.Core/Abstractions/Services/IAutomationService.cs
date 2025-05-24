@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Core.Models;
-
 namespace ClassIsland.Core.Abstractions.Services;
 
 /// <summary>

@@ -8,10 +8,10 @@ public class SentryEventLogger(string categoryName) : ILogger
 {
     private string CategoryName { get; } = categoryName;
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
-        Func<TState, Exception?, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         if (logLevel >= LogLevel.Error && exception != null)
+        {
             SentrySdk.CaptureException(exception, scope =>
             {
                 scope.Level = logLevel switch
@@ -22,6 +22,7 @@ public class SentryEventLogger(string categoryName) : ILogger
                     _ => SentryLevel.Info
                 };
             });
+        }
     }
 
     public bool IsEnabled(LogLevel logLevel)

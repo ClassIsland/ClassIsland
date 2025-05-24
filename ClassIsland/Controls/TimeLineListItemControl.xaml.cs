@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;
@@ -13,24 +14,23 @@ namespace ClassIsland.Controls;
 public sealed partial class TimeLineListItemControl : UserControl, INotifyPropertyChanged
 {
     public static readonly DependencyProperty TimePointProperty = DependencyProperty.Register(
-        nameof(TimePoint), typeof(TimeLayoutItem), typeof(TimeLineListItemControl),
-        new PropertyMetadata(default(TimeLayoutItem)));
+        nameof(TimePoint), typeof(TimeLayoutItem), typeof(TimeLineListItemControl), new PropertyMetadata(default(TimeLayoutItem)));
 
     public static readonly DependencyProperty IsAlwaysExpandedProperty = DependencyProperty.Register(
         nameof(IsAlwaysExpanded), typeof(bool), typeof(TimeLineListItemControl), new PropertyMetadata(false));
 
     public bool IsAlwaysExpanded
     {
-        get => (bool)GetValue(IsAlwaysExpandedProperty);
-        set => SetValue(IsAlwaysExpandedProperty, value);
+        get { return (bool)GetValue(IsAlwaysExpandedProperty); }
+        set { SetValue(IsAlwaysExpandedProperty, value); }
     }
 
     private bool _isExpanded = true;
 
     public TimeLayoutItem TimePoint
     {
-        get => (TimeLayoutItem)GetValue(TimePointProperty);
-        set => SetValue(TimePointProperty, value);
+        get { return (TimeLayoutItem)GetValue(TimePointProperty); }
+        set { SetValue(TimePointProperty, value); }
     }
 
     public bool IsExpanded

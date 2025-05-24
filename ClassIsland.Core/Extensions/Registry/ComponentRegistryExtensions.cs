@@ -17,8 +17,7 @@ public static class ComponentRegistryExtensions
     /// <typeparam name="TComponent">组件类型</typeparam>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddComponent<TComponent>(this IServiceCollection services)
-        where TComponent : ComponentBase
+    public static IServiceCollection AddComponent<TComponent>(this IServiceCollection services) where TComponent : ComponentBase
     {
         Register(services, typeof(TComponent));
         return services;
@@ -31,26 +30,30 @@ public static class ComponentRegistryExtensions
     /// <typeparam name="TSettings">组件设置控件类型</typeparam>
     /// <param name="services"></param>
     /// <returns></returns>
-    public static IServiceCollection AddComponent<TComponent, TSettings>(this IServiceCollection services)
-        where TComponent : ComponentBase where TSettings : class
+    public static IServiceCollection AddComponent<TComponent, TSettings>(this IServiceCollection services) where TComponent : ComponentBase where TSettings : class
     {
         Register(services, typeof(TComponent), typeof(TSettings));
         return services;
     }
 
-    private static ComponentInfo Register(IServiceCollection services, Type component, Type? settings = null)
+    private static ComponentInfo Register(IServiceCollection services, Type component, Type? settings = null) 
     {
         if (component.GetCustomAttributes(false).FirstOrDefault(x => x is ComponentInfo) is not ComponentInfo info)
+        {
             throw new ArgumentException($"无法注册组件，因为这个组件 {component.FullName} 没有注册信息。");
+        }
 
         if (ComponentRegistryService.Registered.FirstOrDefault(x => x.Guid == info.Guid) != null)
+        {
             throw new ArgumentException($"此组件id {info.Guid} 已经被占用。");
+        }
 
         services.AddTransient(component);
         info.ComponentType = component;
-        foreach (var migrationSource in component.GetCustomAttributes(false).Where(x => x is MigrateFromAttribute)
-                     .Cast<MigrateFromAttribute>())
+        foreach (var migrationSource in component.GetCustomAttributes(false).Where(x => x is MigrateFromAttribute).Cast<MigrateFromAttribute>())
+        {
             ComponentRegistryService.MigrationPairs[new Guid(migrationSource.Id)] = info.Guid;
+        }
 
         info.IsComponentContainer =
             component.GetCustomAttributes(false).FirstOrDefault(x => x is ContainerComponent) != null;
@@ -59,9 +62,8 @@ public static class ComponentRegistryExtensions
             services.AddTransient(settings);
             info.SettingsType = settings;
         }
-
         ComponentRegistryService.Registered.Add(info);
-        ComponentRegistryService.RegisteredSettings.Add(new ComponentSettings
+        ComponentRegistryService.RegisteredSettings.Add(new ComponentSettings()
         {
             Id = info.Guid.ToString()
         });

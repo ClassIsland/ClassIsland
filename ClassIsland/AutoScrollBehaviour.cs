@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+
 using Microsoft.Xaml.Behaviors;
 
 namespace ClassIsland;
@@ -9,23 +10,26 @@ public class AutoScrollBehavior : Behavior<ListBox>
     protected override void OnAttached()
     {
         base.OnAttached();
-        AssociatedObject.SelectionChanged += new SelectionChangedEventHandler(AssociatedObject_SelectionChanged);
+        this.AssociatedObject.SelectionChanged += new SelectionChangedEventHandler(AssociatedObject_SelectionChanged);
     }
-
-    private void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (sender is ListBox listBox)
+        {
             if (listBox.SelectedItem != null)
-                listBox.Dispatcher.BeginInvoke((Action)delegate
+            {
+                listBox .Dispatcher.BeginInvoke((Action)delegate
                 {
                     listBox.UpdateLayout();
-                    listBox.ScrollIntoView(listBox.SelectedItem); //在这里使用一的方法
+                    listBox.ScrollIntoView(listBox.SelectedItem);//在这里使用一的方法
                 });
+            }
+        }
     }
 
     protected override void OnDetaching()
     {
         base.OnDetaching();
-        AssociatedObject.SelectionChanged -= new SelectionChangedEventHandler(AssociatedObject_SelectionChanged);
+        this.AssociatedObject.SelectionChanged -= new SelectionChangedEventHandler(AssociatedObject_SelectionChanged);
     }
 }

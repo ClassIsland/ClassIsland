@@ -76,11 +76,17 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         set => SetField(ref _currentWorkingStatus, value);
     }
 
-    private SettingsService SettingsService { get; }
+    private SettingsService SettingsService
+    {
+        get;
+    }
 
     private Settings Settings => SettingsService.Settings;
 
-    private ITaskBarIconService TaskBarIconService { get; }
+    private ITaskBarIconService TaskBarIconService
+    {
+        get;
+    }
 
     private ISplashService SplashService { get; }
 
@@ -90,8 +96,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public event EventHandler? UpdateInfoUpdated;
 
-    public UpdateService(SettingsService settingsService, ITaskBarIconService taskBarIconService,
-        IHostApplicationLifetime lifetime,
+    public UpdateService(SettingsService settingsService, ITaskBarIconService taskBarIconService, IHostApplicationLifetime lifetime,
         ISplashService splashService, ILogger<UpdateService> logger)
     {
         SettingsService = settingsService;
@@ -100,13 +105,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         Logger = logger;
 
         var keyStream = Application
-            .GetResourceStream(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc",
-                UriKind.RelativeOrAbsolute))!.Stream;
+            .GetResourceStream(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute))!.Stream;
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
         Index = ConfigureFileHelper.LoadConfig<VersionsIndex>(Path.Combine(UpdateCachePath, "Index.json"));
-        SelectedVersionInfo =
-            ConfigureFileHelper.LoadConfig<VersionInfo>(Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
+        SelectedVersionInfo = ConfigureFileHelper.LoadConfig<VersionInfo>(Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"));
 
 
         SyncSpeedTestResults();
@@ -117,7 +120,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         foreach (var i in Index.Mirrors)
         {
             if (!Settings.SpeedTestResults.ContainsKey(i.Key))
+            {
                 Settings.SpeedTestResults.Add(i.Key, new SpeedTestResult());
+            }
             i.Value.SpeedTestResult = Settings.SpeedTestResults[i.Key];
         }
     }
@@ -160,7 +165,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async Task<bool> AppStartup()
     {
-        if (Settings.AutoInstallUpdateNextStartup
+        if (Settings.AutoInstallUpdateNextStartup 
             && Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded
             && File.Exists(Path.Combine(UpdateTempPath, "update.zip")))
         {
@@ -169,8 +174,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             return await RestartAppToUpdateAsync();
         }
 
-        if (Settings.UpdateMode < 1) return false;
-
+        if (Settings.UpdateMode < 1)
+        {
+            return false;
+        }
+        
         _ = AppStartupBackground();
         return false;
     }
@@ -178,10 +186,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private async Task AppStartupBackground()
     {
         if (Settings.IsAutoSelectUpgradeMirror && DateTime.Now - Settings.LastSpeedTest >= TimeSpan.FromDays(7))
+        {
             await App.GetService<UpdateNodeSpeedTestingService>().RunSpeedTestAsync();
+        }
         await CheckUpdateAsync();
 
-        if (Settings.UpdateMode < 2) return;
+        if (Settings.UpdateMode < 2)
+        {
+            return;
+        }
 
         if (Settings.LastUpdateStatus == UpdateStatus.UpdateAvailable)
         {
@@ -189,9 +202,15 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             Settings.AutoInstallUpdateNextStartup = false;
         }
 
-        if (Settings.UpdateMode < 3) return;
+        if (Settings.UpdateMode < 3)
+        {
+            return;
+        }
 
-        if (Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded) Settings.AutoInstallUpdateNextStartup = true;
+        if (Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+        {
+            Settings.AutoInstallUpdateNextStartup = true;
+        }
     }
 
 
@@ -199,15 +218,16 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     {
         var progressWindow = new UpdateProgressWindow();
         progressWindow.Show();
-        if (!File.Exists(target)) return;
+        if (!File.Exists(target))
+        {
+            return;
+        }
         var s = Environment.ProcessPath!;
         var t = target;
         Console.WriteLine(Path.GetFullPath(t));
         Console.WriteLine(Path.GetDirectoryName(Path.GetFullPath(t)));
         progressWindow.ProgressText = "正在备份应用数据……";
-        await FileFolderService.CreateBackupAsync(
-            filename: $"Update_Backup_{App.AppVersion}_{DateTime.Now:yy-MMM-dd_HH-mm-ss}",
-            rootPath: Path.GetDirectoryName(Path.GetFullPath(t)) ?? ".");
+        await FileFolderService.CreateBackupAsync(filename: $"Update_Backup_{App.AppVersion}_{DateTime.Now:yy-MMM-dd_HH-mm-ss}", rootPath: Path.GetDirectoryName(Path.GetFullPath(t)) ?? ".");
         progressWindow.ProgressText = "正在等待应用退出……";
         await Task.Run(() => NativeWindowHelper.WaitForFile(t));
         progressWindow.ProgressText = "正在覆盖应用文件……";
@@ -223,7 +243,6 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             NativeWindowHelper.WaitForFile(target);
             File.Delete(target);
         }
-
         try
         {
             Directory.Delete(UpdateTempPath, true);
@@ -236,16 +255,14 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     }
 
 
-    public async Task CheckUpdateAsync(bool isForce = false, bool isCancel = false)
+    public async Task CheckUpdateAsync(bool isForce=false, bool isCancel=false)
     {
         var transaction = SentrySdk.StartTransaction("Get Update Info", "appUpdating.getMetadata");
         try
         {
             var spanGetIndex = transaction.StartChild("getIndex");
             CurrentWorkingStatus = UpdateWorkingStatus.CheckingUpdates;
-            Index = await WebRequestHelper.SaveJson<VersionsIndex>(
-                new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"),
-                Path.Combine(UpdateCachePath, "Index.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
+            Index = await WebRequestHelper.SaveJson<VersionsIndex>(new Uri(UpdateMetadataUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "Index.json"), verifySign:true, publicKey:MetadataPublisherPublicKey);
             SyncSpeedTestResults();
             var version = Index.Versions
                 .Where(x => Version.TryParse(x.Version, out _) && x.Channels.Contains(Settings.SelectedUpdateChannelV2))
@@ -260,14 +277,11 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             }
 
             var spanGetDetail = transaction.StartChild("getDetail");
-            SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(
-                new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"),
-                Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true,
-                publicKey: MetadataPublisherPublicKey);
+            SelectedVersionInfo = await WebRequestHelper.SaveJson<VersionInfo>(new Uri(version.VersionInfoUrl + $"?time={DateTime.Now.ToFileTimeUtc()}"), Path.Combine(UpdateCachePath, "SelectedVersionInfo.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             TaskBarIconService.ShowNotification("发现新版本",
                 $"{Assembly.GetExecutingAssembly().GetName().Version} -> {version.Version}\n" +
-                "点击以查看详细信息。", clickedCallback: UpdateNotificationClickedCallback);
+                "点击以查看详细信息。", clickedCallback:UpdateNotificationClickedCallback);
 
             Settings.LastUpdateStatus = UpdateStatus.UpdateAvailable;
             spanGetDetail.Finish(SpanStatus.Ok);
@@ -307,7 +321,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         var spanDeletePreviousFile = transaction.StartChild("deletePreviousFile");
         try
         {
-            if (Directory.Exists(UpdateTempPath)) Directory.Delete(UpdateTempPath, true);
+            if (Directory.Exists(UpdateTempPath))
+            {
+                Directory.Delete(UpdateTempPath, true);
+            }
             spanDeletePreviousFile.Finish(SpanStatus.Ok);
         }
         catch (Exception ex)
@@ -363,9 +380,13 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
                 {
                     //await RemoveDownloadedFiles();
                     if (args.Error != null)
+                    {
                         spanDownload.Finish(args.Error, SpanStatus.InternalError);
+                    }
                     else
+                    {
                         spanDownload.Finish(SpanStatus.InternalError);
+                    }
                     throw new Exception("更新下载失败。", args.Error);
                 }
                 else
@@ -395,7 +416,10 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
 
     public async void StopDownloading()
     {
-        if (Downloader == null) return;
+        if (Downloader == null)
+        {
+            return;
+        }
 
         Logger.LogInformation("应用更新下载停止。");
         IsCanceled = true;
@@ -415,8 +439,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         {
             Logger.LogError(ex, "移除下载临时文件失败。");
         }
-
-        await CheckUpdateAsync(isCancel: true);
+        await CheckUpdateAsync(isCancel:true);
     }
 
     private void DownloaderOnDownloadProgressChanged(object? sender, DownloadProgressChangedEventArgs e)
@@ -427,10 +450,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         TotalSize = e.TotalBytesToReceive;
         DownloadedSize = e.ReceivedBytesSize;
         DownloadSpeed = e.BytesPerSecondSpeed;
-
-        DownloadEtcSeconds =
-            TimeSpanHelper.FromSecondsSafe(
-                DownloadSpeed == 0 ? 0 : (long)((TotalSize - DownloadedSize) / DownloadSpeed));
+        
+        DownloadEtcSeconds = TimeSpanHelper.FromSecondsSafe(DownloadSpeed == 0 ? 0 : (long)((TotalSize - DownloadedSize) / DownloadSpeed));
         Logger.LogInformation("Download progress changed: {}/{} ({}B/s)", TotalSize, DownloadedSize, DownloadSpeed);
     }
 
@@ -439,8 +460,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         Logger.LogInformation("正在展开应用更新包。");
         await Task.Run(() =>
         {
-            ZipFile.ExtractToDirectory(Path.Combine(UpdateTempPath, @"./update.zip"),
-                Path.Combine(UpdateTempPath, @"./extracted"), true);
+            ZipFile.ExtractToDirectory(Path.Combine(UpdateTempPath, @"./update.zip"), Path.Combine(UpdateTempPath, @"./extracted"), true);
         });
     }
 
@@ -458,7 +478,9 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
         str = str.Replace("-", "");
         Logger.LogDebug("更新文件哈希：{}", str);
         if (!string.Equals(str, Settings.UpdateArtifactHash, StringComparison.CurrentCultureIgnoreCase))
+        {
             throw new Exception("更新文件校验失败，可能下载已经损坏。");
+        }
     }
 
     public async Task<bool> RestartAppToUpdateAsync()
@@ -479,7 +501,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             spanExtract.Finish(SpanStatus.Ok);
 
             var spanReboot = transaction.StartChild("reboot");
-            Process.Start(new ProcessStartInfo
+            Process.Start(new ProcessStartInfo()
             {
                 FileName = Path.Combine(UpdateTempPath, @"extracted/ClassIsland.exe"),
                 ArgumentList =
@@ -498,8 +520,7 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
             transaction.GetLastActiveSpan()?.Finish(ex, SpanStatus.InternalError);
             transaction.Finish(ex, SpanStatus.InternalError);
             Logger.LogError(ex, "无法安装更新");
-            TaskBarIconService.ShowNotification("安装更新失败", ex.Message,
-                clickedCallback: UpdateNotificationClickedCallback);
+            TaskBarIconService.ShowNotification("安装更新失败", ex.Message, clickedCallback:UpdateNotificationClickedCallback);
             CurrentWorkingStatus = UpdateWorkingStatus.Idle;
             await RemoveDownloadedFiles();
         }

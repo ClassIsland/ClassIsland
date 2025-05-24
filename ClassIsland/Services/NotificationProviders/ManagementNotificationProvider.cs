@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ClassIsland.Controls.NotificationProviders;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -11,7 +12,9 @@ using ClassIsland.Shared.Interfaces;
 using ClassIsland.Shared.Models.Management;
 using ClassIsland.Shared.Protobuf.Command;
 using ClassIsland.Shared.Protobuf.Enum;
+
 using MaterialDesignThemes.Wpf;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -21,24 +24,26 @@ namespace ClassIsland.Services.NotificationProviders;
 public class ManagementNotificationProvider : NotificationProviderBase
 {
     private INotificationHostService NotificationHostService { get; }
-
+    
     private IManagementService ManagementService { get; }
-
+    
     private ILogger<ManagementNotificationProvider> Logger { get; }
 
-    public ManagementNotificationProvider(INotificationHostService notificationHostService,
+    public ManagementNotificationProvider(INotificationHostService notificationHostService, 
         IManagementService managementService,
         ILogger<ManagementNotificationProvider> logger) : base(false)
     {
         NotificationHostService = notificationHostService;
         ManagementService = managementService;
         Logger = logger;
-
+        
         if (!ManagementService.IsManagementEnabled)
             return;
         NotificationHostService.RegisterNotificationProvider(this);
         if (ManagementService.Connection != null)
+        {
             ManagementService.Connection.CommandReceived += ConnectionOnCommandReceived;
+        }
     }
 
     private void ConnectionOnCommandReceived(object? sender, ClientCommandEventArgs e)
@@ -49,12 +54,10 @@ public class ManagementNotificationProvider : NotificationProviderBase
         if (payload == null)
             return;
         Logger.LogInformation("接受集控消息：{} {}", payload.MessageMask, payload.MessageContent);
-        ShowNotification(new NotificationRequest
+        ShowNotification(new NotificationRequest()
         {
-            MaskContent =
-                NotificationContent.CreateTwoIconsMask(payload.MessageMask, rightIcon: PackIconKind.Announcement),
-            OverlayContent = NotificationContent.CreateRollingTextContent(payload.MessageContent,
-                TimeSpan.FromSeconds(payload.DurationSeconds) * payload.RepeatCounts, payload.RepeatCounts),
+            MaskContent = NotificationContent.CreateTwoIconsMask(payload.MessageMask, rightIcon:PackIconKind.Announcement),
+            OverlayContent = NotificationContent.CreateRollingTextContent(payload.MessageContent, TimeSpan.FromSeconds(payload.DurationSeconds) * payload.RepeatCounts, payload.RepeatCounts),
             IsPriorityOverride = payload.IsEmergency,
             PriorityOverride = -1,
             RequestNotificationSettings =

@@ -26,8 +26,8 @@ public partial class SlideComponent
 
     public int SelectedIndex
     {
-        get => (int)GetValue(SelectedIndexProperty);
-        set => SetValue(SelectedIndexProperty, value);
+        get { return (int)GetValue(SelectedIndexProperty); }
+        set { SetValue(SelectedIndexProperty, value); }
     }
 
     private Queue<int> _randomPlaylist = [];
@@ -55,14 +55,13 @@ public partial class SlideComponent
 
     private void TimerOnTick(object? sender, EventArgs e)
     {
-        if (Settings.Children.Count <= 1) // 没有或只有一个组件时不轮播
+        if (Settings.Children.Count <= 1)    // 没有或只有一个组件时不轮播
         {
             SelectedIndex = 0;
             return;
         }
-
-        var flag = new bool[Settings.Children.Count];
-        var count = 0;
+        bool[] flag = new bool[Settings.Children.Count];
+        int count = 0;
         // flag用于避免重复检查，count用于记录已检查的组件数
         do
         {
@@ -75,29 +74,34 @@ public partial class SlideComponent
                 flag[SelectedIndex] = true;
                 count++;
             }
-
             if (count >= Settings.Children.Count)
-                // 所有组件均不可见，退出循环
+            {   // 所有组件均不可见，退出循环
                 break;
-        } while (flag[SelectedIndex]);
+            }
+        }
+        while (flag[SelectedIndex]);
     }
 
     private void ShowNext()
     {
         switch (Settings.SlideMode)
         {
-            case 0: // 循环
+            case 0:  // 循环
                 SelectedIndex = SelectedIndex + 1 >= Settings.Children.Count ? 0 : SelectedIndex + 1;
                 break;
-            case 1: // 随机
-                if (_randomPlaylist.Count <= 0) CreateRandomPlaylist();
+            case 1:  // 随机
+                if (_randomPlaylist.Count <= 0)
+                {
+                    CreateRandomPlaylist();
+                }
                 SelectedIndex = _randomPlaylist.Dequeue();
                 break;
-            case 2: // 往复
-                var t = SelectedIndex + _playingDirection;
+            case 2:  // 往复
+                int t = SelectedIndex + _playingDirection;
                 if (t < 0 || t >= Settings.Children.Count)
-                    // 碰到边界时反向播放
+                {    // 碰到边界时反向播放
                     _playingDirection = -_playingDirection;
+                }
                 SelectedIndex += _playingDirection;
                 break;
         }
@@ -110,7 +114,7 @@ public partial class SlideComponent
         Settings.Children.CollectionChanged += ChildrenOnCollectionChanged;
         RulesetService.StatusUpdated += RulesetServiceOnStatusUpdated;
         Timer.Start();
-        Timer.Tick -= TimerOnTick; // 防止重复触发
+        Timer.Tick -= TimerOnTick;  // 防止重复触发
         Timer.Tick += TimerOnTick;
     }
 
@@ -135,13 +139,22 @@ public partial class SlideComponent
 
     private void CreateRandomPlaylist()
     {
-        if (Settings.Children.Count <= 0) return;
+        if (Settings.Children.Count <= 0)
+        {
+            return;
+        }
         _randomPlaylist.Clear();
-        var list = new int[Settings.Children.Count];
-        for (var i = 0; i < Settings.Children.Count; i++) list[i] = i;
+        int[] list = new int[Settings.Children.Count];
+        for (int i = 0; i < Settings.Children.Count; i++)
+        {
+            list[i] = i;
+        }
         Random rand = new();
         rand.Shuffle(list);
-        foreach (var i in list) _randomPlaylist.Enqueue(i);
+        foreach (var i in list)
+        {
+            _randomPlaylist.Enqueue(i);
+        }
     }
 
     private void RulesetServiceOnStatusUpdated(object? sender, EventArgs e)
@@ -165,7 +178,6 @@ public partial class SlideComponent
             Timer.Stop();
             return;
         }
-
         Timer.Start();
     }
 }

@@ -14,7 +14,7 @@ namespace ClassIsland.Controls.NotificationProviders;
 /// </summary>
 public partial class WeatherNotificationProviderControl : UserControl, INotifyPropertyChanged
 {
-    private WeatherAlert _alert = new();
+    private WeatherAlert _alert = new WeatherAlert();
     private bool _isOverlay;
 
     public bool IsOverlay
@@ -72,13 +72,13 @@ public partial class WeatherNotificationProviderControl : UserControl, INotifyPr
     private void WeatherNotificationProviderControl_OnLoaded(object sender, RoutedEventArgs e)
     {
         App.GetService<MainWindow>().GetCurrentDpi(out var dpi, out _);
-        var da = new DoubleAnimation
+        var da = new DoubleAnimation()
         {
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
-            Duration = new Duration(Duration)
+            Duration = new Duration(Duration),
         };
-        var storyboard = new Storyboard
+        var storyboard = new Storyboard()
         {
         };
         Storyboard.SetTarget(da, Description);

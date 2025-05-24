@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace ClassIsland.Core.Controls;
-
 /// <summary>
 /// StarRailLoadingControl.xaml 的交互逻辑
 /// </summary>
@@ -35,7 +34,7 @@ public partial class StarRailLoadingControl : UserControl
             {
                 loop.Remove();
                 //loop.Seek(TimeSpan.Zero);
-
+                
                 if (!_isPlayed || loop.GetCurrentState(this) != ClockState.Active)
                 {
                     BeginStoryBoard("OnLoaded");
@@ -52,16 +51,19 @@ public partial class StarRailLoadingControl : UserControl
                 //Debug.WriteLine("Unloaded.");
             }
         }
-
         base.OnPropertyChanged(e);
     }
 
     private void Loop_OnCompleted(object? sender, EventArgs e)
     {
-        if (!IsVisible) return;
+        if (!IsVisible)
+        {
+            return;
+        }
         var sb = (Storyboard)FindResource("Loop");
         sb.Seek(TimeSpan.Zero);
 
         BeginStoryBoard("Loop");
     }
 }
+

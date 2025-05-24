@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+
 using Microsoft.Extensions.Hosting;
 
 namespace ClassIsland.Services;
@@ -7,8 +8,7 @@ namespace ClassIsland.Services;
 public class BootService : IHostedService
 {
     private MainWindow MainWindow { get; }
-
-    public BootService(MainWindow mainWindow,
+    public BootService(MainWindow mainWindow, 
         MiniInfoProviderHostService miniInfoProviderHostService)
     {
         MainWindow = mainWindow;

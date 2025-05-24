@@ -42,19 +42,30 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         SettingsService = settingsService;
         ComponentsService = componentsService;
         InitializeComponent();
-
+        
         DataContext = this;
         var mainHandler = FindResource("MainComponentsSettingsPageDropHandler") as ComponentsSettingsPageDropHandler;
         var childHandler = FindResource("ChildComponentsSettingsPageDropHandler") as ComponentsSettingsPageDropHandler;
-        if (mainHandler is not null) mainHandler.Components = ComponentsService.CurrentComponents;
-        if (FindResource("DataProxy") is BindingProxy proxy) proxy.Data = this;
+        if (mainHandler is not null)
+        {
+            mainHandler.Components = ComponentsService.CurrentComponents;
+        }
+        if (FindResource("DataProxy") is BindingProxy proxy)
+        {
+            proxy.Data = this;
+        }
         if (FindResource("DataProxyDuplicate") is BindingProxy proxyDuplicate)
+        {
             proxyDuplicate.Data = DuplicateComponentCommand;
+        }
     }
 
     private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
-        if (args.PropertyName == nameof(SettingsService.Settings.CurrentComponentConfig)) CloseComponentChildrenView();
+        if (args.PropertyName == nameof(SettingsService.Settings.CurrentComponentConfig))
+        {
+            CloseComponentChildrenView();
+        }
     }
 
     private void CloseComponentChildrenView()
@@ -71,12 +82,18 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         var remove = ViewModel.SelectedComponentSettings;
         if (remove == null)
             return;
-        if (ViewModel.SelectedComponentSettings == ViewModel.SelectedRootComponent) CloseComponentChildrenView();
+        if (ViewModel.SelectedComponentSettings == ViewModel.SelectedRootComponent)
+        {
+            CloseComponentChildrenView();
+        }
         ViewModel.SelectedComponentSettings = null;
         if (ViewModel.SelectedComponentSettingsMain != null)
+        {
             ComponentsService.CurrentComponents.Remove(remove);
-        else if (ViewModel.SelectedComponentSettingsChild != null)
+        } else if (ViewModel.SelectedComponentSettingsChild != null)
+        {
             ViewModel.SelectedComponentContainerChildren.Remove(remove);
+        }
     }
 
     private void ButtonRefresh_OnClick(object sender, RoutedEventArgs e)
@@ -95,7 +112,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
         var path = Path.Combine(ClassIsland.Services.ComponentsService.ComponentSettingsPath,
             ViewModel.CreateProfileName + ".json");
-        if (r == null || File.Exists(path)) return;
+        if (r == null || File.Exists(path))
+        {
+            return;
+        }
         ConfigureFileHelper.SaveConfig(path, ClassIsland.Services.ComponentsService.DefaultComponents);
         ComponentsService.RefreshConfigs();
         SettingsService.Settings.CurrentComponentConfig = ViewModel.CreateProfileName;
@@ -103,7 +123,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
     private void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo
+        Process.Start(new ProcessStartInfo()
         {
             FileName = Path.GetFullPath(ClassIsland.Services.ComponentsService.ComponentSettingsPath),
             UseShellExecute = true
@@ -117,7 +137,6 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
             ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsMain;
             ViewModel.SelectedComponentSettingsChild = null;
         }
-
         UpdateSettingsVisibility();
     }
 
@@ -135,20 +154,17 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         if (ViewModel.SelectedComponentSettings.AssociatedComponentInfo.SettingsType == null)
         {
             ViewModel.IsComponentSettingsVisible = false;
-            ViewModel.SettingsTabControlIndex =
-                ViewModel.SettingsTabControlIndex == 1 ? 0 : ViewModel.SettingsTabControlIndex;
+            ViewModel.SettingsTabControlIndex = ViewModel.SettingsTabControlIndex == 1 ? 0 : ViewModel.SettingsTabControlIndex;
             return;
         }
-
         ViewModel.IsComponentSettingsVisible = true;
-        ViewModel.SettingsTabControlIndex =
-            ViewModel.SettingsTabControlIndex == 0 ? 1 : ViewModel.SettingsTabControlIndex;
+        ViewModel.SettingsTabControlIndex = ViewModel.SettingsTabControlIndex == 0 ? 1 : ViewModel.SettingsTabControlIndex;
     }
 
     private void ButtonOpenRuleset_OnClick(object sender, RoutedEventArgs e)
     {
         if (FindResource("RulesetControl") is not RulesetControl control ||
-            ViewModel.SelectedComponentSettings == null)
+            ViewModel.SelectedComponentSettings == null) 
             return;
         control.Ruleset = ViewModel.SelectedComponentSettings.HidingRules;
         OpenDrawer("RulesetControl");
@@ -159,21 +175,25 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         SetCurrentSelectedComponentContainer(ViewModel.SelectedComponentSettings);
     }
 
-    private void SetCurrentSelectedComponentContainer(ComponentSettings? componentSettings, bool isBack = false)
+    private void SetCurrentSelectedComponentContainer(ComponentSettings? componentSettings, bool isBack=false)
     {
-        if (componentSettings?.AssociatedComponentInfo?.IsComponentContainer != true) return;
+        if (componentSettings?.AssociatedComponentInfo?.IsComponentContainer != true)
+        {
+            return;
+        }
 
-        if (componentSettings.Settings is not IComponentContainerSettings settings) return;
+        if (componentSettings.Settings is not IComponentContainerSettings settings)
+        {
+            return;
+        }
         if (componentSettings == ViewModel.SelectedComponentSettingsMain)
         {
             ViewModel.ChildrenComponentSettingsNavigationStack.Clear();
             ViewModel.SelectedRootComponent = componentSettings;
-        }
-        else if (ViewModel.SelectedContainerComponent != null && !isBack)
+        } else if (ViewModel.SelectedContainerComponent != null && !isBack)
         {
             ViewModel.ChildrenComponentSettingsNavigationStack.Push(ViewModel.SelectedContainerComponent);
         }
-
         ViewModel.SelectedComponentContainerChildren = settings.Children;
         ViewModel.SelectedContainerComponent = componentSettings;
         ViewModel.IsComponentChildrenViewOpen = true;
@@ -187,7 +207,6 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
             ViewModel.SelectedComponentSettings = ViewModel.SelectedComponentSettingsChild;
             ViewModel.SelectedComponentSettingsMain = null;
         }
-
         UpdateSettingsVisibility();
     }
 
@@ -198,7 +217,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
     private void ButtonNavigateUp_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!ViewModel.ChildrenComponentSettingsNavigationStack.TryPop(out var settings)) return;
+        if (!ViewModel.ChildrenComponentSettingsNavigationStack.TryPop(out var settings))
+        {
+            return;
+        }
         SetCurrentSelectedComponentContainer(settings, true);
     }
 
@@ -207,9 +229,8 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
         // TODO: 如果拖入的组件是当前组件的父组件，要拒绝拖入到子容器中。
         if (dropInfo.Data is not ComponentInfo && dropInfo.Data is not ComponentSettings)
             return;
-        if (dropInfo.Data is ComponentSettings settings && settings == ViewModel.SelectedRootComponent
-                                                        && Equals(dropInfo.TargetCollection,
-                                                            ViewModel.SelectedComponentContainerChildren))
+        if (dropInfo.Data is ComponentSettings settings && settings == ViewModel.SelectedRootComponent 
+            && Equals(dropInfo.TargetCollection, ViewModel.SelectedComponentContainerChildren))
             return;
         dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
         dropInfo.Effects = dropInfo.Data switch
@@ -222,11 +243,14 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
     public new void Drop(IDropInfo dropInfo)
     {
-        if (dropInfo.TargetCollection is not ObservableCollection<ComponentSettings> components) return;
+        if (dropInfo.TargetCollection is not ObservableCollection<ComponentSettings> components)
+        {
+            return;
+        }
         switch (dropInfo.Data)
         {
             case ComponentInfo info:
-                var componentSettings = new ComponentSettings
+                var componentSettings = new ComponentSettings()
                 {
                     Id = info.Guid.ToString()
                 };
@@ -236,9 +260,7 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
                 break;
             case ComponentSettings settings:
                 var oldIndex = components.IndexOf(settings);
-                var newIndex = oldIndex < dropInfo.UnfilteredInsertIndex
-                    ? dropInfo.UnfilteredInsertIndex - 1
-                    : dropInfo.UnfilteredInsertIndex;
+                var newIndex = oldIndex < dropInfo.UnfilteredInsertIndex ? dropInfo.UnfilteredInsertIndex - 1 : dropInfo.UnfilteredInsertIndex;
                 var finalIndex = newIndex >= components.Count ? components.Count - 1 : newIndex;
                 if (!components.Contains(settings))
                 {
@@ -247,15 +269,17 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
                     components.Insert(dropInfo.UnfilteredInsertIndex, settings);
                     break;
                 }
-
-                if (oldIndex != finalIndex) components.Move(oldIndex, finalIndex);
+                if (oldIndex != finalIndex)
+                {
+                    components.Move(oldIndex, finalIndex);
+                }
                 break;
         }
     }
 
     private void ButtonMoveToPrevLine_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedComponentSettings != null)
+        if (ViewModel.SelectedComponentSettings != null) 
             ViewModel.SelectedComponentSettings.RelativeLineNumber--;
     }
 
@@ -277,7 +301,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
 
     private void ContainerComponentsSource_OnFilter(object sender, FilterEventArgs e)
     {
-        if (e.Item is not ComponentInfo info) return;
+        if (e.Item is not ComponentInfo info)
+        {
+            return;
+        }
 
         e.Accepted = info.IsComponentContainer;
     }
@@ -285,7 +312,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
     [RelayCommand]
     private void OpenContextMenu(FrameworkElement element)
     {
-        if (element.ContextMenu == null) return;
+        if (element.ContextMenu == null)
+        {
+            return;
+        }
 
         //element.ContextMenu.DataContext = this;
         element.ContextMenu.IsOpen = true;
@@ -294,7 +324,10 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
     [RelayCommand]
     private void CreateContainerComponent(ComponentInfo container)
     {
-        if (ViewModel.SelectedComponentSettings == null) return;
+        if (ViewModel.SelectedComponentSettings == null)
+        {
+            return;
+        }
 
         var selected = ViewModel.SelectedComponentSettings;
         var list = ComponentsService.CurrentComponents.Contains(selected)
@@ -302,21 +335,30 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
             : ViewModel.SelectedComponentContainerChildren;
         var index = list.IndexOf(ViewModel.SelectedComponentSettings);
 
-        if (index == -1) return;
+        if (index == -1)
+        {
+            return;
+        }
 
         index = Math.Min(list.Count - 1, index);
-        var newComp = new ComponentSettings
+        var newComp = new ComponentSettings()
         {
-            Id = container.Guid.ToString()
+            Id = container.Guid.ToString(),
         };
         if (container.ComponentType?.BaseType != null)
+        {
             newComp.Settings =
                 Services.ComponentsService.LoadComponentSettings(newComp, container.ComponentType.BaseType);
+        }
         list.Insert(index, newComp);
         if (selected == ViewModel.SelectedComponentSettingsMain)
+        {
             ViewModel.SelectedComponentSettingsMain = newComp;
+        }
         else
+        {
             ViewModel.SelectedComponentSettingsChild = newComp;
+        }
         SetCurrentSelectedComponentContainer(newComp);
         list.Remove(selected);
         newComp.Children?.Add(selected);
@@ -330,20 +372,30 @@ public partial class ComponentsSettingsPage : SettingsPageBase, IDropTarget
             ? ComponentsService.CurrentComponents
             : ViewModel.SelectedComponentContainerChildren;
         var index = list.IndexOf(settings);
-        if (index == -1) return;
+        if (index == -1)
+        {
+            return;
+        }
         index = Math.Min(list.Count - 1, index);
 
         var newSettings = ConfigureFileHelper.CopyObject(settings);
         list.Insert(index, newSettings);
         if (settings == ViewModel.SelectedComponentSettingsMain)
+        {
             ViewModel.SelectedComponentSettingsMain = newSettings;
+        }
         else
+        {
             ViewModel.SelectedComponentSettingsChild = newSettings;
+        }
         ViewModel.SelectedComponentSettings = newSettings;
     }
 
     private void MenuItemDuplicateComponent_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedComponentSettings != null) DuplicateComponent(ViewModel.SelectedComponentSettings);
+        if (ViewModel.SelectedComponentSettings != null)
+        {
+            DuplicateComponent(ViewModel.SelectedComponentSettings);
+        }
     }
 }

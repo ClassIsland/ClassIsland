@@ -13,7 +13,11 @@ namespace ClassIsland.Views;
 /// </summary>
 public partial class CrashWindow : MyWindow
 {
-    public string? CrashInfo { get; set; } = "";
+    public string? CrashInfo
+    {
+        get;
+        set;
+    } = "";
 
     public bool IsCritical { get; set; } = false;
 
@@ -33,9 +37,13 @@ public partial class CrashWindow : MyWindow
     private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
     {
         if (IsCritical)
+        {
             Environment.Exit(1);
+        }
         else
+        {
             Application.Current.Shutdown();
+        }
     }
 
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
@@ -54,9 +62,9 @@ public partial class CrashWindow : MyWindow
     {
         var uri = new UriBuilder(
             $"https://github.com/ClassIsland/ClassIsland/issues/new");
-        uri.Query =
+        uri.Query = 
             $"template=BugReport.yml&stacktrace={HttpUtility.UrlEncode(CrashInfo)}&app_version={HttpUtility.UrlEncode(App.AppVersionLong)}&os_version={HttpUtility.UrlEncode(Environment.OSVersion.Version.ToString())}";
-        Process.Start(new ProcessStartInfo
+        Process.Start(new ProcessStartInfo()
         {
             FileName = uri.ToString(),
             UseShellExecute = true
@@ -65,6 +73,9 @@ public partial class CrashWindow : MyWindow
 
     private void ButtonDebug_OnClick(object sender, RoutedEventArgs e)
     {
-        if (Debugger.Launch()) Close();
+        if (Debugger.Launch())
+        {
+            Close();
+        }
     }
 }

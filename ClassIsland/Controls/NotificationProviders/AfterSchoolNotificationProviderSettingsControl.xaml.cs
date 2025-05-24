@@ -21,8 +21,6 @@ public partial class AfterSchoolNotificationProviderSettingsControl
 
     private void ButtonShowAttachedSettingsInfo_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(
-            IAttachedSettingsHostService.RegisteredControls.First(x =>
-                x.Guid == new Guid("8FBC3A26-6D20-44DD-B895-B9411E3DDC51"))));
+        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("8FBC3A26-6D20-44DD-B895-B9411E3DDC51"))));
     }
 }

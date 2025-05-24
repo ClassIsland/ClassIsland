@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
-using CommunityToolkit.Mvvm.ComponentModel;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 namespace ClassIsland.Shared.Models.Action;
 
 /// <summary>
@@ -9,7 +9,6 @@ namespace ClassIsland.Shared.Models.Action;
 public class Action : ObservableRecipient
 {
     private string _id = "";
-
     /// <summary>
     /// 行动 ID。
     /// </summary>
@@ -26,7 +25,6 @@ public class Action : ObservableRecipient
     }
 
     private object? _settings;
-
     /// <summary>
     /// 行动设置。
     /// </summary>
@@ -42,7 +40,6 @@ public class Action : ObservableRecipient
     }
 
     private Exception? _exception;
-
     /// <summary>
     /// 行动错误。
     /// </summary>
@@ -59,7 +56,6 @@ public class Action : ObservableRecipient
     }
 
     private bool _isWorking = false;
-
     /// <summary>
     /// 行动正在运行。
     /// </summary>

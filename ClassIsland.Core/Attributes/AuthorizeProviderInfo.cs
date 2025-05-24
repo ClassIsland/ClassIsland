@@ -2,6 +2,7 @@
 
 namespace ClassIsland.Core.Attributes;
 
+
 /// <summary>
 /// 代表认证提供方信息。
 /// </summary>

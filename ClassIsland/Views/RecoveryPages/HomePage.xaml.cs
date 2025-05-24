@@ -29,7 +29,10 @@ public partial class HomePage : Page
         var replaced = path!.Replace(".dll", ".exe");
         var startInfo = new ProcessStartInfo(replaced);
         startInfo.ArgumentList.Add("-m");
-        foreach (var arg in args) startInfo.ArgumentList.Add(arg);
+        foreach (var arg in args)
+        {
+            startInfo.ArgumentList.Add(arg);
+        }
         Process.Start(startInfo);
     }
 
@@ -40,7 +43,7 @@ public partial class HomePage : Page
 
     private void ButtonContinueSafe_OnClick(object sender, RoutedEventArgs e)
     {
-        ContinueWithArguments(["--safe"]);
+        ContinueWithArguments([ "--safe" ]);
     }
 
     private void ButtonContinueDiagnostic_OnClick(object sender, RoutedEventArgs e)
@@ -50,7 +53,7 @@ public partial class HomePage : Page
 
     private void ButtonOpenLogFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo
+        Process.Start(new ProcessStartInfo()
         {
             FileName = Path.GetFullPath(App.AppLogFolderPath) ?? "",
             UseShellExecute = true
@@ -66,12 +69,21 @@ public partial class HomePage : Page
             .AddCancelAction()
             .AddConfirmAction()
             .ShowDialog();
-        if (result != 1) return;
+        if (result != 1)
+        {
+            return;
+        }
 
         try
         {
-            if (Directory.Exists(App.AppTempFolderPath)) Directory.Delete(App.AppTempFolderPath, true);
-            if (Directory.Exists(App.AppCacheFolderPath)) Directory.Delete(App.AppCacheFolderPath, true);
+            if (Directory.Exists(App.AppTempFolderPath))
+            {
+                Directory.Delete(App.AppTempFolderPath, true);
+            }
+            if (Directory.Exists(App.AppCacheFolderPath))
+            {
+                Directory.Delete(App.AppCacheFolderPath, true);
+            }
             CommonDialog.ShowInfo($"操作成功完成。");
         }
         catch (Exception exception)
@@ -90,14 +102,21 @@ public partial class HomePage : Page
             .AddConfirmAction()
             .HasInput(true)
             .ShowDialog(out var confirmation);
-        if (result != 1 || confirmation != "我确认重置应用设置") return;
+        if (result != 1 || confirmation != "我确认重置应用设置")
+        {
+            return;
+        }
 
         try
         {
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json"));
+            }
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json.bak")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json.bak"));
+            }
             CommonDialog.ShowInfo($"操作成功完成。");
         }
         catch (Exception exception)
@@ -111,22 +130,31 @@ public partial class HomePage : Page
         var result = new CommonDialogBuilder()
             .SetCaption("重置全部配置")
             .SetPackIcon(PackIconKind.FileRemoveOutline)
-            .SetContent(
-                "此操作将重置应用的所有配置，包括应用设置、组件配置、自动化配置、插件设置等，并且无法恢复，不影响档案配置。您确定要重置全部配置吗？\n\n如果您确实希望重置全部配置，请在下方文本框输入 ⌈我确认重置全部配置⌋。")
+            .SetContent("此操作将重置应用的所有配置，包括应用设置、组件配置、自动化配置、插件设置等，并且无法恢复，不影响档案配置。您确定要重置全部配置吗？\n\n如果您确实希望重置全部配置，请在下方文本框输入 ⌈我确认重置全部配置⌋。")
             .AddCancelAction()
             .AddConfirmAction()
             .HasInput(true)
             .ShowDialog(out var confirmation);
-        if (result != 1 || confirmation != "我确认重置全部配置") return;
+        if (result != 1 || confirmation != "我确认重置全部配置")
+        {
+            return;
+        }
 
         try
         {
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json"));
+            }
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json.bak")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json.bak"));
-            if (Directory.Exists(App.AppConfigPath)) Directory.Delete(App.AppConfigPath, true);
-
+            }
+            if (Directory.Exists(App.AppConfigPath))
+            {
+                Directory.Delete(App.AppConfigPath, true);
+            }
+            
             CommonDialog.ShowInfo($"操作成功完成。");
         }
         catch (Exception exception)
@@ -140,24 +168,38 @@ public partial class HomePage : Page
         var result = new CommonDialogBuilder()
             .SetCaption("重置全部信息")
             .SetPackIcon(PackIconKind.Remove)
-            .SetContent(
-                "此操作将重置应用的所有信息，恢复到安装前的状态，包括档案配置、应用设置、组件配置、自动化配置、插件设置、已安装的插件等，并且无法恢复。您确定要重置全部信息吗？\n\n如果您确实希望重置全部信息，请在下方文本框输入 ⌈我确认重置包括课表配置在内的全部信息⌋。")
+            .SetContent("此操作将重置应用的所有信息，恢复到安装前的状态，包括档案配置、应用设置、组件配置、自动化配置、插件设置、已安装的插件等，并且无法恢复。您确定要重置全部信息吗？\n\n如果您确实希望重置全部信息，请在下方文本框输入 ⌈我确认重置包括课表配置在内的全部信息⌋。")
             .AddCancelAction()
             .AddConfirmAction()
             .HasInput(true)
             .ShowDialog(out var confirmation);
-        if (result != 1 || confirmation != "我确认重置包括课表配置在内的全部信息") return;
+        if (result != 1 || confirmation != "我确认重置包括课表配置在内的全部信息")
+        {
+            return;
+        }
 
         try
         {
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json"));
+            }
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json.bak")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json.bak"));
-            if (Directory.Exists(App.AppConfigPath)) Directory.Delete(App.AppConfigPath, true);
+            }
+            if (Directory.Exists(App.AppConfigPath))
+            {
+                Directory.Delete(App.AppConfigPath, true);
+            }
             if (Directory.Exists(Path.Combine(App.AppRootFolderPath, "Profiles")))
+            {
                 Directory.Delete(Path.Combine(App.AppRootFolderPath, "Profiles"), true);
-            if (Directory.Exists(PluginService.PluginsRootPath)) Directory.Delete(PluginService.PluginsRootPath, true);
+            }
+            if (Directory.Exists(PluginService.PluginsRootPath))
+            {
+                Directory.Delete(PluginService.PluginsRootPath, true);
+            }
 
             CommonDialog.ShowInfo($"操作成功完成。");
         }

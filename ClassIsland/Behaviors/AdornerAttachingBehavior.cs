@@ -9,30 +9,31 @@ namespace ClassIsland.Behaviors;
 public class AdornerAttachingBehavior : Behavior<UIElement>
 {
     public static readonly DependencyProperty AdornerTemplateProperty = DependencyProperty.Register(
-        nameof(AdornerTemplate), typeof(ControlTemplate), typeof(AdornerAttachingBehavior),
-        new PropertyMetadata(default(ControlTemplate)));
+        nameof(AdornerTemplate), typeof(ControlTemplate), typeof(AdornerAttachingBehavior), new PropertyMetadata(default(ControlTemplate)));
 
     public ControlTemplate AdornerTemplate
     {
-        get => (ControlTemplate)GetValue(AdornerTemplateProperty);
-        set => SetValue(AdornerTemplateProperty, value);
+        get { return (ControlTemplate)GetValue(AdornerTemplateProperty); }
+        set { SetValue(AdornerTemplateProperty, value); }
     }
 
     public static readonly DependencyProperty AdornerDataContextProperty = DependencyProperty.Register(
-        nameof(AdornerDataContext), typeof(object), typeof(AdornerAttachingBehavior),
-        new PropertyMetadata(default(object?)));
+        nameof(AdornerDataContext), typeof(object), typeof(AdornerAttachingBehavior), new PropertyMetadata(default(object?)));
 
     public object? AdornerDataContext
     {
-        get => (object?)GetValue(AdornerDataContextProperty);
-        set => SetValue(AdornerDataContextProperty, value);
+        get { return (object?)GetValue(AdornerDataContextProperty); }
+        set { SetValue(AdornerDataContextProperty, value); }
     }
 
     private Adorner? _adorner;
 
     protected override void OnAttached()
     {
-        if (AssociatedObject != null) AddAdorner();
+        if (AssociatedObject != null)
+        {
+            AddAdorner();
+        }
         base.OnAttached();
     }
 
@@ -42,10 +43,14 @@ public class AdornerAttachingBehavior : Behavior<UIElement>
         base.OnDetaching();
     }
 
+    
 
     private void RemoveAdorner()
     {
-        if (AssociatedObject == null) return;
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         if (_adorner != null)
         {
             var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
@@ -56,14 +61,20 @@ public class AdornerAttachingBehavior : Behavior<UIElement>
 
     private void AddAdorner()
     {
-        if (AssociatedObject == null) return;
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-        if (_adorner != null) return;
+        if (_adorner != null)
+        {
+            return;
+        }
         _adorner = new TimeLineListItemAdorner(AssociatedObject, AdornerTemplate)
         {
             DataContext = AdornerDataContext
         };
-
+        
         layer?.Add(_adorner);
     }
 }

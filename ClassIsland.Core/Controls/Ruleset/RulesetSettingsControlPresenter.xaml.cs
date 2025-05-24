@@ -12,29 +12,33 @@ namespace ClassIsland.Core.Controls.Ruleset;
 public partial class RulesetSettingsControlPresenter : UserControl
 {
     public static readonly DependencyProperty RuleIdProperty = DependencyProperty.Register(
-        nameof(RuleId), typeof(string), typeof(RulesetSettingsControlPresenter), new PropertyMetadata(default(string),
-            (o, args) =>
+        nameof(RuleId), typeof(string), typeof(RulesetSettingsControlPresenter), new PropertyMetadata(default(string), (o, args) =>
+        {
+            if (o is RulesetSettingsControlPresenter control)
             {
-                if (o is RulesetSettingsControlPresenter control) control.UpdateContent();
-            }));
+                control.UpdateContent();
+            }
+        }));
 
     public string RuleId
     {
-        get => (string)GetValue(RuleIdProperty);
-        set => SetValue(RuleIdProperty, value);
+        get { return (string)GetValue(RuleIdProperty); }
+        set { SetValue(RuleIdProperty, value); }
     }
 
     public static readonly DependencyProperty RuleProperty = DependencyProperty.Register(
-        nameof(Rule), typeof(Rule), typeof(RulesetSettingsControlPresenter), new PropertyMetadata(default(Rule),
-            (o, args) =>
+        nameof(Rule), typeof(Rule), typeof(RulesetSettingsControlPresenter), new PropertyMetadata(default(Rule), (o, args) =>
+        {
+            if (o is RulesetSettingsControlPresenter control)
             {
-                if (o is RulesetSettingsControlPresenter control) control.UpdateContent();
-            }));
+                control.UpdateContent();
+            }
+        }));
 
     public Rule? Rule
     {
-        get => (Rule)GetValue(RuleProperty);
-        set => SetValue(RuleProperty, value);
+        get { return (Rule)GetValue(RuleProperty); }
+        set { SetValue(RuleProperty, value); }
     }
 
     /// <inheritdoc />
@@ -45,8 +49,14 @@ public partial class RulesetSettingsControlPresenter : UserControl
 
     private void UpdateContent()
     {
-        if (Rule == null) return;
-        if (!IRulesetService.Rules.TryGetValue(RuleId, out var info)) return;
+        if (Rule == null)
+        {
+            return;
+        }
+        if (!IRulesetService.Rules.TryGetValue(RuleId, out var info))
+        {
+            return;
+        }
 
         var ruleSettings = Rule.Settings;
         RootContentPresenter.Content = RuleSettingsControlBase.GetInstance(info, ref ruleSettings);

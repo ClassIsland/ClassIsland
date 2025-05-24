@@ -14,8 +14,8 @@ public partial class WizardOptionControl : UserControl
 
     public string OptionHeader
     {
-        get => (string)GetValue(OptionHeaderProperty);
-        set => SetValue(OptionHeaderProperty, value);
+        get { return (string)GetValue(OptionHeaderProperty); }
+        set { SetValue(OptionHeaderProperty, value); }
     }
 
     public static readonly DependencyProperty OptionContentProperty = DependencyProperty.Register(
@@ -23,8 +23,8 @@ public partial class WizardOptionControl : UserControl
 
     public string OptionContent
     {
-        get => (string)GetValue(OptionContentProperty);
-        set => SetValue(OptionContentProperty, value);
+        get { return (string)GetValue(OptionContentProperty); }
+        set { SetValue(OptionContentProperty, value); }
     }
 
     public static readonly DependencyProperty InvokedCommandProperty = DependencyProperty.Register(
@@ -32,8 +32,8 @@ public partial class WizardOptionControl : UserControl
 
     public ICommand InvokedCommand
     {
-        get => (ICommand)GetValue(InvokedCommandProperty);
-        set => SetValue(InvokedCommandProperty, value);
+        get { return (ICommand)GetValue(InvokedCommandProperty); }
+        set { SetValue(InvokedCommandProperty, value); }
     }
 
     public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(
@@ -41,18 +41,17 @@ public partial class WizardOptionControl : UserControl
 
     public bool IsSelected
     {
-        get => (bool)GetValue(IsSelectedProperty);
-        set => SetValue(IsSelectedProperty, value);
+        get { return (bool)GetValue(IsSelectedProperty); }
+        set { SetValue(IsSelectedProperty, value); }
     }
 
     public static readonly DependencyProperty InvokeCommandParameterProperty = DependencyProperty.Register(
-        nameof(InvokeCommandParameter), typeof(object), typeof(WizardOptionControl),
-        new PropertyMetadata(default(object)));
+        nameof(InvokeCommandParameter), typeof(object), typeof(WizardOptionControl), new PropertyMetadata(default(object)));
 
     public object InvokeCommandParameter
     {
-        get => (object)GetValue(InvokeCommandParameterProperty);
-        set => SetValue(InvokeCommandParameterProperty, value);
+        get { return (object)GetValue(InvokeCommandParameterProperty); }
+        set { SetValue(InvokeCommandParameterProperty, value); }
     }
 
 

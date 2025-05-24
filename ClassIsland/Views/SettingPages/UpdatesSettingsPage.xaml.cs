@@ -32,8 +32,8 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     public UpdateSettingsViewModel ViewModel { get; } = new();
 
     public static readonly DependencyProperty IsEasterEggTriggeredProperty =
-        DependencyProperty.Register(nameof(IsEasterEggTriggered), typeof(bool), typeof(UpdatesSettingsPage),
-            new PropertyMetadata(false));
+    DependencyProperty.Register(nameof(IsEasterEggTriggered), typeof(bool), typeof(UpdatesSettingsPage),
+        new PropertyMetadata(false));
 
     public bool IsEasterEggTriggered
     {
@@ -41,8 +41,7 @@ public partial class UpdatesSettingsPage : SettingsPageBase
         set => SetValue(IsEasterEggTriggeredProperty, value);
     }
 
-    public UpdatesSettingsPage(SettingsService settingsService, UpdateService updateService,
-        IManagementService managementService)
+    public UpdatesSettingsPage(SettingsService settingsService, UpdateService updateService, IManagementService managementService)
     {
         DataContext = this;
         SettingsService = settingsService;
@@ -73,14 +72,15 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
     private void UpdateCache()
     {
-        ViewModel.CurrentMarkdownDocument =
-            MarkdownConvertHelper.ConvertMarkdown(UpdateService.SelectedVersionInfo.ChangeLogs);
+        ViewModel.CurrentMarkdownDocument = MarkdownConvertHelper.ConvertMarkdown(UpdateService.SelectedVersionInfo.ChangeLogs);
     }
 
     private void RefreshDescription()
     {
-        if (UpdateService.Index.Channels.TryGetValue(SettingsService.Settings.SelectedUpdateChannelV2,
-                out var channelInfo)) ViewModel.SelectedChannelModel = channelInfo;
+        if (UpdateService.Index.Channels.TryGetValue(SettingsService.Settings.SelectedUpdateChannelV2, out var channelInfo))
+        {
+            ViewModel.SelectedChannelModel = channelInfo;
+        }
     }
 
     private void UpdateErrorMessage_OnActionClick(object sender, RoutedEventArgs e)
@@ -108,10 +108,14 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     private void ButtonCancelUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         if (UpdateService.CurrentWorkingStatus == UpdateWorkingStatus.DownloadingUpdates)
+        {
             UpdateService.StopDownloading();
+        }
 
         if (SettingsService.Settings.LastUpdateStatus == UpdateStatus.UpdateDownloaded)
+        {
             _ = UpdateService.RemoveDownloadedFiles();
+        }
     }
 
     private void ButtonDebugResetUpdate_OnClick(object sender, RoutedEventArgs e)
@@ -137,10 +141,13 @@ public partial class UpdatesSettingsPage : SettingsPageBase
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = MouseWheelEvent;
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
             eventArg.Source = sender;
             var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null) parent.RaiseEvent(eventArg);
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
         }
     }
 
@@ -148,7 +155,10 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     {
         var stream = Application
             .GetResourceStream(new Uri("/Assets/Documents/ChangeLog.md", UriKind.RelativeOrAbsolute))?.Stream;
-        if (stream == null) return;
+        if (stream == null)
+        {
+            return;
+        }
 
         SentrySdk.Metrics.Increment("views.update.changelog.open");
         ViewModel.ChangeLogs = MarkdownConvertHelper.ConvertMarkdown(await new StreamReader(stream).ReadToEndAsync());
@@ -168,15 +178,17 @@ public partial class UpdatesSettingsPage : SettingsPageBase
     private async void ButtonForceUpdate_OnClick(object sender, RoutedEventArgs e)
     {
         CloseDrawer();
-        await UpdateService.CheckUpdateAsync(true);
+        await UpdateService.CheckUpdateAsync(isForce: true);
     }
 
     private void IconUpdateStatus_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
     {
-        if (ManagementService.Policy.DisableEasterEggs) return;
+        if (ManagementService.Policy.DisableEasterEggs)
+        {
+            return;
+        }
         IsEasterEggTriggered = true;
     }
-
     private void UpdateServiceOnUpdateInfoUpdated(object? sender, EventArgs e)
     {
         UpdateCache();

@@ -9,12 +9,10 @@ public enum NotificationModes
     /// 禁用
     /// </summary>
     Disabled,
-
     /// <summary>
     /// 强制启用
     /// </summary>
     EnabledForce,
-
     /// <summary>
     /// 默认
     /// </summary>

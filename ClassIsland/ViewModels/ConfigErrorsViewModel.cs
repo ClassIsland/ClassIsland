@@ -4,4 +4,5 @@ namespace ClassIsland.ViewModels;
 
 public partial class ConfigErrorsViewModel : ObservableObject
 {
+    
 }

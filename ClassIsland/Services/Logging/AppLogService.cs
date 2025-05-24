@@ -17,7 +17,10 @@ public class AppLogService : IAppLogService
         _ = dispatcher?.InvokeAsync(() =>
         {
             Logs.Add(log);
-            while (Logs.Count > MaxLogEntries) Logs.RemoveAt(0);
+            while (Logs.Count > MaxLogEntries)
+            {
+                Logs.RemoveAt(0);
+            }
         });
     }
 }

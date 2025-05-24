@@ -2,7 +2,7 @@
 
 namespace ClassIsland.Models.Plugins;
 
-public record class DependencyNode(PluginInfo Plugin)
+public record class DependencyNode(PluginInfo Plugin) 
 {
     public PluginInfo Plugin { get; set; } = Plugin;
 

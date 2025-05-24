@@ -20,20 +20,18 @@ public class RulesetService : IRulesetService
         NotifyStatusChanged();
     }
 
+    
 
     public event EventHandler? ForegroundWindowChanged;
 
     public event EventHandler? StatusUpdated;
 
-    private int BoolToRuleObjectState(bool? v)
+    private int BoolToRuleObjectState(bool? v) => v switch
     {
-        return v switch
-        {
-            true => 2,
-            false => 1,
-            null => 0
-        };
-    }
+        true => 2,
+        false => 1,
+        null => 0
+    };
 
     private bool? IsRuleSatisfied(Rule i)
     {
@@ -51,9 +49,11 @@ public class RulesetService : IRulesetService
         if (settingsType != null)
         {
             settings = i.Settings ?? Activator.CreateInstance(settingsType);
-            if (settings is JsonElement json) settings = json.Deserialize(settingsType);
+            if (settings is JsonElement json)
+            {
+                settings = json.Deserialize(settingsType);
+            }
         }
-
         if (rule.Handle != null)
         {
             return rule.Handle(settings);
@@ -68,18 +68,21 @@ public class RulesetService : IRulesetService
     private bool? IsRulesetGroupSatisfied(RuleGroup ruleset)
     {
         var rulesetSatisfied = ruleset.Mode == RulesetLogicalMode.And;
-        if (ruleset.Rules.Where(r => r.Id != "").ToList().Count <= 0) return null;
+        if (ruleset.Rules.Where(r => r.Id != "").ToList().Count <= 0)
+        {
+            return null;
+        }
 
         foreach (var i in ruleset.Rules)
         {
-            var res = IsRuleSatisfied(i);
+            bool? res = IsRuleSatisfied(i);
             if (res == null)
             {
                 i.State = BoolToRuleObjectState(res);
                 continue;
             }
 
-            var result = (bool)res;
+            bool result = (bool)res;
             result ^= i.IsReversed;
             i.State = BoolToRuleObjectState(result);
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
@@ -87,14 +90,12 @@ public class RulesetService : IRulesetService
                 rulesetSatisfied = false;
                 break;
             }
-
             if (result && ruleset.Mode == RulesetLogicalMode.Or)
             {
                 rulesetSatisfied = true;
                 break;
             }
         }
-
         rulesetSatisfied ^= ruleset.IsReversed;
         return rulesetSatisfied;
     }
@@ -107,34 +108,33 @@ public class RulesetService : IRulesetService
             ruleset.State = BoolToRuleObjectState(false);
             return false;
         }
-
         foreach (var i in ruleset.Groups)
         {
             i.State = 0;
-            foreach (var j in i.Rules) j.State = 0;
+            foreach (var j in i.Rules)
+            {
+                j.State = 0;
+            }
         }
-
         foreach (var group in ruleset.Groups.Where(x => x.IsEnabled))
         {
-            var res = IsRulesetGroupSatisfied(group);
+            bool? res = IsRulesetGroupSatisfied(group);
             group.State = BoolToRuleObjectState(res);
             if (res == null)
                 continue;
 
-            var result = (bool)res;
+            bool result = (bool)res;
             if (!result && ruleset.Mode == RulesetLogicalMode.And)
             {
                 isSatisfied = false;
                 break;
             }
-
             if (result && ruleset.Mode == RulesetLogicalMode.Or)
             {
                 isSatisfied = true;
                 break;
             }
         }
-
         isSatisfied ^= ruleset.IsReversed;
         ruleset.State = BoolToRuleObjectState(isSatisfied);
         return isSatisfied;
@@ -143,7 +143,9 @@ public class RulesetService : IRulesetService
     public void RegisterRuleHandler(string id, RuleRegistryInfo.HandleDelegate handler)
     {
         if (!IRulesetService.Rules.TryGetValue(id, out var ruleRegistryInfo))
+        {
             throw new KeyNotFoundException($"找不到规则 {id}。");
+        }
 
         ruleRegistryInfo.Handle += handler;
     }

@@ -13,15 +13,14 @@ namespace ClassIsland.Controls;
 public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyChanged
 {
     public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
-        nameof(Value), typeof(RangedValue), typeof(WeatherRangePackIconControl),
-        new PropertyMetadata(default(RangedValue)));
+        nameof(Value), typeof(RangedValue), typeof(WeatherRangePackIconControl), new PropertyMetadata(default(RangedValue)));
 
     private bool _hasSecondIcon = false;
 
     public RangedValue? Value
     {
-        get => (RangedValue)GetValue(ValueProperty);
-        set => SetValue(ValueProperty, value);
+        get { return (RangedValue)GetValue(ValueProperty); }
+        set { SetValue(ValueProperty, value); }
     }
 
     public bool HasSecondIcon
@@ -42,7 +41,10 @@ public partial class WeatherRangePackIconControl : UserControl, INotifyPropertyC
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
     {
-        if (Value != null) HasSecondIcon = Value.From != Value.To;
+        if (Value != null)
+        {
+            HasSecondIcon = Value.From != Value.To;
+        }
         base.OnPropertyChanged(e);
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared;
@@ -23,10 +24,12 @@ public class AttachableSettingsObject : ObservableRecipient
     {
         var key = id.ToString();
         var o = AttachedObjects.ContainsKey(key) ? AttachedObjects[key] : null;
-        if (o is JsonElement o1) return o1.Deserialize<T>();
+        if (o is JsonElement o1)
+        {
+            return o1.Deserialize<T>();
+        }
         return (T?)o;
     }
-
     /// <summary>
     /// 写入指定的附加设置。
     /// </summary>
@@ -53,7 +56,6 @@ public class AttachableSettingsObject : ObservableRecipient
             WriteAttachedObject(id, r);
             return r;
         }
-
         WriteAttachedObject(id, defaultValue);
         return defaultValue;
     }

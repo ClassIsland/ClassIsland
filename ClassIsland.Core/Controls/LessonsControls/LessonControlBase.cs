@@ -5,6 +5,7 @@ using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Core.Controls.LessonsControls;
 
+
 public abstract class LessonControlBase : UserControl
 {
     public static readonly DependencyProperty ClassInfoProperty = DependencyProperty.Register(
@@ -12,17 +13,16 @@ public abstract class LessonControlBase : UserControl
 
     public ClassInfo ClassInfo
     {
-        get => (ClassInfo)GetValue(ClassInfoProperty);
-        set => SetValue(ClassInfoProperty, value);
+        get { return (ClassInfo)GetValue(ClassInfoProperty); }
+        set { SetValue(ClassInfoProperty, value); }
     }
 
     public static readonly DependencyProperty SubjectsProperty = DependencyProperty.Register(
-        nameof(Subjects), typeof(ObservableDictionary<string, Subject>), typeof(LessonControlBase),
-        new PropertyMetadata(new ObservableDictionary<string, Subject>()));
+        nameof(Subjects), typeof(ObservableDictionary<string, Subject>), typeof(LessonControlBase), new PropertyMetadata(new ObservableDictionary<string, Subject>()));
 
     public ObservableDictionary<string, Subject> Subjects
     {
-        get => (ObservableDictionary<string, Subject>)GetValue(SubjectsProperty);
-        set => SetValue(SubjectsProperty, value);
+        get { return (ObservableDictionary<string, Subject>)GetValue(SubjectsProperty); }
+        set { SetValue(SubjectsProperty, value); }
     }
 }

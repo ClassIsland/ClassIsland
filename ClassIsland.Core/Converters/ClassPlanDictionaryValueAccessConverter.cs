@@ -7,7 +7,11 @@ namespace ClassIsland.Core.Converters;
 
 public class ClassPlanDictionaryValueAccessConverter : IValueConverter
 {
-    public ObservableDictionary<string, TimeLayout> SourceDictionary { get; set; } = new();
+    public ObservableDictionary<string, TimeLayout> SourceDictionary
+    {
+        get;
+        set;
+    } = new();
 
     public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {

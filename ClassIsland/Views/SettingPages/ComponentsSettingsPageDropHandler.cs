@@ -10,24 +10,21 @@ namespace ClassIsland.Views.SettingPages;
 public class ComponentsSettingsPageDropHandler : DependencyObject, IDropTarget
 {
     public static readonly DependencyProperty ComponentsProperty = DependencyProperty.Register(
-        nameof(Components), typeof(ObservableCollection<ComponentSettings>), typeof(ComponentsSettingsPageDropHandler),
-        new PropertyMetadata(default(ObservableCollection<ComponentSettings>)));
+        nameof(Components), typeof(ObservableCollection<ComponentSettings>), typeof(ComponentsSettingsPageDropHandler), new PropertyMetadata(default(ObservableCollection<ComponentSettings>)));
 
     public ObservableCollection<ComponentSettings> Components
     {
-        get => (ObservableCollection<ComponentSettings>)GetValue(ComponentsProperty);
-        set => SetValue(ComponentsProperty, value);
+        get { return (ObservableCollection<ComponentSettings>)GetValue(ComponentsProperty); }
+        set { SetValue(ComponentsProperty, value); }
     }
 
-    public static readonly DependencyProperty CurrentSelectedContainerComponentSettingsProperty =
-        DependencyProperty.Register(
-            nameof(CurrentSelectedContainerComponentSettings), typeof(ComponentSettings),
-            typeof(ComponentsSettingsPageDropHandler), new PropertyMetadata(default(ComponentSettings)));
+    public static readonly DependencyProperty CurrentSelectedContainerComponentSettingsProperty = DependencyProperty.Register(
+        nameof(CurrentSelectedContainerComponentSettings), typeof(ComponentSettings), typeof(ComponentsSettingsPageDropHandler), new PropertyMetadata(default(ComponentSettings)));
 
     public ComponentSettings? CurrentSelectedContainerComponentSettings
     {
-        get => (ComponentSettings?)GetValue(CurrentSelectedContainerComponentSettingsProperty);
-        set => SetValue(CurrentSelectedContainerComponentSettingsProperty, value);
+        get { return (ComponentSettings?)GetValue(CurrentSelectedContainerComponentSettingsProperty); }
+        set { SetValue(CurrentSelectedContainerComponentSettingsProperty, value); }
     }
 
     //private IComponentsService ComponentsService { get; } = App.GetService<IComponentsService>();
@@ -36,7 +33,7 @@ public class ComponentsSettingsPageDropHandler : DependencyObject, IDropTarget
     public void DragOver(IDropInfo dropInfo)
     {
         // TODO: 如果拖入的组件是当前组件的父组件，要拒绝拖入到子容器中。
-        if (dropInfo.Data is not ComponentInfo && dropInfo.Data is not ComponentSettings)
+        if (dropInfo.Data is not ComponentInfo && dropInfo.Data is not ComponentSettings) 
             return;
         dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
         dropInfo.Effects = dropInfo.Data switch
@@ -53,7 +50,7 @@ public class ComponentsSettingsPageDropHandler : DependencyObject, IDropTarget
         switch (dropInfo.Data)
         {
             case ComponentInfo info:
-                var componentSettings = new ComponentSettings
+                var componentSettings = new ComponentSettings()
                 {
                     Id = info.Guid.ToString()
                 };
@@ -63,9 +60,7 @@ public class ComponentsSettingsPageDropHandler : DependencyObject, IDropTarget
                 break;
             case ComponentSettings settings:
                 var oldIndex = components.IndexOf(settings);
-                var newIndex = oldIndex < dropInfo.UnfilteredInsertIndex
-                    ? dropInfo.UnfilteredInsertIndex - 1
-                    : dropInfo.UnfilteredInsertIndex;
+                var newIndex = oldIndex < dropInfo.UnfilteredInsertIndex ? dropInfo.UnfilteredInsertIndex - 1 : dropInfo.UnfilteredInsertIndex;
                 var finalIndex = newIndex >= components.Count ? components.Count - 1 : newIndex;
                 if (!components.Contains(settings))
                 {
@@ -74,8 +69,10 @@ public class ComponentsSettingsPageDropHandler : DependencyObject, IDropTarget
                     components.Insert(newIndex + 1, settings);
                     break;
                 }
-
-                if (oldIndex != finalIndex) components.Move(oldIndex, finalIndex);
+                if (oldIndex != finalIndex)
+                {
+                    components.Move(oldIndex, finalIndex);
+                }
                 break;
         }
     }

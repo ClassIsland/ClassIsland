@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
 using ClassIsland.Controls;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
+
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using unvell.ReoGrid;
 
 namespace ClassIsland.ViewModels;
@@ -25,11 +28,11 @@ public class ExcelImportViewModel : ObservableRecipient
     private RangePosition _timePointSourcePosition = RangePosition.Empty;
     private int _timeLayoutImportSource = -1;
     private RangePosition _subjectSourcePosition = RangePosition.Empty;
-    private TimeLayout _selectedTimeLayout = new();
+    private TimeLayout _selectedTimeLayout = new TimeLayout();
     private string _selectedTimeLayoutId = "";
     private bool _isVerticalLayout = false;
     private ObservableCollection<RangePosition> _classPlanSources = new();
-    private RangePosition _currentClassPlanSource = new();
+    private RangePosition _currentClassPlanSource = new RangePosition();
     private ObservableCollection<Selectable<RangePosition>> _classRecognitionRange = new();
     private ObservableCollection<Selectable<TimeLayoutItem>> _classRecognitionTimePoints = new();
     private ObservableCollection<TimeLayoutItem> _classRecognitionTimePointsAll = new();

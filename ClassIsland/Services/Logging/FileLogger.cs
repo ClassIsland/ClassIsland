@@ -11,18 +11,18 @@ namespace ClassIsland.Services.Logging;
 
 public class FileLogger(FileLoggerProvider provider, string categoryName) : ILogger
 {
-    private static readonly AsyncLocal<Stack<object>> ScopeStack = new();
+    private static readonly AsyncLocal<Stack<object>> ScopeStack = new AsyncLocal<Stack<object>>();
     private FileLoggerProvider Provider { get; } = provider;
     private string CategoryName { get; } = categoryName;
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
-        Func<TState, Exception?, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
     {
         List<string> scopes = [];
         if (ScopeStack.Value != null)
+        {
             scopes.AddRange(ScopeStack.Value.Select(scope => (scope.ToString() ?? "") + "=>"));
-        var message = string.Join("", scopes) + formatter(state, exception) +
-                      (exception != null ? "\n" + exception : "");
+        }
+        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
         message = LogMaskingHelper.MaskLog(message);
         Provider.WriteLog($"{DateTime.Now}|{logLevel}|{CategoryName}|{message}");
     }

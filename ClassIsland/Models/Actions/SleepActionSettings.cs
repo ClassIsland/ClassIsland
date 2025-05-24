@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace ClassIsland.Models.Actions;
 
 public class SleepActionSettings : ObservableRecipient
 {
-    private double _value = 5;
-
+    double _value = 5;
     public double Value
     {
         get => _value;

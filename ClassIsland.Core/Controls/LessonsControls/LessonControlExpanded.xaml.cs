@@ -44,38 +44,35 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
     public bool IsLiveUpdatingEnabled
     {
-        get => (bool)GetValue(IsLiveUpdatingEnabledProperty);
-        set => SetValue(IsLiveUpdatingEnabledProperty, value);
+        get { return (bool)GetValue(IsLiveUpdatingEnabledProperty); }
+        set { SetValue(IsLiveUpdatingEnabledProperty, value); }
     }
 
     public static readonly DependencyProperty CurrentTimeLayoutItemProperty = DependencyProperty.Register(
-        nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControlExpanded),
-        new PropertyMetadata(new TimeLayoutItem()));
+        nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControlExpanded), new PropertyMetadata(new TimeLayoutItem()));
 
     public TimeLayoutItem CurrentTimeLayoutItem
     {
-        get => (TimeLayoutItem)GetValue(CurrentTimeLayoutItemProperty);
-        set => SetValue(CurrentTimeLayoutItemProperty, value);
+        get { return (TimeLayoutItem)GetValue(CurrentTimeLayoutItemProperty); }
+        set { SetValue(CurrentTimeLayoutItemProperty, value); }
     }
 
     public static readonly DependencyProperty DefaultLessonControlSettingsProperty = DependencyProperty.Register(
-        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlExpanded),
-        new PropertyMetadata(default(ILessonControlSettings)));
+        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlExpanded), new PropertyMetadata(default(ILessonControlSettings)));
 
     public ILessonControlSettings DefaultLessonControlSettings
     {
-        get => (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty);
-        set => SetValue(DefaultLessonControlSettingsProperty, value);
+        get { return (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty); }
+        set { SetValue(DefaultLessonControlSettingsProperty, value); }
     }
 
     public static readonly DependencyProperty CurrentClassPlanProperty = DependencyProperty.Register(
-        nameof(CurrentClassPlan), typeof(ClassPlan), typeof(LessonControlExpanded),
-        new PropertyMetadata(default(ClassPlan)));
+        nameof(CurrentClassPlan), typeof(ClassPlan), typeof(LessonControlExpanded), new PropertyMetadata(default(ClassPlan)));
 
     public ClassPlan CurrentClassPlan
     {
-        get => (ClassPlan)GetValue(CurrentClassPlanProperty);
-        set => SetValue(CurrentClassPlanProperty, value);
+        get { return (ClassPlan)GetValue(CurrentClassPlanProperty); }
+        set { SetValue(CurrentClassPlanProperty, value); }
     }
 
     public ILessonsService? LessonsService { get; set; }
@@ -120,7 +117,10 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         }
         else
         {
-            if (LessonsService != null) LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+            if (LessonsService != null)
+            {
+                LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+            }
         }
     }
 
@@ -140,29 +140,29 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
 
     ~LessonControlExpanded()
     {
-        if (LessonsService != null) LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        if (LessonsService != null)
+        {
+            LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
+        }
     }
 
-    private Subject CurrentSubject =>
-        Subjects.TryGetValue(ClassInfo?.SubjectId ?? "", out var value) ? value : Subject.Breaking;
+    private Subject CurrentSubject => Subjects.TryGetValue(ClassInfo?.SubjectId ?? "", out var value) ? value : Subject.Breaking;
 
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
         SettingsSource =
-            (ILessonControlSettings?)IAttachedSettingsHostService
-                .GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
-                    new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
-                    CurrentSubject,
-                    CurrentTimeLayoutItem,
-                    CurrentClassPlan,
-                    ClassInfo?.CurrentTimeLayout) ??
+            (ILessonControlSettings?)IAttachedSettingsHostService.GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
+                new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
+                CurrentSubject,
+                CurrentTimeLayoutItem,
+                CurrentClassPlan,
+                ClassInfo?.CurrentTimeLayout) ??
             DefaultLessonControlSettings;
 
         if (ExactTimeService != null)
         {
             TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
-            Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay -
-                             CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
+            Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
             LeftSeconds = TotalSeconds - Seconds;
         }
 
@@ -170,9 +170,7 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         {
             MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
                              SettingsSource.IsCountdownEnabled &&
-                             IsLiveUpdatingEnabled
-                ? 1
-                : 0;
+                             IsLiveUpdatingEnabled ? 1 : 0;
             ExtraInfo4ShowSeconds = SettingsSource.ExtraInfoType == 4 &&
                                     LeftSeconds <= SettingsSource.ExtraInfo4ShowSecondsSeconds;
         }
@@ -194,6 +192,8 @@ public partial class LessonControlExpanded : LessonControlBase, INotifyPropertyC
         OnPropertyChanged(propertyName);
         return true;
     }
+    
 
     #endregion
+
 }

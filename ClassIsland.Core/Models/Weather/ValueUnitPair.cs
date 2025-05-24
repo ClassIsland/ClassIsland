@@ -4,9 +4,12 @@ namespace ClassIsland.Core.Models.Weather;
 
 public class ValueUnitPair
 {
-    [JsonPropertyName("value")] public string Value { get; set; } = "";
+    [JsonPropertyName("value")]
+    public string Value { get; set; } = "";
 
-    [JsonPropertyName("unit")] public string Unit { get; set; } = "";
+    [JsonPropertyName("unit")]
+
+    public string Unit { get; set; } = "";
 
     public override string ToString()
     {

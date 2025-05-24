@@ -5,7 +5,6 @@ using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.Actions;
 using Microsoft.Extensions.Hosting;
-
 namespace ClassIsland.Services.ActionHandlers;
 
 public class AppRestartActionHandler : IHostedService
@@ -16,11 +15,6 @@ public class AppRestartActionHandler : IHostedService
             (s, g) => App.Current.Restart((s as AppRestartActionSettings).Value));
     }
 
-    public async Task StartAsync(CancellationToken _)
-    {
-    }
-
-    public async Task StopAsync(CancellationToken _)
-    {
-    }
+    public async Task StartAsync(CancellationToken _) { }
+    public async Task StopAsync(CancellationToken _) { }
 }

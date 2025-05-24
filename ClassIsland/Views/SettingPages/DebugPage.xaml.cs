@@ -41,9 +41,7 @@ public partial class DebugPage : SettingsPageBase
 
     public DebugPageViewModel ViewModel { get; } = new();
 
-    public DebugPage(SettingsService settingsService, IManagementService managementService,
-        ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService,
-        ILocationService locationService)
+    public DebugPage(SettingsService settingsService, IManagementService managementService, ConsoleService consoleService, ILessonsService lessonsService, IProfileAnalyzeService profileAnalyzeService, ILocationService locationService)
     {
         InitializeComponent();
         DataContext = this;
@@ -111,8 +109,8 @@ public partial class DebugPage : SettingsPageBase
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
 
-        var now = ExactTimeService.GetCurrentLocalDateTime().Date;
-        var tar = ViewModel.TargetDate.Date;
+        DateTime now = ExactTimeService.GetCurrentLocalDateTime().Date;
+        DateTime tar = ViewModel.TargetDate.Date;
 
         SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
     }
@@ -121,7 +119,7 @@ public partial class DebugPage : SettingsPageBase
     {
         if (!ViewModel.IsTargetDateTimeLoaded) return;
 
-        var now = ExactTimeService.GetCurrentLocalDateTime();
+        DateTime now = ExactTimeService.GetCurrentLocalDateTime();
         DateTime tar = new(DateOnly.FromDateTime(now), TimeOnly.FromDateTime(ViewModel.TargetTime));
 
         SettingsService.Settings.DebugTimeOffsetSeconds += Math.Round((tar - now).TotalSeconds);
@@ -160,7 +158,7 @@ public partial class DebugPage : SettingsPageBase
             .AddConfirmAction()
             .ShowDialog(out var ver, Window.GetWindow(this));
         if (r != 0) return;
-        if (!Version.TryParse(ver, out var version))
+        if (!Version.TryParse(ver, out var version)) 
             return;
         SettingsService.Settings.LastAppVersion = version;
         RequestRestart();
@@ -171,18 +169,14 @@ public partial class DebugPage : SettingsPageBase
         ProfileAnalyzeService.Analyze();
         var result = ProfileAnalyzeService.DumpMermaidGraph();
         await File.WriteAllTextAsync(Path.Combine(App.AppRootFolderPath, "Profile-dump.mmd"), result);
-        CommonDialog.ShowInfo(
-            $"转储成功。已保存到 {Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Profile-dump.mmd"))} 。");
+        CommonDialog.ShowInfo($"转储成功。已保存到 {Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Profile-dump.mmd"))} 。");
     }
 
     private void MenuItemFindNext_OnClick(object sender, RoutedEventArgs e)
     {
-        new CommonDialogBuilder().SetContent("输入要找的元素 GUID").AddConfirmAction().HasInput(true)
-            .ShowDialog(out var guid, Window.GetWindow(this));
-        new CommonDialogBuilder().SetContent("输入要找的元素索引（没有填-1）").AddConfirmAction().HasInput(true)
-            .ShowDialog(out var index, Window.GetWindow(this));
-        new CommonDialogBuilder().SetContent("输入要找的设置的GUID").AddConfirmAction().HasInput(true)
-            .ShowDialog(out var settingsId, Window.GetWindow(this));
+        new CommonDialogBuilder().SetContent("输入要找的元素 GUID").AddConfirmAction().HasInput(true).ShowDialog(out var guid, Window.GetWindow(this));
+        new CommonDialogBuilder().SetContent("输入要找的元素索引（没有填-1）").AddConfirmAction().HasInput(true).ShowDialog(out var index, Window.GetWindow(this));
+        new CommonDialogBuilder().SetContent("输入要找的设置的GUID").AddConfirmAction().HasInput(true).ShowDialog(out var settingsId, Window.GetWindow(this));
         if (int.TryParse(index, out var i))
         {
             ProfileAnalyzeService.Analyze();
@@ -190,7 +184,6 @@ public partial class DebugPage : SettingsPageBase
             CommonDialog.ShowInfo(string.Join('\n', obj));
         }
     }
-
     private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
     {
         if (!e.Handled)
@@ -200,10 +193,13 @@ public partial class DebugPage : SettingsPageBase
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = MouseWheelEvent;
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
             eventArg.Source = sender;
             var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null) parent.RaiseEvent(eventArg);
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
         }
     }
 
@@ -224,8 +220,11 @@ public partial class DebugPage : SettingsPageBase
             .SetContent("文档 Uri")
             .HasInput(true)
             .ShowDialog(out var result);
-        if (!Uri.TryCreate(result, UriKind.Absolute, out var uri)) return;
-        var reader = new DocumentReaderWindow
+        if (!Uri.TryCreate(result, UriKind.Absolute, out var uri))
+        {
+            return;
+        }
+        var reader = new DocumentReaderWindow()
         {
             Source = uri
         };
@@ -245,8 +244,7 @@ public partial class DebugPage : SettingsPageBase
 
     private void MenuItemShowTestNotification_OnClick(object sender, RoutedEventArgs e)
     {
-        IAppHost.GetService<ITaskBarIconService>().ShowNotification("Title", "Content",
-            clickedCallback: () => CommonDialog.ShowInfo("Clicked!"));
+        IAppHost.GetService<ITaskBarIconService>().ShowNotification("Title", "Content", clickedCallback:() => CommonDialog.ShowInfo("Clicked!"));
     }
 
     private async void MenuItemTryGetLocation_OnClick(object sender, RoutedEventArgs e)

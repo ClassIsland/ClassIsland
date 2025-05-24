@@ -7,4 +7,5 @@ namespace ClassIsland.Core.Abstractions.Views;
 /// </summary>
 public abstract class SplashWindowBase : Window
 {
+
 }

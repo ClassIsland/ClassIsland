@@ -11,53 +11,51 @@ namespace ClassIsland.Helpers;
 
 internal static class AccentColorHelper
 {
+
     public static unsafe Color? GetAccentColor(byte[] bgra, int width, int height)
     {
         if (bgra.Length % 4 == 0)
+        {
             fixed (byte* ptr = bgra)
             {
                 return GetAccentColorInternal(ptr, width, height);
             }
+        }
 
         return null;
     }
-
     private static unsafe Color? GetAccentColorInternal(void* bgra, int width, int height)
     {
         try
         {
-            var p = (uint*)bgra;
+            uint* p = (uint*)bgra;
             long b = 0, g = 0, r = 0;
-            var hueCircle = new int[360];
-            for (var y = 0; y < height; y += 2)
+            int[] hueCircle = new int[360];
+            for (int y = 0; y < height; y += 2)
             {
-                for (var x = 0; x < width; x += 2)
+                for (int x = 0; x < width; x += 2)
                 {
-                    var pixel = Unsafe.AsRef<Bgra32>(p);
+                    Bgra32 pixel = Unsafe.AsRef<Bgra32>(p);
                     b += pixel.B;
                     g += pixel.G;
                     r += pixel.R;
                     p += 2;
                 }
-
                 p += width - width % 2;
             }
 
-            var c = width / 2 * (height / 2);
+            int c = (width / 2) * (height / 2);
             Unsafe.SkipInit(out Color color);
             color.B = (byte)(b / c);
             color.G = (byte)(g / c);
             color.R = (byte)(r / c);
             color.A = 255;
-            var hsv = ColorConverter.RgbToHsv(new RGB(color.R, color.G, color.B));
+            HSV hsv = ColorConverter.RgbToHsv(new RGB(color.R, color.G, color.B));
 
             var result = ColorConverter.HsvToRgb(new HSV(hsv.H, 60, hsv.V));
             return Color.FromRgb(result.R, result.G, result.B);
         }
-        catch
-        {
-        }
-
+        catch { }
         return null;
     }
 
@@ -72,23 +70,34 @@ internal static class AccentColorHelper
     }
 
 
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static int Bgra32ToHue(in Bgra32 bgra)
     {
-        var max = Math.Max(Math.Max(bgra.R, bgra.G), bgra.B);
-        var min = Math.Min(Math.Min(bgra.R, bgra.G), bgra.B);
+        byte max = Math.Max(Math.Max(bgra.R, bgra.G), bgra.B);
+        byte min = Math.Min(Math.Min(bgra.R, bgra.G), bgra.B);
         float chroma = max - min;
         float h;
 
         if (chroma <= 8)
+        {
             // ignore white black gray
             h = -1;
+        }
         else if (max == bgra.R)
-            h = ((bgra.G - bgra.B) / chroma + 6) % 6;
+        {
+            h = (((bgra.G - bgra.B) / chroma) + 6) % 6;
+        }
         else if (max == bgra.G)
-            h = 2 + (bgra.B - bgra.R) / chroma;
+        {
+            h = 2 + ((bgra.B - bgra.R) / chroma);
+        }
         else
-            h = 4 + (bgra.R - bgra.G) / chroma;
+        {
+            h = 4 + ((bgra.R - bgra.G) / chroma);
+        }
         return (int)(h * 60);
     }
+
+
 }

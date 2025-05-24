@@ -15,7 +15,6 @@ public class CurrentTimeStateChangedTrigger(ILessonsService lessonsService) : Tr
     {
         LessonsService.CurrentTimeStateChanged += CurrentLessonsServiceOnTimeStateChanged;
     }
-
     public override void UnLoaded()
     {
         LessonsService.CurrentTimeStateChanged -= CurrentLessonsServiceOnTimeStateChanged;

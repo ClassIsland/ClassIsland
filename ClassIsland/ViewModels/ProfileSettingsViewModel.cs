@@ -2,7 +2,9 @@
 using System.Collections.ObjectModel;
 using ClassIsland.Models;
 using ClassIsland.Shared.Models.Profile;
+
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.ViewModels;
@@ -25,7 +27,7 @@ public class ProfileSettingsViewModel : ObservableRecipient
     private bool _isPanningModeEnabled = false;
     private bool _isDragEntering = false;
     private string _tempOverlayClassPlanTimeLayoutId = "";
-    private ClassInfo? _selectedClassInfo;
+    private ClassInfo?  _selectedClassInfo;
     private int _selectedClassIndex = -1;
     private ClassPlan _selectedClassPlan = new();
     private bool _isUpdatingClassInfoIndexInBackend = false;
@@ -157,7 +159,10 @@ public class ProfileSettingsViewModel : ObservableRecipient
         }
     }
 
-    public Guid DialogHostId { get; } = Guid.NewGuid();
+    public Guid DialogHostId
+    {
+        get;
+    } = Guid.NewGuid();
 
     public TimeLayoutItem? SelectedTimePoint
     {
@@ -230,8 +235,8 @@ public class ProfileSettingsViewModel : ObservableRecipient
         get => _selectedClassInfo;
         set
         {
-            if (Equals(value, _selectedClassInfo)) return;
-            _selectedClassInfo = value;
+            if (Equals(value,  _selectedClassInfo)) return;
+             _selectedClassInfo = value;
             OnPropertyChanged();
         }
     }

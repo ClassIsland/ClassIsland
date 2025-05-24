@@ -9,8 +9,8 @@
              d:DesignHeight="450" d:DesignWidth="800"
              IsVisibleChanged="WeekOffsetSettingsControl_OnIsVisibleChanged">
     <Grid
-        Margin="12"
-        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:WeekOffsetSettingsControl}}">
+         Margin="12"
+         DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:WeekOffsetSettingsControl}}">
         <StackPanel>
 
             <TextBlock Text="设置本周在多周轮换中的周数。" TextWrapping="Wrap" Margin="0 0 0 8" />
@@ -50,7 +50,7 @@
                 </Button>
                 <Button Style="{StaticResource MaterialDesignFlatButton}"
                         Click="ButtonClear_OnClick">
-                    <ci:IconText Kind="Refresh" Text="重置偏移" />
+                    <ci:IconText Kind="Refresh" Text="重置偏移"/>
                 </Button>
             </WrapPanel>
         </StackPanel>

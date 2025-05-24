@@ -5,10 +5,10 @@ using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Threading;
+
 using Walterlv.Threading;
-using DispatcherDictionary =
-    System.Collections.Concurrent.ConcurrentDictionary<System.Windows.Threading.Dispatcher,
-        Walterlv.Threading.DispatcherAsyncOperation<System.Windows.Threading.Dispatcher>>;
+
+using DispatcherDictionary = System.Collections.Concurrent.ConcurrentDictionary<System.Windows.Threading.Dispatcher, Walterlv.Threading.DispatcherAsyncOperation<System.Windows.Threading.Dispatcher>>;
 
 namespace Walterlv.Windows;
 
@@ -19,7 +19,7 @@ public class AsyncBox : FrameworkElement
     /// 保存外部 UI 线程和与其关联的异步 UI 线程。
     /// 例如主 UI 线程对应一个 AsyncBox 专用的 UI 线程；外面可能有另一个 UI 线程，那么对应另一个 AsyncBox 专用的 UI 线程。
     /// </summary>
-    internal static readonly DispatcherDictionary RelatedAsyncDispatchers = new();
+    internal static readonly DispatcherDictionary RelatedAsyncDispatchers = new DispatcherDictionary();
 
     private UIElement _child;
 
@@ -53,11 +53,17 @@ public class AsyncBox : FrameworkElement
         {
             if (Equals(_child, value)) return;
 
-            if (value != null) RemoveLogicalChild(value);
+            if (value != null)
+            {
+                RemoveLogicalChild(value);
+            }
 
             _child = value;
 
-            if (_isChildReadyToLoad) ActivateChild();
+            if (_isChildReadyToLoad)
+            {
+                ActivateChild();
+            }
         }
     }
 
@@ -72,17 +78,24 @@ public class AsyncBox : FrameworkElement
         get
         {
             if (_loadingViewType == null)
+            {
                 throw new InvalidOperationException(
                     $"在 {nameof(AsyncBox)} 显示之前，必须先为 {nameof(LoadingViewType)} 设置一个 {nameof(UIElement)} 作为 Loading 视图。");
+            }
 
             return _loadingViewType;
         }
         set
         {
-            if (value == null) throw new ArgumentNullException(nameof(LoadingViewType));
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(LoadingViewType));
+            }
 
             if (_loadingViewType != null)
+            {
                 throw new ArgumentException($"{nameof(LoadingViewType)} 只允许被设置一次。", nameof(value));
+            }
 
             _loadingViewType = value;
         }
@@ -91,16 +104,16 @@ public class AsyncBox : FrameworkElement
     /// <summary>
     /// 返回一个可等待的用于显示异步 UI 的后台 UI 线程调度器。
     /// </summary>
-    private DispatcherAsyncOperation<Dispatcher> GetAsyncDispatcherAsync()
-    {
-        return RelatedAsyncDispatchers.GetOrAdd(
-            Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
-    }
+    private DispatcherAsyncOperation<Dispatcher> GetAsyncDispatcherAsync() => RelatedAsyncDispatchers.GetOrAdd(
+        Dispatcher, dispatcher => UIDispatcher.RunNewAsync("AsyncBox"));
 
     private UIElement CreateLoadingView()
     {
         var instance = Activator.CreateInstance(LoadingViewType);
-        if (instance is UIElement element) return element;
+        if (instance is UIElement element)
+        {
+            return element;
+        }
 
         throw new InvalidOperationException($"{LoadingViewType} 必须是 {nameof(UIElement)} 类型");
     }
@@ -117,8 +130,10 @@ public class AsyncBox : FrameworkElement
         }
 
         var dispatcher = await GetAsyncDispatcherAsync();
-        if (VisualTreeHelper.GetParent(_contentPresenter) != null ||
-            VisualTreeHelper.GetParent(_hostVisual) != null) return;
+        if (VisualTreeHelper.GetParent(_contentPresenter) != null || VisualTreeHelper.GetParent(_hostVisual) != null)
+        {
+            return;
+        }
         _loadingView = await dispatcher.InvokeAsync(() =>
         {
             var loadingView = CreateLoadingView();
@@ -182,7 +197,10 @@ public class AsyncBox : FrameworkElement
     {
         get
         {
-            if (_isChildReadyToLoad) yield return _contentPresenter;
+            if (_isChildReadyToLoad)
+            {
+                yield return _contentPresenter;
+            }
         }
     }
 

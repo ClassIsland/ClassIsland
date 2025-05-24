@@ -39,13 +39,12 @@ public class LessonsListBox : ListBox
         nameof(ClassPlan), typeof(ClassPlan), typeof(LessonsListBox), new PropertyMetadata(default(ClassPlan)));
 
     public static readonly DependencyProperty SubjectsProperty = DependencyProperty.Register(
-        nameof(Subjects), typeof(ObservableDictionary<string, Subject>), typeof(LessonsListBox),
-        new PropertyMetadata(new ObservableDictionary<string, Subject>()));
+        nameof(Subjects), typeof(ObservableDictionary<string, Subject>), typeof(LessonsListBox), new PropertyMetadata(new ObservableDictionary<string, Subject>()));
 
     public ObservableDictionary<string, Subject> Subjects
     {
-        get => (ObservableDictionary<string, Subject>)GetValue(SubjectsProperty);
-        set => SetValue(SubjectsProperty, value);
+        get { return (ObservableDictionary<string, Subject>)GetValue(SubjectsProperty); }
+        set { SetValue(SubjectsProperty, value); }
     }
 
     /// <summary>
@@ -53,8 +52,8 @@ public class LessonsListBox : ListBox
     /// </summary>
     public ClassPlan ClassPlan
     {
-        get => (ClassPlan)GetValue(ClassPlanProperty);
-        set => SetValue(ClassPlanProperty, value);
+        get { return (ClassPlan)GetValue(ClassPlanProperty); }
+        set { SetValue(ClassPlanProperty, value); }
     }
 
     public static readonly DependencyProperty IsLiveUpdatingEnabledProperty = DependencyProperty.Register(
@@ -62,8 +61,8 @@ public class LessonsListBox : ListBox
 
     public bool IsLiveUpdatingEnabled
     {
-        get => (bool)GetValue(IsLiveUpdatingEnabledProperty);
-        set => SetValue(IsLiveUpdatingEnabledProperty, value);
+        get { return (bool)GetValue(IsLiveUpdatingEnabledProperty); }
+        set { SetValue(IsLiveUpdatingEnabledProperty, value); }
     }
 
     public static readonly DependencyProperty HighlightChangedClassProperty = DependencyProperty.Register(
@@ -71,22 +70,21 @@ public class LessonsListBox : ListBox
 
     public bool HighlightChangedClass
     {
-        get => (bool)GetValue(HighlightChangedClassProperty);
-        set => SetValue(HighlightChangedClassProperty, value);
+        get { return (bool)GetValue(HighlightChangedClassProperty); }
+        set { SetValue(HighlightChangedClassProperty, value); }
     }
 
     public static readonly DependencyProperty LessonControlSettingsProperty = DependencyProperty.Register(
-        nameof(LessonControlSettings), typeof(ILessonControlSettings), typeof(LessonsListBox),
-        new PropertyMetadata(default(ILessonControlSettings)));
+        nameof(LessonControlSettings), typeof(ILessonControlSettings), typeof(LessonsListBox), new PropertyMetadata(default(ILessonControlSettings)));
 
     public ILessonControlSettings LessonControlSettings
     {
-        get => (ILessonControlSettings)GetValue(LessonControlSettingsProperty);
-        set => SetValue(LessonControlSettingsProperty, value);
+        get { return (ILessonControlSettings)GetValue(LessonControlSettingsProperty); }
+        set { SetValue(LessonControlSettingsProperty, value); }
     }
 
     public static readonly DependencyProperty DiscardHidingDefaultProperty = DependencyProperty.Register(
-        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool) /*,
+        nameof(DiscardHidingDefault), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)/*,
             (o, args) =>
             {
                 var control = o as LessonsListBox;
@@ -97,19 +95,17 @@ public class LessonsListBox : ListBox
 
     public bool DiscardHidingDefault
     {
-        get => (bool)GetValue(DiscardHidingDefaultProperty);
-        set => SetValue(DiscardHidingDefaultProperty, value);
+        get { return (bool)GetValue(DiscardHidingDefaultProperty); }
+        set { SetValue(DiscardHidingDefaultProperty, value); }
     }
 
-    public static readonly DependencyProperty ShowCurrentTimeLayoutItemOnlyOnClassProperty =
-        DependencyProperty.Register(
-            nameof(ShowCurrentTimeLayoutItemOnlyOnClass), typeof(bool), typeof(LessonsListBox),
-            new PropertyMetadata(default(bool)));
+    public static readonly DependencyProperty ShowCurrentTimeLayoutItemOnlyOnClassProperty = DependencyProperty.Register(
+        nameof(ShowCurrentTimeLayoutItemOnlyOnClass), typeof(bool), typeof(LessonsListBox), new PropertyMetadata(default(bool)));
 
     public bool ShowCurrentTimeLayoutItemOnlyOnClass
     {
-        get => (bool)GetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty);
-        set => SetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty, value);
+        get { return (bool)GetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty); }
+        set { SetValue(ShowCurrentTimeLayoutItemOnlyOnClassProperty, value); }
     }
 
     public static readonly DependencyProperty HideFinishedClassProperty = DependencyProperty.Register(
@@ -117,14 +113,13 @@ public class LessonsListBox : ListBox
 
     public bool HideFinishedClass
     {
-        get => (bool)GetValue(HideFinishedClassProperty);
-        set => SetValue(HideFinishedClassProperty, value);
+        get { return (bool)GetValue(HideFinishedClassProperty); }
+        set { SetValue(HideFinishedClassProperty, value); }
     }
 
     static LessonsListBox()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(LessonsListBox),
-            new FrameworkPropertyMetadata(typeof(LessonsListBox)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(LessonsListBox), new FrameworkPropertyMetadata(typeof(LessonsListBox)));
     }
 
     /// <inheritdoc />
@@ -144,7 +139,10 @@ public class LessonsListBox : ListBox
 
     private void CvsOnFilter(object sender, FilterEventArgs e)
     {
-        if (e.Item is TimeLayoutItem timePoint) e.Accepted = timePoint.TimeType != 3;
+        if (e.Item is TimeLayoutItem timePoint)
+        {
+            e.Accepted = timePoint.TimeType != 3;
+        }
     }
 
     /// <inheritdoc />

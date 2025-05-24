@@ -45,16 +45,15 @@ public class TimeLineListControl : ListBox
 
     public double Scale
     {
-        get => (double)GetValue(ScaleProperty);
-        set => SetValue(ScaleProperty, value);
+        get { return (double)GetValue(ScaleProperty); }
+        set { SetValue(ScaleProperty, value); }
     }
 
     private static double BaseTicks { get; } = 1000000000.0;
 
     static TimeLineListControl()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLineListControl),
-            new FrameworkPropertyMetadata(typeof(TimeLineListControl)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLineListControl), new FrameworkPropertyMetadata(typeof(TimeLineListControl)));
     }
 
     public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register(
@@ -62,8 +61,8 @@ public class TimeLineListControl : ListBox
 
     public bool IsReadOnly
     {
-        get => (bool)GetValue(IsReadOnlyProperty);
-        set => SetValue(IsReadOnlyProperty, value);
+        get { return (bool)GetValue(IsReadOnlyProperty); }
+        set { SetValue(IsReadOnlyProperty, value); }
     }
 
     public static readonly DependencyProperty IsPanningModeEnabledProperty = DependencyProperty.Register(
@@ -71,8 +70,8 @@ public class TimeLineListControl : ListBox
 
     public bool IsPanningModeEnabled
     {
-        get => (bool)GetValue(IsPanningModeEnabledProperty);
-        set => SetValue(IsPanningModeEnabledProperty, value);
+        get { return (bool)GetValue(IsPanningModeEnabledProperty); }
+        set { SetValue(IsPanningModeEnabledProperty, value); }
     }
 
     public static readonly DependencyProperty IsStickyProperty = DependencyProperty.Register(
@@ -80,36 +79,46 @@ public class TimeLineListControl : ListBox
 
     public bool IsSticky
     {
-        get => (bool)GetValue(IsStickyProperty);
-        set => SetValue(IsStickyProperty, value);
+        get { return (bool)GetValue(IsStickyProperty); }
+        set { SetValue(IsStickyProperty, value); }
     }
 
     public TimeLineListControl()
     {
-        AddHandler(TimeLineListItemSeparatorAdornerControl.SeparatorLikeTimePointMovedEvent,
-            new RoutedEventHandler(SeparatorLikeTimePointMovedEventHandler));
+        AddHandler(TimeLineListItemSeparatorAdornerControl.SeparatorLikeTimePointMovedEvent, new RoutedEventHandler(SeparatorLikeTimePointMovedEventHandler));
     }
 
     private void SeparatorLikeTimePointMovedEventHandler(object sender, RoutedEventArgs e)
     {
-        if (e is not SeparatorLikeTimePointMovedEventArgs args) return;
-        if (ItemsSource is not ObservableCollection<TimeLayoutItem> layout) return;
+        if (e is not SeparatorLikeTimePointMovedEventArgs args)
+        {
+            return;
+        }
+        if (ItemsSource is not ObservableCollection<TimeLayoutItem> layout)
+        {
+            return;
+        }
 
         var rawIndex = layout.IndexOf(args.Item);
-        if (rawIndex == -1) return;
+        if (rawIndex == -1)
+        {
+            return;
+        }
 
         var isSorted = true;
         var timeLikeTimePoints = layout.Where(x => x.TimeType is 0 or 1 or 2).ToList();
         for (var index = 0; index < timeLikeTimePoints.Count - 1; index++)
         {
             var i = timeLikeTimePoints[index + 1];
-            if (timeLikeTimePoints[index].StartSecond.TimeOfDay <
-                timeLikeTimePoints[index + 1].StartSecond.TimeOfDay) continue;
+            if (timeLikeTimePoints[index].StartSecond.TimeOfDay < timeLikeTimePoints[index + 1].StartSecond.TimeOfDay) continue;
             isSorted = false;
             break;
         }
 
-        if (isSorted) return;
+        if (isSorted)
+        {
+            return;
+        }
 
         var validTimePoints = layout.Where(x => x.TimeType is 0 or 1).ToList();
         for (var index = 0; index < validTimePoints.Count; index++)
@@ -121,7 +130,6 @@ public class TimeLineListControl : ListBox
             SelectedItem = args.Item;
             return;
         }
-
         layout.Move(rawIndex, layout.Count - 1);
         SelectedItem = args.Item;
     }

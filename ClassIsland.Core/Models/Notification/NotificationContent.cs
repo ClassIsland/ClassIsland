@@ -81,13 +81,14 @@ public class NotificationContent : ObservableRecipient
     /// <summary>
     /// 代表空内容
     /// </summary>
-    public static readonly NotificationContent Empty = new();
+    public static readonly NotificationContent Empty = new ();
 
     /// <summary>
     /// 初始化一个 <see cref="NotificationContent"/> 对象
     /// </summary>
     public NotificationContent()
     {
+        
     }
 
     /// <summary>
@@ -111,20 +112,19 @@ public class NotificationContent : ObservableRecipient
     /// <param name="factory">提醒内容处理工厂</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
     public static NotificationContent CreateTwoIconsMask(string text,
-        PackIconKind leftIcon = PackIconKind.AlertCircleOutline, PackIconKind rightIcon = PackIconKind.BellRing,
-        bool hasRightIcon = true,
+        PackIconKind leftIcon = PackIconKind.AlertCircleOutline, PackIconKind rightIcon = PackIconKind.BellRing, bool hasRightIcon=true,
         Action<NotificationContent>? factory = null)
     {
         var content = new NotificationContent
         {
-            Content = new TwoIconsMaskTemplateData
+            Content = new TwoIconsMaskTemplateData()
             {
                 LeftIconKind = leftIcon,
                 RightIconKind = rightIcon,
                 HasRightIcon = hasRightIcon,
                 Text = text
             },
-            SpeechContent = text
+            SpeechContent = text,
         };
         factory?.Invoke(content);
         return content;
@@ -141,11 +141,11 @@ public class NotificationContent : ObservableRecipient
     {
         var content = new NotificationContent
         {
-            Content = new SimpleTextTemplateData
+            Content = new SimpleTextTemplateData()
             {
                 Text = text
             },
-            SpeechContent = text
+            SpeechContent = text,
         };
         factory?.Invoke(content);
         return content;
@@ -159,8 +159,7 @@ public class NotificationContent : ObservableRecipient
     /// <param name="factory">提醒内容处理工厂</param>
     /// <param name="duration">提醒显示时长</param>
     /// <returns>提醒内容 <see cref="NotificationContent"/> 对象</returns>
-    public static NotificationContent CreateRollingTextContent(string text, TimeSpan? duration = null,
-        int repeatCount = 2,
+    public static NotificationContent CreateRollingTextContent(string text, TimeSpan? duration=null, int repeatCount=2,
         Action<NotificationContent>? factory = null)
     {
         duration ??= TimeSpan.FromSeconds(20);

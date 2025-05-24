@@ -64,8 +64,11 @@ public class TimeLayout : AttachableSettingsObject
     internal void NotifyTimeLayoutItemAdded(int index, TimeLayoutItem item)
     {
         var ci = -1;
-        if (item.TimeType == 0) ci = (from i in Layouts where i.TimeType == 0 select i).ToList().IndexOf(item);
-        LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs
+        if (item.TimeType == 0)
+        {
+            ci = (from i in Layouts where i.TimeType == 0 select i).ToList().IndexOf(item);
+        }
+        LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs()
         {
             Action = NotifyCollectionChangedAction.Add,
             AddedItems = { item },
@@ -88,8 +91,11 @@ public class TimeLayout : AttachableSettingsObject
     internal void NotifyTimeLayoutItemRemoved(int index, TimeLayoutItem item)
     {
         var ci = -1;
-        if (item.TimeType == 0) ci = (from i in Layouts where i.TimeType == 0 select i).ToList().IndexOf(item);
-        LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs
+        if (item.TimeType == 0)
+        {
+            ci = (from i in Layouts where i.TimeType==0 select i).ToList().IndexOf(item);
+        }
+        LayoutItemChanged?.Invoke(this, new TimeLayoutUpdateEventArgs()
         {
             Action = NotifyCollectionChangedAction.Remove,
             RemovedItems = { item },

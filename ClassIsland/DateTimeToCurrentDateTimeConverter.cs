@@ -1,7 +1,6 @@
 ﻿using System;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Shared;
-
 namespace ClassIsland;
 
 public static class DateTimeToCurrentDateTimeConverter

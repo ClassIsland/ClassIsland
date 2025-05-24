@@ -10,9 +10,9 @@ namespace ClassIsland.Controls.NotificationProviders;
 public partial class ManagementNotificationProviderControl : UserControl
 {
     public bool IsOverlay { get; }
-
+    
     public SendNotification Payload { get; }
-
+    
     public ManagementNotificationProviderControl(bool isOverlay, SendNotification payload)
     {
         IsOverlay = isOverlay;
@@ -23,13 +23,13 @@ public partial class ManagementNotificationProviderControl : UserControl
     private void ManagementNotificationProviderControl_OnLoaded(object sender, RoutedEventArgs e)
     {
         App.GetService<MainWindow>().GetCurrentDpi(out var dpi, out _);
-        var da = new DoubleAnimation
+        var da = new DoubleAnimation()
         {
             From = -Description.ActualWidth,
             To = RootCanvas.ActualWidth,
-            Duration = new Duration(TimeSpanHelper.FromSecondsSafe(Payload.DurationSeconds))
+            Duration = new Duration(TimeSpanHelper.FromSecondsSafe(Payload.DurationSeconds)),
         };
-        var storyboard = new Storyboard
+        var storyboard = new Storyboard()
         {
         };
         Storyboard.SetTarget(da, Description);

@@ -31,11 +31,11 @@ jobs:
       arch: ${{ matrix.arch }}
     strategy:
       matrix:
-        trim_assets: [ 'false' ]
-        package: [ 'singleFile' ]
-        arch: [ 'x64', 'x86', 'arm64' ]
+        trim_assets: ['false']
+        package: ['singleFile']
+        arch: ['x64', 'x86', 'arm64']
         include:
-          - arch: 'x64'
+          - arch: 'x64' 
             trim_assets: 'true'
             package: 'singleFile'
     name: Build_windows_${{ matrix.arch }}_${{ matrix.trim_assets == 'true' && 'trimmed' || 'full' }}_${{ matrix.package }}
@@ -45,8 +45,8 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
-
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
+      
       - name: List files
         run: ls
       
@@ -59,7 +59,7 @@ jobs:
       # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
-
+      
       - name: Build application
         env:
           trim_assets: ${{ matrix.trim_assets }}
@@ -87,7 +87,7 @@ jobs:
           path: |
             ./out/*.zip
             ./out/*.appx
-  
+          
   build_nupkg:
     runs-on: windows-latest  # For a list of available runner types, refer to
     # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
@@ -103,7 +103,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
       - name: List files
         run: ls
@@ -117,16 +117,16 @@ jobs:
       # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.0.2
-
+        
       - name: Build Nuget packages
         env:
           is_release: ${{ startsWith(github.ref, 'refs/tags/') }}
         run: |
           ls
           pwsh -ep Bypass -c ./tools/release-gen/publish-nupkg.ps1 $env:is_release
-
+      
       - name: Upload Nuget packages to GitHub registry
-        if: ${{ github.event_name != 'pull_request' }}
+        if: ${{ github.event_name != 'pull_request' }} 
         env:
           GHPKG_KEY: ${{ secrets.GHPKG_KEY }}
         run: |
@@ -156,14 +156,14 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+          ref: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
 
       - name: Get commit hash
         uses: prompt/actions-commit-hash@v3
         id: commit
         with:
           prefix: "${{ github.event.inputs.release_tag }}+"
-
+      
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
@@ -212,7 +212,7 @@ jobs:
         run: |
           pwsh -ep Bypass -c ./tools/release-gen/login-github.ps1
           pwsh -ep Bypass -c ./tools/release-gen/upload.ps1
-      
+          
       # - name: Sentry Release
       #   uses: getsentry/action-release@v1.7.0
       #   env:
@@ -222,7 +222,7 @@ jobs:
       #     SENTRY_URL: ${{ vars.SENTRY_URL }}
       #   with:
       #     environment: production
-
+      
       - name: Upload APP to release
         uses: ncipollo/release-action@v1
         with:
@@ -230,7 +230,7 @@ jobs:
           draft: true
           bodyFile: ./out/ChangeLogs.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }}
+          tag: ${{ github.event_name != 'workflow_dispatch' && github.ref || github.event.inputs.release_tag }} 
       - name: Upload Nuget packages to NuGet Gallery
         if: ${{ github.event_name != 'pull_request' }}
         env:

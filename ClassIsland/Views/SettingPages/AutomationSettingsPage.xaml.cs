@@ -21,8 +21,7 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// AutomationSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("automation", "自动化", PackIconKind.ScriptOutline, PackIconKind.ScriptText,
-    SettingsPageCategory.Internal)]
+[SettingsPageInfo("automation", "自动化", PackIconKind.ScriptOutline, PackIconKind.ScriptText, SettingsPageCategory.Internal)]
 public partial class AutomationSettingsPage
 {
     public AutomationSettingsViewModel ViewModel { get; } = new();
@@ -32,8 +31,7 @@ public partial class AutomationSettingsPage
     public IAutomationService AutomationService { get; }
     public ILogger<AutomationSettingsPage> Logger { get; }
 
-    public AutomationSettingsPage(IRulesetService rulesetService, SettingsService settingsService,
-        ILogger<AutomationSettingsPage> logger, IAutomationService automationService)
+    public AutomationSettingsPage(IRulesetService rulesetService, SettingsService settingsService, ILogger<AutomationSettingsPage> logger, IAutomationService automationService)
     {
         RulesetService = rulesetService;
         SettingsService = settingsService;
@@ -50,7 +48,7 @@ public partial class AutomationSettingsPage
 
     private void ButtonAdd_OnClick(object sender, RoutedEventArgs e)
     {
-        AutomationService.Workflows.Add(new Workflow { ActionSet = new ActionSet { Name = "新自动化" } });
+        AutomationService.Workflows.Add(new() { ActionSet = new() { Name = "新自动化" } });
         ViewModel.SelectedAutomation = AutomationService.Workflows.Last();
         ViewModel.IsPanelOpened = true;
     }
@@ -66,8 +64,7 @@ public partial class AutomationSettingsPage
     {
         if (e.Parameter is not Workflow automation) return;
 
-        AutomationService.Workflows.Insert(AutomationService.Workflows.IndexOf(automation) + 1,
-            ConfigureFileHelper.CopyObject(automation));
+        AutomationService.Workflows.Insert(AutomationService.Workflows.IndexOf(automation) + 1, ConfigureFileHelper.CopyObject(automation));
     }
 
     private void CommandDebugInvokeAction_OnExecuted(object sender, ExecutedRoutedEventArgs e)
@@ -91,7 +88,6 @@ public partial class AutomationSettingsPage
             ViewModel.IsPanelOpened = false;
             return;
         }
-
         ViewModel.IsPanelOpened = true;
     }
 
@@ -104,11 +100,13 @@ public partial class AutomationSettingsPage
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             if (((Control)sender).Parent is UIElement parent)
+            {
                 parent.RaiseEvent(new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
                 {
                     RoutedEvent = MouseWheelEvent,
                     Source = sender
                 });
+            }
         }
     }
 
@@ -128,7 +126,10 @@ public partial class AutomationSettingsPage
 
         var path = Path.Combine(Services.AutomationService.AutomationConfigsFolderPath,
             ViewModel.CreateProfileName + ".json");
-        if (r == null || File.Exists(path)) return;
+        if (r == null || File.Exists(path))
+        {
+            return;
+        }
         ConfigureFileHelper.SaveConfig(path, new ObservableCollection<Workflow>());
         AutomationService.RefreshConfigs();
         SettingsService.Settings.CurrentAutomationConfig = ViewModel.CreateProfileName;
@@ -137,7 +138,7 @@ public partial class AutomationSettingsPage
 
     private void ButtonOpenConfigFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo
+        Process.Start(new ProcessStartInfo()
         {
             FileName = Path.GetFullPath(Services.AutomationService.AutomationConfigsFolderPath),
             UseShellExecute = true

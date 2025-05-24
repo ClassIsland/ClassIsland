@@ -42,21 +42,28 @@ public class Profile : ObservableRecipient
 
         // 初始化课表群
         if (!ClassPlanGroups.ContainsKey(ClassPlanGroup.DefaultGroupGuid.ToString()))
-            ClassPlanGroups.Add(ClassPlanGroup.DefaultGroupGuid.ToString(), new ClassPlanGroup
+        {
+            ClassPlanGroups.Add(ClassPlanGroup.DefaultGroupGuid.ToString(), new()
             {
                 Name = "默认"
             });
+        }
         if (!ClassPlanGroups.ContainsKey(ClassPlanGroup.GlobalGroupGuid.ToString()))
-            ClassPlanGroups.Add(ClassPlanGroup.GlobalGroupGuid.ToString(), new ClassPlanGroup
+        {
+            ClassPlanGroups.Add(ClassPlanGroup.GlobalGroupGuid.ToString(), new()
             {
                 Name = "全局课表群",
                 IsGlobal = true
             });
+        }
     }
 
     private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
     {
-        if (e.PropertyName == nameof(Subjects)) Subjects.CollectionChanged -= SubjectsOnCollectionChanged;
+        if (e.PropertyName == nameof(Subjects))
+        {
+            Subjects.CollectionChanged -= SubjectsOnCollectionChanged;
+        }
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -80,7 +87,9 @@ public class Profile : ObservableRecipient
         {
             classPlan.RefreshClassesList();
             foreach (var i in from i in classPlan.Classes where i.CurrentTimeLayoutItem == timePoint select i)
+            {
                 i.SubjectId = subjectId;
+            }
         }
     }
 
@@ -94,11 +103,15 @@ public class Profile : ObservableRecipient
     public void DisbandClassPlanGroup(string id)
     {
         if (id == ClassPlanGroup.GlobalGroupGuid.ToString() || id == ClassPlanGroup.DefaultGroupGuid.ToString())
+        {
             throw new ArgumentException("不能解散默认课表群和全局课表群。", nameof(id));
+        }
 
-        foreach (var i in ClassPlans
+        foreach (var i in ClassPlans   
                      .Where(x => x.Value.AssociatedGroup == id))
+        {
             i.Value.AssociatedGroup = ClassPlanGroup.DefaultGroupGuid.ToString();
+        }
 
         ClassPlanGroups.Remove(id);
     }
@@ -110,15 +123,19 @@ public class Profile : ObservableRecipient
     public void DeleteClassPlanGroup(string id)
     {
         if (id == ClassPlanGroup.GlobalGroupGuid.ToString() || id == ClassPlanGroup.DefaultGroupGuid.ToString())
+        {
             throw new ArgumentException("不能解散删除课表群和全局课表群。", nameof(id));
+        }
 
         foreach (var i in ClassPlans
                      .Where(x => x.Value.AssociatedGroup == id))
+        {
             ClassPlans.Remove(i.Key);
+        }
         ClassPlanGroups.Remove(id);
     }
 
-    private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e = null)
+    private void UpdateEditingSubjects(NotifyCollectionChangedEventArgs? e=null)
     {
         if (e != null)
         {
@@ -152,16 +169,27 @@ public class Profile : ObservableRecipient
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                if (e.NewItems == null) break;
-                foreach (var i in e.NewItems) Subjects[Guid.NewGuid().ToString()] = (Subject)i;
+                if (e.NewItems == null)
+                {
+                    break;
+                }
+                foreach (var i in e.NewItems)
+                {
+                    Subjects[Guid.NewGuid().ToString()] = (Subject)i;
+                }
                 break;
             case NotifyCollectionChangedAction.Remove:
-                if (e.OldItems == null) break;
-                foreach (var i in e.OldItems)
-                foreach (var k in Subjects.Where(k => k.Value == i))
+                if (e.OldItems == null)
                 {
-                    Subjects.Remove(k.Key);
                     break;
+                }
+                foreach (var i in e.OldItems)
+                {
+                    foreach (var k in Subjects.Where(k => k.Value == i))
+                    {
+                        Subjects.Remove(k.Key);
+                        break;
+                    }
                 }
 
                 //Subjects = ConfigureFileHelper.CopyObject(Subjects);
@@ -176,7 +204,10 @@ public class Profile : ObservableRecipient
                 throw new ArgumentOutOfRangeException();
         }
 
-        foreach (var i in Subjects) Console.WriteLine($"{i.Key} {i.Value.Name}");
+        foreach (var i in Subjects)
+        {
+            Console.WriteLine($"{i.Key} {i.Value.Name}" );
+        }
     }
 
     private void SubjectsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

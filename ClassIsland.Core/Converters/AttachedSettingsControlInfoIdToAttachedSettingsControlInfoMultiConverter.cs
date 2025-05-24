@@ -9,9 +9,15 @@ public class
 {
     public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 2) return null;
+        if (values.Length < 2)
+        {
+            return null;
+        }
 
-        if (values[0] is not ICollection<AttachedSettingsControlInfo> c || values[1] is not string id) return null;
+        if (values[0] is not ICollection<AttachedSettingsControlInfo> c || values[1] is not string id)
+        {
+            return null;
+        }
 
         return c.FirstOrDefault(x => x.Guid.ToString() == id);
     }

@@ -61,10 +61,11 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
             WeatherName = App.GetService<IWeatherService>().GetWeatherTextByCode(c);
             WeatherColor = "";
             if (AllowColor)
+            {
                 if (WeatherName.Contains('雨') || WeatherName is "飑")
                     WeatherColor = "Rainy";
+            }
         }
-
         base.OnPropertyChanged(e);
     }
 

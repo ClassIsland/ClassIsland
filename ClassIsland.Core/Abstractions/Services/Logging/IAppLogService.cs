@@ -12,6 +12,5 @@ public interface IAppLogService
     /// 已记录的日志
     /// </summary>
     ObservableCollection<LogEntry> Logs { get; }
-
     internal void AddLog(LogEntry log);
 }

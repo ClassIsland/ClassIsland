@@ -16,7 +16,8 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// </summary>
 public abstract class NotificationProviderControlBase : UserControl, INotifyPropertyChanged
 {
-    [NotNull] internal object? SettingsInternal { get; set; }
+    [NotNull]
+    internal object? SettingsInternal { get; set; }
 
     /// <summary>
     /// 从设置对象获取控件实例。
@@ -27,19 +28,24 @@ public abstract class NotificationProviderControlBase : UserControl, INotifyProp
     public static NotificationProviderControlBase? GetInstance(NotificationProviderInfo info, ref object? settings)
     {
         var control = IAppHost.Host?.Services.GetKeyedService<NotificationProviderControlBase>(info.Guid);
-        if (control == null) return null;
+        if (control == null)
+        {
+            return null;
+        }
 
         var baseType = info.SettingsType!.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json) settingsReal = json.Deserialize(settingsType);
+            if (settingsReal is JsonElement json)
+            {
+                settingsReal = json.Deserialize(settingsType);
+            }
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;
         }
-
         return control;
     }
 
@@ -53,19 +59,24 @@ public abstract class NotificationProviderControlBase : UserControl, INotifyProp
     public static NotificationProviderControlBase? GetInstance(NotificationChannelInfo info, ref object? settings)
     {
         var control = IAppHost.Host?.Services.GetKeyedService<NotificationProviderControlBase>(info.Guid);
-        if (control == null) return null;
+        if (control == null)
+        {
+            return null;
+        }
 
         var baseType = info.SettingsControlType!.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json) settingsReal = json.Deserialize(settingsType);
+            if (settingsReal is JsonElement json)
+            {
+                settingsReal = json.Deserialize(settingsType);
+            }
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;
         }
-
         return control;
     }
 

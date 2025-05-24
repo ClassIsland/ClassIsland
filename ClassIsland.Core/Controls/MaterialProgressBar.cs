@@ -13,7 +13,7 @@ public class MaterialProgressBar : ProgressBar
 
     public double ForegroundScale
     {
-        get => (double)GetValue(ForegroundScaleProperty);
-        set => SetValue(ForegroundScaleProperty, value);
+        get { return (double)GetValue(ForegroundScaleProperty); }
+        set { SetValue(ForegroundScaleProperty, value); }
     }
 }

@@ -7,7 +7,10 @@ public class ExceptionToExceptionHeaderConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value == null) return "";
+        if (value == null)
+        {
+            return "";
+        }
         return $"{value.GetType()}: {((Exception)value).Message}";
     }
 

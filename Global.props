@@ -1,70 +1,70 @@
 <Project>
-    <PropertyGroup>
-        <!-- we'll do our own versioning -->
-        <GitVersion>false</GitVersion>
-        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-        <EnableWindowsTargeting>true</EnableWindowsTargeting>
-    </PropertyGroup>
+	<PropertyGroup>
+		<!-- we'll do our own versioning -->
+		<GitVersion>false</GitVersion>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="GitInfo" Version="2.3.0">
-            <PrivateAssets>all</PrivateAssets>
-        </PackageReference>
-        <Compile Include="..\AssemblyInfo.cs">
-            <LinkBase>Properties</LinkBase>
-        </Compile>
-    </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="GitInfo" Version="2.3.0">
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<Compile Include="..\AssemblyInfo.cs">
+			<LinkBase>Properties</LinkBase>
+		</Compile>
+	</ItemGroup>
 
-    <!--<Target Name="PopulateInfo" DependsOnTargets="GitVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
-        <PropertyGroup>
-            <Version>$(GitBaseTag)</Version>
-        </PropertyGroup>
-    </Target>-->
+	<!--<Target Name="PopulateInfo" DependsOnTargets="GitVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageContents">
+		<PropertyGroup>
+			<Version>$(GitBaseTag)</Version>
+		</PropertyGroup>
+	</Target>-->
 
-    <PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX'">
-        <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
-        <IsMsix>true</IsMsix>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)'=='Release_MSIX'">
-        <IsMsix>true</IsMsix>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='x64'">
-        <DefineConstants>$(DefineConstants);PLATFORM_x64</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='x86'">
-        <DefineConstants>$(DefineConstants);PLATFORM_x86</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='arm64'">
-        <DefineConstants>$(DefineConstants);PLATFORM_ARM64</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='arm'">
-        <DefineConstants>$(DefineConstants);PLATFORM_ARM</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='Any CPU'">
-        <DefineConstants>$(DefineConstants);PLATFORM_Any</DefineConstants>
-    </PropertyGroup>
-    <!-- <PropertyGroup Condition="'$(IsMsix)'=='true'">
-        <Platform>AnyCPU</Platform>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-    </PropertyGroup>
-    <Target Name="OverrideProperties" BeforeTargets="PrepareForBuild" Condition="'$(IsMsix)'=='true'">
-        <Message Text="Overriding properties for MSIX build" Importance="high" />
-        <PropertyGroup>
-            <RuntimeIdentifier></RuntimeIdentifier>
-        </PropertyGroup>
-    </Target> -->
+	<PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX'">
+		<DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+		<IsMsix>true</IsMsix>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release_MSIX'">
+		<IsMsix>true</IsMsix>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='x64'">
+		<DefineConstants>$(DefineConstants);PLATFORM_x64</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='x86'">
+		<DefineConstants>$(DefineConstants);PLATFORM_x86</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='arm64'">
+		<DefineConstants>$(DefineConstants);PLATFORM_ARM64</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='arm'">
+		<DefineConstants>$(DefineConstants);PLATFORM_ARM</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(ClassIsland_PlatformTarget)'=='Any CPU'">
+		<DefineConstants>$(DefineConstants);PLATFORM_Any</DefineConstants>
+	</PropertyGroup>
+	<!-- <PropertyGroup Condition="'$(IsMsix)'=='true'">
+		<Platform>AnyCPU</Platform>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+	<Target Name="OverrideProperties" BeforeTargets="PrepareForBuild" Condition="'$(IsMsix)'=='true'">
+		<Message Text="Overriding properties for MSIX build" Importance="high" />
+		<PropertyGroup>
+			<RuntimeIdentifier></RuntimeIdentifier>
+		</PropertyGroup>
+	</Target> -->
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
-    </ItemGroup>
-    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-    </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+	</ItemGroup>
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
 
-    <PropertyGroup>
-        <DebugType>embedded</DebugType>
-        <DebugSymbols>true</DebugSymbols>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    </PropertyGroup>
+	<PropertyGroup>
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	</PropertyGroup>
 </Project>

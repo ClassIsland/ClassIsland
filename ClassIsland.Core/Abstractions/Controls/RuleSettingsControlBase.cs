@@ -16,7 +16,8 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// </summary>
 public abstract class RuleSettingsControlBase : UserControl, INotifyPropertyChanged
 {
-    [NotNull] internal object? SettingsInternal { get; set; }
+    [NotNull]
+    internal object? SettingsInternal { get; set; }
 
     /// <summary>
     /// 从设置对象获取控件实例。
@@ -27,21 +28,29 @@ public abstract class RuleSettingsControlBase : UserControl, INotifyPropertyChan
     public static RuleSettingsControlBase? GetInstance(RuleRegistryInfo info, ref object? settings)
     {
         var control = IAppHost.Host?.Services.GetKeyedService<RuleSettingsControlBase>(info.Id);
-        if (control == null || info.SettingsControlType == null) return null;
+        if (control == null || info.SettingsControlType == null)
+        {
+            return null;
+        }
 
         var baseType = info.SettingsControlType.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json) settingsReal = json.Deserialize(settingsType);
+            if (settingsReal is JsonElement json)
+            {
+                settingsReal = json.Deserialize(settingsType);
+            }
 
-            if (settingsReal?.GetType() != settingsType) settingsReal = Activator.CreateInstance(settingsType);
+            if (settingsReal?.GetType() != settingsType)
+            {
+                settingsReal = Activator.CreateInstance(settingsType);
+            }
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;
         }
-
         return control;
     }
 

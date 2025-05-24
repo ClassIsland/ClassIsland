@@ -11,24 +11,20 @@ public interface IWeatherService
     /// 天气状态列表
     /// </summary>
     List<XiaomiWeatherStatusCodeItem> WeatherStatusList { get; set; }
-
     /// <summary>
     /// 天气是否已经刷新
     /// </summary>
     bool IsWeatherRefreshed { get; set; }
-
     /// <summary>
     /// 立刻查询天气
     /// </summary>
     Task QueryWeatherAsync();
-
     /// <summary>
     /// 根据天气代码获得天气名称
     /// </summary>
     /// <param name="code">天气代码</param>
     /// <returns>对应的天气名称。如果不存在，则返回“未知”。</returns>
     string GetWeatherTextByCode(string code);
-
     /// <summary>
     /// 按省份和城市名搜索城市
     /// </summary>

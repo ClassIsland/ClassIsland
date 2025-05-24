@@ -10,8 +10,8 @@ public class DialogAction : DependencyObject
 
     public string Name
     {
-        get => (string)GetValue(NameProperty);
-        set => SetValue(NameProperty, value);
+        get { return (string)GetValue(NameProperty); }
+        set { SetValue(NameProperty, value); }
     }
 
     public static readonly DependencyProperty UseCustomIconProperty = DependencyProperty.Register(
@@ -19,8 +19,8 @@ public class DialogAction : DependencyObject
 
     public bool UseCustomIcon
     {
-        get => (bool)GetValue(UseCustomIconProperty);
-        set => SetValue(UseCustomIconProperty, value);
+        get { return (bool)GetValue(UseCustomIconProperty); }
+        set { SetValue(UseCustomIconProperty, value); }
     }
 
     public static readonly DependencyProperty PackIconKindProperty = DependencyProperty.Register(
@@ -28,8 +28,8 @@ public class DialogAction : DependencyObject
 
     public PackIconKind PackIconKind
     {
-        get => (PackIconKind)GetValue(PackIconKindProperty);
-        set => SetValue(PackIconKindProperty, value);
+        get { return (PackIconKind)GetValue(PackIconKindProperty); }
+        set { SetValue(PackIconKindProperty, value); }
     }
 
     public static readonly DependencyProperty CustomIconProperty = DependencyProperty.Register(
@@ -37,8 +37,8 @@ public class DialogAction : DependencyObject
 
     public object CustomIcon
     {
-        get => (object)GetValue(CustomIconProperty);
-        set => SetValue(CustomIconProperty, value);
+        get { return (object)GetValue(CustomIconProperty); }
+        set { SetValue(CustomIconProperty, value); }
     }
 
     public static readonly DependencyProperty IsPrimaryProperty = DependencyProperty.Register(
@@ -46,7 +46,7 @@ public class DialogAction : DependencyObject
 
     public bool IsPrimary
     {
-        get => (bool)GetValue(IsPrimaryProperty);
-        set => SetValue(IsPrimaryProperty, value);
+        get { return (bool)GetValue(IsPrimaryProperty); }
+        set { SetValue(IsPrimaryProperty, value); }
     }
 }
