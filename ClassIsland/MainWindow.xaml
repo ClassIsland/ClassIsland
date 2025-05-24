@@ -11,6 +11,7 @@
         SnapsToDevicePixels="True"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
         xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
@@ -38,6 +39,35 @@
                         Executed="TrayIconOnClicked_OnExecuted" />
     </Window.CommandBindings>
     <Window.Resources>
+        <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter" />
+        <Style TargetType="FrameworkElement" x:Key="DockingStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                             Value="0">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                             Value="1">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                             Value="2">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                             Value="3">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                             Value="4">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                             Value="5">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <CollectionViewSource x:Key="ComponentsCollectionViewSource"
                               Source="{Binding ComponentsService.CurrentComponents}"
                               IsLiveGroupingRequested="True"

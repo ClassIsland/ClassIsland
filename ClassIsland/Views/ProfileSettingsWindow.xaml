@@ -10,6 +10,7 @@
                     xmlns:dd="urn:gong-wpf-dragdrop"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
+                    xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
                     xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
                     xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
                     xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
@@ -46,6 +47,7 @@
     <Window.Resources>
         <converters1:SubjectIdToSubjectConverter x:Key="SubjectIdToSubjectConverter" />
         <converters1:ClassPlanGroupIdToClassPlanGroupConverter x:Key="ClassPlanGroupIdToClassPlanGroupConverter" />
+        <converters1:ClassPlanDictionaryValueAccessConverter x:Key="ClassPlanDictionaryValueAccessConverter" />
         <Style BasedOn="{StaticResource MaterialDesignDataGridComboBox}" TargetType="{x:Type ComboBox}"
                x:Key="ClassPlanDataGridComboBoxStyle">
             <Setter Property="ItemTemplate">
@@ -83,6 +85,7 @@
         <!-- 管理档案 -->
 
         <!-- 课表群管理 -->
+        <converters1:TempClassPlanGroupTypeToIntConverter x:Key="TempClassPlanGroupTypeToIntConverter" />
 
         <Style TargetType="ListBox" BasedOn="{StaticResource MaterialDesignNavigationPrimaryListBox}"
                x:Key="NavigationListBox" />
