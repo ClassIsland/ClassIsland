@@ -14,7 +14,6 @@ namespace ClassIsland.Controls.NotificationProviders;
 /// </summary>
 public partial class WeatherNotificationProviderSettingsControl
 {
-
     public WeatherNotificationProviderSettingsControl()
     {
         InitializeComponent();
@@ -22,6 +21,8 @@ public partial class WeatherNotificationProviderSettingsControl
 
     private void ButtonShowAttachedSettingsInfo_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("7625DE96-38AA-4B71-B478-3F156DD9458D"))));
+        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(
+            IAttachedSettingsHostService.RegisteredControls.First(x =>
+                x.Guid == new Guid("7625DE96-38AA-4B71-B478-3F156DD9458D"))));
     }
 }

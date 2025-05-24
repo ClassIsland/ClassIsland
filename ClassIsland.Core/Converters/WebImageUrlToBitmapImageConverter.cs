@@ -13,9 +13,9 @@ public class WebImageUrlToBitmapImageConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         var url = (string)value;
-        var img = BitmapFrame.Create(new Uri(url, UriKind.RelativeOrAbsolute), 
-            BitmapCreateOptions.DelayCreation, 
-            BitmapCacheOption.Default, 
+        var img = BitmapFrame.Create(new Uri(url, UriKind.RelativeOrAbsolute),
+            BitmapCreateOptions.DelayCreation,
+            BitmapCacheOption.Default,
             new RequestCachePolicy(RequestCacheLevel.BypassCache));
         return img;
     }

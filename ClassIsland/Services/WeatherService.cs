@@ -40,7 +40,8 @@ public class WeatherService : IHostedService, IWeatherService
 
     public bool IsPosUpdated { get; set; } = false;
 
-    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger, IRulesetService rulesetService, ILocationService locationService)
+    public WeatherService(SettingsService settingsService, ILogger<WeatherService> logger,
+        IRulesetService rulesetService, ILocationService locationService)
     {
         Logger = logger;
         RulesetService = rulesetService;
@@ -57,22 +58,16 @@ public class WeatherService : IHostedService, IWeatherService
 
     private bool RainTimeRuleHandler(object? o)
     {
-        if (o is not RainTimeRuleSettings settings)
-        {
-            return false;
-        }
+        if (o is not RainTimeRuleSettings settings) return false;
 
-        var baseTime = (settings.IsRemainingTime ? -1.0 : 1.0) * Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes;
+        var baseTime = (settings.IsRemainingTime ? -1.0 : 1.0) *
+                       Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes;
         return baseTime > 0 && baseTime <= settings.RainTimeMinutes;
-        
     }
 
     private bool HasAlertRuleHandler(object? o)
     {
-        if (o is not StringMatchingSettings settings)
-        {
-            return false;
-        }
+        if (o is not StringMatchingSettings settings) return false;
 
         return IsWeatherRefreshed &&
                Settings.LastWeatherInfo.Alerts.Exists(x => settings.IsMatching(x.Title));
@@ -80,10 +75,7 @@ public class WeatherService : IHostedService, IWeatherService
 
     private bool CurrentWeatherRuleHandler(object? o)
     {
-        if (o is not CurrentWeatherRuleSettings settings)
-        {
-            return false;
-        }
+        if (o is not CurrentWeatherRuleSettings settings) return false;
 
         return IsWeatherRefreshed &&
                settings.WeatherId.ToString() == Settings.LastWeatherInfo.Current.Weather;
@@ -119,18 +111,20 @@ public class WeatherService : IHostedService, IWeatherService
                 Logger.LogError(exception, "无法获取当前位置");
             }
         }
-        
+
         var cityLatitude = string.Empty;
         var cityLongitude = string.Empty;
-        
+
         // 获取城市信息
         try
         {
             using var http = new HttpClient();
             var uri = Settings.WeatherLocationSource switch
             {
-                0 => $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn",
-                1 => $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/geo?longitude={Settings.WeatherLongitude}&latitude={Settings.WeatherLatitude}&locale=zh_cn",
+                0 =>
+                    $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/info?locationKey={Settings.CityId}&locale=zh_cn",
+                1 =>
+                    $"https://weatherapi.market.xiaomi.com/wtr-v3/location/city/geo?longitude={Settings.WeatherLongitude}&latitude={Settings.WeatherLatitude}&locale=zh_cn",
                 _ => throw new ArgumentOutOfRangeException()
             };
             Logger.LogInformation("获取城市信息： {}", uri);
@@ -138,7 +132,7 @@ public class WeatherService : IHostedService, IWeatherService
             // 取第一个城市信息
             var cityInfo = cityInfoList.FirstOrDefault();
             if (cityInfo != null && (Settings.WeatherLocationSource != 0 || cityInfo.LocationKey == Settings.CityId)
-                && !string.IsNullOrWhiteSpace(cityInfo.LocationKey))
+                                 && !string.IsNullOrWhiteSpace(cityInfo.LocationKey))
             {
                 cityLatitude = cityInfo.Latitude;
                 cityLongitude = cityInfo.Longitude;
@@ -155,7 +149,7 @@ public class WeatherService : IHostedService, IWeatherService
         {
             Logger.LogError(ex, "获取城市信息失败。");
         }
-        
+
         // 请求天气信息
         try
         {
@@ -165,7 +159,7 @@ public class WeatherService : IHostedService, IWeatherService
             Logger.LogInformation("获取天气信息： {}", uri);
             var info = await WebRequestHelper.GetJson<WeatherInfo>(new Uri(uri));
             info.Alerts.RemoveAll(i => Settings.ExcludedWeatherAlerts.FirstOrDefault(x =>
-                (!string.IsNullOrWhiteSpace(x)) && i.Title.Contains(x)) != null);
+                !string.IsNullOrWhiteSpace(x) && i.Title.Contains(x)) != null);
             Settings.LastWeatherInfo = info;
             IsWeatherRefreshed = true;
         }
@@ -203,7 +197,7 @@ public class WeatherService : IHostedService, IWeatherService
             Logger.LogInformation("{}： {}", logText, uri);
 
             var cityInfoList = await WebRequestHelper.GetJson<List<CityInfo>>(uri);
-            
+
             var cities = cityInfoList?.Select(cityInfo => new City
             {
                 Name = $"{cityInfo.Name} ({cityInfo.Affiliation})",

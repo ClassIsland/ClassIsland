@@ -44,5 +44,6 @@ public interface IProfileAnalyzeService : INotifyPropertyChanged
     /// <param name="id">附加设置 ID</param>
     /// <param name="requiresEnabled"></param>
     /// <returns></returns>
-    List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id, bool requiresEnabled = true);
+    List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id,
+        bool requiresEnabled = true);
 }

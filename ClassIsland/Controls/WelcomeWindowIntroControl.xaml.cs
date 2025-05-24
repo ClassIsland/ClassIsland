@@ -33,6 +33,7 @@ public partial class WelcomeWindowIntroControl : UserControl
             while (HangService.IsHang)
             {
             }
+
             Play("Outro");
         });
         base.OnInitialized(e);
@@ -40,9 +41,6 @@ public partial class WelcomeWindowIntroControl : UserControl
 
     private void Play(string key)
     {
-        Dispatcher.Invoke(() =>
-        {
-            BeginStoryboard((Storyboard)FindResource(key));
-        });
+        Dispatcher.Invoke(() => { BeginStoryboard((Storyboard)FindResource(key)); });
     }
 }

@@ -11,7 +11,6 @@ using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using MaterialDesignThemes.Wpf;
-
 using NotificationRequest = ClassIsland.Core.Models.Notification.NotificationRequest;
 
 namespace ClassIsland.Services.NotificationProviders;
@@ -25,28 +24,31 @@ public class AfterSchoolNotificationProvider : NotificationProviderBase<AfterSch
 
     private IExactTimeService ExactTimeService { get; }
 
-    public AfterSchoolNotificationProvider(INotificationHostService notificationHostService, IAttachedSettingsHostService attachedSettingsHostService, ILessonsService lessonsService, IExactTimeService exactTimeService)
+    public AfterSchoolNotificationProvider(INotificationHostService notificationHostService,
+        IAttachedSettingsHostService attachedSettingsHostService, ILessonsService lessonsService,
+        IExactTimeService exactTimeService)
     {
         NotificationHostService = notificationHostService;
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
         LessonsService.OnAfterSchool += OnAfterSchool;
-
     }
 
     private void OnAfterSchool(object? sender, EventArgs e)
     {
         var settings = (IAfterSchoolNotificationProviderSettingsBase?)GetAttachedSettings() ?? Settings;
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
-        var afterSchoolTime = LessonsService.CurrentClassPlan?.ValidTimeLayoutItems.LastOrDefault(i => i.TimeType is 0 or 1)?.EndSecond.TimeOfDay;
+        var afterSchoolTime = LessonsService.CurrentClassPlan?.ValidTimeLayoutItems
+            .LastOrDefault(i => i.TimeType is 0 or 1)?.EndSecond.TimeOfDay;
         if (!settings.IsEnabled ||
-            (now - afterSchoolTime) > TimeSpan.FromSeconds(10))
+            now - afterSchoolTime > TimeSpan.FromSeconds(10))
             return;
 
         ShowNotification(new NotificationRequest
         {
             MaskContent = NotificationContent.CreateTwoIconsMask("放学", rightIcon: PackIconKind.ExitRun),
-            OverlayContent = NotificationContent.CreateSimpleTextContent(settings.NotificationMsg, x => x.Duration=TimeSpan.FromSeconds(30))
+            OverlayContent = NotificationContent.CreateSimpleTextContent(settings.NotificationMsg,
+                x => x.Duration = TimeSpan.FromSeconds(30))
         });
     }
 

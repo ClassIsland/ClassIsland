@@ -7,5 +7,4 @@ namespace ClassIsland.Core.Extensions;
 /// </summary>
 public static class NotificationProviderExtensions
 {
-    
 }

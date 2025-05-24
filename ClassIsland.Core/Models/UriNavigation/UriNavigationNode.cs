@@ -46,10 +46,7 @@ internal class UriNavigationNode(string name)
             }
         }
 
-        if (!Children.ContainsKey(paths[0]))
-        {
-            Children[paths[0]] = new UriNavigationNode(paths[0]);
-        }
+        if (!Children.ContainsKey(paths[0])) Children[paths[0]] = new UriNavigationNode(paths[0]);
 
         return Children[paths[0]].AddNode(paths[1..], onNavigated);
     }

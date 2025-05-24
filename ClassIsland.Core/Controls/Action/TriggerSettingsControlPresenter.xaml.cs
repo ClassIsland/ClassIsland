@@ -24,34 +24,29 @@ namespace ClassIsland.Core.Controls.Action;
 public partial class TriggerSettingsControlPresenter : UserControl
 {
     public static readonly DependencyProperty SettingsProperty = DependencyProperty.Register(
-        nameof(Settings), typeof(TriggerSettings), typeof(TriggerSettingsControlPresenter), new PropertyMetadata(default(TriggerSettings),
+        nameof(Settings), typeof(TriggerSettings), typeof(TriggerSettingsControlPresenter), new PropertyMetadata(
+            default(TriggerSettings),
             (o, args) =>
             {
-                if (o is TriggerSettingsControlPresenter control)
-                {
-                    control.UpdateContent();
-                }
+                if (o is TriggerSettingsControlPresenter control) control.UpdateContent();
             }));
 
     public TriggerSettings? Settings
     {
-        get { return (TriggerSettings)GetValue(SettingsProperty); }
-        set { SetValue(SettingsProperty, value); }
+        get => (TriggerSettings)GetValue(SettingsProperty);
+        set => SetValue(SettingsProperty, value);
     }
 
     public static readonly DependencyProperty IdProperty = DependencyProperty.Register(
         nameof(Id), typeof(string), typeof(TriggerSettingsControlPresenter), new PropertyMetadata("", (o, args) =>
         {
-            if (o is TriggerSettingsControlPresenter control)
-            {
-                control.UpdateContent();
-            }
+            if (o is TriggerSettingsControlPresenter control) control.UpdateContent();
         }));
 
     public string? Id
     {
-        get { return (string)GetValue(IdProperty); }
-        set { SetValue(IdProperty, value); }
+        get => (string)GetValue(IdProperty);
+        set => SetValue(IdProperty, value);
     }
 
     public TriggerSettingsControlPresenter()
@@ -61,14 +56,12 @@ public partial class TriggerSettingsControlPresenter : UserControl
 
     private void UpdateContent()
     {
-        if (Settings is not { AssociatedTriggerInfo: not null })
-        {
-            return;
-        }
-        
+        if (Settings is not { AssociatedTriggerInfo: not null }) return;
+
 
         var settings = Settings.Settings;
-        RootContentPresenter.Content = TriggerSettingsControlBase.GetInstance(Settings.AssociatedTriggerInfo, ref settings);
+        RootContentPresenter.Content =
+            TriggerSettingsControlBase.GetInstance(Settings.AssociatedTriggerInfo, ref settings);
         Settings.Settings = settings;
     }
 }

@@ -10,8 +10,8 @@ public class WizardOption : DependencyObject
 
     public string Header
     {
-        get { return (string)GetValue(HeaderProperty); }
-        set { SetValue(HeaderProperty, value); }
+        get => (string)GetValue(HeaderProperty);
+        set => SetValue(HeaderProperty, value);
     }
 
     public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(
@@ -19,8 +19,8 @@ public class WizardOption : DependencyObject
 
     public string Content
     {
-        get { return (string)GetValue(ContentProperty); }
-        set { SetValue(ContentProperty, value); }
+        get => (string)GetValue(ContentProperty);
+        set => SetValue(ContentProperty, value);
     }
 
     public static readonly DependencyProperty InvokeCommandProperty = DependencyProperty.Register(
@@ -28,8 +28,8 @@ public class WizardOption : DependencyObject
 
     public ICommand InvokeCommand
     {
-        get { return (ICommand)GetValue(InvokeCommandProperty); }
-        set { SetValue(InvokeCommandProperty, value); }
+        get => (ICommand)GetValue(InvokeCommandProperty);
+        set => SetValue(InvokeCommandProperty, value);
     }
 
     public static readonly DependencyProperty InvokeCommandParameterProperty = DependencyProperty.Register(
@@ -37,7 +37,7 @@ public class WizardOption : DependencyObject
 
     public object InvokeCommandParameter
     {
-        get { return (object)GetValue(InvokeCommandParameterProperty); }
-        set { SetValue(InvokeCommandParameterProperty, value); }
+        get => (object)GetValue(InvokeCommandParameterProperty);
+        set => SetValue(InvokeCommandParameterProperty, value);
     }
 }

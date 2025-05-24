@@ -1,15 +1,14 @@
 ﻿using System.Windows.Controls;
 
-namespace ClassIsland.Controls.RuleSettingsControls
+namespace ClassIsland.Controls.RuleSettingsControls;
+
+/// <summary>
+/// WindowClassNameRuleSettingsControl.xaml 的交互逻辑
+/// </summary>
+public partial class WindowClassNameRuleSettingsControl : UserControl
 {
-    /// <summary>
-    /// WindowClassNameRuleSettingsControl.xaml 的交互逻辑
-    /// </summary>
-    public partial class WindowClassNameRuleSettingsControl : UserControl
+    public WindowClassNameRuleSettingsControl()
     {
-        public WindowClassNameRuleSettingsControl()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

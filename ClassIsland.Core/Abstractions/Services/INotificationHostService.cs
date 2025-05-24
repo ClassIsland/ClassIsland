@@ -17,9 +17,9 @@ public interface INotificationHostService : IHostedService, INotifyPropertyChang
 {
     internal PriorityQueue<NotificationRequest, NotificationPriority> RequestQueue { get; }
     internal ObservableCollection<NotificationProviderRegisterInfo> NotificationProviders { get; }
-    
+
     internal NotificationRequest? CurrentRequest { get; set; }
-    
+
     internal NotificationRequest GetRequest();
 
     /// <summary>

@@ -7,7 +7,6 @@ using System.Windows.Media.Imaging;
 using ClassIsland.Core.Abstractions.Services;
 using H.NotifyIcon;
 using H.NotifyIcon.Core;
-
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -17,14 +16,13 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
 {
     public ILogger<TaskBarIconService> Logger { get; }
 
-    public TaskbarIcon MainTaskBarIcon
+    public TaskbarIcon MainTaskBarIcon { get; } = new()
     {
-        get;
-    } = new()
-    {
-        IconSource = new GeneratedIconSource()
+        IconSource = new GeneratedIconSource
         {
-            BackgroundSource = new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png", UriKind.Absolute)),
+            BackgroundSource =
+                new BitmapImage(new Uri("pack://application:,,,/ClassIsland;component/Assets/AppLogo.png",
+                    UriKind.Absolute))
         },
         MenuActivation = PopupActivationMode.RightClick,
         ToolTipText = "ClassIsland"
@@ -54,7 +52,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
                 Logger.LogError(e, "无法显示气泡通知");
             }
         }
-        
+
         CurrentNotificationCallback = null;
         IsProcessingNotifications = false;
     }
@@ -71,10 +69,7 @@ public class TaskBarIconService : IHostedService, ITaskBarIconService
             CurrentNotificationCallback = clickedCallback;
             MainTaskBarIcon.ShowNotification(title, content, icon);
         });
-        if (!IsProcessingNotifications)
-        {
-            ProcessNotification();
-        }
+        if (!IsProcessingNotifications) ProcessNotification();
     }
 
     public TaskBarIconService(ILogger<TaskBarIconService> logger)

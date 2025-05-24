@@ -62,7 +62,7 @@ public class CommonDialogBuilder
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
     public CommonDialogBuilder SetBitmapIcon(BitmapSource source, double width = 64, double height = 64)
     {
-        Dialog.DialogIcon = new Image()
+        Dialog.DialogIcon = new Image
         {
             Source = source,
             Width = width,
@@ -81,8 +81,10 @@ public class CommonDialogBuilder
     /// 如果您想设置一个内置的表情包图标，建议使用 <see cref="SetIconKind"/> 方法。此方法可以在【禁用彩蛋】策略启用时自动切换到对应的 <see cref="PackIcon"/> 图标。
     /// </remarks>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder SetBitmapIcon(Uri uri, double width = 64, double height = 64) =>
-        SetBitmapIcon(new BitmapImage(uri), width, height);
+    public CommonDialogBuilder SetBitmapIcon(Uri uri, double width = 64, double height = 64)
+    {
+        return SetBitmapIcon(new BitmapImage(uri), width, height);
+    }
 
     /// <summary>
     /// 设置图标类型。
@@ -124,7 +126,7 @@ public class CommonDialogBuilder
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
     public CommonDialogBuilder SetPackIcon(PackIconKind kind, double width = 64, double height = 64)
     {
-        Dialog.DialogIcon = new PackIcon()
+        Dialog.DialogIcon = new PackIcon
         {
             Kind = kind,
             Width = width,
@@ -162,9 +164,9 @@ public class CommonDialogBuilder
     /// <param name="icon">操作的图标包类型</param>
     /// <param name="isPrimary">操作是否是主要操作，按下 Enter 时将默认选择</param>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddAction(string name, PackIconKind icon, bool isPrimary=false)
+    public CommonDialogBuilder AddAction(string name, PackIconKind icon, bool isPrimary = false)
     {
-        return AddAction(new DialogAction()
+        return AddAction(new DialogAction
         {
             Name = name,
             PackIconKind = icon,
@@ -176,38 +178,53 @@ public class CommonDialogBuilder
     /// 添加一个“确定”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddConfirmAction() => AddAction("确定", PackIconKind.Check);
+    public CommonDialogBuilder AddConfirmAction()
+    {
+        return AddAction("确定", PackIconKind.Check);
+    }
 
     /// <summary>
     /// 添加一个“是”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddYesAction() => AddAction("是", PackIconKind.Check);
+    public CommonDialogBuilder AddYesAction()
+    {
+        return AddAction("是", PackIconKind.Check);
+    }
 
     /// <summary>
     /// 添加一个“否”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddNoAction() => AddAction("否", PackIconKind.Close);
+    public CommonDialogBuilder AddNoAction()
+    {
+        return AddAction("否", PackIconKind.Close);
+    }
 
     /// <summary>
     /// 添加一个“取消”操作按钮。
     /// </summary>
     /// <returns>原来的 <see cref="CommonDialogBuilder"/> 对象</returns>
-    public CommonDialogBuilder AddCancelAction() => AddAction("取消", PackIconKind.Cancel);
+    public CommonDialogBuilder AddCancelAction()
+    {
+        return AddAction("取消", PackIconKind.Cancel);
+    }
 
     /// <summary>
     /// 获得构建的 <see cref="CommonDialog"/> 对象。
     /// </summary>
     /// <returns>构建的 <see cref="CommonDialog"/> 对象</returns>
-    public CommonDialog.CommonDialog Build() => Dialog;
+    public CommonDialog.CommonDialog Build()
+    {
+        return Dialog;
+    }
 
     /// <summary>
     /// 显示构建的对话框。
     /// </summary>
     /// <param name="owner">对话框所有者</param>
     /// <returns>对话框选择的返回值</returns>
-    public int ShowDialog(Window? owner=null)
+    public int ShowDialog(Window? owner = null)
     {
         Dialog.Owner = owner;
         Dialog.ShowDialog();

@@ -5,11 +5,7 @@ namespace ClassIsland.Validations;
 
 public class SameStringValidationRule : ValidationRule
 {
-    public string ErrorMessage
-    {
-        get;
-        set;
-    } = "";
+    public string ErrorMessage { get; set; } = "";
 
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {

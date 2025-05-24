@@ -18,14 +18,18 @@ public interface IAttachedSettingsHostService
 
     public static ObservableCollection<AttachedSettingsControlInfo>
         TimeLayoutSettingsAttachedSettingsControls { get; } = new();
-    public static ObservableCollection<AttachedSettingsControlInfo> ClassPlanSettingsAttachedSettingsControls { get; } = new();
-    public static ObservableCollection<AttachedSettingsControlInfo> SubjectSettingsAttachedSettingsControls { get; } = new();
-    
-    public static T? GetAttachedSettingsByPriority<T>(Guid id, 
+
+    public static ObservableCollection<AttachedSettingsControlInfo> ClassPlanSettingsAttachedSettingsControls { get; } =
+        new();
+
+    public static ObservableCollection<AttachedSettingsControlInfo> SubjectSettingsAttachedSettingsControls { get; } =
+        new();
+
+    public static T? GetAttachedSettingsByPriority<T>(Guid id,
         Subject? subject = null,
-        TimeLayoutItem? timeLayoutItem = null, 
-        ClassPlan? classPlan = null, 
-        TimeLayout? timeLayout = null) 
+        TimeLayoutItem? timeLayoutItem = null,
+        ClassPlan? classPlan = null,
+        TimeLayout? timeLayout = null)
         where T : IAttachedSettings
     {
         var l = new AttachableSettingsObject?[] { subject, timeLayoutItem, classPlan, timeLayout };
@@ -33,10 +37,7 @@ public interface IAttachedSettingsHostService
         {
             if (i == null) continue;
             var o = i.GetAttachedObject<T>(id);
-            if (o?.IsAttachSettingsEnabled == true)
-            {
-                return o;
-            }
+            if (o?.IsAttachSettingsEnabled == true) return o;
         }
 
         return default;

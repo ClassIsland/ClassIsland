@@ -1,7 +1,5 @@
 ﻿using System;
-
 using ClassIsland.Models;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 using MaterialDesignThemes.Wpf;
 
@@ -27,10 +25,7 @@ public class WelcomeViewModel : ObservableRecipient
     private bool _requiresRestarting = false;
     private DateTime _singleWeekStartTime = DateTime.Now;
 
-    public Guid DialogId
-    {
-        get;
-    } = Guid.NewGuid();
+    public Guid DialogId { get; } = Guid.NewGuid();
 
     public int MasterTabIndex
     {

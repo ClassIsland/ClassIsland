@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-
 using ClassIsland.Controls;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.Management;
@@ -11,26 +10,19 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Helpers;
 using ClassIsland.Services;
 using ClassIsland.ViewModels;
-
 using MaterialDesignThemes.Wpf;
-
 using Microsoft.Extensions.Logging;
-
 using WindowsShortcutFactory;
-
 using Path = System.IO.Path;
 
 namespace ClassIsland.Views;
+
 /// <summary>
 /// WelcomeWindow.xaml 的交互逻辑
 /// </summary>
 public partial class WelcomeWindow : MyWindow
 {
-    public WelcomeViewModel ViewModel
-    {
-        get;
-        set;
-    } = new();
+    public WelcomeViewModel ViewModel { get; set; } = new();
 
     public SettingsService SettingsService { get; } = App.GetService<SettingsService>();
 
@@ -65,8 +57,10 @@ public partial class WelcomeWindow : MyWindow
         ViewModel.IsExitConfirmed = true;
         DialogResult = true;
         var startupPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "ClassIsland.lnk");
-        var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "ClassIsland.lnk");
-        var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "ClassIsland.lnk");
+        var startMenuPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu),
+            "ClassIsland.lnk");
+        var desktopPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+            "ClassIsland.lnk");
         using var shortcut = new WindowsShortcut();
         shortcut.Path = Environment.ProcessPath;
         shortcut.WorkingDirectory = Environment.CurrentDirectory;
@@ -89,24 +83,15 @@ public partial class WelcomeWindow : MyWindow
         }
 
         Close();
-        if (ViewModel.RequiresRestarting)
-        {
-            AppBase.Current.Restart();
-        }
+        if (ViewModel.RequiresRestarting) AppBase.Current.Restart();
     }
 
     private async void WelcomeWindow_OnClosing(object? sender, CancelEventArgs e)
     {
-        if (ViewModel.IsExitConfirmed)
-        {
-            return;
-        }
+        if (ViewModel.IsExitConfirmed) return;
 
         e.Cancel = true;
-        if (DialogHost.IsDialogOpen(ViewModel.DialogId))
-        {
-            return;
-        }
+        if (DialogHost.IsDialogOpen(ViewModel.DialogId)) return;
         var r = await DialogHost.Show(FindResource("ExitAppConfirmDialog"), ViewModel.DialogId);
         if ((bool?)r == true)
         {
@@ -117,7 +102,7 @@ public partial class WelcomeWindow : MyWindow
 
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        Process.Start(new ProcessStartInfo
         {
             FileName = "https://learn.microsoft.com/zh-cn/appcenter/sdk/data-collected",
             UseShellExecute = true
@@ -143,7 +128,7 @@ public partial class WelcomeWindow : MyWindow
 
     private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
     {
-        new DocumentReaderWindow()
+        new DocumentReaderWindow
         {
             Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
             Owner = this,

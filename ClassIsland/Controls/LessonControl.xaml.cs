@@ -23,18 +23,13 @@ namespace ClassIsland.Controls;
 [Obsolete("LessonControl is obsolete. Use LessonListBox instead.")]
 public partial class LessonControl : UserControl, INotifyPropertyChanged
 {
-    public static Subject BreakingSubject
-    {
-        get;
-    } = new()
+    public static Subject BreakingSubject { get; } = new()
     {
         Initial = "休",
         Name = "课间休息"
     };
-    public static Subject ErrorSubject
-    {
-        get;
-    } = new()
+
+    public static Subject ErrorSubject { get; } = new()
     {
         Initial = ":(",
         Name = ":( 出错了"
@@ -45,7 +40,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     private IExactTimeService ExactTimeService { get; } = App.GetService<IExactTimeService>();
 
     public static readonly DependencyProperty CurrentTimeLayoutItemProperty = DependencyProperty.Register(
-        nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControl), new PropertyMetadata(default(TimeLayoutItem)));
+        nameof(CurrentTimeLayoutItem), typeof(TimeLayoutItem), typeof(LessonControl),
+        new PropertyMetadata(default(TimeLayoutItem)));
 
     public TimeLayoutItem CurrentTimeLayoutItem
     {
@@ -63,7 +59,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     }
 
     public static readonly DependencyProperty SubjectsProperty = DependencyProperty.Register(
-        nameof(Subjects), typeof(ObservableDictionary<string, Subject>), typeof(LessonControl), new PropertyMetadata(default(ObservableCollection<Subject>)));
+        nameof(Subjects), typeof(ObservableDictionary<string, Subject>), typeof(LessonControl),
+        new PropertyMetadata(default(ObservableCollection<Subject>)));
 
     public ObservableDictionary<string, Subject> Subjects
     {
@@ -72,7 +69,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     }
 
     public static readonly DependencyProperty CurrentTimeLayoutProperty = DependencyProperty.Register(
-        nameof(CurrentTimeLayout), typeof(TimeLayout), typeof(LessonControl), new PropertyMetadata(default(TimeLayout)));
+        nameof(CurrentTimeLayout), typeof(TimeLayout), typeof(LessonControl),
+        new PropertyMetadata(default(TimeLayout)));
 
     public TimeLayout CurrentTimeLayout
     {
@@ -92,7 +90,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     private int GetSubjectIndex(int index)
     {
         var k = CurrentTimeLayout.Layouts[index];
-        var i = (from t in CurrentTimeLayout.Layouts where t.TimeType==0 select t).ToList().IndexOf(k);
+        var i = (from t in CurrentTimeLayout.Layouts where t.TimeType == 0 select t).ToList().IndexOf(k);
         return i;
     }
 
@@ -128,8 +126,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     public long LeftSeconds
     {
-        get { return (long)GetValue(LeftSecondsProperty); }
-        set { SetValue(LeftSecondsProperty, value); }
+        get => (long)GetValue(LeftSecondsProperty);
+        set => SetValue(LeftSecondsProperty, value);
     }
 
     public static readonly DependencyProperty IsTimerEnabledProperty = DependencyProperty.Register(
@@ -137,8 +135,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     public bool IsTimerEnabled
     {
-        get { return (bool)GetValue(IsTimerEnabledProperty); }
-        set { SetValue(IsTimerEnabledProperty, value); }
+        get => (bool)GetValue(IsTimerEnabledProperty);
+        set => SetValue(IsTimerEnabledProperty, value);
     }
 
     public static readonly DependencyProperty MasterTabIndexProperty = DependencyProperty.Register(
@@ -149,14 +147,11 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     public int MasterTabIndex
     {
-        get { return (int)GetValue(MasterTabIndexProperty); }
-        set { SetValue(MasterTabIndexProperty, value); }
+        get => (int)GetValue(MasterTabIndexProperty);
+        set => SetValue(MasterTabIndexProperty, value);
     }
 
-    public DispatcherTimer UpdateTimer
-    {
-        get;
-    } = new(DispatcherPriority.Render)
+    public DispatcherTimer UpdateTimer { get; } = new(DispatcherPriority.Render)
     {
         Interval = TimeSpan.FromMilliseconds(100)
     };
@@ -188,7 +183,8 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     private void UpdateCurrentSubject()
     {
         // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-        if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null || Index >= CurrentTimeLayout.Layouts.Count || Index < 0)
+        if (CurrentTimeLayout == null || Subjects == null || CurrentClassPlan == null ||
+            Index >= CurrentTimeLayout.Layouts.Count || Index < 0)
             // ReSharper restore ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
         {
             CurrentSubject = ErrorSubject;
@@ -219,10 +215,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
         switch (e.Property.Name)
         {
             case nameof(CurrentClassPlan):
-                if (CurrentClassPlan == null)
-                {
-                    break;
-                }
+                if (CurrentClassPlan == null) break;
                 CurrentClassPlan.PropertyChanged += CurrentClassPlanOnPropertyChanged;
                 CurrentClassPlan.Classes.CollectionChanged += ClassesOnCollectionChanged;
                 CurrentClassPlan.ClassesChanged += (sender, args) =>
@@ -243,13 +236,9 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
     private void UpdateUpdateTimerStatus()
     {
         if (IsSelected)
-        {
             UpdateTimer.Start();
-        }
         else
-        {
             UpdateTimer.Stop();
-        }
     }
 
     private void ClassesOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -260,10 +249,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void CurrentClassPlanOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(CurrentClassPlan.IsActivated))
-        {
-            return;
-        }
+        if (e.PropertyName == nameof(CurrentClassPlan.IsActivated)) return;
 
         UpdateCurrentSubject();
         Update();
@@ -271,16 +257,10 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void Update()
     {
-        if (CurrentClassPlan is null)
-        {
-            goto final;
-        }
+        if (CurrentClassPlan is null) goto final;
         CurrentTimeLayout = CurrentClassPlan.TimeLayout;
 
-        if (Index >= CurrentTimeLayout?.Layouts.Count || CurrentTimeLayout == null || Index < 0)
-        {
-            goto final;
-        }
+        if (Index >= CurrentTimeLayout?.Layouts.Count || CurrentTimeLayout == null || Index < 0) goto final;
         CurrentTimeLayoutItem = CurrentTimeLayout.Layouts[Index];
 
         TotalSeconds = (long)CurrentTimeLayoutItem.Last.TotalSeconds;
@@ -288,23 +268,27 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
         final:
         SettingsSource =
-            (ILessonControlSettings?)IAttachedSettingsHostService.GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
-                new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
-                CurrentSubject,
-                CurrentTimeLayoutItem,
-                CurrentClassPlan,
-                CurrentTimeLayout) ??
+            (ILessonControlSettings?)IAttachedSettingsHostService
+                .GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
+                    new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
+                    CurrentSubject,
+                    CurrentTimeLayoutItem,
+                    CurrentClassPlan,
+                    CurrentTimeLayout) ??
             SettingsService.Settings;
     }
 
     private void UpdateSeconds()
     {
-        Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay - CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
+        Seconds = (long)(ExactTimeService.GetCurrentLocalDateTime().TimeOfDay -
+                         CurrentTimeLayoutItem.StartSecond.TimeOfDay).TotalSeconds;
         LeftSeconds = TotalSeconds - Seconds;
 
         MasterTabIndex = LeftSeconds <= SettingsSource.CountdownSeconds &&
                          SettingsSource.IsCountdownEnabled &&
-            IsTimerEnabled ? 1 : 0;
+                         IsTimerEnabled
+            ? 1
+            : 0;
     }
 
     public LessonControl()
@@ -315,10 +299,7 @@ public partial class LessonControl : UserControl, INotifyPropertyChanged
 
     private void UpdateTimerOnTick(object? sender, EventArgs e)
     {
-        if (!IsTimerEnabled)
-        {
-            return;
-        }
+        if (!IsTimerEnabled) return;
         UpdateSeconds();
     }
 

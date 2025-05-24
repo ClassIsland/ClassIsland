@@ -38,7 +38,7 @@ public interface IComponentsService : INotifyPropertyChanged
     /// 重新加载组件配置文件列表。
     /// </summary>
     public void RefreshConfigs();
-    
+
     /// <summary>
     /// 当前是否处于集控模式。
     /// </summary>

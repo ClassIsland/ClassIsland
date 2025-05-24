@@ -1,28 +1,26 @@
 ﻿<UserControl x:Class="ClassIsland.Core.Controls.AttachedSettingsControlPresenter"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ClassIsland.Core.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:services="clr-namespace:ClassIsland.Core.Abstractions.Services;assembly=ClassIsland.Core"
              xmlns:converters1="clr-namespace:ClassIsland.Core.Converters"
              xmlns:controls="clr-namespace:ClassIsland.Core.Controls"
              xmlns:commands="clr-namespace:ClassIsland.Core.Commands"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters1:AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter
-            x:Key="AttachedSettingsControlInfoIdToAttachedSettingsControlInfoMultiConverter" />
     </UserControl.Resources>
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
+    <Grid
+        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}">
         <Expander materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
                   materialDesign:ExpanderAssist.VerticalHeaderPadding="0"
                   Background="Transparent">
             <Expander.IsExpanded>
                 <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}" Mode="OneWay">
-                    <Binding Path="AssociatedAttachedSettings.IsAttachSettingsEnabled"/>
-                    <Binding Path="IsDependencyMode" Converter="{StaticResource InvertBooleanConverter}"/>
+                    <Binding Path="AssociatedAttachedSettings.IsAttachSettingsEnabled" />
+                    <Binding Path="IsDependencyMode" Converter="{StaticResource InvertBooleanConverter}" />
                 </MultiBinding>
             </Expander.IsExpanded>
             <Expander.Header>
@@ -31,7 +29,7 @@
                                   IsChecked="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled}"
                                   ToolTip="是否在此处启用特定的设置"
                                   Content="{materialDesign:PackIcon LayersOutline}"
-                                  Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                  Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     <Button DockPanel.Dock="Right"
                             Style="{StaticResource MaterialDesignToolForegroundButton}"
                             Margin="4 -4"
@@ -39,22 +37,24 @@
                             Content="{materialDesign:PackIcon LayersSearchOutline}"
                             Click="ButtonShowDetails_OnClick">
                         <Button.Visibility>
-                            <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
-                                <Binding Path="ControlInfo.HasEnabledState" Mode="OneWay"/>
-                                <Binding Path="IsDependencyMode" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}"/>
+                            <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}"
+                                          Mode="OneWay">
+                                <Binding Path="ControlInfo.HasEnabledState" Mode="OneWay" />
+                                <Binding Path="IsDependencyMode" Mode="OneWay"
+                                         Converter="{StaticResource InvertBooleanConverter}" />
 
                             </MultiBinding>
                         </Button.Visibility>
                     </Button>
-                    <materialDesign:PopupEx DockPanel.Dock="Right" 
-                           PopupAnimation="Fade"
-                           Closed="Popup_OnClosed"
-                            Margin="0 -2"
-                            IsOpen="{Binding IsPopupOpened}"
-                            StaysOpen="False"
-                            AllowsTransparency="True"
-                           MouseDown="UIElement_OnMouseDown"
-                            Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <materialDesign:PopupEx DockPanel.Dock="Right"
+                                            PopupAnimation="Fade"
+                                            Closed="Popup_OnClosed"
+                                            Margin="0 -2"
+                                            IsOpen="{Binding IsPopupOpened}"
+                                            StaysOpen="False"
+                                            AllowsTransparency="True"
+                                            MouseDown="UIElement_OnMouseDown"
+                                            Visibility="{Binding ControlInfo.HasEnabledState, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Border Background="{DynamicResource MaterialDesignPaper}"
                                 Width="350"
                                 Margin="8"
@@ -64,21 +64,21 @@
                                 <DropShadowEffect BlurRadius="8"
                                                   Opacity="0.5"
                                                   Direction="0"
-                                                  ShadowDepth="0"/>
+                                                  ShadowDepth="0" />
                             </Border.Effect>
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <TabControl Grid.Row="0">
                                     <TabItem Header="被覆盖">
                                         <Grid Margin="4">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition />
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="以下节点的设置可能会覆盖此处的设置。"/>
+                                            <TextBlock Grid.Row="0" Text="以下节点的设置可能会覆盖此处的设置。" />
                                             <ListBox Grid.Row="1" ItemsSource="{Binding NextItems}">
                                                 <ListBox.ItemContainerStyle>
                                                     <Style TargetType="ListBoxItem"
@@ -98,15 +98,16 @@
                                                         </Setter>
                                                     </Style>
                                                 </ListBox.ItemContainerStyle>
-                                            </ListBox></Grid>
+                                            </ListBox>
+                                        </Grid>
                                     </TabItem>
                                     <TabItem Header="继承">
                                         <Grid Margin="4">
                                             <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition/>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition />
                                             </Grid.RowDefinitions>
-                                            <TextBlock Grid.Row="0" Text="此处的设置可能会覆盖以下节点的设置。"/>
+                                            <TextBlock Grid.Row="0" Text="此处的设置可能会覆盖以下节点的设置。" />
                                             <ListBox Grid.Row="1" ItemsSource="{Binding PreviousItems}">
                                                 <ListBox.ItemContainerStyle>
                                                     <Style TargetType="ListBoxItem"
@@ -145,42 +146,45 @@
                                             Margin="4 0 0 0"
                                             Click="ButtonRefresh_OnClick"
                                             Style="{StaticResource MaterialDesignToolForegroundButton}" />
-                                </WrapPanel >
+                                </WrapPanel>
                                 <ProgressBar Grid.Row="0"
                                              IsIndeterminate="True"
                                              VerticalAlignment="Top"
-                                             Visibility="{Binding IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                             Visibility="{Binding IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </Grid>
                         </Border>
                     </materialDesign:PopupEx>
                     <Grid>
                         <controls:IconText Kind="{Binding ControlInfo.IconKind, Mode=OneWay}"
-                                     Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
-                                     Visibility="{Binding IsDependencyMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                           Text="{Binding ControlInfo.Name, Mode=OneWay, FallbackValue=''}"
+                                           Visibility="{Binding IsDependencyMode, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
                         <controls:IconText Kind="{Binding DependencyItemPackIconKind, Mode=OneWay}"
-                                     Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
-                                     Visibility="{Binding IsDependencyMode, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                           Text="{Binding DependencyItemTitle, Mode=OneWay, FallbackValue=''}"
+                                           Visibility="{Binding IsDependencyMode, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <controls:IconText.Style>
                                 <Style TargetType="local:IconText">
                                     <Style.Resources>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding State}" Value="Disabled">
-                                                    <Setter Property="Opacity" Value="0.5"/>
+                                                    <Setter Property="Opacity" Value="0.5" />
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding State, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}" Value="Override">
+                                                <DataTrigger
+                                                    Binding="{Binding State, RelativeSource={RelativeSource FindAncestor, AncestorType=local:AttachedSettingsControlPresenter}}"
+                                                    Value="Override">
 
-                                                    <Setter Property="TextDecorations" Value="{x:Static TextDecorations.Strikethrough}"/>
+                                                    <Setter Property="TextDecorations"
+                                                            Value="{x:Static TextDecorations.Strikethrough}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Style.Resources>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding State}" Value="Disabled">
-                                            <Setter Property="Opacity" Value="0.5"/>
+                                            <Setter Property="Opacity" Value="0.5" />
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding State}" Value="Override">
-                                            <Setter Property="TextElement.FontStyle" Value="Italic"/>
+                                            <Setter Property="TextElement.FontStyle" Value="Italic" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -190,7 +194,8 @@
                     </Grid>
                 </DockPanel>
             </Expander.Header>
-            <ContentPresenter x:Name="MainContentPresenter" IsEnabled="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled, Mode=OneWay}"/>
+            <ContentPresenter x:Name="MainContentPresenter"
+                              IsEnabled="{Binding AssociatedAttachedSettings.IsAttachSettingsEnabled, Mode=OneWay}" />
 
         </Expander>
     </Grid>

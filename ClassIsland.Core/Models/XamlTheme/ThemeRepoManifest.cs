@@ -24,7 +24,7 @@ public class ThemeRepoManifest : ThemeManifest, IMarketplaceItemRepoManifest
     /// 资产文件根目录
     /// </summary>
     public string AssetsRoot { get; set; } = "master";
-    
+
     /// <summary>
     /// 主题发布工件名称。留空将匹配 *.cipx 的发布工件。
     /// </summary>

@@ -9,6 +9,7 @@ public enum IconControlIconKind
     /// MD图标包
     /// </summary>
     PackIcon,
+
     /// <summary>
     /// 自定义图像
     /// </summary>

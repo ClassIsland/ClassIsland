@@ -18,10 +18,10 @@ public class DesktopWindow : ObservableRecipient
     private HWND _hWnd = default;
     private string _windowText = "";
     private Size _windowSize = Size.Empty;
-    private BitmapImage _screenShot = new BitmapImage();
+    private BitmapImage _screenShot = new();
     private Process _ownerProcess = Process.GetCurrentProcess();
-    private RECT _windowRect = new RECT();
-    private BitmapImage _icon = new BitmapImage();
+    private RECT _windowRect = new();
+    private BitmapImage _icon = new();
     private bool _isVisible = false;
 
     public string ClassName
@@ -101,11 +101,7 @@ public class DesktopWindow : ObservableRecipient
         }
     }
 
-    public string Description
-    {
-        get;
-        set;
-    } = "";
+    public string Description { get; set; } = "";
 
     public BitmapImage Icon
     {
@@ -133,8 +129,8 @@ public class DesktopWindow : ObservableRecipient
     {
         var str = NativeWindowHelper.BuildPWSTR(256, out var pstr);
         GetClassName(hWnd, str, 255);
-        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
-        var window = new DesktopWindow()
+        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out var rect);
+        var window = new DesktopWindow
         {
             HWnd = hWnd,
             WindowRect = rect,
@@ -154,10 +150,10 @@ public class DesktopWindow : ObservableRecipient
         var process = Process.GetProcessById((int)pid);
         var pWindowText = NativeWindowHelper.BuildPWSTR(256, out var nWindowText);
         GetWindowText(hWnd, pWindowText, 255);
-        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out RECT rect);
-        var bitmap = BitmapConveters.ConvertToBitmapImage(WindowCaptureHelper.CaptureWindowBitBlt(hWnd),h:300);
+        GetWindowRect((HWND)new HandleRef(null, hWnd).Handle, out var rect);
+        var bitmap = BitmapConveters.ConvertToBitmapImage(WindowCaptureHelper.CaptureWindowBitBlt(hWnd), h: 300);
         var description = process.MainModule?.FileVersionInfo.FileDescription;
-        var windowByHWndDetailed = new DesktopWindow()
+        var windowByHWndDetailed = new DesktopWindow
         {
             HWnd = hWnd,
             ClassName = new string(pClassName),
@@ -165,9 +161,10 @@ public class DesktopWindow : ObservableRecipient
             WindowText = new string(pWindowText),
             WindowRect = rect,
             ScreenShot = bitmap,
-            Description = (description == "") ? (process.ProcessName) : description ?? process.ProcessName,
-            IsVisible = PInvoke.IsWindowVisible(hWnd),
-            Icon = BitmapConveters.ConvertToBitmapImage(System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule!.FileName!)!.ToBitmap(), h:32)
+            Description = description == "" ? process.ProcessName : description ?? process.ProcessName,
+            IsVisible = IsWindowVisible(hWnd),
+            Icon = BitmapConveters.ConvertToBitmapImage(
+                System.Drawing.Icon.ExtractAssociatedIcon(process.MainModule!.FileName!)!.ToBitmap(), h: 32)
         };
         Marshal.FreeHGlobal(nClassName);
         Marshal.FreeHGlobal(nWindowText);

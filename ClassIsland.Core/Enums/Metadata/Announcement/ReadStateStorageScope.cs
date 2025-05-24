@@ -9,6 +9,7 @@ public enum ReadStateStorageScope
     /// 存储到应用配置
     /// </summary>
     Local,
+
     /// <summary>
     /// 存储到机器配置
     /// </summary>

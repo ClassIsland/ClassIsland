@@ -3,7 +3,8 @@
                     xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml" />
+        <ResourceDictionary
+            Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 
@@ -25,10 +26,11 @@
         <ControlTemplate.Resources>
             <Storyboard x:Key="ShowFocusVisualStoryboard">
                 <DoubleAnimation Storyboard.TargetName="focusedHalo"
-                         Storyboard.TargetProperty="Opacity"
-                         To="0.15"
-                         Duration="0" />
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                 Storyboard.TargetProperty="Opacity"
+                                 To="0.15"
+                                 Duration="0" />
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -36,7 +38,8 @@
                         </EasingDoubleKeyFrame.EasingFunction>
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -55,46 +58,49 @@
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
-                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                               Duration="0">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
-                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                               Duration="0">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
             </Storyboard>
         </ControlTemplate.Resources>
         <Grid x:Name="thumbGrid"
-          Width="18"
-          Height="20">
+              Width="18"
+              Height="20">
             <Ellipse x:Name="halo"
-               Width="48"
-               Height="48"
-               Margin="-24"
-               Fill="{TemplateBinding Foreground}"
-               Opacity="0" />
+                     Width="48"
+                     Height="48"
+                     Margin="-24"
+                     Fill="{TemplateBinding Foreground}"
+                     Opacity="0" />
             <Ellipse x:Name="focusedHalo"
-               Width="48"
-               Height="48"
-               Margin="-24"
-               Fill="{TemplateBinding Foreground}"
-               Opacity="0.15"
-               RenderTransformOrigin="0.5,0.5">
+                     Width="48"
+                     Height="48"
+                     Margin="-24"
+                     Fill="{TemplateBinding Foreground}"
+                     Opacity="0.15"
+                     RenderTransformOrigin="0.5,0.5">
                 <Ellipse.RenderTransform>
                     <ScaleTransform ScaleX="0" ScaleY="0" />
                 </Ellipse.RenderTransform>
             </Ellipse>
-            <AdornerDecorator CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
+            <AdornerDecorator
+                CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
                 <Ellipse x:Name="grip"
-                 Margin="-1,0"
-                 Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}"
-                 Fill="{TemplateBinding Foreground}" />
+                         Margin="-1,0"
+                         Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}"
+                         Fill="{TemplateBinding Foreground}" />
             </AdornerDecorator>
         </Grid>
         <ControlTemplate.Triggers>
-            <DataTrigger Binding="{Binding Orientation, RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}}" Value="{x:Static Orientation.Vertical}">
+            <DataTrigger
+                Binding="{Binding Orientation, RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}}"
+                Value="{x:Static Orientation.Vertical}">
                 <Setter TargetName="grip" Property="Margin" Value="0,-1" />
                 <Setter TargetName="thumbGrid" Property="Height" Value="18" />
                 <Setter TargetName="thumbGrid" Property="Width" Value="20" />
@@ -104,9 +110,9 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="halo"
-                               Storyboard.TargetProperty="Opacity"
-                               To="0.15"
-                               Duration="0:0:0.2" />
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0.15"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.EnterActions>
@@ -114,9 +120,9 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="halo"
-                               Storyboard.TargetProperty="Opacity"
-                               To="0"
-                               Duration="0:0:0.2" />
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
@@ -124,10 +130,11 @@
             <DataTrigger Value="True">
                 <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource BooleanAllConverter}">
-                        <Binding Path="IsFocused" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                        <Binding Path="IsFocused"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                         <Binding Converter="{StaticResource InvertBooleanConverter}"
-                     Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
-                     RelativeSource="{RelativeSource FindAncestor,
+                                 Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
+                                 RelativeSource="{RelativeSource FindAncestor,
                                                      AncestorType=RangeBase}" />
                     </MultiBinding>
                 </DataTrigger.Binding>
@@ -142,7 +149,8 @@
                 <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource BooleanAllConverter}">
                         <Binding Path="IsDragging" RelativeSource="{RelativeSource Self}" />
-                        <Binding Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                        <Binding Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                     </MultiBinding>
                 </DataTrigger.Binding>
                 <DataTrigger.EnterActions>
@@ -159,10 +167,11 @@
         <ControlTemplate.Resources>
             <Storyboard x:Key="ShowFocusVisualStoryboard">
                 <DoubleAnimation Storyboard.TargetName="focusedHalo"
-                         Storyboard.TargetProperty="Opacity"
-                         To="0.15"
-                         Duration="0" />
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                 Storyboard.TargetProperty="Opacity"
+                                 To="0.15"
+                                 Duration="0" />
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -170,7 +179,8 @@
                         </EasingDoubleKeyFrame.EasingFunction>
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -179,11 +189,12 @@
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="label"
-                                       Storyboard.TargetProperty="Visibility"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="Visibility"
+                                               Duration="0">
                     <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
                 </ObjectAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -191,7 +202,8 @@
                         </EasingDoubleKeyFrame.EasingFunction>
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -210,16 +222,17 @@
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
-                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                               Duration="0">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
-                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                               Duration="0">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -227,7 +240,8 @@
                         </EasingDoubleKeyFrame.EasingFunction>
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -236,78 +250,84 @@
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="label"
-                                       Storyboard.TargetProperty="Visibility"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="Visibility"
+                                               Duration="0">
                     <DiscreteObjectKeyFrame KeyTime="0:0:0.1" Value="{x:Static Visibility.Collapsed}" />
                 </ObjectAnimationUsingKeyFrames>
             </Storyboard>
         </ControlTemplate.Resources>
         <Grid Width="18" Height="20">
             <Ellipse x:Name="halo"
-               Width="48"
-               Height="48"
-               Margin="-24"
-               Fill="{TemplateBinding Foreground}"
-               Opacity="0" />
+                     Width="48"
+                     Height="48"
+                     Margin="-24"
+                     Fill="{TemplateBinding Foreground}"
+                     Opacity="0" />
             <Ellipse x:Name="focusedHalo"
-               Width="48"
-               Height="48"
-               Margin="-24"
-               Fill="{TemplateBinding Foreground}"
-               Opacity="0.15"
-               RenderTransformOrigin="0.5,0.5">
+                     Width="48"
+                     Height="48"
+                     Margin="-24"
+                     Fill="{TemplateBinding Foreground}"
+                     Opacity="0.15"
+                     RenderTransformOrigin="0.5,0.5">
                 <Ellipse.RenderTransform>
                     <ScaleTransform ScaleX="0" ScaleY="0" />
                 </Ellipse.RenderTransform>
             </Ellipse>
             <Canvas>
                 <Grid x:Name="label"
-              Height="36"
-              IsHitTestVisible="False"
-              RenderTransformOrigin="0.5,1"
-              Visibility="Collapsed">
+                      Height="36"
+                      IsHitTestVisible="False"
+                      RenderTransformOrigin="0.5,1"
+                      Visibility="Collapsed">
                     <Grid.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0" ScaleY="0" />
-                            <TranslateTransform X="{Binding ActualWidth, ElementName=label, Converter={StaticResource SliderValueLabelPositionConverter}, ConverterParameter={x:Static Orientation.Horizontal}}" Y="-40" />
+                            <TranslateTransform
+                                X="{Binding ActualWidth, ElementName=label, Converter={StaticResource SliderValueLabelPositionConverter}, ConverterParameter={x:Static Orientation.Horizontal}}"
+                                Y="-40" />
                         </TransformGroup>
                     </Grid.RenderTransform>
-                    <AdornerDecorator CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
-                        <Grid Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}">
+                    <AdornerDecorator
+                        CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
+                        <Grid
+                            Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}">
                             <Rectangle Margin="0,0,0,5"
-                         Fill="{DynamicResource MaterialDesignToolTipBackground}"
-                         RadiusX="2"
-                         RadiusY="2" />
+                                       Fill="{DynamicResource MaterialDesignToolTipBackground}"
+                                       RadiusX="2"
+                                       RadiusY="2" />
                             <Polygon HorizontalAlignment="Center"
-                       VerticalAlignment="Bottom"
-                       Fill="{DynamicResource MaterialDesignToolTipBackground}"
-                       Points="0,0 4.5,5 9,0" />
+                                     VerticalAlignment="Bottom"
+                                     Fill="{DynamicResource MaterialDesignToolTipBackground}"
+                                     Points="0,0 4.5,5 9,0" />
                         </Grid>
                     </AdornerDecorator>
                     <TextBlock Margin="12,0,12,5"
-                     VerticalAlignment="Center"
-                     Foreground="{DynamicResource MaterialDesignPaper}"
-                     TextAlignment="Center">
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource MaterialDesignPaper}"
+                               TextAlignment="Center">
                         <TextBlock.Text>
                             <MultiBinding Converter="{StaticResource SliderToolTipConverter}"
-                            NotifyOnValidationError="True"
-                            TargetNullValue=""
-                            ValidatesOnDataErrors="True">
+                                          NotifyOnValidationError="True"
+                                          TargetNullValue=""
+                                          ValidatesOnDataErrors="True">
                                 <Binding Path="Value"
-                         RelativeSource="{RelativeSource FindAncestor,
+                                         RelativeSource="{RelativeSource FindAncestor,
                                                          AncestorType=RangeBase}"
-                         TargetNullValue="" />
-                                <Binding Path="(wpf:SliderAssist.ToolTipFormat)" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                                         TargetNullValue="" />
+                                <Binding Path="(wpf:SliderAssist.ToolTipFormat)"
+                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
                 </Grid>
             </Canvas>
-            <AdornerDecorator CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
+            <AdornerDecorator
+                CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
                 <Ellipse x:Name="grip"
-                 Margin="-1,0"
-                 Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}"
-                 Fill="{TemplateBinding Foreground}" />
+                         Margin="-1,0"
+                         Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}"
+                         Fill="{TemplateBinding Foreground}" />
             </AdornerDecorator>
         </Grid>
         <ControlTemplate.Triggers>
@@ -316,9 +336,9 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="halo"
-                               Storyboard.TargetProperty="Opacity"
-                               To="0.15"
-                               Duration="0:0:0.2" />
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0.15"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.EnterActions>
@@ -326,9 +346,9 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="halo"
-                               Storyboard.TargetProperty="Opacity"
-                               To="0"
-                               Duration="0:0:0.2" />
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
@@ -336,10 +356,11 @@
             <DataTrigger Value="True">
                 <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource BooleanAllConverter}">
-                        <Binding Path="IsFocused" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                        <Binding Path="IsFocused"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                         <Binding Converter="{StaticResource InvertBooleanConverter}"
-                     Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
-                     RelativeSource="{RelativeSource FindAncestor,
+                                 Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
+                                 RelativeSource="{RelativeSource FindAncestor,
                                                      AncestorType=RangeBase}" />
                     </MultiBinding>
                 </DataTrigger.Binding>
@@ -354,7 +375,8 @@
                 <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource BooleanAllConverter}">
                         <Binding Path="IsDragging" RelativeSource="{RelativeSource Self}" />
-                        <Binding Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                        <Binding Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                     </MultiBinding>
                 </DataTrigger.Binding>
                 <DataTrigger.EnterActions>
@@ -371,10 +393,11 @@
         <ControlTemplate.Resources>
             <Storyboard x:Key="ShowFocusVisualStoryboard">
                 <DoubleAnimation Storyboard.TargetName="focusedHalo"
-                         Storyboard.TargetProperty="Opacity"
-                         To="0.15"
-                         Duration="0" />
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                                 Storyboard.TargetProperty="Opacity"
+                                 To="0.15"
+                                 Duration="0" />
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -382,7 +405,8 @@
                         </EasingDoubleKeyFrame.EasingFunction>
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -391,11 +415,12 @@
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="label"
-                                       Storyboard.TargetProperty="Visibility"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="Visibility"
+                                               Duration="0">
                     <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
                 </ObjectAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -403,7 +428,8 @@
                         </EasingDoubleKeyFrame.EasingFunction>
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="0" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -422,16 +448,17 @@
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
-                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                               Duration="0">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="focusedHalo"
-                                       Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                               Duration="0">
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0" />
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -439,7 +466,8 @@
                         </EasingDoubleKeyFrame.EasingFunction>
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
-                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
+                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="label"
+                                               Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleY)">
                     <EasingDoubleKeyFrame KeyTime="0:0:0" Value="1" />
                     <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0">
                         <EasingDoubleKeyFrame.EasingFunction>
@@ -448,78 +476,84 @@
                     </EasingDoubleKeyFrame>
                 </DoubleAnimationUsingKeyFrames>
                 <ObjectAnimationUsingKeyFrames Storyboard.TargetName="label"
-                                       Storyboard.TargetProperty="Visibility"
-                                       Duration="0">
+                                               Storyboard.TargetProperty="Visibility"
+                                               Duration="0">
                     <DiscreteObjectKeyFrame KeyTime="0:0:0.1" Value="{x:Static Visibility.Collapsed}" />
                 </ObjectAnimationUsingKeyFrames>
             </Storyboard>
         </ControlTemplate.Resources>
         <Grid Width="20" Height="18">
             <Ellipse x:Name="halo"
-               Width="48"
-               Height="48"
-               Margin="-24"
-               Fill="{TemplateBinding Foreground}"
-               Opacity="0" />
+                     Width="48"
+                     Height="48"
+                     Margin="-24"
+                     Fill="{TemplateBinding Foreground}"
+                     Opacity="0" />
             <Ellipse x:Name="focusedHalo"
-               Width="48"
-               Height="48"
-               Margin="-24"
-               Fill="{TemplateBinding Foreground}"
-               Opacity="0.15"
-               RenderTransformOrigin="0.5,0.5">
+                     Width="48"
+                     Height="48"
+                     Margin="-24"
+                     Fill="{TemplateBinding Foreground}"
+                     Opacity="0.15"
+                     RenderTransformOrigin="0.5,0.5">
                 <Ellipse.RenderTransform>
                     <ScaleTransform ScaleX="0" ScaleY="0" />
                 </Ellipse.RenderTransform>
             </Ellipse>
             <Canvas>
                 <Grid x:Name="label"
-              Height="31"
-              IsHitTestVisible="False"
-              RenderTransformOrigin="1,0.5"
-              Visibility="Collapsed">
+                      Height="31"
+                      IsHitTestVisible="False"
+                      RenderTransformOrigin="1,0.5"
+                      Visibility="Collapsed">
                     <Grid.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="0" ScaleY="0" />
-                            <TranslateTransform X="{Binding ActualWidth, ElementName=label, Converter={StaticResource SliderValueLabelPositionConverter}, ConverterParameter={x:Static Orientation.Vertical}}" Y="-7" />
+                            <TranslateTransform
+                                X="{Binding ActualWidth, ElementName=label, Converter={StaticResource SliderValueLabelPositionConverter}, ConverterParameter={x:Static Orientation.Vertical}}"
+                                Y="-7" />
                         </TransformGroup>
                     </Grid.RenderTransform>
-                    <AdornerDecorator CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
-                        <Grid Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}">
+                    <AdornerDecorator
+                        CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
+                        <Grid
+                            Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}">
                             <Rectangle Margin="0,0,5,0"
-                         Fill="{DynamicResource MaterialDesignToolTipBackground}"
-                         RadiusX="2"
-                         RadiusY="2" />
+                                       Fill="{DynamicResource MaterialDesignToolTipBackground}"
+                                       RadiusX="2"
+                                       RadiusY="2" />
                             <Polygon HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       Fill="{DynamicResource MaterialDesignToolTipBackground}"
-                       Points="0,0 6,5 0,10" />
+                                     VerticalAlignment="Center"
+                                     Fill="{DynamicResource MaterialDesignToolTipBackground}"
+                                     Points="0,0 6,5 0,10" />
                         </Grid>
                     </AdornerDecorator>
                     <TextBlock Margin="12,0,17,0"
-                     VerticalAlignment="Center"
-                     Foreground="{DynamicResource MaterialDesignPaper}"
-                     TextAlignment="Center">
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource MaterialDesignPaper}"
+                               TextAlignment="Center">
                         <TextBlock.Text>
                             <MultiBinding Converter="{StaticResource SliderToolTipConverter}"
-                            NotifyOnValidationError="True"
-                            TargetNullValue=""
-                            ValidatesOnDataErrors="True">
+                                          NotifyOnValidationError="True"
+                                          TargetNullValue=""
+                                          ValidatesOnDataErrors="True">
                                 <Binding Path="Value"
-                         RelativeSource="{RelativeSource FindAncestor,
+                                         RelativeSource="{RelativeSource FindAncestor,
                                                          AncestorType=RangeBase}"
-                         TargetNullValue="" />
-                                <Binding Path="(wpf:SliderAssist.ToolTipFormat)" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                                         TargetNullValue="" />
+                                <Binding Path="(wpf:SliderAssist.ToolTipFormat)"
+                                         RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                             </MultiBinding>
                         </TextBlock.Text>
                     </TextBlock>
                 </Grid>
             </Canvas>
-            <AdornerDecorator CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
+            <AdornerDecorator
+                CacheMode="{Binding RelativeSource={RelativeSource Self}, Path=(wpf:ShadowAssist.CacheMode)}">
                 <Ellipse x:Name="grip"
-                 Margin="0,-1"
-                 Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}"
-                 Fill="{TemplateBinding Foreground}" />
+                         Margin="0,-1"
+                         Effect="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=RangeBase}, Path=(wpf:ElevationAssist.Elevation), Converter={x:Static wpf:ShadowConverter.Instance}}"
+                         Fill="{TemplateBinding Foreground}" />
             </AdornerDecorator>
         </Grid>
         <ControlTemplate.Triggers>
@@ -528,9 +562,9 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="halo"
-                               Storyboard.TargetProperty="Opacity"
-                               To="0.15"
-                               Duration="0:0:0.2" />
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0.15"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.EnterActions>
@@ -538,9 +572,9 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimation Storyboard.TargetName="halo"
-                               Storyboard.TargetProperty="Opacity"
-                               To="0"
-                               Duration="0:0:0.2" />
+                                             Storyboard.TargetProperty="Opacity"
+                                             To="0"
+                                             Duration="0:0:0.2" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
@@ -548,10 +582,11 @@
             <DataTrigger Value="True">
                 <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource BooleanAllConverter}">
-                        <Binding Path="IsFocused" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                        <Binding Path="IsFocused"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                         <Binding Converter="{StaticResource InvertBooleanConverter}"
-                     Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
-                     RelativeSource="{RelativeSource FindAncestor,
+                                 Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
+                                 RelativeSource="{RelativeSource FindAncestor,
                                                      AncestorType=RangeBase}" />
                     </MultiBinding>
                 </DataTrigger.Binding>
@@ -566,7 +601,8 @@
                 <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource BooleanAllConverter}">
                         <Binding Path="IsDragging" RelativeSource="{RelativeSource Self}" />
-                        <Binding Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)" RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
+                        <Binding Path="(wpf:SliderAssist.OnlyShowFocusVisualWhileDragging)"
+                                 RelativeSource="{RelativeSource FindAncestor, AncestorType=RangeBase}" />
                     </MultiBinding>
                 </DataTrigger.Binding>
                 <DataTrigger.EnterActions>
@@ -581,70 +617,73 @@
 
     <ControlTemplate x:Key="MaterialDesignSliderHorizontal" TargetType="{x:Type Slider}">
         <Border Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            SnapsToDevicePixels="True"
-            UseLayoutRounding="True">
-            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True">
+            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                  UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TickBar x:Name="TopTick"
-                 Grid.Row="0"
-                 Height="4"
-                 Margin="0,0,0,2"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Top"
-                 Visibility="Collapsed" />
+                         Grid.Row="0"
+                         Height="4"
+                         Margin="0,0,0,2"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Top"
+                         Visibility="Collapsed" />
                 <TickBar x:Name="BottomTick"
-                 Grid.Row="2"
-                 Height="4"
-                 Margin="0,2,0,0"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Bottom"
-                 Visibility="Collapsed" />
+                         Grid.Row="2"
+                         Height="4"
+                         Margin="0,2,0,0"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Bottom"
+                         Visibility="Collapsed" />
                 <Rectangle Grid.Row="1"
-                   Height="4"
-                   VerticalAlignment="Center"
-                   Fill="{TemplateBinding Foreground}"
-                   Opacity="0.38"
-                   RadiusX="2"
-                   RadiusY="2" />
+                           Height="4"
+                           VerticalAlignment="Center"
+                           Fill="{TemplateBinding Foreground}"
+                           Opacity="0.38"
+                           RadiusX="2"
+                           RadiusY="2" />
                 <Border x:Name="activeTrack"
-                Grid.Row="1"
-                Width="{Binding DecreaseRepeatButton.ActualWidth, ElementName=PART_Track}"
-                Height="6"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Background="{TemplateBinding Foreground}"
-                CornerRadius="3,0,0,3" />
+                        Grid.Row="1"
+                        Width="{Binding DecreaseRepeatButton.ActualWidth, ElementName=PART_Track}"
+                        Height="6"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Background="{TemplateBinding Foreground}"
+                        CornerRadius="3,0,0,3" />
                 <!-- Selection range must be wrapped in a Canvas for the position to be updated correctly -->
                 <Canvas Grid.Row="1"
-                Height="6"
-                VerticalAlignment="Center">
+                        Height="6"
+                        VerticalAlignment="Center">
                     <Rectangle x:Name="PART_SelectionRange"
-                     Height="6"
-                     Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
-                     RadiusX="2"
-                     RadiusY="2"
-                     Visibility="Collapsed" />
+                               Height="6"
+                               Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                               RadiusX="2"
+                               RadiusY="2"
+                               Visibility="Collapsed" />
                 </Canvas>
                 <Track x:Name="PART_Track"
-               Grid.Row="1"
-               Height="20">
+                       Grid.Row="1"
+                       Height="20">
                     <Track.DecreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.DecreaseRepeatButton>
                     <Track.IncreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.IncreaseRepeatButton>
                     <!-- It's important that the Thumb gets added last in the XAML to make sure it is drawn on top of both repeat buttons -->
                     <Track.Thumb>
                         <Thumb Foreground="{TemplateBinding Foreground}"
-                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                   Template="{StaticResource MaterialDesignSliderThumb}" />
+                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                               Template="{StaticResource MaterialDesignSliderThumb}" />
                     </Track.Thumb>
                 </Track>
             </Grid>
@@ -672,70 +711,73 @@
 
     <ControlTemplate x:Key="MaterialDesignSliderVertical" TargetType="{x:Type Slider}">
         <Border Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            SnapsToDevicePixels="True"
-            UseLayoutRounding="True">
-            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True">
+            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                  UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" MinWidth="{TemplateBinding MinWidth}" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TickBar x:Name="TopTick"
-                 Grid.Column="0"
-                 Width="4"
-                 Margin="0,0,2,0"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Left"
-                 Visibility="Collapsed" />
+                         Grid.Column="0"
+                         Width="4"
+                         Margin="0,0,2,0"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Left"
+                         Visibility="Collapsed" />
                 <TickBar x:Name="BottomTick"
-                 Grid.Column="2"
-                 Width="4"
-                 Margin="2,0,0,0"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Right"
-                 Visibility="Collapsed" />
+                         Grid.Column="2"
+                         Width="4"
+                         Margin="2,0,0,0"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Right"
+                         Visibility="Collapsed" />
                 <Rectangle Grid.Column="1"
-                   Width="4"
-                   HorizontalAlignment="Center"
-                   Fill="{TemplateBinding Foreground}"
-                   Opacity="0.38"
-                   RadiusX="2"
-                   RadiusY="2" />
+                           Width="4"
+                           HorizontalAlignment="Center"
+                           Fill="{TemplateBinding Foreground}"
+                           Opacity="0.38"
+                           RadiusX="2"
+                           RadiusY="2" />
                 <Border x:Name="activeTrack"
-                Grid.Column="1"
-                Width="6"
-                Height="{Binding DecreaseRepeatButton.ActualHeight, ElementName=PART_Track}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Background="{TemplateBinding Foreground}"
-                CornerRadius="0,0,3,3" />
+                        Grid.Column="1"
+                        Width="6"
+                        Height="{Binding DecreaseRepeatButton.ActualHeight, ElementName=PART_Track}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Background="{TemplateBinding Foreground}"
+                        CornerRadius="0,0,3,3" />
                 <!-- Selection range must be wrapped in a Canvas for the position to be updated correctly -->
                 <Canvas Grid.Column="1"
-                Width="6"
-                HorizontalAlignment="Center">
+                        Width="6"
+                        HorizontalAlignment="Center">
                     <Rectangle x:Name="PART_SelectionRange"
-                     Width="6"
-                     Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
-                     RadiusX="2"
-                     RadiusY="2"
-                     Visibility="Collapsed" />
+                               Width="6"
+                               Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                               RadiusX="2"
+                               RadiusY="2"
+                               Visibility="Collapsed" />
                 </Canvas>
                 <Track x:Name="PART_Track"
-               Grid.Column="1"
-               Width="20">
+                       Grid.Column="1"
+                       Width="20">
                     <Track.DecreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.DecreaseRepeatButton>
                     <Track.IncreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.IncreaseRepeatButton>
                     <!-- It's important that the Thumb gets added last in the XAML to make sure it is drawn on top of both repeat buttons -->
                     <Track.Thumb>
                         <Thumb Foreground="{TemplateBinding Foreground}"
-                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                   Template="{StaticResource MaterialDesignSliderThumb}" />
+                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                               Template="{StaticResource MaterialDesignSliderThumb}" />
                     </Track.Thumb>
                 </Track>
             </Grid>
@@ -763,70 +805,73 @@
 
     <ControlTemplate x:Key="MaterialDesignDiscreteSliderHorizontal" TargetType="{x:Type Slider}">
         <Border Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            SnapsToDevicePixels="True"
-            UseLayoutRounding="True">
-            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True">
+            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                  UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" MinHeight="{TemplateBinding MinHeight}" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TickBar x:Name="TopTick"
-                 Grid.Row="0"
-                 Height="4"
-                 Margin="0,0,0,2"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Top"
-                 Visibility="Collapsed" />
+                         Grid.Row="0"
+                         Height="4"
+                         Margin="0,0,0,2"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Top"
+                         Visibility="Collapsed" />
                 <TickBar x:Name="BottomTick"
-                 Grid.Row="2"
-                 Height="4"
-                 Margin="0,2,0,0"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Bottom"
-                 Visibility="Collapsed" />
+                         Grid.Row="2"
+                         Height="4"
+                         Margin="0,2,0,0"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Bottom"
+                         Visibility="Collapsed" />
                 <Rectangle Grid.Row="1"
-                   Height="4"
-                   VerticalAlignment="Center"
-                   Fill="{TemplateBinding Foreground}"
-                   Opacity="0.38"
-                   RadiusX="2"
-                   RadiusY="2" />
+                           Height="4"
+                           VerticalAlignment="Center"
+                           Fill="{TemplateBinding Foreground}"
+                           Opacity="0.38"
+                           RadiusX="2"
+                           RadiusY="2" />
                 <Border x:Name="activeTrack"
-                Grid.Row="1"
-                Width="{Binding DecreaseRepeatButton.ActualWidth, ElementName=PART_Track}"
-                Height="6"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Background="{TemplateBinding Foreground}"
-                CornerRadius="3,0,0,3" />
+                        Grid.Row="1"
+                        Width="{Binding DecreaseRepeatButton.ActualWidth, ElementName=PART_Track}"
+                        Height="6"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Background="{TemplateBinding Foreground}"
+                        CornerRadius="3,0,0,3" />
                 <!-- Selection range must be wrapped in a Canvas for the position to be updated correctly -->
                 <Canvas Grid.Row="1"
-                Height="6"
-                VerticalAlignment="Center">
+                        Height="6"
+                        VerticalAlignment="Center">
                     <Rectangle x:Name="PART_SelectionRange"
-                     Height="6"
-                     Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
-                     RadiusX="2"
-                     RadiusY="2"
-                     Visibility="Collapsed" />
+                               Height="6"
+                               Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                               RadiusX="2"
+                               RadiusY="2"
+                               Visibility="Collapsed" />
                 </Canvas>
                 <Track x:Name="PART_Track"
-               Grid.Row="1"
-               Height="20">
+                       Grid.Row="1"
+                       Height="20">
                     <Track.DecreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.DecreaseRepeatButton>
                     <Track.IncreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.IncreaseRepeatButton>
                     <!-- It's important that the Thumb gets added last in the XAML to make sure it is drawn on top of both repeat buttons -->
                     <Track.Thumb>
                         <Thumb Foreground="{TemplateBinding Foreground}"
-                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                   Template="{StaticResource MaterialDesignDiscreteSliderThumb}" />
+                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                               Template="{StaticResource MaterialDesignDiscreteSliderThumb}" />
                     </Track.Thumb>
                 </Track>
             </Grid>
@@ -854,70 +899,73 @@
 
     <ControlTemplate x:Key="MaterialDesignDiscreteSliderVertical" TargetType="{x:Type Slider}">
         <Border Background="{TemplateBinding Background}"
-            BorderBrush="{TemplateBinding BorderBrush}"
-            BorderThickness="{TemplateBinding BorderThickness}"
-            SnapsToDevicePixels="True"
-            UseLayoutRounding="True">
-            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                SnapsToDevicePixels="True"
+                UseLayoutRounding="True">
+            <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                  UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" MinWidth="{TemplateBinding MinWidth}" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TickBar x:Name="TopTick"
-                 Grid.Column="0"
-                 Width="4"
-                 Margin="0,0,2,0"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Left"
-                 Visibility="Collapsed" />
+                         Grid.Column="0"
+                         Width="4"
+                         Margin="0,0,2,0"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Left"
+                         Visibility="Collapsed" />
                 <TickBar x:Name="BottomTick"
-                 Grid.Column="2"
-                 Width="4"
-                 Margin="2,0,0,0"
-                 Fill="{TemplateBinding Foreground}"
-                 Placement="Right"
-                 Visibility="Collapsed" />
+                         Grid.Column="2"
+                         Width="4"
+                         Margin="2,0,0,0"
+                         Fill="{TemplateBinding Foreground}"
+                         Placement="Right"
+                         Visibility="Collapsed" />
                 <Rectangle Grid.Column="1"
-                   Width="4"
-                   HorizontalAlignment="Center"
-                   Fill="{TemplateBinding Foreground}"
-                   Opacity="0.38"
-                   RadiusX="2"
-                   RadiusY="2" />
+                           Width="4"
+                           HorizontalAlignment="Center"
+                           Fill="{TemplateBinding Foreground}"
+                           Opacity="0.38"
+                           RadiusX="2"
+                           RadiusY="2" />
                 <Border x:Name="activeTrack"
-                Grid.Column="1"
-                Width="6"
-                Height="{Binding DecreaseRepeatButton.ActualHeight, ElementName=PART_Track}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                Background="{TemplateBinding Foreground}"
-                CornerRadius="0,0,3,3" />
+                        Grid.Column="1"
+                        Width="6"
+                        Height="{Binding DecreaseRepeatButton.ActualHeight, ElementName=PART_Track}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Background="{TemplateBinding Foreground}"
+                        CornerRadius="0,0,3,3" />
                 <!-- Selection range must be wrapped in a Canvas for the position to be updated correctly -->
                 <Canvas Grid.Column="1"
-                Width="6"
-                HorizontalAlignment="Center">
+                        Width="6"
+                        HorizontalAlignment="Center">
                     <Rectangle x:Name="PART_SelectionRange"
-                     Width="6"
-                     Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
-                     RadiusX="2"
-                     RadiusY="2"
-                     Visibility="Collapsed" />
+                               Width="6"
+                               Fill="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
+                               RadiusX="2"
+                               RadiusY="2"
+                               Visibility="Collapsed" />
                 </Canvas>
                 <Track x:Name="PART_Track"
-               Grid.Column="1"
-               Width="20">
+                       Grid.Column="1"
+                       Width="20">
                     <Track.DecreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.DecreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.DecreaseRepeatButton>
                     <Track.IncreaseRepeatButton>
-                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
+                        <RepeatButton Command="{x:Static Slider.IncreaseLarge}"
+                                      Style="{StaticResource MaterialDesignRepeatButton}" />
                     </Track.IncreaseRepeatButton>
                     <!-- It's important that the Thumb gets added last in the XAML to make sure it is drawn on top of both repeat buttons -->
                     <Track.Thumb>
                         <Thumb Foreground="{TemplateBinding Foreground}"
-                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                   Template="{StaticResource MaterialDesignLeftDiscreteSliderThumb}" />
+                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                               Template="{StaticResource MaterialDesignLeftDiscreteSliderThumb}" />
                     </Track.Thumb>
                 </Track>
             </Grid>
@@ -1009,8 +1057,8 @@
     </Style>
 
     <Style x:Key="MaterialDesignDiscreteSlider"
-         TargetType="{x:Type Slider}"
-         BasedOn="{StaticResource MaterialDesignDiscreteHorizontalSlider}">
+           TargetType="{x:Type Slider}"
+           BasedOn="{StaticResource MaterialDesignDiscreteHorizontalSlider}">
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Foreground" Value="{DynamicResource MaterialDesignCheckBoxDisabled}" />

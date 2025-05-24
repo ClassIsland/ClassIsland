@@ -17,7 +17,7 @@ namespace ClassIsland.Controls.Components;
 /// <summary>
 /// ScheduleComponent.xaml 的交互逻辑
 /// </summary>
-[MigrateFrom("E7831603-61A0-4180-B51B-54AD75B1A4D3")]  // 课程表（旧）
+[MigrateFrom("E7831603-61A0-4180-B51B-54AD75B1A4D3")] // 课程表（旧）
 [ComponentInfo("1DB2017D-E374-4BC6-9D57-0B4ADF03A6B8", "课程表", PackIconKind.Schedule, "显示当前的课程表信息。")]
 public partial class ScheduleComponent : INotifyPropertyChanged
 {
@@ -65,7 +65,8 @@ public partial class ScheduleComponent : INotifyPropertyChanged
         }
     }
 
-    public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService, IProfileService profileService, IExactTimeService exactTimeService)
+    public ScheduleComponent(ILessonsService lessonsService, SettingsService settingsService,
+        IProfileService profileService, IExactTimeService exactTimeService)
     {
         LessonsService = lessonsService;
         SettingsService = settingsService;
@@ -84,10 +85,7 @@ public partial class ScheduleComponent : INotifyPropertyChanged
 
     private void LessonsServiceOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(LessonsService.CurrentClassPlan))
-        {
-            CurrentTimeStateChanged();
-        }
+        if (e.PropertyName == nameof(LessonsService.CurrentClassPlan)) CurrentTimeStateChanged();
     }
 
     private void OnLessonsServiceOnCurrentTimeStateChanged(object? o, EventArgs eventArgs)
@@ -115,15 +113,17 @@ public partial class ScheduleComponent : INotifyPropertyChanged
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
         var settingsSource =
-            (ILessonControlSettings?)IAttachedSettingsHostService.GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
-                new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
-                LessonsService.CurrentSubject,
-                LessonsService.CurrentTimeLayoutItem,
-                LessonsService.CurrentClassPlan,
-                LessonsService.CurrentClassPlan?.TimeLayout) ??
+            (ILessonControlSettings?)IAttachedSettingsHostService
+                .GetAttachedSettingsByPriority<LessonControlAttachedSettings>(
+                    new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"),
+                    LessonsService.CurrentSubject,
+                    LessonsService.CurrentTimeLayoutItem,
+                    LessonsService.CurrentClassPlan,
+                    LessonsService.CurrentClassPlan?.TimeLayout) ??
             Settings;
         ShowCurrentLessonOnlyOnClass = settingsSource.ShowCurrentLessonOnlyOnClass;
-        TomorrowClassPlan = LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
+        TomorrowClassPlan =
+            LessonsService.GetClassPlanByDate(ExactTimeService.GetCurrentLocalDateTime() + TimeSpan.FromDays(1));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

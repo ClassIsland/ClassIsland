@@ -33,7 +33,8 @@ public partial class ThemesSettingsPage
 
     public ThemesSettingsViewModel ViewModel { get; } = new();
 
-    public ThemesSettingsPage(IXamlThemeService xamlThemeService, IPluginMarketService pluginMarketService, SettingsService settingsService)
+    public ThemesSettingsPage(IXamlThemeService xamlThemeService, IPluginMarketService pluginMarketService,
+        SettingsService settingsService)
     {
         XamlThemeService = xamlThemeService;
         PluginMarketService = pluginMarketService;
@@ -41,10 +42,7 @@ public partial class ThemesSettingsPage
         InitializeComponent();
         DataContext = this;
 
-        if (FindResource("DataProxy") is BindingProxy proxy)
-        {
-            proxy.Data = this;
-        }
+        if (FindResource("DataProxy") is BindingProxy proxy) proxy.Data = this;
     }
 
     private void ButtonLoadThemes_OnClick(object sender, RoutedEventArgs e)
@@ -56,9 +54,9 @@ public partial class ThemesSettingsPage
     [RelayCommand]
     private void OpenFolder(ThemeInfo info)
     {
-        Process.Start(new ProcessStartInfo()
+        Process.Start(new ProcessStartInfo
         {
-            FileName = System.IO.Path.GetFullPath(info.Path),
+            FileName = Path.GetFullPath(info.Path),
             UseShellExecute = true
         });
     }
@@ -71,7 +69,7 @@ public partial class ThemesSettingsPage
 
     private void ButtonOpenThemeFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        Process.Start(new ProcessStartInfo
         {
             FileName = ClassIsland.Services.XamlThemeService.ThemesPath,
             UseShellExecute = true
@@ -80,10 +78,7 @@ public partial class ThemesSettingsPage
 
     private void ListBoxCategory_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (FindResource("ThemeSource") is CollectionViewSource source)
-        {
-            source?.View?.Refresh();
-        }
+        if (FindResource("ThemeSource") is CollectionViewSource source) source?.View?.Refresh();
     }
 
     private void ThemeSource_OnFilter(object sender, FilterEventArgs e)
@@ -96,6 +91,7 @@ public partial class ThemesSettingsPage
             e.Accepted = false;
             return;
         }
+
         if (!info.IsAvailableOnMarket && ViewModel.ThemeCategoryIndex == 0)
         {
             e.Accepted = false;
@@ -129,10 +125,7 @@ public partial class ThemesSettingsPage
     [RelayCommand]
     private void OpenContextMenu(ContextMenu? menu)
     {
-        if (menu != null)
-        {
-            menu.IsOpen = true;
-        }
+        if (menu != null) menu.IsOpen = true;
     }
 
     [RelayCommand]
@@ -153,18 +146,18 @@ public partial class ThemesSettingsPage
     {
         if (info == null)
             return;
-        var dialog = new SaveFileDialog()
+        var dialog = new SaveFileDialog
         {
             Title = "打包主题",
             FileName = info.Manifest.Id + ".zip",
             Filter = $"ClassIsland 主题包(*.zip)|*.zip"
         };
-        if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+        if (dialog.ShowDialog() != DialogResult.OK)
             return;
         try
         {
             await XamlThemeService.PackageThemeAsync(info.Manifest.Id, dialog.FileName);
-            Process.Start(new ProcessStartInfo()
+            Process.Start(new ProcessStartInfo
             {
                 FileName = Path.GetDirectoryName(dialog.FileName) ?? "",
                 UseShellExecute = true

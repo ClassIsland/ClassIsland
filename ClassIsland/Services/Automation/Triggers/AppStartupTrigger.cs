@@ -12,10 +12,7 @@ public class AppStartupTrigger : TriggerBase
     public override void Loaded()
     {
         var stack = new StackTrace();
-        if (stack.GetFrames().FirstOrDefault(x => x.GetMethod()?.DeclaringType == typeof(App)) != null)
-        {
-            Trigger();
-        }
+        if (stack.GetFrames().FirstOrDefault(x => x.GetMethod()?.DeclaringType == typeof(App)) != null) Trigger();
     }
 
     public override void UnLoaded()

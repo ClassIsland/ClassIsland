@@ -12,7 +12,9 @@ ClassIsland 现在可以直接禁用某个课程表中的某些课程，无需�
 
 ![主题市场](https://res.classisland.tech/screenshots/changelogs/1.7/1.6.3.0/2.png)
 
-ClassIsland 已将主题系统集成到应用中，并加入了主题市场，以便用户分享和下载主题。您可以在[【应用设置】->【主题】](classisland://app/settings/classisland.themes)中了解更多信息。
+ClassIsland
+已将主题系统集成到应用中，并加入了主题市场，以便用户分享和下载主题。您可以在[【应用设置】->【主题】](classisland://app/settings/classisland.themes)
+中了解更多信息。
 
 ## 导出到表格
 
@@ -30,11 +32,13 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 提醒内容支持使用数据模板，减少开发提醒提供方的重复代码。
 - 加入链式提醒。取消链式提醒中的提醒的同时也会取消链式提醒中的其它提醒。
 
-目前已将上下课提醒中的准备上课提醒、上课提醒和下课提醒分离到了各自的提醒渠道中，以便单独设置提醒设置。您可以在[【应用设置】->【提醒】](classisland://app/settings/notification)中了解更多信息。
+目前已将上下课提醒中的准备上课提醒、上课提醒和下课提醒分离到了各自的提醒渠道中，以便单独设置提醒设置。您可以在[【应用设置】->【提醒】](classisland://app/settings/notification)
+中了解更多信息。
 
 ## 天气增强
 
-现在天气可以使用系统定位接口进行定位，提升降水预报的准确度（仅限内地）和自动设置天气城市。在[【应用设置】->【天气】](classisland://app/settings/weather)中以了解更多信息。
+现在天气可以使用系统定位接口进行定位，提升降水预报的准确度（仅限内地）和自动设置天气城市。在[【应用设置】->【天气】](classisland://app/settings/weather)
+中以了解更多信息。
 
 除此以外，天气组件也添加了以下可以显示的信息：
 
@@ -58,13 +62,16 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 
 ## 🚀 新增功能与优化
 
-- **【主题】主题功能：** 将主题功能整合到应用中，并加入主题市场支持 ([#766](https://github.com/ClassIsland/ClassIsland/issues/766))
+- **【主题】主题功能：**
+  将主题功能整合到应用中，并加入主题市场支持 ([#766](https://github.com/ClassIsland/ClassIsland/issues/766))
 - **【提醒】提醒 API v2：** 加入了新版提醒 API，具体变化如下：
     - 允许提醒在提醒提供方下注册提醒渠道，提供更细化的提醒自定义选项。
     - 提醒内容支持使用数据模板，减少开发提醒提供方的重复代码。
     - 加入链式提醒。取消链式提醒中的提醒的同时也会取消链式提醒中的其它提醒。
-- **【导出到表格】导出到表格：**支持将课表导出到 Excel 表格，以便进行打印和分发 ([#410](https://github.com/ClassIsland/ClassIsland/issues/410))
-- **【插件】允许插件间联动：** 允许插件间互相调用接口，并自动验证和处理依赖关系。 ([#758](https://github.com/ClassIsland/ClassIsland/issues/758))
+- **【导出到表格】导出到表格：**支持将课表导出到 Excel
+  表格，以便进行打印和分发 ([#410](https://github.com/ClassIsland/ClassIsland/issues/410))
+- **【插件】允许插件间联动：**
+  允许插件间互相调用接口，并自动验证和处理依赖关系。 ([#758](https://github.com/ClassIsland/ClassIsland/issues/758))
 - 【组件】滚动组件 ([#393](https://github.com/ClassIsland/ClassIsland/issues/393))
 - 【组件/轮播组件】轮播组件动画 ([#504](https://github.com/ClassIsland/ClassIsland/issues/504))
 - 【组件/天气】显示更多天气信息 ([#480](https://github.com/ClassIsland/ClassIsland/issues/480))
@@ -80,7 +87,8 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 【提醒】将应用内置的提醒提供方迁移到 v2 提醒 API
 - 【提醒】优化户外课程默认提示语文本表述 ([#933](https://github.com/ClassIsland/ClassIsland/issues/933))
 - 【提醒】户外课程支持自定义提醒文本
-- 【提醒/上课提醒】提醒渠道支持，将上下课提醒拆分到多个提醒渠道中 ([#517](https://github.com/ClassIsland/ClassIsland/issues/517))
+-
+【提醒/上课提醒】提醒渠道支持，将上下课提醒拆分到多个提醒渠道中 ([#517](https://github.com/ClassIsland/ClassIsland/issues/517))
 - 【提醒/上课提醒】优化即将上课提醒发布逻辑
 - 【档案】直接隐藏一定时间的课程 ([#182](https://github.com/ClassIsland/ClassIsland/issues/182))
 - 【档案】添加复姓处理逻辑到 Subject 类
@@ -88,9 +96,11 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 【天气】天气自动定位，并根据经纬坐标获取天气信息 ([#547](https://github.com/ClassIsland/ClassIsland/issues/547))
 - 【天气】将天气图标修改为 Sf Symbol Icon
 - 【应用】崩溃时自动禁用导致崩溃的异常插件
-- 【应用】优化日志中内存使用量的显示、添加初步本地化语言文本 ([#956](https://github.com/ClassIsland/ClassIsland/issues/956))
+-
+【应用】优化日志中内存使用量的显示、添加初步本地化语言文本 ([#956](https://github.com/ClassIsland/ClassIsland/issues/956))
 - 【自动化】在特定时间点前指定时间触发自动化 ([#458](https://github.com/ClassIsland/ClassIsland/issues/458))
-- 【行动】加入重启应用、设置主界面偏移和设置主界面置顶状态的行动 ([#981](https://github.com/ClassIsland/ClassIsland/issues/981)) ([#833](https://github.com/ClassIsland/ClassIsland/issues/833)) ([#773](https://github.com/ClassIsland/ClassIsland/issues/773))
+-
+【行动】加入重启应用、设置主界面偏移和设置主界面置顶状态的行动 ([#981](https://github.com/ClassIsland/ClassIsland/issues/981)) ([#833](https://github.com/ClassIsland/ClassIsland/issues/833)) ([#773](https://github.com/ClassIsland/ClassIsland/issues/773))
 - 【主题色提取】引入实验性取色算法
 - 【应用】将未捕获的异常 UCEERR_RENDERTHREADFAILURE (0x88980406) 视为关键异常
 - 【诊断】崩溃来源插件分析
@@ -111,33 +121,42 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 
 ## 🐛 Bug 修复
 
-- 【组件/轮播组件】修复轮播组件在重载后因重复注册计时器 Tick 事件导致无法正常轮播的问题 ([#878](https://github.com/ClassIsland/ClassIsland/issues/878))
+- 【组件/轮播组件】修复轮播组件在重载后因重复注册计时器 Tick
+  事件导致无法正常轮播的问题 ([#878](https://github.com/ClassIsland/ClassIsland/issues/878))
 - 【组件/课表】修复切换时间表后当前时间点不显示的问题 ([#912](https://github.com/ClassIsland/ClassIsland/issues/912))
 - 【组件/轮播组件】修复轮播组件内存泄漏的问题 ([#882](https://github.com/ClassIsland/ClassIsland/issues/882))
-- 【主界面】修复提醒时切换多行组件配置方案或重载主题出现 Bug 的问题 ([#628](https://github.com/ClassIsland/ClassIsland/issues/628))
-- 【主界面】修复在主界面行控件未完全初始化时发出提醒报错的问题 ([#737](https://github.com/ClassIsland/ClassIsland/issues/737))
+- 【主界面】修复提醒时切换多行组件配置方案或重载主题出现 Bug
+  的问题 ([#628](https://github.com/ClassIsland/ClassIsland/issues/628))
+-
+【主界面】修复在主界面行控件未完全初始化时发出提醒报错的问题 ([#737](https://github.com/ClassIsland/ClassIsland/issues/737))
 - 【主界面】修复禁用鼠标穿透后无法点击主界面元素的问题
 - 【应用设置】修复在系统 TTS 不可用时选择其它 TTS 提供方时设置被覆盖的问题
 - 【应用设置/插件】修复无法正常更新插件的问题 ([#924](https://github.com/ClassIsland/ClassIsland/issues/924))
 - 【应用设置/关于】修复无法显示贡献人员的问题
-- 【应用设置/调试】修复在测试 Markdown 时输入无效 URI 导致崩溃的问题 ([#886](https://github.com/ClassIsland/ClassIsland/issues/886))
+- 【应用设置/调试】修复在测试 Markdown 时输入无效 URI
+  导致崩溃的问题 ([#886](https://github.com/ClassIsland/ClassIsland/issues/886))
 - 【应用设置/插件】([#1049](https://github.com/ClassIsland/ClassIsland/issues/1049)) 修复插件页面无法正常绑定选择的插件的问题
 - 【提醒】修复附加设置中的户外课程提醒文本不生效的问题
 - 【提醒】修复缺少标点符号导致播报任教老师时可能出现断句问题
 - 【提醒】修复提醒渠道设置不能保存的问题 ([#987](https://github.com/ClassIsland/ClassIsland/issues/987))
-- 【提醒】修复滚动文字提醒（天气预警、滚动文字提醒模板）在部分主题下高度错位的问题  ([#943](https://github.com/ClassIsland/ClassIsland/issues/943))
+-
+【提醒】修复滚动文字提醒（天气预警、滚动文字提醒模板）在部分主题下高度错位的问题  ([#943](https://github.com/ClassIsland/ClassIsland/issues/943))
 - 【提醒】修复准备上课时覆盖的附加设置不生效的问题 ([#935](https://github.com/ClassIsland/ClassIsland/issues/935))
 - 【提醒】修复发出准备上课提醒时报错的问题 ([#905](https://github.com/ClassIsland/ClassIsland/issues/905))
 - 【提醒/行动】行动提醒遮罩字体大小使用强调字体大小
-- 【提醒/行动】修复在行动提醒中启用高级设置时，无法使用语音的问题 ([#913](https://github.com/ClassIsland/ClassIsland/issues/913)) 
+-
+【提醒/行动】修复在行动提醒中启用高级设置时，无法使用语音的问题 ([#913](https://github.com/ClassIsland/ClassIsland/issues/913))
 - 【UI】修正过时的文档链接
 - 【UI】缓解在部分界面 UI 停止渲染的问题
 - 【应用】修复重复触发应用停止事件的问题 ([#1014](https://github.com/ClassIsland/ClassIsland/issues/1014))
 - 【课程服务】修复编辑当前加载的时间表时课程服务索引溢出的问题
 - 【档案】修复 ClassInfo 获取课程对应时间点超出索引的问题
-- 【档案编辑】修复调课日历中课表选择界面不显示课表的第一个下划线的问题 ([#921](https://github.com/ClassIsland/ClassIsland/issues/921))
-- 【档案编辑】修复选择临时课表时，课表名中的第一个下划线不显示的问题 ([#885](https://github.com/ClassIsland/ClassIsland/issues/885)) 
-- 【档案编辑】修复调课页面在更新选择日期后没有及时更新表格内容的问题 ([#1017](https://github.com/ClassIsland/ClassIsland/issues/1017))
+-
+【档案编辑】修复调课日历中课表选择界面不显示课表的第一个下划线的问题 ([#921](https://github.com/ClassIsland/ClassIsland/issues/921))
+-
+【档案编辑】修复选择临时课表时，课表名中的第一个下划线不显示的问题 ([#885](https://github.com/ClassIsland/ClassIsland/issues/885))
+-
+【档案编辑】修复调课页面在更新选择日期后没有及时更新表格内容的问题 ([#1017](https://github.com/ClassIsland/ClassIsland/issues/1017))
 - 【集控】正常执行集控服务器的 DataUpdated 指令
 
 ## 🐛 Bug 修复（1.6.3.0 - 1.7.0.0）
@@ -148,7 +167,8 @@ ClassIsland 现在支持将课表内容导出到 Excel 表格，以便打印和�
 - 【应用设置/提醒】修复未移除的提醒语音禁用逻辑导致无法修改提醒语音设置的问题
 - 【应用】([#1044](https://github.com/ClassIsland/ClassIsland/issues/1044)) 为由用户输入的 TimeSpan 添加边界限制
 - 【提醒】修复提醒语音会被自动禁用的问题
-- 【提醒】([#1041](https://github.com/ClassIsland/ClassIsland/issues/1041)) 修复直接通过提醒请求指定提醒渠道 ID 时提醒渠道的设置不生效的问题
+- 【提醒】([#1041](https://github.com/ClassIsland/ClassIsland/issues/1041)) 修复直接通过提醒请求指定提醒渠道 ID
+  时提醒渠道的设置不生效的问题
 - 【提醒】修复启动时获取语音提供方服务卡死的问题
 - 【提醒】修复上课提醒提前结束时重复发送上课提醒的问题
 

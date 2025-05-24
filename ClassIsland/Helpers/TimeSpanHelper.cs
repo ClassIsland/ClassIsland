@@ -8,6 +8,8 @@ public static class TimeSpanHelper
 
     public static TimeSpan FromSecondsSafe(double seconds)
     {
-        return !double.IsRealNumber(seconds) ? TimeSpan.Zero : TimeSpan.FromSeconds(Math.Max(0, Math.Min(MaxTimeSpanSeconds, seconds)));
+        return !double.IsRealNumber(seconds)
+            ? TimeSpan.Zero
+            : TimeSpan.FromSeconds(Math.Max(0, Math.Min(MaxTimeSpanSeconds, seconds)));
     }
 }

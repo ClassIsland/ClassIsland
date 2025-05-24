@@ -9,10 +9,12 @@ public enum UpdateStatus
     /// 已是最新
     /// </summary>
     UpToDate,
+
     /// <summary>
     /// 更新可用
     /// </summary>
     UpdateAvailable,
+
     /// <summary>
     /// 已下载更新
     /// </summary>

@@ -13,9 +13,7 @@ using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
-
 using Microsoft.Extensions.Logging;
-
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using PgpCore;
@@ -42,7 +40,6 @@ public class GptSoVitsService : ISpeechService
     public GptSoVitsService()
     {
         Logger.LogInformation("初始化了 GPTSoVITS 服务。");
-        
     }
 
     private string GetCachePath(string text)
@@ -50,38 +47,31 @@ public class GptSoVitsService : ISpeechService
         var data = Encoding.UTF8.GetBytes(text);
         var md5 = MD5.HashData(data);
         var md5String = md5.Aggregate("", (current, t) => current + t.ToString("x2"));
-        var path = Path.Combine(GPTSoVITSCacheFolderPath, SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, $"{md5String}.wav");
+        var path = Path.Combine(GPTSoVITSCacheFolderPath,
+            SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, $"{md5String}.wav");
         var directory = Path.GetDirectoryName(path);
-        if (!Directory.Exists(directory) && directory != null)
-        {
-            Directory.CreateDirectory(directory);
-        }
+        if (!Directory.Exists(directory) && directory != null) Directory.CreateDirectory(directory);
 
         return path;
     }
 
     public void EnqueueSpeechQueue(string text)
     {
-        Logger.LogInformation("以 {VoiceName} 朗读文本：{Text}", SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, text);
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return;
-        }
+        Logger.LogInformation("以 {VoiceName} 朗读文本：{Text}",
+            SettingsService.Settings.GptSoVitsSpeechSettings.GptSoVitsVoiceName, text);
+        if (string.IsNullOrWhiteSpace(text)) return;
         var previousCts = requestingCancellationTokenSource;
         requestingCancellationTokenSource = new CancellationTokenSource();
         if (previousCts is { IsCancellationRequested: false })
-        {
-            requestingCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(previousCts.Token, requestingCancellationTokenSource.Token);
-        }
+            requestingCancellationTokenSource =
+                CancellationTokenSource.CreateLinkedTokenSource(previousCts.Token,
+                    requestingCancellationTokenSource.Token);
 
         var cache = GetCachePath(text);
         Logger.LogDebug("语音缓存路径：{CachePath}", cache);
 
         Task<bool>? task = null;
-        if (!File.Exists(cache))
-        {
-            task = GenerateSpeechAsync(text, cache, requestingCancellationTokenSource.Token);
-        }
+        if (!File.Exists(cache)) task = GenerateSpeechAsync(text, cache, requestingCancellationTokenSource.Token);
 
         if (requestingCancellationTokenSource.IsCancellationRequested)
             return;
@@ -103,6 +93,7 @@ public class GptSoVitsService : ISpeechService
         {
             // ignored
         }
+
         while (PlayingQueue.Count > 0)
         {
             var playInfo = PlayingQueue.Dequeue();
@@ -127,8 +118,10 @@ public class GptSoVitsService : ISpeechService
                 Timestamp = Convert.ToInt64(ts.TotalMilliseconds)
             };
             var sign = await pgp.SignAsync(JsonSerializer.Serialize(signData));
-            httpClient.DefaultRequestHeaders.Add("X-ClassIsland-ApiSignature", Convert.ToBase64String(Encoding.UTF8.GetBytes(sign)));
+            httpClient.DefaultRequestHeaders.Add("X-ClassIsland-ApiSignature",
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(sign)));
         }
+
         httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("ClassIsland", AppBase.AppVersion));
         var serverIp = settings.GptSoVitsServerIp;
         var port = settings.GptSoVitsPort;
@@ -152,7 +145,8 @@ public class GptSoVitsService : ISpeechService
         try
         {
             Logger.LogDebug("发送 TTS 请求到：{RequestUri}", requestUri);
-            using var response = await httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            using var response = await httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken);
             if (response.IsSuccessStatusCode)
             {
                 await using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None);
@@ -193,6 +187,7 @@ public class GptSoVitsService : ISpeechService
                     Logger.LogError("语音 {} 生成失败。", playInfo.FilePath);
                     continue;
                 }
+
                 Logger.LogDebug("语音生成完成。");
             }
 
@@ -217,6 +212,7 @@ public class GptSoVitsService : ISpeechService
                 playInfo.IsPlayingCompleted = false;
 
                 var playbackTcs = new TaskCompletionSource<bool>();
+
                 void PlaybackStoppedHandler(object? sender, StoppedEventArgs args)
                 {
                     playInfo.IsPlayingCompleted = true;

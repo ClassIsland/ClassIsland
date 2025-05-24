@@ -9,7 +9,8 @@ public static class UriProtocolRegisterHelper
 {
     public static void Register()
     {
-        var root = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Classes", RegistryKeyPermissionCheck.ReadWriteSubTree)?.CreateSubKey(IUriNavigationService.UriScheme);
+        var root = Registry.CurrentUser.OpenSubKey("Software\\Classes", RegistryKeyPermissionCheck.ReadWriteSubTree)
+            ?.CreateSubKey(IUriNavigationService.UriScheme);
         var shellKey = root!.CreateSubKey("shell");
         var openKey = shellKey.CreateSubKey("open");
         var commandKey = openKey.CreateSubKey("command");
@@ -20,11 +21,13 @@ public static class UriProtocolRegisterHelper
 
     public static void UnRegister()
     {
-        Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Classes", RegistryKeyPermissionCheck.ReadWriteSubTree)?.DeleteSubKeyTree(IUriNavigationService.UriScheme);
+        Registry.CurrentUser.OpenSubKey("Software\\Classes", RegistryKeyPermissionCheck.ReadWriteSubTree)
+            ?.DeleteSubKeyTree(IUriNavigationService.UriScheme);
     }
 
     public static bool IsRegistered()
     {
-        return Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Classes")?.GetSubKeyNames().Count(x => x == IUriNavigationService.UriScheme) > 0;
+        return Registry.CurrentUser.OpenSubKey("Software\\Classes")?.GetSubKeyNames()
+            .Count(x => x == IUriNavigationService.UriScheme) > 0;
     }
 }

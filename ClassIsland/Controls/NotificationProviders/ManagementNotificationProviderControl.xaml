@@ -8,20 +8,22 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Loaded="ManagementNotificationProviderControl_OnLoaded">
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementNotificationProviderControl}}">
-        <StackPanel Orientation="Horizontal" 
+    <Grid
+        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ManagementNotificationProviderControl}}">
+        <StackPanel Orientation="Horizontal"
                     VerticalAlignment="Center" HorizontalAlignment="Center"
                     Visibility="{Binding IsOverlay, Converter={StaticResource BooleanToVisibilityConverter}}">
             <materialDesign:PackIcon Kind="AlertCircleOutline" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
-            <TextBlock Text="{Binding Payload.MessageMask}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
+                                     Height="20" Width="20" />
+            <TextBlock Text="{Binding Payload.MessageMask}" FontSize="{DynamicResource MainWindowEmphasizedFontSize}"
+                       Margin="8 0" FontWeight="Bold" />
             <materialDesign:PackIcon Kind="Announcement" VerticalAlignment="Center"
-                                     Height="20" Width="20"/>
+                                     Height="20" Width="20" />
         </StackPanel>
         <Grid Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid Grid.Column="1" ClipToBounds="True">
                 <Canvas VerticalAlignment="Stretch"
@@ -30,7 +32,7 @@
                         x:Name="RootCanvas"
                         ClipToBounds="True">
                     <Canvas.OpacityMask>
-                        <SolidColorBrush Color="White"/>
+                        <SolidColorBrush Color="White" />
                     </Canvas.OpacityMask>
                     <TextBlock x:Name="Description" HorizontalAlignment="Right" RenderTransformOrigin="1,0.5"
                                Text="{Binding Payload.MessageContent}"

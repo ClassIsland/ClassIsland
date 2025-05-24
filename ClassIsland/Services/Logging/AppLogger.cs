@@ -16,17 +16,17 @@ public class AppLogger(AppLogService appLogService, string categoryName) : ILogg
 
     private string CategoryName { get; } = categoryName;
 
-    private static readonly AsyncLocal<Stack<object>> ScopeStack = new AsyncLocal<Stack<object>>();
+    private static readonly AsyncLocal<Stack<object>> ScopeStack = new();
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+        Func<TState, Exception?, string> formatter)
     {
         List<string> scopes = [];
         if (ScopeStack.Value != null)
-        {
             scopes.AddRange(ScopeStack.Value.Select(scope => (scope.ToString() ?? "") + " => "));
-        }
-        var message = string.Join("", scopes) + formatter(state, exception) + (exception != null ? "\n" + exception : "");
-        AppLogService.AddLog(new LogEntry()
+        var message = string.Join("", scopes) + formatter(state, exception) +
+                      (exception != null ? "\n" + exception : "");
+        AppLogService.AddLog(new LogEntry
         {
             LogLevel = logLevel,
             Message = LogMaskingHelper.MaskLog(message),

@@ -18,16 +18,10 @@ public abstract class DictionaryValueAccessConverter<T> : IMultiValueConverter
     /// <inheritdoc />
     public object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
-        if (values.Length < 2)
-        {
-            return null;
-        }
+        if (values.Length < 2) return null;
         var dict = values[0] as IDictionary<string, T>;
         var key = values[1] as string;
-        if (dict?.TryGetValue(key ?? "", out var o) == true)
-        {
-            return o;
-        }
+        if (dict?.TryGetValue(key ?? "", out var o) == true) return o;
 
         return null;
     }

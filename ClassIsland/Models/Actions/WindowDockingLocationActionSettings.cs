@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ClassIsland.Models.Actions;
 
 public class WindowDockingLocationActionSettings : ObservableRecipient
 {
-    int _value = 2;
+    private int _value = 2;
+
     public int Value
     {
         get => _value;

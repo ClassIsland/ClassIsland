@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ClassIsland.Models.Actions;
 
 public class RunActionSettings : ObservableRecipient
 {
-    string _value = "";
+    private string _value = "";
+
     public string Value
     {
         get => _value;
@@ -15,7 +17,8 @@ public class RunActionSettings : ObservableRecipient
         }
     }
 
-    string _args = "";
+    private string _args = "";
+
     public string Args
     {
         get => _args;

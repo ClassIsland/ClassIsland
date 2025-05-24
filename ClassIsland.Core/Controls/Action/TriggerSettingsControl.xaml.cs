@@ -24,12 +24,13 @@ namespace ClassIsland.Core.Controls.Action;
 public partial class TriggerSettingsControl : UserControl
 {
     public static readonly DependencyProperty TriggersProperty = DependencyProperty.Register(
-        nameof(Triggers), typeof(ObservableCollection<TriggerSettings>), typeof(TriggerSettingsControl), new PropertyMetadata(new ObservableCollection<TriggerSettings>()));
+        nameof(Triggers), typeof(ObservableCollection<TriggerSettings>), typeof(TriggerSettingsControl),
+        new PropertyMetadata(new ObservableCollection<TriggerSettings>()));
 
     public ObservableCollection<TriggerSettings> Triggers
     {
-        get { return (ObservableCollection<TriggerSettings>)GetValue(TriggersProperty); }
-        set { SetValue(TriggersProperty, value); }
+        get => (ObservableCollection<TriggerSettings>)GetValue(TriggersProperty);
+        set => SetValue(TriggersProperty, value);
     }
 
     public TriggerSettingsControl()

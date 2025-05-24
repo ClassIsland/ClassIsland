@@ -12,10 +12,7 @@ public class MainWindowIsMainLineConverter : IValueConverter
     {
         if (value is not CollectionViewGroup cvg)
             return false;
-        if (cvg.Items.FirstOrDefault() is ComponentSettings component)
-        {
-            return component.RelativeLineNumber == 0;
-        }
+        if (cvg.Items.FirstOrDefault() is ComponentSettings component) return component.RelativeLineNumber == 0;
 
         return false;
     }

@@ -29,10 +29,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
             //EnsureTime(value, EndSecond);
             OnPropertyChanging();
             _startSecond = value;
-            if (TimeType is 2 or 3)
-            {
-                EndSecond = value;
-            }
+            if (TimeType is 2 or 3) EndSecond = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(Last));
         }
@@ -57,10 +54,7 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
 
     private void EnsureTime(DateTime start, DateTime end)
     {
-        if (start.TimeOfDay > end.TimeOfDay)
-        {
-            throw new ArgumentException("时间点起始时间无效。");
-        }
+        if (start.TimeOfDay > end.TimeOfDay) throw new ArgumentException("时间点起始时间无效。");
     }
 
 
@@ -70,11 +64,10 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     public static readonly TimeLayoutItem Empty = new()
     {
         StartSecond = DateTime.MinValue,
-        EndSecond = DateTime.MinValue,
+        EndSecond = DateTime.MinValue
     };
 
-    [JsonIgnore]
-    public TimeSpan Last => EndSecond.TimeOfDay - StartSecond.TimeOfDay;
+    [JsonIgnore] public TimeSpan Last => EndSecond.TimeOfDay - StartSecond.TimeOfDay;
 
     /// <summary>
     /// 时间点类型
@@ -171,19 +164,10 @@ public class TimeLayoutItem : AttachableSettingsObject, IComparable
     public int CompareTo(object? obj)
     {
         var o = (TimeLayoutItem?)obj;
-        if (o is null)
-        {
-            return -1;
-        }
+        if (o is null) return -1;
 
-        if (o.StartSecond.TimeOfDay < StartSecond.TimeOfDay)
-        {
-            return -1;
-        }
-        if (o.StartSecond.TimeOfDay > StartSecond.TimeOfDay)
-        {
-            return 1;
-        }
+        if (o.StartSecond.TimeOfDay < StartSecond.TimeOfDay) return -1;
+        if (o.StartSecond.TimeOfDay > StartSecond.TimeOfDay) return 1;
         return 0;
     }
 }

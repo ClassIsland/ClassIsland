@@ -8,54 +8,30 @@ public interface INotificationSettings
     /// <summary>
     /// 是否启用提醒
     /// </summary>
-    public bool IsNotificationEnabled
-    {
-        get;
-        set;
-    }
+    public bool IsNotificationEnabled { get; set; }
 
     /// <summary>
     /// 是否启用语音
     /// </summary>
-    public bool IsSpeechEnabled
-    {
-        get;
-        set;
-    }
+    public bool IsSpeechEnabled { get; set; }
 
     /// <summary>
     /// 是否启用提醒效果
     /// </summary>
-    public bool IsNotificationEffectEnabled
-    {
-        get;
-        set;
-    }
+    public bool IsNotificationEffectEnabled { get; set; }
 
     /// <summary>
     /// 是否启用提醒音效
     /// </summary>
-    public bool IsNotificationSoundEnabled
-    {
-        get;
-        set;
-    }
+    public bool IsNotificationSoundEnabled { get; set; }
 
     /// <summary>
     /// 提醒音效路径
     /// </summary>
-    public string NotificationSoundPath
-    {
-        get;
-        set;
-    }
+    public string NotificationSoundPath { get; set; }
 
     /// <summary>
     /// 是否在提醒时置顶主界面
     /// </summary>
-    public bool IsNotificationTopmostEnabled
-    {
-        get;
-        set;
-    }
+    public bool IsNotificationTopmostEnabled { get; set; }
 }

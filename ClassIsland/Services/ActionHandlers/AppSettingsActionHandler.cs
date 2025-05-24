@@ -5,6 +5,7 @@ using System.Windows.Threading;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Models.Actions;
 using Microsoft.Extensions.Hosting;
+
 namespace ClassIsland.Services.ActionHandlers;
 
 public class AppSettingsActionHandler : IHostedService
@@ -16,7 +17,7 @@ public class AppSettingsActionHandler : IHostedService
 
         Reg("classisland.settings.currentComponentConfig", (s, g) =>
             Add(g, "CurrentComponentConfig", ((CurrentComponentConfigActionSettings)s!).Value));
-        Reg("classisland.settings.theme", (s, g) => 
+        Reg("classisland.settings.theme", (s, g) =>
             Add(g, "Theme", ((ThemeActionSettings)s!).Value));
         Reg("classisland.settings.windowDockingLocation", (s, g) =>
             Add(g, "WindowDockingLocation", ((WindowDockingLocationActionSettings)s!).Value));
@@ -27,11 +28,11 @@ public class AppSettingsActionHandler : IHostedService
         Reg("classisland.settings.windowDockingOffsetY", (s, g) =>
             Add(g, "WindowDockingOffsetY", ((WindowDockingOffsetYActionSettings)s!).Value));
 
-        RegRevert("classisland.settings.currentComponentConfig", (s, g) => 
+        RegRevert("classisland.settings.currentComponentConfig", (s, g) =>
             Remove(g, "CurrentComponentConfig"));
-        RegRevert("classisland.settings.theme", (s, g) => 
+        RegRevert("classisland.settings.theme", (s, g) =>
             Remove(g, "Theme"));
-        RegRevert("classisland.settings.windowDockingLocation", (s, g) => 
+        RegRevert("classisland.settings.windowDockingLocation", (s, g) =>
             Remove(g, "WindowDockingLocation"));
         RegRevert("classisland.settings.windowLayer", (s, g) =>
             Remove(g, "WindowLayer"));
@@ -55,6 +56,11 @@ public class AppSettingsActionHandler : IHostedService
         }
     }
 
-    public async Task StartAsync(CancellationToken _) { }
-    public async Task StopAsync(CancellationToken _) { }
+    public async Task StartAsync(CancellationToken _)
+    {
+    }
+
+    public async Task StopAsync(CancellationToken _)
+    {
+    }
 }

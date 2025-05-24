@@ -44,12 +44,13 @@ public partial class RulesetControl : UserControl
 
 
     public static readonly DependencyProperty RulesetProperty = DependencyProperty.Register(
-        nameof(Ruleset), typeof(Models.Ruleset.Ruleset), typeof(RulesetControl), new PropertyMetadata(default(Models.Ruleset.Ruleset)));
+        nameof(Ruleset), typeof(Models.Ruleset.Ruleset), typeof(RulesetControl),
+        new PropertyMetadata(default(Models.Ruleset.Ruleset)));
 
     public Models.Ruleset.Ruleset Ruleset
     {
-        get { return (Models.Ruleset.Ruleset)GetValue(RulesetProperty); }
-        set { SetValue(RulesetProperty, value); }
+        get => (Models.Ruleset.Ruleset)GetValue(RulesetProperty);
+        set => SetValue(RulesetProperty, value);
     }
 
     public static readonly DependencyProperty ShowTitleProperty = DependencyProperty.Register(
@@ -57,8 +58,8 @@ public partial class RulesetControl : UserControl
 
     public bool ShowTitle
     {
-        get { return (bool)GetValue(ShowTitleProperty); }
-        set { SetValue(ShowTitleProperty, value); }
+        get => (bool)GetValue(ShowTitleProperty);
+        set => SetValue(ShowTitleProperty, value);
     }
 
     /// <inheritdoc />
@@ -74,42 +75,27 @@ public partial class RulesetControl : UserControl
 
     private void CommandAddRule_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not RuleGroup group)
-        {
-            return;
-        }
+        if (e.Parameter is not RuleGroup group) return;
         group.Rules.Add(new Rule());
     }
 
     private void CommandRemoveRuleCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not Rule rule)
-        {
-            return;
-        }
+        if (e.Parameter is not Rule rule) return;
 
-        foreach (var group in Ruleset.Groups)
-        {
-            group.Rules.Remove(rule);
-        }
+        foreach (var group in Ruleset.Groups) group.Rules.Remove(rule);
     }
 
     private void CommandRemoveGroupCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not RuleGroup group)
-        {
-            return;
-        }
+        if (e.Parameter is not RuleGroup group) return;
 
         Ruleset.Groups.Remove(group);
     }
 
     private void CommandDuplicateGroup_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not RuleGroup group)
-        {
-            return;
-        }
+        if (e.Parameter is not RuleGroup group) return;
 
         Ruleset.Groups.Add(ConfigureFileHelper.CopyObject(group));
     }
@@ -123,13 +109,10 @@ public partial class RulesetControl : UserControl
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.RoutedEvent = MouseWheelEvent;
             eventArg.Source = sender;
-            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null)
-            {
-                parent.RaiseEvent(eventArg);
-            }
+            var parent = ((Control)sender).Parent as UIElement;
+            if (parent != null) parent.RaiseEvent(eventArg);
         }
     }
 }

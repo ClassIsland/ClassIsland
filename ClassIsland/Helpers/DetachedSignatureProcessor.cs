@@ -44,22 +44,14 @@ public static class DetachedSignatureProcessor
             var pgpObj = pgpFact.NextPgpObject();
 
             if (pgpObj is PgpCompressedData compressedData)
-            {
                 pgpObj = new PgpObjectFactory(compressedData.GetDataStream()).NextPgpObject();
-            }
 
-            if (pgpObj is not PgpSignatureList sigList)
-            {
-                throw new PgpException("签名文件格式不正确。");
-            }
+            if (pgpObj is not PgpSignatureList sigList) throw new PgpException("签名文件格式不正确。");
 
             var sig = sigList[0];
             var key = pgpPub.GetPublicKey(sig.KeyId);
 
-            if (key == null)
-            {
-                throw new PgpException("无法找到匹配的公钥。");
-            }
+            if (key == null) throw new PgpException("无法找到匹配的公钥。");
 
             sig.InitVerify(key);
 
@@ -67,10 +59,7 @@ public static class DetachedSignatureProcessor
             using (var inputData = dataStream)
             {
                 int ch;
-                while ((ch = inputData.ReadByte()) >= 0)
-                {
-                    sig.Update((byte)ch);
-                }
+                while ((ch = inputData.ReadByte()) >= 0) sig.Update((byte)ch);
             }
 
             return sig.Verify();
@@ -100,24 +89,21 @@ public static class DetachedSignatureProcessor
     {
         Stream outputStreamRaw = new MemoryStream();
         Stream outputStream = new ArmoredOutputStream(outputStreamRaw);
-        
+
 
         var pgpSec = new EncryptionKeys(keyIn, passPhrase);
-        PgpPrivateKey pgpPrivKey = pgpSec.PrivateKey;
-        PgpSignatureGenerator sGen = new PgpSignatureGenerator(
+        var pgpPrivKey = pgpSec.PrivateKey;
+        var sGen = new PgpSignatureGenerator(
             pgpSec.PrivateKey.PublicKeyPacket.Algorithm, HashAlgorithmTag.Sha1);
 
         sGen.InitSign(PgpSignature.BinaryDocument, pgpPrivKey);
 
-        BcpgOutputStream bOut = new BcpgOutputStream(outputStream);
+        var bOut = new BcpgOutputStream(outputStream);
 
         Stream fIn = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
         int ch;
-        while ((ch = fIn.ReadByte()) >= 0)
-        {
-            sGen.Update((byte)ch);
-        }
+        while ((ch = fIn.ReadByte()) >= 0) sGen.Update((byte)ch);
 
         fIn.Close();
 

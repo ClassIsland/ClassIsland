@@ -9,7 +9,6 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Helpers.Native;
 using ClassIsland.Core.Models;
 using ClassIsland.ViewModels;
-
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views;
@@ -21,11 +20,7 @@ public partial class WindowsPicker : MyWindow
 {
     public WindowsPickerViewModel ViewModel { get; } = new();
 
-    public string SelectedResult
-    {
-        get;
-        set;
-    }
+    public string SelectedResult { get; set; }
 
     public WindowsPicker(string selected)
     {
@@ -51,14 +46,14 @@ public partial class WindowsPicker : MyWindow
     private void UpdateWindows()
     {
         var w = NativeWindowHelper.GetAllWindows();
-        var q = ViewModel.IsFilteredFullscreen ?
-            (from i in w
+        var q = ViewModel.IsFilteredFullscreen
+            ? from i in w
             where Screen.AllScreens.Any(s => new System.Drawing.Rectangle(i.WindowRect.left, i.WindowRect.top,
-                i.WindowRect.right - i.WindowRect.left, i.WindowRect.bottom - i.WindowRect.top).Contains(s.Bounds) &&
+                                                 i.WindowRect.right - i.WindowRect.left,
+                                                 i.WindowRect.bottom - i.WindowRect.top).Contains(s.Bounds) &&
                                              i.IsVisible && i.ClassName != "WorkerW")
-            select i)
-            :
-            from i in w where i.IsVisible select i;
+            select i
+            : from i in w where i.IsVisible select i;
         var c = new ObservableCollection<DesktopWindow>();
         foreach (var i in q)
         {
@@ -67,7 +62,7 @@ public partial class WindowsPicker : MyWindow
             {
                 c.Add(DesktopWindow.GetWindowByHWndDetailed(i.HWnd));
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 App.GetService<ILogger<WindowsPicker>>().LogError(ex, "获取窗口详细信息失败：{}（{}）", i.HWnd, i.ClassName);
             }

@@ -10,65 +10,37 @@ public interface ILessonControlSettings : INotifyPropertyChanged
     /// <summary>
     /// 是否在当前时间点上显示附加信息
     /// </summary>
-    public bool ShowExtraInfoOnTimePoint
-    {
-        get;
-        set;
-    }
+    public bool ShowExtraInfoOnTimePoint { get; set; }
 
     /// <summary>
     /// 时间点附加信息类型
     /// </summary>
-    public int ExtraInfoType
-    {
-        get;
-        set;
-    }
+    public int ExtraInfoType { get; set; }
 
     /// <summary>
     /// 是否启用时间点结束倒计时
     /// </summary>
-    public bool IsCountdownEnabled
-    {
-        get;
-        set;
-    }
+    public bool IsCountdownEnabled { get; set; }
 
     /// <summary>
     /// 时间点结束倒计时时长
     /// </summary>
-    public int CountdownSeconds
-    {
-        get;
-        set;
-    }
+    public int CountdownSeconds { get; set; }
 
     /// <summary>
     /// 时间点剩余时间精确到秒时长
     /// </summary>
-    public int ExtraInfo4ShowSecondsSeconds
-    {
-        get;
-        set;
-    }
+    public int ExtraInfo4ShowSecondsSeconds { get; set; }
 
     /// <summary>
     /// 课程表文字间距
     /// </summary>
-    public double ScheduleSpacing
-    {
-        get;
-        set;
-    }
+    public double ScheduleSpacing { get; set; }
 
     /// <summary>
     /// 是否在上课时仅显示当前课程
     /// </summary>
-    public bool ShowCurrentLessonOnlyOnClass
-    {
-        get;
-        set;
-    }
+    public bool ShowCurrentLessonOnlyOnClass { get; set; }
 
     /// <summary>
     /// 是否启用模糊倒计时

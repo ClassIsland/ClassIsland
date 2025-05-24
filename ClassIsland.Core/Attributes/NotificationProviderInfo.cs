@@ -60,14 +60,16 @@ public class NotificationProviderInfo : Attribute
 
 
     /// <inheritdoc />
-    public NotificationProviderInfo(string guid, string name, PackIconKind icon, string description = "") : this(guid, name,
+    public NotificationProviderInfo(string guid, string name, PackIconKind icon, string description = "") : this(guid,
+        name,
         description)
     {
         PackIcon = icon;
     }
 
     /// <inheritdoc />
-    public NotificationProviderInfo(string guid, string name, string bitmapIconUri, string description = "") : this(guid, name,
+    public NotificationProviderInfo(string guid, string name, string bitmapIconUri, string description = "") : this(
+        guid, name,
         description)
     {
         BitmapIconUri = bitmapIconUri;

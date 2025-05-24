@@ -2,7 +2,6 @@
 
 using System.Runtime.ExceptionServices;
 using System.Windows.Threading;
-
 using Walterlv.Annotations;
 
 namespace Walterlv.Threading;
@@ -44,6 +43,7 @@ public static class UIDispatcher
                 // 不需要担心其内部发生的异常，因为会被异步状态机捕获后重新在原线程上抛出。
                 reportResult(null, ex);
             }
+
             // 此线程的以下代码将脱离异步状态机的控制，需要自己处理异常。
             try
             {
@@ -58,7 +58,7 @@ public static class UIDispatcher
         })
         {
             Name = name ?? "BackgroundUI",
-            IsBackground = true,
+            IsBackground = true
         };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
@@ -98,6 +98,7 @@ public static class UIDispatcher
                 innerException = ex;
                 resetEvent.Set();
             }
+
             // 此线程的以下代码将脱离异步状态机的控制，需要自己处理异常。
             try
             {
@@ -112,17 +113,14 @@ public static class UIDispatcher
         })
         {
             Name = name ?? "BackgroundUI",
-            IsBackground = true,
+            IsBackground = true
         };
         thread.SetApartmentState(ApartmentState.STA);
         thread.Start();
         resetEvent.WaitOne();
         resetEvent.Dispose();
         resetEvent = null;
-        if (innerException != null)
-        {
-            ExceptionDispatchInfo.Capture(innerException).Throw();
-        }
+        if (innerException != null) ExceptionDispatchInfo.Capture(innerException).Throw();
         return dispatcher;
     }
 }

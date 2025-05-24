@@ -15,13 +15,14 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Plugin;
 using ClassIsland.Services.Logging;
 using ClassIsland.Services.Management;
-
 using Microsoft.Extensions.Logging;
 using Clipboard = System.Windows.Forms.Clipboard;
 
 namespace ClassIsland.Services;
 
-public class DiagnosticService(SettingsService settingsService, FileFolderService fileFolderService, 
+public class DiagnosticService(
+    SettingsService settingsService,
+    FileFolderService fileFolderService,
     ILogger<DiagnosticService> logger,
     AppLogService appLogService)
 {
@@ -41,19 +42,19 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     public string GetDiagnosticInfo()
     {
         var settings = SettingsService.Settings;
-        DwmIsCompositionEnabled(out BOOL isCompositionEnabled);
+        DwmIsCompositionEnabled(out var isCompositionEnabled);
         GetDeviceInfo(out var name, out var vendor);
         var list = new Dictionary<string, string>
         {
-            {"SystemOsVersion",  RuntimeInformation.OSDescription},
-            {"SystemIsCompositionEnabled", isCompositionEnabled.ToString()},
-            {"SystemDeviceName", name},
-            {"SystemDeviceVendor", vendor},
-            {"AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N")},
-            {"AppStartupDurationMs", StartupDurationMs.ToString()},
-            {"AppVersion", App.AppVersionLong},
-            {"AppSubChannel", AppBase.Current.AppSubChannel},
-            {"AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString()},
+            { "SystemOsVersion", RuntimeInformation.OSDescription },
+            { "SystemIsCompositionEnabled", isCompositionEnabled.ToString() },
+            { "SystemDeviceName", name },
+            { "SystemDeviceVendor", vendor },
+            { "AppCurrentMemoryUsage", Process.GetCurrentProcess().PrivateMemorySize64.ToString("N") },
+            { "AppStartupDurationMs", StartupDurationMs.ToString() },
+            { "AppVersion", App.AppVersionLong },
+            { "AppSubChannel", AppBase.Current.AppSubChannel },
+            { "AppIsAssetsTrimmed", AppBase.Current.IsAssetsTrimmed().ToString() },
             {
                 nameof(settings.DiagnosticFirstLaunchTime),
                 settings.DiagnosticFirstLaunchTime.ToString(CultureInfo.CurrentCulture)
@@ -62,9 +63,12 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             //{nameof(settings.DiagnosticCrashCount), settings.DiagnosticCrashCount.ToString()},
             //{nameof(settings.DiagnosticLastCrashTime), settings.DiagnosticLastCrashTime.ToString(CultureInfo.CurrentCulture)},
             //{nameof(settings.DiagnosticCrashFreqDay), settings.DiagnosticCrashFreqDay.ToString("F3")},
-            {nameof(settings.DiagnosticMemoryKillCount), settings.DiagnosticMemoryKillCount.ToString()},
-            {nameof(settings.DiagnosticLastMemoryKillTime), settings.DiagnosticLastMemoryKillTime.ToString(CultureInfo.CurrentCulture)},
-            {nameof(settings.DiagnosticMemoryKillFreqDay), settings.DiagnosticMemoryKillFreqDay.ToString("F3")}
+            { nameof(settings.DiagnosticMemoryKillCount), settings.DiagnosticMemoryKillCount.ToString() },
+            {
+                nameof(settings.DiagnosticLastMemoryKillTime),
+                settings.DiagnosticLastMemoryKillTime.ToString(CultureInfo.CurrentCulture)
+            },
+            { nameof(settings.DiagnosticMemoryKillFreqDay), settings.DiagnosticMemoryKillFreqDay.ToString("F3") }
         };
 
         return string.Join('\n', from i in list select $"{i.Key}: {i.Value}");
@@ -102,20 +106,16 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             Directory.CreateDirectory(Path.Combine(temp, "Config/"));
             Directory.CreateDirectory(Path.Combine(temp, "Logs/"));
             foreach (var file in Directory.GetFiles(ManagementService.ManagementConfigureFolderPath))
-            {
                 File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
-            }
-            File.Copy(Path.Combine(App.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/",  profile));
+            File.Copy(Path.Combine(App.AppRootFolderPath, "./Profiles", profile),
+                Path.Combine(temp, "Profiles/", profile));
             FileFolderService.CopyFolder(Path.Combine(App.AppConfigPath), Path.Combine(temp, "Config/"));
             FileFolderService.CopyFolder(Path.Combine(App.AppLogFolderPath), Path.Combine(temp, "Logs/"));
 
             File.Delete(path);
-            await Task.Run(() =>
-            {
-                ZipFile.CreateFromDirectory(temp, path);
-            });
+            await Task.Run(() => { ZipFile.CreateFromDirectory(temp, path); });
             Directory.Delete(temp, true);
-            Process.Start(new ProcessStartInfo()
+            Process.Start(new ProcessStartInfo
             {
                 FileName = Path.GetDirectoryName(path) ?? "",
                 UseShellExecute = true
@@ -150,45 +150,33 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     public static void ProcessDomainUnhandledException(object sender, UnhandledExceptionEventArgs eventArgs)
     {
         App.IsCrashed = true;
-        if (App._isCriticalSafeModeEnabled)  // 教学安全模式
-        {
+        if (App._isCriticalSafeModeEnabled) // 教学安全模式
             return;
-        }
-        
+
         try
         {
             var app = (App)AppBase.Current;
             app.Dispatcher.Invoke(() =>
             {
                 if (eventArgs.ExceptionObject is Exception exception)
-                {
                     app?.ProcessUnhandledException(exception, eventArgs.IsTerminating);
-                }
             });
         }
         catch
         {
-            if (!eventArgs.IsTerminating)
-            {
-                return;
-            }
+            if (!eventArgs.IsTerminating) return;
             ProcessCriticalException(eventArgs.ExceptionObject as Exception);
         }
     }
 
     public static void ProcessCriticalException(Exception? ex)
     {
-        if (App._isCriticalSafeModeEnabled)  // 教学安全模式
-        {
+        if (App._isCriticalSafeModeEnabled) // 教学安全模式
             return;
-        }
 
         CopyException();
         List<PluginInfo> plugins = [];
-        if (ex != null)
-        {
-            plugins = GetPluginsByStacktrace(ex);
-        }
+        if (ex != null) plugins = GetPluginsByStacktrace(ex);
 
         DisableCorruptPlugins(plugins);
         var pluginsWarning = "\n\n此问题可能由以下插件引起，请在向 ClassIsland 开发者反馈问题前先向以下插件的开发者反馈此问题：\n"
@@ -200,14 +188,10 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
 
                        如果您要反馈这个问题或求助，请不要只上传本窗口的截图。请查阅事件查看器和日志获取完整的错误信息，并附加在求助信息中。
                        """;
-        
-        
-            
-        var r = System.Windows.MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
-        if (r == MessageBoxResult.Cancel)
-        {
-            Debugger.Launch();
-        }
+
+
+        var r = MessageBox.Show(message, "ClassIsland", MessageBoxButton.OKCancel, MessageBoxImage.Error);
+        if (r == MessageBoxResult.Cancel) Debugger.Launch();
         return;
 
         void CopyException()
@@ -231,20 +215,11 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
         foreach (var frame in frames)
         {
             var declaringTypeAssembly = frame.GetMethod()?.DeclaringType?.Assembly;
-            if (declaringTypeAssembly == null)
-            {
-                continue;
-            }
+            if (declaringTypeAssembly == null) continue;
             var context = AssemblyLoadContext.GetLoadContext(declaringTypeAssembly);
-            if (context is not PluginLoadContext pluginLoadContext)
-            {
-                continue;
-            }
+            if (context is not PluginLoadContext pluginLoadContext) continue;
 
-            if (!plugins.Contains(pluginLoadContext.Info))
-            {
-                plugins.Add(pluginLoadContext.Info);
-            }
+            if (!plugins.Contains(pluginLoadContext.Info)) plugins.Add(pluginLoadContext.Info);
         }
 
         return plugins;
@@ -254,9 +229,7 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
     {
         var isPluginAutoDisabled = false;
         if (App.AutoDisableCorruptPlugins && plugins.Count > 0)
-        {
             foreach (var plugin in plugins)
-            {
                 try
                 {
                     plugin.IsEnabled = false;
@@ -266,10 +239,8 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
                 {
                     // ignored
                 }
-            }
-        }
 
-        if (!isPluginAutoDisabled) 
+        if (!isPluginAutoDisabled)
             return isPluginAutoDisabled;
         try
         {

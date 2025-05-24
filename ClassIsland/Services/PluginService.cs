@@ -41,26 +41,21 @@ public class PluginService : IPluginService
     internal static readonly Dictionary<string, PluginLoadContext> PluginLoadContexts = new();
 
     internal static List<PluginManifest> InstalledPlugins { get; } = [];
-    
+
     internal static List<PluginManifest> UninstalledPlugins { get; } = [];
 
     public static void ProcessPluginsInstall()
     {
-        if (!Directory.Exists(PluginsPkgRootPath))
-        {
-            Directory.CreateDirectory(PluginsPkgRootPath);
-        }
-        if (!Directory.Exists(PluginsRootPath))
-        {
-            Directory.CreateDirectory(PluginsRootPath);
-        }
+        if (!Directory.Exists(PluginsPkgRootPath)) Directory.CreateDirectory(PluginsPkgRootPath);
+        if (!Directory.Exists(PluginsRootPath)) Directory.CreateDirectory(PluginsRootPath);
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        foreach (var pkgPath in Directory.EnumerateFiles(PluginsPkgRootPath).Where(x => Path.GetExtension(x) == IPluginService.PluginPackageExtension))
+        foreach (var pkgPath in Directory.EnumerateFiles(PluginsPkgRootPath)
+                     .Where(x => Path.GetExtension(x) == IPluginService.PluginPackageExtension))
         {
             try
             {
@@ -71,10 +66,7 @@ public class PluginService : IPluginService
                 var mfText = new StreamReader(mf.Open()).ReadToEnd();
                 var manifest = deserializer.Deserialize<PluginManifest>(mfText);
                 var targetPath = Path.Combine(PluginsRootPath, manifest.Id);
-                if (Directory.Exists(targetPath))
-                {
-                    Directory.Delete(targetPath, true);
-                }
+                if (Directory.Exists(targetPath)) Directory.Delete(targetPath, true);
                 Directory.CreateDirectory(targetPath);
                 ZipFile.ExtractToDirectory(pkgPath, targetPath);
                 InstalledPlugins.Add(manifest);
@@ -83,16 +75,14 @@ public class PluginService : IPluginService
             {
                 Console.WriteLine(e);
             }
+
             File.Delete(pkgPath);
         }
     }
 
     public static void InitializePlugins(HostBuilderContext context, IServiceCollection services)
     {
-        if (!Directory.Exists(PluginsRootPath))
-        {
-            Directory.CreateDirectory(PluginsRootPath);
-        }
+        if (!Directory.Exists(PluginsRootPath)) Directory.CreateDirectory(PluginsRootPath);
 
         var deserializer = new DeserializerBuilder()
             .IgnoreUnmatchedProperties()
@@ -107,17 +97,11 @@ public class PluginService : IPluginService
             if (string.IsNullOrWhiteSpace(pluginDir))
                 continue;
             var manifestPath = Path.Combine(pluginDir, PluginManifestFileName);
-            if (!File.Exists(manifestPath))
-            {
-                continue;
-            }
+            if (!File.Exists(manifestPath)) continue;
 
             var manifestYaml = File.ReadAllText(manifestPath);
             var manifest = deserializer.Deserialize<PluginManifest?>(manifestYaml);
-            if (manifest == null)
-            {
-                continue;
-            }
+            if (manifest == null) continue;
             var info = new PluginInfo
             {
                 Manifest = manifest,
@@ -131,16 +115,16 @@ public class PluginService : IPluginService
                 UninstalledPlugins.Add(manifest);
                 continue;
             }
+
             if (IPluginService.LoadedPluginsIds.Contains(manifest.Id))
                 continue;
             IPluginService.LoadedPluginsIds.Add(manifest.Id);
             IPluginService.LoadedPluginsInternal.Add(info);
-            if (!info.IsEnabled)
-            {
-                info.LoadStatus = PluginLoadStatus.Disabled;
-            }
+            if (!info.IsEnabled) info.LoadStatus = PluginLoadStatus.Disabled;
         }
-        var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal.Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
+
+        var loadOrder = ResolveLoadOrder(IPluginService.LoadedPluginsInternal
+            .Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded).ToList());
         Console.WriteLine($"Resolved load order: {string.Join(", ", loadOrder)}");
 
         // 加载插件
@@ -160,15 +144,9 @@ public class PluginService : IPluginService
                     x.BaseType == typeof(PluginBase) ||
                     x.GetCustomAttributes().FirstOrDefault(a => a.GetType() == typeof(PluginEntrance)) != null);
 
-                if (entrance == null)
-                {
-                    continue;
-                }
+                if (entrance == null) continue;
 
-                if (Activator.CreateInstance(entrance) is not PluginBase entranceObj)
-                {
-                    continue;
-                }
+                if (Activator.CreateInstance(entrance) is not PluginBase entranceObj) continue;
 
                 entranceObj.PluginConfigFolder = Path.Combine(PluginConfigsFolderPath, manifest.Id);
                 if (!Directory.Exists(entranceObj.PluginConfigFolder))
@@ -186,7 +164,7 @@ public class PluginService : IPluginService
                 info.LoadStatus = PluginLoadStatus.Error;
             }
         }
-        
+
         AppBase.Current.AppStarted += CurrentOnAppStarted;
     }
 
@@ -194,35 +172,26 @@ public class PluginService : IPluginService
     {
         if (IAppHost.TryGetService<IManagementService>() is not
             { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-        {
             return;
-        }
 
         foreach (var i in InstalledPlugins)
-        {
-            connection.LogAuditEvent(AuditEvents.PluginInstalled, new PluginInstalled()
+            connection.LogAuditEvent(AuditEvents.PluginInstalled, new PluginInstalled
             {
                 PluginId = i.Id,
                 Version = i.Version
             });
-        }
         foreach (var i in UninstalledPlugins)
-        {
-            connection.LogAuditEvent(AuditEvents.PluginUninstalled, new PluginUninstalled()
+            connection.LogAuditEvent(AuditEvents.PluginUninstalled, new PluginUninstalled
             {
                 PluginId = i.Id,
                 Version = i.Version
             });
-        }
     }
 
     public static async Task PackagePluginAsync(string id, string outputPath)
     {
         var plugin = IPluginService.LoadedPlugins.FirstOrDefault(x => x.Manifest.Id == id);
-        if (plugin == null)
-        {
-            throw new ArgumentException($"找不到插件 {id}。", nameof(id));
-        }
+        if (plugin == null) throw new ArgumentException($"找不到插件 {id}。", nameof(id));
 
         await Task.Run(() =>
         {
@@ -237,12 +206,9 @@ public class PluginService : IPluginService
         var nodes = plugins
             .Where(x => x.LoadStatus == PluginLoadStatus.NotLoaded)
             .ToDictionary(
-            x => x.Manifest.Id, 
-            x => new DependencyNode(x));
-        foreach (var i in nodes)
-        {
-            ResolveDependencyNode(nodes, i.Value, []);
-        }
+                x => x.Manifest.Id,
+                x => new DependencyNode(x));
+        foreach (var i in nodes) ResolveDependencyNode(nodes, i.Value, []);
         return nodes
             .Where(x => x.Value.Plugin.LoadStatus == PluginLoadStatus.NotLoaded)
             .OrderBy(x => x.Value.DependencyTreeDepth)
@@ -250,38 +216,37 @@ public class PluginService : IPluginService
             .ToList();
     }
 
-    private static void ResolveDependencyNode(Dictionary<string, DependencyNode> allNodes, DependencyNode node, List<DependencyNode> walkingNodes)
+    private static void ResolveDependencyNode(Dictionary<string, DependencyNode> allNodes, DependencyNode node,
+        List<DependencyNode> walkingNodes)
     {
-        if (node.IsDiscovered)
-        {
-            return;
-        }
+        if (node.IsDiscovered) return;
 
         if (walkingNodes.Contains(node))
-        {
             throw new InvalidOperationException(
                 $"检测到循环依赖：{string.Join(" -> ", walkingNodes.Select(x => x.Plugin.Manifest.Id))}");
-        }
 
         node.IsDiscovered = true;
         var depth = 0;
         foreach (var i in node.Plugin.Manifest.Dependencies)
         {
-            if (!allNodes.TryGetValue(i.Id, out var dependency) || dependency.Plugin.LoadStatus != PluginLoadStatus.NotLoaded)
+            if (!allNodes.TryGetValue(i.Id, out var dependency) ||
+                dependency.Plugin.LoadStatus != PluginLoadStatus.NotLoaded)
             {
                 if (i.IsRequired)
                 {
                     node.Plugin.LoadStatus = PluginLoadStatus.Error;
-                    node.Plugin.Exception = new InvalidOperationException($"插件 {node.Plugin.Manifest.Id} 依赖的必选插件 {i.Id} 不存在或处于无法加载状态。");
+                    node.Plugin.Exception =
+                        new InvalidOperationException($"插件 {node.Plugin.Manifest.Id} 依赖的必选插件 {i.Id} 不存在或处于无法加载状态。");
                     return;
                 }
+
                 continue;
             }
 
             ResolveDependencyNode(allNodes, dependency, walkingNodes);
             depth = Math.Max(depth, dependency.DependencyTreeDepth);
         }
-        node.DependencyTreeDepth = depth + 1;
 
+        node.DependencyTreeDepth = depth + 1;
     }
 }

@@ -9,19 +9,22 @@ public enum UpdateWorkingStatus
     /// 空闲
     /// </summary>
     Idle,
+
     /// <summary>
     /// 正在检查更新
     /// </summary>
     CheckingUpdates,
+
     /// <summary>
     /// 正在下载更新
     /// </summary>
     DownloadingUpdates,
+
     /// <summary>
     /// 网络错误
     /// </summary>
-    [Obsolete]
-    NetworkError,
+    [Obsolete] NetworkError,
+
     /// <summary>
     /// 正在解包更新
     /// </summary>

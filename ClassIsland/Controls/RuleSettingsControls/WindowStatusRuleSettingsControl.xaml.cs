@@ -1,13 +1,12 @@
-﻿namespace ClassIsland.Controls.RuleSettingsControls
+﻿namespace ClassIsland.Controls.RuleSettingsControls;
+
+/// <summary>
+/// WindowStatusRuleSettingsControl.xaml 的交互逻辑
+/// </summary>
+public partial class WindowStatusRuleSettingsControl
 {
-    /// <summary>
-    /// WindowStatusRuleSettingsControl.xaml 的交互逻辑
-    /// </summary>
-    public partial class WindowStatusRuleSettingsControl
+    public WindowStatusRuleSettingsControl()
     {
-        public WindowStatusRuleSettingsControl()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

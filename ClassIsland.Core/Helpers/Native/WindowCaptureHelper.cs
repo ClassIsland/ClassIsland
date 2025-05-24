@@ -13,14 +13,19 @@ public static class WindowCaptureHelper
 
     [DllImport("user32.dll")]
     private static extern IntPtr GetWindowRect(IntPtr hWnd, ref Rectangle rect);
+
     [DllImport("gdi32.dll")]
     private static extern IntPtr CreateCompatibleDC(IntPtr hdc);
+
     [DllImport("gdi32.dll")]
     private static extern IntPtr CreateCompatibleBitmap(IntPtr hdc, int nWidth, int nHeight);
+
     [DllImport("gdi32.dll")]
     private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
+
     [DllImport("gdi32.dll")]
     private static extern int DeleteDC(IntPtr hdc);
+
     [DllImport("user32.dll")]
     private static extern bool PrintWindow(IntPtr hwnd, IntPtr hdcBlt, int nFlags);
 
@@ -37,8 +42,10 @@ public static class WindowCaptureHelper
 
     [DllImport("user32.dll")]
     public static extern bool PrintWindow(IntPtr hwnd, IntPtr hdcBlt, uint nFlags);
+
     [DllImport("kernel32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
     public static extern long GetLastError();
+
     [DllImport("user32.dll", EntryPoint = "GetWindowDC")]
     public static extern IntPtr GetWindowDC(IntPtr hWnd);
 

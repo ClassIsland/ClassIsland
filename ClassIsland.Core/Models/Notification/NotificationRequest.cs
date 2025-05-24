@@ -21,14 +21,8 @@ public class NotificationRequest : ObservableRecipient
     /// </summary>
     public NotificationRequest()
     {
-        CancellationTokenSource.Token.Register(() =>
-        {
-            Canceled?.Invoke(this, EventArgs.Empty);
-        });
-        CompletedTokenSource.Token.Register(() =>
-        {
-            Completed?.Invoke(this, EventArgs.Empty);
-        });
+        CancellationTokenSource.Token.Register(() => { Canceled?.Invoke(this, EventArgs.Empty); });
+        CompletedTokenSource.Token.Register(() => { Completed?.Invoke(this, EventArgs.Empty); });
     }
 
     /// <summary>
@@ -74,7 +68,6 @@ public class NotificationRequest : ObservableRecipient
         }
     }
 
-    
 
     /// <summary>
     /// 针对此次提醒的特殊设置。如果要使此设置生效，还要将<see cref="NotificationSettings.IsSettingsEnabled"/>设置为true。
@@ -123,7 +116,7 @@ public class NotificationRequest : ObservableRecipient
 
     internal Guid NotificationSourceGuid { get; set; } = Guid.Empty;
 
-    internal NotificationSettings ProviderSettings { get; set; } = new NotificationSettings();
+    internal NotificationSettings ProviderSettings { get; set; } = new();
 
     internal NotificationSettings? ChannelSettings { get; set; }
 
@@ -154,11 +147,12 @@ public class NotificationRequest : ObservableRecipient
 
 
 #pragma warning disable CS0618 // 类型或成员已过时
-    internal static NotificationRequest ConvertFromOldNotificationRequest(ClassIsland.Shared.Models.Notification.NotificationRequest oldRequest)
+    internal static NotificationRequest ConvertFromOldNotificationRequest(
+        ClassIsland.Shared.Models.Notification.NotificationRequest oldRequest)
     {
-        var newRequest = new NotificationRequest()
+        var newRequest = new NotificationRequest
         {
-            MaskContent = new NotificationContent()
+            MaskContent = new NotificationContent
             {
                 Content = oldRequest.MaskContent,
                 SpeechContent = oldRequest.MaskSpeechContent,
@@ -166,14 +160,16 @@ public class NotificationRequest : ObservableRecipient
                 EndTime = oldRequest.TargetMaskEndTime,
                 IsSpeechEnabled = oldRequest.IsSpeechEnabled
             },
-            OverlayContent = oldRequest.OverlayContent != null ? new NotificationContent()
-            {
-                Content = oldRequest.OverlayContent,
-                SpeechContent = oldRequest.OverlaySpeechContent,
-                Duration = oldRequest.OverlayDuration,
-                EndTime = oldRequest.TargetOverlayEndTime,
-                IsSpeechEnabled = oldRequest.IsSpeechEnabled
-            } : null,
+            OverlayContent = oldRequest.OverlayContent != null
+                ? new NotificationContent
+                {
+                    Content = oldRequest.OverlayContent,
+                    SpeechContent = oldRequest.OverlaySpeechContent,
+                    Duration = oldRequest.OverlayDuration,
+                    EndTime = oldRequest.TargetOverlayEndTime,
+                    IsSpeechEnabled = oldRequest.IsSpeechEnabled
+                }
+                : null,
             IsPriorityOverride = oldRequest.IsPriorityOverride,
             RequestNotificationSettings = oldRequest.RequestNotificationSettings,
             CancellationTokenSource = oldRequest.CancellationTokenSource,

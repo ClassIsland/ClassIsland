@@ -29,10 +29,7 @@ public partial class RollingComponentSettingsControl
 
     private void OpenDrawer(string key)
     {
-        if (FindResource(key) is not FrameworkElement drawer)
-        {
-            return;
-        }
+        if (FindResource(key) is not FrameworkElement drawer) return;
 
         drawer.DataContext = this;
         SettingsPageBase.OpenDrawerCommand.Execute(drawer);

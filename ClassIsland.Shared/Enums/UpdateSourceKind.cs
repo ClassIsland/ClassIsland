@@ -9,10 +9,12 @@ public enum UpdateSourceKind
     /// AppCenter
     /// </summary>
     AppCenter,
+
     /// <summary>
     /// GitHub
     /// </summary>
     GitHub,
+
     /// <summary>
     /// 无
     /// </summary>

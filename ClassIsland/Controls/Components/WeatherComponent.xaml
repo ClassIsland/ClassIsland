@@ -19,16 +19,16 @@
     </controls:ComponentBase.Resources>
     <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-            <TabControl Visibility="{Binding Settings.ShowMainWeatherInfo, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        SelectedIndex="{Binding Settings.MainWeatherInfoKind}">
+            <TabControl
+                Visibility="{Binding Settings.ShowMainWeatherInfo, Converter={StaticResource BooleanToVisibilityConverter}}"
+                SelectedIndex="{Binding Settings.MainWeatherInfoKind}">
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <controls1:WeatherPackIconControl
                             Code="{Binding SettingsService.Settings.LastWeatherInfo.Current.Weather}"
                             Height="22" Width="22" VerticalAlignment="Center" />
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}">
-                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Value}" />
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Temperature.Unit}" />
                         </TextBlock>
                     </StackPanel>
@@ -36,10 +36,9 @@
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="WaterPercent"/>
+                                                 Kind="WaterPercent" />
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}">
-                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}" />
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Unit}" />
                         </TextBlock>
                     </StackPanel>
@@ -47,17 +46,18 @@
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="Windsock"/>
+                                                 Kind="Windsock" />
                         <materialDesign:PackIcon Height="22" Width="22"
                                                  Margin="6 0 0 0"
                                                  Kind="Navigation">
                             <materialDesign:PackIcon.RenderTransform>
-                                <RotateTransform Angle="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Direction.Value, Converter={StaticResource StringToDoubleConverter}}" CenterX="11" CenterY="11"/>
+                                <RotateTransform
+                                    Angle="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Direction.Value, Converter={StaticResource StringToDoubleConverter}}"
+                                    CenterX="11" CenterY="11" />
                             </materialDesign:PackIcon.RenderTransform>
                         </materialDesign:PackIcon>
                         <TextBlock VerticalAlignment="Center" Margin="0 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}">
-                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Value}" />
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Speed.Unit}" />
                         </TextBlock>
                     </StackPanel>
@@ -68,41 +68,57 @@
                             <materialDesign:PackIcon.Style>
                                 <Style TargetType="materialDesign:PackIcon">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="1">
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel1Brush}"/>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}"
+                                            Value="1">
+                                            <Setter Property="TextElement.Foreground"
+                                                    Value="{DynamicResource AqiLevel1Brush}" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="2">
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel2Brush}"/>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}"
+                                            Value="2">
+                                            <Setter Property="TextElement.Foreground"
+                                                    Value="{DynamicResource AqiLevel2Brush}" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="3">
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel3Brush}"/>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}"
+                                            Value="3">
+                                            <Setter Property="TextElement.Foreground"
+                                                    Value="{DynamicResource AqiLevel3Brush}" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="4">
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel4Brush}"/>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}"
+                                            Value="4">
+                                            <Setter Property="TextElement.Foreground"
+                                                    Value="{DynamicResource AqiLevel4Brush}" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="5">
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel5Brush}"/>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}"
+                                            Value="5">
+                                            <Setter Property="TextElement.Foreground"
+                                                    Value="{DynamicResource AqiLevel5Brush}" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}" Value="6">
-                                            <Setter Property="TextElement.Foreground" Value="{DynamicResource AqiLevel6Brush}"/>
+                                        <DataTrigger
+                                            Binding="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.AqiLevel}"
+                                            Value="6">
+                                            <Setter Property="TextElement.Foreground"
+                                                    Value="{DynamicResource AqiLevel6Brush}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </materialDesign:PackIcon.Style>
                         </materialDesign:PackIcon>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}">
-                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Aqi.Aqi}" />
                         </TextBlock>
                     </StackPanel>
                 </TabItem>
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="Gauge"/>
+                                                 Kind="Gauge" />
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Value}">
-                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Value}" />
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Unit}" />
                         </TextBlock>
                     </StackPanel>
@@ -110,22 +126,22 @@
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="HomeThermometerOutline"/>
+                                                 Kind="HomeThermometerOutline" />
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Value}">
-                            </Run>
+                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Value}" />
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Unit}" />
                         </TextBlock>
                     </StackPanel>
                 </TabItem>
             </TabControl>
             <!-- 预警信号 -->
-            <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}" VerticalAlignment="Center"
+            <ItemsControl ItemsSource="{Binding SettingsService.Settings.LastWeatherInfo.Alerts}"
+                          VerticalAlignment="Center"
                           Visibility="{Binding Settings.ShowAlerts, Converter={StaticResource BooleanToVisibilityConverter}}"
                           Margin="6 0 -4 0">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel IsItemsHost="True"/>
+                        <WrapPanel IsItemsHost="True" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -134,13 +150,17 @@
                             <TabControl.Style>
                                 <Style TargetType="TabControl" BasedOn="{StaticResource MaterialDesignTabControlBase}">
                                     <Style.Triggers>
-                                        <DataTrigger Value="0" Binding="{Binding Settings.AlertsTitleShowMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
+                                        <DataTrigger Value="0"
+                                                     Binding="{Binding Settings.AlertsTitleShowMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
                                             <Setter Property="SelectedIndex" Value="0" />
                                         </DataTrigger>
-                                        <DataTrigger Value="1" Binding="{Binding Settings.AlertsTitleShowMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
-                                            <Setter Property="SelectedIndex" Value="{Binding IsDefaultIcon, Mode=OneWay}" />
+                                        <DataTrigger Value="1"
+                                                     Binding="{Binding Settings.AlertsTitleShowMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
+                                            <Setter Property="SelectedIndex"
+                                                    Value="{Binding IsDefaultIcon, Mode=OneWay}" />
                                         </DataTrigger>
-                                        <DataTrigger Value="2" Binding="{Binding Settings.AlertsTitleShowMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
+                                        <DataTrigger Value="2"
+                                                     Binding="{Binding Settings.AlertsTitleShowMode, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherComponent}}">
                                             <Setter Property="SelectedIndex" Value="1" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -179,11 +199,13 @@
                 <Grid.Style>
                     <Style TargetType="Grid">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes}" Value="0">
-                                <Setter Property="Visibility" Value="Collapsed"/>
+                            <DataTrigger
+                                Binding="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes}"
+                                Value="0">
+                                <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding Settings.ShowRainTime}" Value="False">
-                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -195,8 +217,7 @@
                         Padding="8 0"
                         Opacity="0.15"
                         VerticalAlignment="Bottom"
-                        CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
-                </Border>
+                        CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}" />
                 <Border ClipToBounds="True"
                         BorderBrush="{DynamicResource Rainy}"
                         BorderThickness="1"
@@ -206,11 +227,12 @@
                         CornerRadius="{Binding ActualHeight, RelativeSource={RelativeSource Self}, Converter={StaticResource SizeDoubleToCornerRadiusConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="WeatherPouring" VerticalAlignment="Center"
-                                                 Margin="0 0 4 0"/>
+                                                 Margin="0 0 4 0" />
                         <TextBlock FontSize="{DynamicResource MainWindowSecondaryFontSize}"
                                    VerticalAlignment="Center" FontWeight="Regular">
-                            <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}">
-                            </Run><Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="min"/>
+                            <Run
+                                Text="{Binding SettingsService.Settings.LastWeatherInfo.Minutely.Precipitation.RainRemainingMinutes, Mode=OneWay}" />
+                            <Run FontSize="{DynamicResource MainWindowSecondaryFontSize}" Text="min" />
                         </TextBlock>
                     </StackPanel>
                 </Border>

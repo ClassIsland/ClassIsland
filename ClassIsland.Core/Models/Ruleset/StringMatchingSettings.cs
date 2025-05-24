@@ -45,7 +45,7 @@ public class StringMatchingSettings : ObservableRecipient
     /// <returns>如果满足规则，则返回true.</returns>
     public bool IsMatching(string str)
     {
-        if (!UseRegex) 
+        if (!UseRegex)
             return str == Text;
         try
         {
@@ -56,6 +56,7 @@ public class StringMatchingSettings : ObservableRecipient
         {
             return false;
         }
+
         return str == Text;
     }
 }

@@ -21,7 +21,7 @@ public interface IMarketplaceItemRepoManifest : IMarketplaceItemManifest
     /// 资产文件根目录
     /// </summary>
     public string AssetsRoot { get; set; }
-    
+
     /// <summary>
     /// 发布工件名称。
     /// </summary>

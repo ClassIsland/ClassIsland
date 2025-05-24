@@ -34,7 +34,9 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     public GeneralSettingsViewModel ViewModel { get; } = new();
 
-    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService, IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService, ISplashService splashService, IAnnouncementService announcementService)
+    public GeneralSettingsPage(SettingsService settingsService, IManagementService managementService,
+        IExactTimeService exactTimeService, MiniInfoProviderHostService miniInfoProviderHostService,
+        ISplashService splashService, IAnnouncementService announcementService)
     {
         InitializeComponent();
         DataContext = this;
@@ -48,10 +50,8 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(SettingsService.Settings.IsTransientDisabled) or nameof(SettingsService.Settings.IsWaitForTransientDisabled))
-        {
-            RequestRestart();
-        }
+        if (e.PropertyName is nameof(SettingsService.Settings.IsTransientDisabled)
+            or nameof(SettingsService.Settings.IsWaitForTransientDisabled)) RequestRestart();
     }
 
     private void ButtonSyncTimeNow_OnClick(object sender, RoutedEventArgs e)
@@ -66,10 +66,7 @@ public partial class GeneralSettingsPage : SettingsPageBase
 
     private void ButtonWeekOffsetSettingsButtons_OnClick(object sender, RoutedEventArgs e)
     {
-        if (e.OriginalSource is not Button)
-        {
-            return;
-        }
+        if (e.OriginalSource is not Button) return;
         ViewModel.IsWeekOffsetSettingsOpen = false;
     }
 

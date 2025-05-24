@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Demo;
@@ -15,8 +14,8 @@ public partial class ThemeDemo : UserControl
 
     public ColorZoneMode ThemeMode
     {
-        get { return (ColorZoneMode)GetValue(ThemeModeProperty); }
-        set { SetValue(ThemeModeProperty, value); }
+        get => (ColorZoneMode)GetValue(ThemeModeProperty);
+        set => SetValue(ThemeModeProperty, value);
     }
 
     public ThemeDemo()

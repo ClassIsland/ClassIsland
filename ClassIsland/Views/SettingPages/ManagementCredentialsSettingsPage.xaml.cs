@@ -25,17 +25,11 @@ public partial class ManagementCredentialsSettingsPage
 
     private async void ManagementCredentialsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (ManagementService.IsManagementEnabled)
-        {
-            return;
-        }
+        if (ManagementService.IsManagementEnabled) return;
         var result =
             await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig
                 .EditAuthorizeSettingsAuthorizeLevel);
-        if (result)
-        {
-            ViewModel.IsLocked = false;
-        }
+        if (result) ViewModel.IsLocked = false;
     }
 
     private void ManagementCredentialsSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)

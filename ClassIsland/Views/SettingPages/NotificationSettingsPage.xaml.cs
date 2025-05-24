@@ -30,7 +30,8 @@ using GptSoVitsSpeechSettingsList = ObservableCollection<GptSoVitsSpeechSettings
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("notification", "提醒", PackIconKind.BellNotificationOutline, PackIconKind.BellNotification, SettingsPageCategory.Internal)]
+[SettingsPageInfo("notification", "提醒", PackIconKind.BellNotificationOutline, PackIconKind.BellNotification,
+    SettingsPageCategory.Internal)]
 public partial class NotificationSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }
@@ -42,7 +43,9 @@ public partial class NotificationSettingsPage : SettingsPageBase
     public IManagementService ManagementService { get; }
 
     public NotificationSettingsViewModel ViewModel { get; } = new();
-    public NotificationSettingsPage(SettingsService settingsService, INotificationHostService notificationHostService, ISpeechService speechService, IManagementService managementService)
+
+    public NotificationSettingsPage(SettingsService settingsService, INotificationHostService notificationHostService,
+        ISpeechService speechService, IManagementService managementService)
     {
         InitializeComponent();
         DataContext = this;
@@ -56,12 +59,10 @@ public partial class NotificationSettingsPage : SettingsPageBase
     {
         var info = SpeechProviderRegistryService.RegisteredProviders.FirstOrDefault(x =>
             x.Id == SettingsService.Settings.SelectedSpeechProvider);
-        if (info == null)
-        {
-            return;
-        }
+        if (info == null) return;
 
-        ViewModel.SpeechProviderSettingsControl = IAppHost.Host?.Services.GetKeyedService<SpeechProviderControlBase>(info.Id);
+        ViewModel.SpeechProviderSettingsControl =
+            IAppHost.Host?.Services.GetKeyedService<SpeechProviderControlBase>(info.Id);
     }
 
     private void CollectionViewSourceNotificationProviders_OnFilter(object sender, FilterEventArgs e)
@@ -69,7 +70,8 @@ public partial class NotificationSettingsPage : SettingsPageBase
         var i = e.Item as string;
         if (i == null)
             return;
-        e.Accepted = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == i) != null;
+        e.Accepted =
+            NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == i) != null;
     }
 
     private void SelectorMain_OnSelected(object sender, SelectionChangedEventArgs e)
@@ -80,22 +82,17 @@ public partial class NotificationSettingsPage : SettingsPageBase
             return;
         }
 
-        if (e.RemovedItems.Count >= 1 && e.RemovedItems[0] == e.AddedItems[0])
-        {
-            return;
-        }
+        if (e.RemovedItems.Count >= 1 && e.RemovedItems[0] == e.AddedItems[0]) return;
         ViewModel.IsNotificationSettingsPanelOpened = true;
         SetCurrentNotificationProvider();
     }
 
     private void SetCurrentNotificationProvider()
     {
-        if (ViewModel.NotificationSettingsSelectedProvider == null)
-        {
-            return;
-        }
+        if (ViewModel.NotificationSettingsSelectedProvider == null) return;
 
-        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider);
+        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x =>
+            x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider);
     }
 
     private void ButtonTestSpeeching_OnClick(object sender, RoutedEventArgs e)
@@ -106,7 +103,8 @@ public partial class NotificationSettingsPage : SettingsPageBase
 
     private void ButtonOpenSpeechSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(@"C:\WINDOWS\system32\rundll32.exe", @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
+        Process.Start(@"C:\WINDOWS\system32\rundll32.exe",
+            @"shell32.dll,Control_RunDLL C:\WINDOWS\system32\Speech\SpeechUX\sapi.cpl");
     }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -132,11 +130,11 @@ public partial class NotificationSettingsPage : SettingsPageBase
     {
         e.Handled = true;
         ViewModel.IsNotificationSettingsPanelOpened = true;
-        if (ViewModel.NotificationSettingsSelectedChannel == null)
-        {
-            return;
-        }
-        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider)?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedChannel);
+        if (ViewModel.NotificationSettingsSelectedChannel == null) return;
+        ViewModel.SelectedRegisterInfo = NotificationHostService.NotificationProviders
+            .FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedProvider)
+            ?.NotificationChannels
+            .FirstOrDefault(x => x.ProviderGuid.ToString() == ViewModel.NotificationSettingsSelectedChannel);
     }
 
     private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -148,13 +146,10 @@ public partial class NotificationSettingsPage : SettingsPageBase
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.RoutedEvent = MouseWheelEvent;
             eventArg.Source = sender;
-            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null)
-            {
-                parent.RaiseEvent(eventArg);
-            }
+            var parent = ((Control)sender).Parent as UIElement;
+            if (parent != null) parent.RaiseEvent(eventArg);
         }
     }
 

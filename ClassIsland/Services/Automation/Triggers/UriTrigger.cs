@@ -19,18 +19,12 @@ public class UriTrigger(UriTriggerHandlerService uriTriggerHandlerService) : Tri
 
     private void UriTriggerHandlerServiceOnHandledRevert(object? sender, UriTriggerHandledEventArgs e)
     {
-        if (e.Name == Settings.UriSuffix)
-        {
-            TriggerRevert();
-        }
+        if (e.Name == Settings.UriSuffix) TriggerRevert();
     }
 
     private void UriTriggerHandlerServiceOnHandledRun(object? sender, UriTriggerHandledEventArgs e)
     {
-        if (e.Name == Settings.UriSuffix)
-        {
-            Trigger();
-        }
+        if (e.Name == Settings.UriSuffix) Trigger();
     }
 
     public override void UnLoaded()

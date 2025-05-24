@@ -49,8 +49,7 @@ public class TriggerSettings : ObservableRecipient
     [JsonIgnore]
     public TriggerInfo? AssociatedTriggerInfo => IAutomationService.RegisteredTriggers.FirstOrDefault(x => x.Id == Id);
 
-    [JsonIgnore]
-    internal TriggerBase? TriggerInstance { get; set; }
+    [JsonIgnore] internal TriggerBase? TriggerInstance { get; set; }
 
     internal void Unload()
     {

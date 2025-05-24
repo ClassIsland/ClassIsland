@@ -7,7 +7,6 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Models.ComponentSettings;
 using ClassIsland.Services;
-
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Controls.Components;
@@ -50,7 +49,8 @@ public partial class ClockComponent : ComponentBase<ClockComponentSettings>, INo
 
     public SettingsService SettingsService { get; }
 
-    public ClockComponent(ILessonsService lessonsService, IExactTimeService exactTimeService, SettingsService settingsService)
+    public ClockComponent(ILessonsService lessonsService, IExactTimeService exactTimeService,
+        SettingsService settingsService)
     {
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;

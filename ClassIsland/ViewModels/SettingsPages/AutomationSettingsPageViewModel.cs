@@ -1,10 +1,12 @@
 ﻿using ClassIsland.Core.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ClassIsland.ViewModels.SettingsPages;
 
 public class AutomationSettingsViewModel : ObservableRecipient
 {
-    bool _isPanelOpened = false;
+    private bool _isPanelOpened = false;
+
     public bool IsPanelOpened
     {
         get => _isPanelOpened;
@@ -16,7 +18,8 @@ public class AutomationSettingsViewModel : ObservableRecipient
         }
     }
 
-    Workflow? _selectedAutomation;
+    private Workflow? _selectedAutomation;
+
     public Workflow? SelectedAutomation
     {
         get => _selectedAutomation;
@@ -29,7 +32,8 @@ public class AutomationSettingsViewModel : ObservableRecipient
     }
 
 
-    string _createProfileName = "";
+    private string _createProfileName = "";
+
     public string CreateProfileName
     {
         get => _createProfileName;

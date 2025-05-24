@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-
 using ClassIsland.Controls;
 using ClassIsland.Core;
 using Microsoft.Xaml.Behaviors;
@@ -12,12 +11,13 @@ namespace ClassIsland.Behaviors;
 public class ExcelSelectingTextBoxBehavior : Behavior<ExcelSelectionTextBox>
 {
     public static readonly DependencyProperty AdornerTemplateProperty = DependencyProperty.Register(
-        nameof(AdornerTemplate), typeof(ControlTemplate), typeof(ExcelSelectingTextBoxBehavior), new PropertyMetadata(default(ControlTemplate)));
+        nameof(AdornerTemplate), typeof(ControlTemplate), typeof(ExcelSelectingTextBoxBehavior),
+        new PropertyMetadata(default(ControlTemplate)));
 
     public ControlTemplate AdornerTemplate
     {
-        get { return (ControlTemplate)GetValue(AdornerTemplateProperty); }
-        set { SetValue(AdornerTemplateProperty, value); }
+        get => (ControlTemplate)GetValue(AdornerTemplateProperty);
+        set => SetValue(AdornerTemplateProperty, value);
     }
 
     private Adorner? _adorner;
@@ -29,6 +29,7 @@ public class ExcelSelectingTextBoxBehavior : Behavior<ExcelSelectionTextBox>
             AssociatedObject.OnEnterSelecting += AssociatedObjectOnEnterSelecting;
             AssociatedObject.OnExitSelecting += AssociatedObjectOnExitSelecting;
         }
+
         base.OnAttached();
     }
 
@@ -45,10 +46,7 @@ public class ExcelSelectingTextBoxBehavior : Behavior<ExcelSelectionTextBox>
 
     private void RemoveAdorner()
     {
-        if (AssociatedObject == null)
-        {
-            return;
-        }
+        if (AssociatedObject == null) return;
         if (_adorner != null)
         {
             var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
@@ -59,15 +57,9 @@ public class ExcelSelectingTextBoxBehavior : Behavior<ExcelSelectionTextBox>
 
     private void AssociatedObjectOnEnterSelecting(object? sender, EventArgs e)
     {
-        if (AssociatedObject == null)
-        {
-            return;
-        }
+        if (AssociatedObject == null) return;
         var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-        if (_adorner != null)
-        {
-            return;
-        }
+        if (_adorner != null) return;
         _adorner = new TimeLineListItemAdorner(AssociatedObject, AdornerTemplate);
         layer?.Add(_adorner);
     }

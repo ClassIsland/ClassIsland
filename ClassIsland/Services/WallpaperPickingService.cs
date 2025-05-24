@@ -34,28 +34,22 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
     private BitmapImage _wallpaperImage = new();
     private bool _isWorking = false;
 
-    public RegistryNotifier RegistryNotifier
-    {
-        get;
-    }
+    public RegistryNotifier RegistryNotifier { get; }
 
-    private DispatcherTimer UpdateTimer
-    {
-        get;
-    } = new DispatcherTimer()
+    private DispatcherTimer UpdateTimer { get; } = new()
     {
         Interval = TimeSpan.FromMinutes(1)
     };
 
     private ILogger<WallpaperPickingService> Logger { get; }
 
-    public static void ColorToHsv(System.Windows.Media.Color color, out double hue, out double saturation, out double value)
+    public static void ColorToHsv(Color color, out double hue, out double saturation, out double value)
     {
         int max = Math.Max(color.R, Math.Max(color.G, color.B));
         int min = Math.Min(color.R, Math.Min(color.G, color.B));
 
         hue = 0;
-        saturation = (max == 0) ? 0 : 1d - (1d * min / max);
+        saturation = max == 0 ? 0 : 1d - 1d * min / max;
         value = max / 255d;
     }
 
@@ -90,9 +84,11 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         RegistryNotifier.RegistryKeyUpdated += RegistryNotifierOnRegistryKeyUpdated;
         RegistryNotifier.Start();
         AppBase.Current.AppStopping += (sender, args) => RegistryNotifier.Stop();
-        AppBase.Current.AppStopping += (sender, args) => SystemEvents.UserPreferenceChanged -= SystemEventsOnUserPreferenceChanged;
+        AppBase.Current.AppStopping += (sender, args) =>
+            SystemEvents.UserPreferenceChanged -= SystemEventsOnUserPreferenceChanged;
         UpdateTimer.Tick += UpdateTimerOnTick;
-        UpdateTimer.Interval = TimeSpanHelper.FromSecondsSafe(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+        UpdateTimer.Interval =
+            TimeSpanHelper.FromSecondsSafe(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
         SettingsService.Settings.PropertyChanged += SettingsServiceOnPropertyChanged;
         UpdateUpdateTimerEnableState();
     }
@@ -102,7 +98,8 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         switch (e.PropertyName)
         {
             case nameof(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds):
-                UpdateTimer.Interval = TimeSpanHelper.FromSecondsSafe(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
+                UpdateTimer.Interval =
+                    TimeSpanHelper.FromSecondsSafe(SettingsService.Settings.WallpaperAutoUpdateIntervalSeconds);
                 break;
             case nameof(SettingsService.Settings.IsWallpaperAutoUpdateEnabled):
             case nameof(SettingsService.Settings.ColorSource):
@@ -115,13 +112,9 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
     {
         if ((SettingsService.Settings.ColorSource == 1 && SettingsService.Settings.IsWallpaperAutoUpdateEnabled) ||
             SettingsService.Settings.ColorSource == 3)
-        {
             UpdateTimer.Start();
-        }
         else
-        {
             UpdateTimer.Stop();
-        }
     }
 
     private async void UpdateTimerOnTick(object? sender, EventArgs e)
@@ -133,18 +126,12 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
     private async void RegistryNotifierOnRegistryKeyUpdated()
     {
         Logger.LogInformation("壁纸注册表项更新触发。");
-        Application.Current.Dispatcher.InvokeAsync(async () =>
-        {
-            await GetWallpaperAsync();
-        });
+        Application.Current.Dispatcher.InvokeAsync(async () => { await GetWallpaperAsync(); });
     }
 
     private IntPtr HwndSourceHookProcess(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
     {
-        if (msg == 0x0317)
-        {
-            Debug.WriteLine("printed");
-        }
+        if (msg == 0x0317) Debug.WriteLine("printed");
         return default;
     }
 
@@ -164,10 +151,11 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
         {
             var baseImage = new Bitmap(screen.Bounds.Width, screen.Bounds.Height);
             var g = Graphics.FromImage(baseImage);
-            g.CopyFromScreen(new(0, 0), new(0, 0), screen.Bounds.Size);
+            g.CopyFromScreen(new Point(0, 0), new Point(0, 0), screen.Bounds.Size);
             g.Dispose();
             return baseImage;
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             Logger.LogError(ex, "获取屏幕截图失败。");
             return null;
@@ -177,10 +165,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
     public static Bitmap? GetScreenShot(string className)
     {
         var win = NativeWindowHelper.FindWindowByClass(className);
-        if (win == IntPtr.Zero)
-        {
-            return null;
-        }
+        if (win == IntPtr.Zero) return null;
 
         return WindowCaptureHelper.CaptureWindowBitBlt(win);
     }
@@ -195,23 +180,21 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
             var path = (string?)k?.GetValue("WallPaper");
             var b = Screen.PrimaryScreen.Bounds;
             if (path == null)
+            {
                 return null;
+            }
             else
             {
                 var image = Image.FromFile(path);
                 var m = 1.0;
                 if (image.Width > image.Height)
-                {
                     m = 1.0 * b.Height / image.Height;
-                }
                 else
-                {
                     m = 1.0 * b.Width / image.Width;
-                }
                 return new Bitmap(image, (int)(image.Width * m), (int)(image.Height * m));
             }
         }
-        catch (Exception ex) 
+        catch (Exception ex)
         {
             Logger.LogError(ex, "以兼容模式获取壁纸失败。");
             return null;
@@ -231,31 +214,32 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
     public async Task GetWallpaperAsync()
     {
-        if (IsWorking)
-        {
-            return;
-        }
+        if (IsWorking) return;
 
         IsWorking = true;
         Logger.LogInformation("正在提取壁纸主题色。");
         var transaction = SentrySdk.StartTransaction("Get Wallpaper Accent Color", "wallpaperAccentColor.get");
         transaction.SetTag("colorPicking.colorSource", SettingsService.Settings.ColorSource.ToString());
-        transaction.SetTag("wallpaper.isFallbackModeEnabled", SettingsService.Settings.IsFallbackModeEnabled.ToString());
-        transaction.SetTag("colorPicking.useExpImpl", SettingsService.Settings.UseExperimentColorPickingMethod.ToString());
+        transaction.SetTag("wallpaper.isFallbackModeEnabled",
+            SettingsService.Settings.IsFallbackModeEnabled.ToString());
+        transaction.SetTag("colorPicking.useExpImpl",
+            SettingsService.Settings.UseExperimentColorPickingMethod.ToString());
         try
         {
             await Task.Run(() =>
             {
                 var spanGetImage = transaction.StartChild("getImage");
-                using var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length && SettingsService.Settings.WindowDockingMonitorIndex >= 0 ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen!)
-                    : SettingsService.Settings.IsFallbackModeEnabled ?
-                        (GetFallbackWallpaper())
-                        :
-                        (GetScreenShot(
-                            SettingsService.Settings.WallpaperClassName == ""
-                                ? DesktopWindowClassName
-                                : SettingsService.Settings.WallpaperClassName
-                        ));
+                using var bitmap = SettingsService.Settings.ColorSource == 3 ? GetFullScreenShot(
+                        SettingsService.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
+                        SettingsService.Settings.WindowDockingMonitorIndex >= 0
+                            ? Screen.AllScreens[SettingsService.Settings.WindowDockingMonitorIndex]
+                            : Screen.PrimaryScreen!)
+                    : SettingsService.Settings.IsFallbackModeEnabled ? GetFallbackWallpaper()
+                    : GetScreenShot(
+                        SettingsService.Settings.WallpaperClassName == ""
+                            ? DesktopWindowClassName
+                            : SettingsService.Settings.WallpaperClassName
+                    );
                 if (bitmap is null)
                 {
                     Logger.LogError("获取壁纸失败。");
@@ -263,6 +247,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
                     transaction.Finish(SpanStatus.InternalError);
                     return;
                 }
+
                 spanGetImage.Finish(SpanStatus.Ok);
 
                 var spanConvertImage = transaction.StartChild("convertImage");
@@ -277,32 +262,26 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
                 var spanGetAccent = transaction.StartChild("getAccent");
                 if (SettingsService.Settings.UseExperimentColorPickingMethod)
-                {
                     NewColorPickingImpl(bitmap);
-                }
                 else
-                {
                     OldColorPickingImpl(bitmap);
-                }
                 spanGetAccent.Finish(SpanStatus.Ok);
             });
 
             var spanFinalize = transaction.StartChild("finalize");
             // Update cached platte
-            if (SettingsService.Settings.WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
+            if (SettingsService.Settings.WallpaperColorPlatte.Count <
+                SettingsService.Settings.SelectedPlatteIndex + 1 ||
                 WallpaperColorPlatte.Count < SettingsService.Settings.SelectedPlatteIndex + 1 ||
                 SettingsService.Settings.SelectedPlatteIndex < 0 ||
                 SettingsService.Settings.WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex] !=
                 WallpaperColorPlatte[SettingsService.Settings.SelectedPlatteIndex])
             {
                 SettingsService.Settings.WallpaperColorPlatte.Clear();
-                foreach (var i in WallpaperColorPlatte)
-                {
-                    SettingsService.Settings.WallpaperColorPlatte.Add(i);
-                }
+                foreach (var i in WallpaperColorPlatte) SettingsService.Settings.WallpaperColorPlatte.Add(i);
                 SettingsService.Settings.SelectedPlatteIndex = 0;
             }
-        
+
             IsWorking = false;
             GC.Collect();
             spanFinalize.Finish(SpanStatus.Ok);
@@ -327,15 +306,13 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
             {
                 var c = (Color)ColorConverter.ConvertFromString(i.Key);
                 ColorToHsv(c, out var h, out var s, out var v);
-                return (s + (v * (-(v - right) * (v - left) * 4))) * Math.Log2(i.Value);
+                return (s + v * (-(v - right) * (v - left) * 4)) * Math.Log2(i.Value);
             })
             .ThenByDescending(i => i.Value)
             .ToList();
         WallpaperColorPlatte.Clear();
         for (var i = 0; i < Math.Min(r.Count, 5); i++)
-        {
             WallpaperColorPlatte.Add((Color)ColorConverter.ConvertFromString(r[i].Key));
-        }
         Logger.LogInformation("提取到的主题色:{Color}", string.Join(",", WallpaperColorPlatte));
     }
 
@@ -350,7 +327,7 @@ public sealed class WallpaperPickingService : IHostedService, INotifyPropertyCha
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return new Task(() => {});
+        return new Task(() => { });
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

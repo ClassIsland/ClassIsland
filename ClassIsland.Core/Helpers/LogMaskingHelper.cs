@@ -18,14 +18,11 @@ public static class LogMaskingHelper
     /// <param name="log">要打码的日志</param>
     /// <param name="replace">打码文本</param>
     /// <returns>打码后的日志</returns>
-    public static string MaskLog(string log, string replace="***")
+    public static string MaskLog(string log, string replace = "***")
     {
         return Rules.Aggregate(log, (current, rule) => rule.Regex.Replace(current, match =>
         {
-            if (match.Groups.Count == 1)
-            {
-                return match.Groups[0].Value;
-            }
+            if (match.Groups.Count == 1) return match.Groups[0].Value;
 
             List<string> parts = [];
             for (var i = 1; i < match.Groups.Count; i++)

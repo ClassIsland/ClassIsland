@@ -6,6 +6,5 @@ namespace ClassIsland.Models.ComponentSettings;
 
 public partial class GroupComponentSettings : ObservableObject, IComponentContainerSettings
 {
-    [ObservableProperty]
-    private ObservableCollection<Core.Models.Components.ComponentSettings> _children = [];
+    [ObservableProperty] private ObservableCollection<Core.Models.Components.ComponentSettings> _children = [];
 }

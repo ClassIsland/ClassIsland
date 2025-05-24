@@ -10,5 +10,8 @@ public class KeyValuePairToValueConverter : IValueConverter
         return value == null ? null : ((KeyValuePair<object, object>)value).Value;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        return null;
+    }
 }

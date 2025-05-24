@@ -16,7 +16,8 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// WindowSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("window", "窗口", PackIconKind.WindowMaximize, PackIconKind.WindowMaximize, SettingsPageCategory.Internal)]
+[SettingsPageInfo("window", "窗口", PackIconKind.WindowMaximize, PackIconKind.WindowMaximize,
+    SettingsPageCategory.Internal)]
 public partial class WindowSettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }
@@ -41,10 +42,8 @@ public partial class WindowSettingsPage : SettingsPageBase
 
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(SettingsService.Settings.UseRawInput) or nameof(SettingsService.Settings.IsCompatibleWindowTransparentEnabled))
-        {
-            RequestRestart();
-        }
+        if (e.PropertyName is nameof(SettingsService.Settings.UseRawInput)
+            or nameof(SettingsService.Settings.IsCompatibleWindowTransparentEnabled)) RequestRestart();
     }
 
     private void ButtonRefreshMonitors_OnClick(object sender, RoutedEventArgs e)

@@ -34,10 +34,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
     {
         get
         {
-            if (_settingsElement == null && Info.SettingsType != null)
-            {
-                SetupSettingsControl(Info.HasSettings);
-            }
+            if (_settingsElement == null && Info.SettingsType != null) SetupSettingsControl(Info.HasSettings);
 
             return _settingsElement;
         }
@@ -79,7 +76,8 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
     /// </summary>
     protected NotificationProviderBase(bool autoRegister)
     {
-        var info = NotificationProviderRegistryService.RegisteredProviders.FirstOrDefault(x => x.ProviderType == GetType());
+        var info = NotificationProviderRegistryService.RegisteredProviders.FirstOrDefault(x =>
+            x.ProviderType == GetType());
 
         Info = info ?? throw new InvalidOperationException($"没有找到与 {GetType()} 对应的提醒提供方。");
 
@@ -92,7 +90,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
             bitmapImage.BeginInit();
             bitmapImage.UriSource = new Uri(info.BitmapIconUri, UriKind.RelativeOrAbsolute);
             bitmapImage.EndInit();
-            IconElement = new Image()
+            IconElement = new Image
             {
                 Source = bitmapImage,
                 Width = 24,
@@ -102,7 +100,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
         }
         else
         {
-            IconElement = new PackIcon()
+            IconElement = new PackIcon
             {
                 Kind = info.PackIcon,
                 Width = 24,
@@ -110,10 +108,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
             };
         }
 
-        if (!autoRegister)
-        {
-            return;
-        }
+        if (!autoRegister) return;
         __NotificationHostService.RegisterNotificationProvider(this);
     }
 
@@ -165,10 +160,7 @@ public abstract class NotificationProviderBase : INotificationProvider, INotific
     /// <returns>对应的提醒渠道 <see cref="NotificationChannel"/></returns>
     protected NotificationChannel Channel(Guid id)
     {
-        if (Channels.TryGetValue(id, out var value))
-        {
-            return value;
-        }
+        if (Channels.TryGetValue(id, out var value)) return value;
 
         throw new InvalidOperationException($"无效的提醒提供方 ID {id}");
     }
@@ -190,10 +182,7 @@ public abstract class NotificationProviderBase<TSettings> : NotificationProvider
     /// <inheritdoc />
     protected NotificationProviderBase(bool autoRegister)
     {
-        if (!autoRegister)
-        {
-            return;
-        }
+        if (!autoRegister) return;
         SettingsInternal = __NotificationHostService.GetNotificationProviderSettings<TSettings>(ProviderGuid);
     }
 }

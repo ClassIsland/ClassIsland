@@ -15,8 +15,7 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// </summary>
 public abstract class AttachedSettingsControlBase : UserControl, INotifyPropertyChanged
 {
-    [NotNull]
-    internal object? SettingsInternal { get; set; }
+    [NotNull] internal object? SettingsInternal { get; set; }
 
     /// <summary>
     /// 从设置对象获取控件实例。
@@ -27,24 +26,19 @@ public abstract class AttachedSettingsControlBase : UserControl, INotifyProperty
     public static AttachedSettingsControlBase? GetInstance(AttachedSettingsControlInfo info, ref object? settings)
     {
         var control = IAppHost.Host?.Services.GetKeyedService<AttachedSettingsControlBase>(info.Guid);
-        if (control == null)
-        {
-            return null;
-        }
+        if (control == null) return null;
 
         var baseType = info.AttachedSettingsControlType.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json)
-            {
-                settingsReal = json.Deserialize(settingsType);
-            }
+            if (settingsReal is JsonElement json) settingsReal = json.Deserialize(settingsType);
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;
         }
+
         return control;
     }
 

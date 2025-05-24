@@ -1,166 +1,55 @@
 ﻿<controls:MyWindow x:Class="ClassIsland.Views.SettingsWindowNew"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ClassIsland.Views"
-        xmlns:controls="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:controls1="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
-        xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
-        xmlns:controls2="clr-namespace:ClassIsland.Controls"
-        xmlns:ci="clr-namespace:ClassIsland"
-        xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
-        xmlns:system="clr-namespace:System;assembly=System.Runtime"
-        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-        xmlns:converters1="clr-namespace:ClassIsland.Converters"
-        xmlns:services="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
-        xmlns:commands="http://classisland.tech/schemas/xaml/core"
-        d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{StaticResource HarmonyOsSans}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="14"
-        TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"
-        mc:Ignorable="d"
-        MinWidth="560"
-        Title="应用设置" Height="550" Width="1200"
-        SizeChanged="SettingsWindowNew_OnSizeChanged"
-        Closing="SettingsWindowNew_OnClosing">
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:local="clr-namespace:ClassIsland.Views"
+                   xmlns:controls="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   xmlns:controls1="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                   xmlns:converters="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+                   xmlns:controls2="clr-namespace:ClassIsland.Controls"
+                   xmlns:ci="clr-namespace:ClassIsland"
+                   xmlns:windows="clr-namespace:Walterlv.Windows;assembly=ClassIsland.Core"
+                   xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+                   xmlns:converters1="clr-namespace:ClassIsland.Converters"
+                   xmlns:services="clr-namespace:ClassIsland.Core.Services.Registry;assembly=ClassIsland.Core"
+                   xmlns:commands="http://classisland.tech/schemas/xaml/core"
+                   d:DataContext="{d:DesignInstance local:SettingsWindowNew}"
+                   TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                   Background="{DynamicResource MaterialDesignPaper}"
+                   FontFamily="{StaticResource HarmonyOsSans}"
+                   TextElement.FontWeight="Regular"
+                   TextElement.FontSize="14"
+                   TextOptions.TextFormattingMode="Ideal"
+                   TextOptions.TextRenderingMode="Auto"
+                   mc:Ignorable="d"
+                   MinWidth="560"
+                   Title="应用设置" Height="550" Width="1200"
+                   SizeChanged="SettingsWindowNew_OnSizeChanged"
+                   Closing="SettingsWindowNew_OnClosing">
     <controls:MyWindow.Resources>
-        <StackPanel VerticalAlignment="Stretch" Margin="16" MaxWidth="400" x:Key="RestartDialog">
-            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-                <Run Text="需要重启"/>
-            </TextBlock>
-            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
-                <Run Text="部分设置需要重启以应用。"/>
-            </TextBlock>
-            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="稍后" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
-                    <Button.CommandParameter>
-                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                            False
-                        </system:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="立即重启" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
-                    <Button.CommandParameter>
-                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                            True
-                        </system:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-            </StackPanel>
-        </StackPanel>
-
-        <ScrollViewer Width="332" x:Key="ExperimentalSettings"
-                      VerticalScrollBarVisibility="Auto"
-                      materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True">
-            <StackPanel Margin="16">
-                <TextBlock Text="实验性功能" Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                           Margin="0 0 0 4" />
-                <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
-                           Margin="0 0 0 16" />
-                <CheckBox IsChecked="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading}"
-                          Margin="0 0 0 6"
-                          IsEnabled="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource BooleanToBooleanReConverter}}">
-                    <TextBlock TextWrapping="Wrap">
-                        在加载设置页面时显示回声洞
-                        <Run TextDecorations="{x:Static TextDecorations.Strikethrough}">
-                            （其实一般你还没看完就加载好了）
-                        </Run>
-                    </TextBlock>
-                </CheckBox>
-
-                <ComboBox Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          materialDesign:HintAssist.Hint="设置页面缓存策略"
-                          Margin="0 0 0 2"
-                          SelectedIndex="{Binding SettingsService.Settings.SettingsPagesCachePolicy}">
-                    <ComboBoxItem>不缓存</ComboBoxItem>
-                    <ComboBoxItem>保留页面缓存到窗口关闭（可能会内存泄漏）</ComboBoxItem>
-                    <ComboBoxItem>一直保留页面缓存</ComboBoxItem>
-                </ComboBox>
-                <TextBlock Text="设置页面缓存可以提升之前打开过的设置页面的加载速度，但会增加一定的内存占用。" TextWrapping="Wrap"
-                           Opacity="0.75"
-                           />
-
-                <Expander materialDesign:ExpanderAssist.VerticalHeaderPadding="0"
-                          materialDesign:ExpanderAssist.HorizontalHeaderPadding="0"
-                          Foreground="Transparent"
-                          Margin="0 24 0 0"
-                          Visibility="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource InverseBoolToVisConverter}}">
-                    
-                    <Button Style="{StaticResource MaterialDesignFlatButton}"
-                            Click="ButtonDoNotClickVeryDangerous_OnClick"
-                            Foreground="Red"
-                            materialDesign:RippleAssist.Feedback="Red"
-                            HorizontalAlignment="Left"
-                            >
-                        <commands:IconText Kind="WarningOutline" Text="千万别点" />
-                    </Button></Expander>
-            </StackPanel>
-        </ScrollViewer>
-
-        <Storyboard x:Key="NavigationLeaving">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.Opacity)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1.00">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <QuarticEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.0500000" Value="0">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <QuarticEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Key="NavigationEntering">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="200">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <SineEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <SineEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="NavigationFrame" Storyboard.TargetProperty="(UIElement.Opacity)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <SineEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1">
-                    <EasingDoubleKeyFrame.EasingFunction>
-                        <SineEase EasingMode="EaseOut"/>
-                    </EasingDoubleKeyFrame.EasingFunction>
-                </EasingDoubleKeyFrame>
-            </DoubleAnimationUsingKeyFrames>
-        </Storyboard>
 
         <CollectionViewSource x:Key="NavigationCollectionViewSource"
                               Source="{x:Static services:SettingsWindowRegistryService.Registered}"
                               Filter="NavigationCollectionViewSource_OnFilter"
                               IsLiveFilteringRequested="True">
             <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="Category"/>
+                <PropertyGroupDescription PropertyName="Category" />
             </CollectionViewSource.GroupDescriptions>
             <CollectionViewSource.SortDescriptions>
-                <componentModel:SortDescription PropertyName="Category"/>
+                <componentModel:SortDescription PropertyName="Category" />
             </CollectionViewSource.SortDescriptions>
         </CollectionViewSource>
         <converters1:SettingsWindowIsFirstGroupConverter x:Key="SettingsWindowIsFirstGroupConverter" />
     </controls:MyWindow.Resources>
     <controls:MyWindow.CommandBindings>
-        <CommandBinding Command="{x:Static controls1:SettingsPageBase.OpenDrawerCommand}" Executed="CommandBindingOpenDrawer_OnExecuted"/>
-        <CommandBinding Command="{x:Static controls1:SettingsPageBase.CloseDrawerCommand}" Executed="CommandBindingCloseDrawer_OnExecuted"/>
-        <CommandBinding Command="{x:Static controls1:SettingsPageBase.RequestRestartCommand}" Executed="CommandBindingRestartApp_OnExecuted"></CommandBinding>
+        <CommandBinding Command="{x:Static controls1:SettingsPageBase.OpenDrawerCommand}"
+                        Executed="CommandBindingOpenDrawer_OnExecuted" />
+        <CommandBinding Command="{x:Static controls1:SettingsPageBase.CloseDrawerCommand}"
+                        Executed="CommandBindingCloseDrawer_OnExecuted" />
+        <CommandBinding Command="{x:Static controls1:SettingsPageBase.RequestRestartCommand}"
+                        Executed="CommandBindingRestartApp_OnExecuted" />
     </controls:MyWindow.CommandBindings>
     <Grid x:Name="RootGrid">
         <Grid.LayoutTransform>
@@ -168,7 +57,7 @@
                 <ScaleTransform />
                 <SkewTransform />
                 <RotateTransform />
-                <TranslateTransform/>
+                <TranslateTransform />
             </TransformGroup>
         </Grid.LayoutTransform>
         <materialDesign:DialogHost Identifier="{x:Static controls1:SettingsPageBase.DialogHostIdentifier}">
@@ -208,9 +97,9 @@
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="{x:Type GroupItem}">
                                                                 <StackPanel>
-                                                                    <Separator Height="0.5" 
+                                                                    <Separator Height="0.5"
                                                                                Margin="0 4 0 4"
-                                                                               Visibility="{Binding Converter={StaticResource SettingsWindowIsFirstGroupConverter}, Mode=OneWay, ConverterParameter={StaticResource NavigationCollectionViewSource}}"/>
+                                                                               Visibility="{Binding Converter={StaticResource SettingsWindowIsFirstGroupConverter}, Mode=OneWay, ConverterParameter={StaticResource NavigationCollectionViewSource}}" />
                                                                     <ItemsPresenter />
                                                                 </StackPanel>
                                                             </ControlTemplate>
@@ -220,7 +109,7 @@
                                             </GroupStyle.ContainerStyle>
                                             <GroupStyle.HeaderTemplate>
                                                 <DataTemplate>
-                                                    <Separator/>
+                                                    <Separator />
                                                 </DataTemplate>
                                             </GroupStyle.HeaderTemplate>
                                         </GroupStyle>
@@ -255,7 +144,7 @@
                                         <ItemsPanelTemplate>
                                             <VirtualizingStackPanel IsVirtualizingWhenGrouping="True"
                                                                     IsVirtualizing="True"
-                                                                    IsContainerVirtualizable="True"/>
+                                                                    IsContainerVirtualizable="True" />
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
                                 </ListBox>
@@ -265,27 +154,28 @@
                         <Grid>
                             <Grid
                                 HorizontalAlignment="Left"
-                                        VerticalAlignment="Bottom"
+                                VerticalAlignment="Bottom"
                                 Margin="32 8 8 16"
-                                        Opacity="0.75">
+                                Opacity="0.75">
                                 <Grid.Visibility>
                                     <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}">
-                                        <Binding Path="SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading"/>
-                                        <Binding Path="ManagementService.Policy.DisableEasterEggs" Converter="{StaticResource BooleanToBooleanReConverter}"/>
+                                        <Binding Path="SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading" />
+                                        <Binding Path="ManagementService.Policy.DisableEasterEggs"
+                                                 Converter="{StaticResource BooleanToBooleanReConverter}" />
                                     </MultiBinding>
                                 </Grid.Visibility>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
                                 <materialDesign:PackIcon Kind="BulbOnOutline" VerticalAlignment="Center"
-                                                         Grid.Column="0"/>
+                                                         Grid.Column="0" />
                                 <TextBlock Text="{Binding ViewModel.CurrentEchoCaveText}"
                                            Grid.Column="1"
                                            TextWrapping="Wrap"
                                            FontWeight="Regular"
                                            VerticalAlignment="Center"
-                                           Margin="4 0 0 0"/>
+                                           Margin="4 0 0 0" />
                             </Grid>
                             <Frame Content="{Binding ViewModel.FrameContent}"
                                    Background="{DynamicResource MaterialDesignPaper}"
@@ -306,7 +196,7 @@
                                     </Page>
                                 </d:Frame.Content>
                             </Frame>
-                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask" x:Name="LoadingAsyncBox"/>
+                            <windows:AsyncBox LoadingViewType="controls2:LoadingMask" x:Name="LoadingAsyncBox" />
                         </Grid>
                     </materialDesign:DrawerHost>
                     <materialDesign:ColorZone Grid.Column="0" Grid.Row="0" Padding="16"
@@ -399,50 +289,50 @@
                                             <!--<MenuItem Icon="{materialDesign:PackIcon WarningCircleOutline}" Header="查看崩溃报告…"/>
                                         <Separator/>-->
                                             <MenuItem Icon="{materialDesign:PackIcon Code}" Header="实验性功能…"
-                                                  Click="MenuItemExperimentalSettings_OnClick" />
+                                                      Click="MenuItemExperimentalSettings_OnClick" />
                                             <MenuItem Icon="{materialDesign:PackIcon WindowMaximize}"
                                                       Header="调试窗口规则…"
-                                                      Click="MenuItemDebugWindowRule_OnClick"/>
+                                                      Click="MenuItemDebugWindowRule_OnClick" />
                                             <MenuItem Icon="{materialDesign:PackIcon SwapHorizontal}"
                                                       Header="创建快捷换课图标"
-                                                      Click="MenuItemAddClassSwapShortcut_OnClick"/>
-                                            <Separator/>
+                                                      Click="MenuItemAddClassSwapShortcut_OnClick" />
+                                            <Separator />
                                             <MenuItem Icon="{materialDesign:PackIcon WorkOutline}" Header="集控选项…"
                                                       Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                                      CommandParameter="classisland://app/settings/management?ci_keepHistory=true">
-                                            </MenuItem>
-                                            <MenuItem Icon="{materialDesign:PackIcon BriefcaseAddOutline}" Header="加入管理…"
-                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
-                                                  Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                                      CommandParameter="classisland://app/settings/management?ci_keepHistory=true" />
+                                            <MenuItem Icon="{materialDesign:PackIcon BriefcaseAddOutline}"
+                                                      Header="加入管理…"
+                                                      Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource InverseBoolToVisConverter}}"
+                                                      Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
                                                 <MenuItem.CommandParameter>
-                                                    <controls2:JoinManagementDialog/>
+                                                    <controls2:JoinManagementDialog />
                                                 </MenuItem.CommandParameter>
                                             </MenuItem>
-                                            <MenuItem Icon="{materialDesign:PackIcon BriefcaseOffOutline}" Header="退出管理…"
-                                                  Click="MenuItemExitManagement_OnClick" 
-                                                  Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                                            </MenuItem>
-                                            <Separator/>
+                                            <MenuItem Icon="{materialDesign:PackIcon BriefcaseOffOutline}"
+                                                      Header="退出管理…"
+                                                      Click="MenuItemExitManagement_OnClick"
+                                                      Visibility="{Binding ManagementService.IsManagementEnabled, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                            <Separator />
                                             <MenuItem Icon="{materialDesign:PackIcon FileDocumentOutline}"
-                                                  Header="日志…"
-                                                  Click="MenuItemAppLogs_OnClick"/>
+                                                      Header="日志…"
+                                                      Click="MenuItemAppLogs_OnClick" />
                                             <MenuItem Icon="{materialDesign:PackIcon DatabaseExportOutline}"
-                                                  Header="导出诊断数据"
-                                                  Click="MenuItemExportDiagnosticInfo_OnClick"/>
+                                                      Header="导出诊断数据"
+                                                      Click="MenuItemExportDiagnosticInfo_OnClick" />
                                             <MenuItem Icon="{materialDesign:PackIcon WrenchCheckOutline}"
                                                       Header="重启到恢复模式"
-                                                      Click="MenuItemRestartToRecovery_OnClick"/>
-                                            <Separator/>
+                                                      Click="MenuItemRestartToRecovery_OnClick" />
+                                            <Separator />
                                             <MenuItem Icon="{materialDesign:PackIcon FolderTextOutline}"
                                                       Header="打开日志目录…"
-                                                      Click="MenuItemOpenLogFolder_OnClick"/>
+                                                      Click="MenuItemOpenLogFolder_OnClick" />
                                             <MenuItem Icon="{materialDesign:PackIcon FolderFileOutline}"
                                                       Header="打开数据目录…"
-                                                      Click="MenuItemOpenDataFolder_OnClick"/>
+                                                      Click="MenuItemOpenDataFolder_OnClick" />
                                             <MenuItem Icon="{materialDesign:PackIcon FolderDownloadOutline}"
                                                       Header="打开应用目录…"
-                                                      Click="MenuItemOpenAppFolder_OnClick"/>
-                                            
+                                                      Click="MenuItemOpenAppFolder_OnClick" />
+
                                         </StackPanel>
 
                                     </StackPanel>
@@ -455,6 +345,6 @@
         </materialDesign:DialogHost>
         <materialDesign:Snackbar MessageQueue="{Binding ViewModel.SnackbarMessageQueue}"
                                  VerticalAlignment="Bottom"
-                                 HorizontalAlignment="Center"/>
+                                 HorizontalAlignment="Center" />
     </Grid>
 </controls:MyWindow>

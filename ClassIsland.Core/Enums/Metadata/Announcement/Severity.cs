@@ -9,18 +9,22 @@ public enum Severity
     /// 普通公告
     /// </summary>
     Announcement,
+
     /// <summary>
     /// 信息
     /// </summary>
     Info,
+
     /// <summary>
     /// 重要
     /// </summary>
     Important,
+
     /// <summary>
     /// 警告
     /// </summary>
     Warning,
+
     /// <summary>
     /// 关键
     /// </summary>

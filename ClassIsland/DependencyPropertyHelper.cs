@@ -10,10 +10,7 @@ public static class DependencyPropertyHelper
         var metadata = prop.DefaultMetadata;
         var mdType = typeof(PropertyMetadata);
         var defaultField = mdType.GetField("_defaultValue", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (defaultField == null)
-        {
-            return;
-        }
+        if (defaultField == null) return;
         defaultField.SetValue(metadata, value);
     }
 
@@ -22,11 +19,9 @@ public static class DependencyPropertyHelper
         foreach (var setter in setters)
         {
             if (setter is not Setter ss) continue;
-            if (ss.Property == prop)
-            {
-                return ss;
-            }
+            if (ss.Property == prop) return ss;
         }
+
         return null;
     }
 }

@@ -18,11 +18,8 @@ using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Client;
 using ClassIsland.Shared.Protobuf.Service;
 using MaterialDesignThemes.Wpf;
-
 using Microsoft.Extensions.Logging;
-
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
-
 using CommonDialog = ClassIsland.Core.Controls.CommonDialog.CommonDialog;
 
 namespace ClassIsland.Services.Management;
@@ -40,8 +37,10 @@ public class ManagementService : IManagementService
     public static ManagementService? Instance { get; private set; }
 
     public static readonly string ManagementPresetPath = Path.Combine(App.AppRootFolderPath, "./ManagementPreset.json");
+
     public static readonly string ManagementConfigureFolderPath =
         Path.Combine(App.AppDataFolderPath, "Management");
+
     public static readonly string LocalManagementConfigureFolderPath =
         Path.Combine(App.AppConfigPath, "Management");
 
@@ -53,11 +52,16 @@ public class ManagementService : IManagementService
     public static readonly string ManagementVersionsPath = Path.Combine(ManagementConfigureFolderPath, "Versions.json");
     public static readonly string ManagementSettingsPath = Path.Combine(ManagementConfigureFolderPath, "Settings.json");
     public static readonly string ManagementPolicyPath = Path.Combine(ManagementConfigureFolderPath, "Policy.json");
-    public static readonly string ManagementCredentialsPath = Path.Combine(ManagementConfigureFolderPath, "Credentials.json");
-    public static readonly string ManagementComponentsPath = Path.Combine(ManagementConfigureFolderPath, "Components.json");
+
+    public static readonly string ManagementCredentialsPath =
+        Path.Combine(ManagementConfigureFolderPath, "Credentials.json");
+
+    public static readonly string ManagementComponentsPath =
+        Path.Combine(ManagementConfigureFolderPath, "Components.json");
 
     public static readonly string LocalManagementPolicyPath =
         Path.Combine(LocalManagementConfigureFolderPath, "Policy.json");
+
     public static readonly string LocalManagementCredentialsPath =
         Path.Combine(LocalManagementConfigureFolderPath, "Credentials.json");
 
@@ -72,7 +76,7 @@ public class ManagementService : IManagementService
     public ManagementPolicy Policy { get; set; } = new();
     public ManagementCredentialConfig CredentialConfig { get; set; } = new();
 
-    public ManagementClientPersistConfig Persist { get;}
+    public ManagementClientPersistConfig Persist { get; }
 
     private ILogger<ManagementService> Logger { get; }
     public IAuthorizeService AuthorizeService { get; }
@@ -103,7 +107,8 @@ public class ManagementService : IManagementService
             switch (Settings.ManagementServerKind)
             {
                 case ManagementServerKind.Serverless:
-                    Connection = new ServerlessConnection(Persist.ClientUniqueId, Settings.ClassIdentity ?? "", Settings.ManifestUrlTemplate);
+                    Connection = new ServerlessConnection(Persist.ClientUniqueId, Settings.ClassIdentity ?? "",
+                        Settings.ManifestUrlTemplate);
                     break;
                 case ManagementServerKind.ManagementServer:
                     Connection = new ManagementServerConnection(Settings, Persist.ClientUniqueId, false);
@@ -111,6 +116,7 @@ public class ManagementService : IManagementService
                 default:
                     throw new ArgumentOutOfRangeException("", "无效的集控服务器类型。");
             }
+
             Connection.CommandReceived += ConnectionOnCommandReceived;
         }
         catch (Exception ex)
@@ -131,7 +137,7 @@ public class ManagementService : IManagementService
             case CommandTypes.DataUpdated:
                 Logger.LogInformation("Received DataUpdated command.");
                 _ = ReloadManagementAsync();
-            break;
+                break;
         }
     }
 
@@ -141,7 +147,8 @@ public class ManagementService : IManagementService
         CredentialConfig = LoadConfig<ManagementCredentialConfig>(LocalManagementCredentialsPath);
 
         Policy.PropertyChanged += (sender, args) => SaveConfig(LocalManagementPolicyPath, Policy);
-        CredentialConfig.PropertyChanged += (sender, args) => SaveConfig(LocalManagementCredentialsPath, CredentialConfig);
+        CredentialConfig.PropertyChanged +=
+            (sender, args) => SaveConfig(LocalManagementCredentialsPath, CredentialConfig);
     }
 
     public async Task SetupManagement()
@@ -160,16 +167,13 @@ public class ManagementService : IManagementService
     public async Task ReloadManagementAsync()
     {
         Logger.LogInformation("正在重载集控配置");
-        if (Connection == null)
-        {
-            return;
-        }
+        if (Connection == null) return;
 
         //Load old config
-        ManagementManifest oldManifest = Manifest;
-        ManagementPolicy oldPolicy = Policy;
-        ManagementCredentialConfig oldCredential = CredentialConfig;
-        ManagementVersions oldVersions = Versions;
+        var oldManifest = Manifest;
+        var oldPolicy = Policy;
+        var oldCredential = CredentialConfig;
+        var oldVersions = Versions;
 
         try
         {
@@ -181,14 +185,13 @@ public class ManagementService : IManagementService
             SaveConfig(ManagementManifestPath, Manifest);
             // 拉取策略
             if (Manifest.PolicySource.IsNewerAndNotNull(Versions.PolicyVersion))
-            {
-                Policy = await Connection.SaveJsonAsync<ManagementPolicy>(Manifest.PolicySource.Value!, ManagementPolicyPath);
-            }
+                Policy = await Connection.SaveJsonAsync<ManagementPolicy>(Manifest.PolicySource.Value!,
+                    ManagementPolicyPath);
             // 拉取凭据
             if (Manifest.CredentialSource.IsNewerAndNotNull(Versions.CredentialVersion))
-            {
-                CredentialConfig = await Connection.SaveJsonAsync<ManagementCredentialConfig>(Manifest.CredentialSource.Value!, ManagementCredentialsPath);
-            }
+                CredentialConfig =
+                    await Connection.SaveJsonAsync<ManagementCredentialConfig>(Manifest.CredentialSource.Value!,
+                        ManagementCredentialsPath);
         }
         catch (Exception e)
         {
@@ -199,7 +202,6 @@ public class ManagementService : IManagementService
             Logger.LogError(e, "拉取集控清单与策略失败");
             return;
         }
-
     }
 
     public void SaveSettings()
@@ -239,14 +241,18 @@ public class ManagementService : IManagementService
         var w = CopyObject(settings);
         w.IsManagementEnabled = true;
         // 清空旧的配置
-        foreach (var i in new List<string>([ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath, ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath, ProfileService.ManagementTimeLayoutPath, Path.Combine(App.AppRootFolderPath, "./Profiles/_management-profile.json"), ManagementCredentialsPath]).Where(File.Exists))
+        foreach (var i in new List<string>([
+                     ManagementManifestPath, ManagementPolicyPath, ManagementVersionsPath,
+                     ProfileService.ManagementClassPlanPath, ProfileService.ManagementSubjectsPath,
+                     ProfileService.ManagementTimeLayoutPath,
+                     Path.Combine(App.AppRootFolderPath, "./Profiles/_management-profile.json"),
+                     ManagementCredentialsPath
+                 ]).Where(File.Exists))
         {
             File.Delete(i);
-            if (File.Exists(i + ".bak"))
-            {
-                File.Delete(i + ".bak");
-            }
+            if (File.Exists(i + ".bak")) File.Delete(i + ".bak");
         }
+
         SaveConfig(ManagementSettingsPath, w);
         CommonDialog.ShowInfo($"已加入组织 {mf.OrganizationName} 的管理。应用将重启以应用更改。");
         await SetupManagement();
@@ -259,10 +265,7 @@ public class ManagementService : IManagementService
         if (!IsManagementEnabled)
             throw new Exception("无法在没有加入集控的情况下退出集控。");
         var authResult = await AuthorizeByLevel(CredentialConfig.ExitManagementAuthorizeLevel);
-        if (!authResult)
-        {
-            throw new Exception("认证失败。");
-        }
+        if (!authResult) throw new Exception("认证失败。");
         if (!Policy.AllowExitManagement)
             throw new Exception("您的组织不允许您退出集控。");
 
@@ -286,10 +289,8 @@ public class ManagementService : IManagementService
     public async Task<bool> AuthorizeByLevel(AuthorizeLevel level)
     {
         if (string.IsNullOrWhiteSpace(CredentialConfig.AdminCredential) &&
-            string.IsNullOrWhiteSpace(CredentialConfig.UserCredential))  // 没有设置任何认证方式
-        {
+            string.IsNullOrWhiteSpace(CredentialConfig.UserCredential)) // 没有设置任何认证方式
             return true;
-        }
 
         var fallbackCredential =
             new List<string>([CredentialConfig.AdminCredential, CredentialConfig.UserCredential]).First(x =>
@@ -298,20 +299,23 @@ public class ManagementService : IManagementService
         {
             AuthorizeLevel.None => true,
             AuthorizeLevel.User => await AuthorizeService.AuthenticateAsync(Fallback(CredentialConfig.UserCredential)),
-            AuthorizeLevel.Admin => await AuthorizeService.AuthenticateAsync(Fallback(CredentialConfig.AdminCredential)),
+            AuthorizeLevel.Admin =>
+                await AuthorizeService.AuthenticateAsync(Fallback(CredentialConfig.AdminCredential)),
             _ => throw new ArgumentOutOfRangeException(nameof(level), level, null)
         };
 
         if (level != AuthorizeLevel.None && IsManagementEnabled && Connection is ManagementServerConnection connection)
-        {
-            connection.LogAuditEvent(result ? AuditEvents.AuthorizeSuccess : AuditEvents.AuthorizeFailed, new AuthorizeEvent()
-            {
-                Level = (int)level
-            });
-        }
+            connection.LogAuditEvent(result ? AuditEvents.AuthorizeSuccess : AuditEvents.AuthorizeFailed,
+                new AuthorizeEvent
+                {
+                    Level = (int)level
+                });
 
         return result;
 
-        string Fallback(string c) => string.IsNullOrWhiteSpace(c) ? fallbackCredential : c;
+        string Fallback(string c)
+        {
+            return string.IsNullOrWhiteSpace(c) ? fallbackCredential : c;
+        }
     }
 }

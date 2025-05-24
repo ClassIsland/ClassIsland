@@ -1,26 +1,26 @@
 <controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.TestSettingsPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
-      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
-      mc:Ignorable="d"
-      d:DataContext="{d:DesignInstance local:TestSettingsPage}"
-      Title="TestSettingsPage"
-      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-      Background="{DynamicResource MaterialDesignPaper}"
-      FontFamily="{StaticResource HarmonyOsSans}"
-      TextElement.FontWeight="Regular"
-      TextElement.FontSize="14"
-      TextOptions.TextFormattingMode="Ideal"
-      TextOptions.TextRenderingMode="Auto"
-      Unloaded="TestSettingsPage_OnUnloaded">
+                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                           xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+                           xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+                           mc:Ignorable="d"
+                           d:DataContext="{d:DesignInstance local:TestSettingsPage}"
+                           Title="TestSettingsPage"
+                           TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                           Background="{DynamicResource MaterialDesignPaper}"
+                           FontFamily="{StaticResource HarmonyOsSans}"
+                           TextElement.FontWeight="Regular"
+                           TextElement.FontSize="14"
+                           TextOptions.TextFormattingMode="Ideal"
+                           TextOptions.TextRenderingMode="Auto"
+                           Unloaded="TestSettingsPage_OnUnloaded">
     <Grid>
         <StackPanel>
 
             <TextBlock>Hello world!</TextBlock>
-            <TextBlock Text="{Binding NavigationUri}"/>
+            <TextBlock Text="{Binding NavigationUri}" />
         </StackPanel>
         <Button Click="ButtonBase_OnClick">Test sub page</Button>
     </Grid>

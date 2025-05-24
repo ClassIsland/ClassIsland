@@ -13,7 +13,8 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// PrivacySettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("privacy", "隐私", PackIconKind.ShieldAccountOutline, PackIconKind.ShieldAccount, SettingsPageCategory.Internal)]
+[SettingsPageInfo("privacy", "隐私", PackIconKind.ShieldAccountOutline, PackIconKind.ShieldAccount,
+    SettingsPageCategory.Internal)]
 public partial class PrivacySettingsPage : SettingsPageBase
 {
     public SettingsService SettingsService { get; }
@@ -28,15 +29,12 @@ public partial class PrivacySettingsPage : SettingsPageBase
 
     private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
-        if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled))
-        {
-            RequestRestart();
-        }
+        if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled)) RequestRestart();
     }
 
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
     {
-        new DocumentReaderWindow()
+        new DocumentReaderWindow
         {
             Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
             Owner = Window.GetWindow(this),

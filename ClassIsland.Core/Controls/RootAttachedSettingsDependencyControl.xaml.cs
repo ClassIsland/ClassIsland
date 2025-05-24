@@ -30,30 +30,29 @@ namespace ClassIsland.Core.Controls;
 public partial class RootAttachedSettingsDependencyControl : UserControl, INotifyPropertyChanged
 {
     public static readonly DependencyProperty ControlInfoProperty = DependencyProperty.Register(
-        nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(RootAttachedSettingsDependencyControl), new PropertyMetadata(default(AttachedSettingsControlInfo),
+        nameof(ControlInfo), typeof(AttachedSettingsControlInfo), typeof(RootAttachedSettingsDependencyControl),
+        new PropertyMetadata(default(AttachedSettingsControlInfo),
             (o, args) =>
             {
-                if (o is RootAttachedSettingsDependencyControl control)
-                {
-                    control.Update();
-                }
+                if (o is RootAttachedSettingsDependencyControl control) control.Update();
             }));
 
     public AttachedSettingsControlInfo? ControlInfo
     {
-        get { return (AttachedSettingsControlInfo)GetValue(ControlInfoProperty); }
-        set { SetValue(ControlInfoProperty, value); }
+        get => (AttachedSettingsControlInfo)GetValue(ControlInfoProperty);
+        set => SetValue(ControlInfoProperty, value);
     }
 
     public static readonly DependencyProperty IsDrawerModeProperty = DependencyProperty.Register(
-        nameof(IsDrawerMode), typeof(bool), typeof(RootAttachedSettingsDependencyControl), new PropertyMetadata(default(bool)));
+        nameof(IsDrawerMode), typeof(bool), typeof(RootAttachedSettingsDependencyControl),
+        new PropertyMetadata(default(bool)));
 
     private ObservableCollection<AttachableObjectNode> _nodes = new();
 
     public bool IsDrawerMode
     {
-        get { return (bool)GetValue(IsDrawerModeProperty); }
-        set { SetValue(IsDrawerModeProperty, value); }
+        get => (bool)GetValue(IsDrawerModeProperty);
+        set => SetValue(IsDrawerModeProperty, value);
     }
 
     public ObservableCollection<AttachableObjectNode> Nodes
@@ -75,7 +74,8 @@ public partial class RootAttachedSettingsDependencyControl : UserControl, INotif
         InitializeComponent();
     }
 
-    public RootAttachedSettingsDependencyControl(AttachedSettingsControlInfo controlInfo, bool isDrawerMode=false) : this()
+    public RootAttachedSettingsDependencyControl(AttachedSettingsControlInfo controlInfo, bool isDrawerMode = false) :
+        this()
     {
         ControlInfo = controlInfo;
         IsDrawerMode = isDrawerMode;
@@ -83,18 +83,18 @@ public partial class RootAttachedSettingsDependencyControl : UserControl, INotif
 
     private void Update()
     {
-        if (ControlInfo == null)
-        {
-            return;
-        }
+        if (ControlInfo == null) return;
         ProfileAnalyzeService.Analyze();
         Nodes = new ObservableCollection<AttachableObjectNode>(ProfileAnalyzeService.Nodes.Where(x =>
-            x.Value.Object != null && x.Value.Object.AttachedObjects.TryGetValue(ControlInfo.Guid.ToString(), out var value) &&
+            x.Value.Object != null &&
+            x.Value.Object.AttachedObjects.TryGetValue(ControlInfo.Guid.ToString(), out var value) &&
             IAttachedSettings.GetIsEnabled(value)).OrderByDescending(x => x.Value.Target).Select(x => x.Value));
     }
 
     #region PropertyChanged
+
     public event PropertyChangedEventHandler? PropertyChanged;
+
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -107,7 +107,6 @@ public partial class RootAttachedSettingsDependencyControl : UserControl, INotif
         OnPropertyChanged(propertyName);
         return true;
     }
-    
 
     #endregion
 

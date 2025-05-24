@@ -7,7 +7,6 @@
                      xmlns:ci="http://classisland.tech/schemas/xaml/core"
                      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                      xmlns:controls1="clr-namespace:ClassIsland.Controls"
-                     xmlns:converters1="clr-namespace:ClassIsland.Converters"
                      xmlns:action="clr-namespace:ClassIsland.Core.Controls.Action;assembly=ClassIsland.Core"
                      xmlns:ruleset="clr-namespace:ClassIsland.Core.Controls.Ruleset;assembly=ClassIsland.Core"
                      xmlns:commands="clr-namespace:ClassIsland.Core.Commands;assembly=ClassIsland.Core"
@@ -15,7 +14,6 @@
                      d:DesignHeight="450"
                      d:DesignWidth="800"
                      xmlns:dd="urn:gong-wpf-dragdrop"
-                     xmlns:models="clr-namespace:ClassIsland.Core.Models;assembly=ClassIsland.Core"
                      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
                      Background="{DynamicResource MaterialDesignPaper}"
                      FontFamily="{StaticResource HarmonyOsSans}"
@@ -26,45 +24,19 @@
                      d:DataContext="{d:DesignInstance local:AutomationSettingsPage}"
                      Title="AutomationSettingsPage">
     <ci:SettingsPageBase.CommandBindings>
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.RemoveCommand}" Executed="CommandRemove_OnExecuted" />
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DuplicateCommand}" Executed="CommandDuplicate_OnExecuted" />
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}" Executed="CommandDebugInvokeAction_OnExecuted" />
-        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeRevertActionCommand}" Executed="CommandDebugInvokeRevertAction_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.RemoveCommand}"
+                        Executed="CommandRemove_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DuplicateCommand}"
+                        Executed="CommandDuplicate_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}"
+                        Executed="CommandDebugInvokeAction_OnExecuted" />
+        <CommandBinding Command="{x:Static local:AutomationSettingsPage.DebugInvokeRevertActionCommand}"
+                        Executed="CommandDebugInvokeRevertAction_OnExecuted" />
     </ci:SettingsPageBase.CommandBindings>
 
 
     <ci:SettingsPageBase.Resources>
         <!--「新建配置」对话框-->
-        <StackPanel x:Key="CreateProfileDialog"
-                    VerticalAlignment="Stretch"
-                    Margin="16"
-                    MaxWidth="400">
-            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                       Text="新建配置" />
-            <TextBox Margin="0 6 0 0"
-                     TextWrapping="Wrap"
-                     x:Name="TextBoxProfileName"
-                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                     Text="{Binding ViewModel.CreateProfileName, UpdateSourceTrigger=PropertyChanged}"
-                     materialDesign:HintAssist.Hint="配置名"
-                     materialDesign:TextFieldAssist.SuffixText=".json" />
-            <StackPanel Orientation="Horizontal"
-                        Margin="0 8 0 0"
-                        HorizontalAlignment="Right">
-                <Button Content="新建"
-                        IsDefault="True"
-                        HorizontalAlignment="Right"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                        CommandParameter="{Binding ViewModel.CreateProfileName, Mode=OneWay}" />
-                <Button Content="取消"
-                        HorizontalAlignment="Right"
-                        Style="{DynamicResource MaterialDesignFlatButton}"
-                        Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                        Margin="6 0 0 0"
-                        CommandParameter="{x:Null}" />
-            </StackPanel>
-        </StackPanel>
     </ci:SettingsPageBase.Resources>
     <Grid>
         <Grid>
@@ -98,8 +70,9 @@
                                             ToolTip="自动化帮助文档…"
                                             Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                                             CommandParameter="https://docs.classisland.tech/app/automation"
-                                            Style="{StaticResource MaterialDesignToolForegroundButton}"/>
-                                    <ToggleButton IsChecked="{Binding SettingsService.Settings.IsAutomationEnabled, Mode=TwoWay}"/>
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}" />
+                                    <ToggleButton
+                                        IsChecked="{Binding SettingsService.Settings.IsAutomationEnabled, Mode=TwoWay}" />
                                 </StackPanel>
                             </ci:SettingsCard.Switcher>
                         </ci:SettingsCard>
@@ -260,7 +233,7 @@
                                     HorizontalAlignment="Right"
                                     DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}">
                             <CheckBox IsChecked="{Binding ActionSet.IsRevertEnabled}"
-                                      Content="启用恢复"/>
+                                      Content="启用恢复" />
                             <Button Command="{x:Static local:AutomationSettingsPage.DebugInvokeActionCommand}"
                                     CommandParameter="{Binding ActionSet}"
                                     Padding="12 0">
@@ -310,7 +283,8 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Grid.Style>
-                                <StackPanel Margin="0 0 6 0" DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}">
+                                <StackPanel Margin="0 0 6 0"
+                                            DataContext="{Binding ViewModel.SelectedAutomation, Mode=OneWay}">
                                     <StackPanel.Style>
                                         <Style TargetType="StackPanel">
                                             <Style.Triggers>
@@ -332,7 +306,7 @@
                                                              Kind="AlertOctagonOutline" />
                                             </DataTemplate>
                                         </GroupBox.HeaderTemplate>
-                                        <action:TriggerSettingsControl Triggers="{Binding Triggers}"/>
+                                        <action:TriggerSettingsControl Triggers="{Binding Triggers}" />
                                     </GroupBox>
 
                                     <!--规则编辑-->
@@ -343,7 +317,7 @@
                                             <DataTemplate>
                                                 <StackPanel Orientation="Horizontal">
                                                     <ToggleButton IsChecked="{Binding IsConditionEnabled, Mode=TwoWay}"
-                                                                  Margin="0 0 4 0"/>
+                                                                  Margin="0 0 4 0" />
                                                     <ci:IconText Text="并且满足以下规则时"
                                                                  Kind="TagMultipleOutline" />
                                                 </StackPanel>
@@ -351,10 +325,10 @@
                                         </GroupBox.HeaderTemplate>
                                         <Grid>
                                             <TextBlock Text="工作流运行时不会考虑规则集。"
-                                   Visibility="{Binding IsConditionEnabled, Converter={StaticResource InverseBoolToVisConverter}, Mode=OneWay}"/>
+                                                       Visibility="{Binding IsConditionEnabled, Converter={StaticResource InverseBoolToVisConverter}, Mode=OneWay}" />
                                             <ruleset:RulesetControl Ruleset="{Binding Ruleset}"
-                                                ShowTitle="False" 
-                                                Visibility="{Binding IsConditionEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"/>
+                                                                    ShowTitle="False"
+                                                                    Visibility="{Binding IsConditionEnabled, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
                                         </Grid>
                                     </GroupBox>
 
@@ -407,17 +381,17 @@
                                 </Style>
                             </StackPanel.Style>
                             <ci:StickerControl ImageSource="/Assets/HoYoStickers/光辉矢愿_瞄准.png"
-                                   Width="72"
-                                   Height="72"
-                                   PackIconKind="ScriptOutline"
-                                   StickerToolTip="光辉矢愿_瞄准" />
+                                               Width="72"
+                                               Height="72"
+                                               PackIconKind="ScriptOutline"
+                                               StickerToolTip="光辉矢愿_瞄准" />
                             <TextBlock Text="在左侧选择或添加一个自动化，然后在此处进行设置。"
                                        TextWrapping="Wrap"
                                        Margin="0 4 0 0" />
                         </StackPanel>
                     </Grid>
                 </controls1:ListDetailView.RightContent>
-                </controls1:ListDetailView>
+            </controls1:ListDetailView>
         </Grid>
 
         <!-- 自动化使用前须知 -->
@@ -434,7 +408,7 @@
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="0"
                                Source="/Assets/AppLogo.png"
-                               ToolTip="ClassIsland"/>
+                               ToolTip="ClassIsland" />
                         <materialDesign:PackIcon Grid.Column="1"
                                                  VerticalAlignment="Center"
                                                  Width="25"
@@ -460,9 +434,9 @@
                                TextAlignment="Center"
                                HorizontalAlignment="Center"
                                TextWrapping="Wrap">
-                        　    欢迎使用自动化！<LineBreak />
-                            自动化是 ClassIsland 1.6 (Himeko) 的新增功能，旨在<LineBreak />
-                        　    提供简单快捷的自动操作。
+                        欢迎使用自动化！<LineBreak />
+                        自动化是 ClassIsland 1.6 (Himeko) 的新增功能，旨在<LineBreak />
+                        提供简单快捷的自动操作。
                     </TextBlock>
 
                     <Button HorizontalAlignment="Center"
@@ -487,9 +461,9 @@
                             <TextBlock TextAlignment="Center"
                                        HorizontalAlignment="Center"
                                        TextWrapping="Wrap">
-                                    自动化允许自动修改 ClassIsland 的各项设置，并调用<LineBreak />
-                                　    外部程序，可能有一定安全风险。<LineBreak />
-                                　    不当的自动化编写可能对正常教学造成影响，请勿滥用。
+                                自动化允许自动修改 ClassIsland 的各项设置，并调用<LineBreak />
+                                外部程序，可能有一定安全风险。<LineBreak />
+                                不当的自动化编写可能对正常教学造成影响，请勿滥用。
                             </TextBlock>
                         </StackPanel>
                     </Border>
@@ -503,6 +477,6 @@
                 </StackPanel>
             </ScrollViewer>
         </Border>
-        
+
     </Grid>
 </ci:SettingsPageBase>

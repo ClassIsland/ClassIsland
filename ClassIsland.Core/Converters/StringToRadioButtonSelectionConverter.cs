@@ -14,18 +14,16 @@ public class StringToRadioButtonSelectionConverter : IMultiValueConverter
         _valueRaw = p;
         return r == p;
     }
-    
+
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
         if ((bool)value)
-        {
             return new[]
             {
                 _valueRaw,
                 _valueRaw
             };
-        }
 
         return null;
     }

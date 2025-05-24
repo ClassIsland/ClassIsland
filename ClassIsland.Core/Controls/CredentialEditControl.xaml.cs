@@ -33,8 +33,8 @@ public partial class CredentialEditControl : UserControl
     /// </summary>
     public string? CredentialString
     {
-        get { return (string)GetValue(CredentialStringProperty); }
-        set { SetValue(CredentialStringProperty, value); }
+        get => (string)GetValue(CredentialStringProperty);
+        set => SetValue(CredentialStringProperty, value);
     }
 
     /// <summary>
@@ -48,7 +48,10 @@ public partial class CredentialEditControl : UserControl
     private async void ButtonEditCredentialString_OnClick(object sender, RoutedEventArgs e)
     {
         var authorizeService = IAppHost.GetService<IAuthorizeService>();
-        CredentialString = await authorizeService.SetupCredentialStringAsync(string.IsNullOrWhiteSpace(CredentialString) ? null : CredentialString);
+        CredentialString =
+            await authorizeService.SetupCredentialStringAsync(string.IsNullOrWhiteSpace(CredentialString)
+                ? null
+                : CredentialString);
     }
 
     private void ButtonClearCredentialString_OnClick(object sender, RoutedEventArgs e)

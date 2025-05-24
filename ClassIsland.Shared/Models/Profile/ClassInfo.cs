@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Shared.Models.Profile;
@@ -50,15 +49,13 @@ public class ClassInfo : AttachableSettingsObject
     /// <summary>
     /// 课程对应的时间点
     /// </summary>
-    [JsonIgnore] public TimeLayoutItem CurrentTimeLayoutItem
+    [JsonIgnore]
+    public TimeLayoutItem CurrentTimeLayoutItem
     {
         get
         {
             var valid = (from i in CurrentTimeLayout.Layouts where i.TimeType == 0 select i).ToList();
-            if (Index < 0 || Index >= valid.Count)
-            {
-                return TimeLayoutItem.Empty;
-            }
+            if (Index < 0 || Index >= valid.Count) return TimeLayoutItem.Empty;
             return valid[Index];
         }
     }

@@ -1,11 +1,10 @@
 ﻿using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Interfaces;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AttachedSettings;
 
-public class AfterSchoolNotificationAttachedSettings : ObservableRecipient, IAttachedSettings, 
+public class AfterSchoolNotificationAttachedSettings : ObservableRecipient, IAttachedSettings,
     IAfterSchoolNotificationProviderSettingsBase
 {
     private bool _isEnabled = true;

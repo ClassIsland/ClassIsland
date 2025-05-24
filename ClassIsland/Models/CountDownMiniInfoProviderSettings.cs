@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Media;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
@@ -10,7 +9,7 @@ public class CountDownMiniInfoProviderSettings : ObservableRecipient
     private string _countDownName = "";
     private DateTime _overTime = DateTime.Now;
     private int _daysLeft = 0;
-    private Color _fontColor = Color.FromRgb(255,0,0);
+    private Color _fontColor = Color.FromRgb(255, 0, 0);
     private int _fontSize = 16;
 
     public string countDownName

@@ -62,10 +62,7 @@ public class HangService : ObservableRecipient, IHangService
     private async Task CheckDispatcherHangAsync()
     {
         var dispatcher = Application.Current?.Dispatcher;
-        if (dispatcher == null || IsChecking)
-        {
-            return;
-        }
+        if (dispatcher == null || IsChecking) return;
         var taskCompletionSource = new TaskCompletionSource<bool>();
         _ = dispatcher.InvokeAsync(() => taskCompletionSource.TrySetResult(true));
         IsChecking = true;

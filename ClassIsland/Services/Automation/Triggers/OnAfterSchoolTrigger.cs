@@ -15,6 +15,7 @@ public class OnAfterSchoolTrigger(ILessonsService lessonsService) : TriggerBase
     {
         LessonsService.OnAfterSchool += OnLessonsServiceOnAfterSchool;
     }
+
     public override void UnLoaded()
     {
         LessonsService.OnAfterSchool -= OnLessonsServiceOnAfterSchool;

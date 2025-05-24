@@ -35,7 +35,7 @@ public class ClassPlan : AttachableSettingsObject
     {
         get
         {
-            if (!_isValidTimeLayoutItemsDirty) 
+            if (!_isValidTimeLayoutItemsDirty)
                 return _validTimeLayoutItems;
             _validTimeLayoutItems = GetValidTimeLayoutItems();
             _isValidTimeLayoutItemsDirty = false;
@@ -63,35 +63,21 @@ public class ClassPlan : AttachableSettingsObject
         var isPrevEnabled = true;
         for (var i = 0; i < displayTimePoints.Count; i++)
         {
-            if (timeLayoutMap.TryGetValue(items[i], out var info))
-            {
-                isPrevEnabled = info.IsEnabled;
-            }
+            if (timeLayoutMap.TryGetValue(items[i], out var info)) isPrevEnabled = info.IsEnabled;
 
-            if (!isPrevEnabled)
-            {
-                remove.Add(displayTimePoints[i]);
-            }
+            if (!isPrevEnabled) remove.Add(displayTimePoints[i]);
         }
+
         // 反向搜索
         isPrevEnabled = true;
         for (var i = displayTimePoints.Count - 1; i >= 0; i--)
         {
-            if (timeLayoutMap.TryGetValue(items[i], out var info))
-            {
-                isPrevEnabled = info.IsEnabled;
-            }
+            if (timeLayoutMap.TryGetValue(items[i], out var info)) isPrevEnabled = info.IsEnabled;
 
-            if (!isPrevEnabled)
-            {
-                remove.Add(displayTimePoints[i]);
-            }
+            if (!isPrevEnabled) remove.Add(displayTimePoints[i]);
         }
 
-        foreach (var i in remove)
-        {
-            items.Remove(i);
-        }
+        foreach (var i in remove) items.Remove(i);
         return items;
     }
 
@@ -130,6 +116,7 @@ public class ClassPlan : AttachableSettingsObject
             TimeLayout.Layouts.CollectionChanged += LayoutsOnCollectionChanged;
             TimeLayout.LayoutItemChanged += TimeLayoutOnLayoutItemChanged;
         }
+
         Classes.CollectionChanged += ClassesOnCollectionChanged;
         ClassesChanged += (sender, args) => MakeValidTimeLayoutItemsDirty();
     }
@@ -142,23 +129,17 @@ public class ClassPlan : AttachableSettingsObject
                 if (e.NewItems == null)
                     return;
                 foreach (var i in e.NewItems)
-                {
                     if (i is ClassInfo c)
-                    {
                         c.PropertyChanged += ClassInfoOnPropertyChanged;
-                    }
-                }
+
                 break;
             case NotifyCollectionChangedAction.Remove:
                 if (e.OldItems == null)
                     return;
                 foreach (var i in e.OldItems)
-                {
                     if (i is ClassInfo c)
-                    {
                         c.PropertyChanged -= ClassInfoOnPropertyChanged;
-                    }
-                }
+
                 break;
             case NotifyCollectionChangedAction.Replace:
                 break;
@@ -210,10 +191,7 @@ public class ClassPlan : AttachableSettingsObject
             case nameof(Classes):
             {
                 Classes.CollectionChanged += ClassesOnCollectionChanged;
-                foreach (var i in Classes)
-                {
-                    i.PropertyChanged += ClassInfoOnPropertyChanged;
-                }
+                foreach (var i in Classes) i.PropertyChanged += ClassInfoOnPropertyChanged;
 
                 break;
             }
@@ -227,18 +205,12 @@ public class ClassPlan : AttachableSettingsObject
             case NotifyCollectionChangedAction.Add:
                 if (e.AddIndexClasses < 0 || e.AddIndexClasses > Classes.Count)
                     break;
-                foreach (var i in e.AddedItems)
-                {
-                    Classes.Insert(e.AddIndexClasses, new ClassInfo());
-                }
+                foreach (var i in e.AddedItems) Classes.Insert(e.AddIndexClasses, new ClassInfo());
                 break;
             case NotifyCollectionChangedAction.Remove:
                 if (e.RemoveIndexClasses < 0 || e.RemoveIndexClasses >= Classes.Count)
                     break;
-                foreach (var i in e.RemovedItems)
-                {
-                    Classes.RemoveAt(e.RemoveIndexClasses);
-                }
+                foreach (var i in e.RemovedItems) Classes.RemoveAt(e.RemoveIndexClasses);
                 break;
             case NotifyCollectionChangedAction.Replace:
                 break;
@@ -315,7 +287,8 @@ public class ClassPlan : AttachableSettingsObject
     /// <summary>
     /// 当前课表的时间表
     /// </summary>
-    [JsonIgnore] public TimeLayout TimeLayout => TimeLayouts[TimeLayoutId];
+    [JsonIgnore]
+    public TimeLayout TimeLayout => TimeLayouts[TimeLayoutId];
 
     /// <summary>
     /// 当前课表的时间表ID
@@ -374,33 +347,24 @@ public class ClassPlan : AttachableSettingsObject
         }
     }
 
-    internal void RefreshClassesList(bool isDiffMode=false)
+    internal void RefreshClassesList(bool isDiffMode = false)
     {
         //App.GetService<ILogger<ClassPlan>>().LogTrace("Calling Refresh ClassesList: \n{}", new StackTrace());
         // 对齐长度
-        if (TimeLayoutId == null || !TimeLayouts.ContainsKey(TimeLayoutId))
-        {
-            return;
-        }
-        
+        if (TimeLayoutId == null || !TimeLayouts.ContainsKey(TimeLayoutId)) return;
+
         var c = (from i in TimeLayout.Layouts where i.TimeType == 0 select i).ToList();
         var l = c.Count;
         //Debug.WriteLine(l);
         if (Classes.Count < l)
         {
             var d = l - Classes.Count;
-            for (var i = 0; i < d; i++)
-            {
-                Classes.Add(new ClassInfo());
-            }
+            for (var i = 0; i < d; i++) Classes.Add(new ClassInfo());
         }
-        else if (Classes.Count > l) 
+        else if (Classes.Count > l)
         {
             var d = Classes.Count - l;
-            for (var i = 0; i < d; i++)
-            {
-                Classes.RemoveAt(Classes.Count - 1);
-            }
+            for (var i = 0; i < d; i++) Classes.RemoveAt(Classes.Count - 1);
         }
 
         for (var i = 0; i < Classes.Count; i++)
@@ -408,9 +372,7 @@ public class ClassPlan : AttachableSettingsObject
             Classes[i].Index = i;
             Classes[i].CurrentTimeLayout = TimeLayout;
             if (Classes[i].SubjectId == "" && Classes[i].CurrentTimeLayoutItem.DefaultClassId != "")
-            {
                 Classes[i].SubjectId = Classes[i].CurrentTimeLayoutItem.DefaultClassId;
-            }
         }
 
         LastTimeLayoutCount = TimeLayout.Layouts.Count;
@@ -431,19 +393,16 @@ public class ClassPlan : AttachableSettingsObject
         }
 
         foreach (var classInfo in Classes)
-        {
             classInfo.IsChangedClass =
-                classInfo.Index >= overlaySource.Classes.Count ? false : // 兜底判断，理论上可以删去
-                classInfo.SubjectId != overlaySource.Classes[classInfo.Index].SubjectId;
-        }
+                classInfo.Index >= overlaySource.Classes.Count
+                    ? false
+                    : // 兜底判断，理论上可以删去
+                    classInfo.SubjectId != overlaySource.Classes[classInfo.Index].SubjectId;
     }
 
     internal void RemoveTimePointSafe(TimeLayoutItem timePoint)
     {
-        foreach (var i in from i in Classes where i.CurrentTimeLayoutItem == timePoint select i)
-        {
-            Classes.Remove(i);
-        }
+        foreach (var i in from i in Classes where i.CurrentTimeLayoutItem == timePoint select i) Classes.Remove(i);
         RefreshClassesList();
     }
 

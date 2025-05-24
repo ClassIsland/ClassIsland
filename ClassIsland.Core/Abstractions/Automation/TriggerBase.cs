@@ -45,7 +45,8 @@ public abstract class TriggerBase
     /// <summary>
     /// 此触发器关联的工作流。
     /// </summary>
-    [NotNull] public Workflow? AssociatedWorkflow { get; internal set; }
+    [NotNull]
+    public Workflow? AssociatedWorkflow { get; internal set; }
 }
 
 /// <inheritdoc cref="TriggerBase"/>

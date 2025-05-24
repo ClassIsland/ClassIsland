@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-
 using ClassIsland.Models;
 
 namespace ClassIsland.Controls.MiniInfoProvider;

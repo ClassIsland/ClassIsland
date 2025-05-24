@@ -27,12 +27,8 @@ public class SignalTrigger(SignalTriggerHandlerService signalTriggerHandlerServi
         if (e.SignalName != Settings.SignalName) return;
 
         if (e.Revert)
-        {
             TriggerRevert();
-        }
         else
-        {
             Trigger();
-        }
     }
 }

@@ -10,10 +10,13 @@ public class AutoScrollListView : ListView
     {
         if (e.NewItems != null)
         {
-            var scroll = (new ListViewAutomationPeer(this).GetPattern(PatternInterface.Scroll) as ScrollViewerAutomationPeer).Owner as ScrollViewer;
+            var scroll =
+                (new ListViewAutomationPeer(this).GetPattern(PatternInterface.Scroll) as ScrollViewerAutomationPeer)
+                .Owner as ScrollViewer;
             if (Math.Abs(scroll.ScrollableHeight - scroll.VerticalOffset) < 0.1)
                 scroll.ScrollToBottom();
         }
+
         base.OnItemsChanged(e);
     }
 }

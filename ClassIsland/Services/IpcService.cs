@@ -43,19 +43,15 @@ public class IpcService : IIpcService
     {
         ConnectedPeers.Remove(null);
         foreach (var i in ConnectedPeers)
-        {
-            if (i?.JsonPeerProxy != null) 
+            if (i?.JsonPeerProxy != null)
                 await i.JsonPeerProxy.NotifyAsync(id);
-        }
     }
 
     public async Task BroadcastNotificationAsync<T>(string id, T obj) where T : class
     {
         ConnectedPeers.Remove(null);
         foreach (var i in ConnectedPeers)
-        {
-            if (i?.JsonPeerProxy != null) 
+            if (i?.JsonPeerProxy != null)
                 await i.JsonPeerProxy.NotifyAsync(id, obj);
-        }
     }
 }

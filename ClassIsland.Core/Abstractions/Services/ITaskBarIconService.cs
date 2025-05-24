@@ -20,5 +20,6 @@ public interface ITaskBarIconService
     /// <param name="content">通知正文</param>
     /// <param name="icon">气泡图标</param>
     /// <param name="clickedCallback">点击通知后执行的操作</param>
-    public void ShowNotification(string title, string content, NotificationIcon icon=NotificationIcon.None, Action? clickedCallback=null);
+    public void ShowNotification(string title, string content, NotificationIcon icon = NotificationIcon.None,
+        Action? clickedCallback = null);
 }

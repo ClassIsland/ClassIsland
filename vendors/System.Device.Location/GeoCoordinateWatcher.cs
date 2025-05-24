@@ -23,443 +23,409 @@ using System.Security;
 using System.Diagnostics.CodeAnalysis;
 using Strings.Resources;
 
-namespace System.Device.Location
+namespace System.Device.Location;
+
+/// <summary>
+/// Represents location provider accuracy
+/// </summary>
+public enum GeoPositionAccuracy
 {
-    /// <summary>
-    /// Represents location provider accuracy
-    /// </summary>
-    public enum GeoPositionAccuracy
+    Default = 0,
+    High
+}
+
+/// <summary>
+/// Represents location provider status
+/// </summary>
+public enum GeoPositionStatus
+{
+    Ready, // Enabled
+    Initializing, // Working to acquire data
+    NoData, // We have access to sensors, but we cannnot resolve
+    Disabled // Location service disabled or access denied
+}
+
+/// <summary>
+/// Represents Geo watcher permission state
+/// </summary>
+public enum GeoPositionPermission
+{
+    Unknown,
+    Granted,
+    Denied
+}
+
+/// <summary>
+/// IGeoPositionWatcher interface
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public interface IGeoPositionWatcher<T>
+{
+    void Start();
+    void Start(bool suppressPermissionPrompt);
+    bool TryStart(bool suppressPermissionPrompt, TimeSpan timeout);
+
+    [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
+    void Stop();
+
+    GeoPosition<T> Position { get; }
+    event EventHandler<GeoPositionChangedEventArgs<T>> PositionChanged;
+
+    GeoPositionStatus Status { get; }
+    event EventHandler<GeoPositionStatusChangedEventArgs> StatusChanged;
+}
+
+/// <summary>
+/// Internal abstract class, representing platform dependant provider implementations
+/// GeoCoordinate is the watching target in this implementation.
+/// </summary>
+internal abstract class GeoCoordinateWatcherBase
+{
+    public abstract bool TryStart(bool suppressPermissionPrompt, TimeSpan timeout);
+    public abstract void Stop();
+    public virtual bool IsStarted { get; protected set; }
+    public virtual GeoPositionPermission Permission { get; protected set; }
+    public virtual GeoPositionStatus Status { get; protected set; }
+    public virtual GeoPosition<GeoCoordinate> Position { get; protected set; }
+
+    public virtual void OnPositionChanged(GeoPositionChangedEventArgs<GeoCoordinate> e)
     {
-        Default = 0,
-        High
-    }
-    /// <summary>
-    /// Represents location provider status
-    /// </summary>
-    public enum GeoPositionStatus
-    {
-        Ready,          // Enabled
-        Initializing,   // Working to acquire data
-        NoData,         // We have access to sensors, but we cannnot resolve
-        Disabled        // Location service disabled or access denied
-    }
-    /// <summary>
-    /// Represents Geo watcher permission state
-    /// </summary>
-    public enum GeoPositionPermission
-    {
-        Unknown,
-        Granted,
-        Denied
-    }
-
-    /// <summary>
-    /// IGeoPositionWatcher interface
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IGeoPositionWatcher<T>
-    {
-        void Start();
-        void Start(Boolean suppressPermissionPrompt);
-        Boolean TryStart(Boolean suppressPermissionPrompt, TimeSpan timeout);
-        [SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords")]
-        void Stop();
-
-        GeoPosition<T> Position { get; }
-        event EventHandler<GeoPositionChangedEventArgs<T>> PositionChanged;
-
-        GeoPositionStatus Status { get; }
-        event EventHandler<GeoPositionStatusChangedEventArgs> StatusChanged;
-    }
-
-    /// <summary>
-    /// Internal abstract class, representing platform dependant provider implementations
-    /// GeoCoordinate is the watching target in this implementation.
-    /// </summary>
-    internal abstract class GeoCoordinateWatcherBase
-    {
-        public abstract Boolean TryStart(Boolean suppressPermissionPrompt, TimeSpan timeout);
-        public abstract void Stop();
-        public virtual Boolean IsStarted { get; protected set; }
-        public virtual GeoPositionPermission Permission { get; protected set; }
-        public virtual GeoPositionStatus Status { get; protected set; }
-        public virtual GeoPosition<GeoCoordinate> Position { get; protected set; }
-
-        public virtual void OnPositionChanged(GeoPositionChangedEventArgs<GeoCoordinate> e)
-        {
-            EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> t = PositionChanged;
-            if (t != null) t(this, e);
-        }
-
-        public virtual void OnPositionStatusChanged(GeoPositionStatusChangedEventArgs e)
-        {
-            EventHandler<GeoPositionStatusChangedEventArgs> t = StatusChanged;
-            if (t != null) t(this, e);
-        }
-
-        public virtual void OnPermissionChanged(GeoPermissionChangedEventArgs e)
-        {
-            EventHandler<GeoPermissionChangedEventArgs> t = PermissionChanged;
-            if (t != null) t(this, e);
-        }
-
-        public event EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> PositionChanged;
-        public event EventHandler<GeoPositionStatusChangedEventArgs> StatusChanged;
-        public event EventHandler<GeoPermissionChangedEventArgs> PermissionChanged;
+        var t = PositionChanged;
+        if (t != null) t(this, e);
     }
 
-    /// <SecurityNote>
-    /// Critical - the only class in Location API that invokes native platform
-    /// </SecurityNote>
-    [SecurityCritical]
-    public class GeoCoordinateWatcher 
-        : IDisposable, INotifyPropertyChanged, IGeoPositionWatcher<GeoCoordinate>
+    public virtual void OnPositionStatusChanged(GeoPositionStatusChangedEventArgs e)
     {
-        private GeoCoordinate m_lastCoordinate = GeoCoordinate.Unknown;
-        private GeoPositionAccuracy m_desiredAccuracy = GeoPositionAccuracy.Default;
-        private GeoCoordinateWatcherInternal m_watcher;
-        private PropertyChangedEventHandler m_propertyChanged;
-        private EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> m_positionChanged;
-        private EventHandler<GeoPositionStatusChangedEventArgs> m_statusChanged;
-        private SynchronizationContext m_synchronizationContext;
-        private bool m_disposed;
-        private double m_threshold = 0.0;
+        var t = StatusChanged;
+        if (t != null) t(this, e);
+    }
 
-        #region Constructors
+    public virtual void OnPermissionChanged(GeoPermissionChangedEventArgs e)
+    {
+        var t = PermissionChanged;
+        if (t != null) t(this, e);
+    }
 
-        public GeoCoordinateWatcher()
-            : this(GeoPositionAccuracy.Default)
-        {
-        }
+    public event EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> PositionChanged;
+    public event EventHandler<GeoPositionStatusChangedEventArgs> StatusChanged;
+    public event EventHandler<GeoPermissionChangedEventArgs> PermissionChanged;
+}
 
-        public GeoCoordinateWatcher(GeoPositionAccuracy desiredAccuracy)
-        {
-            m_desiredAccuracy = desiredAccuracy;
+/// <SecurityNote>
+/// Critical - the only class in Location API that invokes native platform
+/// </SecurityNote>
+[SecurityCritical]
+public class GeoCoordinateWatcher
+    : IDisposable, INotifyPropertyChanged, IGeoPositionWatcher<GeoCoordinate>
+{
+    private GeoCoordinate m_lastCoordinate = GeoCoordinate.Unknown;
+    private GeoPositionAccuracy m_desiredAccuracy = GeoPositionAccuracy.Default;
+    private GeoCoordinateWatcherInternal m_watcher;
+    private PropertyChangedEventHandler m_propertyChanged;
+    private EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> m_positionChanged;
+    private EventHandler<GeoPositionStatusChangedEventArgs> m_statusChanged;
+    private SynchronizationContext m_synchronizationContext;
+    private bool m_disposed;
+    private double m_threshold = 0.0;
 
-            m_watcher = new GeoCoordinateWatcherInternal(desiredAccuracy);
+    #region Constructors
 
-            if (SynchronizationContext.Current == null)
-            {
-                //
-                // Create a SynchronizationContext if there isn't one on calling thread
-                //
-                m_synchronizationContext = new SynchronizationContext();
-            }
-            else
-            {
-                m_synchronizationContext = SynchronizationContext.Current;
-            }
+    public GeoCoordinateWatcher()
+        : this(GeoPositionAccuracy.Default)
+    {
+    }
 
-            m_watcher.StatusChanged += new EventHandler<GeoPositionStatusChangedEventArgs>(OnInternalStatusChanged);
-            m_watcher.PermissionChanged +=new EventHandler<GeoPermissionChangedEventArgs>(OnInternalPermissionChanged);
-            m_watcher.PositionChanged += new EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>>(OnInternalLocationChanged);
-        }
+    public GeoCoordinateWatcher(GeoPositionAccuracy desiredAccuracy)
+    {
+        m_desiredAccuracy = desiredAccuracy;
 
-        #endregion
+        m_watcher = new GeoCoordinateWatcherInternal(desiredAccuracy);
 
-        #region Properties
-
-        public GeoPositionAccuracy DesiredAccuracy
-        {
-            get
-            {
-                DisposeCheck();
-                return m_desiredAccuracy;
-            }
-            private set
-            {
-                DisposeCheck();
-                m_desiredAccuracy = value;
-            }
-        }
-
-        public Double MovementThreshold
-        {
-            set
-            {
-                DisposeCheck();
-
-                if (value < 0.0 || Double.IsNaN(value))
-                {
-                    throw new ArgumentOutOfRangeException("value", SR.GetString(SR.Argument_MustBeNonNegative));
-                }
-                m_threshold = value;
-            }
-            get
-            {
-                DisposeCheck();
-                return m_threshold;
-            }
-        }
-
-        public GeoPositionPermission Permission
-        {
-            get
-            {
-                DisposeCheck();
-                return m_watcher.Permission;
-            }
-        }
-
-        #endregion
-
-        #region IGeoCoordinateWatcher implementation
-
-        public GeoPosition<GeoCoordinate> Position
-        {
-            [SecuritySafeCritical]
-            get
-            {
-                DisposeCheck();
-                return m_watcher.Position;
-            }
-        }
-
-        public GeoPositionStatus Status
-        {
-            [SecuritySafeCritical]
-            get
-            {
-                DisposeCheck();
-                return m_watcher.Status;
-            }
-        }
-        
-        [SecuritySafeCritical]
-        public void Start()
-        {
-            DisposeCheck();
-            this.Start(false);
-        }
-
-        [SecuritySafeCritical]
-        public void Start(Boolean suppressPermissionPrompt)
-        {
-            DisposeCheck();
-            m_watcher.TryStart(suppressPermissionPrompt, TimeSpan.Zero);
-        }
-
-        [SecuritySafeCritical]
-        public Boolean TryStart(Boolean suppressPermissionPrompt, TimeSpan timeout)
-        {
-            DisposeCheck();
+        if (SynchronizationContext.Current == null)
             //
-            // Timeout needs to be in the range of 0 ~ MaxValue
+            // Create a SynchronizationContext if there isn't one on calling thread
             //
-            long tm = (long)timeout.TotalMilliseconds;
-            if (tm <= 0 || (long)Int32.MaxValue < tm)
-            {
-                return m_watcher.IsStarted;
-            }
+            m_synchronizationContext = new SynchronizationContext();
+        else
+            m_synchronizationContext = SynchronizationContext.Current;
 
-            return m_watcher.TryStart(suppressPermissionPrompt, timeout);
-        }
+        m_watcher.StatusChanged += new EventHandler<GeoPositionStatusChangedEventArgs>(OnInternalStatusChanged);
+        m_watcher.PermissionChanged += new EventHandler<GeoPermissionChangedEventArgs>(OnInternalPermissionChanged);
+        m_watcher.PositionChanged +=
+            new EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>>(OnInternalLocationChanged);
+    }
 
-        [SecuritySafeCritical]
-        public void Stop()
+    #endregion
+
+    #region Properties
+
+    public GeoPositionAccuracy DesiredAccuracy
+    {
+        get
         {
             DisposeCheck();
-            m_watcher.Stop();
+            return m_desiredAccuracy;
         }
-
-        #endregion
-
-        private void OnInternalLocationChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
+        private set
         {
-            if (e.Position != null)
-            {
-                Utility.Trace("GeoCoordinateWatcher.OnInternalLocationChanged: " + e.Position.ToString());
-                //
-                // Only fire event when location change exceeds the movement threshold or the coordinate
-                // is unknown, as in the case of a civic address only report.
-                //
-                if ((m_lastCoordinate == GeoCoordinate.Unknown) || (e.Position.Location == GeoCoordinate.Unknown)
-                    || (e.Position.Location.GetDistanceTo(m_lastCoordinate) >= m_threshold))
-                {
-                    m_lastCoordinate = e.Position.Location;
-
-                    PostEvent(OnPositionChanged, new GeoPositionChangedEventArgs<GeoCoordinate>(e.Position));
-
-                    OnPropertyChanged("Position");
-                }
-            }
+            DisposeCheck();
+            m_desiredAccuracy = value;
         }
+    }
 
-        void OnInternalStatusChanged(object sender, GeoPositionStatusChangedEventArgs e)
+    public double MovementThreshold
+    {
+        set
         {
-            PostEvent(OnPositionStatusChanged, new GeoPositionStatusChangedEventArgs(e.Status));
+            DisposeCheck();
 
-            OnPropertyChanged("Status");
+            if (value < 0.0 || double.IsNaN(value))
+                throw new ArgumentOutOfRangeException("value", SR.GetString(SR.Argument_MustBeNonNegative));
+            m_threshold = value;
         }
-
-        void OnInternalPermissionChanged(object sender, GeoPermissionChangedEventArgs e)
+        get
         {
-            OnPropertyChanged("Permission");
+            DisposeCheck();
+            return m_threshold;
         }
+    }
 
-        protected void OnPositionChanged(GeoPositionChangedEventArgs<GeoCoordinate> e)
+    public GeoPositionPermission Permission
+    {
+        get
         {
-            Utility.Trace("GeoCoordinateWatcher.OnPositionChanged: " + e.Position.Location.ToString());
-            EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> t = PositionChanged;
-            if (t != null) t(this, e);
+            DisposeCheck();
+            return m_watcher.Permission;
         }
+    }
 
-        protected void OnPositionStatusChanged(GeoPositionStatusChangedEventArgs e)
-        {
-            Utility.Trace("GeoCoordinateWatcher.OnPositionStatusChanged: " + e.Status.ToString());
-            EventHandler<GeoPositionStatusChangedEventArgs> t = StatusChanged;
-            if (t != null) t(this, e);
-        }
+    #endregion
 
-        protected void OnPropertyChanged(String propertyName)
-        {
-            if (m_propertyChanged != null)
-                m_propertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+    #region IGeoCoordinateWatcher implementation
 
-        #region Events
-
-        public event EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> PositionChanged;
-        public event EventHandler<GeoPositionStatusChangedEventArgs> StatusChanged;
-
-        event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
-        {
-            [SecuritySafeCritical]
-            add
-            {
-                m_propertyChanged += value;
-            }
-            [SecuritySafeCritical]
-            remove
-            {
-                m_propertyChanged -= value;
-            }
-        }
-
-        event EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> IGeoPositionWatcher<GeoCoordinate>.PositionChanged
-        {
-            [SecuritySafeCritical]
-            add
-            {
-                m_positionChanged += value;
-            }
-            [SecuritySafeCritical]
-            remove
-            {
-                m_positionChanged -= value;
-            }
-        }
-
-        event EventHandler<GeoPositionStatusChangedEventArgs> IGeoPositionWatcher<GeoCoordinate>.StatusChanged
-        {
-            [SecuritySafeCritical]
-            add
-            {
-                m_statusChanged += value;
-            }
-            [SecuritySafeCritical]
-            remove
-            {
-                m_statusChanged -= value;
-            }
-        }
-
-        #endregion
-
-        #region IDisposable
-
+    public GeoPosition<GeoCoordinate> Position
+    {
         [SecuritySafeCritical]
-        public void Dispose() 
+        get
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            DisposeCheck();
+            return m_watcher.Position;
         }
+    }
 
+    public GeoPositionStatus Status
+    {
         [SecuritySafeCritical]
-        ~GeoCoordinateWatcher()
+        get
         {
-            Dispose(false);
+            DisposeCheck();
+            return m_watcher.Status;
         }
+    }
 
-        protected virtual void Dispose(Boolean disposing)
+    [SecuritySafeCritical]
+    public void Start()
+    {
+        DisposeCheck();
+        Start(false);
+    }
+
+    [SecuritySafeCritical]
+    public void Start(bool suppressPermissionPrompt)
+    {
+        DisposeCheck();
+        m_watcher.TryStart(suppressPermissionPrompt, TimeSpan.Zero);
+    }
+
+    [SecuritySafeCritical]
+    public bool TryStart(bool suppressPermissionPrompt, TimeSpan timeout)
+    {
+        DisposeCheck();
+        //
+        // Timeout needs to be in the range of 0 ~ MaxValue
+        //
+        var tm = (long)timeout.TotalMilliseconds;
+        if (tm <= 0 || (long)int.MaxValue < tm) return m_watcher.IsStarted;
+
+        return m_watcher.TryStart(suppressPermissionPrompt, timeout);
+    }
+
+    [SecuritySafeCritical]
+    public void Stop()
+    {
+        DisposeCheck();
+        m_watcher.Stop();
+    }
+
+    #endregion
+
+    private void OnInternalLocationChanged(object sender, GeoPositionChangedEventArgs<GeoCoordinate> e)
+    {
+        if (e.Position != null)
         {
-            if (!m_disposed)
+            Utility.Trace("GeoCoordinateWatcher.OnInternalLocationChanged: " + e.Position.ToString());
+            //
+            // Only fire event when location change exceeds the movement threshold or the coordinate
+            // is unknown, as in the case of a civic address only report.
+            //
+            if (m_lastCoordinate == GeoCoordinate.Unknown || e.Position.Location == GeoCoordinate.Unknown
+                                                          || e.Position.Location.GetDistanceTo(m_lastCoordinate) >=
+                                                          m_threshold)
             {
-                if (disposing)
+                m_lastCoordinate = e.Position.Location;
+
+                PostEvent(OnPositionChanged, new GeoPositionChangedEventArgs<GeoCoordinate>(e.Position));
+
+                OnPropertyChanged("Position");
+            }
+        }
+    }
+
+    private void OnInternalStatusChanged(object sender, GeoPositionStatusChangedEventArgs e)
+    {
+        PostEvent(OnPositionStatusChanged, new GeoPositionStatusChangedEventArgs(e.Status));
+
+        OnPropertyChanged("Status");
+    }
+
+    private void OnInternalPermissionChanged(object sender, GeoPermissionChangedEventArgs e)
+    {
+        OnPropertyChanged("Permission");
+    }
+
+    protected void OnPositionChanged(GeoPositionChangedEventArgs<GeoCoordinate> e)
+    {
+        Utility.Trace("GeoCoordinateWatcher.OnPositionChanged: " + e.Position.Location.ToString());
+        var t = PositionChanged;
+        if (t != null) t(this, e);
+    }
+
+    protected void OnPositionStatusChanged(GeoPositionStatusChangedEventArgs e)
+    {
+        Utility.Trace("GeoCoordinateWatcher.OnPositionStatusChanged: " + e.Status.ToString());
+        var t = StatusChanged;
+        if (t != null) t(this, e);
+    }
+
+    protected void OnPropertyChanged(string propertyName)
+    {
+        if (m_propertyChanged != null)
+            m_propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    #region Events
+
+    public event EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> PositionChanged;
+    public event EventHandler<GeoPositionStatusChangedEventArgs> StatusChanged;
+
+    event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+    {
+        [SecuritySafeCritical] add => m_propertyChanged += value;
+        [SecuritySafeCritical] remove => m_propertyChanged -= value;
+    }
+
+    event EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>> IGeoPositionWatcher<GeoCoordinate>.PositionChanged
+    {
+        [SecuritySafeCritical] add => m_positionChanged += value;
+        [SecuritySafeCritical] remove => m_positionChanged -= value;
+    }
+
+    event EventHandler<GeoPositionStatusChangedEventArgs> IGeoPositionWatcher<GeoCoordinate>.StatusChanged
+    {
+        [SecuritySafeCritical] add => m_statusChanged += value;
+        [SecuritySafeCritical] remove => m_statusChanged -= value;
+    }
+
+    #endregion
+
+    #region IDisposable
+
+    [SecuritySafeCritical]
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    [SecuritySafeCritical]
+    ~GeoCoordinateWatcher()
+    {
+        Dispose(false);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!m_disposed)
+        {
+            if (disposing)
+                if (m_watcher != null)
                 {
-                    if (m_watcher != null)
-                    {
-                        m_watcher.Dispose();
-                        m_watcher = null;
-                    }
+                    m_watcher.Dispose();
+                    m_watcher = null;
                 }
 
-                m_disposed = true;
-            }
-        }
-
-        #endregion
-
-        private void DisposeCheck()
-        {
-            if (m_disposed)
-            {
-                throw new ObjectDisposedException("GeoCoordinateWatcher");
-            }
-        }
-
-        /// <summary>Represents a callback to a protected virtual method that raises an event.</summary>
-        /// <typeparam name="T">The <see cref="T:System.EventArgs"/> type identifying the type of object that gets raised with the event"/></typeparam>
-        /// <param name="e">The <see cref="T:System.EventArgs"/> object that should be passed to a protected virtual method that raises the event.</param>
-        private delegate void EventRaiser<T>(T e) where T : EventArgs;
-
-        /// <summary>A helper method used by derived types that asynchronously raises an event on the application's desired thread.</summary>
-        /// <typeparam name="T">The <see cref="T:System.EventArgs"/> type identifying the type of object that gets raised with the event"/></typeparam>
-        /// <param name="callback">The protected virtual method that will raise the event.</param>
-        /// <param name="e">The <see cref="T:System.EventArgs"/> object that should be passed to the protected virtual method raising the event.</param>
-        private void PostEvent<T>(EventRaiser<T> callback, T e) where T : EventArgs 
-        {
-            Debug.Assert(m_synchronizationContext != null);
-            m_synchronizationContext.Post(delegate(Object state) { callback((T)state); }, e);
+            m_disposed = true;
         }
     }
 
-    /// <summary>
-    /// Provide Location data corresponding to the most recent location change data
-    /// </summary>
-    public class GeoPositionChangedEventArgs<T> : EventArgs
+    #endregion
+
+    private void DisposeCheck()
     {
-        public GeoPositionChangedEventArgs(GeoPosition<T> position)
-        {
-            Position = position;
-        }
-
-        public GeoPosition<T> Position { get; private set; }
+        if (m_disposed) throw new ObjectDisposedException("GeoCoordinateWatcher");
     }
 
-    /// <summary>
-    /// Provide Status corresponding to the most recent location change status
-    /// </summary>
-    public class GeoPositionStatusChangedEventArgs : EventArgs
+    /// <summary>Represents a callback to a protected virtual method that raises an event.</summary>
+    /// <typeparam name="T">The <see cref="T:System.EventArgs"/> type identifying the type of object that gets raised with the event"/></typeparam>
+    /// <param name="e">The <see cref="T:System.EventArgs"/> object that should be passed to a protected virtual method that raises the event.</param>
+    private delegate void EventRaiser<T>(T e) where T : EventArgs;
+
+    /// <summary>A helper method used by derived types that asynchronously raises an event on the application's desired thread.</summary>
+    /// <typeparam name="T">The <see cref="T:System.EventArgs"/> type identifying the type of object that gets raised with the event"/></typeparam>
+    /// <param name="callback">The protected virtual method that will raise the event.</param>
+    /// <param name="e">The <see cref="T:System.EventArgs"/> object that should be passed to the protected virtual method raising the event.</param>
+    private void PostEvent<T>(EventRaiser<T> callback, T e) where T : EventArgs
     {
-        public GeoPositionStatusChangedEventArgs(GeoPositionStatus status)
-        {
-            Status = status;
-        }
-
-        public GeoPositionStatus Status { get; private set; }
+        Debug.Assert(m_synchronizationContext != null);
+        m_synchronizationContext.Post(delegate(object state) { callback((T)state); }, e);
     }
+}
 
-    /// <summary>
-    /// Provide Permission corresponding to the most recent location permission change status
-    /// </summary>
-    internal class GeoPermissionChangedEventArgs : EventArgs
+/// <summary>
+/// Provide Location data corresponding to the most recent location change data
+/// </summary>
+public class GeoPositionChangedEventArgs<T> : EventArgs
+{
+    public GeoPositionChangedEventArgs(GeoPosition<T> position)
     {
-        public GeoPermissionChangedEventArgs(GeoPositionPermission permission)
-        {
-            Permission = permission;
-        }
-
-        public GeoPositionPermission Permission { get; private set; }
+        Position = position;
     }
+
+    public GeoPosition<T> Position { get; private set; }
+}
+
+/// <summary>
+/// Provide Status corresponding to the most recent location change status
+/// </summary>
+public class GeoPositionStatusChangedEventArgs : EventArgs
+{
+    public GeoPositionStatusChangedEventArgs(GeoPositionStatus status)
+    {
+        Status = status;
+    }
+
+    public GeoPositionStatus Status { get; private set; }
+}
+
+/// <summary>
+/// Provide Permission corresponding to the most recent location permission change status
+/// </summary>
+internal class GeoPermissionChangedEventArgs : EventArgs
+{
+    public GeoPermissionChangedEventArgs(GeoPositionPermission permission)
+    {
+        Permission = permission;
+    }
+
+    public GeoPositionPermission Permission { get; private set; }
 }

@@ -31,15 +31,12 @@ public partial class ManagementSettingsPage
     private void ButtonJoinManagement_OnClick(object sender, RoutedEventArgs e)
     {
         var dialog = new JoinManagementDialog();
-        DialogHost.Show(dialog, SettingsPageBase.DialogHostIdentifier);
+        DialogHost.Show(dialog, DialogHostIdentifier);
     }
 
     private void ManagementSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (!ManagementService.IsManagementEnabled)
-        {
-            return;
-        }
+        if (!ManagementService.IsManagementEnabled) return;
 
         var qrcode = QrCode.EncodeText(ManagementService.Persist.ClientUniqueId.ToString(), QrCode.Ecc.Medium);
         ViewModel.CuidQrCodePath = Geometry.Parse(qrcode.ToGraphicsPath());

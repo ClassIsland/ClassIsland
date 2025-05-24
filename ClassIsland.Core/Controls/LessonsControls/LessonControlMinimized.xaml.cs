@@ -28,11 +28,12 @@ public partial class LessonControlMinimized : LessonControlBase
     }
 
     public static readonly DependencyProperty DefaultLessonControlSettingsProperty = DependencyProperty.Register(
-        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlMinimized), new PropertyMetadata(default(ILessonControlSettings)));
+        nameof(DefaultLessonControlSettings), typeof(ILessonControlSettings), typeof(LessonControlMinimized),
+        new PropertyMetadata(default(ILessonControlSettings)));
 
     public ILessonControlSettings DefaultLessonControlSettings
     {
-        get { return (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty); }
-        set { SetValue(DefaultLessonControlSettingsProperty, value); }
+        get => (ILessonControlSettings)GetValue(DefaultLessonControlSettingsProperty);
+        set => SetValue(DefaultLessonControlSettingsProperty, value);
     }
 }

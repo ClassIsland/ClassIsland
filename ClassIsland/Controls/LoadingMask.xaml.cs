@@ -25,8 +25,8 @@ public partial class LoadingMask : UserControl
 
     public bool IsFakeLoading
     {
-        get { return (bool)GetValue(IsFakeLoadingProperty); }
-        set { SetValue(IsFakeLoadingProperty, value); }
+        get => (bool)GetValue(IsFakeLoadingProperty);
+        set => SetValue(IsFakeLoadingProperty, value);
     }
 
     public LoadingMask()
@@ -72,9 +72,9 @@ public partial class LoadingMask : UserControl
             {
                 EasingFunction = new SineEase()
             };
-            var stopSb = _fakeLoadingStoppingStoryboard = new Storyboard()
+            var stopSb = _fakeLoadingStoppingStoryboard = new Storyboard
             {
-                FillBehavior = FillBehavior.Stop,
+                FillBehavior = FillBehavior.Stop
             };
             Storyboard.SetTarget(daValue, MetroProgressBar);
             Storyboard.SetTargetProperty(daValue, new PropertyPath(RangeBase.ValueProperty));
@@ -87,10 +87,7 @@ public partial class LoadingMask : UserControl
                 stopSb.Remove();
                 MetroProgressBar.Opacity = 1;
                 MetroProgressBar.Value = 0;
-                if (!_isMainLoadingPlaying)
-                {
-                    IsFakeLoading = false;
-                }
+                if (!_isMainLoadingPlaying) IsFakeLoading = false;
             };
             stopSb.Begin();
         });
@@ -105,10 +102,7 @@ public partial class LoadingMask : UserControl
             (ThemeService.CurrentRealThemeMode == 0
                 ? ThemeService.CurrentTheme?.PrimaryDark.Color
                 : ThemeService.CurrentTheme?.PrimaryLight.Color) ?? Colors.DodgerBlue;
-        Dispatcher.Invoke(() =>
-        {
-            MetroProgressBar.Foreground = new SolidColorBrush(primary);
-        });
+        Dispatcher.Invoke(() => { MetroProgressBar.Foreground = new SolidColorBrush(primary); });
     }
 
     private void ThemeServiceOnThemeUpdated(object? sender, ThemeUpdatedEventArgs e)

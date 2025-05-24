@@ -10,14 +10,11 @@ public class GuidToNotificationProviderConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value == null)
-        {
-            return null;
-        }
+        if (value == null) return null;
         var id = (string)value;
         var l = (from i in App.GetService<INotificationHostService>().NotificationProviders
-            where i.ProviderGuid.ToString() == id
-            select i)
+                where i.ProviderGuid.ToString() == id
+                select i)
             .ToList();
         return l.FirstOrDefault();
     }

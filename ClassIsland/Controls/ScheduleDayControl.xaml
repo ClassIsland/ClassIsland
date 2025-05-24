@@ -1,12 +1,12 @@
 ﻿<UserControl x:Class="ClassIsland.Controls.ScheduleDayControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ClassIsland.Controls"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:ci="http://classisland.tech/schemas/xaml/core"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              Loaded="ScheduleDayControl_OnLoaded"
              Unloaded="ScheduleDayControl_OnUnloaded">
@@ -19,27 +19,27 @@
           PreviewMouseUp="UIElement_OnPreviewMouseUp2"
           Background="Transparent">
         <Grid.Resources>
-            <CollectionViewSource x:Key="ClassPlanSource" 
+            <CollectionViewSource x:Key="ClassPlanSource"
                                   Source="{Binding ProfileService.Profile.ClassPlans}"
-                                  Filter="ClassPlanSource_OnFilter"/>
+                                  Filter="ClassPlanSource_OnFilter" />
         </Grid.Resources>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="36"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="36" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock 
+        <TextBlock
             Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
             IsHitTestVisible="False"
             Margin="4"
             TextTrimming="CharacterEllipsis"
-            Text="{Binding CurrentClassPlan.Name}"/>
+            Text="{Binding CurrentClassPlan.Name}" />
 
-        <StackPanel 
+        <StackPanel
             Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2"
             Orientation="Horizontal"
             Margin="2">
@@ -50,7 +50,7 @@
                             <DataTrigger Binding="{Binding HasOrderedSchedule, Mode=OneWay}" Value="True">
                                 <Setter Property="Badge">
                                     <Setter.Value>
-                                        <materialDesign:PackIcon Kind="Check"/>
+                                        <materialDesign:PackIcon Kind="Check" />
                                     </Setter.Value>
                                 </Setter>
                             </DataTrigger>
@@ -126,7 +126,7 @@
                                         HorizontalAlignment="Stretch">
                                         <CheckBox.Content>
                                             <TextBlock Text="{Binding Value.Name}"
-                                                       VerticalAlignment="Center"/>
+                                                       VerticalAlignment="Center" />
                                         </CheckBox.Content>
                                     </CheckBox>
                                 </DataTemplate>

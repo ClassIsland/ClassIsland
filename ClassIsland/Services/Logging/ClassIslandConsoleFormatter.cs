@@ -11,12 +11,15 @@ namespace ClassIsland.Services.Logging;
 
 public class ClassIslandConsoleFormatter() : ConsoleFormatter("classisland")
 {
-    public override void Write<TState>(in LogEntry<TState> logEntry, IExternalScopeProvider? scopeProvider, TextWriter textWriter)
+    public override void Write<TState>(in LogEntry<TState> logEntry, IExternalScopeProvider? scopeProvider,
+        TextWriter textWriter)
     {
         var separator = " | ".Pastel(ConsoleColor.Gray);
         var scopeSeparator = " => ".Pastel(ConsoleColor.Gray);
         var now = DateTimeOffset.Now.ToString("yyyy/MM/dd HH:mm:ss").Pastel(ConsoleColor.DarkGray);
-        var message = logEntry.Formatter(logEntry.State, logEntry.Exception) + (logEntry.Exception != null ? "\n" + logEntry.Exception.ToString().Pastel("#cccccc") : "");
+        var message = logEntry.Formatter(logEntry.State, logEntry.Exception) + (logEntry.Exception != null
+            ? "\n" + logEntry.Exception.ToString().Pastel("#cccccc")
+            : "");
         message = LogMaskingHelper.MaskLog(message, "***".Pastel(ConsoleColor.DarkGray).PastelBg(ConsoleColor.Gray));
         textWriter.Write(now);
         textWriter.Write(separator);
@@ -31,7 +34,6 @@ public class ClassIslandConsoleFormatter() : ConsoleFormatter("classisland")
         }, textWriter);
         textWriter.Write(message);
         textWriter.Write(Environment.NewLine);
-
     }
 
     private static string GetLogLevelString(LogLevel logLevel)

@@ -1,6 +1,5 @@
 ﻿using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.NotificationProviderSettings;

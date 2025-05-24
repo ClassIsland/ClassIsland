@@ -42,7 +42,8 @@ public class ComponentsService : ObservableRecipient, IComponentsService
     };
 
     private string SelectedConfigFullPath =>
-        Path.GetFullPath(Path.Combine(ComponentSettingsPath, SettingsService.Settings.CurrentComponentConfig + ".json"));
+        Path.GetFullPath(Path.Combine(ComponentSettingsPath,
+            SettingsService.Settings.CurrentComponentConfig + ".json"));
 
     private string CurrentConfigFullPath =>
         Path.GetFullPath(Path.Combine(ComponentSettingsPath, CurrentConfigName + ".json"));
@@ -53,17 +54,15 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     private string CurrentConfigName { get; set; } = "Default";
 
-    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger, IManagementService managementService)
+    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger,
+        IManagementService managementService)
     {
         SettingsService = settingsService;
         Logger = logger;
         ManagementService = managementService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
 
-        if (!Directory.Exists(ComponentSettingsPath))
-        {
-            Directory.CreateDirectory(ComponentSettingsPath);
-        }
+        if (!Directory.Exists(ComponentSettingsPath)) Directory.CreateDirectory(ComponentSettingsPath);
 
         RefreshConfigs();
         LoadConfig();
@@ -80,19 +79,14 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     public async Task LoadManagementConfig()
     {
-        if (!ManagementService.IsManagementEnabled || ManagementService.Connection == null)
-        {
-            return;
-        }
-        
+        if (!ManagementService.IsManagementEnabled || ManagementService.Connection == null) return;
+
         IsManagementMode = true;
         try
         {
             if (!ManagementService.Manifest.ComponentsSource.IsNewerAndNotNull(ManagementService.Versions
                     .ComponentsVersion))
-            {
                 return;
-            }
             CurrentComponents = await ManagementService.Connection
                 .SaveJsonAsync<ComponentSettingsList>(ManagementService.Manifest.ComponentsSource.Value!,
                     Management.ManagementService.ManagementComponentsPath);
@@ -105,8 +99,8 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                 ConfigureFileHelper.LoadConfig<ComponentSettingsList>(Management.ManagementService
                     .ManagementComponentsPath);
         }
+
         LoadConfig();
-    
     }
 
     private void LoadConfig()
@@ -123,9 +117,10 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                 CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentSettingsList>(SelectedConfigFullPath);
             }
         }
-        
+
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
-        CurrentComponents.CollectionChanged += (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
+        CurrentComponents.CollectionChanged +=
+            (s, e) => ConfigureFileHelper.SaveConfig(CurrentConfigFullPath, CurrentComponents);
 
         var migrated = false;
         foreach (var i in CurrentComponents)
@@ -136,7 +131,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                     LoadComponentSettings(i, i.AssociatedComponentInfo.ComponentType.BaseType!);
                 continue;
             }
-            
+
             Logger.LogInformation("迁移组件 {} -> {}", i.Id, targetGuid);
             i.IsMigrated = true;
             i.MigrationSource = new Guid(i.Id);
@@ -144,10 +139,7 @@ public class ComponentsService : ObservableRecipient, IComponentsService
             migrated = true;
         }
 
-        if (migrated)
-        {
-            SaveConfig();
-        }
+        if (migrated) SaveConfig();
     }
 
     public void SaveConfig()
@@ -168,7 +160,8 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     public void RefreshConfigs()
     {
-        ComponentConfigs = Directory.GetFiles(ComponentSettingsPath, "*.json").Select(Path.GetFileNameWithoutExtension).SkipWhile(x => x is null).ToList()!;
+        ComponentConfigs = Directory.GetFiles(ComponentSettingsPath, "*.json").Select(Path.GetFileNameWithoutExtension)
+            .SkipWhile(x => x is null).ToList()!;
     }
 
     public bool IsManagementMode { get; set; } = false;
@@ -194,7 +187,9 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         transaction.SetTag("component.Id", settings.AssociatedComponentInfo.Guid.ToString());
         try
         {
-            var type = isSettings ? settings.AssociatedComponentInfo.SettingsType : settings.AssociatedComponentInfo.ComponentType;
+            var type = isSettings
+                ? settings.AssociatedComponentInfo.SettingsType
+                : settings.AssociatedComponentInfo.ComponentType;
             if (type == null)
             {
                 transaction.Finish(SpanStatus.NotFound);
@@ -220,20 +215,23 @@ public class ComponentsService : ObservableRecipient, IComponentsService
                     settings.Settings = componentSettings;
                     component.SettingsInternal = componentSettings;
                 }
+
                 component.OnMigrated(settings.MigrationSource, settings.Settings);
-            } 
+            }
+
             if (baseType?.GetGenericArguments().Length > 0 && !migrated)
             {
                 var componentSettings = LoadComponentSettings(settings, baseType);
 
                 component.SettingsInternal = componentSettings;
             }
+
             transaction.Finish(SpanStatus.Ok);
             sb.Stop();
             if (sb.Elapsed >= TimeSpan.FromMilliseconds(500))
-            {
-                Logger.LogWarning("组件 {}/{} ({}) 初始化消耗了太长时间，耗时为 {}ms", settings.Id, isSettings ? "settings" : "component", settings.AssociatedComponentInfo.Name, sb.ElapsedMilliseconds);
-            }
+                Logger.LogWarning("组件 {}/{} ({}) 初始化消耗了太长时间，耗时为 {}ms", settings.Id,
+                    isSettings ? "settings" : "component", settings.AssociatedComponentInfo.Name,
+                    sb.ElapsedMilliseconds);
             return component;
         }
         catch (Exception ex)
@@ -246,15 +244,9 @@ public class ComponentsService : ObservableRecipient, IComponentsService
     internal static object? LoadComponentSettings(ComponentSettings settings, Type baseType)
     {
         var settingsType = baseType.GetGenericArguments().FirstOrDefault();
-        if (settingsType == null)
-        {
-            return null;
-        }
+        if (settingsType == null) return null;
         var componentSettings = settings.Settings ?? Activator.CreateInstance(settingsType);
-        if (componentSettings is JsonElement json)
-        {
-            componentSettings = json.Deserialize(settingsType);
-        }
+        if (componentSettings is JsonElement json) componentSettings = json.Deserialize(settingsType);
         settings.Settings = componentSettings;
         return componentSettings;
     }

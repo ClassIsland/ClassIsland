@@ -7,11 +7,7 @@ namespace ClassIsland.Core.Converters;
 
 public class SubjectsDictionaryValueAccessConverter : IValueConverter
 {
-    public ObservableDictionary<string, Subject> SourceDictionary
-    {
-        get;
-        set;
-    } = new();
+    public ObservableDictionary<string, Subject> SourceDictionary { get; set; } = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
@@ -26,5 +22,8 @@ public class SubjectsDictionaryValueAccessConverter : IValueConverter
         }
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        return null;
+    }
 }

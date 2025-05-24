@@ -8,11 +8,15 @@ namespace ClassIsland;
 public class RegistryNotifier
 {
     [DllImport("advapi32.dll", EntryPoint = "RegNotifyChangeKeyValue")]
-    private static extern int RegNotifyChangeKeyValue(IntPtr hKey, bool bWatchSubtree, int dwNotifyFilter, int hEvent, bool fAsynchronus);
+    private static extern int RegNotifyChangeKeyValue(IntPtr hKey, bool bWatchSubtree, int dwNotifyFilter, int hEvent,
+        bool fAsynchronus);
+
     [DllImport("advapi32.dll", EntryPoint = "RegOpenKey")]
     private static extern int RegOpenKey(uint hKey, string lpSubKey, ref IntPtr phkResult);
+
     [DllImport("advapi32.dll", EntryPoint = "RegCloseKey")]
     private static extern int RegCloseKey(IntPtr hKey);
+
     public static uint HKEY_CLASSES_ROOT = 0x80000000;
     public static uint HKEY_CURRENT_USER = 0x80000001;
     public static uint HKEY_LOCAL_MACHINE = 0x80000002;
@@ -24,6 +28,7 @@ public class RegistryNotifier
     private static int REG_NOTIFY_CHANGE_ATTRIBUTES = 0x2;
     private static int REG_NOTIFY_CHANGE_LAST_SET = 0x4;
     private static int REG_NOTIFY_CHANGE_SECURITY = 0x8;
+
     /// <summary>
     /// 打开的注册表句柄
     /// </summary>
@@ -35,10 +40,7 @@ public class RegistryNotifier
     public event RegistryKeyUpdatedHandler? RegistryKeyUpdated;
     private bool _isWorking = false;
 
-    private Task UpdatingTask
-    {
-        get;
-    }
+    private Task UpdatingTask { get; }
 
     private async void UpdateMain()
     {

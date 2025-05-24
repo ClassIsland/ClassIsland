@@ -24,7 +24,8 @@ namespace ClassIsland.Views.SettingPages;
 /// <summary>
 /// AboutSettingsPage.xaml 的交互逻辑
 /// </summary>
-[SettingsPageInfo("about", "关于 ClassIsland", PackIconKind.InfoCircleOutline, PackIconKind.InfoCircle, SettingsPageCategory.About)]
+[SettingsPageInfo("about", "关于 ClassIsland", PackIconKind.InfoCircleOutline, PackIconKind.InfoCircle,
+    SettingsPageCategory.About)]
 public partial class AboutSettingsPage : SettingsPageBase
 {
     public AboutSettingsViewModel ViewModel { get; } = new();
@@ -35,14 +36,16 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     public DiagnosticService DiagnosticService { get; }
 
-    public AboutSettingsPage(IManagementService managementService, SettingsService settingsService, DiagnosticService diagnosticService)
+    public AboutSettingsPage(IManagementService managementService, SettingsService settingsService,
+        DiagnosticService diagnosticService)
     {
         DataContext = this;
         ManagementService = managementService;
         SettingsService = settingsService;
         DiagnosticService = diagnosticService;
         InitializeComponent();
-        var r = new StreamReader(Application.GetResourceStream(new Uri("/Assets/LICENSE.txt", UriKind.Relative))!.Stream);
+        var r = new StreamReader(
+            Application.GetResourceStream(new Uri("/Assets/LICENSE.txt", UriKind.Relative))!.Stream);
         ViewModel.License = r.ReadToEnd();
     }
 
@@ -77,7 +80,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private void ButtonGithub_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        Process.Start(new ProcessStartInfo
         {
             FileName = "https://github.com/HelloWRC/ClassIsland",
             UseShellExecute = true
@@ -86,7 +89,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private void ButtonFeedback_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        Process.Start(new ProcessStartInfo
         {
             FileName = "https://github.com/HelloWRC/ClassIsland/issues",
             UseShellExecute = true
@@ -95,7 +98,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private void Hyperlink2_OnClick(object sender, RoutedEventArgs e)
     {
-        Process.Start(new ProcessStartInfo()
+        Process.Start(new ProcessStartInfo
         {
             FileName = "https://github.com/DuguSand/class_form",
             UseShellExecute = true
@@ -116,13 +119,10 @@ public partial class AboutSettingsPage : SettingsPageBase
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.RoutedEvent = MouseWheelEvent;
             eventArg.Source = sender;
             var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null)
-            {
-                parent.RaiseEvent(eventArg);
-            }
+            if (parent != null) parent.RaiseEvent(eventArg);
         }
     }
 
@@ -150,6 +150,7 @@ public partial class AboutSettingsPage : SettingsPageBase
         {
             App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "无法获取贡献者名单。");
         }
+
         ViewModel.IsRefreshingContributors = false;
     }
 
@@ -160,7 +161,7 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
     {
-        new DocumentReaderWindow()
+        new DocumentReaderWindow
         {
             Source = new Uri("/Assets/Documents/Privacy_.md", UriKind.RelativeOrAbsolute),
             Owner = Window.GetWindow(this),
@@ -170,18 +171,12 @@ public partial class AboutSettingsPage : SettingsPageBase
 
     private async void Sayings_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (ViewModel.IsSayingBusy)
-        {
-            return;
-        }
+        if (ViewModel.IsSayingBusy) return;
 
         if (ViewModel.SayingsCollection.Count <= 0)
         {
             var stream = Application.GetResourceStream(new Uri("/Assets/Tellings.txt", UriKind.Relative))?.Stream;
-            if (stream == null)
-            {
-                return;
-            }
+            if (stream == null) return;
 
             var sayings = await new StreamReader(stream).ReadToEndAsync();
             var collection = new ObservableCollection<string>(sayings.Split("\r\n"));
@@ -193,12 +188,14 @@ public partial class AboutSettingsPage : SettingsPageBase
                 collection.RemoveAt(randomIndex);
             }
         }
+
         //Console.WriteLine(ViewModel.SayingsCollection.Count);
         if (ViewModel.SayingsCollection.Count > 0)
         {
             ViewModel.Sayings = ViewModel.SayingsCollection[0];
             ViewModel.SayingsCollection.RemoveAt(0);
         }
+
         SentrySdk.Metrics.Increment("views.settings.about.sayings.click");
     }
 
@@ -206,8 +203,6 @@ public partial class AboutSettingsPage : SettingsPageBase
     {
         ViewModel.AppIconClickCount++;
         if (ViewModel.AppIconClickCount >= 20 && !ManagementService.Policy.DisableEasterEggs)
-        {
             Clipboard.SetDataObject("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC", false);
-        }
     }
 }

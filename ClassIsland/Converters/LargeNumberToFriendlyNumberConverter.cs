@@ -8,10 +8,7 @@ public class LargeNumberToFriendlyNumberConverter : IValueConverter
 {
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        if (value is not long number)
-        {
-            return "";
-        }
+        if (value is not long number) return "";
 
         return number switch
         {

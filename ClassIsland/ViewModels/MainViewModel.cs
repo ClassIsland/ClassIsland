@@ -5,7 +5,6 @@ using ClassIsland.Core.Models.Notification;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.Services;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;

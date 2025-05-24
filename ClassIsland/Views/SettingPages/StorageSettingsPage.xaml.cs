@@ -27,7 +27,8 @@ public partial class StorageSettingsPage
     public ILogger<StorageSettingsPage> Logger { get; }
     public IManagementService ManagementService { get; }
 
-    public StorageSettingsPage(FileFolderService fileFolderService, SettingsService settingsService, ILogger<StorageSettingsPage> logger, IManagementService managementService)
+    public StorageSettingsPage(FileFolderService fileFolderService, SettingsService settingsService,
+        ILogger<StorageSettingsPage> logger, IManagementService managementService)
     {
         FileFolderService = fileFolderService;
         SettingsService = settingsService;
@@ -51,6 +52,7 @@ public partial class StorageSettingsPage
             Logger.LogError(exception, "无法创建备份。");
             CommonDialog.ShowError($"无法创建备份：{exception.Message}");
         }
+
         ViewModel.IsBackingUp = false;
     }
 
@@ -58,9 +60,9 @@ public partial class StorageSettingsPage
     {
         try
         {
-            Process.Start(new ProcessStartInfo()
+            Process.Start(new ProcessStartInfo
             {
-                FileName = System.IO.Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Backups")),
+                FileName = Path.GetFullPath(Path.Combine(App.AppRootFolderPath, "Backups")),
                 UseShellExecute = true
             });
         }
@@ -74,9 +76,7 @@ public partial class StorageSettingsPage
     private async void ButtonRecoverBackup_OnClick(object sender, RoutedEventArgs e)
     {
         if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
-        {
             return;
-        }
         AppBase.Current.Restart(["-m", "-r"]);
     }
 }

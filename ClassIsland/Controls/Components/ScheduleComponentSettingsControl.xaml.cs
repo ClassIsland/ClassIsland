@@ -25,10 +25,7 @@ public partial class ScheduleComponentSettingsControl
     private async void ButtonImportLegacySettings_OnClick(object sender, RoutedEventArgs e)
     {
         var r = await this.ShowDialog(FindResource("MigrateConfirm")) as bool? ?? false;
-        if (!r)
-        {
-            return;
-        }
+        if (!r) return;
         var settings = SettingsService.Settings;
         Settings.CountdownSeconds = settings.CountdownSeconds;
         Settings.ExtraInfoType = settings.ExtraInfoType;
@@ -38,6 +35,8 @@ public partial class ScheduleComponentSettingsControl
 
     private void ButtonShowAttachedSettings_OnClick(object sender, RoutedEventArgs e)
     {
-        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(IAttachedSettingsHostService.RegisteredControls.First(x => x.Guid == new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"))));
+        SettingsPageBase.OpenDrawerCommand.Execute(new RootAttachedSettingsDependencyControl(
+            IAttachedSettingsHostService.RegisteredControls.First(x =>
+                x.Guid == new Guid("58e5b69a-764a-472b-bcf7-003b6a8c7fdf"))));
     }
 }

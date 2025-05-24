@@ -1,9 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:ClassIsland.Controls"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:behaviors="clr-namespace:ClassIsland.Behaviors"
-                    xmlns:ci="http://classisland.tech/schemas/xaml/core">
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
             Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
@@ -13,12 +11,12 @@
     <materialDesign:CalendarYearMonthConverter x:Key="CalendarYearMonthConverter" />
     <Style TargetType="CalendarDayButton" BasedOn="{StaticResource MaterialDesignCalendarDayButton}"
            x:Key="ScheduleCalendarDayButtonStyle">
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="Width" Value="NaN"/>
-        <Setter Property="Height" Value="NaN"/>
-        <Setter Property="Margin" Value="0"/>
-        <Setter Property="ClickMode" Value="Press"/>
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Width" Value="NaN" />
+        <Setter Property="Height" Value="NaN" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="ClickMode" Value="Press" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type CalendarDayButton}">
@@ -27,8 +25,8 @@
                     <Grid VerticalAlignment="Stretch"
                           HorizontalAlignment="Stretch">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
@@ -138,7 +136,7 @@
                                 Grid.Row="0" Grid.RowSpan="2"
                                 BorderBrush="{DynamicResource MaterialDesignDivider}"
                                 BorderThickness="1 1 0 0 " />
-                        
+
                         <Grid VerticalAlignment="Top" HorizontalAlignment="Right"
                               Grid.Row="0"
                               Width="28" Height="28"
@@ -151,7 +149,7 @@
                             <Ellipse x:Name="SelectedBackground"
                                      Fill="{TemplateBinding materialDesign:CalendarAssist.SelectionColor}"
                                      Opacity="0" />
-                            
+
                             <Border x:Name="HighlightingBorder" Opacity="0">
                                 <Ellipse x:Name="HighlightBackground"
                                          Fill="{TemplateBinding materialDesign:CalendarAssist.SelectionColor}"
@@ -169,7 +167,7 @@
                                      Visibility="Collapsed" />
                         </Grid>
                         <controls:ScheduleDayControl Date="{Binding  Mode=OneWay}"
-                                                     Grid.Row="0" Grid.RowSpan="2"/>
+                                                     Grid.Row="0" Grid.RowSpan="2" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="False">
@@ -291,7 +289,8 @@
                                                 <VisualState x:Name="Disabled" />
                                             </VisualStateGroup>
                                         </VisualStateManager.VisualStateGroups>
-                                        <TextBlock Text="{Binding DisplayDate, RelativeSource={RelativeSource FindAncestor, AncestorType=Calendar}, StringFormat={}{0:yyyy年 MM月}}"/>
+                                        <TextBlock
+                                            Text="{Binding DisplayDate, RelativeSource={RelativeSource FindAncestor, AncestorType=Calendar}, StringFormat={}{0:yyyy年 MM月}}" />
                                     </Grid>
                                 </ControlTemplate>
                             </Grid.Resources>
@@ -308,7 +307,6 @@
                             </Grid.RowDefinitions>
                             <Button x:Name="PART_HeaderButton"
                                     Grid.Row="1"
-                                    Grid.RowSpan="1"
                                     Grid.Column="0"
                                     Grid.ColumnSpan="4"
                                     Height="Auto"
@@ -319,8 +317,8 @@
                                     Focusable="False"
                                     FontWeight="Medium"
                                     Foreground="{DynamicResource MaterialDesignBody}"
-                                    Template="{StaticResource HeaderButtonTemplate}"/>
-                            
+                                    Template="{StaticResource HeaderButtonTemplate}" />
+
                             <Button x:Name="PART_PreviousButton"
                                     Grid.Row="1"
                                     Grid.Column="2"
@@ -447,13 +445,9 @@
                             <Setter TargetName="MonthViewWrapperGrid" Property="Visibility" Value="Hidden" />
                             <Setter TargetName="YearViewWrapperGrid" Property="Visibility" Value="Visible" />
                         </DataTrigger>
-                        
-                        <EventTrigger RoutedEvent="Button.Click" SourceName="PART_NextButton">
-                            
-                        </EventTrigger>
-                        <EventTrigger RoutedEvent="Button.Click" SourceName="PART_PreviousButton">
-                            
-                        </EventTrigger>
+
+                        <EventTrigger RoutedEvent="Button.Click" SourceName="PART_NextButton" />
+                        <EventTrigger RoutedEvent="Button.Click" SourceName="PART_PreviousButton" />
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

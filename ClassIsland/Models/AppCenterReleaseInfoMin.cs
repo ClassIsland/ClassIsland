@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;

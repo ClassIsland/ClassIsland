@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ClassIsland.Models.Actions;
 
 public class AppRestartActionSettings : ObservableRecipient
 {
-    bool _value = false;
+    private bool _value = false;
+
     public bool Value
     {
         get => _value;

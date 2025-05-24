@@ -16,7 +16,8 @@ namespace ClassIsland.Services;
 
 using AttachableObjectNodeDictionary = ObservableDictionary<AttachableObjectAddress, AttachableObjectNode>;
 
-public class ProfileAnalyzeService(IProfileService profileService, ILogger<ProfileAnalyzeService> logger) : ObservableRecipient, IProfileAnalyzeService
+public class ProfileAnalyzeService(IProfileService profileService, ILogger<ProfileAnalyzeService> logger)
+    : ObservableRecipient, IProfileAnalyzeService
 {
     public IProfileService ProfileService { get; } = profileService;
     public ILogger<ProfileAnalyzeService> Logger { get; } = logger;
@@ -34,17 +35,17 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         {
             var keyClassPlan = new AttachableObjectAddress(i.Key);
             var nodeClassPlan = Nodes.GetOrCreateDefault(keyClassPlan,
-                new AttachableObjectNode()
-            {
-                Object = i.Value,
-                Target = AttachedSettingsTargets.ClassPlan,
-                Address = keyClassPlan
-            });
+                new AttachableObjectNode
+                {
+                    Object = i.Value,
+                    Target = AttachedSettingsTargets.ClassPlan,
+                    Address = keyClassPlan
+                });
 
 
             var keyTimeLayout = new AttachableObjectAddress(i.Value.TimeLayoutId);
             var nodeTimeLayout = Nodes.GetOrCreateDefault(keyTimeLayout
-                , new AttachableObjectNode()
+                , new AttachableObjectNode
                 {
                     Object = i.Value.TimeLayout,
                     Target = AttachedSettingsTargets.TimeLayout,
@@ -54,16 +55,13 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
             nodeTimeLayout.NextNodes.TryAdd(keyClassPlan, nodeClassPlan);
 
             // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            if (i.Value.TimeLayout == null)
-            {
-                continue;
-            }
+            if (i.Value.TimeLayout == null) continue;
 
             foreach (var p in i.Value.TimeLayout.Layouts)
             {
                 var keyTimePoint = new AttachableObjectAddress(i.Value.TimeLayoutId,
                     i.Value.TimeLayout.Layouts.IndexOf(p));
-                var nodeTimePoint = Nodes.GetOrCreateDefault(keyTimePoint, new AttachableObjectNode()
+                var nodeTimePoint = Nodes.GetOrCreateDefault(keyTimePoint, new AttachableObjectNode
                 {
                     Object = p,
                     Target = AttachedSettingsTargets.TimePoint,
@@ -80,7 +78,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
             foreach (var j in i.Value.Classes)
             {
                 var keyClassInfo = new AttachableObjectAddress(i.Key, j.Index);
-                var nodeClassInfo = new AttachableObjectNode()
+                var nodeClassInfo = new AttachableObjectNode
                 {
                     Object = j,
                     Target = AttachedSettingsTargets.Lesson,
@@ -89,7 +87,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
                 var keyTimePoint = new AttachableObjectAddress(i.Value.TimeLayoutId,
                     j.CurrentTimeLayout.Layouts.IndexOf(j.CurrentTimeLayoutItem));
-                var nodeTimePoint = Nodes.GetOrCreateDefault(keyTimePoint, new AttachableObjectNode()
+                var nodeTimePoint = Nodes.GetOrCreateDefault(keyTimePoint, new AttachableObjectNode
                 {
                     Object = j.CurrentTimeLayoutItem,
                     Target = AttachedSettingsTargets.TimePoint,
@@ -110,12 +108,9 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
 
                 nodeTimeLayout.RelatedLessons.TryAdd(keyClassInfo, nodeClassInfo);
 
-                if (!profile.Subjects.TryGetValue(j.SubjectId, out var subject))
-                {
-                    continue;
-                }
+                if (!profile.Subjects.TryGetValue(j.SubjectId, out var subject)) continue;
                 var keySubject = new AttachableObjectAddress(j.SubjectId);
-                var nodeSubject = Nodes.GetOrCreateDefault(keySubject, new AttachableObjectNode()
+                var nodeSubject = Nodes.GetOrCreateDefault(keySubject, new AttachableObjectNode
                 {
                     Object = subject,
                     Target = AttachedSettingsTargets.Subject,
@@ -131,6 +126,7 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
                 nodeSubject.RelatedLessons.TryAdd(keyClassInfo, nodeClassInfo);
             }
         }
+
         stopwatch.Stop();
         Logger.LogInformation("分析结束，发现了{}个节点，耗时{}ms", Nodes.Count, stopwatch.ElapsedMilliseconds);
     }
@@ -143,69 +139,58 @@ public class ProfileAnalyzeService(IProfileService profileService, ILogger<Profi
         {
             mermaid.AppendLine(
                 $"    n_{node.Key.Guid}_{node.Key.Index}[\"{node.Value.Target}_{node.Key.Guid}_{node.Key.Index}\"]");
-            
+
             foreach (var i in node.Value.NextNodes)
-            {
                 mermaid.AppendLine(
                     $"    n_{node.Key.Guid}_{node.Key.Index} --> n_{i.Key.Guid}_{i.Key.Index}");
-            }
         }
 
         return mermaid.ToString();
     }
 
-    public void Walk(AttachableObjectNode? node, ICollection<AttachableObjectNode> foundNodes, bool isUp, bool isInit=false)
+    public void Walk(AttachableObjectNode? node, ICollection<AttachableObjectNode> foundNodes, bool isUp,
+        bool isInit = false)
     {
-        if (node == null)
-        {
-            return;
-        }
-        if (!foundNodes.Contains(node) && !isInit)
-        {
-            foundNodes.Add(node);
-        }
-        if (node.Target == AttachedSettingsTargets.Subject && !isInit)
-        {
-            return;
-        }
+        if (node == null) return;
+        if (!foundNodes.Contains(node) && !isInit) foundNodes.Add(node);
+        if (node.Target == AttachedSettingsTargets.Subject && !isInit) return;
 
-        foreach (var i in isUp ? node.PreviousNodes : node.NextNodes)
-        {
-            Walk(i.Value, foundNodes, isUp);
-        }
+        foreach (var i in isUp ? node.PreviousNodes : node.NextNodes) Walk(i.Value, foundNodes, isUp);
     }
 
-    public List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, string id, bool requiresEnabled=true)
+    public List<AttachableObjectNode> FindNextObjects(AttachableObjectAddress address, string id,
+        bool requiresEnabled = true)
     {
         var results = new List<AttachableObjectNode>();
         Walk(Nodes[address], results, false, true);
 
-        return [.. results.Where(x =>
-            {
-                if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
+        return
+        [
+            .. results.Where(x =>
                 {
-                    return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
-                }
-                return false;
-            })
-            .OrderByDescending(x => x.Target)
+                    if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
+                        return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
+                    return false;
+                })
+                .OrderByDescending(x => x.Target)
         ];
     }
 
-    public List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id, bool requiresEnabled = true)
+    public List<AttachableObjectNode> FindPreviousObjects(AttachableObjectAddress address, string id,
+        bool requiresEnabled = true)
     {
         var results = new List<AttachableObjectNode>();
         Walk(Nodes[address], results, true, true);
 
-        return [.. results.Where(x =>
-            {
-                if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
+        return
+        [
+            .. results.Where(x =>
                 {
-                    return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
-                }
-                return false;
-            })
-            .OrderBy(x => x.Target)
+                    if (x.Object != null && x.Object.AttachedObjects.TryGetValue(id, out var obj))
+                        return IAttachedSettings.GetIsEnabled(obj) || !requiresEnabled;
+                    return false;
+                })
+                .OrderBy(x => x.Target)
         ];
     }
 }

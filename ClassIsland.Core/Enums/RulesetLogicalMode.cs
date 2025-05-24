@@ -9,8 +9,9 @@ public enum RulesetLogicalMode
     /// 任意条件满足。
     /// </summary>
     Or,
+
     /// <summary>
     /// 所有条件满足。
     /// </summary>
-    And,
+    And
 }

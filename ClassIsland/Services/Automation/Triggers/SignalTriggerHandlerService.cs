@@ -18,17 +18,11 @@ public class SignalTriggerHandlerService
     {
         actionService.RegisterActionHandler("classisland.broadcastSignal", (o, guid) =>
         {
-            if (o is SignalTriggerSettings settings)
-            {
-                EmitSignal(settings.SignalName, settings.IsRevert);
-            }
+            if (o is SignalTriggerSettings settings) EmitSignal(settings.SignalName, settings.IsRevert);
         });
         actionService.RegisterRevertHandler("classisland.broadcastSignal", (o, guid) =>
         {
-            if (o is SignalTriggerSettings settings)
-            {
-                EmitSignal(settings.SignalName, !settings.IsRevert);
-            }
+            if (o is SignalTriggerSettings settings) EmitSignal(settings.SignalName, !settings.IsRevert);
         });
     }
 }

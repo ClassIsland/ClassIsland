@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+
 namespace ClassIsland.Shared.Models.Action;
 
 /// <summary>
@@ -8,6 +9,7 @@ namespace ClassIsland.Shared.Models.Action;
 public class ActionSet : ObservableRecipient
 {
     private bool _isEnabled = true;
+
     /// <summary>
     /// 是否启用
     /// </summary>
@@ -23,6 +25,7 @@ public class ActionSet : ObservableRecipient
     }
 
     private string _name = "新行动";
+
     /// <summary>
     /// “名称”（自动化）/ “备注”（行动组）
     /// </summary>
@@ -38,6 +41,7 @@ public class ActionSet : ObservableRecipient
     }
 
     private string _guid = System.Guid.NewGuid().ToString();
+
     /// <summary>
     /// 行动组Guid，仅用于标识设置叠层。
     /// </summary>
@@ -53,6 +57,7 @@ public class ActionSet : ObservableRecipient
     }
 
     private bool _isOn = false;
+
     /// <summary>
     /// 行动组被触发后还未恢复。
     /// </summary>

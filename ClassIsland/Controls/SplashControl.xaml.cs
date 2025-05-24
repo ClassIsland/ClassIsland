@@ -24,8 +24,8 @@ public partial class SplashControl : UserControl
 
     public double CurrentProgress
     {
-        get { return (double)GetValue(CurrentProgressProperty); }
-        set { SetValue(CurrentProgressProperty, value); }
+        get => (double)GetValue(CurrentProgressProperty);
+        set => SetValue(CurrentProgressProperty, value);
     }
 
     public SplashControl()
@@ -37,36 +37,29 @@ public partial class SplashControl : UserControl
 
     private void SplashServiceOnSplashEnded(object? sender, EventArgs e)
     {
-        Dispatcher.InvokeAsync(() =>
-        {
-            UpdateProgress(100, 0.1, (_, _) =>
-            {
-                Window.GetWindow(this)?.Close();
-            });
-        });
+        Dispatcher.InvokeAsync(() => { UpdateProgress(100, 0.1, (_, _) => { Window.GetWindow(this)?.Close(); }); });
     }
 
     private void SplashServiceOnProgressChanged(object? sender, double e)
     {
         Dispatcher.InvokeAsync(() =>
         {
-            UpdateProgress(e, Math.Max((e - _lastProgress ) / 8, 0.5));
+            UpdateProgress(e, Math.Max((e - _lastProgress) / 8, 0.5));
             _lastProgressDelta = e - _lastProgress;
             _lastProgress = e;
         });
-        
     }
 
     private void UpdateProgress(double e, double seconds, EventHandler? callBack = null)
     {
-        var da = new DoubleAnimation()
+        var da = new DoubleAnimation
         {
             From = CurrentProgress,
             To = e,
             Duration = new Duration(TimeSpanHelper.FromSecondsSafe(seconds)),
             EasingFunction = new ExponentialEase()
         };
-        var storyboard = new Storyboard()
+        var storyboard = new Storyboard
         {
         };
         Storyboard.SetTarget(da, this);
@@ -85,6 +78,7 @@ public partial class SplashControl : UserControl
             BeginStoryboard((Storyboard)FindResource("Intro"));
             Console.WriteLine("splash control visible.");
         }
+
         base.OnPropertyChanged(e);
     }
 

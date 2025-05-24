@@ -2,6 +2,7 @@
 using ClassIsland.Core.Models.Action;
 using ClassIsland.Shared.Models.Action;
 using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace ClassIsland.Core.Models;
 
 /// <summary>
@@ -10,6 +11,7 @@ namespace ClassIsland.Core.Models;
 public class Workflow : ObservableRecipient
 {
     private Ruleset.Ruleset _ruleset = new();
+
     /// <summary>
     /// 规则集
     /// </summary>

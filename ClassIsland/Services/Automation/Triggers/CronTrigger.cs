@@ -29,16 +29,10 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
     {
         while (_stopCancellationTokenSource?.IsCancellationRequested == false)
         {
-            if (_crontab == null)
-            {
-                continue;
-            }
+            if (_crontab == null) continue;
 
             await Task.Delay(_crontab.GetSleepTimeSpan(DateTime.Now), _stopCancellationTokenSource.Token);
-            if (_stopCancellationTokenSource.IsCancellationRequested)
-            {
-                break;
-            }
+            if (_stopCancellationTokenSource.IsCancellationRequested) break;
 
             AppBase.Current.Dispatcher.Invoke(Trigger);
         }
@@ -51,10 +45,7 @@ public class CronTrigger : TriggerBase<CronTriggerSettings>
 
     private void LoadCron()
     {
-        if (_stopCancellationTokenSource?.IsCancellationRequested == false)
-        {
-            _stopCancellationTokenSource.Cancel();
-        }
+        if (_stopCancellationTokenSource?.IsCancellationRequested == false) _stopCancellationTokenSource.Cancel();
         _crontab = Crontab.TryParse(Settings.CronExpression);
         if (_crontab != null)
         {

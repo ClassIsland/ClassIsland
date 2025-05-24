@@ -1,7 +1,5 @@
+namespace ClassIsland.ExamplePlugin;
 
-namespace ClassIsland.ExamplePlugin
+public class Class1
 {
-    public class Class1
-    {
-    }
 }

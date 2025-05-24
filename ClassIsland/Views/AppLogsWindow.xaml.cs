@@ -9,7 +9,6 @@ using ClassIsland.Core.Controls;
 using ClassIsland.Core.Models.Logging;
 using ClassIsland.Services.Logging;
 using ClassIsland.ViewModels;
-
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Views;
@@ -42,10 +41,7 @@ public partial class AppLogsWindow : MyWindow
         }
         else
         {
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
+            if (WindowState == WindowState.Minimized) WindowState = WindowState.Normal;
 
             Activate();
         }
@@ -78,22 +74,19 @@ public partial class AppLogsWindow : MyWindow
 
     private void LogsSource_OnFilter(object sender, FilterEventArgs e)
     {
-        if (e.Item is not LogEntry i) 
+        if (e.Item is not LogEntry i)
             return;
-        bool c1 = (ViewModel.IsFilteredCritical && i.LogLevel == LogLevel.Critical) ||
-                  (ViewModel.IsFilteredError && i.LogLevel == LogLevel.Error) ||
-                  (ViewModel.IsFilteredWarning && i.LogLevel == LogLevel.Warning) ||
-                  (ViewModel.IsFilteredInfo && i.LogLevel == LogLevel.Information) ||
-                  (ViewModel.IsFilteredDebug && i.LogLevel == LogLevel.Debug) ||
-                  (ViewModel.IsFilteredTrace && i.LogLevel == LogLevel.Trace);
+        var c1 = (ViewModel.IsFilteredCritical && i.LogLevel == LogLevel.Critical) ||
+                 (ViewModel.IsFilteredError && i.LogLevel == LogLevel.Error) ||
+                 (ViewModel.IsFilteredWarning && i.LogLevel == LogLevel.Warning) ||
+                 (ViewModel.IsFilteredInfo && i.LogLevel == LogLevel.Information) ||
+                 (ViewModel.IsFilteredDebug && i.LogLevel == LogLevel.Debug) ||
+                 (ViewModel.IsFilteredTrace && i.LogLevel == LogLevel.Trace);
         if (string.IsNullOrWhiteSpace(ViewModel.FilterText))
-        {
             e.Accepted = c1;
-        }
         else
-        {
-            e.Accepted = c1 && (i.Message.Contains(ViewModel.FilterText, StringComparison.OrdinalIgnoreCase) || i.CategoryName.Contains(ViewModel.FilterText));
-        }
+            e.Accepted = c1 && (i.Message.Contains(ViewModel.FilterText, StringComparison.OrdinalIgnoreCase) ||
+                                i.CategoryName.Contains(ViewModel.FilterText));
     }
 
     private void TextBoxBase_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -103,15 +96,9 @@ public partial class AppLogsWindow : MyWindow
 
     private void RefreshView()
     {
-        if (FindResource("LogsSource") is CollectionViewSource a)
-        {
-            a.View?.Refresh();
-        }
+        if (FindResource("LogsSource") is CollectionViewSource a) a.View?.Refresh();
 
-        if (AppLogService.Logs.Count > 0)
-        {
-            MainListView.ScrollIntoView(AppLogService.Logs[^1]);
-        }
+        if (AppLogService.Logs.Count > 0) MainListView.ScrollIntoView(AppLogService.Logs[^1]);
     }
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

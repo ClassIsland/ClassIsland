@@ -16,7 +16,8 @@ public static class FilePathExtensions
     {
         path = DriveInfo.GetDrives()
             .Where(x => x.DriveType == DriveType.Fixed)
-            .Aggregate(path, (current, drive) => current.Replace(drive.Name, $"{drive.VolumeLabel} ({drive.Name[..^1]}) > "));
+            .Aggregate(path,
+                (current, drive) => current.Replace(drive.Name, $"{drive.VolumeLabel} ({drive.Name[..^1]}) > "));
         path = path.Replace(@"\", " > ").Replace("/", " > ");
         if (path.EndsWith(" > "))
             path = path[..^3];

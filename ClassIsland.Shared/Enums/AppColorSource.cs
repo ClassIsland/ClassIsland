@@ -9,10 +9,12 @@ public enum AppColorSource
     /// 自定义
     /// </summary>
     Custom,
+
     /// <summary>
     /// 系统壁纸
     /// </summary>
     Wallpaper,
+
     /// <summary>
     /// 系统主题色
     /// </summary>

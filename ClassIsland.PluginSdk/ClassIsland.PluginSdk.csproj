@@ -1,29 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net8.0-windows</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<Title>ClassIsland Plugin SDK</Title>
-		<Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Title>ClassIsland Plugin SDK</Title>
+        <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
+    </PropertyGroup>
 
-	<PropertyGroup>
-	  <PackageTags>classisland;plugin;addin;wpf;material design</PackageTags>
-	  <Description>用于开发应用 ClassIsland 插件的 SDK。</Description>
-	</PropertyGroup>
+    <PropertyGroup>
+        <PackageTags>classisland;plugin;addin;wpf;material design</PackageTags>
+        <Description>用于开发应用 ClassIsland 插件的 SDK。</Description>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" IncludeAssets="all" />
-	</ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" IncludeAssets="all"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<Folder Include="Properties\" />
-		<None Include="ClassIsland.PluginSdk.targets" Pack="True" PackagePath="build/net8.0" />
-		<None Include="generate-md5.ps1" Pack="True" PackagePath="build/net8.0" />
-	</ItemGroup>
-	
-	<Import Project="..\GeneratePackage.props" />
-	<Import Project="..\Global.props" />
-	<Import Project=".\ClassIsland.PluginSdk.targets" />
+    <ItemGroup>
+        <Folder Include="Properties\"/>
+        <None Include="ClassIsland.PluginSdk.targets" Pack="True" PackagePath="build/net8.0"/>
+        <None Include="generate-md5.ps1" Pack="True" PackagePath="build/net8.0"/>
+    </ItemGroup>
+
+    <Import Project="..\GeneratePackage.props"/>
+    <Import Project="..\Global.props"/>
+    <Import Project=".\ClassIsland.PluginSdk.targets"/>
 </Project>

@@ -12,8 +12,8 @@ public class SfSymbolIcon : Image
 
     public Geometry DrawingGeometry
     {
-        get { return (Geometry)GetValue(DrawingGeometryProperty); }
-        set { SetValue(DrawingGeometryProperty, value); }
+        get => (Geometry)GetValue(DrawingGeometryProperty);
+        set => SetValue(DrawingGeometryProperty, value);
     }
 
     public static readonly DependencyProperty DrawingClipGeometryProperty = DependencyProperty.Register(
@@ -21,24 +21,21 @@ public class SfSymbolIcon : Image
 
     public Geometry DrawingClipGeometry
     {
-        get { return (Geometry)GetValue(DrawingClipGeometryProperty); }
-        set { SetValue(DrawingClipGeometryProperty, value); }
+        get => (Geometry)GetValue(DrawingClipGeometryProperty);
+        set => SetValue(DrawingClipGeometryProperty, value);
     }
 
     public static readonly DependencyProperty KindProperty = DependencyProperty.Register(
         nameof(Kind), typeof(SfSymbolIconKind), typeof(SfSymbolIcon), new PropertyMetadata(default(SfSymbolIconKind),
             (o, args) =>
             {
-                if (o is SfSymbolIcon control)
-                {
-                    control.UpdateIcon();
-                }
+                if (o is SfSymbolIcon control) control.UpdateIcon();
             }));
 
     public SfSymbolIconKind Kind
     {
-        get { return (SfSymbolIconKind)GetValue(KindProperty); }
-        set { SetValue(KindProperty, value); }
+        get => (SfSymbolIconKind)GetValue(KindProperty);
+        set => SetValue(KindProperty, value);
     }
 
     private void UpdateIcon()

@@ -17,7 +17,6 @@ namespace ClassIsland.ViewModels;
 
 public partial class ExcelExportViewModel : ObservableObject
 {
-
     [ObservableProperty] private bool _canUndo = false;
 
     [ObservableProperty] private bool _canRedo = false;
@@ -26,13 +25,14 @@ public partial class ExcelExportViewModel : ObservableObject
 
     [ObservableProperty] private Cell? _selectedCell;
 
-    public List<string> FontFamilies { get; } = Fonts.SystemFontFamilies.Where(x => x.FamilyNames.Count > 0).Select(x => x.FamilyNames.FirstOrDefault().Value).ToList();
+    public List<string> FontFamilies { get; } = Fonts.SystemFontFamilies.Where(x => x.FamilyNames.Count > 0)
+        .Select(x => x.FamilyNames.FirstOrDefault().Value).ToList();
 
     [ObservableProperty] private Worksheet? _currentWorksheet;
 
     [ObservableProperty] private ReferenceRange? _selectedRange;
 
-    [ObservableProperty] private RangePosition _classPlanStartPos = new RangePosition(1, 0, 1, 1);
+    [ObservableProperty] private RangePosition _classPlanStartPos = new(1, 0, 1, 1);
 
     [ObservableProperty] private bool _isSelectingMode = false;
 

@@ -25,19 +25,20 @@ public partial class InfoCard : UserControl
 {
     public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(
         nameof(Content), typeof(string), typeof(InfoCard), new PropertyMetadata(default(string)));
+
     public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
         nameof(Title), typeof(string), typeof(InfoCard), new PropertyMetadata(default(string)));
 
     public string Content
     {
-        get { return (string)GetValue(ContentProperty); }
-        set { SetValue(ContentProperty, value); }
+        get => (string)GetValue(ContentProperty);
+        set => SetValue(ContentProperty, value);
     }
 
     public string Title
     {
-        get { return (string)GetValue(TitleProperty); }
-        set { SetValue(TitleProperty, value); }
+        get => (string)GetValue(TitleProperty);
+        set => SetValue(TitleProperty, value);
     }
 
     public static readonly DependencyProperty IconKindProperty = DependencyProperty.Register(
@@ -45,8 +46,8 @@ public partial class InfoCard : UserControl
 
     public PackIconKind IconKind
     {
-        get { return (PackIconKind)GetValue(IconKindProperty); }
-        set { SetValue(IconKindProperty, value); }
+        get => (PackIconKind)GetValue(IconKindProperty);
+        set => SetValue(IconKindProperty, value);
     }
 
     public static readonly DependencyProperty HasCloseButtonProperty = DependencyProperty.Register(
@@ -54,8 +55,8 @@ public partial class InfoCard : UserControl
 
     public bool HasCloseButton
     {
-        get { return (bool)GetValue(HasCloseButtonProperty); }
-        set { SetValue(HasCloseButtonProperty, value); }
+        get => (bool)GetValue(HasCloseButtonProperty);
+        set => SetValue(HasCloseButtonProperty, value);
     }
 
     public static readonly DependencyProperty ActionButtonProperty = DependencyProperty.Register(
@@ -63,8 +64,8 @@ public partial class InfoCard : UserControl
 
     public Visual ActionButton
     {
-        get { return (Visual)GetValue(ActionButtonProperty); }
-        set { SetValue(ActionButtonProperty, value); }
+        get => (Visual)GetValue(ActionButtonProperty);
+        set => SetValue(ActionButtonProperty, value);
     }
 
     public InfoCard()

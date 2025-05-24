@@ -12,7 +12,7 @@ public interface IIpcService
     /// 跨进程通信提供方
     /// </summary>
     public IpcProvider IpcProvider { get; }
-    
+
     /// <summary>
     /// JSON 路由通信提供方
     /// </summary>

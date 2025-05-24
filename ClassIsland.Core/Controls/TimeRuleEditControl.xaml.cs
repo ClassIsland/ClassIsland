@@ -17,17 +17,11 @@ public partial class TimeRuleEditControl : UserControl
         nameof(TimeRule), typeof(TimeRule), typeof(TimeRuleEditControl), new PropertyMetadata(default(TimeRule),
             (o, args) =>
             {
-                if (o is not TimeRuleEditControl control) 
+                if (o is not TimeRuleEditControl control)
                     return;
-                if (args.NewValue is TimeRule newRule)
-                {
-                    newRule.PropertyChanged += control.RuleOnPropertyChanged;
-                }
+                if (args.NewValue is TimeRule newRule) newRule.PropertyChanged += control.RuleOnPropertyChanged;
 
-                if (args.OldValue is TimeRule oldRule)
-                {
-                    oldRule.PropertyChanged -= control.RuleOnPropertyChanged;
-                }
+                if (args.OldValue is TimeRule oldRule) oldRule.PropertyChanged -= control.RuleOnPropertyChanged;
                 control.UpdateWeekCountDivs();
             }));
 
@@ -43,8 +37,8 @@ public partial class TimeRuleEditControl : UserControl
 
     public TimeRule? TimeRule
     {
-        get { return (TimeRule)GetValue(TimeRuleProperty); }
-        set { SetValue(TimeRuleProperty, value); }
+        get => (TimeRule)GetValue(TimeRuleProperty);
+        set => SetValue(TimeRuleProperty, value);
     }
 
     /// <inheritdoc />
@@ -62,13 +56,10 @@ public partial class TimeRuleEditControl : UserControl
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
+            eventArg.RoutedEvent = MouseWheelEvent;
             eventArg.Source = sender;
-            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
-            if (parent != null)
-            {
-                parent.RaiseEvent(eventArg);
-            }
+            var parent = ((Control)sender).Parent as UIElement;
+            if (parent != null) parent.RaiseEvent(eventArg);
         }
     }
 
@@ -78,14 +69,11 @@ public partial class TimeRuleEditControl : UserControl
 
     private void UpdateWeekCountDivs()
     {
-        if (TimeRule == null)
-        {
-            return;
-        }
+        if (TimeRule == null) return;
         var w = TimeRule.WeekCountDiv;
         TimeRule.WeekCountDivs = [];
         foreach (var i in Enumerable.Range(0, TimeRule.WeekCountDivTotal + 1).ToList())
-            TimeRule.WeekCountDivs.Add(((Func<int, int, string>) delegate (int num, int total)
+            TimeRule.WeekCountDivs.Add(((Func<int, int, string>)delegate(int num, int total)
             {
                 if (num == 0) return "不限";
                 if (total <= 2)
@@ -93,6 +81,7 @@ public partial class TimeRuleEditControl : UserControl
                     if (num == 1) return "单周";
                     if (num == 2) return "双周";
                 }
+
                 return $"第{num switch
                 {
                     1 => "一",

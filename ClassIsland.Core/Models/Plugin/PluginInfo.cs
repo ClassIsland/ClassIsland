@@ -58,13 +58,9 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
             var path = Path.Combine(PluginFolderPath, ".disabled");
             RestartRequired = true;
             if (value)
-            {
                 File.Delete(path);
-            }
             else
-            {
                 File.WriteAllText(path, "");
-            }
             OnPropertyChanged();
         }
     }
@@ -87,13 +83,9 @@ public class PluginInfo : ObservableRecipient, IMarketplaceItemInfo
                 throw new InvalidOperationException("无法为不存在本地的插件设置将要卸载状态。");
             var path = Path.Combine(PluginFolderPath, ".uninstall");
             if (value)
-            {
                 File.WriteAllText(path, "");
-            }
             else
-            {
                 File.Delete(path);
-            }   
             OnPropertyChanged();
         }
     }

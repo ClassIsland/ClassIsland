@@ -21,10 +21,7 @@ public partial class WeatherHourlyForecastNotificationProvider : UserControl
         IsOverlay = isOverlay;
         Info = info;
         BaseTime = baseTime;
-        for (var i = 0; i < 6; i++)
-        {
-            DateTimes.Add(baseTime.AddHours(i));
-        }
+        for (var i = 0; i < 6; i++) DateTimes.Add(baseTime.AddHours(i));
         InitializeComponent();
     }
 }

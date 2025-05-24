@@ -6,22 +6,23 @@
             <Setter.Value>
                 <DrawingImage>
                     <DrawingImage.Drawing>
-                        <DrawingGroup ClipGeometry="{Binding DrawingClipGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}">
-                            <GeometryDrawing 
+                        <DrawingGroup
+                            ClipGeometry="{Binding DrawingClipGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}">
+                            <GeometryDrawing
                                 Brush="Transparent"
-                                Geometry="{Binding DrawingClipGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}"/>
-                            <GeometryDrawing 
+                                Geometry="{Binding DrawingClipGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}" />
+                            <GeometryDrawing
                                 Brush="{Binding (TextElement.Foreground), RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}"
-                                Geometry="{Binding DrawingGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}"/>
+                                Geometry="{Binding DrawingGeometry, RelativeSource={RelativeSource AncestorType=controls:SfSymbolIcon}}" />
                         </DrawingGroup>
                     </DrawingImage.Drawing>
                 </DrawingImage>
             </Setter.Value>
         </Setter>
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="Stretch" Value="Uniform"/>
-        <Setter Property="StretchDirection" Value="Both"/>
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Stretch" Value="Uniform" />
+        <Setter Property="StretchDirection" Value="Both" />
     </Style>
 
-    <Style TargetType="controls:SfSymbolIcon" BasedOn="{StaticResource SfSymbolIconBaseStyle}"/>
+    <Style TargetType="controls:SfSymbolIcon" BasedOn="{StaticResource SfSymbolIconBaseStyle}" />
 </ResourceDictionary>

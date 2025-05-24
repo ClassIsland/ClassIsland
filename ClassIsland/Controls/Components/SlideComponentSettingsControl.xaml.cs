@@ -11,10 +11,7 @@ public partial class SlideComponentSettingsControl
 {
     private void OpenDrawer(string key)
     {
-        if (FindResource(key) is not FrameworkElement drawer)
-        {
-            return;
-        }
+        if (FindResource(key) is not FrameworkElement drawer) return;
 
         drawer.DataContext = this;
         SettingsPageBase.OpenDrawerCommand.Execute(drawer);
@@ -27,7 +24,7 @@ public partial class SlideComponentSettingsControl
 
     private void ButtonOpenPauseRuleset_OnClick(object sender, RoutedEventArgs e)
     {
-        if (FindResource("RulesetControl") is RulesetControl rulesetControl) 
+        if (FindResource("RulesetControl") is RulesetControl rulesetControl)
             rulesetControl.Ruleset = Settings.PauseRule;
         OpenDrawer("RulesetControl");
     }

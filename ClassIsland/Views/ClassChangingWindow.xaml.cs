@@ -11,7 +11,6 @@ using ClassIsland.Services.Management;
 using ClassIsland.Shared.Protobuf.AuditEvent;
 using ClassIsland.Shared.Protobuf.Enum;
 using ClassIsland.ViewModels;
-
 using MaterialDesignThemes.Wpf;
 
 namespace ClassIsland.Views;
@@ -34,9 +33,10 @@ public partial class ClassChangingWindow : MyWindow
 
     public ClassPlan ClassPlan
     {
-        get { return (ClassPlan)GetValue(ClassPlanProperty); }
-        set { SetValue(ClassPlanProperty, value); }
+        get => (ClassPlan)GetValue(ClassPlanProperty);
+        set => SetValue(ClassPlanProperty, value);
     }
+
     private int GetSubjectIndex(int index)
     {
         var k = ClassPlan?.TimeLayout.Layouts[index];
@@ -72,30 +72,19 @@ public partial class ClassChangingWindow : MyWindow
     private async void ButtonConfirmClassChanging_OnClick(object sender, RoutedEventArgs e)
     {
         var l = ProfileService.Profile.ClassPlans.Where(i => i.Value == ClassPlan).ToList();
-        if (l.Count <= 0)
-        {
-            return;
-        }
+        if (l.Count <= 0) return;
         var key = l[0].Key;
-        if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay && ProfileService.Profile.OverlayClassPlanId != null)
+        if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay &&
+            ProfileService.Profile.OverlayClassPlanId != null)
         {
             var r = (bool?)await DialogHost.Show(FindResource("OverwriteConfirm"), ViewModel.DialogIdentifier);
-            if (r != true)
-            {
-                return;
-            }
+            if (r != true) return;
             ProfileService.ClearTempClassPlan();
         }
 
-        if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay)
-        {
-            key = ProfileService.CreateTempClassPlan(key);
-        }
+        if (!ViewModel.WriteToSourceClassPlan && !ClassPlan.IsOverlay) key = ProfileService.CreateTempClassPlan(key);
 
-        if (key == null)
-        {
-            return;
-        }
+        if (key == null) return;
         var cp = ProfileService.Profile.ClassPlans[key];
         var aI = GetSubjectIndex(ViewModel.SourceIndex);
         var bI = 0;
@@ -112,18 +101,14 @@ public partial class ClassChangingWindow : MyWindow
         }
         else
         {
-            if (ViewModel.TargetSubjectIndex == null)
-            {
-                return;
-            }
+            if (ViewModel.TargetSubjectIndex == null) return;
 
             cp.Classes[aI].SubjectId = ViewModel.TargetSubjectIndex;
         }
 
         ProfileService.SaveProfile();
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-        {
-            connection.LogAuditEvent(AuditEvents.ClassChangeCompleted, new ClassChangeCompleted()
+            connection.LogAuditEvent(AuditEvents.ClassChangeCompleted, new ClassChangeCompleted
             {
                 ChangeMode = SettingsService.Settings.IsSwapMode ? 0 : 1,
                 ClassPlanId = key,
@@ -133,7 +118,6 @@ public partial class ClassChangingWindow : MyWindow
                 TargetClassSubjectId = b,
                 WriteToSourceClassPlan = ViewModel.WriteToSourceClassPlan
             });
-        }
         Close();
     }
 

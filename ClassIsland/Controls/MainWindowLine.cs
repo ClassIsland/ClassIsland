@@ -26,8 +26,8 @@ public class MainWindowLine : Control
 
     public object? Content
     {
-        get { return (object)GetValue(ContentProperty); }
-        set { SetValue(ContentProperty, value); }
+        get => (object)GetValue(ContentProperty);
+        set => SetValue(ContentProperty, value);
     }
 
     public static readonly DependencyProperty BackgroundWidthProperty = DependencyProperty.Register(
@@ -38,8 +38,8 @@ public class MainWindowLine : Control
 
     public string? LastStoryboardName
     {
-        get { return (string)GetValue(LastStoryboardNameProperty); }
-        set { SetValue(LastStoryboardNameProperty, value); }
+        get => (string)GetValue(LastStoryboardNameProperty);
+        set => SetValue(LastStoryboardNameProperty, value);
     }
 
     public static readonly DependencyProperty IsOverlayOpenProperty = DependencyProperty.Register(
@@ -47,18 +47,18 @@ public class MainWindowLine : Control
 
     public bool IsOverlayOpen
     {
-        get { return (bool)GetValue(IsOverlayOpenProperty); }
-        set { SetValue(IsOverlayOpenProperty, value); }
+        get => (bool)GetValue(IsOverlayOpenProperty);
+        set => SetValue(IsOverlayOpenProperty, value);
     }
 
     public double BackgroundWidth
     {
-        get { return (double)GetValue(BackgroundWidthProperty); }
-        set { SetValue(BackgroundWidthProperty, value); }
+        get => (double)GetValue(BackgroundWidthProperty);
+        set => SetValue(BackgroundWidthProperty, value);
     }
 
     public static readonly DependencyProperty WindowDockingLocationProperty = DependencyProperty.Register(
-        nameof(WindowDockingLocation), typeof(int ), typeof(MainWindowLine), new PropertyMetadata(default(int )));
+        nameof(WindowDockingLocation), typeof(int), typeof(MainWindowLine), new PropertyMetadata(default(int)));
 
 
     public static readonly DependencyProperty IsMainLineProperty = DependencyProperty.Register(
@@ -66,29 +66,26 @@ public class MainWindowLine : Control
 
     public bool IsMainLine
     {
-        get { return (bool)GetValue(IsMainLineProperty); }
-        set { SetValue(IsMainLineProperty, value); }
+        get => (bool)GetValue(IsMainLineProperty);
+        set => SetValue(IsMainLineProperty, value);
     }
 
-    public int  WindowDockingLocation
+    public int WindowDockingLocation
     {
-        get { return (int )GetValue(WindowDockingLocationProperty); }
-        set { SetValue(WindowDockingLocationProperty, value); }
+        get => (int)GetValue(WindowDockingLocationProperty);
+        set => SetValue(WindowDockingLocationProperty, value);
     }
 
     public static readonly DependencyProperty IsMouseInProperty = DependencyProperty.Register(
         nameof(IsMouseIn), typeof(bool), typeof(MainWindowLine), new PropertyMetadata(default(bool), (o, args) =>
         {
-            if (o is MainWindowLine line)
-            {
-                line.UpdateFadeStatus();
-            }
+            if (o is MainWindowLine line) line.UpdateFadeStatus();
         }));
 
     public bool IsMouseIn
     {
-        get { return (bool)GetValue(IsMouseInProperty); }
-        set { SetValue(IsMouseInProperty, value); }
+        get => (bool)GetValue(IsMouseInProperty);
+        set => SetValue(IsMouseInProperty, value);
     }
 
     public static readonly DependencyProperty LineNumberProperty = DependencyProperty.Register(
@@ -96,8 +93,8 @@ public class MainWindowLine : Control
 
     public int LineNumber
     {
-        get { return (int)GetValue(LineNumberProperty); }
-        set { SetValue(LineNumberProperty, value); }
+        get => (int)GetValue(LineNumberProperty);
+        set => SetValue(LineNumberProperty, value);
     }
 
     public static readonly DependencyProperty IsAllComponentsHidProperty = DependencyProperty.Register(
@@ -105,8 +102,8 @@ public class MainWindowLine : Control
 
     public bool IsAllComponentsHid
     {
-        get { return (bool)GetValue(IsAllComponentsHidProperty); }
-        set { SetValue(IsAllComponentsHidProperty, value); }
+        get => (bool)GetValue(IsAllComponentsHidProperty);
+        set => SetValue(IsAllComponentsHidProperty, value);
     }
 
     public static readonly DependencyProperty IsLineFadedProperty = DependencyProperty.Register(
@@ -114,8 +111,8 @@ public class MainWindowLine : Control
 
     public bool IsLineFaded
     {
-        get { return (bool)GetValue(IsLineFadedProperty); }
-        set { SetValue(IsLineFadedProperty, value); }
+        get => (bool)GetValue(IsLineFadedProperty);
+        set => SetValue(IsLineFadedProperty, value);
     }
 
     private bool _isLoadCompleted = false;
@@ -173,24 +170,19 @@ public class MainWindowLine : Control
     {
         if (e.PropertyName is nameof(SettingsService.Settings.IsMouseInFadingReversed)
             or nameof(SettingsService.Settings.IsMouseInFadingEnabled))
-        {
             UpdateFadeStatus();
-        }
     }
 
     private void UpdateFadeStatus()
     {
         IsLineFaded =
             SettingsService.Settings.IsMouseInFadingEnabled &&
-            (IsMouseIn ^ SettingsService.Settings.IsMouseInFadingReversed);
+            IsMouseIn ^ SettingsService.Settings.IsMouseInFadingReversed;
     }
 
     private Storyboard? BeginStoryboard(string name)
     {
-        if (!_isLoadCompleted || !_isTemplateApplied)
-        {
-            return null;
-        }
+        if (!_isLoadCompleted || !_isTemplateApplied) return null;
         var a = (Storyboard)FindResource(name);
         GridWrapper?.BeginStoryboard(a);
         return a;
@@ -198,10 +190,7 @@ public class MainWindowLine : Control
 
     private void MainWindowOnMainWindowAnimationEvent(object? sender, MainWindowAnimationEventArgs e)
     {
-        if (!IsMainLine)
-        {
-            return;
-        }
+        if (!IsMainLine) return;
         BeginStoryboard(e.StoryboardName);
     }
 
@@ -218,14 +207,12 @@ public class MainWindowLine : Control
                 if (SettingsService.Settings.TouchInFadingDurationMs > 0 && r)
                 {
                     TouchInFadingTimer.Stop();
-                    TouchInFadingTimer.Interval = TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
+                    TouchInFadingTimer.Interval =
+                        TimeSpan.FromMilliseconds(SettingsService.Settings.TouchInFadingDurationMs);
                     TouchInFadingTimer.Start();
                 }
 
-                if (!r)
-                {
-                    TouchInFadingTimer.Stop();
-                }
+                if (!r) TouchInFadingTimer.Stop();
                 break;
             }
             case RawInputMouseData mouseData:
@@ -239,10 +226,7 @@ public class MainWindowLine : Control
 
     private void UpdateMouseStatus()
     {
-        if (PresentationSource.FromVisual(this) == null)
-        {
-            return;
-        }
+        if (PresentationSource.FromVisual(this) == null) return;
 
         try
         {
@@ -265,37 +249,25 @@ public class MainWindowLine : Control
         Logger.LogTrace("已应用控件模板");
         if (GetTemplateChild("PART_GridWrapper") is Grid wrapper)
         {
-            if (GridWrapper is not null)
-            {
-                GridWrapper.SizeChanged -= WrapperOnSizeChanged;
-            }
+            if (GridWrapper is not null) GridWrapper.SizeChanged -= WrapperOnSizeChanged;
             GridWrapper = wrapper;
             wrapper.SizeChanged += WrapperOnSizeChanged;
             wrapper.Loaded += GridWrapperOnLoaded;
         }
 
         Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
-        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
-        {
-            BeginStoryboard(LastStoryboardName);
-        }
+        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen) BeginStoryboard(LastStoryboardName);
         base.OnApplyTemplate();
     }
 
     private void GridWrapperOnLoaded(object sender, RoutedEventArgs e)
     {
-        if (GridWrapper != null)
-        {
-            GridWrapper.Loaded -= GridWrapperOnLoaded;
-        }
+        if (GridWrapper != null) GridWrapper.Loaded -= GridWrapperOnLoaded;
 
         _isTemplateApplied = true;
 
         Logger.LogDebug("LastStoryboardName = {}", LastStoryboardName);
-        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen)
-        {
-            BeginStoryboard(LastStoryboardName);
-        }
+        if (IsMainLine && LastStoryboardName != null && IsOverlayOpen) BeginStoryboard(LastStoryboardName);
     }
 
     private void WrapperOnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -309,42 +281,38 @@ public class MainWindowLine : Control
         }
 
         var m = e.NewSize.Width > BackgroundWidth;
-        var s = 1.0;  // TODO: 适配 debug 动画缩放
+        var s = 1.0; // TODO: 适配 debug 动画缩放
         var t = m ? 600 * s : 800 * s;
-        var da = new DoubleAnimation()
+        var da = new DoubleAnimation
         {
             From = BackgroundWidth,
             To = e.NewSize.Width,
             Duration = new Duration(TimeSpan.FromMilliseconds(t)),
-            EasingFunction = m ? new BackEase()
-            {
-                EasingMode = EasingMode.EaseOut,
-                Amplitude = 0.4
-            } : new BackEase()
-            {
-                EasingMode = EasingMode.EaseOut,
-                Amplitude = 0.2
-            }
+            EasingFunction = m
+                ? new BackEase
+                {
+                    EasingMode = EasingMode.EaseOut,
+                    Amplitude = 0.4
+                }
+                : new BackEase
+                {
+                    EasingMode = EasingMode.EaseOut,
+                    Amplitude = 0.2
+                }
         };
-        var storyboard = new Storyboard()
+        var storyboard = new Storyboard
         {
         };
         Storyboard.SetTarget(da, this);
         Storyboard.SetTargetProperty(da, new PropertyPath(BackgroundWidthProperty));
         storyboard.Children.Add(da);
         storyboard.Begin();
-        storyboard.Completed += (o, args) =>
-        {
-            storyboard.Remove();
-        };
+        storyboard.Completed += (o, args) => { storyboard.Remove(); };
     }
 
     private bool GetMouseStatusByPos(System.Drawing.Point ptr)
     {
-        if (GridWrapper == null || PresentationSource.FromVisual(GridWrapper) == null)
-        {
-            return false;
-        }
+        if (GridWrapper == null || PresentationSource.FromVisual(GridWrapper) == null) return false;
         MainWindow.GetCurrentDpi(out var dpiX, out var dpiY);
         var scale = MainWindow.ViewModel.Settings.Scale;
         //Debug.WriteLine($"Window: {Left * dpiX} {Top * dpiY};; Cursor: {ptr.X} {ptr.Y} ;; dpi: {dpiX}");
@@ -356,6 +324,6 @@ public class MainWindowLine : Control
         var cr = cx + cw;
         var cb = cy + ch;
 
-        return (cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb);
+        return cx <= ptr.X && cy <= ptr.Y && ptr.X <= cr && ptr.Y <= cb;
     }
 }

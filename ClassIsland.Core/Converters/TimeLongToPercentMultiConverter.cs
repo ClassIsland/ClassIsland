@@ -9,7 +9,7 @@ public class TimeLongToPercentMultiConverter : IMultiValueConverter
     {
         var a = (long)values[0];
         var b = (long)values[1];
-        return $"{(a*1.0)/(b*1.0):P0}";
+        return $"{a * 1.0 / (b * 1.0):P0}";
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

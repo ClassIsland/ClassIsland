@@ -36,9 +36,9 @@ public abstract class SettingsPageBase : Page
     /// <param name="key">抽屉资源键名</param>
     /// <param name="useGlobalDataContext">是否使用设置界面的数据上下文，为false时则使用本页面的数据上下文。</param>
     /// <param name="dataContext">抽屉元素的数据上下文</param>
-    protected void OpenDrawer(string key, bool useGlobalDataContext=false, object? dataContext=null)
+    protected void OpenDrawer(string key, bool useGlobalDataContext = false, object? dataContext = null)
     {
-        OpenDrawer(FindResource(key), useGlobalDataContext,  dataContext);
+        OpenDrawer(FindResource(key), useGlobalDataContext, dataContext);
     }
 
     /// <summary>
@@ -47,12 +47,9 @@ public abstract class SettingsPageBase : Page
     /// <param name="o">要在抽屉中显示的对象</param>
     /// <param name="useGlobalDataContext">是否使用设置界面的数据上下文，为false时则使用本页面的数据上下文。</param>
     /// <param name="dataContext">抽屉元素的数据上下文</param>
-    protected void OpenDrawer(object o, bool useGlobalDataContext=false, object? dataContext=null)
+    protected void OpenDrawer(object o, bool useGlobalDataContext = false, object? dataContext = null)
     {
-        if (o is FrameworkElement e && !useGlobalDataContext)
-        {
-            e.DataContext = dataContext ?? this;
-        }
+        if (o is FrameworkElement e && !useGlobalDataContext) e.DataContext = dataContext ?? this;
         OpenDrawerCommand.Execute(o);
     }
 

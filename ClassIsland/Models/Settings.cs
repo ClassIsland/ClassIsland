@@ -16,13 +16,10 @@ using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Models.Notification;
 using ClassIsland.Models.AllContributors;
 using CommunityToolkit.Mvvm.ComponentModel;
-
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 using Octokit;
-
 using WindowsShortcutFactory;
-
 using File = System.IO.File;
 using ClassIsland.Core.Models;
 using ClassIsland.Core.Abstractions.Models.Speech;
@@ -50,10 +47,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isMouseClickingEnabled = false;
     private bool _hideOnFullscreen = false;
     private bool _isClassOffNotificationEnabled = true;
+
     private ObservableCollection<string> _excludedFullscreenWindow = new()
     {
         "explorer"
     };
+
     private ObservableCollection<int> _multiWeekRotationOffset = [-1, -1, 0, 0, 0];
 
     private bool _hideOnMaxWindow = false;
@@ -63,11 +62,14 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isMainWindowVisible = true;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
+
     private Dictionary<string, string> _releaseChannels = new()
     {
     };
 
-    private string _selectedChannel = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public";
+    private string _selectedChannel =
+        "https://install.appcenter.ms/api/v0.1/apps/hellowrc/classisland/distribution_groups/public";
+
     private DateTime _lastCheckUpdateTime = DateTime.MinValue;
     private AppCenterReleaseInfo _lastCheckUpdateInfoCache = new();
     private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;
@@ -89,7 +91,11 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isWallpaperAutoUpdateEnabled = false;
     private int _wallpaperAutoUpdateIntervalSeconds = 60;
     private bool _isFallbackModeEnabled = true;
-    private string _mainWindowFont = App.IsAssetsTrimmedInternal ? "Microsoft YaHei UI" : "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
+
+    private string _mainWindowFont = App.IsAssetsTrimmedInternal
+        ? "Microsoft YaHei UI"
+        : "/ClassIsland;component/Assets/Fonts/#HarmonyOS Sans SC";
+
     private ObservableDictionary<string, object?> _miniInfoProviderSettings = new();
     private string? _selectedMiniInfoProvider = "d9fc55d6-8061-4c21-b521-6b0532ff735f";
     private WeatherInfo _lastWeatherInfo = new();
@@ -119,8 +125,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private DateTime _lastSpeedTest = DateTime.MinValue;
     private UpdateSourceKind _lastUpdateSourceKind = UpdateSourceKind.None;
     private string _updateReleaseInfo = "";
-    private Version _updateVersion = new Version();
-    private Release _lastCheckUpdateInfoCacheGitHub = new Release();
+    private Version _updateVersion = new();
+    private Release _lastCheckUpdateInfoCacheGitHub = new();
     private string _updateDownloadUrl = "";
     private DateTime _firstLaunchTime = DateTime.Now;
     private long _diagnosticStartupCount = 0;
@@ -158,7 +164,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isAutomationEnabled = false;
     private bool _isAutomationWarningVisible = true;
     private string _currentAutomationConfig = "Default";
-    private Version _lastAppVersion = new Version("0.0.0.0");
+    private Version _lastAppVersion = new("0.0.0.0");
     private bool _showComponentsMigrateTip = false;
     private bool _expAllowEditingActivatedTimeLayout = false;
     private ObservableDictionary<string, string> _pluginIndexSelectedMirrors = new();
@@ -166,6 +172,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private ObservableDictionary<string, string> _additionalPluginIndexes = new();
     private ObservableCollection<PluginIndexInfo> _pluginIndexes = new();
     private string _officialSelectedMirror = "github";
+
     private ObservableDictionary<string, string> _officialIndexMirrors = new()
     {
         { "github", "https://github.com" },
@@ -501,6 +508,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
                 {
                     File.Delete(path);
                 }
+
                 OnPropertyChanged();
             }
             catch (Exception ex)
@@ -551,13 +559,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         set
         {
             if (value)
-            {
                 UriProtocolRegisterHelper.Register();
-            }
             else
-            {
                 UriProtocolRegisterHelper.UnRegister();
-            }
         }
     }
 
@@ -929,8 +933,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     }
 
     [JsonIgnore]
-    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1 
-        ? Colors.DodgerBlue 
+    public Color SelectedPlatte => WallpaperColorPlatte.Count < Math.Max(SelectedPlatteIndex, 0) + 1
+        ? Colors.DodgerBlue
         : WallpaperColorPlatte[SelectedPlatteIndex];
 
     public int SelectedPlatteIndex
@@ -1323,6 +1327,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
                 OnPropertyChanged();
                 return;
             }
+
             _speechSource = value;
             OnPropertyChanged();
         }
@@ -1746,7 +1751,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    bool _isIgnoreWorkAreaEnabled;
+    private bool _isIgnoreWorkAreaEnabled;
     private int _criticalSafeModeMethod = 0;
     private bool _notificationUseStandaloneEffectUiThread = true;
     private double _weatherLongitude = 0.0;
@@ -1770,7 +1775,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             OnPropertyChanged();
         }
     }
-    
+
     public int WindowDockingOffsetX
     {
         get => _windowDockingOffsetX;
@@ -2057,7 +2062,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     [JsonIgnore]
     public double DiagnosticMemoryKillFreqDay => DiagnosticMemoryKillCount == 0
         ? 0
-        : (DiagnosticLastMemoryKillTime - DiagnosticFirstLaunchTime).TotalSeconds / 86400.0 * 1.0 / DiagnosticMemoryKillCount;
+        : (DiagnosticLastMemoryKillTime - DiagnosticFirstLaunchTime).TotalSeconds / 86400.0 * 1.0 /
+          DiagnosticMemoryKillCount;
 
     #endregion
 
@@ -2399,7 +2405,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
             {
                 IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 ShowSellingAnnouncement 启用状态。");
             }
-
         }
     }
 }

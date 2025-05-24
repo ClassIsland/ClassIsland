@@ -36,10 +36,7 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
         get => _visualTarget.RootVisual;
         set
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException("VisualTarget");
-            }
+            if (IsDisposed) throw new ObjectDisposedException("VisualTarget");
 
             var oldRoot = _visualTarget.RootVisual;
 
@@ -50,10 +47,7 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
             // Hook the SizeChanged event on framework elements for all
             // future changed to the layout size of our root, and manually
             // trigger a size change.
-            if (oldRoot is FrameworkElement oldRootFe)
-            {
-                oldRootFe.SizeChanged -= root_SizeChanged;
-            }
+            if (oldRoot is FrameworkElement oldRootFe) oldRootFe.SizeChanged -= root_SizeChanged;
             if (value is FrameworkElement rootFe)
             {
                 rootFe.SizeChanged += root_SizeChanged;
@@ -88,21 +82,12 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
         get => _dataContext;
         set
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException("VisualTarget");
-            }
+            if (IsDisposed) throw new ObjectDisposedException("VisualTarget");
 
-            if (_dataContext == value)
-            {
-                return;
-            }
+            if (_dataContext == value) return;
 
             _dataContext = value;
-            if (_visualTarget.RootVisual is FrameworkElement rootElement)
-            {
-                rootElement.DataContext = _dataContext;
-            }
+            if (_visualTarget.RootVisual is FrameworkElement rootElement) rootElement.DataContext = _dataContext;
         }
     }
 
@@ -111,19 +96,13 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
         get => _propertyName;
         set
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException("VisualTarget");
-            }
+            if (IsDisposed) throw new ObjectDisposedException("VisualTarget");
 
             _propertyName = value;
 
             if (_visualTarget.RootVisual is TextBlock rootElement)
             {
-                if (!rootElement.CheckAccess())
-                {
-                    throw new InvalidOperationException("What?");
-                }
+                if (!rootElement.CheckAccess()) throw new InvalidOperationException("What?");
 
                 var myBinding = new Binding(_propertyName)
                 {
@@ -145,10 +124,7 @@ public class VisualTargetPresentationSource : PresentationSource, IDisposable
 
     private void root_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        if (IsDisposed)
-        {
-            return;
-        }
+        if (IsDisposed) return;
 
         SizeChanged?.Invoke(this, e);
     }

@@ -7,7 +7,8 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300"
              Loaded="TimeRuleEditControl_OnLoaded">
-    <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TimeRuleEditControl}}">
+    <StackPanel
+        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:TimeRuleEditControl}}">
         <StackPanel DataContext="{Binding TimeRule}">
             <Separator Margin="0 20 0 8" />
             <local:IconText Kind="LabelMultipleOutline" Text="触发规则" Margin="0 0 0 8" />
@@ -31,13 +32,13 @@
             <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
                      ItemsSource="{Binding WeekCountDivs}"
                      SelectedIndex="{Binding WeekCountDiv}"
-                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel"/>
+                     PreviewMouseWheel="UIElement_OnPreviewMouseWheel" />
 
-            <TextBlock Text="每轮周数：" Margin="0 8 0 0"/>
+            <TextBlock Text="每轮周数：" Margin="0 8 0 0" />
             <ListBox Style="{StaticResource MaterialDesignChoiceChipPrimaryOutlineListBox}"
                      SelectedIndex="{Binding WeekCountDivTotal}"
                      PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                <ListBoxItem Visibility="Collapsed"/>
+                <ListBoxItem Visibility="Collapsed" />
                 <ListBoxItem Visibility="Collapsed" />
                 <ListBoxItem Content="两周" />
                 <ListBoxItem Content="三周" />

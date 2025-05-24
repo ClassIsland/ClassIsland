@@ -9,12 +9,9 @@ using System.Threading.Tasks;
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
-
 using Edge_tts_sharp;
 using Edge_tts_sharp.Model;
-
 using Microsoft.Extensions.Logging;
-
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 
@@ -54,10 +51,7 @@ public class EdgeTtsService : ISpeechService
         var md5String = md5.Aggregate("", (current, t) => current + t.ToString("x2"));
         var path = Path.Combine(EdgeTtsCacheFolderPath, SettingsService.Settings.EdgeTtsVoiceName, $"{md5String}");
         var directory = Path.GetDirectoryName(path);
-        if (!Directory.Exists(directory) && directory != null)
-        {
-            Directory.CreateDirectory(directory);
-        }
+        if (!Directory.Exists(directory) && directory != null) Directory.CreateDirectory(directory);
 
         return path;
     }
@@ -68,22 +62,19 @@ public class EdgeTtsService : ISpeechService
         var r = requestingCancellationTokenSource;
         requestingCancellationTokenSource = new CancellationTokenSource();
         if (r is { IsCancellationRequested: false })
-        {
             CancellationTokenSource.CreateLinkedTokenSource(r.Token, requestingCancellationTokenSource.Token);
-        }
 
         var cache = GetCachePath(text);
         Logger.LogDebug("语音缓存：{}", cache);
 
         Task? task = null;
         if (!File.Exists(cache))
-        {
             task = Task.Run(() =>
                 {
                     var completed = false;
                     var voice = Voices.Find(voice => voice.ShortName == SettingsService.Settings.EdgeTtsVoiceName);
                     var completeHandle = new CancellationTokenSource();
-                    var options = new PlayOption()
+                    var options = new PlayOption
                     {
                         Text = text
                     };
@@ -99,8 +90,7 @@ public class EdgeTtsService : ISpeechService
                     completeHandle.Cancel();
                 },
                 requestingCancellationTokenSource.Token);
-        }
-        
+
         if (requestingCancellationTokenSource.IsCancellationRequested)
             return;
         PlayingQueue.Enqueue(new EdgeTtsPlayInfo(cache, new CancellationTokenSource(), task));
@@ -113,10 +103,7 @@ public class EdgeTtsService : ISpeechService
         CurrentWavePlayer?.Stop();
         CurrentWavePlayer?.Dispose();
         CurrentWavePlayer = null;
-        foreach (var pair in PlayingQueue)
-        {
-            pair.CancellationTokenSource.Cancel();
-        }
+        foreach (var pair in PlayingQueue) pair.CancellationTokenSource.Cancel();
         //IsPlaying = false;
     }
 

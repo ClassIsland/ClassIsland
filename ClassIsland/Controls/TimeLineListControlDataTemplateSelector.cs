@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-
 using ClassIsland.Shared.Models.Profile;
 
 namespace ClassIsland.Controls;

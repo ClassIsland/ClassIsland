@@ -41,16 +41,32 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     #region Events
 
     public event EventHandler? UpdateTimerTick;
-    public void OnUpdateTimerTick(object sender, EventArgs args) => UpdateTimerTick?.Invoke(sender, args);
-    
+
+    public void OnUpdateTimerTick(object sender, EventArgs args)
+    {
+        UpdateTimerTick?.Invoke(sender, args);
+    }
+
     public event EventHandler? OnClass;
-    public void OnOnClass(object sender, EventArgs args) => OnClass?.Invoke(sender, args);
+
+    public void OnOnClass(object sender, EventArgs args)
+    {
+        OnClass?.Invoke(sender, args);
+    }
 
     public event EventHandler? OnBreakingTime;
-    public void OnOnBreakingTime(object sender, EventArgs args) => OnBreakingTime?.Invoke(sender, args);
+
+    public void OnOnBreakingTime(object sender, EventArgs args)
+    {
+        OnBreakingTime?.Invoke(sender, args);
+    }
 
     public event EventHandler? CurrentStateChanged;
-    public void OnCurrentStateChanged(object sender, EventArgs args) => CurrentStateChanged?.Invoke(sender, args);
+
+    public void OnCurrentStateChanged(object sender, EventArgs args)
+    {
+        CurrentStateChanged?.Invoke(sender, args);
+    }
 
     #endregion
 
@@ -75,37 +91,26 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
     {
         Logger.LogInformation("注册提醒提供方：{}（{}）", provider.ProviderGuid, provider.Name);
         if (!Settings.NotificationProvidersPriority.Contains(provider.ProviderGuid.ToString()))
-        {
             Settings.NotificationProvidersPriority.Add(provider.ProviderGuid.ToString());
-        }
         if (!Settings.NotificationProvidersSettings.ContainsKey(provider.ProviderGuid.ToString()))
-        {
             Settings.NotificationProvidersSettings.Add(provider.ProviderGuid.ToString(), null);
-        }
         if (!Settings.NotificationProvidersEnableStates.ContainsKey(provider.ProviderGuid.ToString()))
-        {
             Settings.NotificationProvidersEnableStates.Add(provider.ProviderGuid.ToString(), true);
-        }
         if (!Settings.NotificationProvidersNotifySettings.ContainsKey(provider.ProviderGuid.ToString()))
-        {
-            Settings.NotificationProvidersNotifySettings.Add(provider.ProviderGuid.ToString(), new());
-        }
+            Settings.NotificationProvidersNotifySettings.Add(provider.ProviderGuid.ToString(),
+                new NotificationSettings());
 
         NotificationProviders.Add(new NotificationProviderRegisterInfo(provider)
         {
             ProviderSettings = Settings.NotificationProvidersNotifySettings[provider.ProviderGuid.ToString()]
         });
 
-        if (provider is not NotificationProviderBase providerBase)
-        {
-            return;
-        }
+        if (provider is not NotificationProviderBase providerBase) return;
 
-        var providerInfo = NotificationProviderRegistryService.RegisteredProviders.First(x => x.Guid == provider.ProviderGuid);
+        var providerInfo =
+            NotificationProviderRegistryService.RegisteredProviders.First(x => x.Guid == provider.ProviderGuid);
         foreach (var channelInfo in providerInfo.RegisteredChannels)
-        {
             providerBase.Channels[channelInfo.Guid] = new NotificationChannel(providerBase, providerInfo, channelInfo);
-        }
     }
 
     [Obsolete]
@@ -118,7 +123,8 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
             var type = i.GetMethod()?.DeclaringType;
             if (type?.IsAssignableTo(typeof(INotificationProvider)) != true)
                 continue;
-            var provider = (from p in NotificationProviders where p.ProviderInstance.GetType() == type select p).FirstOrDefault();
+            var provider = (from p in NotificationProviders where p.ProviderInstance.GetType() == type select p)
+                .FirstOrDefault();
             if (provider == null)
                 continue;
             Logger.LogInformation("请求来源：{}", provider.ProviderGuid);
@@ -137,102 +143,85 @@ public class NotificationHostService(SettingsService settingsService, ILogger<No
         request.NotificationSource = (from i in NotificationProviders where i.ProviderGuid == providerGuid select i)
             .FirstOrDefault();
         request.ProviderSettings = request.NotificationSource?.ProviderSettings ?? request.ProviderSettings;
-        if (_queueIndex +1 >= int.MaxValue)
-        {
-            _queueIndex = 0;
-        }
+        if (_queueIndex + 1 >= int.MaxValue) _queueIndex = 0;
 
-        if (channelGuid != Guid.Empty && request.ChannelId == Guid.Empty)
-        {
-            request.ChannelId = channelGuid;
-        }
+        if (channelGuid != Guid.Empty && request.ChannelId == Guid.Empty) request.ChannelId = channelGuid;
 
         channelGuid = request.ChannelId;
 
         var channel =
             request.NotificationSource?.NotificationChannels.FirstOrDefault(x => x.ProviderGuid == channelGuid);
         request.ChannelSettings = channel?.ProviderSettings;
-        RequestQueue.Enqueue(request, new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()), _queueIndex++, request.IsPriorityOverride) );
+        RequestQueue.Enqueue(request,
+            new NotificationPriority(Settings.NotificationProvidersPriority.IndexOf(providerGuid.ToString()),
+                _queueIndex++, request.IsPriorityOverride));
     }
 
     [Obsolete]
     public async Task ShowNotificationAsync(Shared.Models.Notification.NotificationRequest request)
     {
         ShowNotification(request);
-        await Task.Run(() =>
-        {
-            request.CompletedTokenSource.Token.WaitHandle.WaitOne();
-        });
+        await Task.Run(() => { request.CompletedTokenSource.Token.WaitHandle.WaitOne(); });
     }
 
     public async Task ShowNotificationAsync(NotificationRequest request, Guid providerGuid, Guid channelGuid)
     {
         ShowNotification(request, providerGuid, channelGuid);
-        await Task.Run(() =>
-        {
-            request.CompletedTokenSource.Token.WaitHandle.WaitOne();
-        });
+        await Task.Run(() => { request.CompletedTokenSource.Token.WaitHandle.WaitOne(); });
     }
 
     public void ShowChainedNotifications(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid)
     {
-        if (requests.Length <= 0)
-        {
-            return;
-        }
+        if (requests.Length <= 0) return;
 
-        var rootCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(requests.Select(x => x.CancellationTokenSource.Token).ToArray());
-        var rootCompletedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(requests.Select(x => x.CompletedTokenSource.Token).ToArray());
+        var rootCancellationTokenSource =
+            CancellationTokenSource.CreateLinkedTokenSource(requests.Select(x => x.CancellationTokenSource.Token)
+                .ToArray());
+        var rootCompletedTokenSource =
+            CancellationTokenSource.CreateLinkedTokenSource(
+                requests.Select(x => x.CompletedTokenSource.Token).ToArray());
         rootCancellationTokenSource.Token.Register(() =>
         {
             foreach (var request in requests.Where(x => !x.CancellationToken.IsCancellationRequested))
-            {
                 request.CancellationTokenSource.Cancel();
-            }
         });
         foreach (var request in requests)
         {
             request.RootCancellationTokenSource = rootCancellationTokenSource;
             request.RootCompletedTokenSource = rootCompletedTokenSource;
-            
+
             ShowNotification(request, providerGuid, channelGuid);
         }
     }
 
     public async Task ShowChainedNotificationsAsync(NotificationRequest[] requests, Guid providerGuid, Guid channelGuid)
     {
-        if (requests.Length <= 0)
-        {
-            return;
-        }
+        if (requests.Length <= 0) return;
         ShowChainedNotifications(requests, providerGuid, channelGuid);
-        await Task.Run(() =>
-        {
-            requests.Last().CompletedTokenSource.Token.WaitHandle.WaitOne();
-        });
+        await Task.Run(() => { requests.Last().CompletedTokenSource.Token.WaitHandle.WaitOne(); });
     }
 
     public void RegisterNotificationChannel(NotificationChannel channel)
     {
         Logger.LogInformation("注册提醒渠道：{}（{}）", channel.ChannelInfo.Guid, channel.ChannelInfo.Name);
         if (!Settings.NotificationChannelsNotifySettings.ContainsKey(channel.ChannelInfo.Guid.ToString()))
-        {
-            Settings.NotificationChannelsNotifySettings.Add(channel.ChannelInfo.Guid.ToString(), new());
-        }
-        NotificationProviders.FirstOrDefault(x => x.ProviderGuid == channel.ChannelInfo.AssociatedProviderGuid)?.NotificationChannels.Add(new NotificationChannelRegisterInfo(channel)
-        {
-            ProviderSettings = Settings.NotificationChannelsNotifySettings[channel.ChannelInfo.Guid.ToString()]
-        });
+            Settings.NotificationChannelsNotifySettings.Add(channel.ChannelInfo.Guid.ToString(),
+                new NotificationSettings());
+        NotificationProviders.FirstOrDefault(x => x.ProviderGuid == channel.ChannelInfo.AssociatedProviderGuid)
+            ?.NotificationChannels.Add(new NotificationChannelRegisterInfo(channel)
+            {
+                ProviderSettings = Settings.NotificationChannelsNotifySettings[channel.ChannelInfo.Guid.ToString()]
+            });
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        return new Task(()=>{});
+        return new Task(() => { });
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        return new Task(()=>{});
+        return new Task(() => { });
     }
 
     /// <summary>

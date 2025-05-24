@@ -4,7 +4,7 @@ using XmlDocMarkdown.Core;
 
 namespace ClassIsland.DocsGenerator;
 
-static class Program
+internal static class Program
 {
     public static int Main(string[] args)
     {

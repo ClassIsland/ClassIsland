@@ -9,7 +9,7 @@ namespace ClassIsland.ViewModels;
 public class ClassPlanDetailsViewModel : ObservableRecipient
 {
     private ClassPlan _classPlan = new();
-    private ObservableCollection<LessonDetails> _classes = new ObservableCollection<LessonDetails>();
+    private ObservableCollection<LessonDetails> _classes = new();
     private AttachedSettingsControlInfo? _selectedControlInfo;
     private AttachedSettingsControlInfo? _displayControlInfo;
     private LessonDetails? _selectedLesson;

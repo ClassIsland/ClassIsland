@@ -1,4 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
+
 namespace ClassIsland.Core.Models.Action;
 
 /// <summary>

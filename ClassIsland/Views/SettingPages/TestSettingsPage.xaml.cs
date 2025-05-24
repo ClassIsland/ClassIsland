@@ -17,15 +17,15 @@ public partial class TestSettingsPage : SettingsPageBase
 
     public Uri? NavigationUri
     {
-        get { return (Uri)GetValue(NavigationUriProperty); }
-        set { SetValue(NavigationUriProperty, value); }
+        get => (Uri)GetValue(NavigationUriProperty);
+        set => SetValue(NavigationUriProperty, value);
     }
 
     public TestSettingsPage()
     {
         DataContext = this;
         InitializeComponent();
-        Loaded+= OnLoaded;
+        Loaded += OnLoaded;
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)

@@ -5,7 +5,6 @@
                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                   xmlns:local="clr-namespace:ClassIsland.Controls.Components"
-                  xmlns:models="clr-namespace:ClassIsland.Models"
                   xmlns:ci="http://classisland.tech/schemas/xaml/core"
                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                   xmlns:componentSettings="clr-namespace:ClassIsland.Models.ComponentSettings"
@@ -13,32 +12,9 @@
                   mc:Ignorable="d"
                   d:DesignHeight="450" d:DesignWidth="800">
     <ci:ComponentBase.Resources>
-        <StackPanel x:Key="MigrateConfirm" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
-            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-                <Run Text="导入旧版设置"/>
-            </TextBlock>
-            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
-                <Run Text="此操作将从 1.4 及以前的课表设置导入课表组件设置，并覆盖当前课表组件的设置。"/>
-            </TextBlock>
-            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
-                <Button Content="继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
-                    <Button.CommandParameter>
-                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                            True
-                        </system:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
-                    <Button.CommandParameter>
-                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                            False
-                        </system:Boolean>
-                    </Button.CommandParameter>
-                </Button>
-            </StackPanel>
-        </StackPanel>
     </ci:ComponentBase.Resources>
-    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ScheduleComponentSettingsControl}}">
+    <Grid
+        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:ScheduleComponentSettingsControl}}">
         <ScrollViewer>
             <StackPanel>
                 <!-- 附加设置覆盖提示 -->
@@ -51,14 +27,14 @@
                                     materialDesign:RippleAssist.Feedback="{DynamicResource MaterialDesignBody}"
                                     Foreground="{DynamicResource MaterialDesignBody}"
                                     Click="ButtonShowAttachedSettings_OnClick">
-                                <ci:IconText Kind="MoreCircleOutline" Text="查看…"/>
+                                <ci:IconText Kind="MoreCircleOutline" Text="查看…" />
                             </Button>
                             <materialDesign:PackIcon Kind="LayersOutline"
                                                      Margin="0 0 4 0"
-                                                     VerticalAlignment="Center"/>
+                                                     VerticalAlignment="Center" />
                             <TextBlock Text="此处的设置可以在档案设置中被附加设置覆盖。"
                                        TextWrapping="Wrap"
-                                       VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center" />
                         </DockPanel>
                     </Grid>
                 </materialDesign:ColorZone>
@@ -114,37 +90,38 @@
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 5 0 -3"
                                        Text="显示精确倒计时" VerticalAlignment="Center"
-                                           Opacity="0.75">
+                                       Opacity="0.75">
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Settings.ExtraInfoType}" Value="4">
-                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Setter Property="Visibility" Value="Visible" />
                                             </DataTrigger>
                                         </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                     </Style>
                                 </TextBlock.Style>
                             </TextBlock>
 
-                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 -3" HorizontalAlignment="Right">
+                            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="0 5 0 -3"
+                                        HorizontalAlignment="Right">
                                 <StackPanel.Style>
                                     <Style TargetType="StackPanel">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding Settings.ExtraInfoType}" Value="4">
-                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Setter Property="Visibility" Value="Visible" />
                                             </DataTrigger>
                                         </Style.Triggers>
-                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                     </Style>
                                 </StackPanel.Style>
-                                
+
                                 <TextBlock Text="当剩余时间不足" VerticalAlignment="Center"
-                                           Opacity="0.75"/>
+                                           Opacity="0.75" />
                                 <TextBox Foreground="{DynamicResource MaterialDesignBody}"
                                          Text="{Binding Settings.ExtraInfo4ShowSecondsSeconds, Converter={StaticResource IntToStringConverter}}"
                                          MinWidth="75" Margin="3 0 0 0" TextAlignment="Center"
-                                         materialDesign:TextFieldAssist.SuffixText="秒"/>
+                                         materialDesign:TextFieldAssist.SuffixText="秒" />
                             </StackPanel>
                         </Grid>
                     </Expander>
@@ -169,8 +146,8 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="时间点结束倒计时时长" VerticalAlignment="Center" />
                             <ci:NumbericTextBox Grid.Row="0" MaxValue="36000" MinValue="0" Width="100"
@@ -183,8 +160,8 @@
 
                             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                         Margin="0 8 0 0">
-                                <ToggleButton IsChecked="{Binding Settings.IsNonExactCountdownEnabled}"/>
-                                <TextBlock Text="使用模糊倒计时" Margin="4 0 0 0"/>
+                                <ToggleButton IsChecked="{Binding Settings.IsNonExactCountdownEnabled}" />
+                                <TextBlock Text="使用模糊倒计时" Margin="4 0 0 0" />
                             </StackPanel>
                         </Grid>
                     </Expander>
@@ -197,10 +174,10 @@
                                  Margin="0 0 0 6" />
                 <!-- 不显示已结束的课程 -->
                 <ci:SettingsCard IconGlyph="HideOutline"
-                 Header="不显示已结束的课程"
-                 Description="隐藏已结束的课程，只显示当前课程与暂未开始的课程。"
-                 IsOn="{Binding Settings.HideFinishedClass, Mode=TwoWay}"
-                 Margin="0 0 0 6" />
+                                 Header="不显示已结束的课程"
+                                 Description="隐藏已结束的课程，只显示当前课程与暂未开始的课程。"
+                                 IsOn="{Binding Settings.HideFinishedClass, Mode=TwoWay}"
+                                 Margin="0 0 0 6" />
                 <!-- 标记换课课程 -->
                 <ci:SettingsCard IconGlyph="SwapHorizontal"
                                  Header="标记换课课程"
@@ -217,7 +194,7 @@
                                 Value="{Binding Settings.ScheduleSpacing}"
                                 TickFrequency="0.05" IsSnapToTickEnabled="True"
                                 AutoToolTipPrecision="2"
-                                AutoToolTipPlacement="BottomRight"/>
+                                AutoToolTipPlacement="BottomRight" />
                     </ci:SettingsCard.Switcher>
                 </ci:SettingsCard>
                 <!-- 无课程时显示占位符 -->
@@ -240,17 +217,14 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
                                 <TextBlock Grid.Column="0" Text="当日没有课程的占位符内容" VerticalAlignment="Center" />
                                 <ComboBox MinWidth="100"
-                                      MaxWidth="300"
-                                      Grid.Column="1"
-                                      VerticalAlignment="Center"
-                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                      IsEditable="True"
-                                      Text="{Binding Settings.PlaceholderTextNoClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                          MaxWidth="300"
+                                          Grid.Column="1"
+                                          VerticalAlignment="Center"
+                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                          IsEditable="True"
+                                          Text="{Binding Settings.PlaceholderTextNoClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <system:String>今天没有课程。</system:String>
                                     <system:String>无</system:String>
                                     <system:String>[ ]</system:String>
@@ -261,17 +235,14 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
                                 <TextBlock Grid.Column="0" Text="当日课程结束的占位符内容" VerticalAlignment="Center" />
                                 <ComboBox MinWidth="100"
-                                      MaxWidth="300"
-                                      Grid.Column="1"
-                                      VerticalAlignment="Center"
-                                      Foreground="{DynamicResource MaterialDesignBody}"
-                                      IsEditable="True"
-                                      Text="{Binding Settings.PlaceholderTextAllClassEnded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                          MaxWidth="300"
+                                          Grid.Column="1"
+                                          VerticalAlignment="Center"
+                                          Foreground="{DynamicResource MaterialDesignBody}"
+                                          IsEditable="True"
+                                          Text="{Binding Settings.PlaceholderTextAllClassEnded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <system:String>今日课程已全部结束。</system:String>
                                     <system:String>无</system:String>
                                     <system:String>[ ]</system:String>
@@ -299,7 +270,7 @@
                         Style="{StaticResource MaterialDesignFlatButton}"
                         Click="ButtonImportLegacySettings_OnClick"
                         Visibility="{Binding SettingsService.Settings.IsMigratedFromv1_4, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ci:IconText Kind="Import" Text="导入旧版设置"/>
+                    <ci:IconText Kind="Import" Text="导入旧版设置" />
                 </Button>
             </StackPanel>
         </ScrollViewer>

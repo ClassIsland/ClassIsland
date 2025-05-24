@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using ClassIsland.Core.Models.Action;
 using ClassIsland.Shared;
 using Microsoft.Extensions.DependencyInjection;
+
 namespace ClassIsland.Core.Abstractions.Controls;
 
 /// <summary>
@@ -24,25 +25,16 @@ public abstract class ActionSettingsControlBase : UserControl, INotifyPropertyCh
     public static ActionSettingsControlBase? GetInstance(ActionRegistryInfo info, ref object? settings)
     {
         var control = IAppHost.Host?.Services.GetKeyedService<ActionSettingsControlBase>(info.Id);
-        if (control == null || info.SettingsControlType == null)
-        {
-            return null;
-        }
+        if (control == null || info.SettingsControlType == null) return null;
 
         var baseType = info.SettingsControlType.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json)
-            {
-                settingsReal = json.Deserialize(settingsType);
-            }
+            if (settingsReal is JsonElement json) settingsReal = json.Deserialize(settingsType);
 
-            if (settingsReal?.GetType() != settingsType)
-            {
-                settingsReal = Activator.CreateInstance(settingsType);
-            }
+            if (settingsReal?.GetType() != settingsType) settingsReal = Activator.CreateInstance(settingsType);
 
             settings = settingsReal;
 

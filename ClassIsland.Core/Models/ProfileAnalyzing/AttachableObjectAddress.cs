@@ -26,10 +26,7 @@ public class AttachableObjectAddress(string guid, int index = -1)
     /// <inheritdoc />
     public override bool Equals(object? obj)
     {
-        if (obj is AttachableObjectAddress address)
-        {
-            return address.Guid == Guid && address.Index == Index;
-        }
+        if (obj is AttachableObjectAddress address) return address.Guid == Guid && address.Index == Index;
 
         return false;
     }
