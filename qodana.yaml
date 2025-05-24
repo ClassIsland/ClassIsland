@@ -11,6 +11,5 @@ exclude:
     paths:
       - vendors
       - ClassIsland.Core/Walterlv
-      - "**/*.manifest"
-      - "**/*.appxmaniefst"
+  - name: XmlHighlighting
 fixesStrategy: cleanup
