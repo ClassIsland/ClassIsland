@@ -24,8 +24,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0.x
-      - name: Restore Project
-        run: dotnet restore
+      - name: Build Project
+        run: dotnet build
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.1
         with:

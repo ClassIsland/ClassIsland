@@ -4,3 +4,5 @@ profile:
 include:
   - name: CheckDependencyLicenses
 ide: QDNET
+dotnet:
+  solution: ClassIsland.sln
