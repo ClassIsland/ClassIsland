@@ -75,9 +75,9 @@ public static class SfSymbolIconClipData
 
         { SfSymbolIconKind.CloudDrizzleFill, "M-4.504883,-4.177892 V37.275233 H36.948242 V-4.177892 H-4.504883 Z" },
 
-        { SfSymbolIconKind.CloudRain, "M0 0V15H15V0H0Z" },
+        { SfSymbolIconKind.CloudModerateRain, "M0 0V15H15V0H0Z" },
 
-        { SfSymbolIconKind.CloudRainFill, "M-4.504883,-4.157161 V37.295964 H36.948242 V-4.157161 H-4.504883 Z" },
+        { SfSymbolIconKind.CloudModerateRainFill, "M-4.504883,-4.157161 V37.295964 H36.948242 V-4.157161 H-4.504883 Z" },
 
         { SfSymbolIconKind.CloudHeavyrain, "M0 0V23H23V0H0Z" },
 
