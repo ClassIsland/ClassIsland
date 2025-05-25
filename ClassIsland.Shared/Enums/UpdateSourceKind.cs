@@ -6,10 +6,6 @@
 public enum UpdateSourceKind
 {
     /// <summary>
-    /// AppCenter
-    /// </summary>
-    AppCenter,
-    /// <summary>
     /// GitHub
     /// </summary>
     GitHub,
