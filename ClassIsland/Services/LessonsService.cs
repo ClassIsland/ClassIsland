@@ -445,12 +445,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
             currentSelectedIndex = layout.IndexOf(currentTimeLayoutItem);
             if (currentTimeLayoutItem.TimeType == 0)
             {
+                currentState = TimeState.OnClass;
+
                 var i0 = GetClassIndex((int)currentSelectedIndex);
                 if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
                     Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
                 {
                     currentSubject = subject;
-                    currentState = TimeState.OnClass;
                 }
             }
             else if (currentTimeLayoutItem.TimeType == 1)
