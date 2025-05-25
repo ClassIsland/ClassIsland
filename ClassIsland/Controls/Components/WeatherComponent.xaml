@@ -36,7 +36,8 @@
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="WaterPercent"/>
+                                                 Kind="WaterPercent"
+                                                 VerticalAlignment="Center"/>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Humidity.Value}">
                             </Run>
@@ -47,10 +48,12 @@
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="Windsock"/>
+                                                 Kind="Windsock"
+                                                 VerticalAlignment="Center"/>
                         <materialDesign:PackIcon Height="22" Width="22"
                                                  Margin="6 0 0 0"
-                                                 Kind="Navigation">
+                                                 Kind="Navigation"
+                                                 VerticalAlignment="Center">
                             <materialDesign:PackIcon.RenderTransform>
                                 <RotateTransform Angle="{Binding SettingsService.Settings.LastWeatherInfo.Current.Wind.Direction.Value, Converter={StaticResource StringToDoubleConverter}}" CenterX="11" CenterY="11"/>
                             </materialDesign:PackIcon.RenderTransform>
@@ -64,7 +67,8 @@
                 </TabItem>
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Leaf" Width="22" Height="22">
+                        <materialDesign:PackIcon Kind="Leaf" Width="22" Height="22"
+                                                 VerticalAlignment="Center">
                             <materialDesign:PackIcon.Style>
                                 <Style TargetType="materialDesign:PackIcon">
                                     <Style.Triggers>
@@ -99,7 +103,7 @@
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="Gauge"/>
+                                                 Kind="Gauge" VerticalAlignment="Center"/>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.Pressure.Value}">
                             </Run>
@@ -110,7 +114,8 @@
                 <TabItem Visibility="Collapsed">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Height="22" Width="22"
-                                                 Kind="HomeThermometerOutline"/>
+                                                 Kind="HomeThermometerOutline"
+                                                 VerticalAlignment="Center"/>
                         <TextBlock VerticalAlignment="Center" Margin="6 0 0 0">
                             <Run Text="{Binding SettingsService.Settings.LastWeatherInfo.Current.FeelsLike.Value}">
                             </Run>
