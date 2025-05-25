@@ -25,34 +25,37 @@
                 <Grid.RenderTransform>
                     <TranslateTransform X="{Binding ScrollWidth, Mode=OneWay}"/>
                 </Grid.RenderTransform>
-                <ItemsControl ItemsSource="{Binding Settings.Children}"
-                              x:Name="ItemsControlCore"
-                              VerticalContentAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="Transparent"
-                              Height="{Binding ActualHeight, ElementName=OuterContainerStackPanel}"
-                              SizeChanged="ItemsControlCore_OnSizeChanged">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal" IsItemsHost="True" />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <ci:ComponentPresenter IsOnMainWindow="True" 
-                                                   Settings="{Binding}"
-                                                   HidingRules="{Binding HidingRules, Mode=OneWay}"
-                                                   HideOnRule="{Binding HideOnRule, Mode=OneWay}"
-                                                   Margin="6 0" />
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <Border Grid.Column="2" Width="{Binding ActualWidth, ElementName=ItemsControlCore}"
+                <Border x:Name="ItemsControlContainer" Background="Transparent">
+                    <ItemsControl ItemsSource="{Binding Settings.Children}"
+                                  x:Name="ItemsControlCore"
+                                  VerticalContentAlignment="Stretch"
+                                  VerticalAlignment="Stretch"
+                                  Background="Transparent"
+                                  Height="{Binding ActualHeight, ElementName=OuterContainerStackPanel}"
+                                  SizeChanged="ItemsControlCore_OnSizeChanged">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" IsItemsHost="True" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ci:ComponentPresenter IsOnMainWindow="True"
+                                                       Settings="{Binding}"
+                                                       HidingRules="{Binding HidingRules, Mode=OneWay}"
+                                                       HideOnRule="{Binding HideOnRule, Mode=OneWay}"
+                                                       Margin="6 0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+                <Border Grid.Column="2" Width="{Binding ActualWidth, ElementName=ItemsControlContainer}"
                         Height="{Binding ActualHeight, ElementName=OuterContainerStackPanel}"
                         Visibility="{Binding IsScrolling, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <Border.Background>
-                        <VisualBrush Visual="{Binding ElementName=ItemsControlCore}"
-                                     Stretch="Uniform"
+                        <VisualBrush Visual="{Binding ElementName=ItemsControlContainer}"
+                                     Stretch="UniformToFill"
+                                     AlignmentX="Left"
                                      AlignmentY="Center"/>
                     </Border.Background>
                 </Border>
