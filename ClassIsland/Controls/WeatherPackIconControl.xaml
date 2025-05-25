@@ -127,27 +127,27 @@
                         <!-- 小雨-中雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="21">
-                            <Setter Property="Kind" Value="CloudDrizzle"/>
+                            <Setter Property="Kind" Value="RainDrizzle2Moderate"/>
                         </DataTrigger>
                         <!-- 中雨-大雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="22">
-                            <Setter Property="Kind" Value="CloudRain"/>
+                            <Setter Property="Kind" Value="RainModerate2Heavy"/>
                         </DataTrigger>
                         <!-- 大雨-暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="23">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
+                            <Setter Property="Kind" Value="RainHeavy2Storm"/>
                         </DataTrigger>
                         <!-- 暴雨-大暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="24">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
+                            <Setter Property="Kind" Value="RainStorm2HeavyStorm"/>
                         </DataTrigger>
                         <!-- 大暴雨-特大暴雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="25">
-                            <Setter Property="Kind" Value="CloudHeavyrain"/>
+                            <Setter Property="Kind" Value="RainHeavyStorm2SevereStorm"/>
                         </DataTrigger>
                         <!-- 小雪-中雪 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
@@ -207,7 +207,7 @@
                         <!-- 雨 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                          Value="301">
-                            <Setter Property="Kind" Value="CloudRain"/>
+                            <Setter Property="Kind" Value="CloudDrizzle"/>
                         </DataTrigger>
                         <!-- 雪 -->
                         <DataTrigger Binding="{Binding Code, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"

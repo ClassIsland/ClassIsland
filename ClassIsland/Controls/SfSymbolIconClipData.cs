@@ -143,6 +143,26 @@ public static class SfSymbolIconClipData
 
         { SfSymbolIconKind.CloudMoonBoltFill, "M-1.948242,-2.332181 V39.120944 H39.504883 V-2.332181 H-1.948242 Z" },
 
+        { SfSymbolIconKind.RainDrizzle2Moderate, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainDrizzle2ModerateFill, "M0 0VH16V16H0Z"},
+
+        { SfSymbolIconKind.RainModerate2Heavy, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainModerate2HeavyFill, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainHeavy2Storm, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainHeavy2StormFill, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainStorm2HeavyStorm, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainStorm2HeavyStormFill, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainHeavyStorm2SevereStorm, "M0 0V16H16V0H0Z"},
+
+        { SfSymbolIconKind.RainHeavyStorm2SevereStormFill, "M0 0V16H16V0H0Z"},
+
         { SfSymbolIconKind.Smoke, "M-3.677734,-7.998047 V33.455078 H37.775391 V-7.998047 H-3.677734 Z" },
 
         { SfSymbolIconKind.SmokeFill, "M-3.629883,-8.039062 V33.414063 H37.823242 V-8.039062 H-3.629883 Z" },
