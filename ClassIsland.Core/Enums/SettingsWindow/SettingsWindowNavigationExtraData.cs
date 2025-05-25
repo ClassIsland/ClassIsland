@@ -10,7 +10,6 @@ public enum SettingsWindowNavigationExtraData
     /// 无
     /// </summary>
     None,
-
     /// <summary>
     /// 从导航栏进行导航
     /// </summary>

@@ -21,13 +21,12 @@ public class DevelopmentBuildAdorner : Adorner
     public bool ShowOssWatermark { get; }
 
     /// <inheritdoc />
-    public DevelopmentBuildAdorner(UIElement adornedElement, bool isDevelopmentBuild, bool showOssWatermark) : base(
-        adornedElement)
+    public DevelopmentBuildAdorner(UIElement adornedElement, bool isDevelopmentBuild, bool showOssWatermark) : base(adornedElement)
     {
         IsDevelopmentBuild = isDevelopmentBuild;
         ShowOssWatermark = showOssWatermark;
         _visualCollection = new VisualCollection(this);
-        _control = new Control
+        _control = new Control()
         {
             Template = FindResource("DevelopmentBuildAdornerControlTemplate") as ControlTemplate,
             ClipToBounds = false,

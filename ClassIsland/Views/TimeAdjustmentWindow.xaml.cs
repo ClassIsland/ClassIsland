@@ -33,10 +33,10 @@ public partial class TimeAdjustmentWindow
     public INotificationHostService NotificationHostService { get; }
     public TimeAdjustmentViewModel ViewModel { get; } = new();
 
-    private static readonly Guid ClassNotificationProviderGuid = new("08F0D9C3-C770-4093-A3D0-02F3D90C24BC");
+    private static readonly Guid ClassNotificationProviderGuid = new Guid("08F0D9C3-C770-4093-A3D0-02F3D90C24BC");
 
-    public TimeAdjustmentWindow(IExactTimeService exactTimeService,
-        ILessonsService lessonsService,
+    public TimeAdjustmentWindow(IExactTimeService exactTimeService, 
+        ILessonsService lessonsService, 
         SettingsService settingsService,
         INotificationHostService notificationHostService)
     {
@@ -53,6 +53,7 @@ public partial class TimeAdjustmentWindow
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
         ViewModel.CurrentTime = ExactTimeService.GetCurrentLocalDateTime();
+        
     }
 
     private void TimeAdjustmentWindow_OnClosed(object? sender, EventArgs e)
@@ -64,18 +65,23 @@ public partial class TimeAdjustmentWindow
     {
         var now = ExactTimeService.GetCurrentLocalDateTime();
         var offset = ViewModel.TargetTime - now;
-        SettingsService.Settings.TimeOffsetSeconds =
-            Math.Round(SettingsService.Settings.TimeOffsetSeconds + offset.TotalSeconds, 2);
+        SettingsService.Settings.TimeOffsetSeconds = Math.Round(SettingsService.Settings.TimeOffsetSeconds + offset.TotalSeconds , 2);
     }
 
     private void SetTargetTime(bool force)
     {
-        if (LessonsService.CurrentClassPlan?.TimeLayout is not { } timeLayout) return;
+        if (LessonsService.CurrentClassPlan?.TimeLayout is not { } timeLayout)
+        {
+            return;
+        }
 
         var provider =
             NotificationHostService.NotificationProviders.FirstOrDefault(x =>
                 x.ProviderGuid == ClassNotificationProviderGuid);
-        if (provider?.ProviderInstance is not ClassNotificationProvider classNotificationProvider) return;
+        if (provider?.ProviderInstance is not ClassNotificationProvider classNotificationProvider)
+        {
+            return;
+        }
 
         var now = ExactTimeService.GetCurrentLocalDateTime();
 
@@ -83,17 +89,14 @@ public partial class TimeAdjustmentWindow
         {
             // 上课中
             case TimeState.OnClass when LessonsService.NextBreakingTimeLayoutItem == TimeLayoutItem.Empty:
-                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now),
-                    TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay));
+                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay));
                 return;
             case TimeState.OnClass:
-                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now),
-                    TimeOnly.FromTimeSpan(LessonsService.NextBreakingTimeLayoutItem.StartSecond.TimeOfDay));
+                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.NextBreakingTimeLayoutItem.StartSecond.TimeOfDay));
                 return;
             // 课间休息
             case TimeState.Breaking when LessonsService.NextClassTimeLayoutItem == TimeLayoutItem.Empty:
-                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now),
-                    TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay));
+                ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(LessonsService.CurrentTimeLayoutItem.EndSecond.TimeOfDay));
                 return;
             case TimeState.Breaking:
             {
@@ -106,10 +109,9 @@ public partial class TimeAdjustmentWindow
                     ViewModel.TargetTime = prepOnClassTime;
                     return;
                 }
-
                 ViewModel.TargetTime = onClassTime;
                 return;
-            }
+                }
             case TimeState.None when LessonsService.NextClassTimeLayoutItem != TimeLayoutItem.Empty:
                 ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
                     LessonsService.NextClassTimeLayoutItem.StartSecond.TimeOfDay));
@@ -118,14 +120,17 @@ public partial class TimeAdjustmentWindow
                 ViewModel.TargetTime = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(
                     LessonsService.NextBreakingTimeLayoutItem.StartSecond.TimeOfDay));
                 return;
-            case TimeState.PrepareOnClass: // 弃用
+            case TimeState.PrepareOnClass:  // 弃用
             case TimeState.AfterSchool:
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
-        if (force) return;
+        if (force)
+        {
+            return;
+        }
         AdjustToNextMinute();
     }
 

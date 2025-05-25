@@ -13,9 +13,15 @@ public class SubjectDictionaryKeyFinderMultiConverter : IMultiValueConverter
     {
         // values[0]: Subject                       subject
         // values[1]: IDictionary<string, Subject>  dict
-        if (values.Length < 2) return "";
+        if (values.Length < 2)
+        {
+            return "";
+        }
 
-        if (values[0] is not Subject subject || values[1] is not IDictionary<string, Subject> dict) return "";
+        if (values[0] is not Subject subject || values[1] is not IDictionary<string, Subject> dict)
+        {
+            return "";
+        }
 
         return dict.FirstOrDefault(x => x.Value == subject).Key ?? "";
     }

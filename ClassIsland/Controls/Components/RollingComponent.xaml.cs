@@ -35,8 +35,8 @@ public partial class RollingComponent
 
     public double InnerContainerWidth
     {
-        get => (double)GetValue(InnerContainerWidthProperty);
-        set => SetValue(InnerContainerWidthProperty, value);
+        get { return (double)GetValue(InnerContainerWidthProperty); }
+        set { SetValue(InnerContainerWidthProperty, value); }
     }
 
     public static readonly DependencyProperty ScrollWidthProperty = DependencyProperty.Register(
@@ -44,8 +44,8 @@ public partial class RollingComponent
 
     public double ScrollWidth
     {
-        get => (double)GetValue(ScrollWidthProperty);
-        set => SetValue(ScrollWidthProperty, value);
+        get { return (double)GetValue(ScrollWidthProperty); }
+        set { SetValue(ScrollWidthProperty, value); }
     }
 
     public static readonly DependencyProperty OuterContainerWidthProperty = DependencyProperty.Register(
@@ -53,8 +53,8 @@ public partial class RollingComponent
 
     public double OuterContainerWidth
     {
-        get => (double)GetValue(OuterContainerWidthProperty);
-        set => SetValue(OuterContainerWidthProperty, value);
+        get { return (double)GetValue(OuterContainerWidthProperty); }
+        set { SetValue(OuterContainerWidthProperty, value); }
     }
 
     public static readonly DependencyProperty IsScrollingProperty = DependencyProperty.Register(
@@ -62,8 +62,8 @@ public partial class RollingComponent
 
     public bool IsScrolling
     {
-        get => (bool)GetValue(IsScrollingProperty);
-        set => SetValue(IsScrollingProperty, value);
+        get { return (bool)GetValue(IsScrollingProperty); }
+        set { SetValue(IsScrollingProperty, value); }
     }
 
     private Storyboard? _currentScrollingStoryboard;
@@ -87,25 +87,23 @@ public partial class RollingComponent
             return;
         }
 
-        var sb = new Storyboard
+        var sb = new Storyboard()
         {
             RepeatBehavior = RepeatBehavior.Forever,
-            FillBehavior = FillBehavior.Stop
+            FillBehavior = FillBehavior.Stop,
         };
-        var width = InnerContainerWidth + 16.0;
-        var pausePos = _pausePos =
-            !Settings.IsPauseEnabled || Settings.PauseOffsetX > width ? 0.0 : Settings.PauseOffsetX;
+        var width = (InnerContainerWidth + 16.0);
+        var pausePos = _pausePos = !Settings.IsPauseEnabled || Settings.PauseOffsetX > width ? 0.0 : Settings.PauseOffsetX;
         var durationSeconds = width / Math.Max(1, Settings.SpeedPixelPerSecond);
         var pauseSeconds = Settings.IsPauseEnabled ? Settings.PauseSeconds : 0.0;
-        var animation = new DoubleAnimationUsingKeyFrames
+        var animation = new DoubleAnimationUsingKeyFrames()
         {
-            KeyFrames =
-            [
+            KeyFrames = [
                 //new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpan.FromSeconds(Settings.PauseSeconds + durationSeconds))),
                 new LinearDoubleKeyFrame(-pausePos),
                 new LinearDoubleKeyFrame(-pausePos, KeyTime.FromTimeSpan(TimeSpanHelper.FromSecondsSafe(pauseSeconds))),
-                new LinearDoubleKeyFrame(-(width + pausePos),
-                    KeyTime.FromTimeSpan(TimeSpanHelper.FromSecondsSafe(pauseSeconds + durationSeconds)))
+                new LinearDoubleKeyFrame(-(width + pausePos), KeyTime.FromTimeSpan(TimeSpanHelper.FromSecondsSafe(pauseSeconds + durationSeconds))),
+
             ]
         };
         //Storyboard.SetTarget(animation, this);
@@ -145,16 +143,22 @@ public partial class RollingComponent
         _isPauseRuleSatisfied = Settings.PauseOnRule && RulesetService.IsRulesetSatisfied(Settings.PauseRule);
         _isStopRuleSatisfied = Settings.StopOnRule && RulesetService.IsRulesetSatisfied(Settings.StopRule);
 
-        if (prevStopState != _isStopRuleSatisfied) UpdateScrollState();
+        if (prevStopState != _isStopRuleSatisfied)
+        {
+            UpdateScrollState();
+        }
 
-        if (prevPauseState == _isPauseRuleSatisfied)
+        if (prevPauseState == _isPauseRuleSatisfied) 
             return;
         if (_isPauseRuleSatisfied)
+        {
             _currentScrollingStoryboard?.Pause(this);
+        }
         else
+        {
             _currentScrollingStoryboard?.Resume(this);
+        }
     }
-
     private void SettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName != nameof(Settings.PauseOffsetX) &&
@@ -162,7 +166,9 @@ public partial class RollingComponent
             e.PropertyName != nameof(Settings.IsPauseEnabled) &&
             e.PropertyName != nameof(Settings.SpeedPixelPerSecond) &&
             e.PropertyName != nameof(Settings.StopOnRule))
+        {
             return;
+        }
         UpdateScrollState();
     }
 

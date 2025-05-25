@@ -20,10 +20,7 @@ using Sentry;
 
 namespace ClassIsland.Services;
 
-public class PluginMarketService(
-    SettingsService settingsService,
-    IPluginService pluginService,
-    ILogger<PluginMarketService> logger) : ObservableRecipient, IPluginMarketService
+public class PluginMarketService(SettingsService settingsService, IPluginService pluginService, ILogger<PluginMarketService> logger) : ObservableRecipient, IPluginMarketService
 {
     public static string DefaultPluginIndexKey { get; } = "Default";
 
@@ -42,7 +39,7 @@ public class PluginMarketService(
         { "moeyy", "https://github.moeyy.xyz/https://github.com" }
     };
 
-    private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
+private ObservableDictionary<string, PluginInfo> _mergedPlugins = new();
     private bool _isLoadingPluginSource = false;
     private double _pluginSourceDownloadProgress;
     private Exception? _exception;
@@ -103,7 +100,9 @@ public class PluginMarketService(
         try
         {
             if (SettingsService.Settings.OfficialIndexMirrors.Count <= 0)
+            {
                 SettingsService.Settings.OfficialIndexMirrors = ConfigureFileHelper.CopyObject(FallbackMirrors);
+            }
             var indexes = GetIndexInfos().ToList();
             var i = 0.0;
             var total = Math.Max(1, indexes.Count);
@@ -116,7 +115,7 @@ public class PluginMarketService(
                 var download = DownloadBuilder.New()
                     .WithUrl(url)
                     .WithFileLocation(archive)
-                    .WithConfiguration(new DownloadConfiguration
+                    .WithConfiguration(new DownloadConfiguration()
                     {
                         Timeout = 10_000
                     })
@@ -124,12 +123,18 @@ public class PluginMarketService(
                 var i1 = i;
                 download.DownloadProgressChanged +=
                     (sender, args) =>
-                        PluginSourceDownloadProgress = args.ProgressPercentage / total + i1 / total * 100.0;
+                        PluginSourceDownloadProgress = (args.ProgressPercentage / total) + (i1 / total * 100.0);
                 download.DownloadFileCompleted += (sender, args) =>
                 {
-                    if (args.Error != null) throw new Exception($"无法加载插件源：{args.Error.Message}", args.Error);
+                    if (args.Error != null)
+                    {
+                        throw new Exception($"无法加载插件源：{args.Error.Message}", args.Error);
+                    } 
                     var indexFolderPath = Path.Combine(Services.PluginService.PluginsIndexPath, indexInfo.Id);
-                    if (Directory.Exists(indexFolderPath)) Directory.Delete(indexFolderPath, true);
+                    if (Directory.Exists(indexFolderPath))
+                    {
+                        Directory.Delete(indexFolderPath, true);
+                    }
 
                     Directory.CreateDirectory(indexFolderPath);
                     ZipFile.ExtractToDirectory(archive, indexFolderPath);
@@ -138,7 +143,6 @@ public class PluginMarketService(
 
                 i++;
             }
-
             LoadPluginSource();
             transaction.Finish(SpanStatus.Ok);
         }
@@ -148,7 +152,6 @@ public class PluginMarketService(
             Logger.LogError(ex, "无法加载插件源。");
             Exception = ex;
         }
-
         Logger.LogInformation("插件源刷新成功。");
         SettingsService.Settings.LastRefreshPluginSourceTime = DateTime.Now;
         IsLoadingPluginSource = false;
@@ -159,9 +162,8 @@ public class PluginMarketService(
         var mirrors = SettingsService.Settings.OfficialIndexMirrors.Count == 0
             ? FallbackMirrors
             : SettingsService.Settings.OfficialIndexMirrors;
-        const string repo =
-            "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/plugin/index.zip?time={time}";
-        return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo
+        const string repo = "https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/plugin/index.zip?time={time}";
+        return SettingsService.Settings.PluginIndexes.Append(new PluginIndexInfo()
         {
             Id = DefaultPluginIndexKey,
             Url = repo,
@@ -173,7 +175,7 @@ public class PluginMarketService(
     public PluginIndexItem? ResolveMarketPlugin(string id)
     {
         return Indexes.Select(i => i.Value.Plugins
-                .FirstOrDefault(x => x.Manifest.Id == id))
+            .FirstOrDefault(x => x.Manifest.Id == id))
             .OfType<PluginIndexItem>()
             .FirstOrDefault();
     }
@@ -190,7 +192,6 @@ public class PluginMarketService(
             transaction.Finish(SpanStatus.NotFound);
             return;
         }
-
         transaction.SetTag("plugin", item.Manifest.Name);
 
         if (DownloadTasks.ContainsKey(id))
@@ -204,7 +205,7 @@ public class PluginMarketService(
         var spanDownload = transaction.StartChild("download");
         var url = item.DownloadUrl;
         var md5 = item.DownloadMd5;
-        var task = new DownloadProgress
+        var task = new DownloadProgress()
         {
             IsDownloading = true
         };
@@ -216,7 +217,10 @@ public class PluginMarketService(
             .WithConfiguration(new DownloadConfiguration())
             .Build();
         transaction.SetTag("url", url);
-        if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri)) transaction.SetTag("url.host", uri.Host);
+        if (Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var uri))
+        {
+            transaction.SetTag("url.host", uri.Host);
+        }
 
         var stopwatch = new Stopwatch();
         download.DownloadFileCompleted += (sender, args) =>
@@ -232,7 +236,6 @@ public class PluginMarketService(
                 spanDownload.Finish(args.Error, SpanStatus.InternalError);
                 throw new Exception($"无法下载插件 {id}：{args.Error.Message}", args.Error);
             }
-
             spanDownload.Finish(SpanStatus.Ok);
 
             var spanValidateChecksum = transaction.StartChild("validate");
@@ -243,14 +246,20 @@ public class PluginMarketService(
             File.Move(archive, Path.Combine(Services.PluginService.PluginsPkgRootPath, id + ".cipx"), true);
             spanMoveToCache.Finish(SpanStatus.Ok);
         };
-        download.DownloadProgressChanged += (sender, args) => { task.Progress = args.ProgressPercentage; };
+        download.DownloadProgressChanged += (sender, args) =>
+        {
+            task.Progress = args.ProgressPercentage;
+        };
         try
         {
             BindDownloadTasks();
             stopwatch.Start();
             await download.StartAsync(task.CancellationToken);
             item.RestartRequired = true;
-            if (MergedPlugins.TryGetValue(id, out var plugin)) plugin.RestartRequired = true;
+            if (MergedPlugins.TryGetValue(id, out var plugin))
+            {
+                plugin.RestartRequired = true;
+            }
             RestartRequested?.Invoke(this, EventArgs.Empty);
             Logger.LogInformation("插件 {} 下载完成。", id);
             transaction.Finish(SpanStatus.Ok);
@@ -262,7 +271,6 @@ public class PluginMarketService(
             transaction.Finish(e, SpanStatus.InternalError);
             Logger.LogError(e, "无法从 {} 下载插件 {}", url, id);
         }
-
         task.IsDownloading = false;
         DownloadTasks.Remove(id);
     }
@@ -298,7 +306,6 @@ public class PluginMarketService(
                 mirror = i.SelectedMirror = index.DownloadMirrors.First().Key;
                 root = index.DownloadMirrors.First().Value;
             }
-
             Logger.LogDebug("插件源 {} 选择的镜像根：{}", name, root);
             foreach (var plugin in index.Plugins)
             {
@@ -313,10 +320,11 @@ public class PluginMarketService(
                     if (Version.TryParse(pluginLocal.Manifest.Version, out var versionLocal) &&
                         Version.TryParse(plugin.Manifest.Version, out var versionRemote) &&
                         versionRemote > versionLocal)
+                    {
                         pluginLocal.IsUpdateAvailable = true;
+                    }
                     continue;
                 }
-
                 plugin.IsAvailableOnMarket = true;
                 plugin.RealIconPath = plugin.RealIconPath.Replace("{root}", root);
                 plugin.Manifest.Readme = plugin.Manifest.Readme.Replace("{root}", root);
@@ -342,8 +350,9 @@ public class PluginMarketService(
             v.DownloadProgress = i.Value;
         }
 
-        foreach (var plugin in MergedPlugins.Where(plugin =>
-                     File.Exists(Path.Combine(Services.PluginService.PluginsPkgRootPath,
-                         plugin.Value.Manifest.Id + ".cipx")))) plugin.Value.RestartRequired = true;
+        foreach (var plugin in MergedPlugins.Where(plugin => File.Exists(Path.Combine(Services.PluginService.PluginsPkgRootPath, plugin.Value.Manifest.Id + ".cipx"))))
+        {
+            plugin.Value.RestartRequired = true;
+        }
     }
 }

@@ -32,7 +32,6 @@ public partial class JoinManagementDialog : UserControl
             ViewModel.ConfigFilePath = Services.Management.ManagementService.ManagementPresetPath;
             LoadManagementSettings();
         }
-
         base.OnInitialized(e);
     }
 
@@ -64,7 +63,7 @@ public partial class JoinManagementDialog : UserControl
     {
         ViewModel.IsWorking = true;
         try
-        {
+        { 
             await ManagementService.JoinManagementAsync(ViewModel.ManagementSettings);
         }
         catch (Exception exception)
@@ -72,7 +71,6 @@ public partial class JoinManagementDialog : UserControl
             ViewModel.ErrorMessage = exception.Message;
             ViewModel.IsErrorMessageOpen = true;
         }
-
         ViewModel.IsWorking = false;
     }
 }

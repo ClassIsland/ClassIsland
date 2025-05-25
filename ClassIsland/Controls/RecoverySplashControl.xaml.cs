@@ -13,6 +13,7 @@ public partial class RecoverySplashControl : UserControl
     public RecoverySplashControl()
     {
         InitializeComponent();
+            
     }
 
     private void RecoverySplashControl_OnLoaded(object sender, RoutedEventArgs e)

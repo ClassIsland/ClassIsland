@@ -16,7 +16,7 @@ public class IpcClient
     /// <summary>
     /// IPC 提供方。
     /// </summary>
-    public IpcProvider Provider { get; } = new();
+    public IpcProvider Provider { get; } = new IpcProvider();
 
     /// <summary>
     /// 远程的对方
@@ -27,7 +27,7 @@ public class IpcClient
     /// JSON IPC 提供方。
     /// </summary>
     public JsonIpcDirectRoutedProvider JsonIpcProvider { get; }
-
+    
     /// <summary>
     /// 初始化一个 <see cref="IpcClient"/> 对象。
     /// </summary>

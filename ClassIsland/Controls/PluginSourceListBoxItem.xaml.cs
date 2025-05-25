@@ -10,13 +10,12 @@ namespace ClassIsland.Controls;
 public partial class PluginSourceListBoxItem : UserControl
 {
     public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
-        nameof(Value), typeof(KeyValuePair<string, string>), typeof(PluginSourceListBoxItem),
-        new PropertyMetadata(default(KeyValuePair<string, string>)));
+        nameof(Value), typeof(KeyValuePair<string, string>), typeof(PluginSourceListBoxItem), new PropertyMetadata(default(KeyValuePair<string, string>)));
 
     public KeyValuePair<string, string> Value
     {
-        get => (KeyValuePair<string, string>)GetValue(ValueProperty);
-        set => SetValue(ValueProperty, value);
+        get { return (KeyValuePair<string, string>)GetValue(ValueProperty); }
+        set { SetValue(ValueProperty, value); }
     }
 
     public PluginSourceListBoxItem()

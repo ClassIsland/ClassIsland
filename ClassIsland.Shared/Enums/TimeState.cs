@@ -9,24 +9,20 @@ public enum TimeState
     /// 无
     /// </summary>
     None,
-
     /// <summary>
     /// 上课
     /// </summary>
     OnClass,
-
     /// <summary>
     /// 准备上课（预留）
     /// </summary>
     PrepareOnClass,
-
     /// <summary>
     /// 课间休息
     /// </summary>
     Breaking,
-
     /// <summary>
     /// 放学
     /// </summary>
-    AfterSchool
+    AfterSchool,
 }

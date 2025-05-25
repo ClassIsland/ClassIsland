@@ -13,4 +13,3 @@ exclude:
       - ClassIsland.Core/Walterlv
       - .github
   - name: XmlHighlighting
-fixesStrategy: cleanup

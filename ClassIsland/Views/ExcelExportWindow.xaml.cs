@@ -47,8 +47,7 @@ public partial class ExcelExportWindow
 
     public ExcelExportViewModel ViewModel { get; } = new();
 
-    public ExcelExportWindow(IThemeService themeService, IProfileService profileService,
-        ILogger<ExcelExportWindow> logger)
+    public ExcelExportWindow(IThemeService themeService, IProfileService profileService, ILogger<ExcelExportWindow> logger)
     {
         ThemeService = themeService;
         ProfileService = profileService;
@@ -163,14 +162,19 @@ public partial class ExcelExportWindow
 
     private void ViewModelOnPropertyChanging(object? sender, PropertyChangingEventArgs e)
     {
-        if (e.PropertyName is nameof(ViewModel.ClassPlanStartPos)) ClearGeneratedCells();
+        if (e.PropertyName is nameof(ViewModel.ClassPlanStartPos))
+        {
+            ClearGeneratedCells();
+        }
     }
 
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(ViewModel.SelectedClassPlanIds)
-            or nameof(ViewModel.ClassPlanStartPos))
+                            or nameof(ViewModel.ClassPlanStartPos))
+        {
             GenerateClassPlanCells(e.PropertyName != nameof(ViewModel.ClassPlanStartPos));
+        }
     }
 
     private void SelectedClassPlanIdsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -203,9 +207,8 @@ public partial class ExcelExportWindow
         if (range == RangePosition.Empty)
         {
             ViewModel.SelectedCell = null;
-            return; // 跳过单元格样式刷新
+            return;  // 跳过单元格样式刷新
         }
-
         var cell = Grid.CurrentWorksheet.Cells[range.StartPos];
         ViewModel.SelectedRange = Grid.CurrentWorksheet.Ranges[range];
         ViewModel.SelectedCell = cell;
@@ -221,13 +224,16 @@ public partial class ExcelExportWindow
 
     private void PreRefreshWorksheet()
     {
-        if (ViewModel.CurrentWorksheet == null) return;
+        if (ViewModel.CurrentWorksheet == null)
+        {
+            return;
+        }
 
         ViewModel.CurrentWorksheet.SelectionRangeChanged -= CurrentWorksheetOnSelectionRangeChanged;
         ViewModel.SelectedRange = null;
         ViewModel.SelectedCell = null;
         ViewModel.SelectedPosition = RangePosition.Empty;
-    }
+    } 
 
     private void CurrentWorksheetOnSelectionRangeChanged(object? sender, RangeEventArgs e)
     {
@@ -261,13 +267,19 @@ public partial class ExcelExportWindow
 
     private void ButtonBaseFontSizeDecrease_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedRange != null) ViewModel.SelectedRange.Style.FontSize -= 1;
+        if (ViewModel.SelectedRange != null)
+        {
+            ViewModel.SelectedRange.Style.FontSize -= 1;
+        }
         RefreshGridState();
     }
 
     private void ButtonBaseFontSizeIncrease_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedRange != null) ViewModel.SelectedRange.Style.FontSize += 1;
+        if (ViewModel.SelectedRange != null)
+        {
+            ViewModel.SelectedRange.Style.FontSize += 1;
+        }
         RefreshGridState();
     }
 
@@ -302,7 +314,10 @@ public partial class ExcelExportWindow
         ViewModel.SelectedRangePosition = e.Range;
         var vmt = typeof(ExcelExportViewModel);
         var p = vmt.GetProperty(ViewModel.CurrentUpdatingPropertyName);
-        if (p == null) return;
+        if (p == null)
+        {
+            return;
+        }
 
         p.SetValue(ViewModel, e.Range);
         ViewModel.CurrentSelectingElement?.Focus();
@@ -321,41 +336,47 @@ public partial class ExcelExportWindow
         //((Storyboard)FindResource("EditingLoop")).Remove();
     }
 
-    private string GetWeekDayName(int x)
+    private string GetWeekDayName(int x) => x switch
     {
-        return x switch
-        {
-            0 => "星期日",
-            1 => "星期一",
-            2 => "星期二",
-            3 => "星期三",
-            4 => "星期四",
-            5 => "星期五",
-            6 => "星期六",
-            _ => "???"
-        };
-    }
+        0 => "星期日",
+        1 => "星期一",
+        2 => "星期二",
+        3 => "星期三",
+        4 => "星期四",
+        5 => "星期五",
+        6 => "星期六",
+        _ => "???",
+    };
 
     private void GenerateClassPlanCells(bool clear)
     {
-        if (clear) ClearGeneratedCells();
+        if (clear)
+        {
+            ClearGeneratedCells();
+        }
 
         List<ClassPlan> classPlans = [];
         foreach (var i in ViewModel.SelectedClassPlanIds)
+        {
             if (ProfileService.Profile.ClassPlans.TryGetValue(i, out var cp))
+            {
                 classPlans.Add(cp);
-
+            }
+        }
         classPlans.Sort((x, y) => x.TimeRule.WeekDay - y.TimeRule.WeekDay);
 
         List<List<string>?> cellData = [null, null, null, null, null, null, null];
-        for (var i = 0; i < 7; i++)
+        for (int i = 0; i < 7; i++)
         {
             var currentCp = classPlans.Where(x => x.TimeRule.WeekDay == i).ToList();
-            if (currentCp.Count <= 0) continue;
+            if (currentCp.Count <= 0)
+            {
+                continue;
+            }
 
             var maxIndex = currentCp.Select(x => x.Classes.Count).Max();
             List<string> data = [GetWeekDayName(i)];
-            for (var j = 0; j < maxIndex; j++)
+            for (int j = 0; j < maxIndex; j++)
             {
                 var isEqual = true;
                 List<string> subjects = [];
@@ -363,17 +384,22 @@ public partial class ExcelExportWindow
                 {
                     subjects.Add(k.Classes[j].SubjectId);
 
-                    if (subjects[0] == k.Classes[j].SubjectId) continue;
+                    if (subjects[0] == k.Classes[j].SubjectId)
+                    {
+                        continue;
+                    }
 
                     isEqual = false;
                     break;
                 }
 
-                if (subjects.Count <= 0) break;
+                if (subjects.Count <= 0)
+                {
+                    break;
+                }
 
                 var subjectObjects = subjects.Select(x => ProfileService.Profile.Subjects[x] ?? Subject.Empty).ToList();
-                var textLine1 = isEqual
-                    ? $"{subjectObjects[0].Name}"
+                var textLine1 = isEqual ? $"{subjectObjects[0].Name}"
                     : $"{string.Join("/", subjectObjects.Select(x => x.Name))}";
                 var textLine2 = isEqual
                     ? $"\n{subjectObjects[0].TeacherName}"
@@ -389,7 +415,10 @@ public partial class ExcelExportWindow
         var rowBase = ViewModel.ClassPlanStartPos.Row;
         foreach (var i in cellData)
         {
-            if (i == null) continue;
+            if (i == null)
+            {
+                continue;
+            }
 
             var row = rowBase;
             foreach (var j in i)
@@ -404,7 +433,7 @@ public partial class ExcelExportWindow
             col++;
         }
 
-        for (var i = 1; i <= ViewModel.GeneratedRowsCount - 1; i++)
+        for (int i = 1; i <= ViewModel.GeneratedRowsCount - 1; i++)
         {
             var pos = new CellPosition(rowBase + i, colBase);
             Grid.CurrentWorksheet.Cells[pos].Data = i.ToString();
@@ -413,8 +442,7 @@ public partial class ExcelExportWindow
 
         ViewModel.GeneratedColsCount = col - colBase;
 
-        var range = new RangePosition(ViewModel.ClassPlanStartPos.Row, ViewModel.ClassPlanStartPos.Col,
-            ViewModel.GeneratedRowsCount,
+        var range = new RangePosition(ViewModel.ClassPlanStartPos.Row, ViewModel.ClassPlanStartPos.Col, ViewModel.GeneratedRowsCount,
             ViewModel.GeneratedColsCount);
         var style = Grid.CurrentWorksheet.Ranges[range].Style;
         style.HorizontalAlign = ViewModel.HorAlign;
@@ -428,27 +456,25 @@ public partial class ExcelExportWindow
         Grid.CurrentWorksheet.SetColumnsWidth(colBase + 1, ViewModel.GeneratedColsCount, (ushort)ViewModel.ColWidth);
         Grid.CurrentWorksheet.SetColumnsWidth(colBase, 1, 32);
         Grid.CurrentWorksheet.SetRangeBorders(range, ViewModel.BorderMode switch
-            {
-                0 => BorderPositions.None,
-                1 => BorderPositions.All,
-                2 => BorderPositions.All,
-                _ => BorderPositions.None
-            },
+        {
+            0 => BorderPositions.None,
+            1 => BorderPositions.All,
+            2 => BorderPositions.All,
+            _ => BorderPositions.None
+        },
             ViewModel.BorderMode switch
             {
                 0 => RangeBorderStyle.Empty,
                 1 => RangeBorderStyle.BlackSolid,
                 2 => RangeBorderStyle.BlackBoldSolid,
                 _ => RangeBorderStyle.Empty
-            });
+            }); 
     }
 
     private void ClearGeneratedCells()
     {
         var startPos = ViewModel.ClassPlanStartPos;
-        Grid.CurrentWorksheet.ClearRangeContent(
-            new RangePosition(startPos.Row, startPos.Col, ViewModel.GeneratedRowsCount, ViewModel.GeneratedColsCount),
-            CellElementFlag.All);
+        Grid.CurrentWorksheet.ClearRangeContent(new RangePosition(startPos.Row, startPos.Col, ViewModel.GeneratedRowsCount, ViewModel.GeneratedColsCount), CellElementFlag.All);
     }
 
     private void ButtonRegenerate_OnClick(object sender, RoutedEventArgs e)
@@ -458,12 +484,15 @@ public partial class ExcelExportWindow
 
     private string? SaveFile()
     {
-        var dialog = new SaveFileDialog
+        var dialog = new SaveFileDialog()
         {
             Title = "保存课表表格文件",
             Filter = $"Excel 工作簿(*.xlsx)|*.xlsx"
         };
-        if (dialog.ShowDialog(this) != true) return null;
+        if (dialog.ShowDialog(this) != true)
+        {
+            return null;
+        }
 
         Grid.Save(dialog.FileName, FileFormat.Excel2007, Encoding.Default);
         ViewModel.MessageQueue.Enqueue($"已保存到 {dialog.FileName}");
@@ -488,7 +517,10 @@ public partial class ExcelExportWindow
         try
         {
             var filename = SaveFile();
-            if (filename == null) return;
+            if (filename == null)
+            {
+                return;
+            }
 
             Process.Start(new ProcessStartInfo(filename)
             {

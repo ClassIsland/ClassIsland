@@ -30,11 +30,17 @@ public partial class ManagementPolicySettingsPage
 
     private async void ManagementPolicySettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (ManagementService.IsManagementEnabled) return;
+        if (ManagementService.IsManagementEnabled)
+        {
+            return;
+        }
         var result =
             await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig
                 .EditPolicyAuthorizeLevel);
-        if (result) ViewModel.IsLocked = false;
+        if (result)
+        {
+            ViewModel.IsLocked = false;
+        }
     }
 
     private void ManagementPolicySettingsPage_OnUnloaded(object sender, RoutedEventArgs e)

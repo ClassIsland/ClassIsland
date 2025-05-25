@@ -4,7 +4,9 @@ namespace ClassIsland.Models.AuthorizeProviderSettings;
 
 public partial class PasswordAuthorizeSettings : ObservableObject
 {
-    [ObservableProperty] private string _passwordHash = "";
+    [ObservableProperty]
+    private string _passwordHash = "";
 
-    [ObservableProperty] private byte[] _passwordSalt = [];
+    [ObservableProperty]
+    private byte[] _passwordSalt = [];
 }

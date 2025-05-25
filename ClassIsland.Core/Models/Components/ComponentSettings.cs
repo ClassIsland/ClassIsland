@@ -108,7 +108,8 @@ public class ComponentSettings : ObservableRecipient
         }
     }
 
-    [JsonIgnore] internal bool IsMigrated { get; set; } = false;
+    [JsonIgnore]
+    internal bool IsMigrated { get; set; } = false;
 
     [JsonIgnore] internal Guid MigrationSource { get; set; } = Guid.Empty;
 
@@ -117,8 +118,7 @@ public class ComponentSettings : ObservableRecipient
     /// </summary>
     [JsonIgnore]
     public ComponentInfo AssociatedComponentInfo =>
-        ComponentRegistryService.Registered.FirstOrDefault(x =>
-            string.Equals(x.Guid.ToString(), Id, StringComparison.CurrentCultureIgnoreCase)) ?? ComponentInfo.Empty;
+        ComponentRegistryService.Registered.FirstOrDefault(x => string.Equals(x.Guid.ToString(), Id, StringComparison.CurrentCultureIgnoreCase)) ?? ComponentInfo.Empty;
 
     /// <summary>
     /// 这个组件包含的组件
@@ -223,7 +223,7 @@ public class ComponentSettings : ObservableRecipient
         get => _foregroundColor;
         set
         {
-            if (Equals(value, _foregroundColor)) return;
+            if (Nullable.Equals(value, _foregroundColor)) return;
             _foregroundColor = value;
             OnPropertyChanged();
         }

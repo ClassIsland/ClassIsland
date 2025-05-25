@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+
 using Microsoft.Xaml.Behaviors;
 
 namespace ClassIsland.Behaviors;
@@ -8,13 +9,12 @@ namespace ClassIsland.Behaviors;
 public class AllCollectionBehavior : Behavior<ListBoxItem>
 {
     public static readonly DependencyProperty AllCollectionProperty = DependencyProperty.Register(
-        nameof(AllCollection), typeof(ObservableCollection<string>), typeof(AllCollectionBehavior),
-        new PropertyMetadata(default(ObservableCollection<string>)));
+        nameof(AllCollection), typeof(ObservableCollection<string>), typeof(AllCollectionBehavior), new PropertyMetadata(default(ObservableCollection<string>)));
 
     public ObservableCollection<string> AllCollection
     {
-        get => (ObservableCollection<string>)GetValue(AllCollectionProperty);
-        set => SetValue(AllCollectionProperty, value);
+        get { return (ObservableCollection<string>)GetValue(AllCollectionProperty); }
+        set { SetValue(AllCollectionProperty, value); }
     }
 
     public static readonly DependencyProperty CurrentValueProperty = DependencyProperty.Register(
@@ -22,8 +22,8 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
 
     public string CurrentValue
     {
-        get => (string)GetValue(CurrentValueProperty);
-        set => SetValue(CurrentValueProperty, value);
+        get { return (string)GetValue(CurrentValueProperty); }
+        set { SetValue(CurrentValueProperty, value); }
     }
 
     protected override void OnAttached()
@@ -36,7 +36,10 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
 
     protected override void OnDetaching()
     {
-        if (AssociatedObject == null) return;
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         AssociatedObject.Selected -= AssociatedObjectOnSelected;
         AssociatedObject.Unselected -= AssociatedObjectOnUnselected;
         base.OnDetaching();
@@ -51,17 +54,26 @@ public class AllCollectionBehavior : Behavior<ListBoxItem>
 
     protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
     {
-        if (e.Property == AllCollectionProperty) UpdateValue();
+        if (e.Property == AllCollectionProperty)
+        {
+            UpdateValue();
+        }
         base.OnPropertyChanged(e);
     }
 
     private void AssociatedObjectOnUnselected(object sender, RoutedEventArgs e)
     {
-        if (AllCollection.Contains(CurrentValue)) AllCollection.Remove(CurrentValue);
+        if (AllCollection.Contains(CurrentValue))
+        {
+            AllCollection.Remove(CurrentValue);
+        }
     }
 
     private void AssociatedObjectOnSelected(object sender, RoutedEventArgs e)
     {
-        if (!AllCollection.Contains(CurrentValue)) AllCollection.Add(CurrentValue);
+        if (!AllCollection.Contains(CurrentValue))
+        {
+            AllCollection.Add(CurrentValue);
+        }
     }
 }

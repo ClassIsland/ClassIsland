@@ -24,7 +24,7 @@ public interface IMarketplaceItemInfo : INotifyPropertyChanged
     /// <summary>
     /// 是否存在于本地
     /// </summary>
-    [JsonIgnore]
+    [JsonIgnore] 
     public bool IsLocal { get; }
 
     /// <summary>

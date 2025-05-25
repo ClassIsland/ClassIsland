@@ -5,27 +5,27 @@
         <UseWindowsForms>True</UseWindowsForms>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ApplicationIcon>Assets\AppLogo.ico</ApplicationIcon>
-        <!--        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>-->
+<!--        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>-->
         <UserSecretsId>0702af86-626c-4e4a-94e4-f506e4e2beb7</UserSecretsId>
         <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <StartupObject></StartupObject>
         <AssemblyName>ClassIsland</AssemblyName>
         <RootNamespace>ClassIsland</RootNamespace>
-        <IsMsix>$(IsMsix)</IsMsix>
-        <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
-        <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<IsMsix>$(IsMsix)</IsMsix>
+		<Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_MSIX'">
         <OutputType>WinExe</OutputType>
         <DebugType>embedded</DebugType>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
-        <OutputType>Exe</OutputType>
-        <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+	    <OutputType>Exe</OutputType>
+	    <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Configuration)'=='Debug_MSIX' Or '$(Configuration)'=='Release_MSIX'">
-        <IsMsix>true</IsMsix>
+      <IsMsix>true</IsMsix>
     </PropertyGroup>
     <PropertyGroup Condition="'$(IsMsix)'=='true'">
         <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
@@ -46,105 +46,105 @@
         <TargetFramework>net8.0-windows</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <None Remove="assets\documents\ChangeLog.md"/>
-        <None Remove="Assets\HoYoStickers\帕姆_注意.png"/>
-        <None Remove="assets\Tellings.txt"/>
-        <None Remove="Assets\TrustedPublicKeys\ClassIsland.MetadataPublisher.asc"/>
+        <None Remove="assets\documents\ChangeLog.md" />
+        <None Remove="Assets\HoYoStickers\帕姆_注意.png" />
+        <None Remove="assets\Tellings.txt" />
+        <None Remove="Assets\TrustedPublicKeys\ClassIsland.MetadataPublisher.asc" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug'">
-        <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6"/>
+        <PackageReference Include="JetBrains.Profiler.Api" Version="1.4.6" />
     </ItemGroup>
     <ItemGroup Condition="'$(Configuration)'=='Debug_MSIX'">
-        <PackageReference Include="JetBrains.Profiler.Api">
-            <Version>1.4.6</Version>
-        </PackageReference>
+      <PackageReference Include="JetBrains.Profiler.Api">
+        <Version>1.4.6</Version>
+      </PackageReference>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1"/>
-        <PackageReference Include="Downloader" Version="3.3.4"/>
-        <PackageReference Include="EPPlus" Version="7.0.8"/>
-        <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1"/>
-        <PackageReference Include="Grpc.Net.Client" Version="2.62.0"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+        <PackageReference Include="Downloader" Version="3.3.4" />
+        <PackageReference Include="EPPlus" Version="7.0.8" />
+        <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
+        <PackageReference Include="Grpc.Net.Client" Version="2.62.0" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="GuerrillaNtp" Version="3.1.0"/>
+        <PackageReference Include="GuerrillaNtp" Version="3.1.0" />
         <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="NAudio" Version="2.2.1"/>
-        <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6"/>
-        <PackageReference Include="Octokit" Version="9.1.0"/>
-        <PackageReference Include="Pastel" Version="4.2.0"/>
-        <PackageReference Include="PgpCore" Version="6.5.1"/>
-        <PackageReference Include="RawInput.Sharp" Version="0.1.3"/>
-        <PackageReference Include="Sentry" Version="4.9.0"/>
-        <PackageReference Include="Sentry.Extensions.Logging" Version="4.9.0"/>
-        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1"/>
-        <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1"/>
-        <PackageReference Include="System.Management" Version="8.0.0"/>
-        <PackageReference Include="System.Speech" Version="8.0.0"/>
-        <PackageReference Include="TimeCrontab" Version="3.5.1"/>
-        <PackageReference Include="WindowsShortcutFactory" Version="1.1.0"/>
-        <PackageReference Include="ColorHelper" Version="1.8.1"/>
+        <PackageReference Include="NAudio" Version="2.2.1" />
+        <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.6" />
+        <PackageReference Include="Octokit" Version="9.1.0" />
+        <PackageReference Include="Pastel" Version="4.2.0" />
+        <PackageReference Include="PgpCore" Version="6.5.1" />
+        <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
+        <PackageReference Include="Sentry" Version="4.9.0" />
+        <PackageReference Include="Sentry.Extensions.Logging" Version="4.9.0" />
+        <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+        <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
+        <PackageReference Include="System.Management" Version="8.0.0" />
+        <PackageReference Include="System.Speech" Version="8.0.0" />
+        <PackageReference Include="TimeCrontab" Version="3.5.1" />
+        <PackageReference Include="WindowsShortcutFactory" Version="1.1.0" />
+        <PackageReference Include="ColorHelper" Version="1.8.1" />
+	</ItemGroup>
+    <ItemGroup>
+        <Folder Include="Models\Logging\" />
+        <Folder Include="Models\Native\" />
+        <Folder Include="Models\TimeRules\" />
+        <Folder Include="Enums\" />
+        <Folder Include="Models\Ipc\" />
+        <Folder Include="Models\AuthorizeProviderSettings\" />
+        <Folder Include="Models\Logging\" />
+        <Folder Include="Services\Metadata\" />
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Models\Logging\"/>
-        <Folder Include="Models\Native\"/>
-        <Folder Include="Models\TimeRules\"/>
-        <Folder Include="Enums\"/>
-        <Folder Include="Models\Ipc\"/>
-        <Folder Include="Models\AuthorizeProviderSettings\"/>
-        <Folder Include="Models\Logging\"/>
-        <Folder Include="Services\Metadata\"/>
+        <None Include="..\..\.editorconfig" Link=".editorconfig" />
     </ItemGroup>
     <ItemGroup>
-        <None Include="..\..\.editorconfig" Link=".editorconfig"/>
-    </ItemGroup>
-    <ItemGroup>
-        <Resource Include="Assets\**"/>
+        <Resource Include="Assets\**" />
     </ItemGroup>
     <ItemGroup Condition="'$(TrimAssets)'=='true'">
-        <Resource Remove="Assets\Fonts\*.ttf"/>
-    </ItemGroup>
+        <Resource Remove="Assets\Fonts\*.ttf" />
+	</ItemGroup>
     <PropertyGroup Condition="'$(TrimAssets)'=='true'">
         <DefineConstants>$(DefineConstants);TrimAssets</DefineConstants>
     </PropertyGroup>
-    <PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
-        <DefineConstants>$(DefineConstants);DevelopmentBuild</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(PublishBuilding)' == 'true'">
-        <DefineConstants>$(DefineConstants);PublishBuilding</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(IsMsix)' == 'true'">
-        <DefineConstants>$(DefineConstants);IsMsix</DefineConstants>
-    </PropertyGroup>
+	<PropertyGroup Condition="'$(PublishBuilding)' != 'true' And ('$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Debug_MSIX')">
+		<DefineConstants>$(DefineConstants);DevelopmentBuild</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(PublishBuilding)' == 'true'">
+		<DefineConstants>$(DefineConstants);PublishBuilding</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(IsMsix)' == 'true'">
+		<DefineConstants>$(DefineConstants);IsMsix</DefineConstants>
+	</PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj"/>
-        <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj"/>
-        <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj"/>
-        <ProjectReference Include="..\vendors\System.Device.Location\System.Device.Location.csproj"/>
+        <ProjectReference Include="..\ClassIsland.Core\ClassIsland.Core.csproj" />
+        <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+        <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
+        <ProjectReference Include="..\vendors\System.Device.Location\System.Device.Location.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <Page Update="Themes\LightTheme.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
-        <Page Update="Themes\DarkTheme.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
-    </ItemGroup>
+	<ItemGroup>
+		<Page Update="Themes\LightTheme.xaml">
+			<Generator>MSBuild:Compile</Generator>
+			<XamlRuntime>Wpf</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="Themes\DarkTheme.xaml">
+			<Generator>MSBuild:Compile</Generator>
+			<XamlRuntime>Wpf</XamlRuntime>
+			<SubType>Designer</SubType>
+		</Page>
+	</ItemGroup>
 
     <Target Name="PrintConstants" AfterTargets="Build">
-        <Message Text="Constants: $(DefineConstants)" Importance="high"/>
-        <Message Text="IsMsix: $(IsMsix)" Importance="high"/>
-        <Message Text="TargetFramework: $(TargetFramework)" Importance="high"/>
+		<Message Text="Constants: $(DefineConstants)" Importance="high" />
+		<Message Text="IsMsix: $(IsMsix)" Importance="high" />
+		<Message Text="TargetFramework: $(TargetFramework)" Importance="high" />
     </Target>
 
-    <Import Project="..\Global.props"/>
+	<Import Project="..\Global.props" />
 </Project>

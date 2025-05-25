@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+
 using ClassIsland.Controls;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Controls;
@@ -20,12 +21,16 @@ using ClassIsland.Core.Models.Theming;
 using ClassIsland.Shared.Models.Profile;
 using ClassIsland.Models;
 using ClassIsland.ViewModels;
+
 using MaterialDesignThemes.Wpf;
+
 using OfficeOpenXml;
+
 using unvell.ReoGrid;
 using unvell.ReoGrid.Events;
 using unvell.ReoGrid.Graphics;
 using unvell.ReoGrid.IO;
+
 using CheckBox = System.Windows.Controls.CheckBox;
 using DataFormats = System.Windows.DataFormats;
 using DragDropEffects = System.Windows.DragDropEffects;
@@ -70,15 +75,14 @@ public partial class ExcelImportWindow : MyWindow
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
     }
-
     private void EnterSelectingMode()
     {
         BeginStoryboard((Storyboard)FindResource("EditingLoop"));
         ViewModel.IsSelectingMode = true;
         ViewModel.NormalSelectionRangePosition = Grid.CurrentWorksheet.SelectionRange;
         var s = typeof(ExcelImportViewModel).GetProperty(ViewModel.CurrentUpdatingPropertyName)?.GetValue(ViewModel);
-        ViewModel.SelectedRangePosition = Grid.CurrentWorksheet.SelectionRange
-            = (RangePosition)(s ?? RangePosition.Empty);
+        ViewModel.SelectedRangePosition = Grid.CurrentWorksheet.SelectionRange 
+                = (RangePosition)(s ?? RangePosition.Empty);
         Grid.CurrentWorksheet.SelectionRangeChanged += CurrentWorksheetOnSelectionRangeChanged;
         if (ViewModel.CurrentSelectingElement != null) ViewModel.CurrentSelectingElement.IsSelecting = true;
         Grid.ControlStyle.SelectionBorderWidth = 5;
@@ -99,11 +103,17 @@ public partial class ExcelImportWindow : MyWindow
 
     private void CurrentWorksheetOnSelectionRangeChanged(object? sender, RangeEventArgs e)
     {
-        if (!ViewModel.IsSelectingMode) return;
+        if (!ViewModel.IsSelectingMode)
+        {
+            return;
+        }
         ViewModel.SelectedRangePosition = e.Range;
         var vmt = typeof(ExcelImportViewModel);
         var p = vmt.GetProperty(ViewModel.CurrentUpdatingPropertyName);
-        if (p == null) return;
+        if (p == null)
+        {
+            return; 
+        }
 
         p.SetValue(ViewModel, e.Range);
         ViewModel.CurrentSelectingElement?.Focus();
@@ -165,16 +175,19 @@ public partial class ExcelImportWindow : MyWindow
         rgcs[ControlAppearanceColors.RowHeadText] = b;
         rgcs[ControlAppearanceColors.SelectionBorder] = sca2;
         rgcs[ControlAppearanceColors.SelectionFill] = sca;
-        rgcs[ControlAppearanceColors.GridBackground] = Color.FromArgb(255, 255, 255, 255);
-        rgcs[ControlAppearanceColors.GridText] = Color.FromArgb(255, 0, 0, 0);
-        rgcs[ControlAppearanceColors.GridLine] = Color.FromArgb(255, 208, 215, 229);
+        rgcs[ControlAppearanceColors.GridBackground] = Color.FromArgb(255,255,255,255);
+        rgcs[ControlAppearanceColors.GridText] = Color.FromArgb(255,0,0,0);
+        rgcs[ControlAppearanceColors.GridLine] = Color.FromArgb(255,208,215,229);
         Grid.ControlStyle = rgcs;
     }
 
     protected override async void OnContentRendered(EventArgs e)
     {
         UpdateChartStyle();
-        if (File.Exists(ExcelSourcePath)) LoadExcelWorkbook();
+        if (File.Exists(ExcelSourcePath))
+        {
+            LoadExcelWorkbook();
+        }
 
         Grid.SheetTabWidth = 400;
         base.OnContentRendered(e);
@@ -191,23 +204,25 @@ public partial class ExcelImportWindow : MyWindow
             //}
             excel.Workbook.Styles.UpdateXml();
             foreach (var sheet in excel.Workbook.Worksheets)
-            foreach (var cell in sheet.Cells)
             {
-                if (!cell.IsRichText) continue;
-                var text = cell.RichText.Text;
-                Console.WriteLine(cell.RichText.HtmlText);
-                cell.RichText.Clear();
-                cell.Value = text;
-                //cell.RichText.Text = text;
+                foreach (var cell in sheet.Cells)
+                {
+                    if (!cell.IsRichText) continue;
+                    var text = cell.RichText.Text;
+                    Console.WriteLine(cell.RichText.HtmlText);
+                    cell.RichText.Clear();
+                    cell.Value = text;
+                    //cell.RichText.Text = text;
+                }
             }
         });
 
         var filePath = Path.Combine(App.AppTempFolderPath, $"excel{Guid.NewGuid()}.xlsx");
         await excel.SaveAsAsync(filePath);
-        ExcelSourcePath = filePath;
+        ExcelSourcePath = filePath ;
     }
 
-    private async void LoadExcelWorkbook(bool isFixed = false)
+    private async void LoadExcelWorkbook(bool isFixed=false)
     {
         ViewModel.SlideIndex = 1;
         ViewModel.OpenFileName = ExcelSourcePath;
@@ -232,19 +247,16 @@ public partial class ExcelImportWindow : MyWindow
                     await ShowDialog("FixExcelFailed");
                     return;
                 }
-
                 var r = await ShowDialog("ExcelOpenError") as bool?;
                 if (r != true || isFixed)
                 {
                     ViewModel.SlideIndex = 0;
                     return;
                 }
-
                 await FixWorkbookAsync(ExcelSourcePath);
                 LoadExcelWorkbook(true);
                 return;
             }
-
             Debug.WriteLine(sw.Elapsed);
             ViewModel.IsFileSelected = true;
             ViewModel.SlideIndex = 2;
@@ -274,9 +286,8 @@ public partial class ExcelImportWindow : MyWindow
 
     private void ProfileSettingsWindow_OnDragEnter(object sender, DragEventArgs e)
     {
-        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) && !ViewModel.IsFileSelected
-            ? DragDropEffects.Link
-            : DragDropEffects.None;
+        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) && !ViewModel.IsFileSelected 
+            ? DragDropEffects.Link : DragDropEffects.None;
         ViewModel.IsDragEntering = e.Data.GetDataPresent(DataFormats.FileDrop) && !ViewModel.IsFileSelected;
     }
 
@@ -313,15 +324,22 @@ public partial class ExcelImportWindow : MyWindow
 
     private void NavigateCommand_OnExecuted(object sender, ExecutedRoutedEventArgs e)
     {
-        if (e.Parameter is not string p) return;
+        if (e.Parameter is not string p)
+        {
+            return;
+        }
 
         if (ViewModel.SlideIndex == 6)
         {
             ViewModel.ClassRecognitionTimePoints.Clear();
             ViewModel.SelectedTimeLayout = ProfileService.Profile.TimeLayouts[ViewModel.SelectedTimeLayoutId];
             foreach (var i in ViewModel.SelectedTimeLayout.Layouts)
+            {
                 if (i.TimeType == 0)
+                {
                     ViewModel.ClassRecognitionTimePoints.Add(new Selectable<TimeLayoutItem>(i));
+                }
+            }
         }
 
         ViewModel.SlideIndex = p switch
@@ -347,8 +365,7 @@ public partial class ExcelImportWindow : MyWindow
         };
         switch (p)
         {
-            case "ImportTimeLayoutFromThisFile"
-                when ViewModel.SelectedTimeLayoutId == "" && ViewModel.TimeLayoutImportSource != 2:
+            case "ImportTimeLayoutFromThisFile" when ViewModel.SelectedTimeLayoutId == "" && ViewModel.TimeLayoutImportSource != 2:
                 ViewModel.SelectedTimeLayoutId = Guid.NewGuid().ToString();
                 ProfileService.Profile.TimeLayouts.Add(ViewModel.SelectedTimeLayoutId, ViewModel.SelectedTimeLayout);
                 break;
@@ -372,7 +389,9 @@ public partial class ExcelImportWindow : MyWindow
                 w.ImportTimeLayoutOnly = true;
                 w.ShowDialog();
                 if (!string.IsNullOrEmpty(w.ViewModel.SelectedTimeLayoutId))
+                {
                     ViewModel.SelectedTimeLayoutId = w.ViewModel.SelectedTimeLayoutId;
+                }
                 break;
         }
     }
@@ -407,7 +426,7 @@ public partial class ExcelImportWindow : MyWindow
 
         if (text == null) return null;
         var matches = Regex.Matches(text, "\\d+"); // 匹配数字
-        if (matches.Count is not (4 or 6)) // 格式不符合
+        if (matches.Count is not (4 or 6))  // 格式不符合
             return null;
         int h1 = 0, m1 = 0, s1 = 0, h2 = 0, m2 = 0, s2 = 0;
         switch (matches.Count)
@@ -429,9 +448,8 @@ public partial class ExcelImportWindow : MyWindow
                 s2 = int.Parse(matches[5].Value);
                 break;
         }
-
         // 保存结果
-        var result = new TimeLayoutItem
+        var result = new TimeLayoutItem()
         {
             StartSecond = new DateTime(baseDateOnly, new TimeOnly(h1, m1, s1)),
             EndSecond = new DateTime(baseDateOnly, new TimeOnly(h2, m2, s2))
@@ -447,28 +465,37 @@ public partial class ExcelImportWindow : MyWindow
         var selection = ViewModel.TimePointSourcePosition;
         var timeLayout = ViewModel.SelectedTimeLayout;
         var auto = ViewModel.TimeLayoutImportSource != 2;
-        if (auto) timeLayout.Layouts.Clear();
+        if (auto)
+        {
+            timeLayout.Layouts.Clear();
+        }
         ViewModel.ClassRecognitionRange.Clear();
         ViewModel.ClassRecognitionRangeCache.Clear();
         // 判断是否是垂直模式
-        if (selection.Rows != 1 && selection.Cols != 1) return;
+        if (selection.Rows != 1 && selection.Cols != 1)
+        {
+            return;
+        }
         var isVertical = selection.Cols == 1;
         ViewModel.IsVerticalLayout = isVertical;
 
-        var start = isVertical ? selection.Row : selection.Col;
-        var end = isVertical ? selection.EndRow : selection.EndCol;
+        var start = isVertical? selection.Row : selection.Col;
+        var end = isVertical? selection.EndRow : selection.EndCol;
 
         // 填充上课时间点
         for (var i = start; i <= end; i++)
         {
-            var text = Grid.CurrentWorksheet.GetCellText(isVertical ? i : selection.Row,
-                isVertical ? selection.Col : i);
-            if (text == null)
+            var text = Grid.CurrentWorksheet.GetCellText(isVertical ? i : selection.Row, 
+                isVertical? selection.Col : i);
+            if (text == null) 
                 continue;
             var result = ParseTimeLayoutItem(text);
-            if (result == null)
+            if (result == null) 
                 continue;
-            if (auto) timeLayout.Layouts.Add(result);
+            if (auto)
+            {
+                timeLayout.Layouts.Add(result);
+            }
             ViewModel.ClassRecognitionRangeCache.Add(i);
         }
 
@@ -477,7 +504,7 @@ public partial class ExcelImportWindow : MyWindow
             return;
         var tempLayouts = (from i in timeLayout.Layouts select i).ToList();
         var pIndex = 0;
-        for (var i = 0; i < tempLayouts.Count - 1; i++)
+        for (int i = 0; i < tempLayouts.Count - 1; i++)
         {
             pIndex++;
             var a = tempLayouts[i];
@@ -485,7 +512,7 @@ public partial class ExcelImportWindow : MyWindow
             if (b.StartSecond.TimeOfDay - a.EndSecond.TimeOfDay <= TimeSpan.Zero)
                 continue;
 
-            timeLayout.Layouts.Insert(pIndex, new TimeLayoutItem
+            timeLayout.Layouts.Insert(pIndex, new TimeLayoutItem()
             {
                 StartSecond = a.EndSecond,
                 EndSecond = b.StartSecond,
@@ -509,16 +536,21 @@ public partial class ExcelImportWindow : MyWindow
         var end = isVertical ? selection.EndCol : selection.EndRow;
         ViewModel.ClassPlanSources.Clear();
         for (var i = start; i <= end; i++)
+        {
             ViewModel.ClassPlanSources.Add(isVertical
                 ? new RangePosition(selection.Row, i, selection.Rows, 1)
                 : new RangePosition(i, selection.Col, 1, selection.Cols));
+        }
 
         // 填充时间识别源
-        var startR = isVertical ? selection.Row : selection.Col;
+        var startR = isVertical ?  selection.Row : selection.Col;
         var endR = isVertical ? selection.EndRow : selection.EndCol;
         var auto = ViewModel.TimeLayoutImportSource != 2;
         ViewModel.ClassRecognitionRange.Clear();
-        if (auto) ViewModel.ClassRecognitionTimePoints.Clear();
+        if (auto)
+        {
+            ViewModel.ClassRecognitionTimePoints.Clear();
+        }
         for (var i = startR; i <= endR; i++)
         {
             var range = isVertical
@@ -526,13 +558,16 @@ public partial class ExcelImportWindow : MyWindow
                 : new RangePosition(selection.Row, i, selection.EndRow, 1);
             var selectableRange = new Selectable<RangePosition>(range);
             ViewModel.ClassRecognitionRange.Add(selectableRange);
-            if (ViewModel.ClassRecognitionRangeCache.Contains(i)) selectableRange.IsSelected = true;
+            if (ViewModel.ClassRecognitionRangeCache.Contains(i))
+            {
+                selectableRange.IsSelected = true;
+            }
 
             var posRow = isVertical ? i : ViewModel.TimePointSourcePosition.Row;
             var posCol = isVertical ? ViewModel.TimePointSourcePosition.Col : i;
             var text = Grid.CurrentWorksheet.GetCellText(posRow, posCol);
             var result = ParseTimeLayoutItem(text);
-            if (result == null)
+            if (result == null) 
                 continue;
             // 匹配时间点
             if (auto)
@@ -541,7 +576,10 @@ public partial class ExcelImportWindow : MyWindow
                 ViewModel.ClassRecognitionTimePoints.Add(selectableTimePoint);
                 var matched = ViewModel.SelectedTimeLayout.Layouts.Where(k => k.TimeType == 0).Any(k =>
                     k.StartSecond.TimeOfDay == result.StartSecond.TimeOfDay);
-                if (matched) selectableTimePoint.IsSelected = true;
+                if (matched)
+                {
+                    selectableTimePoint.IsSelected = true;
+                }
             }
         }
     }
@@ -553,10 +591,8 @@ public partial class ExcelImportWindow : MyWindow
         if (source == RangePosition.Empty)
             return;
         var isVertical = ViewModel.IsVerticalLayout;
-
-        int gi = 0,
-            ti = 0,
-            ci = 0; // index of ViewModel.ClassRecognitionRange, index of ViewModel.ClassRecognitionTimePoints, 当前下标
+        
+        int gi = 0, ti = 0, ci = 0; // index of ViewModel.ClassRecognitionRange, index of ViewModel.ClassRecognitionTimePoints, 当前下标
         var start = isVertical ? source.Row : source.Col;
         var end = isVertical ? source.EndRow : source.EndCol;
         var subjects = ProfileService.Profile.Subjects;
@@ -581,12 +617,12 @@ public partial class ExcelImportWindow : MyWindow
             if (!i.IsSelected)
                 continue;
             // 移动下标
-            while (ti < ViewModel.ClassRecognitionTimePoints.Count &&
-                   !ViewModel.ClassRecognitionTimePoints[ti].IsSelected)
+            while (ti < ViewModel.ClassRecognitionTimePoints.Count && 
+                   !ViewModel.ClassRecognitionTimePoints[ti].IsSelected) 
                 ti++;
             var v = i.Value;
-            var row = isVertical ? v.Row : source.Row;
-            var col = isVertical ? source.Col : v.Col;
+            var row = isVertical? v.Row : source.Row;
+            var col = isVertical? source.Col : v.Col;
             var text = Grid.CurrentWorksheet.GetCellText(row, col);
             if (ti >= classPlan.Classes.Count)
                 break;
@@ -645,7 +681,10 @@ public partial class ExcelImportWindow : MyWindow
         if (e.AddedItems.Count <= 0)
             return;
         var r = (RangePosition?)e.AddedItems[0];
-        if (r != null) Grid.CurrentWorksheet.SelectionRange = r.Value;
+        if (r != null)
+        {
+            Grid.CurrentWorksheet.SelectionRange = r.Value;
+        }
     }
 
     private void MenuItemContinueImportClassPlan_OnClick(object sender, RoutedEventArgs e)
@@ -656,7 +695,9 @@ public partial class ExcelImportWindow : MyWindow
     private void CompleteImport()
     {
         foreach (var i in ViewModel.ImportedClassPlans)
+        {
             ProfileService.Profile.ClassPlans.Add(Guid.NewGuid().ToString(), i);
+        }
 
         ViewModel.SelectedTimeLayout.IsActivated = false;
         ViewModel.SelectedTimeLayout.IsActivatedManually = false;
@@ -677,7 +718,10 @@ public partial class ExcelImportWindow : MyWindow
     {
         var s = sender as CheckBox;
         Debug.WriteLine(s?.Content);
-        if (s?.Content != null) Grid.CurrentWorksheet.SelectRange((RangePosition)s.Content);
+        if (s?.Content != null)
+        {
+            Grid.CurrentWorksheet.SelectRange((RangePosition)s.Content);
+        }
     }
 
     private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -689,10 +733,13 @@ public partial class ExcelImportWindow : MyWindow
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = MouseWheelEvent;
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
             eventArg.Source = sender;
-            var parent = ((Control)sender).Parent as UIElement;
-            if (parent != null) parent.RaiseEvent(eventArg);
+            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
         }
     }
 
@@ -704,7 +751,7 @@ public partial class ExcelImportWindow : MyWindow
             InitialDirectory = Environment.SpecialFolder.Desktop.ToString(),
             Filter = "表格文件(*.xlsx)|*.xlsx"
         };
-        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) 
         {
             ExcelSourcePath = dialog.FileName;
             LoadExcelWorkbook();
@@ -726,7 +773,6 @@ public partial class ExcelImportWindow : MyWindow
             ViewModel.IsTimeLayoutRangeValid = true;
             return;
         }
-
         ViewModel.IsTimeLayoutRangeValid = false;
     }
 

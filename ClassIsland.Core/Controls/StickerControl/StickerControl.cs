@@ -27,7 +27,7 @@ public class StickerControl : IconControl.IconControl
 
     public object? StickerToolTip
     {
-        get => (object)GetValue(StickerToolTipProperty);
-        set => SetValue(StickerToolTipProperty, value);
+        get { return (object)GetValue(StickerToolTipProperty); }
+        set { SetValue(StickerToolTipProperty, value); }
     }
 }

@@ -1,41 +1,251 @@
 ﻿<controls:SettingsPageBase x:Class="ClassIsland.Views.SettingPages.AboutSettingsPage"
-                           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                           xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                           xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
-                           xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
-                           xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                           xmlns:ci="clr-namespace:ClassIsland"
-                           xmlns:commands="http://classisland.tech/schemas/xaml/core"
-                           xmlns:controls2="clr-namespace:ClassIsland.Controls"
-                           xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                           mc:Ignorable="d"
-                           d:DesignHeight="450" d:DesignWidth="800"
-                           Title="关于"
-                           TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                           Background="{DynamicResource MaterialDesignPaper}"
-                           FontFamily="{StaticResource HarmonyOsSans}"
-                           TextElement.FontWeight="Regular"
-                           TextElement.FontSize="14"
-                           TextOptions.TextFormattingMode="Ideal"
-                           TextOptions.TextRenderingMode="Auto"
-                           d:DataContext="{d:DesignInstance local:AboutSettingsPage}">
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ClassIsland.Views.SettingPages"
+      xmlns:controls="clr-namespace:ClassIsland.Core.Abstractions.Controls;assembly=ClassIsland.Core"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:ci="clr-namespace:ClassIsland"
+      xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+      xmlns:models="clr-namespace:ClassIsland.Models"
+      xmlns:commands="http://classisland.tech/schemas/xaml/core"
+      xmlns:controls2="clr-namespace:ClassIsland.Controls"
+      xmlns:system="clr-namespace:System;assembly=System.Runtime"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="关于"
+      TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+      Background="{DynamicResource MaterialDesignPaper}"
+      FontFamily="{StaticResource HarmonyOsSans}"
+      TextElement.FontWeight="Regular"
+      TextElement.FontSize="14"
+      TextOptions.TextFormattingMode="Ideal"
+      TextOptions.TextRenderingMode="Auto"
+      d:DataContext="{d:DesignInstance local:AboutSettingsPage}">
 
     <controls:SettingsPageBase.Resources>
         <Style x:Key="LinkButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
-            <Setter Property="Height" Value="48" />
-            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}" />
-            <Setter Property="materialDesign:RippleAssist.Feedback" Value="{DynamicResource MaterialDesignBody}" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="24 0" />
-            <Setter Property="TextElement.FontSize" Value="14" />
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="materialDesign:RippleAssist.Feedback" Value="{DynamicResource MaterialDesignBody}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="24 0"/>
+            <Setter Property="TextElement.FontSize" Value="14"/>
         </Style>
         <Style TargetType="StackPanel" x:Key="LinkButtonGroupStackPanelStyle">
             <Style.Resources>
-                <Style TargetType="Button" BasedOn="{StaticResource LinkButtonStyle}" />
+                <Style TargetType="Button" BasedOn="{StaticResource LinkButtonStyle}"/>
             </Style.Resources>
         </Style>
+        <Grid Margin="16" x:Key="ContributorsDrawer" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="贡献人员" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <TextBlock Grid.Row="1" Margin="0 6 0 0" Text="感谢以下同学为本项目做出的贡献！"/>
+            <Button Grid.Row="2" HorizontalAlignment="Left" 
+                    Click="ButtonRefreshContributors_OnClick"
+                    Margin="0 2 0 0"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    materialDesign:ButtonProgressAssist.IsIndeterminate="True"
+                    materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding ViewModel.IsRefreshingContributors}"
+                    IsEnabled="{Binding ViewModel.IsRefreshingContributors, Converter={StaticResource InvertBooleanConverter}}">
+                <controls1:IconText Kind="Refresh" Text="刷新"/>
+            </Button>
+            <ListView Grid.Row="3" Margin="0 2 0 0"
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      ItemsSource="{Binding SettingsService.Settings.ContributorsCache.Contributors}"
+                      materialDesign:ListBoxItemAssist.ShowSelection="False">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" VerticalAlignment="Center"
+                                  Width="32" Height="32"
+                                  Margin="0 0 6 0">
+                                <Grid.Clip>
+                                    <RectangleGeometry RadiusX="16" RadiusY="16"
+                                                       Rect="0,0,32,32" />
+                                </Grid.Clip>
+                                <Border Background="{DynamicResource MaterialDesignBody}" Opacity="0.1" />
+                                <Image Source="{Binding AvatarUri}"
+                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                       Width="32" Height="32">
+                                </Image>
+                            </Grid>
+                            <TextBlock Grid.Column="1" TextWrapping="Wrap">
+                                <Run FontSize="15"
+                                     Text="{Binding Name, Mode=OneWay}" />
+                                <LineBreak />
+                                <Run FontSize="11"
+                                     FontWeight="Light"
+                                     Text="{Binding ContributionText, Mode=OneWay}" />
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        <Grid Margin="16" x:Key="ThirdPartyLibs" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="第三方库" Style="{StaticResource MaterialDesignHeadline5TextBlock}" />
+            <ListView Grid.Row="1" Margin="0 6 0 0" HorizontalContentAlignment="Stretch"
+                      VirtualizingPanel.ScrollUnit="Pixel">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:ContributionLabel}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <materialDesign:PackIcon Grid.Row="0" Grid.Column="0"
+                                                     Kind="PackageVariant" VerticalAlignment="Center"
+                                                     Margin="0 0 6 0" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Title}"
+                                       VerticalAlignment="Center" FontSize="14"
+                                       FontWeight="Bold" TextWrapping="Wrap" />
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       VerticalAlignment="Center" FontSize="14"
+                                       TextWrapping="Wrap" 
+                                       Visibility="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <commands:NavHyperlink CommandParameter="{Binding Website}"
+                                                       ToolTip="{Binding Website}">
+                                    网站…
+                                </commands:NavHyperlink>
+                                <commands:NavHyperlink CommandParameter="{Binding LicenseUrl}"
+                                                       ToolTip="{Binding LicenseUrl}">
+                                    查看许可证…
+                                </commands:NavHyperlink>
+                            </TextBlock>
+                            <!--<TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}"  Margin="0 3 0 0" TextWrapping="Wrap"/>-->
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                <models:ContributionLabel Title=".NET"
+                                          Website="https://github.com/microsoft/dotnet" 
+                                          LicenseUrl="https://github.com/microsoft/dotnet/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="BouncyCastle"
+                                          Website="https://www.bouncycastle.org/download/bouncy-castle-c/"
+                                          LicenseUrl="https://github.com/bcgit/bc-csharp/blob/master/LICENSE.md"/>
+                <models:ContributionLabel Title="ColorHelper"
+                                          Website="https://github.com/iamartyom/ColorHelper"
+                                          LicenseUrl="https://github.com/iamartyom/ColorHelper/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="CommunityToolkit.Mvvm"
+                                          Website="https://github.com/CommunityToolkit/dotnet" 
+                                          LicenseUrl="https://github.com/CommunityToolkit/dotnet/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="dotnetCampus.Ipc"
+                                          Website="https://github.com/dotnet-campus/dotnetCampus.Ipc" 
+                                          LicenseUrl="https://github.com/dotnet-campus/dotnetCampus.Ipc/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="Downloader"
+                                          Website="https://github.com/bezzad/Downloader" 
+                                          LicenseUrl="https://github.com/bezzad/Downloader/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="EPPlus"
+                                          Website="https://github.com/EPPlusSoftware/EPPlus" 
+                                          LicenseUrl="https://github.com/EPPlusSoftware/EPPlus/blob/develop8/license.md"/>
+                <models:ContributionLabel Title="Edge_tts_sharp"
+                                          Website="https://github.com/Entity-Now/Edge_tts_sharp" 
+                                          LicenseUrl=""/>
+                <models:ContributionLabel Title="gong-wpf-dragdrop"
+                                          Website="https://github.com/punker76/gong-wpf-dragdrop" 
+                                          LicenseUrl="https://github.com/punker76/gong-wpf-dragdrop/blob/develop/LICENSE"/>
+                <models:ContributionLabel Title="Google.Protobuf"
+                                          Website="https://github.com/protocolbuffers/protobuf" 
+                                          LicenseUrl="https://github.com/protocolbuffers/protobuf/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="Grpc"
+                                          Website="https://github.com/grpc/grpc-dotnet"
+                                          LicenseUrl="https://github.com/grpc/grpc-dotnet/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="Grpc.Tools"
+                                          Website="https://github.com/grpc/grpc"
+                                          LicenseUrl="https://github.com/grpc/grpc/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="GuerrillaNtp"
+                                          Website="https://github.com/robertvazan/guerrillantp" 
+                                          LicenseUrl="https://github.com/robertvazan/guerrillantp/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="H.NotifyIcon"
+                                          Website="https://github.com/HavenDV/H.NotifyIcon" 
+                                          LicenseUrl="https://github.com/HavenDV/H.NotifyIcon/blob/master/LICENSE.md"/>
+                <models:ContributionLabel Title="HarmonyOS Sans"
+                                          Website="https://developer.harmonyos.com/cn/design/resource" 
+                                          LicenseUrl="https://github.com/ClassIsland/ClassIsland/blob/dev/ClassIsland/Assets/Fonts/LICENSE.txt"/>
+                <models:ContributionLabel Title="MaterialDesignInXamlToolkit"
+                                          Website="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit"
+                                          LicenseUrl="https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="MdXaml"
+                                          Website="https://github.com/whistyun/MdXaml" 
+                                          LicenseUrl="https://github.com/whistyun/MdXaml/blob/master/LICENSE.txt"/>
+                <models:ContributionLabel Title="Microsoft.Data.Sqlite"
+                                          Website="https://github.com/dotnet/efcore" 
+                                          LicenseUrl="https://github.com/dotnet/efcore/blob/main/LICENSE.txt"/>
+                <models:ContributionLabel Title="Microsoft.Extensions.Hosting"
+                                          Website="https://github.com/dotnet/runtime"
+                                          LicenseUrl="https://github.com/dotnet/runtime/blob/main/LICENSE.TXT"/>
+                <models:ContributionLabel Title="Microsoft.Windows.CsWin32"
+                                          Website="https://github.com/microsoft/CsWin32"
+                                          LicenseUrl="https://github.com/microsoft/CsWin32/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="NAudio"
+                                          Website="https://github.com/naudio/NAudio" 
+                                          LicenseUrl="https://github.com/naudio/NAudio/blob/master/license.txt"/>
+                <models:ContributionLabel Title="Net.Codecrete.QrCodeGenerator"
+                                          Website="https://github.com/manuelbl/QrCodeGenerator"
+                                          LicenseUrl="https://github.com/manuelbl/QrCodeGenerator/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="Octokit"
+                                          Website="https://github.com/octokit/octokit.net"
+                                          LicenseUrl="https://github.com/octokit/octokit.net/blob/main/LICENSE.txt"/>
+                <models:ContributionLabel Title="Pastel"
+                                          Website="https://github.com/silkfire/Pastel" 
+                                          LicenseUrl="https://github.com/silkfire/Pastel/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="PgpCore"
+                                          Website="https://github.com/mattosaurus/PgpCore"
+                                          LicenseUrl="https://github.com/mattosaurus/PgpCore/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="RawInput.Sharp"
+                                          Website="https://github.com/mfakane/rawinput-sharp"
+                                          LicenseUrl="https://github.com/mfakane/rawinput-sharp/blob/master/LICENSE.txt"/>
+                <models:ContributionLabel Title="Sentry"
+                                          Website="https://github.com/getsentry/sentry-dotnet" 
+                                          LicenseUrl="https://github.com/getsentry/sentry-dotnet/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="Starward"
+                                          Website="https://github.com/Scighost/Starward" 
+                                          LicenseUrl="https://github.com/Scighost/Starward/blob/main/LICENSE"/>
+                <models:ContributionLabel Title="TimeCrontab"
+                                          Website="https://github.com/MonkSoul/TimeCrontab" 
+                                          LicenseUrl="https://github.com/monksoul/TimeCrontab/blob/net6/LICENSE"/>
+                <models:ContributionLabel Title="unvell.ReoGridWPF"
+                                          Website="https://github.com/unvell/ReoGrid"
+                                          LicenseUrl="https://github.com/unvell/ReoGrid/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="VirtualizingWrapPanel"
+                                          Website="https://github.com/sbaeumlisberger/VirtualizingWrapPanel" 
+                                          LicenseUrl="https://github.com/sbaeumlisberger/VirtualizingWrapPanel/blob/master/LICENSE"/>
+                <models:ContributionLabel Title="WPF"
+                                          Website="https://github.com/dotnet/Wpf" 
+                                          LicenseUrl="https://github.com/dotnet/wpf/blob/main/LICENSE.TXT"/>
+                <models:ContributionLabel Title="WindowsShortcutFactory"
+                                          Website="https://github.com/gdivis/WindowsShortcutFactory"
+                                          LicenseUrl="https://licenses.nuget.org/MIT"/>
+                <models:ContributionLabel Title="WinowsCommunityToolkit"
+                                          Website="https://github.com/CommunityToolkit/WindowsCommunityToolkit"
+                                          LicenseUrl="https://github.com/CommunityToolkit/WindowsCommunityToolkit/blob/main/License.md"/>
+                <models:ContributionLabel Title="YamlDotNet"
+                                          Website="https://github.com/aaubry/YamlDotNet"
+                                          LicenseUrl="https://github.com/aaubry/YamlDotNet/blob/master/LICENSE.txt"/>
+            </ListView>
+        </Grid>
 
         <Grid x:Key="OpenSourceLicense" Margin="16" Height="450" Width="600" MaxHeight="{Binding Height}">
             <Grid.RowDefinitions>
@@ -50,7 +260,9 @@
             <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定"
                     IsDefault="True"
                     HorizontalAlignment="Right" Margin="0 8 0 0"
-                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+
+            </Button>
         </Grid>
 
         <Grid x:Key="DiagnosticInfoDialog" Margin="16" Height="400" Width="550" MaxHeight="{Binding Height}">
@@ -67,7 +279,9 @@
             <Button Grid.Row="2" Style="{StaticResource MaterialDesignFlatButton}" Content="确定"
                     IsDefault="True"
                     HorizontalAlignment="Right" Margin="0 8 0 0"
-                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" />
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+
+            </Button>
         </Grid>
 
     </controls:SettingsPageBase.Resources>
@@ -92,9 +306,8 @@
                                     <Run Text="(Codename" />
                                     <Run Text="{x:Static ci:App.AppCodeName}" /><Run Text=")" />
                                     <LineBreak />
-                                    <Run Text="Copyright (c) 2023-" />
-                                    <Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" />
-                                    <Run Text="HelloWRC" />
+                                    <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" />
+                                    <Run Text="HelloWRC"/>
                                 </TextBlock>
                             </StackPanel>
                             <!-- Links -->
@@ -104,24 +317,24 @@
                                         Margin="0 0 4 0"
                                         ToolTip="项目主页"
                                         Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                        CommandParameter="https://classisland.tech" />
+                                        CommandParameter="https://classisland.tech"/>
                                 <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                         Content="{materialDesign:PackIcon BookOpenVariant, Size=20}"
                                         Margin="0 0 4 0"
                                         ToolTip="文档"
                                         Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                        CommandParameter="https://docs.classisland.tech" />
+                                        CommandParameter="https://docs.classisland.tech"/>
                                 <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                         Content="{materialDesign:PackIcon GitHub, Size=20}"
                                         Margin="0 0 4 0"
                                         ToolTip="GitHub"
                                         Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                        CommandParameter="https://github.com/ClassIsland/ClassIsland" />
+                                        CommandParameter="https://github.com/ClassIsland/ClassIsland"/>
                                 <Button Style="{StaticResource MaterialDesignToolForegroundButton}"
                                         Content="{materialDesign:PackIcon ForumOutline, Size=20}"
                                         ToolTip="加入社区"
                                         Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
-                                        CommandParameter="https://docs.classisland.tech/community/" />
+                                        CommandParameter="https://docs.classisland.tech/community/"/>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
@@ -130,25 +343,25 @@
 
             <materialDesign:Card Margin="0 12 0 0" ClipContent="True">
                 <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
-
+                    
                     <Button Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                             CommandParameter="https://github.com/ClassIsland/ClassIsland/issues/">
                         <Grid>
                             <TextBlock Text="问题反馈/功能建议" />
                             <materialDesign:PackIcon Kind="ExternalLink" HorizontalAlignment="Right"
-                                                     VerticalAlignment="Center" />
+                                                     VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
-                    <Separator Margin="0 -0.5" Opacity="0.5" />
+                    <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Command="{x:Static commands:UriNavigationCommands.UriNavigationCommand}"
                             CommandParameter="https://github.com/ClassIsland/voting/discussions/categories/classisland?discussions_q=is%3Aopen+category%3AClassIsland+sort%3Atop">
                         <Grid>
                             <TextBlock Text="功能投票" />
                             <materialDesign:PackIcon Kind="ExternalLink" HorizontalAlignment="Right"
-                                                     VerticalAlignment="Center" />
+                                                     VerticalAlignment="Center"/>
                         </Grid>
                     </Button>
-                    <Separator Margin="0 -0.5" Opacity="0.5" />
+                    <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Click="ButtonDiagnosticInfo_OnClick"
                             Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                             CommandParameter="{StaticResource DiagnosticInfoDialog}">
@@ -159,46 +372,41 @@
                 </StackPanel>
             </materialDesign:Card>
 
-            <materialDesign:Card Margin="0 12 0 0" ClipContent="True"
-                                 MouseLeftButtonDown="Sayings_OnMouseLeftButtonDown"
+            <materialDesign:Card Margin="0 12 0 0" ClipContent="True" MouseLeftButtonDown="Sayings_OnMouseLeftButtonDown"
                                  Visibility="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource InverseBoolToVisConverter}}">
                 <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
-                    <TextBlock Text="回声洞" FontWeight="Bold" Margin="16 12 16 6" />
+                    <TextBlock Text="回声洞" FontWeight="Bold" Margin="16 12 16 6"/>
 
                     <controls2:TypingControl Margin="24 8 16 12" Text="{Binding ViewModel.Sayings, Mode=OneWay}"
-                                             IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}" />
+                                             IsBusy="{Binding ViewModel.IsSayingBusy, Mode=OneWayToSource}"/>
                 </StackPanel>
             </materialDesign:Card>
 
             <materialDesign:Card Margin="0 12 0 0" ClipContent="True">
                 <StackPanel Style="{StaticResource LinkButtonGroupStackPanelStyle}">
-                    <TextBlock Text="鸣谢" FontWeight="Bold" Margin="16 12 16 6" />
+                    <TextBlock Text="鸣谢" FontWeight="Bold" Margin="16 12 16 6"/>
                     <Button Click="ButtonContributors_OnClick">
                         <Grid>
                             <TextBlock Text="贡献人员" />
                         </Grid>
                     </Button>
-                    <Separator Margin="0 -0.5" Opacity="0.5" />
+                    <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Click="ButtonThirdPartyLibs_OnClick">
                         <Grid>
                             <TextBlock Text="第三方库" />
                         </Grid>
                     </Button>
-                    <Separator Margin="0 -0.5" Opacity="0.5" />
+                    <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <TextBlock LineHeight="30" Margin="24 12 0 0" FontSize="14" TextWrapping="Wrap">
                         本项目受到
                         <Hyperlink Click="Hyperlink2_OnClick">DuguSand/class_form</Hyperlink>
-                        的启发而开发。<LineBreak />
-                        界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。<LineBreak />
-                        应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak />
-                        感谢协助本应用测试的同学。<LineBreak />
-                        感谢
-                        <commands:NavHyperlink CommandParameter="https://forum.smart-teach.cn/">智教联盟</commands:NavHyperlink>
-                        提供服务器资源，
-                        <commands:NavHyperlink CommandParameter="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>提供 TTS、遥测等服务资源。
-                        <LineBreak />
-                        天气数据来源于小米天气。<LineBreak />
-                        部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak />
+                        的启发而开发。<LineBreak/>
+                        界面主题和部分控件使用了 MaterialDesignInXamlToolkit 框架。<LineBreak/>
+                        应用字体使用了华为出品的 HarmonyOS Sans。<LineBreak/>
+                        感谢协助本应用测试的同学。<LineBreak/>
+                        感谢<commands:NavHyperlink CommandParameter="https://forum.smart-teach.cn/">智教联盟</commands:NavHyperlink>提供服务器资源，<commands:NavHyperlink CommandParameter="https://xiaowuap.com/">吴恩泽</commands:NavHyperlink>提供 TTS、遥测等服务资源。<LineBreak/>
+                        天气数据来源于小米天气。<LineBreak/>
+                        部分图像资源（/Assets/HoYoStickers/*）来自米游社和 Bilibili 装扮表情包，版权归 miHoYo 所有。<LineBreak/>
                         感谢其他使用的第三方库和贡献成员，详见贡献名单和第三方库。
                     </TextBlock>
                 </StackPanel>
@@ -212,7 +420,7 @@
                             <TextBlock Text="查看开放源代码许可" />
                         </Grid>
                     </Button>
-                    <Separator Margin="0 -0.5" Opacity="0.5" />
+                    <Separator Margin="0 -0.5" Opacity="0.5"/>
                     <Button Click="ButtonPrivacy_OnClick">
                         <Grid>
                             <TextBlock Text="查看隐私政策" />

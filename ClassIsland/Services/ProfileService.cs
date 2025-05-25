@@ -12,8 +12,11 @@ using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
 using ClassIsland.Services.Management;
 using ClassIsland.Shared.Models.Profile;
+
 using Microsoft.Extensions.Logging;
+
 using static ClassIsland.Shared.Helpers.ConfigureFileHelper;
+
 using Path = System.IO.Path;
 using ClassIsland.Shared;
 using ClassIsland.Shared.IPC.Abstractions.Services;
@@ -26,7 +29,10 @@ namespace ClassIsland.Services;
 
 public class ProfileService : IProfileService, INotifyPropertyChanged
 {
-    public string CurrentProfilePath { get; set; } = Path.Combine(App.AppRootFolderPath, @"Default.json");
+    public string CurrentProfilePath { 
+        get; 
+        set;
+    } = Path.Combine(App.AppRootFolderPath, @"Default.json");
 
     public static readonly string ManagementClassPlanPath =
         Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
@@ -39,7 +45,10 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public static readonly string ProfilePath = Path.Combine(App.AppRootFolderPath, "Profiles");
 
-    public Profile Profile { get; set; } = new();
+    public Profile Profile {
+        get;
+        set;
+    } = new Profile();
 
     private SettingsService SettingsService { get; }
 
@@ -51,15 +60,17 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     private bool _isProfileLoaded = false;
     private bool _isCurrentProfileTrusted = false;
 
-    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger,
-        IManagementService managementService, IIpcService ipcService)
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
     {
         Logger = logger;
         ManagementService = managementService;
         IpcService = ipcService;
         SettingsService = settingsService;
         IpcService.IpcProvider.CreateIpcJoint<IPublicProfileService>(this);
-        if (!Directory.Exists(ProfilePath)) Directory.CreateDirectory(ProfilePath);
+        if (!Directory.Exists(ProfilePath))
+        {
+            Directory.CreateDirectory(ProfilePath);
+        }
     }
 
 
@@ -75,38 +86,28 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Profile? classPlan = null;
             Profile? timeLayouts = null;
             Profile? subjects = null;
-            if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(
-                    ManagementService.Versions.ClassPlanVersion))
+            if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-classPlan");
                 var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
-                var cpNew = classPlan =
-                    await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource
-                        .Value!);
+                var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
                 MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
                 MergeDictionary(Profile.ClassPlanGroups, cpOld.ClassPlanGroups, cpNew.ClassPlanGroups);
                 spanDownload?.Finish();
             }
-
-            if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions
-                    .TimeLayoutVersion))
+            if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-timeLayout");
                 var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
-                var tlNew = timeLayouts =
-                    await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource
-                        .Value!);
+                var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
                 MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
                 spanDownload?.Finish();
             }
-
             if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
             {
                 var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-subjects");
                 var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
-                var subjectNew = subjects =
-                    await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource
-                        .Value!);
+                var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
                 MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
                 spanDownload?.Finish();
             }
@@ -125,7 +126,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Logger.LogError(exp, "拉取档案失败。");
         }
 
-
+        
         //Profile = ConfigureFileHelper.CopyObject(Profile);
         Profile.Subjects = CopyObject(Profile.Subjects);
         Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
@@ -139,33 +140,33 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     {
         var span = SentrySdk.GetSpan();
         var spanLoadingProfile = span?.StartChild("profile-loading");
-        var filename = ManagementService.IsManagementEnabled
-            ? "_management-profile.json"
-            : SettingsService.Settings.SelectedProfile;
+        var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
         var path = Path.Combine(ProfilePath, filename);
         Logger.LogInformation("加载档案中：{}", path);
         if (!File.Exists(path))
         {
             Logger.LogInformation("档案不存在：{}", path);
-            if (!ManagementService.IsManagementEnabled) // 在集控模式下不需要默认科目
+            if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
             {
-                var subject =
-                    new StreamReader(
-                        Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!
-                            .Stream).ReadToEnd();
+                var subject = new StreamReader(Application.GetResourceStream(new Uri("/Assets/default-subjects.json", UriKind.Relative))!.Stream).ReadToEnd();
                 Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
             }
-
             SaveProfile(filename);
         }
 
         var r = LoadConfig<Profile>(path);
 
         Profile = r;
-        if (ManagementService.IsManagementEnabled) await MergeManagementProfileAsync();
+        if (ManagementService.IsManagementEnabled)
+        {
+            await MergeManagementProfileAsync();
+        }
         Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
-        if (SettingsService.Settings.TrustedProfileIds.Contains(Profile.Id)) IsCurrentProfileTrusted = true;
+        if (SettingsService.Settings.TrustedProfileIds.Contains(Profile.Id))
+        {
+            IsCurrentProfileTrusted = true;
+        }
 
         if (SettingsService.WillMigrateProfileTrustedState)
         {
@@ -173,25 +174,22 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             SettingsService.WillMigrateProfileTrustedState = false;
             Logger.LogInformation("自动信任来自 1.5.4.0 以前的当前档案。");
         }
-
         CurrentProfilePath = filename;
         Logger.LogTrace("成功加载档案！信任：{}", IsCurrentProfileTrusted);
         CleanExpiredTempClassPlan();
         _isProfileLoaded = true;
 
-        Profile.ClassPlans.CollectionChanged +=
-            (sender, args) => AuditProfileChangeEvent(AuditEvents.ClassPlanUpdated, args);
-        Profile.TimeLayouts.CollectionChanged +=
-            (sender, args) => AuditProfileChangeEvent(AuditEvents.TimeLayoutUpdated, args);
-        Profile.Subjects.CollectionChanged +=
-            (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
+        Profile.ClassPlans.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.ClassPlanUpdated, args);
+        Profile.TimeLayouts.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.TimeLayoutUpdated, args);
+        Profile.Subjects.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
         spanLoadingProfile?.Finish();
     }
 
     public void AuditProfileChangeEvent(AuditEvents eventType, NotifyCollectionChangedEventArgs args)
     {
         if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-            connection.LogAuditEvent(eventType, new ProfileItemUpdated
+        {
+            connection.LogAuditEvent(eventType, new ProfileItemUpdated()
             {
                 Operation = args.Action switch
                 {
@@ -208,13 +206,17 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
                     KeyValuePair<string, TimeLayout> tl => tl.Key,
                     KeyValuePair<string, Subject> s => s.Key,
                     _ => throw new ArgumentOutOfRangeException()
-                }
+                },
             });
+        }
     }
 
     public void SaveProfile()
     {
-        if (!_isProfileLoaded) return;
+        if (!_isProfileLoaded)
+        {
+            return;
+        }
         if (CurrentProfilePath.Contains(".\\Profiles\\"))
         {
             var splittedFileName = CurrentProfilePath.Split("\\");
@@ -222,7 +224,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             SaveProfile(fileName);
             return;
         }
-
         SaveProfile(CurrentProfilePath);
     }
 
@@ -238,14 +239,16 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         return JsonSerializer.Deserialize<T>(json)!;
     }
 
-    public string? CreateTempClassPlan(string id, string? timeLayoutId = null, DateTime? enableDateTime = null)
+    public string? CreateTempClassPlan(string id, string? timeLayoutId=null, DateTime? enableDateTime = null)
     {
         Logger.LogInformation("创建临时层：{}", id);
         var date = enableDateTime ?? IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
         if (Profile.OrderedSchedules.TryGetValue(date, out var orderedSchedule)
             && Profile.ClassPlans.TryGetValue(orderedSchedule.ClassPlanId, out var cp1)
             && cp1.IsOverlay)
+        {
             return null;
+        }
         var cp = Profile.ClassPlans[id];
         timeLayoutId ??= cp.TimeLayoutId;
         var newCp = DuplicateJson(cp);
@@ -259,7 +262,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         var newId = Guid.NewGuid().ToString();
         Profile.OverlayClassPlanId = newId;
         Profile.ClassPlans.Add(newId, newCp);
-        Profile.OrderedSchedules[date] = new OrderedSchedule
+        Profile.OrderedSchedules[date] = new OrderedSchedule()
         {
             ClassPlanId = newId
         };
@@ -268,7 +271,10 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public void ClearTempClassPlan()
     {
-        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId)) return;
+        if (Profile.OverlayClassPlanId == null || !Profile.ClassPlans.ContainsKey(Profile.OverlayClassPlanId))
+        {
+            return;
+        }
 
         Logger.LogInformation("清空今天的临时层：{}", Profile.OverlayClassPlanId);
         Profile.OrderedSchedules.Remove(IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date);
@@ -291,7 +297,7 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
         foreach (var (key, _) in Profile.ClassPlans.Where(x => x.Value.IsOverlay).ToList())
         {
-            if (orderedSchedules.Contains(key))
+            if (orderedSchedules.Contains(key)) 
                 continue;
             Profile.ClassPlans.Remove(key);
             Logger.LogInformation("清理没有被引用的过期临时层课表：{}", key);
@@ -306,14 +312,20 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
     public void ConvertToStdClassPlan()
     {
         Logger.LogInformation("将当前临时层课表转换为普通课表：{}", Profile.OverlayClassPlanId);
-        if (Profile.OverlayClassPlanId != null) ConvertToStdClassPlan(Profile.OverlayClassPlanId);
+        if (Profile.OverlayClassPlanId != null)
+        {
+            ConvertToStdClassPlan(Profile.OverlayClassPlanId);
+        }
     }
 
     public void ConvertToStdClassPlan(string id)
     {
         Logger.LogInformation("将临时层课表转换为普通课表：{}", id);
         var today = IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date;
-        if (!Profile.ClassPlans.TryGetValue(id, out var classPlan)) return;
+        if (!Profile.ClassPlans.TryGetValue(id, out var classPlan))
+        {
+            return;
+        }
         classPlan.IsOverlay = false;
     }
 
@@ -331,16 +343,16 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         {
             var w = (int)dw % classPlan.TimeRule.WeekCountDivTotal;
             var baseOffset = (int)(classPlan.TimeRule.WeekDay - dow);
-            var divOffset = (classPlan.TimeRule.WeekCountDiv + classPlan.TimeRule.WeekCountDivTotal - w) %
-                            classPlan.TimeRule.WeekCountDivTotal;
-            var finalOffset = baseOffset + divOffset * 7;
-            if (finalOffset < 0) finalOffset += 7;
+            var divOffset = (classPlan.TimeRule.WeekCountDiv + classPlan.TimeRule.WeekCountDivTotal - w) % classPlan.TimeRule.WeekCountDivTotal;
+            var finalOffset = baseOffset + (divOffset * 7);
+            if (finalOffset < 0)
+            {
+                finalOffset += 7;
+            }
 
             dayOffset = Math.Max(finalOffset, dayOffset);
         }
-
-        expireTime ??= App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date +
-                       TimeSpan.FromDays(dayOffset);
+        expireTime ??= App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date + TimeSpan.FromDays(dayOffset);
 
         Profile.TempClassPlanGroupExpireTime = expireTime.Value;
         Profile.TempClassPlanGroupId = key;
@@ -366,8 +378,10 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     public void ClearExpiredTempClassPlanGroup()
     {
-        if (Profile.TempClassPlanGroupExpireTime.Date <
-            App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date) ClearTempClassPlanGroup();
+        if (Profile.TempClassPlanGroupExpireTime.Date < App.GetService<IExactTimeService>().GetCurrentLocalDateTime().Date)
+        {
+            ClearTempClassPlanGroup();
+        }
     }
 
     public void TrustCurrentProfile()

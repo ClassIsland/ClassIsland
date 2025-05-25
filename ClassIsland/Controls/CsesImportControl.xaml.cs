@@ -25,8 +25,8 @@ public partial class CsesImportControl : UserControl
 
     public int ImportType
     {
-        get => (int)GetValue(ImportTypeProperty);
-        set => SetValue(ImportTypeProperty, value);
+        get { return (int)GetValue(ImportTypeProperty); }
+        set { SetValue(ImportTypeProperty, value); }
     }
 
     public static readonly DependencyProperty NewProfileNameProperty = DependencyProperty.Register(
@@ -34,8 +34,8 @@ public partial class CsesImportControl : UserControl
 
     public string NewProfileName
     {
-        get => (string)GetValue(NewProfileNameProperty);
-        set => SetValue(NewProfileNameProperty, value);
+        get { return (string)GetValue(NewProfileNameProperty); }
+        set { SetValue(NewProfileNameProperty, value); }
     }
 
     public static readonly DependencyProperty SourceFilePathProperty = DependencyProperty.Register(
@@ -43,8 +43,8 @@ public partial class CsesImportControl : UserControl
 
     public string SourceFilePath
     {
-        get => (string)GetValue(SourceFilePathProperty);
-        set => SetValue(SourceFilePathProperty, value);
+        get { return (string)GetValue(SourceFilePathProperty); }
+        set { SetValue(SourceFilePathProperty, value); }
     }
 
     private IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>();
@@ -68,11 +68,13 @@ public partial class CsesImportControl : UserControl
             var profile = csesProfile.ToClassIslandObject(ImportType == 0 ? ProfileService.Profile : templateProfile);
             if (ImportType == 1)
             {
-                var path = Path.Combine("./Profiles", NewProfileName + ".json");
-                if (File.Exists(path)) throw new InvalidOperationException($"无法导入课表：{path} 已存在。");
+                var path = System.IO.Path.Combine("./Profiles", NewProfileName + ".json");
+                if (File.Exists(path))
+                {
+                    throw new InvalidOperationException($"无法导入课表：{path} 已存在。");
+                }
                 ConfigureFileHelper.SaveConfig(path, profile);
             }
-
             DialogHost.CloseDialogCommand.Execute(true, this);
         }
         catch (Exception exception)

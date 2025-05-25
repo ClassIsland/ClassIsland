@@ -9,33 +9,30 @@ namespace ClassIsland.Controls;
 public partial class NavigationButtonsControl : UserControl
 {
     public static readonly DependencyProperty NavigationNextCommandParameterProperty = DependencyProperty.Register(
-        nameof(NavigationNextCommandParameter), typeof(object), typeof(NavigationButtonsControl),
-        new PropertyMetadata(default(object)));
+        nameof(NavigationNextCommandParameter), typeof(object), typeof(NavigationButtonsControl), new PropertyMetadata(default(object)));
 
     public object NavigationNextCommandParameter
     {
-        get => (object)GetValue(NavigationNextCommandParameterProperty);
-        set => SetValue(NavigationNextCommandParameterProperty, value);
+        get { return (object)GetValue(NavigationNextCommandParameterProperty); }
+        set { SetValue(NavigationNextCommandParameterProperty, value); }
     }
 
     public static readonly DependencyProperty IsNavigateBackButtonEnabledProperty = DependencyProperty.Register(
-        nameof(IsNavigateBackButtonEnabled), typeof(bool), typeof(NavigationButtonsControl),
-        new PropertyMetadata(true));
+        nameof(IsNavigateBackButtonEnabled), typeof(bool), typeof(NavigationButtonsControl), new PropertyMetadata(true));
 
     public bool IsNavigateBackButtonEnabled
     {
-        get => (bool)GetValue(IsNavigateBackButtonEnabledProperty);
-        set => SetValue(IsNavigateBackButtonEnabledProperty, value);
+        get { return (bool)GetValue(IsNavigateBackButtonEnabledProperty); }
+        set { SetValue(IsNavigateBackButtonEnabledProperty, value); }
     }
 
     public static readonly DependencyProperty IsNavigateNextButtonEnabledProperty = DependencyProperty.Register(
-        nameof(IsNavigateNextButtonEnabled), typeof(bool), typeof(NavigationButtonsControl),
-        new PropertyMetadata(true));
+        nameof(IsNavigateNextButtonEnabled), typeof(bool), typeof(NavigationButtonsControl), new PropertyMetadata(true));
 
     public bool IsNavigateNextButtonEnabled
     {
-        get => (bool)GetValue(IsNavigateNextButtonEnabledProperty);
-        set => SetValue(IsNavigateNextButtonEnabledProperty, value);
+        get { return (bool)GetValue(IsNavigateNextButtonEnabledProperty); }
+        set { SetValue(IsNavigateNextButtonEnabledProperty, value); }
     }
 
     public NavigationButtonsControl()

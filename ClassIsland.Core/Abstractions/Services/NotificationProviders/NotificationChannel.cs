@@ -16,6 +16,7 @@ namespace ClassIsland.Core.Abstractions.Services.NotificationProviders;
 /// </summary>
 public class NotificationChannel : INotificationSender, INotificationProvider
 {
+
     /// <summary>
     /// 当前提醒渠道所属的提醒提供方信息
     /// </summary>
@@ -47,17 +48,14 @@ public class NotificationChannel : INotificationSender, INotificationProvider
 
     /// <inheritdoc/>
     public object? IconElement { get; set; }
-
     private Guid ProviderGuid => ProviderInfo.Guid;
 
     private Guid ChannelGuid => ChannelInfo.Guid;
 
     // ReSharper disable once InconsistentNaming
-    internal INotificationHostService __NotificationHostService { get; } =
-        IAppHost.GetService<INotificationHostService>();
+    internal INotificationHostService __NotificationHostService { get; } = IAppHost.GetService<INotificationHostService>();
 
-    internal NotificationChannel(NotificationProviderBase provider, NotificationProviderInfo providerInfo,
-        NotificationChannelInfo channelInfo)
+    internal NotificationChannel(NotificationProviderBase provider, NotificationProviderInfo providerInfo, NotificationChannelInfo channelInfo)
     {
         ProviderInfo = providerInfo;
         ChannelInfo = channelInfo;
@@ -66,7 +64,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
         var info = ChannelInfo;
         Name = info.Name;
         Description = info.Description;
-        IconElement = new PackIcon
+        IconElement = new PackIcon()
         {
             Kind = info.PackIcon,
             Width = 24,
@@ -75,7 +73,7 @@ public class NotificationChannel : INotificationSender, INotificationProvider
 
         __NotificationHostService.RegisterNotificationChannel(this);
 
-        if (info.SettingsControlType == null)
+        if (info.SettingsControlType == null) 
             return;
         var settings = provider.SettingsInternal;
         SettingsElement = NotificationProviderControlBase.GetInstance(info, ref settings);

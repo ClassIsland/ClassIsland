@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace ClassIsland.Models.Actions;
 
 public class ThemeActionSettings : ObservableRecipient
 {
-    private int _value = 2;
-
+    int _value = 2;
     public int Value
     {
         get => _value;

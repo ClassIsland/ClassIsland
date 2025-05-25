@@ -1,11 +1,12 @@
 ﻿using System;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Abstractions.Services.Management;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Services;
 
-public class SplashService : ObservableRecipient, ISplashService
+public class SplashService: ObservableRecipient, ISplashService
 {
     private string _splashStatus = "正在启动…";
     private double _currentProgress = 0.0;
@@ -23,7 +24,10 @@ public class SplashService : ObservableRecipient, ISplashService
 
     public void SetDetailedStatus(string message)
     {
-        if (SettingsService.Settings.ShowDetailedStatusOnSplash) SplashStatus = message;
+        if (SettingsService.Settings.ShowDetailedStatusOnSplash)
+        {
+            SplashStatus = message;
+        }
     }
 
     public double CurrentProgress
@@ -41,7 +45,6 @@ public class SplashService : ObservableRecipient, ISplashService
     public event EventHandler<double>? ProgressChanged;
 
     public event EventHandler? SplashEnded;
-
     public void EndSplash()
     {
         if (!SettingsService.Settings.IsSplashEnabled)
@@ -62,14 +65,11 @@ public class SplashService : ObservableRecipient, ISplashService
             SettingsService.Settings.SplashCustomText = "";
             SettingsService.Settings.ShowDetailedStatusOnSplash = false;
         }
-
         ResetSplashText();
     }
 
     public void ResetSplashText()
     {
-        SplashStatus = SettingsService.Settings.SplashCustomText == ""
-            ? DefaultText
-            : SettingsService.Settings.SplashCustomText;
-    }
+        SplashStatus = SettingsService.Settings.SplashCustomText == "" ? DefaultText : SettingsService.Settings.SplashCustomText;
+    }       
 }

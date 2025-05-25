@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="Rainy" Color="Blue" />
+    <SolidColorBrush x:Key="Rainy" Color="Blue"/>
     <DropShadowEffect x:Key="LuminousClass"
                       BlurRadius="6"
                       ShadowDepth="0"

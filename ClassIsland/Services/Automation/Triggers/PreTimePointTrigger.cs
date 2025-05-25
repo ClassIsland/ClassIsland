@@ -11,8 +11,7 @@ using MaterialDesignThemes.Wpf;
 namespace ClassIsland.Services.Automation.Triggers;
 
 [TriggerInfo("classisland.lessons.preTimePoint", "特定时间点前", PackIconKind.ClockEnd)]
-public class PreTimePointTrigger(ILessonsService lessonsService, IExactTimeService exactTimeService)
-    : TriggerBase<PreTimePointTriggerSettings>
+public class PreTimePointTrigger(ILessonsService lessonsService, IExactTimeService exactTimeService) : TriggerBase<PreTimePointTriggerSettings>
 {
     private ILessonsService LessonsService { get; } = lessonsService;
     private IExactTimeService ExactTimeService { get; } = exactTimeService;
@@ -31,7 +30,6 @@ public class PreTimePointTrigger(ILessonsService lessonsService, IExactTimeServi
     {
         LessonsService.PostMainTimerTicked -= LessonsServiceOnPostMainTimerTicked;
     }
-
     private void LessonsServiceOnPostMainTimerTicked(object? sender, EventArgs e)
     {
         var targetTimePoint = Settings.TargetState switch
@@ -50,13 +48,18 @@ public class PreTimePointTrigger(ILessonsService lessonsService, IExactTimeServi
                 TriggerRevert();
                 return;
             }
-
-            if (targetTimePoint == TimeLayoutItem.Empty || Settings.TimeSeconds < 0) return;
+            if (targetTimePoint == TimeLayoutItem.Empty || Settings.TimeSeconds < 0)
+            {
+                return;
+            }
 
             var targetTime = targetTimePoint.StartSecond - TimeSpanHelper.FromSecondsSafe(Settings.TimeSeconds);
             var targetTime2 = new DateTime(DateOnly.FromDateTime(now), TimeOnly.FromTimeSpan(targetTime.TimeOfDay));
             //Console.WriteLine($"{LastCheckTime} {targetTime} {targetTimePoint.StartSecond} {now}");
-            if (LastCheckTime < targetTime2 && targetTime2 <= now) Trigger();
+            if (LastCheckTime < targetTime2 && targetTime2 <= now)
+            {
+                Trigger();
+            }
         }
         finally
         {

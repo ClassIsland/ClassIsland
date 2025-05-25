@@ -1,14 +1,15 @@
 ﻿using System.Windows.Controls;
 
-namespace ClassIsland.Controls.MiniInfoProvider;
-
-/// <summary>
-/// DateMiniInfoProviderControl.xaml 的交互逻辑
-/// </summary>
-public partial class DateMiniInfoProviderControl : UserControl
+namespace ClassIsland.Controls.MiniInfoProvider
 {
-    public DateMiniInfoProviderControl()
+    /// <summary>
+    /// DateMiniInfoProviderControl.xaml 的交互逻辑
+    /// </summary>
+    public partial class DateMiniInfoProviderControl : UserControl
     {
-        InitializeComponent();
+        public DateMiniInfoProviderControl()
+        {
+            InitializeComponent();
+        }
     }
 }

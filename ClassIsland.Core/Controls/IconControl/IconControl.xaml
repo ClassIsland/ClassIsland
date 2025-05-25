@@ -3,43 +3,40 @@
                     xmlns:iconControl="clr-namespace:ClassIsland.Core.Controls.IconControl"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary
-            Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="{x:Type iconControl:IconControl}" x:Key="IconControlBaseStyle">
         <Style.Triggers>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
-                    <Condition Property="RealIconKind" Value="PackIcon" />
-                    <Condition Property="IsFallbackMode" Value="True" />
+                    <Condition Property="RealIconKind" Value="PackIcon"/>
+                    <Condition Property="IsFallbackMode" Value="True"/>
                 </MultiTrigger.Conditions>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type iconControl:IconControl}">
-                            <materialDesign:PackIcon
-                                Kind="{Binding FallbackPackIconKind, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
-                                Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}" />
+                            <materialDesign:PackIcon Kind="{Binding FallbackPackIconKind, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
+                                                     HorizontalAlignment="Stretch"
+                                                     VerticalAlignment="Stretch"
+                                                     Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
+                                                     Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"/>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
-                    <Condition Property="RealIconKind" Value="PackIcon" />
-                    <Condition Property="IsFallbackMode" Value="False" />
+                    <Condition Property="RealIconKind" Value="PackIcon"/>
+                    <Condition Property="IsFallbackMode" Value="False"/>
                 </MultiTrigger.Conditions>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type iconControl:IconControl}">
-                            <materialDesign:PackIcon
-                                Kind="{Binding PackIconKind, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
-                                Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}" />
+                            <materialDesign:PackIcon Kind="{Binding PackIconKind, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
+                                                     HorizontalAlignment="Stretch"
+                                                     VerticalAlignment="Stretch"
+                                                     Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
+                                                     Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"/>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
@@ -48,15 +45,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type iconControl:IconControl}">
-                    <Image
-                        Source="{Binding ImageSource, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
-                        x:Name="PART_ImageIcon"
-                        Stretch="UniformToFill"
-                        StretchDirection="Both" />
+                    <Image Source="{Binding ImageSource, RelativeSource={RelativeSource FindAncestor, AncestorType=iconControl:IconControl}}"
+                           x:Name="PART_ImageIcon"
+                           Stretch="UniformToFill"
+                           StretchDirection="Both"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type iconControl:IconControl}" BasedOn="{StaticResource IconControlBaseStyle}" />
+    <Style TargetType="{x:Type iconControl:IconControl}" BasedOn="{StaticResource IconControlBaseStyle}"/>
 </ResourceDictionary>

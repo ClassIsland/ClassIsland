@@ -30,15 +30,15 @@ public class WindowRuleService : IWindowRuleService
         Logger = logger;
         RulesetService = rulesetService;
         eventProc = PfnWinEventProc;
-        uint[] events =
-        [
-            EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_MOVESIZEEND, EVENT_SYSTEM_MOVESIZESTART,
-            EVENT_SYSTEM_MINIMIZEEND, EVENT_OBJECT_LOCATIONCHANGE
-        ];
+        uint[] events = [EVENT_SYSTEM_FOREGROUND, EVENT_SYSTEM_MOVESIZEEND, EVENT_SYSTEM_MOVESIZESTART,
+            EVENT_SYSTEM_MINIMIZEEND, EVENT_OBJECT_LOCATIONCHANGE];
         foreach (var i in events)
         {
             var flags = WINEVENT_OUTOFCONTEXT;
-            if (i == EVENT_OBJECT_LOCATIONCHANGE) flags |= WINEVENT_SKIPOWNPROCESS;
+            if (i == EVENT_OBJECT_LOCATIONCHANGE)
+            {
+                flags |= WINEVENT_SKIPOWNPROCESS;
+            }
             var hook = SetWinEventHook(
                 i, i,
                 HMODULE.Null, eventProc,
@@ -46,8 +46,7 @@ public class WindowRuleService : IWindowRuleService
                 flags);
             _hooks.Add(hook);
         }
-
-        ForegroundWindowChanged += (_, _, _, _, _, _, _) => RulesetService.NotifyStatusChanged();
+        ForegroundWindowChanged += ((_, _, _, _, _, _, _) => RulesetService.NotifyStatusChanged());
 
         RulesetService.RegisterRuleHandler("classisland.windows.className", ClassNameHandler);
         RulesetService.RegisterRuleHandler("classisland.windows.text", TextHandler);
@@ -70,10 +69,12 @@ public class WindowRuleService : IWindowRuleService
         GetWindowRect(ForegroundHwnd, out var rect);
         var mw = App.GetService<MainWindow>();
         var screen = mw.ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
-                     mw.ViewModel.Settings.WindowDockingMonitorIndex >= 0
-            ? Screen.AllScreens[mw.ViewModel.Settings.WindowDockingMonitorIndex]
-            : Screen.PrimaryScreen;
-        if (screen == null) return false;
+                     mw.ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
+            Screen.AllScreens[mw.ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
+        if (screen == null)
+        {
+            return false;
+        }
 
         var fullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
         var maximize = IsZoomed(ForegroundHwnd);
@@ -106,18 +107,25 @@ public class WindowRuleService : IWindowRuleService
 
     ~WindowRuleService()
     {
-        foreach (var i in _hooks) UnhookWinEvent(i);
+        foreach (var i in _hooks)
+        {
+            UnhookWinEvent(i);
+        }
     }
 
     // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
     private static WINEVENTPROC eventProc;
-
-    private void PfnWinEventProc(HWINEVENTHOOK hook, uint @event, HWND hwnd, int idObject, int child, uint thread,
-        uint time)
+    private void PfnWinEventProc(HWINEVENTHOOK hook, uint @event, HWND hwnd, int idObject, int child, uint thread, uint time)
     {
-        if (hwnd != GetForegroundWindow()) return;
+        if (hwnd != GetForegroundWindow())
+        {
+            return;
+        }
 
-        if (@event == EVENT_OBJECT_LOCATIONCHANGE && _isMoving) return;
+        if (@event == EVENT_OBJECT_LOCATIONCHANGE && _isMoving)
+        {
+            return;
+        }
 
         _isMoving = @event switch
         {

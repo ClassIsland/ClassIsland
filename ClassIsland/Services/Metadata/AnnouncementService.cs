@@ -26,8 +26,7 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
         Logger = logger;
 
         var keyStream = Application
-            .GetResourceStream(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc",
-                UriKind.RelativeOrAbsolute))!.Stream;
+            .GetResourceStream(new Uri("/Assets/TrustedPublicKeys/ClassIsland.MetadataPublisher.asc", UriKind.RelativeOrAbsolute))!.Stream;
         MetadataPublisherPublicKey = new StreamReader(keyStream).ReadToEnd();
 
         UpdateReadAnnouncements();
@@ -40,12 +39,10 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
     private ObservableCollection<Announcement> _announcementsInternal = [];
     private ObservableCollection<Guid> _readAnnouncementsMachine = [];
     private ObservableCollection<Guid> _readAnnouncementsLocal = [];
-
     public IReadOnlyList<Announcement> Announcements => AnnouncementsInternal.Where(x => x.EndTime >= DateTime.Now &&
-            x.StartTime <= DateTime.Now &&
-            (!ReadAnnouncementsMachine.Contains(x.Guid) || x.ReadStateStorageScope is ReadStateStorageScope.Local) &&
-            (!ReadAnnouncementsLocal.Contains(x.Guid) || x.ReadStateStorageScope is ReadStateStorageScope.Machine))
-        .ToList();
+        x.StartTime <= DateTime.Now &&
+        (!ReadAnnouncementsMachine.Contains(x.Guid) || x.ReadStateStorageScope is ReadStateStorageScope.Local) &&
+        (!ReadAnnouncementsLocal.Contains(x.Guid) || x.ReadStateStorageScope is ReadStateStorageScope.Machine)).ToList();
 
     private string MetadataPublisherPublicKey { get; set; }
 
@@ -67,16 +64,14 @@ public class AnnouncementService : ObservableRecipient, IAnnouncementService
         {
             var time = (long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalSeconds;
             AnnouncementsInternal =
-                await WebRequestHelper.SaveJson<ObservableCollection<Announcement>>(
-                    new Uri(
-                        $"https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/announcements.json?time={time}"),
-                    Path.Combine(App.AppCacheFolderPath,
-                        "Announcements.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
+                await WebRequestHelper.SaveJson<ObservableCollection<Announcement>>(new Uri($"https://get.classisland.tech/d/ClassIsland-Ningbo-S3/classisland/announcements.json?time={time}"), Path.Combine(App.AppCacheFolderPath,
+                    "Announcements.json"), verifySign: true, publicKey: MetadataPublisherPublicKey);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "刷新公告失败");
         }
+        
     }
 
     public ObservableCollection<Guid> ReadAnnouncementsLocal

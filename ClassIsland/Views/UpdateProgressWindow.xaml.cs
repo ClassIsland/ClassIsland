@@ -13,8 +13,8 @@ public partial class UpdateProgressWindow
 
     public string ProgressText
     {
-        get => (string)GetValue(ProgressTextProperty);
-        set => SetValue(ProgressTextProperty, value);
+        get { return (string)GetValue(ProgressTextProperty); }
+        set { SetValue(ProgressTextProperty, value); }
     }
 
     public bool CanClose { get; set; } = false;
@@ -27,7 +27,10 @@ public partial class UpdateProgressWindow
 
     private void UpdateProgressWindow_OnClosing(object? sender, CancelEventArgs e)
     {
-        if (CanClose) return;
+        if (CanClose)
+        {
+            return;
+        }
         e.Cancel = true;
     }
 }

@@ -1,28 +1,33 @@
 ﻿<controls1:MyWindow x:Class="ClassIsland.Views.ClassChangingWindow"
-                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:local="clr-namespace:ClassIsland.Views"
-                    xmlns:controls="clr-namespace:ClassIsland.Controls"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
-                    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
-                    xmlns:ci="http://classisland.tech/schemas/xaml/core"
-                    mc:Ignorable="d"
-                    Title="换课"
-                    Height="250" Width="600"
-                    MinWidth="730"
-                    MinHeight="230"
-                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                    Background="{DynamicResource MaterialDesignPaper}"
-                    TextElement.FontWeight="Regular"
-                    TextElement.FontSize="14"
-                    FontFamily="{StaticResource HarmonyOsSans}"
-                    Icon="/Assets/AppLogo.ico"
-                    SizeToContent="WidthAndHeight"
-                    d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
-                    WindowStartupLocation="CenterScreen">
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClassIsland.Views"
+        xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:converters="clr-namespace:ClassIsland.Converters"
+        xmlns:models="clr-namespace:ClassIsland.Models"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        xmlns:windows="clr-namespace:Walterlv.Windows"
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+        xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+        xmlns:ci="http://classisland.tech/schemas/xaml/core"
+        mc:Ignorable="d"
+        Title="换课" 
+        Height="250" Width="600"
+        MinWidth="730"
+        MinHeight="230"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="14"
+        FontFamily="{StaticResource HarmonyOsSans}"
+        Icon="/Assets/AppLogo.ico"
+        SizeToContent="WidthAndHeight"
+        d:DataContext="{d:DesignInstance local:ClassChangingWindow}"
+        WindowStartupLocation="CenterScreen">
     <controls1:MyWindow.Resources>
         <Style x:Key="ClassPlanListBoxItemStyle" BasedOn="{StaticResource MaterialDesignListBoxItem}"
                TargetType="{x:Type ListBoxItem}">
@@ -30,20 +35,52 @@
             <Setter Property="IsTabStop" Value="False" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding TimeType}" Value="2">
-                    <Setter Property="IsHitTestVisible" Value="False" />
+                    <Setter Property="IsHitTestVisible" Value="False"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsHideDefault}" Value="True">
-                    <Setter Property="Opacity" Value="0.4" />
+                    <Setter Property="Opacity" Value="0.4"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
         <converters1:SolidColorBrushOpacityConverter x:Key="SolidColorBrushOpacityConverter" />
 
-        <Style x:Key="ClassPlanListBoxStyle" TargetType="ci:LessonsListBox"
+        <converters1:IndexConverter x:Key="IndexConverter" />
+        <Style x:Key="ClassPlanListBoxStyle" TargetType="ci:LessonsListBox" 
                BasedOn="{StaticResource ClassIsland.LessonsListBox}">
-
-            <Setter Property="ItemContainerStyle" Value="{StaticResource ClassPlanListBoxItemStyle}" />
+            
+            <Setter Property="ItemContainerStyle" Value="{StaticResource ClassPlanListBoxItemStyle}"/>
         </Style>
+        <StackPanel x:Key="OverwriteConfirm" VerticalAlignment="Stretch" Margin="16" MaxWidth="400">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+                <Run Text="覆盖当前的临时层"/>
+            </TextBlock>
+            <TextBlock Margin="0 6 0 0" TextWrapping="Wrap">
+                <Run Text="当前已经存在一个临时层课表，如果继续换课，那么该临时层将被覆盖。是否继续？"/>
+            </TextBlock>
+            <StackPanel Orientation="Horizontal" Margin="0 8 0 0" HorizontalAlignment="Right">
+                <Button Content="继续" IsDefault="True" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" >
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            True
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+                <Button Content="取消" HorizontalAlignment="Right" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" Margin="6 0 0 0">
+                    <Button.CommandParameter>
+                        <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                            False
+                        </system:Boolean>
+                    </Button.CommandParameter>
+                </Button>
+            </StackPanel>
+        </StackPanel>
+        <Storyboard x:Key="OverlayFadeOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LoadingOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <converters1:BooleanOrExpressionMultiConverter x:Key="BooleanOrExpressionMultiConverter" />
         <converters1:InvertBooleanOrExpressionMultiConverter x:Key="InvertBooleanOrExpressionMultiConverter" />
     </controls1:MyWindow.Resources>
     <materialDesign:DialogHost Identifier="{Binding ViewModel.DialogIdentifier}">
@@ -63,14 +100,15 @@
                     </materialDesign:TransitionerSlide.ForwardWipe>
                     <Grid>
                         <ci:LessonsListBox VerticalAlignment="Center"
-                                           HorizontalAlignment="Center"
-                                           Margin="0 8"
-                                           ClassPlan="{Binding ClassPlan, Mode=OneWay}"
-                                           Style="{StaticResource ClassPlanListBoxStyle}"
-                                           SelectedIndex="{Binding ViewModel.SourceIndex}"
-                                           DiscardHidingDefault="True"
-                                           Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
-                                           SelectionChanged="Selector_OnSelectionChanged" />
+                                 HorizontalAlignment="Center"
+                                 Margin="0 8"
+                                 ClassPlan="{Binding ClassPlan, Mode=OneWay}"
+                                 Style="{StaticResource ClassPlanListBoxStyle}"
+                                 SelectedIndex="{Binding ViewModel.SourceIndex}"
+                                 DiscardHidingDefault="True"
+                                 Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
+                                 SelectionChanged="Selector_OnSelectionChanged">
+                        </ci:LessonsListBox>
                     </Grid>
                 </materialDesign:TransitionerSlide>
                 <materialDesign:TransitionerSlide>
@@ -119,12 +157,10 @@
                             <materialDesign:Transitioner.Style>
                                 <Style TargetType="materialDesign:Transitioner">
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.IsSwapMode}"
-                                                     Value="True">
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.IsSwapMode}" Value="True">
                                             <Setter Property="SelectedIndex" Value="0" />
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding SettingsService.Settings.IsSwapMode}"
-                                                     Value="False">
+                                        <DataTrigger Binding="{Binding SettingsService.Settings.IsSwapMode}" Value="False">
                                             <Setter Property="SelectedIndex" Value="1" />
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -141,7 +177,8 @@
                                                    Style="{StaticResource ClassPlanListBoxStyle}"
                                                    DiscardHidingDefault="True"
                                                    Subjects="{Binding ProfileService.Profile.Subjects, Mode=OneWay}"
-                                                   SelectedIndex="{Binding ViewModel.SwapModeTargetIndex}" />
+                                                   SelectedIndex="{Binding ViewModel.SwapModeTargetIndex}">
+                                </ci:LessonsListBox>
                             </materialDesign:TransitionerSlide>
                             <materialDesign:TransitionerSlide>
                                 <materialDesign:TransitionerSlide.BackwardWipe>
@@ -236,8 +273,7 @@
                                 </MultiDataTrigger>
                                 <MultiDataTrigger>
                                     <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding SettingsService.Settings.IsSwapMode}"
-                                                   Value="False" />
+                                        <Condition Binding="{Binding SettingsService.Settings.IsSwapMode}" Value="False" />
                                         <Condition Binding="{Binding ViewModel.TargetSubjectIndex}" Value="{x:Null}" />
                                     </MultiDataTrigger.Conditions>
                                     <Setter Property="Visibility" Value="Collapsed" />
@@ -251,10 +287,9 @@
                               IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
                               Visibility="{Binding ClassPlan.IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
                         <CheckBox.IsEnabled>
-                            <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}"
-                                          Mode="OneWay">
-                                <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay" />
-                                <Binding Path="ManagementService.Policy.DisableProfileEditing" Mode="OneWay" />
+                            <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}" Mode="OneWay">
+                                <Binding Path="ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay"/>
+                                <Binding Path="ManagementService.Policy.DisableProfileEditing" Mode="OneWay"/>
                             </MultiBinding>
                         </CheckBox.IsEnabled>
                     </CheckBox>
@@ -344,15 +379,15 @@
                     <Style TargetType="Border">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Visible" />
+                                <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>
-                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Setter Property="Visibility" Value="Collapsed"/>
                     </Style>
                 </Border.Style>
                 <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right"
                             Margin="0 0 36 24">
-                    <controls1:TeyvatLoadingControl />
+                    <controls1:TeyvatLoadingControl/>
                 </StackPanel>
             </Border>
         </Grid>

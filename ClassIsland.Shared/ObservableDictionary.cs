@@ -3,8 +3,7 @@ using System.ComponentModel;
 
 namespace ClassIsland.Shared;
 
-public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged,
-    INotifyPropertyChanged
+public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INotifyCollectionChanged, INotifyPropertyChanged
 {
     public ObservableDictionary()
         : base()
@@ -15,29 +14,58 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
     public event NotifyCollectionChangedEventHandler CollectionChanged;
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public new KeyCollection Keys => base.Keys;
+    public new KeyCollection Keys
+    {
+        get
+        {
+            return base.Keys;
+        }
+    }
 
-    public new ValueCollection Values => base.Values;
+    public new ValueCollection Values
+    {
+        get
+        {
+            return base.Values;
+        }
+    }
 
-    public new int Count => base.Count;
+    public new int Count
+    {
+        get
+        {
+            return base.Count;
+        }
+    }
 
     public new TValue this[TKey key]
     {
-        get => GetValue(key);
-        set => SetValue(key, value);
+        get
+        {
+            return this.GetValue(key);
+        }
+        set
+        {
+            this.SetValue(key, value);
+        }
     }
 
     public TValue this[int index]
     {
-        get => GetIndexValue(index);
-        set => SetIndexValue(index, value);
+        get
+        {
+            return this.GetIndexValue(index);
+        }
+        set
+        {
+            this.SetIndexValue(index, value);
+        }
     }
 
     public new void Add(TKey key, TValue value)
     {
         base.Add(key, value);
-        OnCollectionChanged(
-            new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, FindPair(key), _index));
+        this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, this.FindPair(key), _index));
         OnPropertyChanged("Keys");
         OnPropertyChanged("Values");
         OnPropertyChanged("Count");
@@ -46,7 +74,7 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
     public new void Clear()
     {
         base.Clear();
-        OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         OnPropertyChanged("Keys");
         OnPropertyChanged("Values");
         OnPropertyChanged("Count");
@@ -54,42 +82,47 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
 
     public new bool Remove(TKey key)
     {
-        var pair = FindPair(key);
+        var pair = this.FindPair(key);
         if (base.Remove(key))
         {
-            OnCollectionChanged(
-                new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, pair, _index));
+            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, pair, _index));
             OnPropertyChanged("Keys");
             OnPropertyChanged("Values");
             OnPropertyChanged("Count");
             return true;
         }
-
         return false;
     }
 
     protected void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
     {
-        if (CollectionChanged != null) CollectionChanged(this, e);
+        if (this.CollectionChanged != null)
+        {
+            this.CollectionChanged(this, e);
+        }
     }
 
     protected void OnPropertyChanged(string propertyName)
     {
-        if (PropertyChanged != null) PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        if (this.PropertyChanged != null)
+        {
+            this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     #region private方法
-
     private TValue GetIndexValue(int index)
     {
-        for (var i = 0; i < Count; i++)
+        for (int i = 0; i < this.Count; i++)
+        {
             if (i == index)
             {
                 var pair = this.ElementAt(i);
                 return pair.Value;
             }
+        }
 
-        return default;
+        return default(TValue);
     }
 
     private void SetIndexValue(int index, TValue value)
@@ -106,28 +139,31 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
 
     private TValue GetValue(TKey key)
     {
-        if (ContainsKey(key))
+        if (base.ContainsKey(key))
+        {
             return base[key];
+        }
         else
-            return default;
+        {
+            return default(TValue);
+        }
     }
 
     private void SetValue(TKey key, TValue value)
     {
-        if (ContainsKey(key))
+        if (base.ContainsKey(key))
         {
-            var pair = FindPair(key);
-            var index = _index;
+            var pair = this.FindPair(key);
+            int index = _index;
             base[key] = value;
-            var newpair = FindPair(key);
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newpair,
-                pair, index));
+            var newpair = this.FindPair(key);
+            this.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newpair, pair, index));
             OnPropertyChanged("Values");
             OnPropertyChanged("Item[]");
         }
         else
         {
-            Add(key, value);
+            this.Add(key, value);
         }
     }
 
@@ -136,24 +172,30 @@ public class ObservableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, INot
         _index = 0;
         foreach (var item in this)
         {
-            if (item.Key.Equals(key)) return item;
+            if (item.Key.Equals(key))
+            {
+                return item;
+            }
             _index++;
         }
-
-        return default;
+        return default(KeyValuePair<TKey, TValue>);
     }
 
     private int IndexOf(TKey key)
     {
-        var index = 0;
+        int index = 0;
         foreach (var item in this)
         {
-            if (item.Key.Equals(key)) return index;
+            if (item.Key.Equals(key))
+            {
+                return index;
+            }
             index++;
         }
-
         return -1;
     }
+    
 
     #endregion
+
 }

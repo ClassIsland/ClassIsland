@@ -40,23 +40,21 @@ public class WizardOptionsListBox : ListBox
 
     public ICommand InvokeCommand
     {
-        get => (ICommand)GetValue(InvokeCommandProperty);
-        set => SetValue(InvokeCommandProperty, value);
+        get { return (ICommand)GetValue(InvokeCommandProperty); }
+        set { SetValue(InvokeCommandProperty, value); }
     }
 
     public static readonly DependencyProperty InvokeCommandParameterProperty = DependencyProperty.Register(
-        nameof(InvokeCommandParameter), typeof(object), typeof(WizardOptionsListBox),
-        new PropertyMetadata(default(object)));
+        nameof(InvokeCommandParameter), typeof(object), typeof(WizardOptionsListBox), new PropertyMetadata(default(object)));
 
     public object InvokeCommandParameter
     {
-        get => GetValue(InvokeCommandParameterProperty);
-        set => SetValue(InvokeCommandParameterProperty, value);
+        get { return GetValue(InvokeCommandParameterProperty); }
+        set { SetValue(InvokeCommandParameterProperty, value); }
     }
 
     static WizardOptionsListBox()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(WizardOptionsListBox),
-            new FrameworkPropertyMetadata(typeof(WizardOptionsListBox)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(WizardOptionsListBox), new FrameworkPropertyMetadata(typeof(WizardOptionsListBox)));
     }
 }

@@ -97,7 +97,6 @@ public class LessonControlAttachedSettings : ObservableRecipient, IAttachedSetti
             if (value.Equals(_scheduleSpacing))
             {
             }
-
             _scheduleSpacing = value;
             OnPropertyChanged();
         }

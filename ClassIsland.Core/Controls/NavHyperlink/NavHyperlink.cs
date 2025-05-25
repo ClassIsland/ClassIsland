@@ -12,15 +12,18 @@ public class NavHyperlink : Hyperlink
     public static readonly DependencyProperty NavigateTargetProperty = DependencyProperty.Register(
         nameof(NavigateTarget), typeof(string), typeof(NavHyperlink), new PropertyMetadata(default(Uri), (o, args) =>
         {
-            if (o is not NavHyperlink link) return;
+            if (o is not NavHyperlink link)
+            {
+                return;
+            }
 
             link.CommandParameter = link.NavigateTarget;
         }));
 
     public string NavigateTarget
     {
-        get => (string)GetValue(NavigateTargetProperty);
-        set => SetValue(NavigateTargetProperty, value);
+        get { return (string)GetValue(NavigateTargetProperty); }
+        set { SetValue(NavigateTargetProperty, value); }
     }
 
     /// <inheritdoc />

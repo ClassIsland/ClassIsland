@@ -15,7 +15,6 @@ public class OnClassTrigger(ILessonsService lessonsService) : TriggerBase
     {
         LessonsService.OnClass += LessonsServiceOnOnClass;
     }
-
     public override void UnLoaded()
     {
         LessonsService.OnClass -= LessonsServiceOnOnClass;

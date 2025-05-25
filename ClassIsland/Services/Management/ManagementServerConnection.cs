@@ -22,8 +22,11 @@ using CsesSharp.Models;
 using Google.Protobuf;
 using Grpc.Core;
 using Grpc.Net.Client;
+
 using MahApps.Metro.Controls;
+
 using Microsoft.Extensions.Logging;
+
 using Timer = System.Timers.Timer;
 
 namespace ClassIsland.Services.Management;
@@ -35,28 +38,26 @@ public class ManagementServerConnection : IManagementServerConnection
     private Guid ClientGuid { get; }
 
     private string Id { get; }
-
+    
     private string ManifestUrl { get; }
-
+    
     private string Host { get; }
-
+    
     internal GrpcChannel Channel { get; }
 
     private DispatcherTimer CommandConnectionAliveTimer { get; } = new()
     {
         Interval = TimeSpan.FromSeconds(10)
     };
-
-    private AsyncDuplexStreamingCall<ClientCommandDeliverScReq, ClientCommandDeliverScRsp>? CommandListeningCall
-    {
-        get;
+    
+    private AsyncDuplexStreamingCall<ClientCommandDeliverScReq, ClientCommandDeliverScRsp>? CommandListeningCall { get;
         set;
     }
 
     private CancellationTokenSource CommandListeningCallCancellationTokenSource { get; set; } = new();
-
+    
     private ManagementSettings ManagementSettings { get; }
-
+    
     public ManagementServerConnection(ManagementSettings settings, Guid clientUid, bool lightConnect)
     {
         ClientGuid = clientUid;
@@ -65,11 +66,11 @@ public class ManagementServerConnection : IManagementServerConnection
         ManagementSettings = settings;
         ManifestUrl = $"{Host}/api/v1/client/{clientUid}/manifest";
         CommandConnectionAliveTimer.Tick += CommandConnectionAliveTimerOnTick;
-
+        
         Channel = GrpcChannel.ForAddress(settings.ManagementServerGrpc);
-
+        
         Logger.LogInformation("初始化管理服务器连接。");
-        if (lightConnect)
+        if (lightConnect) 
             return;
         AppBase.Current.AppStarted += (sender, args) => InstallAuditHooks();
         // 接受命令
@@ -79,10 +80,16 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private void OnCommandReceived(object? sender, ClientCommandEventArgs e)
     {
-        if (e.Type != CommandTypes.GetClientConfig) return;
+        if (e.Type != CommandTypes.GetClientConfig)
+        {
+            return;
+        }
         var payload = GetClientConfig.Parser.ParseFrom(e.Payload);
-        if (payload == null) return;
-
+        if (payload == null)
+        {
+            return;
+        }
+        
         Logger.LogInformation("集控请求上传配置：{} {}", payload.RequestGuid, payload.ConfigType);
         var uploadPayload = payload.ConfigType switch
         {
@@ -100,7 +107,7 @@ public class ManagementServerConnection : IManagementServerConnection
             _ => throw new ArgumentOutOfRangeException()
         };
         var client = new ConfigUpload.ConfigUploadClient(Channel);
-        client.UploadConfig(new ConfigUploadScReq
+        client.UploadConfig(new ConfigUploadScReq()
         {
             RequestGuidId = payload.RequestGuid,
             Payload = uploadPayload
@@ -112,7 +119,7 @@ public class ManagementServerConnection : IManagementServerConnection
     {
         Logger.LogInformation("正在注册实例");
         var client = new ClientRegister.ClientRegisterClient(Channel);
-        var r = await client.RegisterAsync(new ClientRegisterCsReq
+        var r = await client.RegisterAsync(new ClientRegisterCsReq()
         {
             ClientUid = ClientGuid.ToString(),
             ClientId = Id
@@ -127,11 +134,14 @@ public class ManagementServerConnection : IManagementServerConnection
     {
         try
         {
-            if (CommandListeningCall == null) throw new Exception("CommandListeningCall is null!");
+            if (CommandListeningCall == null)
+            {
+                throw new Exception("CommandListeningCall is null!");
+            }
             if (CommandListeningCallCancellationTokenSource.IsCancellationRequested)
                 return;
             // Logger.LogTrace("向命令流发送心跳包。");
-            await CommandListeningCall.RequestStream.WriteAsync(new ClientCommandDeliverScReq
+            await CommandListeningCall.RequestStream.WriteAsync(new ClientCommandDeliverScReq()
             {
                 Type = CommandTypes.Ping
             });
@@ -146,7 +156,7 @@ public class ManagementServerConnection : IManagementServerConnection
             _ = Task.Run(ListenCommands);
         }
     }
-
+    
     private async Task ListenCommands()
     {
         if (CommandListeningCall != null)
@@ -154,14 +164,11 @@ public class ManagementServerConnection : IManagementServerConnection
             Logger.LogWarning("已连接到命令流，无需重复连接");
             return;
         }
-
         try
         {
             Logger.LogInformation("正在连接到命令流");
-            var client =
-                new ClientCommandDeliver.ClientCommandDeliverClient(
-                    GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc));
-            var call = client.ListenCommand(new Grpc.Core.Metadata
+            var client = new ClientCommandDeliver.ClientCommandDeliverClient(GrpcChannel.ForAddress(ManagementSettings.ManagementServerGrpc));
+            var call = client.ListenCommand(new Grpc.Core.Metadata()
             {
                 { "cuid", ClientGuid.ToString() }
             });
@@ -175,20 +182,22 @@ public class ManagementServerConnection : IManagementServerConnection
                 var r = call.ResponseStream.Current;
                 if (r == null)
                     continue;
-                if (r.Type == CommandTypes.Pong) continue;
+                if (r.Type == CommandTypes.Pong)
+                {
+                    continue;
+                }
 
                 if (r.RetCode != Retcode.Success)
                 {
                     Logger.LogWarning("接受指令时未返回成功代码：{}", r.RetCode);
                     continue;
                 }
-
                 Logger.LogInformation("接受指令：[{}] {}", r.Type, r.Payload);
                 try
                 {
                     Application.Current.Invoke(() =>
                     {
-                        CommandReceived?.Invoke(this, new ClientCommandEventArgs
+                        CommandReceived?.Invoke(this, new ClientCommandEventArgs()
                         {
                             Type = r.Type,
                             Payload = r.Payload
@@ -208,7 +217,7 @@ public class ManagementServerConnection : IManagementServerConnection
             Logger.LogError(ex, "无法连接到集控服务器命令流，将在30秒后重试。");
             CommandConnectionAliveTimer.Stop();
             CommandListeningCall = null;
-            var timer = new Timer
+            var timer = new Timer()
             {
                 Interval = 30000,
                 AutoReset = false
@@ -220,6 +229,7 @@ public class ManagementServerConnection : IManagementServerConnection
 
     private void InstallAuditHooks()
     {
+        
     }
 
     internal void LogAuditEvent(AuditEvents eventType, IBufferMessage payload)
@@ -228,7 +238,7 @@ public class ManagementServerConnection : IManagementServerConnection
         {
             try
             {
-                new Audit.AuditClient(Channel).LogEvent(new AuditScReq
+                new Audit.AuditClient(Channel).LogEvent(new AuditScReq()
                 {
                     Event = eventType,
                     Payload = payload.ToByteString(),
@@ -241,7 +251,7 @@ public class ManagementServerConnection : IManagementServerConnection
             }
         });
     }
-
+    
     public async Task<ManagementManifest> GetManifest()
     {
         return await WebRequestHelper.GetJson<ManagementManifest>(new Uri(ManifestUrl));

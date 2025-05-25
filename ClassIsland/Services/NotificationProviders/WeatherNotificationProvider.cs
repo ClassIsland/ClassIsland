@@ -14,6 +14,7 @@ using ClassIsland.Models.AttachedSettings;
 using ClassIsland.Models.NotificationProviderSettings;
 using ClassIsland.Shared;
 using MaterialDesignThemes.Wpf;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ClassIsland.Core.Abstractions.Services.NotificationProviders;
@@ -23,10 +24,10 @@ using ClassIsland.Helpers;
 
 namespace ClassIsland.Services.NotificationProviders;
 
-[NotificationProviderInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气预警", PackIconKind.CloudWarning,
-    "当有降雨或者极端天气时发出提醒。")]
+[NotificationProviderInfo("7625DE96-38AA-4B71-B478-3F156DD9458D", "天气预警", PackIconKind.CloudWarning, "当有降雨或者极端天气时发出提醒。")]
 public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotificationProviderSettings>
 {
+
     private IWeatherService WeatherService { get; }
 
     private SettingsService SettingsService { get; }
@@ -57,13 +58,16 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
         LessonsService.OnBreakingTime += NotificationHostServiceOnOnBreakingTime;
         LessonsService.OnClass += NotificationHostServiceOnOnClass;
 
-        ActionService.RegisterActionHandler("classisland.notification.weather", (settings, _) =>
+        ActionService.RegisterActionHandler("classisland.notification.weather", (settings, _) => 
             AppBase.Current.Dispatcher.Invoke(() => HandleWeatherAction(settings)));
     }
 
     private void HandleWeatherAction(object? s)
     {
-        if (s is not WeatherNotificationActionSettings settings) return;
+        if (s is not WeatherNotificationActionSettings settings)
+        {
+            return;
+        }
 
         switch (settings.NotificationKind)
         {
@@ -95,23 +99,21 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
         if (!Settings.IsForecastEnabled || s.ForecastShowMode == NotificationModes.Disabled ||
             (s.ForecastShowMode == NotificationModes.Default &&
              Settings.ForecastShowMode == NotificationModes.Disabled))
+        {
             return;
+        }
         ShowWeatherForecastCore();
     }
 
     private void ShowWeatherForecastCore()
     {
-        ShowNotification(new NotificationRequest
+        ShowNotification(new Core.Models.Notification.NotificationRequest()
         {
-            MaskContent =
-                new NotificationContent(
-                    new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo)),
-            OverlayContent =
-                new NotificationContent(
-                    new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo))
-                {
-                    Duration = TimeSpan.FromSeconds(15)
-                }
+            MaskContent = new NotificationContent(new WeatherForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo)),
+            OverlayContent = new NotificationContent(new WeatherForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo))
+            {
+                Duration = TimeSpan.FromSeconds(15)
+            }
         });
     }
 
@@ -126,17 +128,13 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
     {
         var baseTime = SettingsService.Settings.LastWeatherInfo.UpdateTime;
         baseTime = RoundUpToHour(baseTime);
-        ShowNotification(new NotificationRequest
+        ShowNotification(new Core.Models.Notification.NotificationRequest()
         {
-            MaskContent =
-                new NotificationContent(new WeatherHourlyForecastNotificationProvider(true,
-                    SettingsService.Settings.LastWeatherInfo, baseTime)),
-            OverlayContent =
-                new NotificationContent(new WeatherHourlyForecastNotificationProvider(false,
-                    SettingsService.Settings.LastWeatherInfo, baseTime))
-                {
-                    Duration = TimeSpan.FromSeconds(15)
-                }
+            MaskContent = new NotificationContent(new WeatherHourlyForecastNotificationProvider(true, SettingsService.Settings.LastWeatherInfo, baseTime)),
+            OverlayContent = new NotificationContent(new WeatherHourlyForecastNotificationProvider(false, SettingsService.Settings.LastWeatherInfo, baseTime))
+            {
+                Duration = TimeSpan.FromSeconds(15)
+            }
         });
     }
 
@@ -156,7 +154,9 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
         if (!Settings.IsAlertEnabled || s.AlertShowMode == NotificationModes.Disabled ||
             (s.AlertShowMode == NotificationModes.Default &&
              Settings.AlertShowMode == NotificationModes.Disabled))
+        {
             return;
+        }
 
         ShowAlertsNotificationCore();
     }
@@ -170,7 +170,7 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
             if (t >= 90) t = 90.0;
             var ts = TimeSpanHelper.FromSecondsSafe(t);
             IAppHost.GetService<ILogger<WeatherNotificationProvider>>().LogTrace("单次预警显示时长：{}", ts);
-            ShowNotification(new NotificationRequest
+            ShowNotification(new Core.Models.Notification.NotificationRequest()
             {
                 MaskContent = new NotificationContent(new WeatherNotificationProviderControl(true, i, ts))
                 {
@@ -180,7 +180,8 @@ public class WeatherNotificationProvider : NotificationProviderBase<WeatherNotif
                 OverlayContent = new NotificationContent(new WeatherNotificationProviderControl(false, i, ts))
                 {
                     Duration = ts * 2,
-                    SpeechContent = i.Detail
+                    SpeechContent = i.Detail,
+
                 }
             });
             ShownAlerts.Add(i.Detail);

@@ -21,7 +21,6 @@ namespace ClassIsland.Views.RecoveryPages;
 public partial class RecoverBackupPage : Page
 {
     public RecoverBackupViewModel ViewModel { get; } = new();
-
     public RecoverBackupPage()
     {
         InitializeComponent();
@@ -30,12 +29,12 @@ public partial class RecoverBackupPage : Page
     private void RecoverBackupPage_OnLoaded(object sender, RoutedEventArgs e)
     {
         if (Directory.Exists(Path.Combine(App.AppRootFolderPath, "Backups")))
+        {
             ViewModel.Backups =
                 new ObservableCollection<string>(
-                    Directory.GetFiles(Path.Combine(App.AppRootFolderPath, "Backups"))
-                        .OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName).Concat(
-                            Directory.GetDirectories(Path.Combine(App.AppRootFolderPath, "Backups"))
-                                .OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName)!));
+                    Directory.GetFiles(Path.Combine(App.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName).Concat(
+                        Directory.GetDirectories(Path.Combine(App.AppRootFolderPath, "Backups")).OrderByDescending(Directory.GetLastWriteTime).Select(Path.GetFileName)!)); 
+        }
     }
 
     private async Task RecoverBackupAsync(string backupPath)
@@ -43,25 +42,40 @@ public partial class RecoverBackupPage : Page
         if (ViewModel.RecoverMode == 1)
         {
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json"));
+            }
             if (File.Exists(Path.Combine(App.AppRootFolderPath, "Settings.json.bak")))
+            {
                 File.Delete(Path.Combine(App.AppRootFolderPath, "Settings.json.bak"));
-            if (Directory.Exists(App.AppConfigPath)) Directory.Delete(App.AppConfigPath, true);
+            }
+            if (Directory.Exists(App.AppConfigPath))
+            {
+                Directory.Delete(App.AppConfigPath, true);
+            }
             if (Directory.Exists(Path.Combine(App.AppRootFolderPath, "Profiles")))
+            {
                 Directory.Delete(Path.Combine(App.AppRootFolderPath, "Profiles"), true);
+            }
         }
 
         await Task.Run(() =>
         {
-            if (Path.GetExtension(backupPath) == ".zip")
+            if(Path.GetExtension(backupPath)==".zip"){
                 ZipFile.ExtractToDirectory(backupPath, App.AppRootFolderPath, true);
-            if (Directory.Exists(backupPath)) FileFolderService.CopyFolder(backupPath, App.AppRootFolderPath, true);
+            }
+            if(Directory.Exists(backupPath)){
+                FileFolderService.CopyFolder(backupPath, App.AppRootFolderPath, true);
+            }
         });
     }
 
     private async void ButtonRecover_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedBackupName == null) return;
+        if (ViewModel.SelectedBackupName == null)
+        {
+            return;
+        }
 
         var result = new CommonDialogBuilder()
             .SetCaption("恢复备份")
@@ -70,7 +84,10 @@ public partial class RecoverBackupPage : Page
             .AddCancelAction()
             .AddConfirmAction()
             .ShowDialog();
-        if (result != 1) return;
+        if (result != 1)
+        {
+            return;
+        }
 
         var backupPath = Path.Combine(App.AppRootFolderPath, "Backups", ViewModel.SelectedBackupName);
 

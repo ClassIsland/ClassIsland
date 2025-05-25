@@ -7,7 +7,10 @@ public class RippleEffectTranslationConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if (value is not double d) return 0.0;
+        if (value is not double d)
+        {
+            return 0.0;
+        }
         //Console.WriteLine(-d / 2);
         return -d / 2;
     }

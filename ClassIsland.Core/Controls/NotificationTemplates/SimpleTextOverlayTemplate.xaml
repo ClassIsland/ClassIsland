@@ -6,9 +6,9 @@
         <Grid>
             <TextBlock Text="{Binding Text, Mode=OneWay}"
                        Margin="24 0"
-                       VerticalAlignment="Center"
+                       VerticalAlignment="Center" 
                        HorizontalAlignment="Center"
-                       TextTrimming="CharacterEllipsis" />
+                       TextTrimming="CharacterEllipsis"/>
         </Grid>
     </DataTemplate>
 </ResourceDictionary>

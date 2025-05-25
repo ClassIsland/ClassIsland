@@ -19,7 +19,7 @@ public abstract class AppBase : Application, IAppHost
     /// 重启应用程序。
     /// </summary>
     /// <param name="quiet">是否静默重启</param>
-    public abstract void Restart(bool quiet = false);
+    public abstract void Restart(bool quiet=false);
 
     /// <summary>
     /// 重启应用程序。
@@ -76,8 +76,7 @@ public abstract class AppBase : Application, IAppHost
     /// <summary>
     /// 应用分发频道
     /// </summary>
-    public string AppSubChannel =>
-        $"{OperatingSystem}_{Platform}_{(IsAssetsTrimmed() ? "trimmed" : "full")}_{PackagingType}";
+    public string AppSubChannel => $"{OperatingSystem}_{Platform}_{(IsAssetsTrimmed() ? "trimmed" : "full")}_{PackagingType}";
 
     internal AppBase()
     {
@@ -100,7 +99,7 @@ public abstract class AppBase : Application, IAppHost
     /// </summary>
     public static string AppVersionLong =>
         $"{AppVersion}-{AppCodeName}-{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch}) (Core {IAppHost.CoreVersion})";
-
+    
     /// <summary>
     /// 应用当前生命周期状态
     /// </summary>

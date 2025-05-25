@@ -1,11 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace ClassIsland.Models.Actions;
 
 public class CurrentComponentConfigActionSettings : ObservableRecipient
 {
-    private string _value = "Default";
-
+    string _value = "Default";
     public string Value
     {
         get => _value;

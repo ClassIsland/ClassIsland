@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+
 using ClassIsland.Models;
 using ClassIsland.Services;
 
@@ -15,8 +16,7 @@ public partial class WeatherMiniInfoProviderControl : UserControl
 
     public WeatherMiniInfoProviderSettings Settings { get; }
 
-    public WeatherMiniInfoProviderControl(SettingsService settingsService,
-        WeatherMiniInfoProviderSettings weatherMiniInfoProviderSettings)
+    public WeatherMiniInfoProviderControl(SettingsService settingsService, WeatherMiniInfoProviderSettings weatherMiniInfoProviderSettings)
     {
         Settings = weatherMiniInfoProviderSettings;
         SettingsService = settingsService;

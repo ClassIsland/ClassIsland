@@ -13,8 +13,7 @@ namespace ClassIsland.Core.Controls;
 /// </summary>
 public partial class ColorPicker : UserControl, INotifyPropertyChanged
 {
-    public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Color),
-        typeof(ColorPicker), new PropertyMetadata(Colors.Black));
+    public static readonly DependencyProperty ColorProperty = DependencyProperty.Register("Color", typeof(Color), typeof(ColorPicker), new PropertyMetadata(Colors.Black));
 
     public Color Color
     {
@@ -24,7 +23,7 @@ public partial class ColorPicker : UserControl, INotifyPropertyChanged
 
     public string ColorHex => $"#{Color.R:X2}{Color.G:X2}{Color.B:X2}";
 
-    public SolidColorBrush ColorBrush => new(Color);
+    public SolidColorBrush ColorBrush => new SolidColorBrush(Color);
 
     public ColorPicker()
     {
@@ -71,6 +70,9 @@ public partial class ColorPicker : UserControl, INotifyPropertyChanged
 
     private void UIElement_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if (e.Key == Key.Enter) Picker.Focus();
+        if (e.Key == Key.Enter)
+        {
+            Picker.Focus();
+        }
     }
 }

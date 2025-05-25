@@ -19,8 +19,8 @@ using ClassIsland.Models;
 using ClassIsland.Services;
 using ClassIsland.Shared.Helpers;
 using CommunityToolkit.Mvvm.Input;
-using GptSoVitsSpeechSettingsList =
-    System.Collections.ObjectModel.ObservableCollection<ClassIsland.Models.GptSoVitsSpeechSettings>;
+
+using GptSoVitsSpeechSettingsList = System.Collections.ObjectModel.ObservableCollection<ClassIsland.Models.GptSoVitsSpeechSettings>;
 
 
 namespace ClassIsland.Controls.SpeechProviderSettingsControls;
@@ -37,8 +37,7 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
     public static readonly string GptSoVitsSettingsPresetsPath = System.IO.Path.Combine(App.AppConfigPath,
         "GptSovitsSettingsPresets.json");
 
-    public static readonly GptSoVitsSpeechSettingsList InternalGptSoVitsSpeechPresets =
-    [
+    public static readonly GptSoVitsSpeechSettingsList InternalGptSoVitsSpeechPresets = [
         new GptSoVitsSpeechSettings
         {
             PresetName = "派蒙（原神）",
@@ -115,7 +114,8 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
             GptSoVitsPort = "80",
             GptSoVitsPromptText = "回答听力部分时，请先将答案标在试卷上。",
             GptSoVitsRefAudioPath = "template_audio/highexam-male.wav"
-        },
+        }
+        ,
         new GptSoVitsSpeechSettings
         {
             PresetName = "三月七（崩坏：星穹铁道）",
@@ -127,7 +127,7 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
             GptSoVitsPromptText = "名字是我自己取的，大家也叫我三月、小三月…你呢？你想叫我什么？",
             GptSoVitsRefAudioPath = "template_audio/march7th.wav"
         }
-    ];
+        ];
 
     private GptSoVitsSpeechSettings? _selectedGptSoVitsSpeechPreset;
 
@@ -145,13 +145,17 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
         GptSoVitsSpeechSettingsPresets =
             ConfigureFileHelper.LoadConfig<GptSoVitsSpeechSettingsList>(GptSoVitsSettingsPresetsPath);
         foreach (var preset in GptSoVitsSpeechSettingsPresets.Where(x => x.IsInternal).ToList())
+        {
             GptSoVitsSpeechSettingsPresets.Remove(preset);
+        }
 
-        foreach (var preset in InternalGptSoVitsSpeechPresets) GptSoVitsSpeechSettingsPresets.Insert(0, preset);
+        foreach (var preset in InternalGptSoVitsSpeechPresets)
+        {
+            GptSoVitsSpeechSettingsPresets.Insert(0, preset);
+        }
 
         ConfigureFileHelper.SaveConfig(GptSoVitsSettingsPresetsPath, GptSoVitsSpeechSettingsPresets);
-        GptSoVitsSpeechSettingsPresets.CollectionChanged += (_, _) =>
-            ConfigureFileHelper.SaveConfig(GptSoVitsSettingsPresetsPath, GptSoVitsSpeechSettingsPresets);
+        GptSoVitsSpeechSettingsPresets.CollectionChanged += (_, _) => ConfigureFileHelper.SaveConfig(GptSoVitsSettingsPresetsPath, GptSoVitsSpeechSettingsPresets);
     }
 
     private void ButtonSaveGptSovitsPreset_OnClick(object sender, RoutedEventArgs e)
@@ -173,8 +177,7 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
     [RelayCommand]
     private void OverwriteGptSoVitsPreset(GptSoVitsSpeechSettings settings)
     {
-        GptSoVitsSpeechSettingsPresets.Insert(GptSoVitsSpeechSettingsPresets.IndexOf(settings),
-            ConfigureFileHelper.CopyObject(SettingsService.Settings.GptSoVitsSpeechSettings));
+        GptSoVitsSpeechSettingsPresets.Insert(GptSoVitsSpeechSettingsPresets.IndexOf(settings), ConfigureFileHelper.CopyObject(SettingsService.Settings.GptSoVitsSpeechSettings));
         GptSoVitsSpeechSettingsPresets.Remove(settings);
     }
 
@@ -195,7 +198,10 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
 
     private void DataGridPresets_OnBeginningEdit(object? sender, DataGridBeginningEditEventArgs e)
     {
-        if (e.Row.Item is GptSoVitsSpeechSettings settings) e.Cancel = settings.IsInternal;
+        if (e.Row.Item is GptSoVitsSpeechSettings settings)
+        {
+            e.Cancel = settings.IsInternal;
+        }
     }
 
     private void ButtonSaveGptSovitsPreset2_OnClick(object sender, RoutedEventArgs e)
@@ -215,7 +221,10 @@ public partial class GptSovitsSpeechServiceSettingsControl : INotifyPropertyChan
     private void OpenDrawer(string key)
     {
         var o = FindResource(key);
-        if (o is FrameworkElement e) e.DataContext = this;
+        if (o is FrameworkElement e)
+        {
+            e.DataContext = this;
+        }
         SettingsPageBase.OpenDrawerCommand.Execute(o);
     }
 

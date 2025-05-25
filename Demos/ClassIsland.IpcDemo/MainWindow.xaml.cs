@@ -21,21 +21,17 @@ namespace ClassIsland.IpcDemo;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainViewModel ViewModel { get; } = new();
+    public MainViewModel ViewModel { get; } = new MainViewModel();
 
     private IpcClient _ipcClient;
 
     public MainWindow()
     {
         _ipcClient = new IpcClient();
-        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.CurrentTimeStateChangedNotifyId,
-            () => MessageBox.Show("CurrentTimeStateChanged."));
-        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnClassNotifyId,
-            () => MessageBox.Show("OnClass."));
-        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnBreakingTimeNotifyId,
-            () => MessageBox.Show("OnBreakingTime."));
-        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnAfterSchoolNotifyId,
-            () => MessageBox.Show("OnAfterSchool."));
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.CurrentTimeStateChangedNotifyId, () => MessageBox.Show("CurrentTimeStateChanged."));
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnClassNotifyId, () => MessageBox.Show("OnClass."));
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnBreakingTimeNotifyId, () => MessageBox.Show("OnBreakingTime."));
+        _ipcClient.JsonIpcProvider.AddNotifyHandler(IpcRoutedNotifyIds.OnAfterSchoolNotifyId, () => MessageBox.Show("OnAfterSchool."));
         _ = _ipcClient.Connect();
         InitializeComponent();
         DataContext = this;
@@ -53,8 +49,7 @@ public partial class MainWindow : Window
 
         var sb = new StringBuilder();
         sb.AppendLine($"当前科目： {lessonSc.CurrentSubject?.Name}");
-        sb.AppendLine(
-            $"当前时间点： {lessonSc.CurrentTimeLayoutItem.StartSecond} - {lessonSc.CurrentTimeLayoutItem.EndSecond}");
+        sb.AppendLine($"当前时间点： {lessonSc.CurrentTimeLayoutItem.StartSecond} - {lessonSc.CurrentTimeLayoutItem.EndSecond}");
 
         ViewModel.LessonInfos = sb.ToString();
     }

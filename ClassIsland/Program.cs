@@ -34,12 +34,15 @@ var command = new RootCommand
     new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印"),
     new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
     new Option<bool>(["--diagnostic", "-d"], "启用诊断模式"),
-    new Option<bool>(["--safe", "-s"], "启用安全模式")
+    new Option<bool>(["--safe", "-s"], "启用安全模式"),
 };
 command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
 command.Invoke(args);
 
-if (App.ApplicationCommand.Diagnostic) AllocConsole();
+if (App.ApplicationCommand.Diagnostic)
+{
+    AllocConsole();
+}
 
 var mutex = new Mutex(true, "ClassIsland.Lock", out var createNew);
 
@@ -58,7 +61,10 @@ if (!createNew)
     }
     else
     {
-        if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri)) await ProcessUriNavigationAsync();
+        if (!string.IsNullOrWhiteSpace(App.ApplicationCommand.Uri))
+        {
+            await ProcessUriNavigationAsync();
+        }
     }
 }
 
@@ -81,22 +87,29 @@ void ConfigureSentry(SentryOptions options)
     options.IsGlobalModeEnabled = true;
     // Example sample rate for your transactions: captures 10% of transactions
     if (App.ApplicationCommand.EnableSentryDebug)
+    {
         options.TracesSampleRate = 1.0;
-    // options.ProfilesSampleRate = 1.0;
+        // options.ProfilesSampleRate = 1.0;
+    }
     else
+    {
         options.TracesSampleRate = 0.05;
-    // options.ProfilesSampleRate = 0.016;
+        // options.ProfilesSampleRate = 0.016;
+    }
+
     options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
 }
 
 var sentryEnabled = Environment.GetEnvironmentVariable("ClassIsland_IsSentryEnabled") is "1" or null;
-if (sentryEnabled)
+if (sentryEnabled )
 {
     SentrySdk.Init(ConfigureSentry);
-    SentrySdk.ConfigureScope(s => { s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString()); });
+    SentrySdk.ConfigureScope(s =>
+    {
+        s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
+    });
 }
-
-var app = new App
+var app = new App()
 {
     Mutex = mutex,
     IsMutexCreateNew = createNew,
@@ -105,6 +118,8 @@ var app = new App
 app.InitializeComponent();
 app.Run();
 return;
+
+
 
 
 static async Task ProcessUriNavigationAsync()

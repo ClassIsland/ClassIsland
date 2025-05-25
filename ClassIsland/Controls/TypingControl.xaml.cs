@@ -15,20 +15,23 @@ public partial class TypingControl : UserControl
 
     public string DisplayingText
     {
-        get => (string)GetValue(DisplayingTextProperty);
-        set => SetValue(DisplayingTextProperty, value);
+        get { return (string)GetValue(DisplayingTextProperty); }
+        set { SetValue(DisplayingTextProperty, value); }
     }
 
     public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
         nameof(Text), typeof(string), typeof(TypingControl), new PropertyMetadata(default(string), (o, args) =>
         {
-            if (o is TypingControl control) control.UpdateText();
+            if (o is TypingControl control)
+            {
+                control.UpdateText();
+            }
         }));
 
     public string Text
     {
-        get => (string)GetValue(TextProperty);
-        set => SetValue(TextProperty, value);
+        get { return (string)GetValue(TextProperty); }
+        set { SetValue(TextProperty, value); }
     }
 
     public static readonly DependencyProperty IsBusyProperty = DependencyProperty.Register(
@@ -36,8 +39,8 @@ public partial class TypingControl : UserControl
 
     public bool IsBusy
     {
-        get => (bool)GetValue(IsBusyProperty);
-        set => SetValue(IsBusyProperty, value);
+        get { return (bool)GetValue(IsBusyProperty); }
+        set { SetValue(IsBusyProperty, value); }
     }
 
     public static readonly DependencyProperty DisplayIndexProperty = DependencyProperty.Register(
@@ -48,14 +51,14 @@ public partial class TypingControl : UserControl
 
     public Visibility TextVisibility
     {
-        get => (Visibility)GetValue(TextVisibilityProperty);
-        set => SetValue(TextVisibilityProperty, value);
+        get { return (Visibility)GetValue(TextVisibilityProperty); }
+        set { SetValue(TextVisibilityProperty, value); }
     }
 
     public int DisplayIndex
     {
-        get => (int)GetValue(DisplayIndexProperty);
-        set => SetValue(DisplayIndexProperty, value);
+        get { return (int)GetValue(DisplayIndexProperty); }
+        set { SetValue(DisplayIndexProperty, value); }
     }
 
     private bool _isFirstUpdate = true;
@@ -73,16 +76,16 @@ public partial class TypingControl : UserControl
         {
             DisplayingText = "";
             await Task.Delay(TimeSpan.FromMilliseconds(150));
-            for (var i = 0; i < Text.Length; i++)
+            for (int i = 0; i < Text.Length; i++)
             {
-                DisplayingText = Text[..i] + (i / 10 % 2 == 0 ? "_" : "");
+                DisplayingText = Text[..i] + ((i / 10) % 2 == 0 ? "_" : "");
                 await Task.Delay(TimeSpan.FromMilliseconds(40));
             }
         }
 
         _isFirstUpdate = false;
 
-        DisplayingText = Text;
+        DisplayingText = Text;  
         IsBusy = false;
     }
 }

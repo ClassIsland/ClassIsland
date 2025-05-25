@@ -2,5 +2,9 @@
 
 public interface IAttachedSettingsHelper
 {
-    public AttachableSettingsObject? AttachedTarget { get; set; }
+    public AttachableSettingsObject? AttachedTarget
+    {
+        get;
+        set;
+    }
 }

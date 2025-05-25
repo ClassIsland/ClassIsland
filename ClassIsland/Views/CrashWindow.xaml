@@ -1,35 +1,36 @@
 ﻿<controls1:MyWindow x:Class="ClassIsland.Views.CrashWindow"
-                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:views="clr-namespace:ClassIsland.Views"
-                    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
-                    d:DataContext="{d:DesignInstance views:CrashWindow}"
-                    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-                    TextElement.FontWeight="Regular"
-                    TextElement.FontSize="13"
-                    TextOptions.TextFormattingMode="Ideal"
-                    TextOptions.TextRenderingMode="Auto"
-                    Background="{DynamicResource MaterialDesignPaper}"
-                    FontFamily="{StaticResource HarmonyOsSans}"
-                    mc:Ignorable="d"
-                    WindowStartupLocation="CenterScreen"
-                    Icon="/Assets/AppLogo.ico"
-                    Title="ClassIsland 崩溃报告" Height="450" Width="800">
+                   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                   xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                   xmlns:views="clr-namespace:ClassIsland.Views"
+                   xmlns:controls="clr-namespace:ClassIsland.Controls"
+                   xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+                   d:DataContext="{d:DesignInstance views:CrashWindow}"
+                   TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+                   TextElement.FontWeight="Regular"
+                   TextElement.FontSize="13"
+                   TextOptions.TextFormattingMode="Ideal" 
+                   TextOptions.TextRenderingMode="Auto"        
+                   Background="{DynamicResource MaterialDesignPaper}"
+                   FontFamily="{StaticResource HarmonyOsSans}"
+                   mc:Ignorable="d"
+                   WindowStartupLocation="CenterScreen"
+                   Icon="/Assets/AppLogo.ico"
+                   Title="ClassIsland 崩溃报告" Height="450" Width="800">
     <Grid Margin="12">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <materialDesign:PackIcon Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left"
                                  Grid.RowSpan="2"
@@ -39,10 +40,10 @@
                                  Height="56" Width="56" />
 
         <TextBlock Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" FontSize="14">
-            <Run Text="ClassIsland 碰到了严重错误而无法正常运行。您可以保存下方的错误信息并向他人寻求帮助。如果您认为这是由软件本身的错误所致，请点击下方“反馈问题”按钮。" />
+            <Run Text="ClassIsland 碰到了严重错误而无法正常运行。您可以保存下方的错误信息并向他人寻求帮助。如果您认为这是由软件本身的错误所致，请点击下方“反馈问题”按钮。"/>
         </TextBlock>
         <TextBox Grid.Column="1"
-                 x:Name="TextBoxCrashInfo" Grid.Row="2"
+                 x:Name="TextBoxCrashInfo" Grid.Row="2" 
                  FontSize="13"
                  BorderThickness="0"
                  Padding="0"
@@ -51,7 +52,7 @@
                  VerticalContentAlignment="Top"
                  VerticalScrollBarVisibility="Auto" IsReadOnly="True" Text="{Binding CrashInfo, Mode=OneWay}"
                  TextAlignment="Left" TextWrapping="Wrap"
-                 d:Text="123" />
+                 d:Text="123"/>
 
         <materialDesign:ColorZone Grid.Row="3"
                                   Grid.Column="0" Grid.ColumnSpan="2"
@@ -62,56 +63,53 @@
                 <DockPanel Margin="8 4 4 4">
                     <materialDesign:PackIcon Kind="ErrorOutline"
                                              Margin="0 0 4 0"
-                                             VerticalAlignment="Center" />
+                                             VerticalAlignment="Center"/>
                     <TextBlock Text="这个异常无法被忽略，您需要重启或退出应用。很抱歉对您的使用造成不便。"
                                TextWrapping="Wrap"
-                               VerticalAlignment="Center" />
+                               VerticalAlignment="Center"/>
                 </DockPanel>
             </Grid>
         </materialDesign:ColorZone>
-        <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="-12 8" />
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" HorizontalAlignment="Right"
-                    Orientation="Horizontal">
+        <Separator Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" Margin="-12 8"/>
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
                     Visibility="{Binding IsCritical, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Click="ButtonDebug_OnClick">
-                <controls1:IconText Kind="BugOutline" Text="调试" IconMargin="3 0 0 0" />
+                <controls1:IconText Kind="BugOutline" Text="调试" IconMargin="3 0 0 0"/>
             </Button>
             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0"
                     Visibility="{Binding AllowIgnore, Mode=OneTime, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Click="ButtonIgnore_OnClick">
-                <controls1:IconText Kind="Close" Text="忽略" IconMargin="3 0 0 0" />
+                <controls1:IconText Kind="Close" Text="忽略" IconMargin="3 0 0 0"/>
             </Button>
             <Button Style="{StaticResource MaterialDesignPaperButton}" Margin="0 0 6 0" Click="ButtonExit_OnClick">
-                <controls1:IconText Kind="ExitToApp" Text="退出应用" IconMargin="3 0 0 0" />
+                <controls1:IconText Kind="ExitToApp" Text="退出应用" IconMargin="3 0 0 0"/>
             </Button>
             <Button Click="ButtonRestart_OnClick">
-                <controls1:IconText Kind="Restart" Text="重启应用" IconMargin="3 0 0 0" />
+                <controls1:IconText Kind="Restart" Text="重启应用" IconMargin="3 0 0 0"/>
             </Button>
         </StackPanel>
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" HorizontalAlignment="Left"
-                    Orientation="Horizontal">
+        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="5" HorizontalAlignment="Left" Orientation="Horizontal">
             <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonCopy_OnClick" Margin="0 0 6 0">
-                <controls1:IconText Kind="ContentCopy" Text="复制" IconMargin="3 0 0 0" />
+                <controls1:IconText Kind="ContentCopy" Text="复制" IconMargin="3 0 0 0"/>
             </Button>
             <Button Style="{StaticResource MaterialDesignPaperButton}" Click="ButtonFeedback_OnClick">
-                <controls1:IconText Kind="FeedbackOutline" Text="反馈问题" IconMargin="3 0 0 0" />
+                <controls1:IconText Kind="FeedbackOutline" Text="反馈问题" IconMargin="3 0 0 0"/>
             </Button>
         </StackPanel>
 
         <materialDesign:ColorZone Grid.Column="0" Grid.ColumnSpan="2"
-                                  Grid.Row="0"
+                                  Grid.Row="0" 
                                   Margin="-12 -12 -12 8"
                                   materialDesign:ElevationAssist.Elevation="Dp4"
                                   Mode="PrimaryMid"
                                   Padding="16">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBlock Text="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜"
-                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                    <TextBlock Text="ClassIsland 发生错误 ヽ(*。>Д&lt;)o゜" Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                HorizontalAlignment="Left"
                                VerticalAlignment="Center"
-                               Margin="0 0 16 0" />
+                               Margin="0 0 16 0"/>
                 </StackPanel>
             </Grid>
         </materialDesign:ColorZone>

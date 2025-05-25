@@ -14,7 +14,7 @@ public class Ruleset : ObservableRecipient
 {
     private RulesetLogicalMode _mode = RulesetLogicalMode.Or;
     private bool _isReversed = false;
-    private ObservableCollection<RuleGroup> _groups = [new() { Rules = [new Rule()] }];
+    private ObservableCollection<RuleGroup> _groups = [new() { Rules = [new()] }];
     private int _state = 0;
 
     /// <summary>

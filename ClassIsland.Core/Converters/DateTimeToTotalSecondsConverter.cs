@@ -11,8 +11,5 @@ public class TimeSpanToTotalSecondsConverter : IValueConverter
         return r.TotalSeconds < 0.5 ? "0" : r.TotalSeconds.ToString("#");
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return null;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => null;
 }

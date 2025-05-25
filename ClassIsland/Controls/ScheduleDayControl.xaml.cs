@@ -18,33 +18,34 @@ public partial class ScheduleDayControl : UserControl
     public static readonly DependencyProperty DateProperty = DependencyProperty.Register(
         nameof(Date), typeof(DateTime), typeof(ScheduleDayControl), new PropertyMetadata(default(DateTime), (o, args) =>
         {
-            if (o is ScheduleDayControl control) control.UpdateData();
+            if (o is ScheduleDayControl control)
+            {
+                control.UpdateData();
+            }
         }));
 
     public DateTime Date
     {
-        get => (DateTime)GetValue(DateProperty);
-        set => SetValue(DateProperty, value);
+        get { return (DateTime)GetValue(DateProperty); }
+        set { SetValue(DateProperty, value); }
     }
 
     public static readonly DependencyProperty CurrentClassPlanProperty = DependencyProperty.Register(
-        nameof(CurrentClassPlan), typeof(ClassPlan), typeof(ScheduleDayControl),
-        new PropertyMetadata(default(ClassPlan)));
+        nameof(CurrentClassPlan), typeof(ClassPlan), typeof(ScheduleDayControl), new PropertyMetadata(default(ClassPlan)));
 
     public ClassPlan? CurrentClassPlan
     {
-        get => (ClassPlan)GetValue(CurrentClassPlanProperty);
-        set => SetValue(CurrentClassPlanProperty, value);
+        get { return (ClassPlan)GetValue(CurrentClassPlanProperty); }
+        set { SetValue(CurrentClassPlanProperty, value); }
     }
 
     public static readonly DependencyProperty IsClassPlanSelectionPopupOpenProperty = DependencyProperty.Register(
-        nameof(IsClassPlanSelectionPopupOpen), typeof(bool), typeof(ScheduleDayControl),
-        new PropertyMetadata(default(bool)));
+        nameof(IsClassPlanSelectionPopupOpen), typeof(bool), typeof(ScheduleDayControl), new PropertyMetadata(default(bool)));
 
     public bool IsClassPlanSelectionPopupOpen
     {
-        get => (bool)GetValue(IsClassPlanSelectionPopupOpenProperty);
-        set => SetValue(IsClassPlanSelectionPopupOpenProperty, value);
+        get { return (bool)GetValue(IsClassPlanSelectionPopupOpenProperty); }
+        set { SetValue(IsClassPlanSelectionPopupOpenProperty, value); }
     }
 
     public static readonly DependencyProperty SelectedClassPlanIdProperty = DependencyProperty.Register(
@@ -52,8 +53,8 @@ public partial class ScheduleDayControl : UserControl
 
     public string SelectedClassPlanId
     {
-        get => (string)GetValue(SelectedClassPlanIdProperty);
-        set => SetValue(SelectedClassPlanIdProperty, value);
+        get { return (string)GetValue(SelectedClassPlanIdProperty); }
+        set { SetValue(SelectedClassPlanIdProperty, value); }
     }
 
     public static readonly DependencyProperty HasOrderedScheduleProperty = DependencyProperty.Register(
@@ -61,8 +62,8 @@ public partial class ScheduleDayControl : UserControl
 
     public bool HasOrderedSchedule
     {
-        get => (bool)GetValue(HasOrderedScheduleProperty);
-        set => SetValue(HasOrderedScheduleProperty, value);
+        get { return (bool)GetValue(HasOrderedScheduleProperty); }
+        set { SetValue(HasOrderedScheduleProperty, value); }
     }
 
     public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>();
@@ -110,8 +111,7 @@ public partial class ScheduleDayControl : UserControl
             IsClassPlanSelectionPopupOpen = false;
             return;
         }
-
-        ProfileService.Profile.OrderedSchedules[date] = new OrderedSchedule
+        ProfileService.Profile.OrderedSchedules[date] = new OrderedSchedule()
         {
             ClassPlanId = SelectedClassPlanId
         };
@@ -174,10 +174,11 @@ public partial class ScheduleDayControl : UserControl
 
     private void ScheduleDayControl_OnLoaded(object sender, RoutedEventArgs e)
     {
-        _parentScheduleCalendarControl =
-            VisualTreeUtils.FindParentVisuals<ScheduleCalendarControl>(this).FirstOrDefault();
+        _parentScheduleCalendarControl = VisualTreeUtils.FindParentVisuals<ScheduleCalendarControl>(this).FirstOrDefault();
         if (_parentScheduleCalendarControl != null)
+        {
             _parentScheduleCalendarControl.ScheduleUpdated += ParentScheduleCalendarControlOnScheduleUpdated;
+        }
     }
 
     private void ParentScheduleCalendarControlOnScheduleUpdated(object? sender, EventArgs e)
@@ -188,7 +189,9 @@ public partial class ScheduleDayControl : UserControl
     private void ScheduleDayControl_OnUnloaded(object sender, RoutedEventArgs e)
     {
         if (_parentScheduleCalendarControl != null)
+        {
             _parentScheduleCalendarControl.ScheduleUpdated -= ParentScheduleCalendarControlOnScheduleUpdated;
+        }
 
         _parentScheduleCalendarControl = null;
     }

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using ClassIsland.Core.Models;
 using ClassIsland.Shared.Enums;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models;
 
-public class UpdateSource : ObservableRecipient
+public class UpdateSource: ObservableRecipient
 {
     private UpdateSourceKind _kind = UpdateSourceKind.None;
     private string _name = "";

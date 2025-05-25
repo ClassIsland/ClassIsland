@@ -10,9 +10,13 @@ public interface IAttachedSettings
     /// <summary>
     /// 此附加设置是否启用
     /// </summary>
-    public bool IsAttachSettingsEnabled { get; set; }
+    public bool IsAttachSettingsEnabled { 
+        get; 
+        set;
+    }
 
 #if !NETFRAMEWORK
+    
     /// <summary>
     /// 判断指定的<see cref="IAttachedSettings"/>是否启用。
     /// </summary>

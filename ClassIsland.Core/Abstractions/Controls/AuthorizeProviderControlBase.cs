@@ -38,18 +38,23 @@ public abstract class AuthorizeProviderControlBase : UserControl
     /// <param name="info">控件信息</param>
     /// <param name="settings">要附加的设置对象</param>
     /// <returns>初始化的控件对象。</returns>
-    public static AuthorizeProviderControlBase? GetInstance(AuthorizeProviderInfo info, ref object? settings,
-        bool isEditngMode)
+    public static AuthorizeProviderControlBase? GetInstance(AuthorizeProviderInfo info, ref object? settings, bool isEditngMode)
     {
         var control = IAppHost.Host?.Services.GetKeyedService<AuthorizeProviderControlBase>(info.Id);
-        if (control == null) return null;
+        if (control == null)
+        {
+            return null;
+        }
 
         var baseType = info.AuthorizeProviderType?.BaseType;
         if (baseType?.GetGenericArguments().Length > 0)
         {
             var settingsType = baseType.GetGenericArguments().First();
             var settingsReal = settings ?? Activator.CreateInstance(settingsType);
-            if (settingsReal is JsonElement json) settingsReal = json.Deserialize(settingsType);
+            if (settingsReal is JsonElement json)
+            {
+                settingsReal = json.Deserialize(settingsType);
+            }
             settings = settingsReal;
 
             control.SettingsInternal = settingsReal;

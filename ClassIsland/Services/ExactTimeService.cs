@@ -6,7 +6,9 @@ using System.Windows.Threading;
 using ClassIsland.Core;
 using ClassIsland.Core.Abstractions.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
+
 using GuerrillaNtp;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
@@ -36,7 +38,7 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
 
     private ILogger<ExactTimeService> Logger { get; }
 
-    private DispatcherTimer UpdateTimer { get; } = new()
+    private DispatcherTimer UpdateTimer { get; } = new DispatcherTimer()
     {
         Interval = TimeSpan.FromMinutes(10)
     };
@@ -59,7 +61,10 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         Logger = logger;
         SettingsService = settingsService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
-        UpdateTimer.Tick += (sender, args) => { _ = Task.Run(Sync); };
+        UpdateTimer.Tick += (sender, args) =>
+        {
+            _ = Task.Run(Sync);
+        };
         try
         {
             NtpClient = new NtpClient(SettingsService.Settings.ExactTimeServer);
@@ -69,14 +74,11 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
             Logger.LogError(ex, "初始化NtpClient失败。");
             SyncStatusMessage = ex.Message;
         }
-
-        Task.Run(() =>
-        {
+        Task.Run(() => {
             Sync();
             UpdateTimerStatus();
             SystemEvents.TimeChanged += SystemEventsOnTimeChanged;
-            AppBase.Current.AppStopping += (sender, args) => SystemEvents.TimeChanged -= SystemEventsOnTimeChanged;
-            ;
+            AppBase.Current.AppStopping += (sender, args) => SystemEvents.TimeChanged -= SystemEventsOnTimeChanged; ;
         });
 
         if (SettingsService.Settings.IsTimeAutoAdjustEnabled)
@@ -86,7 +88,6 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
                                                               .LastTimeAdjustDateTime.Date).TotalDays);
             SettingsService.Settings.TimeOffsetSeconds = Math.Round(SettingsService.Settings.TimeOffsetSeconds, 3);
         }
-
         SettingsService.Settings.LastTimeAdjustDateTime = DateTime.Now.Date;
     }
 
@@ -112,7 +113,6 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
                     Logger.LogError(ex, "初始化NtpClient失败。");
                     SyncStatusMessage = ex.Message;
                 }
-
                 break;
             case nameof(SettingsService.Settings.IsExactTimeEnabled):
                 UpdateTimerStatus();
@@ -123,9 +123,13 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
     private void UpdateTimerStatus()
     {
         if (SettingsService.Settings.IsExactTimeEnabled)
+        {
             UpdateTimer.Start();
+        }
         else
+        {
             UpdateTimer.Stop();
+        }
     }
 
     public void Sync()
@@ -136,7 +140,10 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
             return;
         }
 
-        if (_isSyncingTime) return;
+        if (_isSyncingTime)
+        {
+            return;
+        }
         _isSyncingTime = true;
 
         Logger.LogInformation("正在从 {} 同步时间", SettingsService.Settings.ExactTimeServer);
@@ -174,15 +181,16 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
         var systemTime = DateTime.Now;
         if (SettingsService.Settings.IsExactTimeEnabled)
         {
-            if (Math.Abs((LastSystemTime - systemTime).TotalMilliseconds - TimeGetStopwatch.ElapsedMilliseconds) >
-                30_000.0 && !WaitingForSystemTimeChanged)
+            if (Math.Abs((LastSystemTime - systemTime).TotalMilliseconds - TimeGetStopwatch.ElapsedMilliseconds) > 30_000.0 && !WaitingForSystemTimeChanged)
             {
                 WaitingForSystemTimeChanged = true;
                 Logger.LogInformation("检测到系统时间突变，已暂停返回的时间并重新同步时间");
                 Task.Run(Sync);
             }
-
-            if (WaitingForSystemTimeChanged) return LastTime;
+            if (WaitingForSystemTimeChanged)
+            {
+                return LastTime;
+            }
         }
 
         LastSystemTime = systemTime;
@@ -199,8 +207,7 @@ public class ExactTimeService : ObservableRecipient, IExactTimeService
                 NeedWaiting = false;
             baseTime = now;
         }
-
         return LastTime = baseTime + TimeSpan.FromSeconds(SettingsService.Settings.TimeOffsetSeconds +
-                                                          SettingsService.Settings.DebugTimeOffsetSeconds);
+                                                       SettingsService.Settings.DebugTimeOffsetSeconds);
     }
 }

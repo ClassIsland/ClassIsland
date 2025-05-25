@@ -15,7 +15,6 @@ public class OnBreakingTimeTrigger(ILessonsService lessonsService) : TriggerBase
     {
         LessonsService.OnBreakingTime += LessonsServiceOnOnBreakingTime;
     }
-
     public override void UnLoaded()
     {
         LessonsService.OnBreakingTime -= LessonsServiceOnOnBreakingTime;

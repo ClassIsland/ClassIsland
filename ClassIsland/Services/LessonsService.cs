@@ -38,7 +38,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
     private static readonly ObservableCollection<int> DefaultMultiWeekRotation = [0, 0, 1, 1, 1];
 
-    private DispatcherTimer MainTimer { get; } = new(DispatcherPriority.Render)
+    private DispatcherTimer MainTimer
+    {
+        get;
+    } = new(DispatcherPriority.Render)
     {
         Interval = TimeSpan.FromMilliseconds(50)
     };
@@ -136,17 +139,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
         get => _onBreakingTimeLeftTime;
         set => SetProperty(ref _onBreakingTimeLeftTime, value);
     }
-
     public ObservableCollection<int> MultiWeekRotation
     {
         get => _multiWeekRotation;
         set => SetProperty(ref _multiWeekRotation, value);
     }
 
-    public ClassPlan? GetClassPlanByDate(DateTime date)
-    {
-        return GetClassPlanByDate(date, out _);
-    }
+    public ClassPlan? GetClassPlanByDate(DateTime date) => GetClassPlanByDate(date, out _);
 
     public ClassPlan? GetClassPlanByDate(DateTime date, out string? guid)
     {
@@ -167,7 +166,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
             guid = orderedScheduleInfo.ClassPlanId;
             return orderedClassPlan;
         }
-
         // 加载临时课表
         if (Profile.TempClassPlanId != null &&
             Profile.ClassPlans.TryGetValue(Profile.TempClassPlanId, out var tempClassPlan) &&
@@ -176,7 +174,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
             guid = Profile.TempClassPlanId;
             return tempClassPlan;
         }
-
         // 加载课表
         var a = Profile.ClassPlans
             .Where(x =>
@@ -184,7 +181,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 var group = x.Value.AssociatedGroup;
                 var matchGlobal = new Guid(group) == ClassPlanGroup.GlobalGroupGuid;
                 var matchDefault = group == Profile.SelectedClassPlanGroupId;
-                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null }
+                if (Profile is not { IsTempClassPlanGroupEnabled: true, TempClassPlanGroupId: not null } 
                     || Profile.TempClassPlanGroupExpireTime.Date < date.Date)
                     return matchDefault || matchGlobal;
                 var matchTemp = group == Profile.TempClassPlanGroupId;
@@ -215,25 +212,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
     public event EventHandler? OnAfterSchool;
     public event EventHandler? CurrentTimeStateChanged;
 
-    public void DebugTriggerOnClass()
-    {
-        OnClass?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void DebugTriggerOnBreakingTime()
-    {
-        OnBreakingTime?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void DebugTriggerOnAfterSchool()
-    {
-        OnAfterSchool?.Invoke(this, EventArgs.Empty);
-    }
-
-    public void DebugTriggerOnStateChanged()
-    {
-        CurrentTimeStateChanged?.Invoke(this, EventArgs.Empty);
-    }
+    public void DebugTriggerOnClass() => OnClass?.Invoke(this, EventArgs.Empty);
+    public void DebugTriggerOnBreakingTime() => OnBreakingTime?.Invoke(this, EventArgs.Empty);
+    public void DebugTriggerOnAfterSchool() => OnAfterSchool?.Invoke(this, EventArgs.Empty);
+    public void DebugTriggerOnStateChanged() => CurrentTimeStateChanged?.Invoke(this, EventArgs.Empty);
 
     private SettingsService SettingsService { get; }
     private IProfileService ProfileService { get; }
@@ -245,9 +227,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private Profile Profile => ProfileService.Profile;
     private Settings Settings => SettingsService.Settings;
 
-    public LessonsService(SettingsService settingsService, IProfileService profileService,
-        ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService,
-        IIpcService ipcService)
+    public LessonsService(SettingsService settingsService, IProfileService profileService, ILogger<LessonsService> logger, IExactTimeService exactTimeService, IRulesetService rulesetService, IIpcService ipcService)
     {
         MainTimer.Tick += MainTimerOnTick;
         SettingsService = settingsService;
@@ -288,13 +268,16 @@ public class LessonsService : ObservableRecipient, ILessonsService
             await IpcService.BroadcastNotificationAsync(IpcRoutedNotifyIds.OnAfterSchoolNotifyId);
         };
 
-        ProcessLessons(); // 防止在课程服务初始化后因没有更新课表获取到错误的信息
+        ProcessLessons();  // 防止在课程服务初始化后因没有更新课表获取到错误的信息
         StartMainTimer();
     }
 
     private void OnPropertyChanged(object? sender, PropertyChangedEventArgs args)
     {
-        if (args.PropertyName == nameof(CurrentSubject)) RulesetService.NotifyStatusChanged();
+        if (args.PropertyName == nameof(CurrentSubject))
+        {
+            RulesetService.NotifyStatusChanged();
+        }
 
         if (args.PropertyName == nameof(CurrentClassPlan) && CurrentClassPlan != null)
         {
@@ -306,57 +289,89 @@ public class LessonsService : ObservableRecipient, ILessonsService
     private void OnPropertyChanging(object? sender, PropertyChangingEventArgs e)
     {
         if (e.PropertyName == nameof(CurrentClassPlan) && CurrentClassPlan != null)
+        {
             CurrentClassPlan.ClassesChanged -= CurrentClassPlanOnClassesChanged;
+        }
     }
 
     private void CurrentClassPlanOnClassesChanged(object? sender, EventArgs e)
     {
+        
     }
 
     private bool CurrentSubjectHandler(object? settings)
     {
-        if (settings is not CurrentSubjectRuleSettings s) return false;
+        if (settings is not CurrentSubjectRuleSettings s)
+        {
+            return false;
+        }
 
-        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject)) return false;
+        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject))
+        {
+            return false;
+        }
 
         return CurrentSubject == subject;
     }
 
     private bool PreviousSubjectHandler(object? settings)
     {
-        if (settings is not CurrentSubjectRuleSettings s) return false;
+        if (settings is not CurrentSubjectRuleSettings s)
+        {
+            return false;
+        }
 
-        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject)) return false;
+        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject))
+        {
+            return false;
+        }
 
         var now = ExactTimeService.GetCurrentLocalDateTime().TimeOfDay;
         var layout = CurrentClassPlan?.TimeLayout;
-        if (layout == null) return false;
+        if (layout == null)
+        {
+            return false;
+        }
         var prevClassTimeItem = layout.Layouts
             .Reverse()
             .FirstOrDefault(i =>
                 i.TimeType == 0 &&
                 i.EndSecond.TimeOfDay < now);
-        if (prevClassTimeItem == null) return false;
+        if (prevClassTimeItem == null)
+        {
+            return false;
+        }
         var i0 = GetClassIndex(layout.Layouts.IndexOf(prevClassTimeItem));
         if (i0 >= 0 && CurrentClassPlan?.Classes.Count > i0 &&
             Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var prevSubject))
+        {
             return prevSubject == subject;
+        }
 
         return false;
     }
 
     private bool NextSubjectHandler(object? settings)
     {
-        if (settings is not CurrentSubjectRuleSettings s) return false;
+        if (settings is not CurrentSubjectRuleSettings s)
+        {
+            return false;
+        }
 
-        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject)) return false;
+        if (!ProfileService.Profile.Subjects.TryGetValue(s.SubjectId, out var subject))
+        {
+            return false;
+        }
 
         return NextClassSubject == subject;
     }
 
     private bool TimeStateHandler(object? settings)
     {
-        if (settings is not TimeStateRuleSettings s) return false;
+        if (settings is not TimeStateRuleSettings s)
+        {
+            return false;
+        }
 
         return CurrentState == s.State ||
                (CurrentState == TimeState.AfterSchool && s.State == TimeState.None);
@@ -369,12 +384,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         {
             PreMainTimerTicked?.Invoke(this, EventArgs.Empty);
         }
-
         using (Logger.BeginScope("ProcessLessons"))
         {
             ProcessLessons();
         }
-
         using (Logger.BeginScope("PostTicked"))
         {
             PostMainTimerTicked?.Invoke(this, EventArgs.Empty);
@@ -385,8 +398,14 @@ public class LessonsService : ObservableRecipient, ILessonsService
     {
         LoadCurrentClassPlan();
         // Deactivate
-        foreach (var i in Profile.TimeLayouts.Where(i => !i.Value.IsActivatedManually)) i.Value.IsActivated = false;
-        foreach (var i in Profile.ClassPlans) i.Value.IsActivated = false;
+        foreach (var i in Profile.TimeLayouts.Where(i => !i.Value.IsActivatedManually))
+        {
+            i.Value.IsActivated = false;
+        }
+        foreach (var i in Profile.ClassPlans)
+        {
+            i.Value.IsActivated = false;
+        }
 
         // 预定所有需要更新的信息
         int? currentSelectedIndex = null;
@@ -403,7 +422,9 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
         var layout = CurrentClassPlan?.TimeLayout?.Layouts;
         if (layout == null) // 当前没有课表时，跳过获取信息
+        {
             goto final;
+        }
 
         // 开始获取信息
         isClassPlanLoaded = true;
@@ -424,12 +445,13 @@ public class LessonsService : ObservableRecipient, ILessonsService
             currentSelectedIndex = layout.IndexOf(currentTimeLayoutItem);
             if (currentTimeLayoutItem.TimeType == 0)
             {
+                currentState = TimeState.OnClass;
+
                 var i0 = GetClassIndex((int)currentSelectedIndex);
                 if (i0 >= 0 && CurrentClassPlan.Classes.Count > i0 &&
                     Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
                 {
                     currentSubject = subject;
-                    currentState = TimeState.OnClass;
                 }
             }
             else if (currentTimeLayoutItem.TimeType == 1)
@@ -438,7 +460,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 currentSubject.Name = currentTimeLayoutItem.BreakNameText;
                 currentState = TimeState.Breaking;
             }
-
             isLessonConfirmed = true;
         }
 
@@ -453,7 +474,6 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 Profile.Subjects.TryGetValue(CurrentClassPlan.Classes[i0].SubjectId, out var subject))
                 nextClassSubject = subject;
         }
-
         nextBreakingTimeLayoutItem = validTimeLayoutItems.FirstOrDefault(i =>
             i.TimeType == 1 &&
             i.EndSecond.TimeOfDay >= now);
@@ -468,7 +488,7 @@ public class LessonsService : ObservableRecipient, ILessonsService
             nextBreakingTimeLayoutItem == null)
             currentState = TimeState.AfterSchool;
 
-        final:
+    final:
 
         // 统一更新信息
         CurrentSelectedIndex = currentSelectedIndex ?? -1;
@@ -506,19 +526,18 @@ public class LessonsService : ObservableRecipient, ILessonsService
                 default:
                     break;
             }
-
             CurrentOverlayEventStatus = CurrentState;
         }
     }
 
-    private static TimeSpan? AtLeastZero(TimeSpan? a)
-    {
-        return a < TimeSpan.Zero ? TimeSpan.Zero : a;
-    }
+    static TimeSpan? AtLeastZero(TimeSpan? a) => a < TimeSpan.Zero ? TimeSpan.Zero : a;
 
     private int GetClassIndex(int index)
     {
-        if (index < 0 || index >= CurrentClassPlan?.TimeLayout.Layouts.Count) return -1;
+        if (index < 0 || index >= CurrentClassPlan?.TimeLayout.Layouts.Count )
+        {
+            return -1;
+        }
         var k = CurrentClassPlan?.TimeLayout.Layouts[index];
         var l = (from t in CurrentClassPlan?.TimeLayout.Layouts where t.TimeType == 0 select t).ToList();
         var i = l.IndexOf(k);
@@ -536,8 +555,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         ProfileService.Profile.RefreshTimeLayouts();
         RefreshMultiWeekRotation();
         var currentTime = ExactTimeService.GetCurrentLocalDateTime();
-        if (Profile.TempClassPlanSetupTime.Date < currentTime.Date) // 清除过期临时课表
+        if (Profile.TempClassPlanSetupTime.Date < currentTime.Date)  // 清除过期临时课表
+        {
             Profile.TempClassPlanId = null;
+        }
         ProfileService.CleanExpiredTempClassPlan(); // 清除过期的临时层
 
         // 清除过期的临时课表群
@@ -545,19 +566,23 @@ public class LessonsService : ObservableRecipient, ILessonsService
 
         // 检测是否启用课表加载
         if (!IsClassPlanEnabled)
-        {
+        {   
             CurrentClassPlan = null;
             return;
         }
 
         CurrentClassPlan = GetClassPlanByDate(currentTime);
         var orderedClassPlanId = Profile.OrderedSchedules[currentTime.Date]?.ClassPlanId;
-        if (orderedClassPlanId != null
+        if (orderedClassPlanId != null 
             && Profile.ClassPlans.TryGetValue(orderedClassPlanId, out var classPlan)
             && classPlan.IsOverlay)
+        {
             Profile.OverlayClassPlanId = orderedClassPlanId;
+        }
         else
+        {
             Profile.OverlayClassPlanId = null;
+        }
     }
 
     private bool CheckClassPlan(ClassPlan plan, DateTime time)
@@ -565,12 +590,17 @@ public class LessonsService : ObservableRecipient, ILessonsService
         if (plan.IsOverlay || !plan.IsEnabled)
             return false;
 
-        if (plan.TimeRule.WeekDay != (int)time.DayOfWeek) return false;
+        if (plan.TimeRule.WeekDay != (int)time.DayOfWeek)
+        {
+            return false;
+        }
 
         if (plan.AssociatedGroup != ClassPlanGroup.GlobalGroupGuid.ToString() &&
             plan.AssociatedGroup != Profile.SelectedClassPlanGroupId &&
             plan.AssociatedGroup != Profile.TempClassPlanGroupId)
+        {
             return false;
+        }
 
         if (plan.TimeRule.WeekCountDiv == 0)
             return true;
@@ -593,7 +623,10 @@ public class LessonsService : ObservableRecipient, ILessonsService
         for (var i = 2; i <= 4; i++)
         {
             var w = (deltaWeeks - Settings.MultiWeekRotationOffset[i] + i) % i;
-            if (w < 0) w += i;
+            if (w < 0)
+            {
+                w += i;
+            }
             rotation[i] = w + 1;
         }
 

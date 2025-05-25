@@ -7,4 +7,5 @@ namespace ClassIsland.Core.Abstractions.Controls;
 /// </summary>
 public class SpeechProviderControlBase : UserControl
 {
+    
 }

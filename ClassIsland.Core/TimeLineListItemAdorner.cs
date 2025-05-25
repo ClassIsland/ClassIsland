@@ -9,12 +9,12 @@ public class TimeLineListItemAdorner : Adorner
 {
     private VisualCollection _visualCollection;
 
-    private Control _control;
+    private Control _control ;
 
     public TimeLineListItemAdorner(UIElement adornedElement, ControlTemplate template) : base(adornedElement)
     {
         _visualCollection = new VisualCollection(this);
-        _control = new Control
+        _control = new Control()
         {
             Template = template,
             ClipToBounds = false
@@ -28,7 +28,13 @@ public class TimeLineListItemAdorner : Adorner
         base.OnRender(drawingContext);
     }
 
-    protected override int VisualChildrenCount => _visualCollection.Count;
+    protected override int VisualChildrenCount
+    {
+        get
+        {
+            return _visualCollection.Count;
+        }
+    }
 
     protected override Visual GetVisualChild(int index)
     {

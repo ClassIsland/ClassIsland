@@ -1,37 +1,38 @@
-﻿<ci:NotificationProviderControlBase
-    x:Class="ClassIsland.Controls.NotificationProviders.WeatherNotificationProviderSettingsControl"
-    x:TypeArguments="notificationProviderSettings:WeatherNotificationProviderSettings"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
-    xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
-    xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
-    xmlns:ci="http://classisland.tech/schemas/xaml/core"
-    xmlns:notificationProviderSettings="clr-namespace:ClassIsland.Models.NotificationProviderSettings"
-    mc:Ignorable="d"
-    d:DesignHeight="450" d:DesignWidth="800">
+﻿<ci:NotificationProviderControlBase x:Class="ClassIsland.Controls.NotificationProviders.WeatherNotificationProviderSettingsControl"
+             x:TypeArguments="notificationProviderSettings:WeatherNotificationProviderSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ClassIsland.Controls.NotificationProviders"
+             xmlns:controls="clr-namespace:ClassIsland.Controls"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
+             xmlns:converters="clr-namespace:ClassIsland.Converters"
+             xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+             xmlns:controls1="clr-namespace:ClassIsland.Core.Controls;assembly=ClassIsland.Core"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:ci="http://classisland.tech/schemas/xaml/core"
+             xmlns:notificationProviderSettings="clr-namespace:ClassIsland.Models.NotificationProviderSettings"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <converters1:NotificationModeToIntConverter x:Key="ShowModeToIntConverter" />
     </UserControl.Resources>
-    <Grid
-        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherNotificationProviderSettingsControl}}">
+    <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherNotificationProviderSettingsControl}}">
         <ScrollViewer>
             <StackPanel>
                 <!-- 启用天气预报 -->
                 <controls1:SettingsCard IconGlyph="CloudOutline" Header="启用天气预报" Margin="0 0 0 6"
-                                        Description="若启用天气预报，会在指定时间段显示今天和明后两天的天气概况。"
-                                        IsOn="{Binding Settings.IsForecastEnabled, Mode=TwoWay}" />
+                                       Description="若启用天气预报，会在指定时间段显示今天和明后两天的天气概况。"
+                                       IsOn="{Binding Settings.IsForecastEnabled, Mode=TwoWay}"/>
                 <!-- 启用极端天气预警 -->
                 <controls1:SettingsCard IconGlyph="AlertOutline" Header="启用极端天气预警" Margin="0 0 0 6"
-                                        Description="当发布气象预警时，会在指定的时间段进行通知。"
-                                        IsOn="{Binding Settings.IsAlertEnabled, Mode=TwoWay}" />
+                                       Description="当发布气象预警时，会在指定的时间段进行通知。"
+                                       IsOn="{Binding Settings.IsAlertEnabled, Mode=TwoWay}"/>
                 <!-- 默认天气预报显示模式 -->
                 <controls1:SettingsCard IconGlyph="CloudOutline" Header="默认天气预报显示模式" Margin="0 0 0 6"
-                                        Visibility="{Binding Settings.IsForecastEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Description="天气预报的默认显示模式，可以在各个时间点覆盖该设置。">
+                                       Visibility="{Binding Settings.IsForecastEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Description="天气预报的默认显示模式，可以在各个时间点覆盖该设置。">
                     <controls1:SettingsCard.Switcher>
                         <Grid>
                             <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
@@ -44,8 +45,8 @@
                 </controls1:SettingsCard>
                 <!-- 默认极端天气提醒显示模式 -->
                 <controls1:SettingsCard IconGlyph="AlertOutline" Header="默认极端天气提醒显示模式" Margin="0 0 0 6"
-                                        Visibility="{Binding Settings.IsAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Description="极端天气提醒的默认显示模式，可以在各个时间点覆盖该设置。">
+                                       Visibility="{Binding Settings.IsAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Description="极端天气提醒的默认显示模式，可以在各个时间点覆盖该设置。">
                     <controls1:SettingsCard.Switcher>
                         <Grid>
                             <ComboBox Foreground="{DynamicResource MaterialDesignBody}"
@@ -58,10 +59,10 @@
                 </controls1:SettingsCard>
                 <!-- 极端天气文本滚动速度 -->
                 <controls1:SettingsCard IconGlyph="Velocity"
-                                        Visibility="{Binding Settings.IsAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Header="极端天气预警滚动速度（字/秒）"
-                                        Description="显示天气预警详细信息时文本滚动一轮的速度。无论此选项设置为何值，滚动一轮的时间始终限制在10~90秒内。"
-                                        Margin="0 0 0 6">
+                                       Visibility="{Binding Settings.IsAlertEnabled, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Header="极端天气预警滚动速度（字/秒）"
+                                       Description="显示天气预警详细信息时文本滚动一轮的速度。无论此选项设置为何值，滚动一轮的时间始终限制在10~90秒内。"
+                                       Margin="0 0 0 6">
                     <controls1:SettingsCard.Switcher>
                         <Slider Width="180" Minimum="5" Maximum="12"
                                 VerticalAlignment="Center"

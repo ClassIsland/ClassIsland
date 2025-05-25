@@ -46,7 +46,6 @@ public partial class ListDetailView : UserControl
 
     public static readonly DependencyProperty MinCompressWidthProperty = DependencyProperty.Register(
         nameof(MinCompressWidth), typeof(double), typeof(ListDetailView), new PropertyMetadata(800.0));
-
     public double MinCompressWidth
     {
         get => (double)GetValue(MinCompressWidthProperty);

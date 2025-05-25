@@ -20,7 +20,6 @@ public class UpdateSettingsViewModel : ObservableRecipient
             OnPropertyChanged();
         }
     }
-
     public ChannelInfo SelectedChannelModel
     {
         get => _selectedChannelModel;

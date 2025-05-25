@@ -23,8 +23,7 @@ public partial class FeatureDebugWindow : MyWindow
     public IAuthorizeService AuthorizeService { get; }
     public IWeatherService WeatherService { get; }
 
-    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService,
-        IAuthorizeService authorizeService, IWeatherService weatherService)
+    public FeatureDebugWindow(ILessonsService lessonsService, IProfileService profileService, IAuthorizeService authorizeService, IWeatherService weatherService)
     {
         DataContext = this;
         LessonsService = lessonsService;
@@ -59,10 +58,13 @@ public partial class FeatureDebugWindow : MyWindow
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = MouseWheelEvent;
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
             eventArg.Source = sender;
-            var parent = ((Control)sender).Parent as UIElement;
-            if (parent != null) parent.RaiseEvent(eventArg);
+            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
         }
     }
 
@@ -83,10 +85,7 @@ public partial class FeatureDebugWindow : MyWindow
             .AddConfirmAction()
             .SetContent("输入原先的认证字符串")
             .ShowDialog(out var credentialString, this);
-        credentialString =
-            await AuthorizeService.SetupCredentialStringAsync(string.IsNullOrEmpty(credentialString)
-                ? null
-                : credentialString);
+        credentialString = await AuthorizeService.SetupCredentialStringAsync(string.IsNullOrEmpty(credentialString) ? null : credentialString);
         CommonDialog.ShowInfo(credentialString ?? "");
         Clipboard.SetDataObject(credentialString ?? "", false);
     }

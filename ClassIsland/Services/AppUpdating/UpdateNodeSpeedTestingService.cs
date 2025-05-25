@@ -24,9 +24,15 @@ public class UpdateNodeSpeedTestingService
     public async Task RunSpeedTestAsync()
     {
         var updateService = IAppHost.TryGetService<UpdateService>();
-        if (updateService == null) return;
-        foreach (var i in SettingsService.Settings.SpeedTestResults) i.Value.IsTesting = true;
-        var client = new HttpClient
+        if (updateService == null)
+        {
+            return;
+        }
+        foreach (var i in SettingsService.Settings.SpeedTestResults)
+        {
+            i.Value.IsTesting = true;
+        }
+        var client = new HttpClient()
         {
         };
 
@@ -52,7 +58,6 @@ public class UpdateNodeSpeedTestingService
                             i.Value.SpeedTestResult.Delay = 9999;
                             return;
                         }
-
                         Logger.LogInformation("Ping {}, {}ms", k, pr.RoundtripTime);
                         delays.Add(pr.RoundtripTime);
                     });
@@ -74,7 +79,6 @@ public class UpdateNodeSpeedTestingService
             i.Value.SpeedTestResult.IsTested = true;
             i.Value.SpeedTestResult.IsTesting = false;
         }
-
         Logger.LogInformation("Ping completed.");
         SettingsService.Settings.LastSpeedTest = DateTime.Now;
 
@@ -86,11 +90,10 @@ public class UpdateNodeSpeedTestingService
                 SettingsService.Settings.SelectedUpdateMirrorV2 = "main";
                 return;
             }
-
             var re = from i in updateService.Index.Mirrors
-                where i.Value.SpeedTestResult.CanConnect
-                orderby i.Value.SpeedTestResult.Delay
-                select i.Key;
+                     where i.Value.SpeedTestResult.CanConnect
+                     orderby i.Value.SpeedTestResult.Delay
+                     select i.Key;
             foreach (var i in re)
             {
                 SettingsService.Settings.SelectedUpdateMirrorV2 = i;

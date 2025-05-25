@@ -2,6 +2,7 @@
 using ClassIsland.Core.Abstractions.Services.SpeechService;
 using ClassIsland.Core.Attributes;
 using ClassIsland.Shared.Abstraction.Services;
+
 using Microsoft.Extensions.Logging;
 
 namespace ClassIsland.Services.SpeechService;

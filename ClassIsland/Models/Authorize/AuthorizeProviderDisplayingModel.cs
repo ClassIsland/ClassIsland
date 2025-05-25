@@ -4,10 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.Authorize;
 
-public partial class AuthorizeProviderDisplayingModel(
-    AuthorizeProviderInfo info,
-    Visual providerControl,
-    CredentialItem associatedCredentialItem) : ObservableObject
+public partial class AuthorizeProviderDisplayingModel(AuthorizeProviderInfo info, Visual providerControl, CredentialItem associatedCredentialItem) : ObservableObject
 {
     [ObservableProperty] private AuthorizeProviderInfo _info = info;
 

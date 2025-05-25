@@ -94,5 +94,5 @@ public enum SfSymbolIconKind
     CarbonMonoxideCloud,
     CarbonMonoxideCloudFill,
     CarbonDioxideCloud,
-    CarbonDioxideCloudFill
+    CarbonDioxideCloudFill,
 }

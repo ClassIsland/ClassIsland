@@ -36,7 +36,10 @@ public class UriNavigationService : IUriNavigationService
             Path = path
         };
         Logger.LogDebug("注册uri处理器：{}", uri);
-        if (NavigationHandlers.Contains(uri.ToString())) throw new ArgumentException($"给定的uri {uri} 已经被注册。");
+        if (NavigationHandlers.Contains(uri.ToString()))
+        {
+            throw new ArgumentException($"给定的uri {uri} 已经被注册。");
+        }
 
         NavigationHandlers.AddNode(domain + uri.Uri.AbsolutePath, onNavigated);
     }
@@ -63,7 +66,7 @@ public class UriNavigationService : IUriNavigationService
             }
             else
             {
-                Process.Start(new ProcessStartInfo
+                Process.Start(new ProcessStartInfo()
                 {
                     FileName = uri.ToString(),
                     UseShellExecute = true
@@ -93,6 +96,6 @@ public class UriNavigationService : IUriNavigationService
 
     public void NavigateWrapped(Uri uri)
     {
-        NavigateWrapped(uri, out _);
+        NavigateWrapped(uri, out var _);
     }
 }

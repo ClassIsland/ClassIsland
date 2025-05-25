@@ -6,8 +6,7 @@ using ClassIsland.Services;
 
 namespace ClassIsland;
 
-internal class PluginLoadContext(PluginInfo info, string fullPath)
-    : AssemblyLoadContext($"ClassIsland.PluginLoadContext[{info.Manifest.Id}]")
+class PluginLoadContext(PluginInfo info, string fullPath) : AssemblyLoadContext($"ClassIsland.PluginLoadContext[{info.Manifest.Id}]")
 {
     public PluginInfo Info { get; } = info;
 
@@ -18,14 +17,22 @@ internal class PluginLoadContext(PluginInfo info, string fullPath)
         // 尝试查找依赖
         foreach (var dep in Info.Manifest.Dependencies)
         {
-            if (!PluginService.PluginLoadContexts.TryGetValue(dep.Id, out var context)) continue;
+            if (!PluginService.PluginLoadContexts.TryGetValue(dep.Id, out var context))
+            {
+                continue;
+            }
 
             var assembly = context.Load(assemblyName);
-            if (assembly != null) return assembly;
+            if (assembly != null)
+            {
+                return assembly;
+            }
         }
-
         var assemblyPath = Resolver.ResolveAssemblyToPath(assemblyName);
-        if (assemblyPath != null) return LoadFromAssemblyPath(assemblyPath);
+        if (assemblyPath != null)
+        {
+            return LoadFromAssemblyPath(assemblyPath);
+        }
 
         return null;
     }
@@ -33,7 +40,10 @@ internal class PluginLoadContext(PluginInfo info, string fullPath)
     protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
     {
         var libraryPath = Resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
-        if (libraryPath != null) return LoadUnmanagedDllFromPath(libraryPath);
+        if (libraryPath != null)
+        {
+            return LoadUnmanagedDllFromPath(libraryPath);
+        }
 
         return IntPtr.Zero;
     }

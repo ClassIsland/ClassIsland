@@ -7,11 +7,7 @@ namespace ClassIsland.Core.Attributes;
 /// </summary>
 /// <inheritdoc />
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-public class NotificationChannelInfo(
-    string guid,
-    string name,
-    string description = "",
-    Type? settingsControlType = null) : Attribute
+public class NotificationChannelInfo(string guid, string name, string description = "", Type? settingsControlType = null) : Attribute
 {
     /// <summary>
     /// 渠道 GUID
@@ -46,8 +42,7 @@ public class NotificationChannelInfo(
     /// <summary>
     /// 初始化一个 <see cref="NotificationChannelInfo"/> 实例
     /// </summary>
-    public NotificationChannelInfo(string guid, string name, PackIconKind icon, string description = "",
-        Type? settingsControlType = null) : this(guid, name,
+    public NotificationChannelInfo(string guid, string name, PackIconKind icon, string description = "", Type? settingsControlType = null) : this(guid, name,
         description, settingsControlType)
     {
         PackIcon = icon;

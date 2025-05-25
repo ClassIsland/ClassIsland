@@ -1,12 +1,12 @@
 ﻿using ClassIsland.Shared.Abstraction.Models;
 using ClassIsland.Shared.Enums;
 using ClassIsland.Shared.Interfaces;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AttachedSettings;
 
-public class WeatherNotificationAttachedSettings : ObservableRecipient, IAttachedSettings,
-    IWeatherNotificationSettingsBase
+public class WeatherNotificationAttachedSettings : ObservableRecipient, IAttachedSettings, IWeatherNotificationSettingsBase
 {
     private NotificationModes _alertShowMode = NotificationModes.Default;
     private NotificationModes _forecastShowMode = NotificationModes.Default;

@@ -1,33 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <PackageTags>classisland;ipc;grpc;addin;plugin</PackageTags>
-        <Description>用于的客户端与 ClassIsland 应用进行跨进程通信库。</Description>
-        <LangVersion>12</LangVersion>
+  <PropertyGroup>
+	  <TargetFrameworks>net8.0-windows;net472</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageTags>classisland;ipc;grpc;addin;plugin</PackageTags>
+    <Description>用于的客户端与 ClassIsland 应用进行跨进程通信库。</Description>
+	  <LangVersion>12</LangVersion>
 
-        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+	  <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 
-        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
 
-        <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
-    </PropertyGroup>
+	  <Configurations>Debug;Release;Debug_MSIX;Release_MSIX</Configurations>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="dotnetCampus.Ipc" Version="2.0.0-alpha410"/>
-        <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha410" OutputItemType="Analyzer" ReferenceOutputAssembly="false">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>analyzers</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="dotnetCampus.Ipc" Version="2.0.0-alpha410" />
+    <PackageReference Include="dotnetCampus.Ipc.Analyzers" Version="2.0.0-alpha410" OutputItemType="Analyzer" ReferenceOutputAssembly="false">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
-    <ItemGroup>
-        <!--<ProjectReference Include="..\analyzers\dotnetCampus.Ipc.SourceGenerators\dotnetCampus.Ipc.SourceGenerators.csproj" />-->
-        <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj"/>
-    </ItemGroup>
+  <ItemGroup>
+    <!--<ProjectReference Include="..\analyzers\dotnetCampus.Ipc.SourceGenerators\dotnetCampus.Ipc.SourceGenerators.csproj" />-->
+    <ProjectReference Include="..\ClassIsland.Shared\ClassIsland.Shared.csproj" />
+  </ItemGroup>
 
-    <Import Project="..\GeneratePackage.props"/>
-    <Import Project="..\Global.props"/>
+  <Import Project="..\GeneratePackage.props" />
+  <Import Project="..\Global.props" />
 </Project>

@@ -22,10 +22,14 @@ public static class SettingsWindowRegistryExtensions
     {
         var type = typeof(T);
         if (type.GetCustomAttributes(false).FirstOrDefault(x => x is SettingsPageInfo) is not SettingsPageInfo info)
+        {
             throw new ArgumentException($"无法注册设置页面 {type.FullName}，因为设置页面没有注册信息。");
+        }
 
         if (SettingsWindowRegistryService.Registered.FirstOrDefault(x => x.Id == info.Id) != null)
+        {
             throw new ArgumentException($"此设置页面id {info.Id} 已经被占用。");
+        }
         services.AddKeyedTransient<SettingsPageBase, T>(info.Id);
         SettingsWindowRegistryService.Registered.Add(info);
         return services;

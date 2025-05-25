@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Documents;
+
 using ClassIsland.Shared;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.ViewModels;

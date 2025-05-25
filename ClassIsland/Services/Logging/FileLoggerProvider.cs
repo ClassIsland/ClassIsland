@@ -19,7 +19,7 @@ public class FileLoggerProvider : ILoggerProvider
 
     private const int LogRetentionDays = 30;
 
-    private readonly object _lock = new();
+    private readonly object _lock = new object();
 
     public static string GetLogFileName()
     {
@@ -43,13 +43,12 @@ public class FileLoggerProvider : ILoggerProvider
         {
             var logs = Directory.GetFiles(App.AppLogFolderPath);
             var currentLogFile = GetLogFileName();
-            _logStream = File.Open(Path.Combine(App.AppLogFolderPath, currentLogFile), FileMode.Create,
-                FileAccess.ReadWrite, FileShare.Read);
+            _logStream = File.Open(Path.Combine(App.AppLogFolderPath, currentLogFile), FileMode.Create, FileAccess.ReadWrite, FileShare.Read);
             _logWriter = new StreamWriter(_logStream)
             {
                 AutoFlush = true
             };
-            _ = Task.Run(() => ProcessPreviousLogs(logs, currentLogFile));
+            _ = Task.Run(() =>  ProcessPreviousLogs(logs, currentLogFile));
         }
         catch (Exception e)
         {
@@ -60,6 +59,7 @@ public class FileLoggerProvider : ILoggerProvider
     private static void ProcessPreviousLogs(string[] logs, string currentLogFile)
     {
         foreach (var i in logs.Where(x => Path.GetFileName(x) != currentLogFile && Path.GetExtension(x) == ".log"))
+        {
             try
             {
                 GZipHelper.CompressFileAndDelete(i);
@@ -68,11 +68,13 @@ public class FileLoggerProvider : ILoggerProvider
             {
                 Console.WriteLine(e);
             }
+        }
 
         var now = DateTime.Now;
         foreach (var i in logs.Where(x => (now - File.GetLastWriteTime(x)).TotalDays > LogRetentionDays &&
                                           Path.GetFileName(x) != currentLogFile &&
                                           (x.EndsWith(".log") || x.EndsWith(".log.gz"))))
+        {
             try
             {
                 File.Delete(i);
@@ -81,6 +83,7 @@ public class FileLoggerProvider : ILoggerProvider
             {
                 Console.WriteLine(e);
             }
+        }
     }
 
     private static List<string?> GetLogs()
@@ -94,7 +97,10 @@ public class FileLoggerProvider : ILoggerProvider
         {
             try
             {
-                if (!_canWrite) return;
+                if (!_canWrite)
+                {
+                    return;
+                }
                 _logWriter?.WriteLine(log);
             }
             catch (Exception e)

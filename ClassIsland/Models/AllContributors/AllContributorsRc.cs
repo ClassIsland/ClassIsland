@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ClassIsland.Models.AllContributors;

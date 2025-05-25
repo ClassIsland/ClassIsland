@@ -14,17 +14,16 @@
     <Border SizeChanged="OuterContainerStackPanel_OnSizeChanged"
             x:Name="OuterContainerStackPanel" ClipToBounds="True"
             Margin="-6 0">
-        <Canvas
-            DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
-            Width="{Binding ActualWidth, ElementName=ItemsControlCore}">
+        <Canvas DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=local:RollingComponent}}"
+                Width="{Binding ActualWidth, ElementName=ItemsControlCore}">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RenderTransform>
-                    <TranslateTransform X="{Binding ScrollWidth, Mode=OneWay}" />
+                    <TranslateTransform X="{Binding ScrollWidth, Mode=OneWay}"/>
                 </Grid.RenderTransform>
                 <ItemsControl ItemsSource="{Binding Settings.Children}"
                               x:Name="ItemsControlCore"
@@ -40,7 +39,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <ci:ComponentPresenter IsOnMainWindow="True"
+                            <ci:ComponentPresenter IsOnMainWindow="True" 
                                                    Settings="{Binding}"
                                                    HidingRules="{Binding HidingRules, Mode=OneWay}"
                                                    HideOnRule="{Binding HideOnRule, Mode=OneWay}"
@@ -54,7 +53,7 @@
                     <Border.Background>
                         <VisualBrush Visual="{Binding ElementName=ItemsControlCore}"
                                      Stretch="Uniform"
-                                     AlignmentY="Center" />
+                                     AlignmentY="Center"/>
                     </Border.Background>
                 </Border>
             </Grid>

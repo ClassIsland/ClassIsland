@@ -19,12 +19,12 @@
         ShowInTaskbar="False"
         ResizeMode="NoResize">
     <WindowChrome.WindowChrome>
-        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="0" />
+        <WindowChrome GlassFrameThickness="-1" CaptionHeight="0" ResizeBorderThickness="0"/>
     </WindowChrome.WindowChrome>
     <Grid>
         <Grid.CacheMode>
             <BitmapCache SnapsToDevicePixels="True"
-                         RenderAtScale="{Binding SettingsService.Settings.NotificationEffectRenderingScale, Mode=OneWay}" />
+                         RenderAtScale="{Binding SettingsService.Settings.NotificationEffectRenderingScale, Mode=OneWay}"/>
         </Grid.CacheMode>
         <ItemsControl HorizontalContentAlignment="Stretch"
                       VerticalContentAlignment="Stretch"
@@ -34,7 +34,7 @@
 
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Grid IsItemsHost="True" />
+                    <Grid IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
         </ItemsControl>

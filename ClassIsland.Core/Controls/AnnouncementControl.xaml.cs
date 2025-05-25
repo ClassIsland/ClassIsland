@@ -25,15 +25,14 @@ namespace ClassIsland.Core.Controls;
 public partial class AnnouncementControl : UserControl
 {
     public static readonly DependencyProperty AnnouncementProperty = DependencyProperty.Register(
-        nameof(Announcement), typeof(Announcement), typeof(AnnouncementControl),
-        new PropertyMetadata(default(Announcement)));
+        nameof(Announcement), typeof(Announcement), typeof(AnnouncementControl), new PropertyMetadata(default(Announcement)));
 
     public Announcement Announcement
     {
-        get => (Announcement)GetValue(AnnouncementProperty);
-        set => SetValue(AnnouncementProperty, value);
+        get { return (Announcement)GetValue(AnnouncementProperty); }
+        set { SetValue(AnnouncementProperty, value); }
     }
-
+    
     public AnnouncementControl()
     {
         InitializeComponent();
@@ -49,5 +48,6 @@ public partial class AnnouncementControl : UserControl
             _ => throw new ArgumentOutOfRangeException()
         };
         readStateStorage.Add(Announcement.Guid);
+        
     }
 }

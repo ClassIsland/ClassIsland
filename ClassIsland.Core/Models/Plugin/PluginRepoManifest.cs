@@ -2,6 +2,7 @@
 
 namespace ClassIsland.Core.Models.Plugin;
 
+
 /// <summary>
 /// 插件仓库清单，用于构建插件索引（<see cref="PluginIndexItem"/>）。
 /// </summary>
@@ -23,7 +24,7 @@ public class PluginRepoManifest : PluginManifest, IMarketplaceItemRepoManifest
     /// 资产文件根目录
     /// </summary>
     public string AssetsRoot { get; set; } = "master";
-
+    
     /// <summary>
     /// 插件发布工件名称。留空将匹配 *.cipx 的发布工件。
     /// </summary>

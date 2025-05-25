@@ -13,29 +13,27 @@ namespace ClassIsland.Core.Helpers.Native;
 public class BitmapConveters
 {
     [DllImport("gdi32")]
-    private static extern int DeleteObject(IntPtr o);
-
+    static extern int DeleteObject(IntPtr o);
     public static BitmapSource ConvertToBitMapSource(Bitmap bitmap)
     {
-        var intPtrl = bitmap.GetHbitmap();
-        var bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(intPtrl,
+        IntPtr intPtrl = bitmap.GetHbitmap();
+        BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(intPtrl,
             IntPtr.Zero,
             Int32Rect.Empty,
             BitmapSizeOptions.FromEmptyOptions());
         DeleteObject(intPtrl);
         return bitmapSource;
     }
-
-    public static BitmapImage ConvertToBitmapImage(Bitmap bitmap, int? w = null, int? h = null)
+    public static BitmapImage ConvertToBitmapImage(Bitmap bitmap, int? w=null, int? h=null)
     {
-        using (var stream = new MemoryStream())
+        using (MemoryStream stream = new MemoryStream())
         {
             bitmap.Save(stream, ImageFormat.Png);
             stream.Position = 0;
-            var result = new BitmapImage();
+            BitmapImage result = new BitmapImage();
             result.BeginInit();
             result.CacheOption = BitmapCacheOption.OnLoad;
-            if (h != null && h <= bitmap.Height)
+            if (h != null && h<=bitmap.Height)
             {
                 result.DecodePixelWidth = (int)((double)bitmap.Width / (double)bitmap.Height * (double)h);
                 result.DecodePixelHeight = h.Value;
@@ -50,7 +48,6 @@ public class BitmapConveters
                 result.DecodePixelWidth = bitmap.Width;
                 result.DecodePixelHeight = bitmap.Height;
             }
-
             result.StreamSource = stream;
             result.EndInit();
             result.Freeze();
@@ -60,7 +57,7 @@ public class BitmapConveters
 
     public static byte[] BitmapToByteArray(Bitmap bitmap)
     {
-        var pixelFormat2 = PixelFormat.Format32bppArgb;
+        var pixelFormat2 = System.Drawing.Imaging.PixelFormat.Format32bppArgb;
         var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
         var bitmapdata = bitmap.LockBits(rect, ImageLockMode.ReadOnly, pixelFormat2);
         var length = Math.Abs(bitmapdata.Stride) * bitmap.Height;

@@ -42,10 +42,9 @@ public class TimeLineBackgroundRulerControl : Control
 
     public double Scale
     {
-        get => (double)GetValue(ScaleProperty);
-        set => SetValue(ScaleProperty, value);
+        get { return (double)GetValue(ScaleProperty); }
+        set { SetValue(ScaleProperty, value); }
     }
-
     private static double BaseTicks { get; } = 1000000000.0;
 
     private static TimeSpan BaseSpan { get; } = TimeSpan.FromMinutes(5);
@@ -53,8 +52,7 @@ public class TimeLineBackgroundRulerControl : Control
 
     static TimeLineBackgroundRulerControl()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLineBackgroundRulerControl),
-            new FrameworkPropertyMetadata(typeof(TimeLineBackgroundRulerControl)));
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(TimeLineBackgroundRulerControl), new FrameworkPropertyMetadata(typeof(TimeLineBackgroundRulerControl)));
     }
 
     protected override void OnRender(DrawingContext drawingContext)
@@ -84,10 +82,16 @@ public class TimeLineBackgroundRulerControl : Control
             var y = ts.Ticks / BaseTicks * Scale;
             var yDelta = y - lastY;
             lastY = y;
-            if (c * 2 % p != 0) goto done;
+            if ((c * 2) % p != 0)
+            {
+                goto done;
+            }
 
             drawingContext.DrawLine(c % p == 0 ? pen : penA, new Point(55, y), new Point(ActualWidth, y));
-            if (c % p != 0) goto done;
+            if (c % p != 0)
+            {
+                goto done;
+            }
 
             var text = new FormattedText(ts.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight,
                 new Typeface(fontFamily, new FontStyle(), FontWeights.Regular,

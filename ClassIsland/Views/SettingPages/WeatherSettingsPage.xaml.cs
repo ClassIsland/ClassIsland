@@ -34,8 +34,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
     // [搜索城市或地区] 防抖定时器
     private DispatcherTimer SearchDebounceTimer { get; set; } = null!;
 
-    public WeatherSettingsPage(SettingsService settingsService, IWeatherService weatherService,
-        ILocationService locationService, ILogger<WeatherSettingsPage> logger)
+    public WeatherSettingsPage(SettingsService settingsService, IWeatherService weatherService, ILocationService locationService, ILogger<WeatherSettingsPage> logger)
     {
         InitializeComponent();
         DataContext = this;
@@ -68,7 +67,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         SearchDebounceTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
         SearchDebounceTimer.Tick += SearchDebounceTimer_Tick;
         SearchDebounceTimer.Stop();
-
+        
         ViewModel.CitySearchResults = await WeatherService.GetCitiesByName(string.Empty);
     }
 
@@ -115,7 +114,6 @@ public partial class WeatherSettingsPage : SettingsPageBase
             //Settings.CityName = "";
             return;
         }
-
         SettingsService.Settings.CityName = city.Name;
         await WeatherService.QueryWeatherAsync();
     }
@@ -125,7 +123,7 @@ public partial class WeatherSettingsPage : SettingsPageBase
         try
         {
             var pos = await LocationService.GetLocationAsync();
-            SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4);
+            SettingsService.Settings.WeatherLongitude = Math.Round(pos.Longitude, 4); 
             SettingsService.Settings.WeatherLatitude = Math.Round(pos.Latitude, 4);
             await WeatherService.QueryWeatherAsync();
         }

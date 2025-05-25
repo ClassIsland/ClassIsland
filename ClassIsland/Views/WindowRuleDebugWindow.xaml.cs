@@ -32,8 +32,7 @@ public partial class WindowRuleDebugWindow
         UpdateInfo();
     }
 
-    private void WindowRuleServiceOnForegroundWindowChanged(HWINEVENTHOOK hwineventhook, uint @event, HWND hwnd,
-        int idobject, int idchild, uint ideventthread, uint dwmseventtime)
+    private void WindowRuleServiceOnForegroundWindowChanged(HWINEVENTHOOK hwineventhook, uint @event, HWND hwnd, int idobject, int idchild, uint ideventthread, uint dwmseventtime)
     {
         UpdateInfo();
     }
@@ -69,6 +68,7 @@ public partial class WindowRuleDebugWindow
             {
                 ViewModel.ForegroundWindowProcessName = "？？？";
             }
+
         }
         catch (Exception e)
         {
@@ -81,10 +81,12 @@ public partial class WindowRuleDebugWindow
         GetWindowRect(hWnd, out var rect);
         var mw = App.GetService<MainWindow>();
         var screen = mw.ViewModel.Settings.WindowDockingMonitorIndex < Screen.AllScreens.Length &&
-                     mw.ViewModel.Settings.WindowDockingMonitorIndex >= 0
-            ? Screen.AllScreens[mw.ViewModel.Settings.WindowDockingMonitorIndex]
-            : Screen.PrimaryScreen;
-        if (screen == null) return;
+                     mw.ViewModel.Settings.WindowDockingMonitorIndex >= 0 ?
+            Screen.AllScreens[mw.ViewModel.Settings.WindowDockingMonitorIndex] : Screen.PrimaryScreen;
+        if (screen == null)
+        {
+            return;
+        }
 
         var fullscreen = NativeWindowHelper.IsForegroundFullScreen(screen);
         var maximize = IsZoomed(hWnd);
@@ -95,19 +97,16 @@ public partial class WindowRuleDebugWindow
             ViewModel.ForegroundWindowState = "全屏";
             return;
         }
-
         if (maximize)
         {
             ViewModel.ForegroundWindowState = "最大化";
             return;
         }
-
         if (minimize)
         {
             ViewModel.ForegroundWindowState = "最小化";
             return;
         }
-
         ViewModel.ForegroundWindowState = "正常";
     }
 }

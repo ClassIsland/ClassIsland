@@ -2,6 +2,7 @@
 
 namespace ClassIsland.Core.Commands;
 
+
 /// <summary>
 /// Uri 导航相关命令。
 /// </summary>

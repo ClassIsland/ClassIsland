@@ -5,7 +5,9 @@ using System.Windows;
 using System.Windows.Media;
 using ClassIsland.Core.Abstractions.Services;
 using ClassIsland.Core.Models.Theming;
+
 using MaterialDesignThemes.Wpf;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -22,7 +24,7 @@ public class ThemeService : IHostedService, IThemeService
     {
     }
 
-    public ITheme? CurrentTheme { get; set; }
+    public ITheme? CurrentTheme { get; set; } 
 
     public ILogger<ThemeService> Logger { get; }
 
@@ -52,17 +54,20 @@ public class ThemeService : IHostedService, IThemeService
                     if (key != null)
                     {
                         if ((int?)key.GetValue("AppsUseLightTheme") == 0)
+                        {
                             theme.SetBaseTheme(new MaterialDesignDarkTheme());
+                        }
                         else
+                        {
                             theme.SetBaseTheme(new MaterialDesignLightTheme());
+                        }
                     }
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
                     Logger.LogError(ex, "无法获取系统明暗主题，使用默认（亮色）主题。");
                     theme.SetBaseTheme(new MaterialDesignLightTheme());
                 }
-
                 break;
 
             case 1:
@@ -72,14 +77,14 @@ public class ThemeService : IHostedService, IThemeService
                 theme.SetBaseTheme(new MaterialDesignDarkTheme());
                 break;
         }
-
-        ((Theme)theme).ColorAdjustment = new ColorAdjustment
+        
+        ((Theme)theme).ColorAdjustment = new ColorAdjustment()
         {
             DesiredContrastRatio = 4.5F,
             Contrast = Contrast.Medium,
             Colors = ColorSelection.All
         };
-
+        
         theme.SetPrimaryColor(primary);
         theme.SetSecondaryColor(secondary);
         var lastTheme = paletteHelper.GetTheme();
@@ -87,7 +92,9 @@ public class ThemeService : IHostedService, IThemeService
         if (lastPrimary == theme.PrimaryMid.Color &&
             lastSecondary == theme.SecondaryMid.Color &&
             lastBaseTheme == theme.GetBaseTheme())
+        {
             return;
+        }
 
 
         paletteHelper.SetTheme(theme);
@@ -104,9 +111,9 @@ public class ThemeService : IHostedService, IThemeService
 
         var resource = new ResourceDictionary
         {
-            Source = CurrentRealThemeMode == 0
-                ? new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.xaml")
-                : new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.xaml")
+            Source = CurrentRealThemeMode == 0 ?
+                new Uri("pack://application:,,,/ClassIsland;component/Themes/LightTheme.xaml") :
+                new Uri("pack://application:,,,/ClassIsland;component/Themes/DarkTheme.xaml")
         };
         Application.Current.Resources.MergedDictionaries[0] = resource;
     }

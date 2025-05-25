@@ -13,5 +13,5 @@ public record LocationCoordinate
     /// <summary>
     /// 纬度
     /// </summary>
-    public double Latitude { get; set; } = 0;
+    public double Latitude { get; set; } = 0;  
 }

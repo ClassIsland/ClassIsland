@@ -8,10 +8,7 @@ namespace ClassIsland.Core.Converters;
 public class InvertBooleanAndToVisibilityMultiConverter : IMultiValueConverter
 {
     /// <inheritdoc />
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    {
-        return values.All(x => x.Equals(true)) ? Visibility.Collapsed : Visibility.Visible;
-    }
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) => values.All(x => x.Equals(true)) ? Visibility.Collapsed : Visibility.Visible;
 
     /// <inheritdoc />
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

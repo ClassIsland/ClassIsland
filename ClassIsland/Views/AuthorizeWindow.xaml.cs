@@ -31,16 +31,18 @@ public partial class AuthorizeWindow
 
     protected override void OnContentRendered(EventArgs e)
     {
-        var result = SetWindowDisplayAffinity((HWND)new WindowInteropHelper(this).Handle,
-            WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE);
+        var result = SetWindowDisplayAffinity((HWND)new WindowInteropHelper(this).Handle, WINDOW_DISPLAY_AFFINITY.WDA_EXCLUDEFROMCAPTURE);
         base.OnContentRendered(e);
     }
 
     private void ButtonAddAuthorizeMethod_OnClick(object sender, RoutedEventArgs e)
     {
-        if (ViewModel.SelectedAuthorizeProviderInfo == null) return;
+        if (ViewModel.SelectedAuthorizeProviderInfo == null)
+        {
+            return;
+        }
 
-        var item = new CredentialItem
+        var item = new CredentialItem()
         {
             ProviderId = ViewModel.SelectedAuthorizeProviderInfo.Id
         };
@@ -56,14 +58,16 @@ public partial class AuthorizeWindow
 
     private void ButtonOk_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!ViewModel.IsEditingMode) return;
+        if (!ViewModel.IsEditingMode)
+        {
+            return;
+        }
 
         if (ViewModel.Credential.Items.Count <= 0)
         {
             CommonDialog.ShowError("请至少添加一个认证方式。");
             return;
         }
-
         DialogResult = true;
         Close();
     }
@@ -75,7 +79,6 @@ public partial class AuthorizeWindow
             Logger.LogWarning("来自 {} 的命令 CommandBindingCompleteAuthorize 在编辑模式下没有效果，已忽略此调用。", sender.GetType());
             return;
         }
-
         DialogResult = true;
         Close();
     }

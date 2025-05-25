@@ -12,13 +12,12 @@ namespace ClassIsland.Views;
 public partial class WallpaperPreviewWindow : MyWindow
 {
     public static readonly DependencyProperty PreviewImageProperty = DependencyProperty.Register(
-        nameof(PreviewImage), typeof(BitmapImage), typeof(WallpaperPreviewWindow),
-        new PropertyMetadata(default(BitmapImage)));
+        nameof(PreviewImage), typeof(BitmapImage), typeof(WallpaperPreviewWindow), new PropertyMetadata(default(BitmapImage)));
 
     public BitmapImage PreviewImage
     {
-        get => (BitmapImage)GetValue(PreviewImageProperty);
-        set => SetValue(PreviewImageProperty, value);
+        get { return (BitmapImage)GetValue(PreviewImageProperty); }
+        set { SetValue(PreviewImageProperty, value); }
     }
 
     public WallpaperPickingService WallpaperPickingService { get; }

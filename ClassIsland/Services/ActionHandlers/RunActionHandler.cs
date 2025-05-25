@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using System;
-
 namespace ClassIsland.Services.ActionHandlers;
 
 public class RunActionHandler : IHostedService
@@ -19,7 +18,7 @@ public class RunActionHandler : IHostedService
         Logger = logger;
         ActionService.RegisterActionHandler("classisland.os.run",
             (s, _) => Run((s as RunActionSettings).Value,
-                (s as RunActionSettings).Args));
+                          (s as RunActionSettings).Args));
     }
 
     private void Run(string value, string args)
@@ -28,9 +27,10 @@ public class RunActionHandler : IHostedService
         {
             var path = value.Replace('"'.ToString(), "");
             if (File.Exists(path) || Directory.Exists(path))
+            {
                 try
                 {
-                    Process.Start(new ProcessStartInfo
+                    Process.Start(new ProcessStartInfo()
                     {
                         FileName = value,
                         Arguments = args,
@@ -42,14 +42,14 @@ public class RunActionHandler : IHostedService
                 {
                     Logger.LogError(ex, "打开文件(夹)失败。");
                 }
+            }
         }
 
         // cmd 命令
-        try
-        {
+        try {
             Process process = new()
             {
-                StartInfo = new ProcessStartInfo
+                StartInfo = new()
                 {
                     FileName = "cmd.exe",
                     Arguments = $"/c {value}",
@@ -61,15 +61,16 @@ public class RunActionHandler : IHostedService
             if (string.IsNullOrEmpty(process.StandardError.ReadToEnd()))
                 return;
         }
-        catch
-        {
-        }
+        catch { }
 
         // 网页
         {
             var path = value;
-            if (value.Contains('.') && !value.Contains("://")) path = "http://" + path;
-            if (Uri.TryCreate(path, UriKind.Absolute, out var uri))
+            if (value.Contains('.') && !value.Contains("://"))
+            {
+                path = "http://" + path;
+            }
+            if (Uri.TryCreate(path, UriKind.Absolute, out Uri uri))
             {
                 Process.Start("explorer.exe", uri.AbsoluteUri);
                 return;
@@ -79,11 +80,6 @@ public class RunActionHandler : IHostedService
         throw new InvalidOperationException($"未能运行“{value}”：未匹配到合适的运行方式。");
     }
 
-    public async Task StartAsync(CancellationToken _)
-    {
-    }
-
-    public async Task StopAsync(CancellationToken _)
-    {
-    }
+    public async Task StartAsync(CancellationToken _) { }
+    public async Task StopAsync(CancellationToken _) { }
 }

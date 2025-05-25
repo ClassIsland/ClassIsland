@@ -10,33 +10,30 @@ namespace ClassIsland.Core.Controls.LessonsControls;
 internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMultiValueConverter
 {
     public static readonly DependencyProperty MinimizedDataTemplateProperty = DependencyProperty.Register(
-        nameof(MinimizedDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter),
-        new PropertyMetadata(default(DataTemplate)));
+        nameof(MinimizedDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(DataTemplate)));
 
     public DataTemplate MinimizedDataTemplate
     {
-        get => (DataTemplate)GetValue(MinimizedDataTemplateProperty);
-        set => SetValue(MinimizedDataTemplateProperty, value);
+        get { return (DataTemplate)GetValue(MinimizedDataTemplateProperty); }
+        set { SetValue(MinimizedDataTemplateProperty, value); }
     }
 
     public static readonly DependencyProperty ExpandedDataTemplateProperty = DependencyProperty.Register(
-        nameof(ExpandedDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter),
-        new PropertyMetadata(default(DataTemplate)));
+        nameof(ExpandedDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(DataTemplate)));
 
     public DataTemplate ExpandedDataTemplate
     {
-        get => (DataTemplate)GetValue(ExpandedDataTemplateProperty);
-        set => SetValue(ExpandedDataTemplateProperty, value);
+        get { return (DataTemplate)GetValue(ExpandedDataTemplateProperty); }
+        set { SetValue(ExpandedDataTemplateProperty, value); }
     }
 
     public static readonly DependencyProperty SeparatorDataTemplateProperty = DependencyProperty.Register(
-        nameof(SeparatorDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter),
-        new PropertyMetadata(default(DataTemplate)));
+        nameof(SeparatorDataTemplate), typeof(DataTemplate), typeof(LessonsListBoxItemTemplateMultiConverter), new PropertyMetadata(default(DataTemplate)));
 
     public DataTemplate SeparatorDataTemplate
     {
-        get => (DataTemplate)GetValue(SeparatorDataTemplateProperty);
-        set => SetValue(SeparatorDataTemplateProperty, value);
+        get { return (DataTemplate)GetValue(SeparatorDataTemplateProperty); }
+        set { SetValue(SeparatorDataTemplateProperty, value); }
     }
 
     public DataTemplate BlankDataTemplate { get; } = new();
@@ -61,9 +58,14 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
             values[4] is not bool discardHidingDefault ||
             values[5] is not bool showCurrentTimeLayoutItemOnlyOnClass ||
             values[6] is not bool hideFinishedClass)
+        {
             return BlankDataTemplate;
+        }
 
-        if (timeType == 3) return BlankDataTemplate;
+        if (timeType == 3)
+        {
+            return BlankDataTemplate;
+        }
 
         var selectedItem = values[2] as TimeLayoutItem;
         var currentItem = values[3] as TimeLayoutItem;
@@ -72,18 +74,28 @@ internal class LessonsListBoxItemTemplateMultiConverter : DependencyObject, IMul
 
         if (values[7] is ICollection<TimeLayoutItem> validTimePoints &&
             (currentItem == null || !validTimePoints.Contains(currentItem)))
+        {
             return BlankDataTemplate;
+        }
 
-        var itemDateTime = currentItem?.TimeType == 2 ? currentItem?.StartSecond : currentItem?.EndSecond;
-        if ((itemDateTime?.TimeOfDay < selectedItem?.StartSecond.TimeOfDay
-             || (itemDateTime.HasValue && itemDateTime.Value.TimeOfDay <
-                 IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().TimeOfDay)) && hideFinishedClass)
+        var itemDateTime = (currentItem?.TimeType == 2) ? currentItem?.StartSecond : currentItem?.EndSecond;
+        if ((itemDateTime?.TimeOfDay < selectedItem?.StartSecond.TimeOfDay 
+             || itemDateTime.HasValue && itemDateTime.Value.TimeOfDay <
+                IAppHost.GetService<IExactTimeService>().GetCurrentLocalDateTime().TimeOfDay) && hideFinishedClass)
+        {
             return BlankDataTemplate;
+        }
 
-        if (timeType == 2) return SeparatorDataTemplate;
+        if (timeType == 2)
+        {
+            return SeparatorDataTemplate;
+        }
 
         var hide = (timeType == 1 || (isHideDefault && !discardHidingDefault)) && selectedItem != currentItem;
-        if (hide) return BlankDataTemplate;
+        if (hide)
+        {
+            return BlankDataTemplate;
+        }
 
         return selectedItem == currentItem ? ExpandedDataTemplate : MinimizedDataTemplate;
     }

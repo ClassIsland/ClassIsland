@@ -38,7 +38,7 @@ public static class RulesetRegistryExtensions
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
     public static IServiceCollection AddRule<TSettings>(this IServiceCollection services, string id, string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
+        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle=null)
     {
         var info = Register(id, name, iconKind, onHandle);
         info.SettingsType = typeof(TSettings);
@@ -56,10 +56,8 @@ public static class RulesetRegistryExtensions
     /// <typeparam name="TSettings">规则设置类型。</typeparam>
     /// <typeparam name="TSettingsControl">规则设置控件类型。</typeparam>
     /// <returns><see cref="IServiceCollection"/>对象。</returns>
-    public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id,
-        string name = "",
-        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
-        where TSettingsControl : RuleSettingsControlBase
+    public static IServiceCollection AddRule<TSettings, TSettingsControl>(this IServiceCollection services, string id, string name = "",
+        PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate ? onHandle = null) where TSettingsControl : RuleSettingsControlBase
     {
         var info = Register(id, name, iconKind, onHandle);
         services.AddKeyedTransient<RuleSettingsControlBase, TSettingsControl>(id);
@@ -72,12 +70,15 @@ public static class RulesetRegistryExtensions
     private static RuleRegistryInfo Register(string id, string name = "",
         PackIconKind iconKind = PackIconKind.CogOutline, RuleRegistryInfo.HandleDelegate? onHandle = null)
     {
-        if (IRulesetService.Rules.ContainsKey(id)) throw new InvalidOperationException($"已注册ID为 {id} 的规则。");
+        if (IRulesetService.Rules.ContainsKey(id))
+        {
+            throw new InvalidOperationException($"已注册ID为 {id} 的规则。");
+        }
 
         var info = new RuleRegistryInfo(id, name, iconKind);
         info.Handle += onHandle;
         IRulesetService.Rules.Add(id, info);
-
+        
         return info;
     }
 }

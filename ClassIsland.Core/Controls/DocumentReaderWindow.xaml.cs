@@ -26,13 +26,12 @@ namespace ClassIsland.Core.Controls;
 public partial class DocumentReaderWindow : MyWindow
 {
     public static readonly DependencyProperty DocumentProperty = DependencyProperty.Register(
-        nameof(Document), typeof(FlowDocument), typeof(DocumentReaderWindow),
-        new PropertyMetadata(default(FlowDocument)));
+        nameof(Document), typeof(FlowDocument), typeof(DocumentReaderWindow), new PropertyMetadata(default(FlowDocument)));
 
     public FlowDocument Document
     {
-        get => (FlowDocument)GetValue(DocumentProperty);
-        set => SetValue(DocumentProperty, value);
+        get { return (FlowDocument)GetValue(DocumentProperty); }
+        set { SetValue(DocumentProperty, value); }
     }
 
     public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(
@@ -45,8 +44,8 @@ public partial class DocumentReaderWindow : MyWindow
 
     public Uri Source
     {
-        get => (Uri)GetValue(SourceProperty);
-        set => SetValue(SourceProperty, value);
+        get { return (Uri)GetValue(SourceProperty); }
+        set { SetValue(SourceProperty, value); }
     }
 
     public static readonly DependencyProperty IsLoadingProperty = DependencyProperty.Register(
@@ -54,8 +53,8 @@ public partial class DocumentReaderWindow : MyWindow
 
     public bool IsLoading
     {
-        get => (bool)GetValue(IsLoadingProperty);
-        private set => SetValue(IsLoadingProperty, value);
+        get { return (bool)GetValue(IsLoadingProperty); }
+        private set { SetValue(IsLoadingProperty, value); }
     }
 
     /// <inheritdoc />
@@ -72,13 +71,22 @@ public partial class DocumentReaderWindow : MyWindow
             IsLoading = true;
             Stream? stream;
             if (!Source.IsAbsoluteUri || Source.Scheme == "pack")
+            {
                 stream = Application.GetResourceStream(Source)?.Stream;
+            }
             else if (Source.Scheme is "http" or "https")
+            {
                 stream = await new HttpClient().GetStreamAsync(Source);
+            }
             else
+            {
                 throw new InvalidOperationException("只支持从资源或 Http 源加载文档。");
+            }
 
-            if (stream == null) throw new ArgumentNullException();
+            if (stream == null)
+            {
+                throw new ArgumentNullException();
+            }
             var md = await new StreamReader(stream).ReadToEndAsync();
             Document = MarkdownConvertHelper.ConvertMarkdown(md);
         }
@@ -87,7 +95,6 @@ public partial class DocumentReaderWindow : MyWindow
             IAppHost.GetService<ILogger<DocumentReaderWindow>>().LogError(ex, "无法加载文档 {}", Source);
             CommonDialog.CommonDialog.ShowError($"无法加载文档 {Source}：{ex.Message}");
         }
-
         IsLoading = false;
     }
 
@@ -100,10 +107,13 @@ public partial class DocumentReaderWindow : MyWindow
 
             // 激发一个鼠标滚轮事件，冒泡给外层ListView接收到
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
-            eventArg.RoutedEvent = MouseWheelEvent;
+            eventArg.RoutedEvent = UIElement.MouseWheelEvent;
             eventArg.Source = sender;
-            var parent = ((Control)sender).Parent as UIElement;
-            if (parent != null) parent.RaiseEvent(eventArg);
+            var parent = ((System.Windows.Controls.Control)sender).Parent as UIElement;
+            if (parent != null)
+            {
+                parent.RaiseEvent(eventArg);
+            }
         }
     }
 

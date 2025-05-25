@@ -19,7 +19,6 @@ public class TextComponentSettings : ObservableRecipient
             OnPropertyChanged();
         }
     }
-
     public int FontSize
     {
         get => _fontSize;
@@ -31,7 +30,6 @@ public class TextComponentSettings : ObservableRecipient
             OnPropertyChanged();
         }
     }
-
     public Color FontColor
     {
         get => _fontColor;

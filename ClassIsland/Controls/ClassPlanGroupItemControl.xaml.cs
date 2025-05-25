@@ -20,19 +20,18 @@ namespace ClassIsland.Controls;
 public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyPropertyChanged
 {
     public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(
-        nameof(Item), typeof(ClassPlanGroup), typeof(ClassPlanGroupItemControl),
-        new PropertyMetadata(new ClassPlanGroup()));
+        nameof(Item), typeof(ClassPlanGroup), typeof(ClassPlanGroupItemControl), new PropertyMetadata(new ClassPlanGroup()));
 
     public ClassPlanGroup Item
     {
-        get => (ClassPlanGroup)GetValue(ItemProperty);
-        set => SetValue(ItemProperty, value);
+        get { return (ClassPlanGroup)GetValue(ItemProperty); }
+        set { SetValue(ItemProperty, value); }
     }
 
     public static readonly DependencyProperty KeyProperty = DependencyProperty.Register(
         nameof(Key), typeof(string), typeof(ClassPlanGroupItemControl), new PropertyMetadata("", (o, args) =>
         {
-            if (o is not ClassPlanGroupItemControl control)
+            if (o is not ClassPlanGroupItemControl control) 
                 return;
             var key = control.Key;
             var policy = IAppHost.GetService<IManagementService>().Policy;
@@ -46,8 +45,8 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
 
     public string Key
     {
-        get => (string)GetValue(KeyProperty);
-        set => SetValue(KeyProperty, value);
+        get { return (string)GetValue(KeyProperty); }
+        set { SetValue(KeyProperty, value); }
     }
 
     private IProfileService ProfileService { get; } = App.GetService<IProfileService>();
@@ -127,7 +126,10 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
     private async void MenuItemDisband_OnClick(object sender, RoutedEventArgs e)
     {
         var r = await DialogHost.Show(FindResource("DisbandConfirmDialog"), _parentDialogId);
-        if (r as bool? != true) return;
+        if (r as bool? != true)
+        {
+            return;
+        }
 
         ProfileService.Profile.DisbandClassPlanGroup(Key);
     }
@@ -135,7 +137,10 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
     private async void MenuItemDelete_OnClick(object sender, RoutedEventArgs e)
     {
         var r = await DialogHost.Show(FindResource("DeleteConfirmDialog"), _parentDialogId);
-        if (r as bool? != true) return;
+        if (r as bool? != true)
+        {
+            return;
+        }
 
         ProfileService.Profile.DeleteClassPlanGroup(Key);
     }

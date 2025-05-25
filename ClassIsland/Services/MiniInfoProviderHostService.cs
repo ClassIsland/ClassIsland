@@ -2,9 +2,11 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
 using ClassIsland.Shared;
 using ClassIsland.Shared.Interfaces;
 using ClassIsland.Models;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -28,7 +30,10 @@ public class MiniInfoProviderHostService : IHostedService
     {
         var guid = provider.ProviderGuid.ToString();
         Logger.LogInformation("注册快速信息提供方：{}（{}）", guid, provider.Name);
-        if (!Settings.MiniInfoProviderSettings.Keys.Contains(guid)) Settings.MiniInfoProviderSettings[guid] = null;
+        if (!Settings.MiniInfoProviderSettings.Keys.Contains(guid))
+        {
+            Settings.MiniInfoProviderSettings[guid] = null;
+        }
         Providers.Add(guid, provider);
     }
 
@@ -41,7 +46,6 @@ public class MiniInfoProviderHostService : IHostedService
             var o1 = (JsonElement)o;
             return o1.Deserialize<T>();
         }
-
         return (T?)Settings.MiniInfoProviderSettings[id.ToString()];
     }
 

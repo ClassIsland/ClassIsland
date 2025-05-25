@@ -5,14 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClassIsland"
         mc:Ignorable="d"
-        Title="ClassIsland"
-        Height="40"
+        Title="ClassIsland" 
+        Height="40" 
         Width="800"
         SnapsToDevicePixels="True"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:controls="clr-namespace:ClassIsland.Controls"
+        xmlns:converters="clr-namespace:ClassIsland.Converters"
+        xmlns:models="clr-namespace:ClassIsland.Models"
+        xmlns:hc="https://handyorg.github.io/handycontrol"
+        xmlns:tb="clr-namespace:H.NotifyIcon;assembly=H.NotifyIcon.Wpf"
+        xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+        xmlns:profile="clr-namespace:ClassIsland.Shared.Models.Profile;assembly=ClassIsland.Shared"
+        xmlns:converters1="clr-namespace:ClassIsland.Core.Converters;assembly=ClassIsland.Core"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:ci="http://classisland.tech/schemas/xaml/core"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="{Binding ViewModel.Settings.MainWindowFontWeight2, Converter={StaticResource IntToFontWeightConverter}}"
         TextElement.FontSize="14"
@@ -34,9 +43,132 @@
         materialDesign:ShadowAssist.CacheMode="{x:Null}">
     <Window.CommandBindings>
         <CommandBinding Command="{x:Static local:MainWindow.TrayIconLeftClickedCommand}"
-                        Executed="TrayIconOnClicked_OnExecuted" />
+                        Executed="TrayIconOnClicked_OnExecuted"/>
     </Window.CommandBindings>
     <Window.Resources>
+        <converters1:IndexConverter x:Key="IndexConverter" />
+        <converters1:ColorToColorPickerBrushConverter x:Key="ColorToColorPickerBrushConverter"/>
+        <profile:ClassPlan x:Key="FallbackClassPlan"/>
+        <Style TargetType="FrameworkElement" x:Key="DockingStyle">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="0">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="1">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="2">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="3">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="4">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay}"
+                                             Value="5">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Border" x:Key="BackgroundBorderStyle" BasedOn="{StaticResource DockingStyle}">
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ViewModel.Settings.IsCustomBackgroundColorEnabled}" Value="True">
+                    <Setter Property="Background" Value="{Binding ViewModel.Settings.BackgroundColor, Converter={StaticResource ColorToColorPickerBrushConverter}}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <converters1:BooleanToVisibilityReConverter x:Key="BooleanToVisibilityReConverter"/>
+        <ContextMenu FontFamily="{StaticResource HarmonyOsSans}" x:Key="AppContextMenu"
+                     StaysOpen="True"
+                     IsEnabled="{Binding ViewModel.IsBusy, Converter={StaticResource InvertBooleanConverter}}">
+            <ContextMenu.Resources>
+                <converters1:BooleanAndToVisibilityMultiConverter x:Key="BooleanAndToVisibilityMultiConverter" />
+            </ContextMenu.Resources>
+            <MenuItem Header="ClassIsland" Click="MenuItemAbout_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed}">
+                <MenuItem.Icon>
+                    <Image Source="/Assets/AppLogo.ico"/>
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="更新可用…" Click="MenuItemUpdates_OnClick" IsEnabled="{Binding ViewModel.Settings.IsWelcomeWindowShowed}">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="UploadOutline"/>
+                </MenuItem.Icon>
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ViewModel.Settings.LastUpdateStatus}" Value="UpToDate">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+            <MenuItem Icon="{materialDesign:PackIcon HelpCircleOutline}" Header="帮助…" Click="MenuItemHelps_OnClick" 
+                      Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Separator/>
+            <MenuItem Icon="{materialDesign:PackIcon EyeOutLine}" Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
+                <MenuItem.Visibility>
+                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay" Converter="{StaticResource InvertBooleanConverter}" />
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.Visibility>
+            </MenuItem>
+            <MenuItem Icon="{materialDesign:PackIcon EyeOffOutline}" Header="隐藏主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick">
+                <MenuItem.Visibility>
+                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsMainWindowVisible" Mode="OneWay"/>
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.Visibility>
+            </MenuItem>
+            <MenuItem Icon="{materialDesign:PackIcon NotificationClearAll}" Header="清除全部提醒" Click="MenuItemClearAllNotifications_OnClick">
+                <MenuItem.Visibility>
+                    <MultiBinding Converter="{StaticResource BooleanAndToVisibilityMultiConverter}" Mode="OneWay">
+                        <Binding Path="ViewModel.Settings.IsWelcomeWindowShowed" Mode="OneWay"/>
+                        <Binding Path="ViewModel.IsOverlayOpened" Mode="OneWay"/>
+                    </MultiBinding>
+                </MenuItem.Visibility>
+            </MenuItem>
+            <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon FileDocumentEditOutline}" Header="编辑档案…" Click="ButtonSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon SettingsOutline}" Header="应用设置…" Click="MenuItemSettings_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon FileChartOutline}" Header="加载临时课表…" Click="MenuItemTemporaryClassPlan_OnClick" Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}">
+            </MenuItem>
+            <MenuItem Icon="{materialDesign:PackIcon SwapHorizontal}" Header="换课…" Click="MenuItemClassSwap_OnClick">
+                <MenuItem.Style>
+                    <Style TargetType="MenuItem" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding LessonsService.CurrentClassPlan}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                        <Setter Property="Visibility" Value="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    </Style>
+                </MenuItem.Style>
+            </MenuItem>
+            <Separator Visibility="{Binding ViewModel.Settings.IsWelcomeWindowShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon Restart}"  Header="重启" Click="MenuItemRestartApp_OnClick"/>
+            <MenuItem Icon="{materialDesign:PackIcon ExitToApp}"  Header="退出" Click="MenuItemExitApp_OnClick"/>
+            <Separator Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <MenuItem Icon="{materialDesign:PackIcon BugOutline}" Header="调试"
+                      Visibility="{Binding ViewModel.Settings.IsDebugEnabled, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <MenuItem Header="SizeToContentTest" Click="ButtonResizeDebug_OnClick"/>
+                <Separator/>
+                <MenuItem Header="WelcomeWindow" Click="MenuItemDebugWelcomeWindow_OnClick"/>
+                <MenuItem Header="WelcomeWindow (Full)" Click="MenuItemDebugWelcomeWindow2_OnClick"/>
+                <Separator/>
+                <MenuItem Header="FitSize" Click="MenuItemDebugFitSize_OnClick"/>
+            </MenuItem>
+        </ContextMenu>
         <CollectionViewSource x:Key="ComponentsCollectionViewSource"
                               Source="{Binding ComponentsService.CurrentComponents}"
                               IsLiveGroupingRequested="True"
@@ -51,12 +183,205 @@
                 <system:String>RelativeLineNumber</system:String>
             </CollectionViewSource.LiveFilteringProperties>
             <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="RelativeLineNumber" />
+                <PropertyGroupDescription PropertyName="RelativeLineNumber"/>
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
         <!--#region StoryBoards-->
+        <Storyboard x:Key="OverlayMaskIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <PowerEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0.7">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>-->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="-60"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.2000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="OverlayMaskOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridContentRoot" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.7"/>
+                <!--<EasingDoubleKeyFrame KeyTime="00:00:00.1" Value="0.7"/>-->
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="OverlayOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridContentRoot" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <!--<EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>-->
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+                <!--<EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.7"/>-->
+                <!--<EasingDoubleKeyFrame KeyTime="00:00:00.1" Value="0.7"/>-->
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>-->
+        </Storyboard>
+        <Storyboard x:Key="OverlayMaskOutDirect">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridContentRoot" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="GridOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CubicEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="RootDropShadowEffect" Storyboard.TargetProperty="Opacity">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.0000000" Value="0.7"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="OverlayMaskContent" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <!--<DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlay" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <QuinticEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>-->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="BackgroundBorderOverlayMask" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1000000" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="60">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
 
+        <Storyboard x:Key="WindowMouseIn">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="0.1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="WindowMouseOut">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0.1"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.1500000" Value="1">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <CircleEase EasingMode="EaseIn"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+        <converters1:IntToStringConverter x:Key="IntToStringConverter" />
+        <converters1:MiniInfoGuidToMiniInfoProviderElementMultiConverter x:Key="MiniInfoGuidToMiniInfoProviderElementConverter" />
+        <converters1:WidthDoubleToRectConverter x:Key="WidthDoubleToRectConverter" />
         <!--#endregion 1-->
     </Window.Resources>
     <Window.Style>
@@ -64,12 +389,12 @@
             <Style.Triggers>
                 <!-- Debug -->
                 <DataTrigger Binding="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Mode=OneWay}" Value="True">
-                    <Setter Property="Background" Value="#2FAA0000" />
+                    <Setter Property="Background" Value="#2FAA0000"/>
                 </DataTrigger>
             </Style.Triggers>
             <!-- 默认状态 -->
-            <Setter Property="Topmost" Value="False" />
-            <Setter Property="Background" Value="{x:Null}" />
+            <Setter Property="Topmost" Value="False"/>
+            <Setter Property="Background" Value="{x:Null}"/>
         </Style>
     </Window.Style>
     <Grid>
@@ -96,14 +421,12 @@
                         <!-- 显示提醒时置顶窗口 -->
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
-                                <Condition
-                                    Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
-                                    Value="True" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
+                                           Value="True" />
                                 <Condition Binding="{Binding ViewModel.IsOverlayOpened, Mode=OneWay}"
                                            Value="True" />
                             </MultiDataTrigger.Conditions>
-                            <Setter Property="Visibility"
-                                    Value="{Binding ViewModel.Settings.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <Setter Property="Visibility" Value="{Binding ViewModel.Settings.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         </MultiDataTrigger>
                         <!-- 窗口上课隐藏 -->
                         <MultiDataTrigger>
@@ -112,9 +435,7 @@
                                            Value="0" />
                                 <Condition Binding="{Binding ViewModel.Settings.HideOnClass, Mode=OneWay}" Value="True" />
                                 <Condition Binding="{Binding LessonsService.CurrentState, Mode=OneWay}" Value="OnClass" />
-                                <Condition
-                                    Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
-                                    Value="False" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
@@ -127,9 +448,7 @@
                                            Value="True" />
                                 <Condition Binding="{Binding ViewModel.IsForegroundMaxWindow, Mode=OneWay}"
                                            Value="True" />
-                                <Condition
-                                    Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
-                                    Value="False" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
@@ -142,9 +461,7 @@
                                            Value="True" />
                                 <Condition Binding="{Binding ViewModel.IsForegroundFullscreen, Mode=OneWay}"
                                            Value="True" />
-                                <Condition
-                                    Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
-                                    Value="False" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
@@ -155,24 +472,21 @@
                                            Value="1" />
                                 <Condition Binding="{Binding ViewModel.IsHideRuleSatisfied, Mode=OneWay}"
                                            Value="True" />
-                                <Condition
-                                    Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}"
-                                    Value="False" />
+                                <Condition Binding="{Binding ViewModel.IsNotificationWindowExplicitShowed, Mode=OneWay}" Value="False" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="Visibility" Value="Collapsed" />
                         </MultiDataTrigger>
 
                     </Style.Triggers>
 
-                    <Setter Property="Visibility"
-                            Value="{Binding ViewModel.Settings.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Setter Property="Visibility" Value="{Binding ViewModel.Settings.IsMainWindowVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
                 </Style>
             </Grid.Style>
             <Grid.Effect>
-                <DropShadowEffect BlurRadius="8" Direction="0"
+                <DropShadowEffect BlurRadius="8" Direction="0" 
                                   ShadowDepth="0" Opacity="0"
                                   x:Name="RootDropShadowEffect"
-                                  Color="Black" />
+                                  Color="Black"/>
             </Grid.Effect>
 
             <Border ClipToBounds="True"
@@ -190,7 +504,7 @@
                             <GroupStyle>
                                 <GroupStyle.Panel>
                                     <ItemsPanelTemplate>
-                                        <StackPanel IsItemsHost="True" />
+                                        <StackPanel IsItemsHost="True"/>
                                     </ItemsPanelTemplate>
                                 </GroupStyle.Panel>
                                 <GroupStyle.ContainerStyle>
@@ -198,13 +512,12 @@
                                         <Setter Property="Template">
                                             <Setter.Value>
                                                 <ControlTemplate TargetType="{x:Type GroupItem}">
-                                                    <controls:MainWindowLine
-                                                        WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                        LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
-                                                        IsMainLine="{Binding Converter={StaticResource MainWindowIsMainLineConverter}, ConverterParameter={StaticResource ComponentsCollectionViewSource}}"
-                                                        LineNumber="{Binding Name}"
-                                                        IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
-                                                        <ItemsPresenter />
+                                                    <controls:MainWindowLine WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                                             LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
+                                                                             IsMainLine="{Binding Converter={StaticResource MainWindowIsMainLineConverter}, ConverterParameter={StaticResource ComponentsCollectionViewSource}}"
+                                                                             LineNumber="{Binding Name}"
+                                                                             IsOverlayOpen="{Binding ViewModel.IsOverlayOpened, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}">
+                                                        <ItemsPresenter/>
                                                     </controls:MainWindowLine>
                                                 </ControlTemplate>
                                             </Setter.Value>
@@ -221,7 +534,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Grid>
-                                    <ci:ComponentPresenter IsOnMainWindow="True"
+                                    <ci:ComponentPresenter IsOnMainWindow="True" 
                                                            IsRootComponent="True"
                                                            Settings="{Binding}"
                                                            HidingRules="{Binding HidingRules, Mode=OneWay}"
@@ -250,30 +563,30 @@
         </Grid>
 
         <!-- Scale debug -->
-        <TextBlock Foreground="Cyan"
+        <TextBlock Foreground="Cyan" 
                    d:Visibility="Collapsed"
                    Visibility="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Run Text="GridRoot:" />
-            <Run Text="{Binding ActualWidth, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}" />
-            <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}" />
-            <LineBreak />
-            <Run Text="CurrentTime:" />
-            <Run Text="{Binding ViewModel.DebugCurrentTime, ConverterCulture=zh-CN}" />
+            <Run Text="GridRoot:"/>
+            <Run Text="{Binding ActualWidth, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
+            <Run Text="{Binding ActualHeight, ElementName=GridRoot, Mode=OneWay, StringFormat={}{0:f1}}"/>
+            <LineBreak/>
+            <Run Text="CurrentTime:"/>
+            <Run Text="{Binding ViewModel.DebugCurrentTime, ConverterCulture=zh-CN}"/>
         </TextBlock>
-        <TextBlock Foreground="Cyan"
+        <TextBlock Foreground="Cyan" 
                    HorizontalAlignment="Right"
                    d:Visibility="Collapsed"
                    Visibility="{Binding ViewModel.Settings.IsMainWindowDebugEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Run Text="{x:Static local:App.AppVersionLong}" />
+            <Run Text="{x:Static local:App.AppVersionLong}"/>
         </TextBlock>
 
         <!-- Reserved transforms -->
         <Grid.RenderTransform>
             <TransformGroup>
-                <TranslateTransform />
-                <ScaleTransform />
-                <RotateTransform />
-                <MatrixTransform />
+                <TranslateTransform/>
+                <ScaleTransform/>
+                <RotateTransform/>
+                <MatrixTransform/>
             </TransformGroup>
         </Grid.RenderTransform>
     </Grid>

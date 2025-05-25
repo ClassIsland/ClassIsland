@@ -1,27 +1,28 @@
 ﻿using ClassIsland.Core.Controls;
 using System.Windows;
 
-namespace ClassIsland.Views;
-
-/// <summary>
-/// InstanceExistedWindow.xaml 的交互逻辑
-/// </summary>
-public partial class InstanceExistedWindow : MyWindow
+namespace ClassIsland.Views
 {
-    public InstanceExistedWindow()
+    /// <summary>
+    /// InstanceExistedWindow.xaml 的交互逻辑
+    /// </summary>
+    public partial class InstanceExistedWindow : MyWindow
     {
-        InitializeComponent();
-    }
+        public InstanceExistedWindow()
+        {
+            InitializeComponent();
+        }
 
-    private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
-    {
-        DialogResult = true;
-        Close();
-    }
+        private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
 
-    private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
-    {
-        DialogResult = false;
-        Close();
+        private void ButtonExit_OnClick(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
+        }
     }
 }

@@ -9,13 +9,12 @@ namespace ClassIsland.Behaviors;
 public class TimeLineListItemBehavior : Behavior<ListBoxItem>
 {
     public static readonly DependencyProperty ThumbTemplateProperty = DependencyProperty.Register(
-        nameof(ThumbTemplate), typeof(ControlTemplate), typeof(TimeLineListItemBehavior),
-        new PropertyMetadata(default(ControlTemplate)));
+        nameof(ThumbTemplate), typeof(ControlTemplate), typeof(TimeLineListItemBehavior), new PropertyMetadata(default(ControlTemplate)));
 
     public ControlTemplate ThumbTemplate
     {
-        get => (ControlTemplate)GetValue(ThumbTemplateProperty);
-        set => SetValue(ThumbTemplateProperty, value);
+        get { return (ControlTemplate)GetValue(ThumbTemplateProperty); }
+        set { SetValue(ThumbTemplateProperty, value); }
     }
 
     private Adorner? _adorner;
@@ -28,7 +27,6 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
             AssociatedObject.Unselected += AssociatedObjectOnUnselected;
             if (AssociatedObject.IsSelected) AttachAdorner();
         }
-
         base.OnAttached();
     }
 
@@ -45,7 +43,10 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
 
     private void RemoveAdorner()
     {
-        if (AssociatedObject == null) return;
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         if (_adorner != null)
         {
             var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
@@ -61,9 +62,15 @@ public class TimeLineListItemBehavior : Behavior<ListBoxItem>
 
     private void AttachAdorner()
     {
-        if (AssociatedObject == null) return;
+        if (AssociatedObject == null)
+        {
+            return;
+        }
         var layer = AdornerLayer.GetAdornerLayer(AssociatedObject);
-        if (_adorner != null) return;
+        if (_adorner != null)
+        {
+            return;
+        }
         _adorner = new TimeLineListItemAdorner(AssociatedObject, ThumbTemplate);
         layer?.Add(_adorner);
     }

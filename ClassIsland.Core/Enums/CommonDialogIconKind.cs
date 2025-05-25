@@ -11,17 +11,14 @@ public enum CommonDialogIconKind
     /// 信息
     /// </summary>
     Information,
-
     /// <summary>
     /// 提示
     /// </summary>
     Hint,
-
     /// <summary>
     /// 错误
     /// </summary>
     Error,
-
     /// <summary>
     /// 禁止
     /// </summary>

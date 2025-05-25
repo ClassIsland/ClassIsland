@@ -15,16 +15,13 @@ public class UriTriggerHandlerService
     {
         UriNavigationService = uriNavigationService;
 
-        UriNavigationService.HandleAppNavigation("api/automation/run",
-            args =>
-            {
-                HandledRun?.Invoke(this, new UriTriggerHandledEventArgs(string.Join('/', args.ChildrenPathPatterns)));
-            });
-        UriNavigationService.HandleAppNavigation("api/automation/revert",
-            args =>
-            {
-                HandledRevert?.Invoke(this,
-                    new UriTriggerHandledEventArgs(string.Join('/', args.ChildrenPathPatterns)));
-            });
+        UriNavigationService.HandleAppNavigation("api/automation/run", args =>
+        {
+            HandledRun?.Invoke(this, new UriTriggerHandledEventArgs(string.Join('/', args.ChildrenPathPatterns)));
+        });
+        UriNavigationService.HandleAppNavigation("api/automation/revert", args =>
+        {
+            HandledRevert?.Invoke(this, new UriTriggerHandledEventArgs(string.Join('/', args.ChildrenPathPatterns)));
+        });
     }
 }

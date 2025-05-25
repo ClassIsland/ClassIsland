@@ -14,8 +14,7 @@ namespace ClassIsland.Core.Helpers.Native;
 public static class NativeWindowHelper
 {
     #region 常量
-
-    public static readonly IntPtr HFILE_ERROR = new(-1);
+    public static readonly IntPtr HFILE_ERROR = new IntPtr(-1);
     public static readonly HWND HWND_TOPMOST = new(-1);
     public static readonly HWND HWND_BOTTOM = (HWND)new IntPtr(1);
 
@@ -41,39 +40,48 @@ public static class NativeWindowHelper
         JournalPlayback = 0x0020,
         Enumerate = 0x0040,
         WriteObjects = 0x0080,
-        SwitchDesktop = 0x0100
+        SwitchDesktop = 0x0100,
     }
-
     #endregion
 
     public static bool IsForegroundFullScreen(Screen screen)
     {
-        if (screen == null) screen = Screen.PrimaryScreen;
+        if (screen == null)
+        {
+            screen = Screen.PrimaryScreen;
+        }
         var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out var rect);
+        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
         var pClassName = BuildPWSTR(256, out var nClassName);
         GetClassName(win, pClassName, 255);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
         var className = pClassName.ToString();
         Marshal.FreeHGlobal(nClassName);
-        if (className == "WorkerW" || className == "Progman") return false;
-        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(
-            screen.Bounds);
+        if (className == "WorkerW" || className == "Progman")
+        {
+            return false;
+        }
+        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.Bounds);
     }
 
     public static bool IsForegroundMaxWindow(Screen screen)
     {
-        if (screen == null) screen = Screen.PrimaryScreen;
+        if (screen == null)
+        {
+            screen = Screen.PrimaryScreen;
+        }
         var win = GetForegroundWindow();
-        GetWindowRect((HWND)new HandleRef(null, win).Handle, out var rect);
+        GetWindowRect((HWND)new HandleRef(null, win).Handle, out RECT rect);
         var pClassName = BuildPWSTR(256, out var nClassName);
         GetClassName(win, pClassName, 255);
         var className = pClassName.ToString();
         Marshal.FreeHGlobal(nClassName);
         //Debug.WriteLine(Process.GetProcessById(pid).ProcessName);
-        if (className == "WorkerW" || className == "Progman") return false;
-        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(
-            screen.WorkingArea);
+        if (className == "WorkerW" || className == "Progman")
+        {
+            return false;
+        }
+        return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top).Contains(screen.WorkingArea);
     }
 
     public static bool IsOccupied(string filePath)
@@ -91,32 +99,32 @@ public static class NativeWindowHelper
 
     public static void WaitForFile(string path)
     {
-        while (IsOccupied(path)) Thread.Sleep(TimeSpan.FromSeconds(0.1));
-    }
-
-    public static System.Windows.Media.Color GetColor(int argb)
-    {
-        return new System.Windows.Media.Color
+        while (IsOccupied(path))
         {
-            A = (byte)(argb >> 24),
-            R = (byte)(argb >> 16),
-            G = (byte)(argb >> 8),
-            B = (byte)argb
-        };
+            Thread.Sleep(TimeSpan.FromSeconds(0.1));
+        }
     }
+    
+    public static System.Windows.Media.Color GetColor(int argb) => new System.Windows.Media.Color()
+    {
+        A = (byte)(argb >> 24),
+        R = (byte)(argb >> 16),
+        G = (byte)(argb >> 8),
+        B = (byte)(argb)
+    };
 
     public static IntPtr FindWindowByClass(string className)
     {
-        var windows = GetAllWindows();
+        var windows =  GetAllWindows();
         var q = (from i in windows
-                where i.ClassName == className
-                select i)
+            where i.ClassName == className
+            select i)
             .ToList();
         return q.Count > 0 ? q[0].HWnd : IntPtr.Zero;
     }
 
 
-    public static List<DesktopWindow> GetAllWindows(bool isDetailed = false)
+    public static List<DesktopWindow> GetAllWindows(bool isDetailed=false)
     {
         var windows = new List<DesktopWindow>();
         string className;
@@ -126,11 +134,11 @@ public static class NativeWindowHelper
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
-            var win = FindWindowEx(current, HWND.Null, default, default(PCWSTR));
+            var win = PInvoke.FindWindowEx(current, HWND.Null, default(PCWSTR), default(PCWSTR));
             while (win != IntPtr.Zero)
             {
                 // 检查是否存在子窗口
-                var child = FindWindowEx(win, HWND.Null, default, default(PCWSTR));
+                var child = PInvoke.FindWindowEx(win, HWND.Null, default(PCWSTR), default(PCWSTR));
                 // 获取窗口信息
                 try
                 {
@@ -144,10 +152,16 @@ public static class NativeWindowHelper
                 }
 
                 // 前往下一个窗口
-                win = FindWindowEx(current, win, default, default(PCWSTR));
-                if (child == IntPtr.Zero) continue;
+                win = PInvoke.FindWindowEx(current, win, default(PCWSTR), default(PCWSTR));
+                if (child == IntPtr.Zero)
+                {
+                    continue;
+                }
 
-                if (win != IntPtr.Zero) queue.Enqueue(win);
+                if (win != IntPtr.Zero)
+                {
+                    queue.Enqueue(win);
+                }
             }
         }
 

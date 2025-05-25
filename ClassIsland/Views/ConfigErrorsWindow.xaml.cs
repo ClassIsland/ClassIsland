@@ -28,7 +28,9 @@ public partial class ConfigErrorsWindow
     {
         var managementService = IAppHost.GetService<IManagementService>();
         if (!await managementService.AuthorizeByLevel(managementService.CredentialConfig.ExitApplicationAuthorizeLevel))
+        {
             return;
+        }
         AppBase.Current.Restart(["-m", "-r"]);
     }
 }

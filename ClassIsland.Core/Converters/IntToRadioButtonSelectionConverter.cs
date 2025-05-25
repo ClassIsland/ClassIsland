@@ -14,7 +14,10 @@ public class IntToRadioButtonSelectionConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        if ((bool)value) return System.Convert.ToInt32(parameter);
+        if ((bool)value)
+        {
+            return System.Convert.ToInt32(parameter);
+        }
 
         return null;
     }

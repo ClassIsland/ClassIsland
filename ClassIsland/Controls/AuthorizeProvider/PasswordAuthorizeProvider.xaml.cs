@@ -22,8 +22,8 @@ public partial class PasswordAuthorizeProvider
 
     public bool AuthorizeFailed
     {
-        get => (bool)GetValue(AuthorizeFailedProperty);
-        set => SetValue(AuthorizeFailedProperty, value);
+        get { return (bool)GetValue(AuthorizeFailedProperty); }
+        set { SetValue(AuthorizeFailedProperty, value); }
     }
 
     public static readonly DependencyProperty ProtectPasswordProperty = DependencyProperty.Register(
@@ -31,8 +31,8 @@ public partial class PasswordAuthorizeProvider
 
     public bool ProtectPassword
     {
-        get => (bool)GetValue(ProtectPasswordProperty);
-        set => SetValue(ProtectPasswordProperty, value);
+        get { return (bool)GetValue(ProtectPasswordProperty); }
+        set { SetValue(ProtectPasswordProperty, value); }
     }
 
     public PasswordAuthorizeProvider()
@@ -42,7 +42,10 @@ public partial class PasswordAuthorizeProvider
 
     private void PasswordBox_OnPasswordChanged(object sender, RoutedEventArgs e)
     {
-        if (IsEditingMode) UpdatePassword();
+        if (IsEditingMode)
+        {
+            UpdatePassword();
+        }
     }
 
     private void UpdatePassword()
@@ -69,23 +72,36 @@ public partial class PasswordAuthorizeProvider
         passwordBytes.AddRange(saltBytes);
         var hash = SHA256.HashData(passwordBytes.ToArray());
         if (Convert.ToBase64String(hash) == Settings.PasswordHash)
+        {
             CompleteAuthorize();
+        }
         else
+        {
             AuthorizeFailed = true;
+        }
     }
 
     private void PasswordBox_OnKeyDown(object sender, KeyEventArgs e)
     {
-        if (IsEditingMode || e.Key != Key.Enter) return;
+        if (IsEditingMode || e.Key != Key.Enter)
+        {
+            return;
+        }
         CheckPassword();
     }
 
     private void PasswordAuthorizeProvider_OnLoaded(object sender, RoutedEventArgs e)
     {
-        if (!string.IsNullOrEmpty(Settings.PasswordHash) && IsEditingMode) ProtectPassword = true;
+        if (!string.IsNullOrEmpty(Settings.PasswordHash) && IsEditingMode)
+        {
+            ProtectPassword = true;
+        }
 
         var parentItem = VisualTreeUtils.FindParentVisuals<ListBoxItem>(this).FirstOrDefault();
-        if (parentItem?.IsSelected == true) PasswordBox.Focus();
+        if (parentItem?.IsSelected == true)
+        {
+            PasswordBox.Focus();
+        }
     }
 
     private void ButtonChangePassword_OnClick(object sender, RoutedEventArgs e)

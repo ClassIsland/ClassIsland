@@ -9,7 +9,7 @@ public class DownloadProgress : ObservableRecipient
 {
     private double _progress = 0.0;
     private CancellationToken _cancellationToken;
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
     private bool _isDownloading = false;
     private Exception? _exception;
 

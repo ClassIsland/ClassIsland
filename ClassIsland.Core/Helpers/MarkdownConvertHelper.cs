@@ -25,7 +25,10 @@ public static class MarkdownConvertHelper
     public static FlowDocument ConvertMarkdown(string document)
     {
         var app = Application.Current;
-        if (app == null) throw new InvalidOperationException("Application.Current is null!");
+        if (app == null)
+        {
+            throw new InvalidOperationException("Application.Current is null!");
+        }
 
         _markdownEngine ??= CreateEngine(app);
         var fd = _markdownEngine.Transform(document);
