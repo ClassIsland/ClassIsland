@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
@@ -47,5 +48,37 @@ public static class VisualTreeUtils
         }
 
         return null;
+    }
+
+    public static string DumpVisualTree(FrameworkElement element)
+    {
+        var elements = new List<string>();
+        DumpVisualTreeInternal(element, elements, 0);
+        return string.Join("\n", elements);
+    }
+
+    private static void DumpVisualTreeInternal(DependencyObject element, List<string> elementList, int depth)
+    {
+        if (element is not FrameworkElement fe)
+        {
+            return;
+        }
+        var sb = new StringBuilder();
+        for (int i = 0; i < depth; i++)
+        {
+            sb.Append("| ");
+        }
+        if (depth > 0)
+        {
+            sb.Append('>');
+        }
+
+        sb.Append($"{fe.Name}({element.GetHashCode()}) [{element.GetType()}]");
+        elementList.Add(sb.ToString());
+
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
+        {
+            DumpVisualTreeInternal(VisualTreeHelper.GetChild(element, i), elementList, depth + 1);
+        }
     }
 }
