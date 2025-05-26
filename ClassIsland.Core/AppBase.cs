@@ -91,7 +91,7 @@ public abstract class AppBase : Application, IAppHost
     /// 应用版本代号
     /// </summary>
     // ReSharper disable StringLiteralTypo
-    public static string AppCodeName => "RyouYamada";
+    public static string AppCodeName => "Kiana";
     // ReSharper restore StringLiteralTypo
 
     /// <summary>
