@@ -3,7 +3,25 @@
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:controls="clr-namespace:ClassIsland.Controls">
     <DataTemplate DataType="{x:Type system:String}" x:Key="SimpleTextWeatherIconTemplate">
-        <TextBlock Text="{Binding WeatherName, RelativeSource={RelativeSource AncestorType=controls:WeatherPackIconControl}}"
-                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock Text="~" Foreground="{DynamicResource MaterialDesignBody}"
+                       x:Name="Separator"
+                       VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=ContentPresenter}}"
+                                         Value="To">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+						</Style.Triggers>
+                        <Setter Property="Visibility" Value="Collapsed"/>
+					</Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <TextBlock
+                Text="{Binding WeatherName, RelativeSource={RelativeSource AncestorType=controls:WeatherPackIconControl}}"
+                VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </StackPanel >
     </DataTemplate>
 </ResourceDictionary>

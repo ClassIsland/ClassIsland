@@ -13,7 +13,8 @@
                           Content="{Binding Code, RelativeSource={RelativeSource AncestorType=local:WeatherPackIconControl}}"
                           Width="{Binding Width, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
                           Height="{Binding Height, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
-                          ToolTip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}">
+                          ToolTip="{Binding WeatherName, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}"
+                          Tag="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType=local:WeatherPackIconControl}}">
             <ContentPresenter.Style>
                 <Style TargetType="ContentPresenter" >
                     <Style.Triggers>
