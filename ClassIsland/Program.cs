@@ -4,6 +4,7 @@ using System.CommandLine.NamingConventionBinder;
 using System.CommandLine;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 using ClassIsland;
 using ClassIsland.Core;
 using ClassIsland.Core.Enums;
@@ -109,6 +110,7 @@ if (sentryEnabled )
         s.SetTag("assetsTrimmed", App.IsAssetsTrimmedInternal.ToString());
     });
 }
+new Thread(StartAvaloniaApp).Start();
 var app = new App()
 {
     Mutex = mutex,
@@ -136,4 +138,16 @@ static async Task ProcessUriNavigationAsync()
     {
         // ignored
     }
+}
+
+AppBuilder BuildAvaloniaApp()
+    => AppBuilder.Configure<AppNew>()
+        .UsePlatformDetect()
+        .LogToTrace();
+
+[STAThread]
+void StartAvaloniaApp()
+{
+    BuildAvaloniaApp()
+        .StartWithClassicDesktopLifetime(args);
 }
