@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using ClassIsland.Core.Abstractions.Services;
+using ClassIsland.Shared;
 
 namespace ClassIsland.Controls;
 
@@ -45,6 +46,8 @@ public partial class WeatherPackIconControl : UserControl, INotifyPropertyChange
         get => _weatherColor;
         set => SetField(ref _weatherColor, value);
     }
+
+    public IWeatherService? WeatherService => IAppHost.TryGetService<IWeatherService>();
 
     public WeatherPackIconControl()
     {

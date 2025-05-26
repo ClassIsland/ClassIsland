@@ -16,7 +16,7 @@
                                      Height="20" Width="20"/>
             <TextBlock Text="天气预报" FontSize="{DynamicResource MainWindowEmphasizedFontSize}" Margin="8 0" FontWeight="Bold"/>
             <controls:WeatherPackIconControl Code="{Binding Info.ForecastDaily.Weather.Value[0].To}" VerticalAlignment="Center"
-                                             Height="20" Width="20" AllowColor="False"/>
+                                             Height="20" AllowColor="False"/>
         </StackPanel>
         <Grid HorizontalAlignment="Center" Visibility="{Binding IsOverlay, Converter={StaticResource InverseBoolToVisConverter}}">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12 0">
